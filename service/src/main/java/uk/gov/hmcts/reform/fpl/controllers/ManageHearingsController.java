@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
@@ -68,6 +69,7 @@ public class ManageHearingsController extends CallbackController {
     private final ManageHearingsService hearingsService;
     private final FeatureToggleService featureToggleService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
+    private final CaseSummaryService caseSummaryService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -292,6 +294,8 @@ public class ManageHearingsController extends CallbackController {
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
         data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
+
+        data.putAll(caseSummaryService.generateSummaryFields(caseData));
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 

@@ -1,0 +1,382 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryTabHeading",
+    "TabShowCondition": "[STATE] != \"Open\"",
+    "TabFieldDisplayOrder": 0
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryOrdersRequested",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryDateOfIssue",
+    "TabFieldDisplayOrder": 20
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryApplicationDeadline",
+    "TabFieldDisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "extend26WeekTimelineLink",
+    "TabFieldDisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryAllocatedJudgeName",
+    "TabFieldDisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryAllocatedJudgeEmail",
+    "TabFieldDisplayOrder": 51
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryHasUnresolvedMessages",
+    "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 60
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryUnresolvedMessagesHeading",
+    "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
+    "TabFieldDisplayOrder": 60
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryUnresolvedMessagesLabel",
+    "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
+    "TabFieldDisplayOrder": 70
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "messageJudgeLegalAdviserLink",
+    "FieldShowCondition": "caseSummaryHasUnresolvedMessages = \"Yes\"",
+    "TabFieldDisplayOrder": 80
+  },
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryHasNextHearing",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 90
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNextHearingHeading",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 91
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNextHearingType",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 92
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNextHearingDate",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 93
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNextHearingJudge",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 94
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNextHearingEmailAddress",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 94
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNextHearingCMO",
+    "FieldShowCondition": "caseSummaryHasNextHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 96
+  },
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryHasPreviousHearing",
+    "FieldShowCondition": "caseSummaryHasPreviousHearing = \"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 100
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryPreviousHearingHeading",
+    "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 101
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryPreviousHearingType",
+    "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 102
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryPreviousHearingDate",
+    "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 103
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryPreviousHearingCMO",
+    "FieldShowCondition": "caseSummaryHasPreviousHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 104
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryHasFinalHearing",
+    "FieldShowCondition": "caseSummaryHasFinalHearing = \"DO_NOT_SHOW\"",
+    "TabFieldDisplayOrder": 110
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNominatedFinalHearingHeading",
+    "FieldShowCondition": "caseSummaryHasFinalHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 111
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryFinalHearingDate",
+    "FieldShowCondition": "caseSummaryHasFinalHearing = \"Yes\"",
+    "TabFieldDisplayOrder": 112
+  },
+
+
+
+
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryPeopleInTheCaseHeading",
+    "TabFieldDisplayOrder": 120
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryNumberOfChildren",
+    "TabFieldDisplayOrder": 121
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryLASolicitorName",
+    "TabFieldDisplayOrder": 122
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryLASolicitorEmail",
+    "TabFieldDisplayOrder": 123
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryFirstRespondentLastName",
+    "TabFieldDisplayOrder": 124
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryFirstRespondentLegalRep",
+    "TabFieldDisplayOrder": 125
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SummaryAfterSubmissionTab",
+    "TabLabel": "Summary",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "caseSummaryCafcassGuardian",
+    "TabFieldDisplayOrder": 126
+  }
+
+
+
+
+
+]

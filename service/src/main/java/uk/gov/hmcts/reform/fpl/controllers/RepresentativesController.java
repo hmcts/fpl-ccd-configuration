@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class RepresentativesController extends CallbackController {
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;
     private final OthersService othersService;
+    private final CaseSummaryService caseSummaryService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -64,6 +66,8 @@ public class RepresentativesController extends CallbackController {
         updatedCaseDetails.getData().put("representatives", updatedCaseData.getRepresentatives());
         updatedCaseDetails.getData().put("others", updatedCaseData.getOthers());
         updatedCaseDetails.getData().put("respondents1", updatedCaseData.getRespondents1());
+
+        updatedCaseDetails.getData().putAll(caseSummaryService.generateSummaryFields(updatedCaseData));
 
         return respond(updatedCaseDetails);
     }
