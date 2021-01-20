@@ -344,8 +344,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING",
     "UserRoles": [
-      "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate", "caseworker-publiclaw-courtadmin",
-      "caseworker-publiclaw-solicitor", "caseworker-publiclaw-gatekeeper"
+      "caseworker-publiclaw-judiciary",
+      "caseworker-publiclaw-magistrate",
+      "caseworker-publiclaw-courtadmin",
+      "caseworker-publiclaw-solicitor",
+      "caseworker-publiclaw-gatekeeper"
     ],
     "CRUD": "R"
   },
@@ -354,8 +357,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadStandardDirections",
     "UserRoles": [
-      "caseworker-publiclaw-courtadmin", "caseworker-publiclaw-solicitor", "caseworker-publiclaw-gatekeeper",
-      "caseworker-publiclaw-judiciary", "caseworker-publiclaw-magistrate"
+      "caseworker-publiclaw-courtadmin",
+      "caseworker-publiclaw-solicitor",
+      "caseworker-publiclaw-gatekeeper",
+      "caseworker-publiclaw-judiciary",
+      "caseworker-publiclaw-magistrate"
     ],
     "CRUD": "R"
   }
