@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForC2;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -36,10 +35,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
@@ -150,43 +147,6 @@ class C2UploadedEventHandlerTest {
         c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         verifyNoInteractions(notificationService);
-    }
-
-    @Test
-    void shouldNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeExists() {
-        CaseData caseData = caseData();
-
-        AllocatedJudgeTemplateForC2 allocatedJudgeParametersForC2 = getAllocatedJudgeParametersForC2();
-
-        given(c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData))
-            .willReturn(allocatedJudgeParametersForC2);
-
-        c2UploadedEventHandler.notifyAllocatedJudge(new C2UploadedEvent(caseData, c2DocumentBundle));
-
-        verify(notificationService).sendEmail(
-            C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
-            ALLOCATED_JUDGE_EMAIL_ADDRESS,
-            allocatedJudgeParametersForC2,
-            caseData.getId());
-    }
-
-    @Test
-    void shouldNotNotifyAllocatedJudgeOnC2UploadWhenAllocatedJudgeDoesNotExist() {
-        CaseData caseData = CaseData.builder().build();
-
-        c2UploadedEventHandler.notifyAllocatedJudge(new C2UploadedEvent(caseData, c2DocumentBundle));
-
-        verifyNoInteractions(c2UploadedEmailContentProvider, notificationService);
-    }
-
-    private AllocatedJudgeTemplateForC2 getAllocatedJudgeParametersForC2() {
-        return AllocatedJudgeTemplateForC2.builder()
-            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .callout(subjectLine)
-            .judgeTitle("Her Honour Judge")
-            .judgeName("Byrne")
-            .respondentLastName("Smith")
-            .build();
     }
 
     private C2UploadedTemplate getC2UploadedTemplateParameters() {

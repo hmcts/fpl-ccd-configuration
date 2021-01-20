@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.notify.NewJudicialMessageTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
@@ -34,7 +35,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
             .hasUrgency(YES.getValue())
             .urgency("Needed asap")
             .callout("^Smith, 12345, hearing 1 Jan 2020")
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
             .build();
 
@@ -58,7 +59,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
             .hasUrgency(NO.getValue())
             .urgency("")
             .callout("^Smith, 12345, hearing 1 Jan 2020")
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
             .build();
 
@@ -83,7 +84,7 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
             .hasUrgency(NO.getValue())
             .urgency("")
             .callout("^Smith, 12345, hearing 1 Jan 2020")
-            .caseUrl(caseUrl(CASE_REFERENCE, "JudicialMessagesTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
             .build();
 

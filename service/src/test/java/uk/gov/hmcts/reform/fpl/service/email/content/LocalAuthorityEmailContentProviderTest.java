@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -28,7 +29,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .leadRespondentsName("Smith")
             .hearingDate("1 January 2020")
             .reference(CASE_REFERENCE)
-            .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .callout("^Smith, 12345, hearing 1 Jan 2020")
             .build();
 
@@ -47,7 +48,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .hearingDate("")
             .leadRespondentsName("Smith")
             .reference(CASE_REFERENCE)
-            .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .callout("^Smith")
             .build();
 
