@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,19 +11,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @Api
-@Slf4j
 @RestController
 @RequestMapping("/callback/case-initiation")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -39,14 +34,7 @@ public class CaseInitiationController extends CallbackController {
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        List<String> errors = new ArrayList<>();
-        try {
-            errors = localAuthorityOnboardedValidationService.validateIfUserIsOnboarded();
-        } catch (UnknownLocalAuthorityDomainException e) {
-            log.warn(e.getMessage());
-            errors.add(e.getUserMessage());
-        }
-        return respond(caseDetails, errors);
+        return respond(caseDetails, localAuthorityOnboardedValidationService.validateIfUserIsOnboarded());
     }
 
     @PostMapping("/about-to-submit")

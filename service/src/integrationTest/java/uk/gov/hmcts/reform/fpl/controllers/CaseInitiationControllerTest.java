@@ -169,17 +169,18 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldPopulateErrorsInResponseIfDomainNameNotFound() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseName", "title"))
+    void shouldPopulateErrorsInResponseWhenDomainNameIsNotFound() {
+        AboutToStartOrSubmitCallbackResponse expectedResponse = AboutToStartOrSubmitCallbackResponse.builder()
+            .errors(List.of("The email address was not linked to a known Local Authority"))
             .build();
 
-        given(client.getUserInfo(USER_AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("user@test.com").build());
+        given(client.getUserInfo(USER_AUTH_TOKEN))
+            .willReturn(UserInfo.builder().sub("user@email.gov.uk").build());
 
-        AboutToStartOrSubmitCallbackResponse actualResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToSubmitEvent(
+            "core-case-data-store-api/empty-case-details.json");
 
-        assertThat(actualResponse.getErrors()).contains("The email address was not linked to a known Local Authority");
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -310,6 +311,6 @@ class CaseInitiationControllerTest extends AbstractControllerTest {
 
     private void givenPRDWillReturn(List<String> userIds) {
         given(organisationApi.findUsersInOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
-            Status.ACTIVE, false)).willReturn(organisation(userIds));
+                                                    Status.ACTIVE, false)).willReturn(organisation(userIds));
     }
 }
