@@ -249,9 +249,6 @@ dependencies {
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  // https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-core
-  implementation group: 'org.elasticsearch', name: 'elasticsearch', version: '7.10.1'
-
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
   integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
