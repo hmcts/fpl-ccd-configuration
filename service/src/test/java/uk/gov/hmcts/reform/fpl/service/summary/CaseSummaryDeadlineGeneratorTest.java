@@ -13,6 +13,13 @@ class CaseSummaryDeadlineGeneratorTest {
     private final CaseSummaryDeadlineGenerator underTest = new CaseSummaryDeadlineGenerator();
 
     @Test
+    void testGenerateEmptySumbittedDate() {
+        SyntheticCaseSummary actual = underTest.generate(CaseData.builder().build());
+
+        assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
+    }
+
+    @Test
     void testGenerate() {
 
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
