@@ -98,8 +98,8 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryNextHearingCMO",
-    "Label": "CMO",
-    "FieldType": "Text",
+    "Label": "Draft CMO",
+    "FieldType": "Document",
     "SecurityClassification": "PUBLIC"
   },
 

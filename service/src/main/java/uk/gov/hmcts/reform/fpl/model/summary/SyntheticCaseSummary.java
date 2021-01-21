@@ -23,7 +23,7 @@ public class SyntheticCaseSummary {
     LocalDate caseSummaryNextHearingDate;
     String caseSummaryNextHearingJudge;
     String caseSummaryNextHearingEmailAddress;
-    String caseSummaryNextHearingCMO;
+    DocumentReference caseSummaryNextHearingCMO;
 
     String caseSummaryHasPreviousHearing;
     String caseSummaryPreviousHearingType;
