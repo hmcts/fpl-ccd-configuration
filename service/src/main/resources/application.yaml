@@ -147,7 +147,7 @@ scheduler:
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
       cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
-    - name: 'Summary Tab'
+    - name: 'Summary tab'
       enabled: true
       cronGroup: "NIGHTLY_CRON"
       description: 'Updates the summary tab'
