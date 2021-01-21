@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model.summary;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDate;
 
@@ -28,7 +28,7 @@ public class SyntheticCaseSummary {
     String caseSummaryHasPreviousHearing;
     String caseSummaryPreviousHearingType;
     LocalDate caseSummaryPreviousHearingDate;
-    String caseSummaryPreviousHearingCMO;
+    DocumentReference caseSummaryPreviousHearingCMO;
 
     String caseSummaryHasFinalHearing;
     LocalDate caseSummaryFinalHearingDate;
@@ -44,5 +44,8 @@ public class SyntheticCaseSummary {
     String caseSummaryFirstRespondentLegalRep;
     String caseSummaryCafcassGuardian;
 
+    public static SyntheticCaseSummary emptySummary() {
+        return SyntheticCaseSummary.builder().build();
+    }
 
 }

@@ -136,7 +136,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryPreviousHearingCMO",
     "Label": "CMO",
-    "FieldType": "Text",
+    "FieldType": "Document",
     "SecurityClassification": "PUBLIC"
   },
 
