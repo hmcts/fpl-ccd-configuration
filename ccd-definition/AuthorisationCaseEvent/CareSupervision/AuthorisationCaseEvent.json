@@ -91,16 +91,16 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "R"
       }
@@ -113,16 +113,16 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "R"
       }
@@ -135,16 +135,16 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "R"
       }
@@ -179,16 +179,16 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "R"
       }
@@ -201,16 +201,16 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
           "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
         ],
         "CRUD": "R"
       }
