@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UpdateSummaryTab implements Job {
     private static final String EVENT_NAME = "internal-update-case-summary";

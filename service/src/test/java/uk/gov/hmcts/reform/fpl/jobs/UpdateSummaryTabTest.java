@@ -11,7 +11,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { JacksonAutoConfiguration.class, UpdateSummaryTab.class})
+@ContextConfiguration(classes = { JacksonAutoConfiguration.class })
 class UpdateSummaryTabTest {
 
     private static final String JURISDICTION = "PUBLICLAW";
@@ -64,20 +63,20 @@ class UpdateSummaryTabTest {
             .build())
         .build();
 
-    @MockBean
+    @Mock
     private SearchService searchService;
-    @MockBean
+    @Mock
     private FeatureToggleService toggleService;
-    @MockBean
+    @Mock
     private CaseSummaryService summaryService;
-    @MockBean
+    @Mock
     private CoreCaseDataService ccdService;
 
     // autowire required due to the model classes not having been set up properly with jackson in the past,
     // springs construction of the object mapper works but a default construction of it doesn't :(
     @Autowired
     private ObjectMapper mapper;
-    @Autowired
+
     private UpdateSummaryTab underTest;
 
     @Mock
