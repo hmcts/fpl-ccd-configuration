@@ -38,7 +38,9 @@ public class CaseSummaryPeopleInCaseGenerator implements CaseSummaryFieldsGenera
 
     private String generateSummaryCafcassGuardian(CaseData caseData) {
         List<Representative> cafcasGuardians = unwrapElements(caseData.getRepresentatives()).stream()
-            .filter(representative -> representative.getRole().equals(RepresentativeRole.CAFCASS_GUARDIAN))
+            .filter(representative -> Optional.ofNullable(representative.getRole())
+                .map(role -> role.equals(RepresentativeRole.CAFCASS_GUARDIAN))
+                .orElse(false))
             .collect(Collectors.toList());
 
         if (cafcasGuardians.isEmpty()) {

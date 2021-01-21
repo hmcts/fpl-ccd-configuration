@@ -7,10 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -27,7 +31,7 @@ public class AfterSubmissionCaseDataUpdatedEventHandler {
     public void handleCaseDataChange(final AfterSubmissionCaseDataUpdated event) {
 
         Map<String, Object> originalSummaryFields = objectMapper.convertValue(
-            event.getCaseDataBefore().getSyntheticCaseSummary(),
+            originalSyntheticCaseSummary(event),
             new TypeReference<>() {});
 
         Map<String, Object> updatedSummaryFields = caseSummaryService.generateSummaryFields(event.getCaseData());
@@ -41,6 +45,12 @@ public class AfterSubmissionCaseDataUpdatedEventHandler {
                 updatedSummaryFields);
         }
 
+    }
+
+    private SyntheticCaseSummary originalSyntheticCaseSummary(AfterSubmissionCaseDataUpdated event) {
+        return Optional.ofNullable(event.getCaseDataBefore())
+            .flatMap(caseData -> Optional.ofNullable(caseData.getSyntheticCaseSummary()))
+            .orElse(SyntheticCaseSummary.emptySummary());
     }
 
     private boolean fieldsHaveChanged(Map<String, Object> originalSummaryFields,

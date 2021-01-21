@@ -155,6 +155,19 @@ class CaseSummaryPeopleInCaseGeneratorTest {
     }
 
     @Test
+    void testReppresentativesWithoutRole() {
+        SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
+            .representatives(List.of(
+                element(Representative.builder()
+                    .fullName(LEGAL_REPRESENTATIVE)
+                    .build())
+            ))
+            .build());
+
+        assertThat(actual).isEqualTo(SyntheticCaseSummary.emptySummary());
+    }
+
+    @Test
     void testNoCafcassGuardianNoRepresentatives() {
         SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
             .representatives(List.of(
