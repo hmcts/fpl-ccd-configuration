@@ -60,8 +60,8 @@ public class MigrateCaseController extends CallbackController {
         } else {
             if (orders.size() > orderElement) {
                 orders.remove(orderElement);
+                data.getData().put("orderCollection", orders);
             }
-            data.getData().put("orderCollection", orders);
         }
     }
 
