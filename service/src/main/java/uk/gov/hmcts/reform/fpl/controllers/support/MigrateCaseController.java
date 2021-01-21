@@ -46,22 +46,21 @@ public class MigrateCaseController extends CallbackController {
 
         if ("CF20C50072".equals(caseData.getFamilyManCaseNumber())) {
 
-            removeDuplicateOrder(caseData, caseDetails, 1);
+            removeDuplicateOrder(caseData, caseDetails, 3);
         }
     }
 
     public void removeDuplicateOrder(CaseData caseData, CaseDetails data,
-                                               Integer orderElement) throws Exception {
+                                               int orderElement){
 
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
-
-        if (!orders.remove(orderElement)) {
-            throw new Exception("Failed to find order");
-        }
 
         if (isEmpty(orders)) {
             data.getData().remove("orderCollection");
         } else {
+            if (orders.size() >= orderElement) {
+                orders.remove(orderElement);
+            }
             data.getData().put("orderCollection", orders);
         }
     }
