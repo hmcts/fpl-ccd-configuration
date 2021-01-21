@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.CaseNoteService;
+import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ import java.util.List;
 public class AddNoteController extends CallbackController {
     private final CaseNoteService service;
     private final RequestData requestData;
+    private final CaseSummaryService caseSummaryService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
