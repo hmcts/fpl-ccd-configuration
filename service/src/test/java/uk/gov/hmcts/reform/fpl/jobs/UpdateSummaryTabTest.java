@@ -48,7 +48,8 @@ class UpdateSummaryTabTest {
         .mustNot(MustNot.builder()
             .clauses(List.of(
                 MatchQuery.of("state", "Open"),
-                MatchQuery.of("state", "Deleted")
+                MatchQuery.of("state", "Deleted"),
+                MatchQuery.of("state", "RETURNED")
             ))
             .build())
         .build();
@@ -58,6 +59,7 @@ class UpdateSummaryTabTest {
             .clauses(List.of(
                 MatchQuery.of("state", "Open"),
                 MatchQuery.of("state", "Deleted"),
+                MatchQuery.of("state", "RETURNED"),
                 MatchQuery.of("state", "CLOSED")
             ))
             .build())
