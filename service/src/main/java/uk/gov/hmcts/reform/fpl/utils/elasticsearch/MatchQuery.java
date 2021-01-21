@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.utils.elasticsearch;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.Map;
 
+@EqualsAndHashCode
 public class MatchQuery implements ESQuery {
     private final String field;
     private final Object value;
