@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -30,7 +31,7 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
         }
 
         return CMOReadyToSealTemplate.builder()
-            .caseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
+            .caseUrl(getCaseUrl(caseId, DRAFT_ORDERS))
             .judgeName(judgeName)
             .judgeTitle(judgeTitle)
             .respondentLastName(getFirstRespondentLastName(respondents))

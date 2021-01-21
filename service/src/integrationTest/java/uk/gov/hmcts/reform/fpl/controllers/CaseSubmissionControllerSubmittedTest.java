@@ -79,8 +79,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
-    private static final String SURVEY_LINK = "https://www.smartsurvey.co"
-        + ".uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903";
+    private static final String SURVEY_LINK = "https://fake.survey.url";
     private static final Long CASE_ID = nextLong();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 

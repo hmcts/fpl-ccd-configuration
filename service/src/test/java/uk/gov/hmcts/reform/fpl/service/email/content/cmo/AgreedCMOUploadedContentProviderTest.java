@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {AgreedCMOUploadedContentProvider.class})
@@ -59,7 +60,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .judgeTitle("Her Honour Judge")
             .respondentLastName("Vlad")
             .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
-            .caseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"))
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
         assertThat(template).usingRecursiveComparison().isEqualTo(expected);
@@ -94,7 +95,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .judgeTitle("")
             .respondentLastName("Vlad")
             .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
-            .caseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"))
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
         assertThat(template).usingRecursiveComparison().isEqualTo(expected);
@@ -128,7 +129,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .judgeTitle("Justice of the Peace")
             .respondentLastName("Vlad")
             .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
-            .caseUrl(caseUrl(CASE_NUMBER.toString(), "DraftOrdersTab"))
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
         assertThat(template).usingRecursiveComparison().isEqualTo(expected);

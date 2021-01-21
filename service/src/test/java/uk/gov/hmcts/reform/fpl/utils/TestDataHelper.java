@@ -240,7 +240,7 @@ public class TestDataHelper {
     public static FeignException feignException(int status, String message) {
         return FeignException.errorStatus(message, Response.builder()
             .status(status)
-            .request(Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null))
+            .request(Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null))
             .build());
     }
 
