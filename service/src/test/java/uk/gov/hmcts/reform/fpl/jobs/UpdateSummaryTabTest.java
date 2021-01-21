@@ -30,7 +30,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -112,7 +111,7 @@ class UpdateSummaryTabTest {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(FIRST_RUN_ES_QUERY)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(any())).thenReturn(Map.of());
+        when(summaryService.generateSummaryFields(CaseData.builder().build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -128,7 +127,7 @@ class UpdateSummaryTabTest {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(ES_QUERY)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(any())).thenReturn(Map.of());
+        when(summaryService.generateSummaryFields(CaseData.builder().build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -144,7 +143,7 @@ class UpdateSummaryTabTest {
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder().data(Map.of()).build());
 
         when(searchService.search(ES_QUERY)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(any())).thenReturn(Map.of());
+        when(summaryService.generateSummaryFields(CaseData.builder().build())).thenReturn(Map.of());
 
         underTest.execute(executionContext);
 
@@ -177,10 +176,11 @@ class UpdateSummaryTabTest {
         Map<String, Object> caseSummaryData = mapper.convertValue(caseSummary, new TypeReference<>() {});
 
         when(searchService.search(ES_QUERY)).thenReturn(caseDetails);
-        when(summaryService.generateSummaryFields(any())).thenReturn(caseSummaryData);
+        when(summaryService.generateSummaryFields(caseData)).thenReturn(caseSummaryData);
 
         underTest.execute(executionContext);
 
+        verify(summaryService).generateSummaryFields(caseData);
         verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
     }
 }

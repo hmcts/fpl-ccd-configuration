@@ -568,7 +568,8 @@ public class CaseData {
 
     private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
     @JsonUnwrapped
-    private final UploadCMOEventData uploadCMOEventData;
+    @Builder.Default
+    private final UploadCMOEventData uploadCMOEventData = UploadCMOEventData.builder().build();
 
     public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
