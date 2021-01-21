@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.jobs;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +10,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
+import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
@@ -31,13 +31,13 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UpdateSummaryTab implements Job {
-    private static final String EVENT_NAME = "internal-update-summary-tab";
+    private static final String EVENT_NAME = "internal-update-case-summary";
 
-    private final CaseConverter converter;
     private final ObjectMapper mapper;
     private final SearchService searchService;
     private final CoreCaseDataService ccdService;
     private final FeatureToggleService toggleService;
+    private final CaseSummaryService summaryService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
@@ -57,19 +57,18 @@ public class UpdateSummaryTab implements Job {
 
         log.info("Job {} found {} cases", jobName, total);
         for (CaseDetails caseDetails : cases) {
-            CaseData caseData = converter.convert(caseDetails);
-            Object updatedData = updateSummaryTab(caseData);
+            CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+            Map<String, Object> updatedData = updateSummaryTab(caseData);
             final Long caseId = caseDetails.getId();
             try {
-                if (!shouldUpdate(updatedData, caseData)) {
-                    log.debug("Job {} skipped case {}", jobName, caseId);
-                    skipped++;
-                } else {
+                if (shouldUpdate(updatedData, caseData)) {
                     log.debug("Job {} updating case {}", jobName, caseId);
-                    Map<String, Object> dataToAdd = mapper.convertValue(updatedData, new TypeReference<>() {});
-                    ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, dataToAdd);
+                    ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
                     log.info("Job {} updated case {}", jobName, caseId);
                     updated++;
+                } else {
+                    log.debug("Job {} skipped case {}", jobName, caseId);
+                    skipped++;
                 }
             } catch (Exception e) {
                 log.error("Job {} could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
@@ -78,14 +77,13 @@ public class UpdateSummaryTab implements Job {
         log.info("Job {} finished. {}", jobName, buildStats(total, skipped, updated));
     }
 
-    private Object updateSummaryTab(CaseData caseData) {
-        // TODO: 20/01/2021 call update service here
-        return caseData;
+    private Map<String, Object> updateSummaryTab(CaseData caseData) {
+        return summaryService.generateSummaryFields(caseData);
     }
 
-    private boolean shouldUpdate(Object updatedData, CaseData oldData) {
-        // TODO: 20/01/2021 get the old data field here, update params with the actual data type
-        return !Objects.equals(updatedData, oldData);
+    private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {
+        SyntheticCaseSummary newSummaryData = mapper.convertValue(updatedData, SyntheticCaseSummary.class);
+        return !Objects.equals(newSummaryData, oldData.getSyntheticCaseSummary());
     }
 
     private ESQuery buildQuery(boolean firstPassEnabled) {
