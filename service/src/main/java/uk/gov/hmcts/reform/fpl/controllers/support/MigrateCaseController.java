@@ -41,7 +41,7 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run2623(CaseDetails caseDetails) throws Exception {
+    private void run2623(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
         if ("CF20C50072".equals(caseData.getFamilyManCaseNumber())) {
@@ -58,7 +58,7 @@ public class MigrateCaseController extends CallbackController {
         if (isEmpty(orders)) {
             data.getData().remove("orderCollection");
         } else {
-            if (orders.size() >= orderElement) {
+            if (orders.size() > orderElement) {
                 orders.remove(orderElement);
             }
             data.getData().put("orderCollection", orders);

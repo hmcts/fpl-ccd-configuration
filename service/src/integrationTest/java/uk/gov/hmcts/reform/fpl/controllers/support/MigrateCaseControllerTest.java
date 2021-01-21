@@ -63,43 +63,27 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
             assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orders);
         }
-//
-//        @Test
-//        void shouldNotChangeCaseIfNotExpectedFamilyManCaseNumber() {
-//            String invalidFamilyManNumber = "PO20C50031";
-//
-//            Element<HearingBooking> hearingOne = element(HEARING_ID_1, HEARING);
-//            Element<HearingBooking> hearingTwo = element(HEARING_ID_2, HEARING);
-//
-//            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne, hearingTwo);
-//            CaseDetails caseDetails = caseDetails(migrationId, invalidFamilyManNumber, hearingBookings);
-//            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-//
-//            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-//        }
-//
-//        @Test
-//        void shouldThrowAnExceptionIfCaseContainsFewerHearingsThanExpected() {
-//            Element<HearingBooking> hearingOne = element(HEARING_ID_1, HEARING);
-//            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne);
-//
-//            CaseDetails caseDetails = caseDetails(
-//                migrationId, familyManNumber, hearingBookings);
-//
-//            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-//                .getRootCause()
-//                .hasMessage("Expected 2 hearings in the case but found 1");
-//        }
 
-//        @Test
-//        void shouldThrowAnExceptionIfCaseDoesNotContainHearings() {
-//            CaseDetails caseDetails = caseDetails(
-//                migrationId, familyManNumber, null);
-//
-//            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-//                .getRootCause()
-//                .hasMessage("No hearings in the case");
-//        }
+        @Test
+        void shouldNotChangeCaseIfNotExpectedFamilyManCaseNumber() {
+            String invalidFamilyManNumber = "PO20C50031";
+
+            List<Element<GeneratedOrder>> orders = List.of(orderOne, orderTwo, orderThree, orderFour);
+            CaseDetails caseDetails = caseDetails(migrationId, invalidFamilyManNumber, orders);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orders);
+        }
+
+        @Test
+        void shouldNotModifyOrdersCollectionIfOrderToRemoveIndexIsBiggerThanCollectionSize() {
+            List<Element<GeneratedOrder>> orders = List.of(orderOne, orderTwo, orderThree);
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, orders);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orders);
+
+        }
 
         private CaseDetails caseDetails(String migrationId,
                                         String familyManCaseNumber,
