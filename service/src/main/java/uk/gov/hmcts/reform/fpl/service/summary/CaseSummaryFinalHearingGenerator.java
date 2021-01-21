@@ -3,13 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.summary;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.Map;
-
-import static java.util.Comparator.comparing;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component

@@ -4,14 +4,18 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 
+import java.util.Optional;
+
 @Component
 public class CaseSummaryDeadlineGenerator implements CaseSummaryFieldsGenerator {
 
     @Override
     public SyntheticCaseSummary generate(CaseData caseData) {
         return SyntheticCaseSummary.builder()
-            .caseSummaryDateOfIssue(caseData.getDateSubmitted())
-            .caseSummaryApplicationDeadline(caseData.getDateSubmitted().plusWeeks(26))
+            .caseSummaryDateOfIssue(Optional.ofNullable(caseData.getDateSubmitted()).orElse(null))
+            .caseSummaryApplicationDeadline(Optional.ofNullable(caseData.getDateSubmitted())
+                .map(date -> date.plusWeeks(26))
+                .orElse(null))
             .build();
     }
 }

@@ -74,7 +74,8 @@ public class RepresentativesController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         publishEvent(new PartyAddedToCaseEvent(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest)));
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest)));
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
     }
 
     private String getRespondentsLabel(CaseData caseData) {

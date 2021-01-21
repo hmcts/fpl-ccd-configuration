@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -39,6 +40,9 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean // TODO: substitute with actual call
+    private CoreCaseDataService coreCaseDataService;
 
     private static final Long CASE_ID = 12345L;
     private static final String CASE_REFERENCE = "12345";

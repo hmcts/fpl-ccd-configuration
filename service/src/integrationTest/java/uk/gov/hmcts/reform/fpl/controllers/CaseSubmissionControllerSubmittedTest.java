@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -387,7 +388,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                     .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
                     .build(),
                 "caseLocalAuthority", "example",
-                "sendToCtsc", enableCtsc.getValue()
+                "sendToCtsc", enableCtsc.getValue(),
+                "dateSubmitted", LocalDate.of(2020, 1, 1)
             ))).build();
     }
 
