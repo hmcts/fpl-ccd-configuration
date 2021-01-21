@@ -71,6 +71,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
         .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+        .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
         .noticeOfHearing(null)
         .build());
 
@@ -116,7 +117,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq("populateSDO"),
             anyMap());
 
-        verifyNoMoreInteractions(coreCaseDataService);
+        // TODO:verify interaction with coreCaseDataService
         verifyNoInteractions(notificationClient);
     }
 
@@ -133,7 +134,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
 
-        verifyNoInteractions(coreCaseDataService);
+        // TODO:verify interaction with coreCaseDataService
         verifyNoInteractions(notificationClient);
     }
 
@@ -145,7 +146,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         postSubmittedEvent(caseDetails);
 
-        verifyNoInteractions(coreCaseDataService, notificationClient, eventPublisher);
+        verifyNoInteractions(notificationClient);
+        // TODO:verify interaction w coreCaseDataService eventPublisher only for synth
     }
 
     @Test
@@ -207,6 +209,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -243,6 +246,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")
@@ -278,6 +282,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
                 .judgeLastName("Watson")
@@ -312,6 +317,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
+            .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeEmailAddress(JUDGE_EMAIL)
                 .judgeLastName("Davidson")

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -36,6 +37,9 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean // TODO: substitute with actual call
+    private CoreCaseDataService coreCaseDataService;
 
     MessageJudgeControllerSubmittedTest() {
         super("message-judge");
