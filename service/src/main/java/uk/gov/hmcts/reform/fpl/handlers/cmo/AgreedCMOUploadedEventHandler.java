@@ -41,7 +41,7 @@ public class AgreedCMOUploadedEventHandler {
             judge = caseData.getAllocatedJudge();
         }
 
-        if(judge == null){
+        if (judge == null) {
             return;
         }
 
