@@ -140,6 +140,21 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
         verifyTaskListUpdated(CASE_ID);
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
+
+    }
+
+    @Test
+    void shouldUpdateTheCaseManagementSummary() {
+
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
+
+        postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
     }
 
     @Test
