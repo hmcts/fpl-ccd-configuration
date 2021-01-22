@@ -93,7 +93,6 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-superuser"
