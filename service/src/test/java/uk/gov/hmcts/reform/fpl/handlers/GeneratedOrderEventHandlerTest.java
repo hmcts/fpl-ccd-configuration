@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -33,6 +34,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
@@ -107,17 +110,17 @@ class GeneratedOrderEventHandlerTest {
             getExpectedParameters(BLANK_ORDER.getLabel(), true),
             caseData.getId().toString());
 
-        verify(representativeNotificationService).sendToRepresentativesByServedPreference(
-            DIGITAL_SERVICE,
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES,
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            caseData.getId(),
             getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            caseData);
+            getExpectedDigitalServedRepresentativesForAddingPartiesToCase(),
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES);
 
-        verify(representativeNotificationService).sendToRepresentativesByServedPreference(
-            EMAIL,
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES,
+        verify(representativeNotificationService).sendNotificationToRepresentatives(
+            caseData.getId(),
             getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true),
-            caseData);
+            getExpectedEmailRepresentativesForAddingPartiesToCase(),
+            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
     }
 
     @Test
@@ -177,6 +180,18 @@ class GeneratedOrderEventHandlerTest {
                 .email("barney@rubble.com")
                 .fullName("Barney Rubble")
                 .servingPreferences(EMAIL)
+                .positionInACase("Cafcass Solicitor")
+                .telephoneNumber("0717171718")
+                .role(CAFCASS_SOLICITOR)
+                .address(Address.builder()
+                    .addressLine1("160 Tooley St")
+                    .addressLine2("Tooley road")
+                    .addressLine3("Tooley")
+                    .postTown("Limerick")
+                    .postcode("SE1 2QH")
+                    .country("Ireland")
+                    .county("Galway")
+                    .build())
                 .build());
     }
 
@@ -186,6 +201,18 @@ class GeneratedOrderEventHandlerTest {
                 .email("fred@flinstone.com")
                 .fullName("Fred Flinstone")
                 .servingPreferences(DIGITAL_SERVICE)
+                .positionInACase("Cafcass Guardian")
+                .telephoneNumber("0717171717")
+                .role(CAFCASS_GUARDIAN)
+                .address(Address.builder()
+                    .addressLine1("160 Tooley St")
+                    .addressLine2("Tooley road")
+                    .addressLine3("Tooley")
+                    .postTown("Limerick")
+                    .postcode("SE1 2QH")
+                    .country("Ireland")
+                    .county("Galway")
+                    .build())
                 .build());
     }
 }

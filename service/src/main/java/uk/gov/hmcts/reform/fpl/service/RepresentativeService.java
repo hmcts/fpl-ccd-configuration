@@ -174,6 +174,9 @@ public class RepresentativeService {
                 .ifPresent(userId -> caseService.addUser(Long.toString(caseId), userId, roles)));
     }
 
+
+    // TODO
+    // Remove this method and use casedata.getRepresentativesByServedPreference instead
     public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
                                                                      RepresentativeServingPreferences preference) {
         if (isNotEmpty(representatives)) {

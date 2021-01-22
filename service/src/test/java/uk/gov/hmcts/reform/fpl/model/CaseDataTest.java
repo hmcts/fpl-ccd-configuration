@@ -40,6 +40,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -1062,6 +1065,66 @@ class CaseDataTest {
                 .dateSent(dateSent)
                 .isRelatedToC2(isRelatedToC2)
                 .build();
+        }
+    }
+
+    @Nested
+    class GetRepresentativesByServedPreference {
+        private Representative emailRepOne = Representative.builder().servingPreferences(EMAIL).build();
+        private Representative emailRepTwo = Representative.builder().servingPreferences(EMAIL).build();
+        private Representative digitalRepOne = Representative.builder().servingPreferences(DIGITAL_SERVICE).build();
+        private Representative digitalRepTwo = Representative.builder().servingPreferences(DIGITAL_SERVICE).build();
+
+        @Test
+        void shouldReturnListOfEmailRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentatives())
+                .build();
+
+            List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+
+            assertThat(emailRepresentatives).isEqualTo(List.of(emailRepOne, emailRepTwo));
+        }
+
+        @Test
+        void shouldReturnListOfDigitalRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentatives())
+                .build();
+
+            List<Representative> digitalRepresentatives
+                = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).isEqualTo(List.of(digitalRepOne, digitalRepTwo));
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotMatchServingPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentatives())
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEqualTo(List.of());
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEqualTo(List.of());
+        }
+
+        private List<Element<Representative>> getRepresentatives() {
+            return List.of(
+                element(emailRepOne),
+                element(emailRepTwo),
+                element(digitalRepOne),
+                element(digitalRepTwo));
         }
     }
 

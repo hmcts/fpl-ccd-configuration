@@ -7,6 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProv
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
@@ -70,21 +72,42 @@ public class GeneratedOrderEventHandler {
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
                                                               final DocumentReference orderDocument) {
-        final NotifyData notifyData =
-            orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData, orderDocument, GENERATED_ORDER);
+        List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
 
-        representativeNotificationService.sendToRepresentativesByServedPreference(EMAIL,
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES, notifyData, caseData);
+        System.out.println(emailRepresentatives);
+
+        if (!emailRepresentatives.isEmpty()) {
+            final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
+                orderDocument, GENERATED_ORDER);
+
+            representativeNotificationService.sendNotificationToRepresentatives(
+                caseData.getId(),
+                notifyData,
+                emailRepresentatives,
+                ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES
+            );
+        }
     }
 
     private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
                                                                            final DocumentReference orderDocument) {
-        final NotifyData notifyData =
-            orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData, orderDocument, GENERATED_ORDER);
+        List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+
+        System.out.println(caseData.getRepresentatives());
+
+        final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
+            orderDocument, GENERATED_ORDER);
 
         sendToLocalAuthority(caseData, notifyData);
-        representativeNotificationService.sendToRepresentativesByServedPreference(DIGITAL_SERVICE,
-            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES, notifyData, caseData);
+
+        if (!digitalRepresentatives.isEmpty()) {
+            representativeNotificationService.sendNotificationToRepresentatives(
+                caseData.getId(),
+                notifyData,
+                digitalRepresentatives,
+                ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES
+            );
+        }
     }
 
     private void sendToLocalAuthority(final CaseData caseData,
