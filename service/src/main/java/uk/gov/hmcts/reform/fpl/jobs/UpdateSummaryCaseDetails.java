@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
@@ -32,9 +33,11 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Component
 @ConditionalOnProperty(value = "scheduler.enabled", havingValue = "true")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class UpdateSummaryTab implements Job {
+public class UpdateSummaryCaseDetails implements Job {
     private static final String EVENT_NAME = "internal-update-case-summary";
+    private static final int SEARCH_SIZE = 3000;
 
+    private final CaseConverter converter;
     private final ObjectMapper mapper;
     private final SearchService searchService;
     private final CoreCaseDataService ccdService;
@@ -51,7 +54,8 @@ public class UpdateSummaryTab implements Job {
         log.info("Job {} started", jobName);
 
         log.debug("Job {} searching for cases", jobName);
-        List<CaseDetails> cases = searchService.search(buildQuery(toggleService.isSummaryTabFirstCronRunEnabled()));
+        final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
+        List<CaseDetails> cases = searchService.search(query, SEARCH_SIZE);
 
         int total = cases.size();
         int skipped = 0;
@@ -59,8 +63,8 @@ public class UpdateSummaryTab implements Job {
 
         log.info("Job {} found {} cases", jobName, total);
         for (CaseDetails caseDetails : cases) {
-            CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-            Map<String, Object> updatedData = updateSummaryTab(caseData);
+            CaseData caseData = converter.convert(caseDetails);
+            Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
             final Long caseId = caseDetails.getId();
             try {
                 if (shouldUpdate(updatedData, caseData)) {
@@ -77,10 +81,6 @@ public class UpdateSummaryTab implements Job {
             }
         }
         log.info("Job {} finished. {}", jobName, buildStats(total, skipped, updated));
-    }
-
-    private Map<String, Object> updateSummaryTab(CaseData caseData) {
-        return summaryService.generateSummaryFields(caseData);
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {

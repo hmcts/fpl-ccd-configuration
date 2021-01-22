@@ -29,6 +29,11 @@ public class SearchService {
         return search(query.toQueryContext().toString());
     }
 
+    public List<CaseDetails> search(ESQuery query, int size) {
+        requireNonNull(query);
+        return search(query.toQueryContext(size).toString());
+    }
+
     public List<CaseDetails> search(String property, LocalDate day) {
         requireNonNull(property);
         requireNonNull(day);
