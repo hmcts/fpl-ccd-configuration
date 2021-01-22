@@ -22,6 +22,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SearchService {
 
+    public static final int MAX_SEARCH_SIZE = 10000;
+
     private final CoreCaseDataService coreCaseDataService;
 
     public List<CaseDetails> search(ESQuery query) {

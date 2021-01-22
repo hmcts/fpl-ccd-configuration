@@ -20,7 +20,9 @@ import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import java.util.Objects;
 
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.service.search.SearchService.MAX_SEARCH_SIZE;
 
 @Slf4j
 @Component
@@ -35,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UpdateSummaryCaseDetails implements Job {
     private static final String EVENT_NAME = "internal-update-case-summary";
-    private static final int SEARCH_SIZE = 3000;
+    private static final String RANGE_FIELD = "data.caseSummaryNextHearingDate";
 
     private final CaseConverter converter;
     private final ObjectMapper mapper;
@@ -48,39 +51,39 @@ public class UpdateSummaryCaseDetails implements Job {
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
         if (!toggleService.isSummaryTabEnabled()) {
-            log.info("Job {} skipping due to feature toggle", jobName);
+            log.info("Job '{}' skipping due to feature toggle", jobName);
             return;
         }
-        log.info("Job {} started", jobName);
+        log.info("Job '{}' started", jobName);
 
-        log.debug("Job {} searching for cases", jobName);
+        log.debug("Job '{}' searching for cases", jobName);
         final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
-        List<CaseDetails> cases = searchService.search(query, SEARCH_SIZE);
+        List<CaseDetails> cases = searchService.search(query, MAX_SEARCH_SIZE);
 
         int total = cases.size();
         int skipped = 0;
         int updated = 0;
 
-        log.info("Job {} found {} cases", jobName, total);
+        log.info("Job '{}' found {} cases", jobName, total);
         for (CaseDetails caseDetails : cases) {
             CaseData caseData = converter.convert(caseDetails);
             Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
             final Long caseId = caseDetails.getId();
             try {
                 if (shouldUpdate(updatedData, caseData)) {
-                    log.debug("Job {} updating case {}", jobName, caseId);
+                    log.debug("Job '{}' updating case {}", jobName, caseId);
                     ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
-                    log.info("Job {} updated case {}", jobName, caseId);
+                    log.info("Job '{}' updated case {}", jobName, caseId);
                     updated++;
                 } else {
-                    log.debug("Job {} skipped case {}", jobName, caseId);
+                    log.debug("Job '{}' skipped case {}", jobName, caseId);
                     skipped++;
                 }
             } catch (Exception e) {
-                log.error("Job {} could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
+                log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
             }
         }
-        log.info("Job {} finished. {}", jobName, buildStats(total, skipped, updated));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated));
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {
@@ -96,14 +99,24 @@ public class UpdateSummaryCaseDetails implements Job {
         final MatchQuery closedCases = MatchQuery.of(field, State.CLOSED.getValue());
 
         MustNot.MustNotBuilder mustNot = MustNot.builder();
+        Must must = null;
 
         if (firstPassEnabled) {
             mustNot.clauses(List.of(openCases, deletedCases, returnedCases));
         } else {
             mustNot.clauses(List.of(openCases, deletedCases, returnedCases, closedCases));
+            must = Must.builder()
+                .clauses(List.of(
+                    RangeQuery.builder()
+                        .field(RANGE_FIELD)
+                        .lessThan("now/d")
+                        .build()
+                ))
+                .build();
         }
 
         return BooleanQuery.builder()
+            .must(must)
             .mustNot(mustNot.build())
             .build();
     }

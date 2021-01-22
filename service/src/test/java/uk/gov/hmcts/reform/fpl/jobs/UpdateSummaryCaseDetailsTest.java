@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,14 +39,15 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { JacksonAutoConfiguration.class })
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class UpdateSummaryCaseDetailsTest {
 
     private static final String JURISDICTION = "PUBLICLAW";
     private static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
     private static final String EVENT_NAME = "internal-update-case-summary";
     private static final Long CASE_ID = 12345L;
-    private static final int SEARCH_SIZE = 3000;
+    private static final int SEARCH_SIZE = 10000;
+    private static final String RANGE_FIELD = "data.caseSummaryNextHearingDate";
 
     private static final ESQuery FIRST_RUN_ES_QUERY = BooleanQuery.builder()
         .mustNot(MustNot.builder()
@@ -63,6 +66,11 @@ class UpdateSummaryCaseDetailsTest {
                 MatchQuery.of("state", "Deleted"),
                 MatchQuery.of("state", "RETURNED"),
                 MatchQuery.of("state", "CLOSED")
+            ))
+            .build())
+        .must(Must.builder()
+            .clauses(List.of(
+                RangeQuery.builder().field(RANGE_FIELD).lessThan("now/d").build()
             ))
             .build())
         .build();
@@ -89,7 +97,12 @@ class UpdateSummaryCaseDetailsTest {
     @BeforeEach
     void initMocks() {
         CaseConverter converter = new CaseConverter(mapper);
-        underTest = new UpdateSummaryCaseDetails(converter, mapper, searchService, ccdService, toggleService, summaryService);
+        underTest = new UpdateSummaryCaseDetails(converter,
+            mapper,
+            searchService,
+            ccdService,
+            toggleService,
+            summaryService);
 
         JobDetail jobDetail = mock(JobDetail.class);
         JobKey jobKey = mock(JobKey.class);
