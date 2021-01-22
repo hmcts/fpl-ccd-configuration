@@ -74,8 +74,6 @@ public class GeneratedOrderEventHandler {
                                                               final DocumentReference orderDocument) {
         List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
 
-        System.out.println(emailRepresentatives);
-
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
                 orderDocument, GENERATED_ORDER);
@@ -92,8 +90,6 @@ public class GeneratedOrderEventHandler {
     private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
                                                                            final DocumentReference orderDocument) {
         List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
-
-        System.out.println(caseData.getRepresentatives());
 
         final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
             orderDocument, GENERATED_ORDER);
