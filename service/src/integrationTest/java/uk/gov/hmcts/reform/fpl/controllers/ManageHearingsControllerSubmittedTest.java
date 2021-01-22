@@ -229,6 +229,15 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_REFERENCE,
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", hearingWithNotice.getValue().getNoticeOfHearing()));
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+            eq("internal-update-case-summary"), anyMap());
+
         verifyNoMoreInteractions(coreCaseDataService);
     }
 
