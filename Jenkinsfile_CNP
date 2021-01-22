@@ -86,7 +86,7 @@ def uploadCoreCaseDataDefinitions(env) {
     } else {
       ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
       sh """
-        eval \$(./variables/load-${env}-environment-variables.sh
+        eval \$(./variables/load-${env}-environment-variables.sh)
         ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
       """
     }
