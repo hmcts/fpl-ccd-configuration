@@ -677,7 +677,7 @@
     "ID": "messageJudgeOrLegalAdviser",
     "Name": "Message judge or legal adviser",
     "Description": "Message judge or legal adviser",
-    "DisplayOrder": 26,
+    "DisplayOrder": 13,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
