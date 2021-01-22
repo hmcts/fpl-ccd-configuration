@@ -63,6 +63,7 @@ public class UpdateSummaryCaseDetails implements Job {
         int total = cases.size();
         int skipped = 0;
         int updated = 0;
+        int failed = 0;
 
         log.info("Job '{}' found {} cases", jobName, total);
         for (CaseDetails caseDetails : cases) {
@@ -81,9 +82,10 @@ public class UpdateSummaryCaseDetails implements Job {
                 }
             } catch (Exception e) {
                 log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
+                failed++;
             }
         }
-        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated));
+        log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated, failed));
     }
 
     private boolean shouldUpdate(Map<String, Object> updatedData, CaseData oldData) {
@@ -121,16 +123,16 @@ public class UpdateSummaryCaseDetails implements Job {
             .build();
     }
 
-    private String buildStats(int total, int skipped, int updated) {
+    private String buildStats(int total, int skipped, int updated, int failed) {
         double percentUpdated = updated * 100.0 / total;
         double percentSkipped = skipped * 100.0 / total;
+        double percentFailed = failed * 100.0 / total;
 
-        return String.format(
-            "total cases: %1$d, updated cases: %2$d/%1$d (%4$.0f%%), skipped cases: %3$d/%1$d (%5$.0f%%)",
-            total,
-            updated,
-            skipped,
-            percentUpdated,
-            percentSkipped);
+        return String.format("total cases: %1$d, "
+                + "updated cases: %2$d/%1$d (%5$.0f%%), "
+                + "skipped cases: %3$d/%1$d (%6$.0f%%), "
+                + "failed cases: %4$d/%1$d (%7$.0f%%)",
+            total, updated, skipped, failed, percentUpdated, percentSkipped, percentFailed
+        );
     }
 }

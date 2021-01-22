@@ -14,7 +14,7 @@ class ESQueryTest {
         ESQuery query = new TestClass();
 
         final JSONObject queryInContext = query.toQueryContext();
-        final JSONObject expectedContext = new JSONObject(Map.of("query", Map.of()));
+        final JSONObject expectedContext = new JSONObject(Map.of("query", Map.of("test", "query")));
 
         assertThat(queryInContext).usingRecursiveComparison().isEqualTo(expectedContext);
     }
@@ -24,7 +24,7 @@ class ESQueryTest {
         ESQuery query = new TestClass();
 
         final JSONObject queryInContext = query.toQueryContext(2);
-        final JSONObject expectedContext = new JSONObject(Map.of("query", Map.of(), "size", 2));
+        final JSONObject expectedContext = new JSONObject(Map.of("query", Map.of("test", "query"), "size", 2));
 
         assertThat(queryInContext).usingRecursiveComparison().isEqualTo(expectedContext);
     }
@@ -32,7 +32,7 @@ class ESQueryTest {
     private static class TestClass implements ESQuery {
         @Override
         public Map<String, Object> toMap() {
-            return Map.of();
+            return Map.of("test", "query");
         }
     }
 }

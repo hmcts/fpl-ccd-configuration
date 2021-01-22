@@ -32,11 +32,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -117,7 +120,7 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        verifyNoInteractions(searchService);
+        verifyNoInteractions(searchService, ccdService);
     }
 
     @Test
@@ -201,5 +204,54 @@ class UpdateSummaryCaseDetailsTest {
 
         verify(summaryService).generateSummaryFields(caseData);
         verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
+    }
+
+    @Test
+    void shouldGracefullyHandleErrorsFromCCDWhenUpdatingCaseDetails() {
+        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
+        when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder()
+            .syntheticCaseSummary(SyntheticCaseSummary.builder()
+                .caseSummaryHasNextHearing("No")
+                .build())
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
+
+        CaseDetails caseDetails2 = CaseDetails.builder()
+            .id(54321L)
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
+
+        List<CaseDetails> allCaseDetails = List.of(caseDetails, caseDetails2);
+
+        SyntheticCaseSummary caseSummary = SyntheticCaseSummary.builder()
+            .caseSummaryNextHearingDate(LocalDate.now())
+            .caseSummaryNextHearingType("Hearing type")
+            .caseSummaryNextHearingJudge("Dave")
+            .caseSummaryHasNextHearing("Yes")
+            .build();
+
+        Map<String, Object> caseSummaryData = mapper.convertValue(caseSummary, new TypeReference<>() {});
+
+        when(searchService.search(ES_QUERY, SEARCH_SIZE)).thenReturn(allCaseDetails);
+        when(summaryService.generateSummaryFields(any())).thenReturn(caseSummaryData);
+        doThrow(feignException(500))
+            .when(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
+
+        underTest.execute(executionContext);
+
+        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID).build();
+        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+
+        verify(summaryService).generateSummaryFields(expectedCaseData1);
+        verify(summaryService).generateSummaryFields(expectedCaseData2);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
+
     }
 }

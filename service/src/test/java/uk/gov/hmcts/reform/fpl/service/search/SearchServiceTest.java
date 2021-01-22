@@ -2,12 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.search;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
@@ -25,15 +22,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
+import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
 @ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
 
     private static final List<CaseDetails> EXPECTED_CASES = List.of(CaseDetails.builder().id(nextLong()).build());
-
-    @Captor
-    private ArgumentCaptor<String> queryCaptor;
 
     @Mock
     private CoreCaseDataService coreCaseDataService;
@@ -50,14 +44,12 @@ class SearchServiceTest {
 
         List<CaseDetails> casesFound = searchService.search(property, date);
 
-        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
-
-        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
-
         String expectedQuery = format("{\"query\":{\"range\":{\"%s\":{\"lt\":\"%sT00:00\",\"gte\":\"%sT00:00\"}}}}",
             property, date.plusDays(1), date);
 
-        JSONAssert.assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
+
+        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), eqJson(expectedQuery));
     }
 
     @Test
@@ -70,13 +62,11 @@ class SearchServiceTest {
 
         List<CaseDetails> casesFound = searchService.search(query);
 
-        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
-
-        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
-
         String expectedQuery = "{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{\"query\":\"b\"}}}]}}}";
 
-        JSONAssert.assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
+
+        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), eqJson(expectedQuery));
     }
 
     @Test
@@ -89,13 +79,10 @@ class SearchServiceTest {
 
         List<CaseDetails> casesFound = searchService.search(query, 15);
 
-        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
-
-        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
-
         String expectedQuery = "{\"size\":15,\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{\"query\":\"b"
             + "\"}}}]}}}";
+        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
 
-        JSONAssert.assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), eqJson(expectedQuery));
     }
 }
