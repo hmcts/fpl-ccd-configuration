@@ -19,7 +19,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseSummaryApplicationDeadline",
+    "ID": "deadline26week",
     "Label": "26-week timeline date",
     "FieldType": "Date",
     "SecurityClassification": "PUBLIC"

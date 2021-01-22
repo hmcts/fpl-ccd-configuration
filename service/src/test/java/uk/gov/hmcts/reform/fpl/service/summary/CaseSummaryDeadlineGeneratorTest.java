@@ -28,7 +28,7 @@ class CaseSummaryDeadlineGeneratorTest {
 
         assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
             .caseSummaryDateOfIssue(LocalDate.of(2012,1,1))
-            .caseSummaryApplicationDeadline(LocalDate.of(2012,7,1))
+            .deadline26week(LocalDate.of(2012,7,1))
             .build());
     }
 }

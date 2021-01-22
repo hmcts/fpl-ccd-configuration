@@ -6,6 +6,9 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 
 import java.util.Optional;
+import java.util.function.Function;
+
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Component
 public class CaseSummaryJudgeInformationGenerator implements CaseSummaryFieldsGenerator {
@@ -14,12 +17,19 @@ public class CaseSummaryJudgeInformationGenerator implements CaseSummaryFieldsGe
     public SyntheticCaseSummary generate(CaseData caseData) {
         return SyntheticCaseSummary.builder()
             .caseSummaryAllocatedJudgeName(Optional.ofNullable(caseData.getAllocatedJudge())
-                .map(Judge::getJudgeLastName)
+                .map(generateJudgeTitle())
                 .orElse(null))
             .caseSummaryAllocatedJudgeEmail(Optional.ofNullable(caseData.getAllocatedJudge())
                 .map(Judge::getJudgeEmailAddress)
                 .orElse(null))
             .build();
+    }
+
+    private Function<Judge, String> generateJudgeTitle() {
+        return judge -> {
+            String judgeTitleAndName = formatJudgeTitleAndName(judge.toJudgeAndLegalAdvisor());
+            return judgeTitleAndName.isBlank() ? null : judgeTitleAndName;
+        };
     }
 
 }

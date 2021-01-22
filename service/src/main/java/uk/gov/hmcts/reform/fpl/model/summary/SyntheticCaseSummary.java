@@ -14,7 +14,7 @@ public class SyntheticCaseSummary {
     String caseSummaryOrdersRequested;
 
     LocalDate caseSummaryDateOfIssue;
-    LocalDate caseSummaryApplicationDeadline;
+    LocalDate deadline26week;
 
     String caseSummaryHasUnresolvedMessages;
 
