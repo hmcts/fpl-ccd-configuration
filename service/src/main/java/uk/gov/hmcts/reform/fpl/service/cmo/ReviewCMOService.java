@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -15,8 +16,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +30,11 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -42,32 +48,31 @@ public class ReviewCMOService {
      * There is dedicated method below to support this functionality.
      */
     public DynamicList buildDynamicList(CaseData caseData) {
-        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
-        Element<HearingOrder> selectedCMO = getSelectedCMO(caseData);
+        List<Element<HearingOrdersBundle>> cmosReadyForApproval = caseData.getHearingOrdersBundlesDrafts();
+        Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
 
-        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), HearingOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), HearingOrdersBundle::getHearingName);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
-        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+        List<Element<HearingOrdersBundle>> orderBundlesForApproval = caseData.getHearingOrdersBundlesDrafts();
 
-        return asDynamicList(cmosReadyForApproval, null, HearingOrder::getHearing);
+        return asDynamicList(orderBundlesForApproval, null, HearingOrdersBundle::getHearingName);
     }
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
-        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+        List<Element<HearingOrdersBundle>> draftOrdersReadyForApproval = caseData.getHearingOrdersBundlesDrafts();
         Map<String, Object> data = new HashMap<>();
         String numDraftCMOs = "numDraftCMOs";
 
-        switch (cmosReadyForApproval.size()) {
+        switch (draftOrdersReadyForApproval.size()) {
             case 0:
                 data.put(numDraftCMOs, "NONE");
                 break;
             case 1:
-                HearingOrder cmo = cmosReadyForApproval.get(0).getValue();
+                HearingOrdersBundle hearingOrdersBundle = draftOrdersReadyForApproval.get(0).getValue();
                 data.put(numDraftCMOs, "SINGLE");
-                data.put("reviewCMODecision",
-                    ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
+                data.put("reviewCMODecision", buildDraftOrdersReviewData(hearingOrdersBundle));
                 break;
             default:
                 data.put(numDraftCMOs, "MULTI");
@@ -78,16 +83,29 @@ public class ReviewCMOService {
         return data;
     }
 
-    public Element<HearingOrder> getCMOToSeal(CaseData caseData) {
-        Element<HearingOrder> cmo = getSelectedCMO(caseData);
+    public Map<String, Object> populateDraftOrdersData(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+        Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
+
+        data.put("reviewCMODecision", buildDraftOrdersReviewData(selectedCMO.getValue()));
+        data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(caseData.getCaseName(), selectedCMO.getValue()));
+
+        return data;
+    }
+
+    public Element<HearingOrder> getCMOToSeal(
+        Element<ReviewDecision> reviewDecisionElement,
+        Element<HearingOrder> hearingOrderElement
+    ) {
+        ReviewDecision reviewDecision = reviewDecisionElement.getValue();
         DocumentReference order;
 
-        if (JUDGE_AMENDS_DRAFT.equals(caseData.getReviewCMODecision().getDecision())) {
-            order = caseData.getReviewCMODecision().getJudgeAmendedDocument();
+        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
+            order = reviewDecision.getJudgeAmendedDocument();
         } else {
-            order = cmo.getValue().getOrder();
+            order = hearingOrderElement.getValue().getOrder();
         }
-        return element(cmo.getId(), cmo.getValue().toBuilder()
+        return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
             .order(order)
@@ -100,12 +118,27 @@ public class ReviewCMOService {
             .collect(Collectors.toList());
     }
 
-    public Element<HearingOrder> getSelectedCMO(CaseData caseData) {
-        List<Element<HearingOrder>> readyForApproval = getCMOsReadyForApproval(caseData);
+    public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {
+        List<Element<HearingOrdersBundle>> ordersBundleReadyForApproval = caseData.getHearingOrdersBundlesDrafts();
+        if (ordersBundleReadyForApproval.size() > 1) {
+            UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
+
+            return ordersBundleReadyForApproval.stream()
+                .filter(element -> element.getId().equals(selectedCMOCode))
+                .findFirst()
+                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
+                    "Could not find draft cmo with id " + selectedCMOCode));
+        } else {
+            return ordersBundleReadyForApproval.get(0);
+        }
+    }
+
+    public Element<HearingOrdersBundle> getSelectedCMO(CaseData caseData) {
+        List<Element<HearingOrdersBundle>> readyForApproval = caseData.getHearingOrdersBundlesDrafts();
         if (readyForApproval.size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
-            return caseData.getDraftUploadedCMOs().stream()
+            return readyForApproval.stream()
                 .filter(element -> element.getId().equals(selectedCMOCode))
                 .findFirst()
                 .orElseThrow(() -> new CMONotFoundException("Could not find draft cmo with id " + selectedCMOCode));
@@ -123,16 +156,28 @@ public class ReviewCMOService {
         }
     }
 
-    public State getStateBasedOnNextHearing(CaseData caseData, UUID cmoID) {
+    public State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {
         State currentState = caseData.getState();
         Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
         if (nextHearingBooking.isPresent()
-            && caseData.getReviewCMODecision().hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
+            && reviewDecision.hasReviewOutcomeOf(SEND_TO_ALL_PARTIES)
             && nextHearingBooking.get().isOfType(HearingType.FINAL)) {
             return State.FINAL_HEARING;
         }
         return currentState;
+    }
+
+    public List<Element<HearingOrdersBundle>> updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle, List<Element<HearingOrder>> ordersInBundle) {
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = caseData.getHearingOrdersBundlesDrafts();
+        if (ordersInBundle.isEmpty()) {
+            hearingOrdersBundlesDrafts.removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
+        } else {
+            hearingOrdersBundlesDrafts.stream()
+                .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
+                .forEach(bundle -> bundle.getValue().toBuilder().orders(ordersInBundle).build());
+        }
+        return hearingOrdersBundlesDrafts;
     }
 
     private UUID getSelectedCMOId(Object dynamicList) {
@@ -141,5 +186,28 @@ public class ReviewCMOService {
             return UUID.fromString(dynamicList.toString());
         }
         return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
+    }
+
+    private String buildDraftOrdersBundleSummary(String caseName, HearingOrdersBundle hearingOrdersBundle) {
+        String ordersSummary = unwrapElements(hearingOrdersBundle.getOrders()).stream()
+            .map(order -> {
+                if (order.getType().isCmo()) {
+                    return String.format("%s for %s", CMO, order.getHearing());
+                } else {
+                    return String.format("%s Order - %s for %s", C21, order.getTitle(), hearingOrdersBundle.getHearingName());
+                }
+            }).collect(Collectors.joining("\n"));
+        return String.format("%s has sent the following orders for approval.\n%s", caseName, ordersSummary);
+    }
+
+    private List<Element<ReviewDecision>> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
+        List<Element<ReviewDecision>> orders = new ArrayList<>();
+        ordersBundle.getOrders()
+            .forEach(order -> orders.add(element(order.getId(), ReviewDecision.builder()
+                .hearing(order.getValue().getTitle())
+                .document(order.getValue().getOrder())
+                .build())));
+
+        return orders;
     }
 }

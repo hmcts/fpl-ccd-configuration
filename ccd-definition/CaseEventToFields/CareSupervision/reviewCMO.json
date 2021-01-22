@@ -28,11 +28,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMODecision",
-    "DisplayContext": "COMPLEX",
+    "CaseFieldID": "reviewDraftOrdersTitles",
+    "DisplayContext": "READONLY",
     "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 2,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMODecision",
+    "DisplayContext": "OPTIONAL",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 3,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

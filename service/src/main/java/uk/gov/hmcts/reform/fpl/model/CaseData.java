@@ -620,7 +620,7 @@ public class CaseData {
     }
 
     private final Object cmoToReviewList;
-    private final ReviewDecision reviewCMODecision;
+    private final List<Element<ReviewDecision>> reviewCMODecision;
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
 
