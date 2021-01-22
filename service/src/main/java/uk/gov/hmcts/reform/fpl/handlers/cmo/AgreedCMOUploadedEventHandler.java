@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
 
@@ -29,11 +31,24 @@ public class AgreedCMOUploadedEventHandler {
     @EventListener
     public void sendNotificationForAdmin(final AgreedCMOUploaded event) {
         CaseData caseData = event.getCaseData();
+        HearingBooking hearing = event.getHearing();
+
+        AbstractJudge judge = null;
+
+        if (isNotEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
+            judge = hearing.getJudgeAndLegalAdvisor();
+        } else if (caseData.hasAllocatedJudgeEmail()) {
+            judge = caseData.getAllocatedJudge();
+        }
+
+        if(judge == null){
+            return;
+        }
 
         CMOReadyToSealTemplate template = contentProvider.buildTemplate(
             event.getHearing(),
             caseData.getId(),
-            caseData.getAllocatedJudge(),
+            judge,
             caseData.getAllRespondents(),
             caseData.getFamilyManCaseNumber()
         );
