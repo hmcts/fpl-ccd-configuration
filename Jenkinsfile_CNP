@@ -79,14 +79,17 @@ def uploadCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin"){
     if("preview" == env){
       ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+      sh """
+        eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+      """
     } else {
       ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
+      sh """
+        eval \$(./variables/load-${env}-environment-variables.sh
+        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+      """
     }
-
-    sh """
-    eval \$(./variables/load-${env}-environment-variables.sh ${CHANGE_ID})
-    ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
-  """
   }
 }
 
