@@ -3,9 +3,12 @@ package uk.gov.hmcts.reform.fpl.service.summary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -20,6 +23,20 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class CaseSummaryNextHearingGeneratorTest {
+
+    private static final String JUDGE_EMAIL_ADDRESS = "judge@email.address";
+    private static final String HEARING_JUDGE_EMAIL_ADDRESS = "judgehearing@email.address";
+    private static final JudgeOrMagistrateTitle JUDGE_TITLE = JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
+    private static final JudgeOrMagistrateTitle HEARING_JUDGE_TITLE = JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+    private static final String JUDGE_LAST_NAME = "judge last name";
+    private static final String HEARING_JUDGE_LAST_NAME = " hearing judge last name";
+    private static final String JUDGE_LABEL = "judge label";
+    private static final String HEARING_JUDGE_LABEL = "hearing judge label";
+    private static final Judge ALLOCATED_JUDGE = Judge.builder()
+        .judgeEmailAddress(JUDGE_EMAIL_ADDRESS)
+        .judgeTitle(JUDGE_TITLE)
+        .judgeLastName(JUDGE_LAST_NAME)
+        .build();
 
     private final Time time = mock(Time.class);
 
@@ -83,6 +100,97 @@ class CaseSummaryNextHearingGeneratorTest {
             .caseSummaryHasNextHearing("Yes")
             .caseSummaryNextHearingDate(NOW.toLocalDate())
             .caseSummaryNextHearingType("Case management")
+            .build());
+    }
+
+    @Test
+    void testSingleHearingsWithAllocatedJudgeIgnored() {
+        SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
+            .hearingDetails(List.of(
+                element(HearingBooking.builder()
+                    .type(HearingType.CASE_MANAGEMENT)
+                    .startDate(NOW)
+                    .endDate(NOW.plusMinutes(10))
+                    .build())
+            )).allocatedJudge(ALLOCATED_JUDGE)
+            .build());
+
+        assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+            .caseSummaryHasNextHearing("Yes")
+            .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingType("Case management")
+            .build());
+    }
+
+    @Test
+    void testSingleHearingsWithAllocatedJudgeAndEmptyInfoOnHearingJudge() {
+        SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
+            .hearingDetails(List.of(
+                element(HearingBooking.builder()
+                    .type(HearingType.CASE_MANAGEMENT)
+                    .startDate(NOW)
+                    .endDate(NOW.plusMinutes(10))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                    .build())
+            )).allocatedJudge(ALLOCATED_JUDGE)
+            .build());
+
+        assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+            .caseSummaryHasNextHearing("Yes")
+            .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingType("Case management")
+            .build());
+    }
+
+    @Test
+    void testSingleHearingsWithAllocatedJudgeSameAsHearingJudge() {
+        SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
+            .hearingDetails(List.of(
+                element(HearingBooking.builder()
+                    .type(HearingType.CASE_MANAGEMENT)
+                    .startDate(NOW)
+                    .endDate(NOW.plusMinutes(10))
+                    .hearingJudgeLabel(JUDGE_LABEL)
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(JUDGE_TITLE)
+                        .judgeLastName(JUDGE_LAST_NAME)
+                        .judgeEmailAddress(JUDGE_EMAIL_ADDRESS)
+                        .build())
+                    .build())
+            )).allocatedJudge(ALLOCATED_JUDGE)
+            .build());
+
+        assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+            .caseSummaryHasNextHearing("Yes")
+            .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingType("Case management")
+            .build());
+    }
+
+    @Test
+    void testSingleHearingsWithAllocatedJudgeDiffenentThanHearingJudge() {
+        SyntheticCaseSummary actual = underTest.generate(CaseData.builder()
+            .hearingDetails(List.of(
+                element(HearingBooking.builder()
+                    .type(HearingType.CASE_MANAGEMENT)
+                    .startDate(NOW)
+                    .endDate(NOW.plusMinutes(10))
+                    .hearingJudgeLabel(HEARING_JUDGE_LABEL)
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeTitle(HEARING_JUDGE_TITLE)
+                        .judgeLastName(HEARING_JUDGE_LAST_NAME)
+                        .judgeEmailAddress(HEARING_JUDGE_EMAIL_ADDRESS)
+                        .build())
+                    .build())
+            )).allocatedJudge(ALLOCATED_JUDGE)
+            .build());
+
+        assertThat(actual).isEqualTo(SyntheticCaseSummary.builder()
+            .caseSummaryHasNextHearing("Yes")
+            .caseSummaryNextHearingDate(NOW.toLocalDate())
+            .caseSummaryNextHearingType("Case management")
+            .caseSummaryNextHearingJudge(HEARING_JUDGE_LABEL)
+            .caseSummaryNextHearingEmailAddress(HEARING_JUDGE_EMAIL_ADDRESS)
             .build());
     }
 
