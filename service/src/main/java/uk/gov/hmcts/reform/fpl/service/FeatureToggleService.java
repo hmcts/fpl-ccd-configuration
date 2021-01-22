@@ -56,7 +56,7 @@ public class FeatureToggleService {
     }
 
     public boolean isApplicationDocumentsEventEnabled() {
-        return ldClient.boolVariation("application-documents-event", createLDUser(), true);
+        return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
 
     public boolean isEpoOrderTypeAndExclusionEnabled() {
