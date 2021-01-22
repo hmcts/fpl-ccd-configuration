@@ -224,7 +224,7 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-bulkscan",
-          "caseworker-publiclaw-systemupdate"
+          "caseworker-publiclaw-bulkscansystemupdate"
         ],
         "CRUD": "CRUD"
       },
