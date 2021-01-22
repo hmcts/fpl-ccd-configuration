@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "submittedForm",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 1
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "manageDocumentsLink",
     "TabFieldDisplayOrder": 2
   },
@@ -26,7 +26,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 3,
     "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
@@ -37,7 +37,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabFurtherEvidenceHeading",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "hearingFurtherEvidenceDocuments=\"*\" OR furtherEvidenceDocuments=\"*\" OR furtherEvidenceDocumentsLA=\"*\""
@@ -48,7 +48,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "TabFieldDisplayOrder": 5
   },
@@ -58,7 +58,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "furtherEvidenceDocuments",
     "TabFieldDisplayOrder": 6
   },
@@ -68,7 +68,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "furtherEvidenceDocumentsLA",
     "TabFieldDisplayOrder": 7
   },
@@ -78,7 +78,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabBulkScanHeading",
     "TabFieldDisplayOrder": 8,
     "FieldShowCondition": "scannedDocuments=\"*\""
@@ -89,7 +89,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "scannedDocuments",
     "TabFieldDisplayOrder": 9
   },
@@ -99,7 +99,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 10
   },
@@ -109,7 +109,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabApplicationHeading",
     "TabFieldDisplayOrder": 11
   },
@@ -119,7 +119,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocuments",
     "FieldShowCondition": "applicationDocuments!=\"\"",
     "TabFieldDisplayOrder": 12
@@ -130,7 +130,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\"",
     "TabFieldDisplayOrder": 13
@@ -141,7 +141,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 20
   }

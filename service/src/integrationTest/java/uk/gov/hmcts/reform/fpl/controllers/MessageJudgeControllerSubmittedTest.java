@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -19,6 +23,8 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_ADDED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDICIAL_MESSAGE_REPLY_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
@@ -34,12 +40,16 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final String MESSAGE = "Some note";
     private static final String REPLY = "Reply";
+    private static final String LAST_NAME = "Davidson";
 
     @MockBean
     private NotificationClient notificationClient;
 
-    @MockBean // TODO: substitute with actual call
+    @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     MessageJudgeControllerSubmittedTest() {
         super("message-judge");
@@ -90,6 +100,11 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_ADDED_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_REFERENCE,
+            "internal-update-case-summary",
+            caseSummary("Yes"));
     }
 
     @Test
@@ -109,7 +124,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .respondents1(List.of(
                 element(Respondent.builder()
                     .party(RespondentParty.builder()
-                        .lastName("Davidson")
+                        .lastName(LAST_NAME)
                         .build())
                     .build())))
             .judicialMessages(List.of(
@@ -134,6 +149,11 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             JUDICIAL_MESSAGE_REPLY_TEMPLATE, JUDICIAL_MESSAGE_RECIPIENT, expectedData, "localhost/12345");
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_REFERENCE,
+            "internal-update-case-summary",
+            caseSummary("Yes"));
     }
 
     @Test
@@ -153,7 +173,7 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
             .respondents1(List.of(
                 element(Respondent.builder()
                     .party(RespondentParty.builder()
-                        .lastName("Davidson")
+                        .lastName(LAST_NAME)
                         .build())
                     .build())))
             .judicialMessages(List.of(
@@ -170,5 +190,18 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(asCaseDetails(caseData));
 
         verifyNoInteractions(notificationClient);
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_REFERENCE,
+            "internal-update-case-summary",
+            caseSummary("Yes"));
+    }
+
+    private Map<String, Object> caseSummary(String withUnresolvedMessages) {
+        return objectMapper.convertValue(
+            SyntheticCaseSummary.builder()
+                .caseSummaryHasUnresolvedMessages(withUnresolvedMessages)
+                .caseSummaryFirstRespondentLastName(LAST_NAME)
+                .build(), new TypeReference<>() {});
     }
 }

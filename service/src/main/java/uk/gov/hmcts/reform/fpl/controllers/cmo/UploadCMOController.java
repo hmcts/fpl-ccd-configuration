@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -98,5 +99,6 @@ public class UploadCMOController extends CallbackController {
         CaseData caseData = getCaseData(request);
 
         publishEvent(service.buildEventToPublish(caseData, caseDataBefore));
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
     }
 }
