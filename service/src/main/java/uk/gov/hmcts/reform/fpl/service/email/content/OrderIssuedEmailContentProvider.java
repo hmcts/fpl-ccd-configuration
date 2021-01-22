@@ -53,7 +53,7 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
 
         return AllocatedJudgeTemplateForGeneratedOrder.builder()
             .orderType(getTypeOfOrder(caseData, GENERATED_ORDER))
-            .callout(buildCalloutWithNextHearing(caseData, time))
+            .callout(buildCalloutWithNextHearing(caseData, time.now()))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .respondentLastName(getFirstRespondentLastName(caseData))
             .judgeTitle(judge.getJudgeOrMagistrateTitle())
@@ -68,7 +68,8 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .respondentLastName(getFirstRespondentLastName(caseData))
             .orderType(getTypeOfOrder(caseData, issuedOrderType))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER) ? buildCalloutWithNextHearing(caseData, time) : "")
+            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
+                ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
     }
 

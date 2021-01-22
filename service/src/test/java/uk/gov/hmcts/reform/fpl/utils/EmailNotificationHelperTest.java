@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.utils;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -34,9 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {FixedTimeConfiguration.class})
 class EmailNotificationHelperTest {
-
-    @Autowired
-    Time time;
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
@@ -222,7 +217,7 @@ class EmailNotificationHelperTest {
 
         String expectedContent = String.format("^12345,%s", buildHearingDateText(hearingBooking));
 
-        assertThat(buildCalloutWithNextHearing(caseData, time)).isEqualTo(expectedContent);
+        assertThat(buildCalloutWithNextHearing(caseData, LocalDateTime.now())).isEqualTo(expectedContent);
     }
 
     @Test
@@ -240,7 +235,7 @@ class EmailNotificationHelperTest {
 
         String expectedContent = "^12345";
 
-        assertThat(buildCalloutWithNextHearing(caseData, time)).isEqualTo(expectedContent);
+        assertThat(buildCalloutWithNextHearing(caseData, LocalDateTime.now())).isEqualTo(expectedContent);
     }
 
     @Test

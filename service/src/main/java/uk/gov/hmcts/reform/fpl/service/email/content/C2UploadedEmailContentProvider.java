@@ -37,7 +37,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
 
         return AllocatedJudgeTemplateForC2.builder()
             .caseUrl(getCaseUrl(caseData.getId(), C2))
-            .callout(buildCalloutWithNextHearing(caseData, time))
+            .callout(buildCalloutWithNextHearing(caseData, time.now()))
             .judgeTitle(caseData.getAllocatedJudge().getJudgeOrMagistrateTitle())
             .judgeName(caseData.getAllocatedJudge().getJudgeName())
             .respondentLastName(getFirstRespondentLastName(caseData))
