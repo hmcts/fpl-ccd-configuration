@@ -10,7 +10,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -29,7 +29,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -51,7 +51,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -72,7 +72,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -93,7 +93,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -115,7 +115,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -137,7 +137,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -159,7 +159,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -181,7 +181,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -203,7 +203,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -224,9 +224,9 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-bulkscan",
-          "caseworker-publiclaw-systemupdate"
+          "caseworker-publiclaw-bulkscansystemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -245,7 +245,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -264,7 +264,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -279,7 +279,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "changeState",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CRU"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -290,7 +290,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -355,7 +355,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -375,7 +375,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -392,7 +392,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "editFamilyManCaseNumber",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CRU"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -403,7 +403,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -422,7 +422,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -441,7 +441,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -460,7 +460,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -479,7 +479,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -498,7 +498,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -517,7 +517,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -536,7 +536,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -555,7 +555,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -576,7 +576,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -597,7 +597,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -620,7 +620,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -635,21 +635,21 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-CMO_PROGRESSION",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-change-SEND_DOCUMENT",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "internal-update-task-list",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -661,7 +661,7 @@
           "[SOLICITOR]",
           "[CAFCASSSOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -684,7 +684,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -704,7 +704,7 @@
           "[LABARRISTER]",
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -729,7 +729,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -745,7 +745,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageLegalRepresentatives",
     "UserRole": "[LASOLICITOR]",
-    "CRUD": "CRUD"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -757,7 +757,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -790,7 +790,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "migrateCase",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -801,7 +801,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -818,7 +818,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -829,7 +829,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -849,7 +849,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -870,7 +870,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -889,7 +889,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -911,7 +911,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "removeOrder",
     "UserRole": "caseworker-publiclaw-superuser",
-    "CRUD": "CRU"
+    "CRUD": "CR"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -922,7 +922,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -945,7 +945,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -967,7 +967,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -989,7 +989,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -1018,7 +1018,7 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -1041,7 +1041,7 @@
           "[LASOLICITOR]",
           "[LABARRISTER]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -1065,7 +1065,7 @@
           "[LASOLICITOR]",
           "[LABARRISTER]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -1084,7 +1084,7 @@
         "UserRoles": [
           "[LASOLICITOR]"
         ],
-        "CRUD": "CRU"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
