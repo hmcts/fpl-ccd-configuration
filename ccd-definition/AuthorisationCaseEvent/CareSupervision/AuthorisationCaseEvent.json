@@ -799,14 +799,14 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "R"
