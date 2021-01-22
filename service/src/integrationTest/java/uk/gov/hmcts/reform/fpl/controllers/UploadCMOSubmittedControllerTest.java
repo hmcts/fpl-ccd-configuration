@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftCMOUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
@@ -58,6 +61,9 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
     @MockBean
     private NotificationClient notificationClient;
 
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
+
     protected UploadCMOSubmittedControllerTest() {
         super("upload-cmo");
     }
@@ -83,6 +89,9 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
                 eq(NOTIFICATION_REFERENCE)
             );
         });
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
     }
 
     @Test
@@ -97,6 +106,9 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             draftEmailTemplate(),
             NOTIFICATION_REFERENCE
         ));
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
     }
 
     private Map<String, Object> draftEmailTemplate() {
