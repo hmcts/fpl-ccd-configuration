@@ -4,12 +4,16 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+
 @EqualsAndHashCode
 public class MatchQuery implements ESQuery {
     private final String field;
     private final Object value;
 
     public MatchQuery(String field, Object value) {
+        requireNonNull(field);
+        requireNonNull(value);
         this.field = field;
         this.value = value;
     }
