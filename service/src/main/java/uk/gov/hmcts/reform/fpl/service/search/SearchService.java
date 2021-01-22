@@ -34,6 +34,8 @@ public class SearchService {
             "lt", day.plusDays(1).atStartOfDay()
         );
 
-        return new JSONObject(of("query", of("range", of(property, dayRange)))).toString();
+        return new JSONObject(
+            of("query", of("range", of(property, dayRange)),"size", 1000))
+            .toString();
     }
 }
