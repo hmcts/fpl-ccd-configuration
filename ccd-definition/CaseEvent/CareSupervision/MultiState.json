@@ -133,7 +133,7 @@
     "ID": "removeOrder",
     "Name": "Remove an order",
     "Description": "Remove a C21 order from the case",
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;CLOSED",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
