@@ -41,8 +41,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     I_doActionsOnEditPage();
     await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
-    I.see(summary);
-    I.see(description);
+    I.see('Case information');
   };
 
   const summaryText = 'Summary of change';
