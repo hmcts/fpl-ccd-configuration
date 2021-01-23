@@ -1,0 +1,61 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewDraftOrdersTitles",
+    "DisplayContext": "READONLY",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 2,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewDecision_1",
+    "DisplayContext": "OPTIONAL",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 5,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewDecision_2",
+    "DisplayContext": "OPTIONAL",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 6,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewDecision_3",
+    "DisplayContext": "OPTIONAL",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 7,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewDecision_4",
+    "DisplayContext": "OPTIONAL",
+    "PageID": "ReviewDecision",
+    "PageFieldDisplayOrder": 8,
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  }
+]

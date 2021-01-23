@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,7 @@ public class ReviewCMOService {
             case 1:
                 HearingOrdersBundle hearingOrdersBundle = draftOrdersReadyForApproval.get(0).getValue();
                 data.put(numDraftCMOs, "SINGLE");
-                data.put("reviewCMODecision", buildDraftOrdersReviewData(hearingOrdersBundle));
+                data.putAll(buildDraftOrdersReviewData(hearingOrdersBundle));
                 break;
             default:
                 data.put(numDraftCMOs, "MULTI");
@@ -87,8 +86,8 @@ public class ReviewCMOService {
         Map<String, Object> data = new HashMap<>();
         Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
 
-        data.put("reviewCMODecision", buildDraftOrdersReviewData(selectedCMO.getValue()));
         data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(caseData.getCaseName(), selectedCMO.getValue()));
+        data.putAll(buildDraftOrdersReviewData(selectedCMO.getValue()));
 
         return data;
     }
@@ -200,14 +199,22 @@ public class ReviewCMOService {
         return String.format("%s has sent the following orders for approval.\n%s", caseName, ordersSummary);
     }
 
-    private List<Element<ReviewDecision>> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
-        List<Element<ReviewDecision>> orders = new ArrayList<>();
-        ordersBundle.getOrders()
-            .forEach(order -> orders.add(element(order.getId(), ReviewDecision.builder()
-                .hearing(order.getValue().getTitle())
-                .document(order.getValue().getOrder())
-                .build())));
+    private Map<String, Object> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
+        Map<String, Object> data = new HashMap<>();
 
-        return orders;
+        int counter = 1;
+        for (Element<HearingOrder> orderElement : ordersBundle.getOrders()) {
+            if (orderElement.getValue().getType().isCmo()) {
+                data.put("reviewCMODecision",
+                    ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
+                        .document(orderElement.getValue().getOrder()).build());
+            } else {
+                data.put("reviewDecision_" + counter,
+                    ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
+                        .document(orderElement.getValue().getOrder()).build());
+                counter++;
+            }
+        }
+        return data;
     }
 }

@@ -1,0 +1,377 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "document",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "decision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "changesRequestedByJudge",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewCMODecision",
+    "ListElementCode": "judgeAmendedDocument",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_1",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_1",
+    "ListElementCode": "document",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_1",
+    "ListElementCode": "decision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_1",
+    "ListElementCode": "changesRequestedByJudge",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_1",
+    "ListElementCode": "judgeAmendedDocument",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_2",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_2",
+    "ListElementCode": "document",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_2",
+    "ListElementCode": "decision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_2",
+    "ListElementCode": "changesRequestedByJudge",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_2",
+    "ListElementCode": "judgeAmendedDocument",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_3",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_3",
+    "ListElementCode": "document",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_3",
+    "ListElementCode": "decision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_3",
+    "ListElementCode": "changesRequestedByJudge",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_3",
+    "ListElementCode": "judgeAmendedDocument",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_4",
+    "ListElementCode": "hearing",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_4",
+    "ListElementCode": "document",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_4",
+    "ListElementCode": "decision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_4",
+    "ListElementCode": "changesRequestedByJudge",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision_4",
+    "ListElementCode": "judgeAmendedDocument",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  }
+]

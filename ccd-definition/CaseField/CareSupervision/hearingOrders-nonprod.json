@@ -1,0 +1,46 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewDraftOrdersTitles",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewDecision_1",
+    "Label": "C21 Orders",
+    "FieldType": "ReviewDecision",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewDecision_2",
+    "Label": " ",
+    "FieldType": "ReviewDecision",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewDecision_3",
+    "Label": " ",
+    "FieldType": "ReviewDecision",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "reviewDecision_4",
+    "Label": " ",
+    "FieldType": "ReviewDecision",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public"
+  }
+]
