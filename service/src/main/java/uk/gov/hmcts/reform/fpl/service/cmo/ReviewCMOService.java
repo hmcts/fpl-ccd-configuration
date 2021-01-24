@@ -92,19 +92,15 @@ public class ReviewCMOService {
         return data;
     }
 
-    public Element<HearingOrder> getCMOToSeal(
-        Element<ReviewDecision> reviewDecisionElement,
-        Element<HearingOrder> hearingOrderElement
-    ) {
-        ReviewDecision reviewDecision = reviewDecisionElement.getValue();
+    public Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
         DocumentReference order;
 
         if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
             order = reviewDecision.getJudgeAmendedDocument();
         } else {
-            order = hearingOrderElement.getValue().getOrder();
+            order = cmo.getValue().getOrder();
         }
-        return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
+        return element(cmo.getId(), cmo.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
             .order(order)
@@ -165,18 +161,6 @@ public class ReviewCMOService {
             return State.FINAL_HEARING;
         }
         return currentState;
-    }
-
-    public List<Element<HearingOrdersBundle>> updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle, List<Element<HearingOrder>> ordersInBundle) {
-        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = caseData.getHearingOrdersBundlesDrafts();
-        if (ordersInBundle.isEmpty()) {
-            hearingOrdersBundlesDrafts.removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
-        } else {
-            hearingOrdersBundlesDrafts.stream()
-                .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
-                .forEach(bundle -> bundle.getValue().toBuilder().orders(ordersInBundle).build());
-        }
-        return hearingOrdersBundlesDrafts;
     }
 
     private UUID getSelectedCMOId(Object dynamicList) {
