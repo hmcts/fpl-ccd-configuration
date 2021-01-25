@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -185,7 +186,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     private CaseDetails buildCaseData(Respondent respondent, List<Element<Representative>> representatives,
                                       Map<String, Object> caseSummary) {
-        Map<String, Object> data = new java.util.HashMap<>();
+        Map<String, Object> data = new HashMap<>();
         data.put("representatives", representatives);
         data.put("respondents1", wrapElements(respondent));
         data.putAll(caseSummary);
