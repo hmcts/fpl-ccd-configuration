@@ -10,7 +10,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -25,7 +25,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -85,7 +85,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -100,7 +100,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -160,7 +160,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -175,7 +175,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -235,7 +235,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -250,7 +250,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -310,7 +310,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },
@@ -325,7 +325,7 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"
         ],
-        "CRUD": "R"
+        "CRUD": "CRU"
       }
     ]
   },

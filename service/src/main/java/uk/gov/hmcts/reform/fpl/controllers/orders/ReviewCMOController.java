@@ -86,12 +86,12 @@ public class ReviewCMOController extends CallbackController {
         data.remove("reviewDraftOrdersTitles");
 
         //TODO: fix - do not remove the following
-        data.remove("reviewCMODecision");
+        /*data.remove("reviewCMODecision");
         data.remove("reviewDecision1");
         data.remove("reviewDecision2");
         data.remove("reviewDecision3");
         data.remove("reviewDecision4");
-
+        */
         return respond(caseDetails);
     }
 
