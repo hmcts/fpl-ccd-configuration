@@ -155,7 +155,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "R"
       },
