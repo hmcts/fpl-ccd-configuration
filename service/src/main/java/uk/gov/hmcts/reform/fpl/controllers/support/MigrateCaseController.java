@@ -17,14 +17,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
-import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.List;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Api
 @RestController
@@ -33,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private final CMORemovalAction cmoRemovalAction;
-    private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
 
     @PostMapping("/about-to-submit")
@@ -41,73 +36,55 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2480".equals(migrationId)) {
-            run2480(caseDetails);
+        if ("FPLA-2623".equals(migrationId)) {
+            run2623(caseDetails);
         }
 
-        if ("FPLA-2608".equals(migrationId)) {
-            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
-            run2608(caseDetails);
-            caseDetails.getData().put("hiddenOrders", hiddenOrders);
+        if ("FPLA-2636".equals(migrationId)) {
+            run2636(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2480(CaseDetails caseDetails) {
+    private void run2623(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        if ("LE20C50003".equals(caseData.getFamilyManCaseNumber())) {
-            removeDraftCaseManagementOrder(caseDetails, 0);
+
+        if ("CF20C50072".equals(caseData.getFamilyManCaseNumber())) {
+
+            removeDuplicateOrder(caseData, caseDetails, 3);
         }
     }
 
-    private void run2608(CaseDetails caseDetails) {
-        if ("1595320156232721".equals(caseDetails.getId().toString())) {
-            CaseData caseData = getCaseData(caseDetails);
-
-            if (caseData.getOrderCollection().size() < 7) {
-                throw new IllegalArgumentException(String.format("Expected to have at least 8 generated orders"
-                        + " but found %s", caseData.getOrderCollection().size()));
-            }
-
-            UUID orderSixId = UUID.fromString("aaa8e7b5-824c-4fde-9ab6-f0abf28a22be");
-            UUID orderSevenId = UUID.fromString("fa2d3751-3517-455d-a67b-35232d257665");
-
-            Optional<Element<GeneratedOrder>> generatedOrderSix
-                = findElement(orderSixId, caseData.getOrderCollection());
-
-            Optional<Element<GeneratedOrder>> generatedOrderSeven
-                = findElement(orderSevenId, caseData.getOrderCollection());
-
-            if (generatedOrderSix.isEmpty()) {
-                throw new IllegalArgumentException(String.format("Could not find generated order %s",
-                    orderSixId));
-            }
-
-            if (generatedOrderSeven.isEmpty()) {
-                throw new IllegalArgumentException(String.format("Could not find generated order %s",
-                    orderSevenId));
-            }
-
-            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
-
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSeven.get().getId(),
-                generatedOrderSeven.get().getValue());
-
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSix.get().getId(),
-                generatedOrderSix.get().getValue());
-
-            caseDetails.setData(caseDetailsMap);
+    private void run2636(CaseDetails caseDetails) {
+        if ("1605534056983302".equals(caseDetails.getId().toString())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
         }
     }
 
-    private void removeDraftCaseManagementOrder(CaseDetails caseDetails, int index) {
+    private void removeDuplicateOrder(CaseData caseData, CaseDetails data, int orderElement) {
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+
+        if (isEmpty(orders)) {
+            data.getData().remove("orderCollection");
+        } else {
+            if (orders.size() > orderElement) {
+                orders.remove(orderElement);
+                data.getData().put("orderCollection", orders);
+            }
+        }
+    }
+
+    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
+
         if (isEmpty(caseData.getDraftUploadedCMOs())) {
             throw new IllegalArgumentException("No draft case management orders in the case");
         }
-        Element<CaseManagementOrder> draftCmo = caseData.getDraftUploadedCMOs().get(index);
-        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, draftCmo);
+
+        Element<CaseManagementOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+
+        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }
 }

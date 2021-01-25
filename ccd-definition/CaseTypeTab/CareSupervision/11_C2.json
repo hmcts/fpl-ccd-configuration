@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "C2Tab",
     "TabLabel": "C2",
-    "TabDisplayOrder": 9,
+    "TabDisplayOrder": 11,
     "CaseFieldID": "uploadC2Link",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "c2DocumentBundle!=\"\""
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "C2Tab",
     "TabLabel": "C2",
-    "TabDisplayOrder": 9,
+    "TabDisplayOrder": 11,
     "CaseFieldID": "c2DocumentBundle",
     "TabFieldDisplayOrder": 2
   }
