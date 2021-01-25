@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AgreedCMOUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private final String respondentLastName = "Smith";
-    private final String caseUrl = "http://fake-url/cases/case-details/12345#DraftOrdersTab";
+    private final String caseUrl = "http://fake-url/cases/case-details/12345#Draft%20orders";
     private CaseData caseData;
     private HearingBooking hearing;
     private Judge allocatedJudge;
