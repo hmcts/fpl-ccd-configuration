@@ -51,7 +51,7 @@ public class AgreedCMOUploadedEventHandlerEmailTemplateTest extends EmailTemplat
     private AgreedCMOUploadedEventHandler underTest;
 
     @BeforeAll
-    void setup() {
+    void createJudges() {
         allocatedJudge = Judge.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Hastings")
