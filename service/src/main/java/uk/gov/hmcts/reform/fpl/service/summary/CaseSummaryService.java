@@ -16,6 +16,7 @@ public class CaseSummaryService {
     private final List<CaseSummaryFieldsGenerator> generators;
     private final ObjectMapper objectMapper;
 
+    @SuppressWarnings("all")
     public CaseSummaryService(
         CaseSummaryOrdersRequestedGenerator caseSummaryOrdersRequestedGenerator,
         CaseSummaryDeadlineGenerator caseSummaryDeadlineGenerator,
