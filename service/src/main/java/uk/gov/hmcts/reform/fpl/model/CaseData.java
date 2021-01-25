@@ -625,7 +625,16 @@ public class CaseData {
     private final ReviewDecision reviewDecision2;
     private final ReviewDecision reviewDecision3;
     private final ReviewDecision reviewDecision4;
+    private final ReviewDecision reviewDecision5;
+    private final ReviewDecision reviewDecision6;
+    private final ReviewDecision reviewDecision7;
+    private final ReviewDecision reviewDecision8;
+    private final ReviewDecision reviewDecision9;
+    private final ReviewDecision reviewDecision10;
+
     private final String numDraftCMOs;
+    private final String draftCMOExists;
+    private final String draftBlankOrdersCount;
     private final List<Element<HearingOrder>> sealedCMOs;
 
     public List<Element<HearingOrder>> getSealedCMOs() {

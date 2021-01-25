@@ -19,9 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 
 import java.util.List;
@@ -36,9 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHA
 public class ReviewCMOController extends CallbackController {
 
     private final ReviewCMOService reviewCMOService;
-    private final DocumentSealingService documentSealingService;
     private final CoreCaseDataService coreCaseDataService;
-    private final DraftOrderService draftOrderService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -84,14 +80,9 @@ public class ReviewCMOController extends CallbackController {
         data.remove("numDraftCMOs");
         data.remove("cmoToReviewList");
         data.remove("reviewDraftOrdersTitles");
+        data.remove("draftCMOExists");
+        data.remove("draftBlankOrdersCount");
 
-        //TODO: fix - do not remove the following
-        /*data.remove("reviewCMODecision");
-        data.remove("reviewDecision1");
-        data.remove("reviewDecision2");
-        data.remove("reviewDecision3");
-        data.remove("reviewDecision4");
-        */
         return respond(caseDetails);
     }
 

@@ -34,7 +34,8 @@
     "PageFieldDisplayOrder": 3,
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "FieldShowCondition": "draftCMOExists=\"Y\""
   },
   {
     "LiveFrom": "01/01/2017",

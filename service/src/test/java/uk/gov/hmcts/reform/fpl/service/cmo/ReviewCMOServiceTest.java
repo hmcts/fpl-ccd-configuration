@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.cmo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -22,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -51,8 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, FixedTimeConfiguration.class, ReviewCMOService.class})
+@ExtendWith(MockitoExtension.class)
 class ReviewCMOServiceTest {
 
     private static final String SINGLE = "SINGLE";
@@ -62,71 +62,98 @@ class ReviewCMOServiceTest {
     private static final String hearing2 = "Test hearing, 15 October 2020";
     private static final DocumentReference order = testDocumentReference();
     private final UUID cmoID = UUID.randomUUID();
+    private static final Time TIME = new FixedTimeConfiguration().stoppedTime();
     private LocalDateTime futureDate;
+    private ObjectMapper mapper = new ObjectMapper();
 
-    @Autowired
+    @Mock
+    private DocumentSealingService documentSealingService;
+
+    @Mock
+    private DraftOrderService draftOrderService;
+
     private ReviewCMOService service;
-
-    @Autowired
-    private Time time;
 
     @BeforeEach
     void setUp() {
-        futureDate = time.now().plusDays(1);
+        service = new ReviewCMOService(mapper, TIME, draftOrderService, documentSealingService);
+        futureDate = TIME.now().plusDays(1);
     }
 
     @Test
     void shouldBuildDynamicListWithAppropriateElementSelected() {
-        Element<HearingOrder> firstCMO = agreedCMO(hearing1);
-        List<Element<HearingOrder>> agreedCMOs = List.of(
-            firstCMO, agreedCMO(hearing2)
+        Element<HearingOrdersBundle> hearingOrdersBundle1 = element(HearingOrdersBundle.builder()
+            .orders(List.of(agreedCMO(hearing1))).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle2 = element(HearingOrdersBundle.builder()
+            .orders(List.of(agreedCMO(hearing2), element(HearingOrder.builder().build()))).build());
+
+        List<Element<HearingOrdersBundle>> hearingOrderBundlesDrafts = List.of(
+            hearingOrdersBundle1, hearingOrdersBundle2
         );
-        UUID firstElementId = firstCMO.getId();
+
+        UUID selectedBundleId = hearingOrdersBundle1.getId();
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(agreedCMOs)
+            .hearingOrdersBundlesDrafts(hearingOrderBundlesDrafts)
             //This replicates bug in CCD which sends only String UUID in mid event
-            .cmoToReviewList(firstElementId.toString())
+            .cmoToReviewList(selectedBundleId.toString())
             .numDraftCMOs("MULTI")
             .build();
 
         DynamicList actualDynamicList = service.buildDynamicList(caseData);
 
         DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(agreedCMOs, firstElementId, HearingOrder::getHearing);
+            .asDynamicList(hearingOrderBundlesDrafts, selectedBundleId, HearingOrdersBundle::getHearingName);
 
-        assertThat(actualDynamicList)
-            .isEqualTo(expectedDynamicList);
+        assertThat(actualDynamicList).isEqualTo(expectedDynamicList);
     }
 
     @Test
     void shouldBuildUnselectedDynamicList() {
-        List<Element<HearingOrder>> agreedCMOs = List.of(
-            agreedCMO(hearing1), agreedCMO(hearing2)
+        Element<HearingOrdersBundle> hearingOrdersBundle1 = element(HearingOrdersBundle.builder()
+            .orders(List.of(agreedCMO(hearing1))).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle2 = element(HearingOrdersBundle.builder()
+            .orders(List.of(agreedCMO(hearing2), element(HearingOrder.builder().build()))).build());
+
+        List<Element<HearingOrdersBundle>> hearingOrderBundlesDrafts = List.of(
+            hearingOrdersBundle1, hearingOrdersBundle2
         );
 
         CaseData caseData = CaseData.builder()
-            .draftUploadedCMOs(agreedCMOs)
+            .hearingOrdersBundlesDrafts(hearingOrderBundlesDrafts)
             .build();
 
         DynamicList actualDynamicList = service.buildUnselectedDynamicList(caseData);
         DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(agreedCMOs, HearingOrder::getHearing);
+            .asDynamicList(hearingOrderBundlesDrafts, HearingOrdersBundle::getHearingName);
 
-        assertThat(actualDynamicList)
-            .isEqualTo(expectedDynamicList);
+        assertThat(actualDynamicList).isEqualTo(expectedDynamicList);
     }
 
     @Test
-    void shouldReturnMultiPageDataWhenThereAreMultipleDraftCMOsReadyForApproval() {
-        List<Element<HearingOrder>> agreedCMOs = List.of(agreedCMO(hearing1), agreedCMO(hearing2));
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(agreedCMOs).build();
+    void shouldReturnMultiPageDataWhenThereAreMultipleDraftBundlesReadyForApproval() {
+        Element<HearingOrdersBundle> hearingOrdersBundle1 = element(HearingOrdersBundle.builder()
+            .orders(List.of(agreedCMO(hearing1))).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle2 = element(HearingOrdersBundle.builder()
+            .orders(List.of(agreedCMO(hearing2), element(HearingOrder.builder().build()))).build());
+
+        List<Element<HearingOrdersBundle>> hearingOrderBundlesDrafts = List.of(
+            hearingOrdersBundle1, hearingOrdersBundle2
+        );
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(hearingOrderBundlesDrafts)
+            .build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", MULTI,
             "cmoToReviewList", DynamicList.builder()
                 .value(EMPTY)
-                .listItems(dynamicListItems(agreedCMOs.get(0).getId(), agreedCMOs.get(1).getId())).build());
+                .listItems(dynamicListItems(
+                    hearingOrderBundlesDrafts.get(0).getId(), hearingOrderBundlesDrafts.get(1).getId())).build());
 
         assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
@@ -210,7 +237,7 @@ class ReviewCMOServiceTest {
         HearingOrder expectedCmo = HearingOrder.builder()
             .order(judgeAmendedOrder)
             .hearing(hearing1)
-            .dateIssued(time.now().toLocalDate())
+            .dateIssued(TIME.now().toLocalDate())
             .judgeTitleAndName("Her Honour Judge Judy")
             .status(APPROVED)
             .build();

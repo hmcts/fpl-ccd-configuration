@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
@@ -287,12 +288,19 @@ public class ReviewCMOService {
                 data.put("reviewCMODecision",
                     ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
                         .document(orderElement.getValue().getOrder()).build());
+                data.put("draftCMOExists", "Y");
             } else {
                 data.put("reviewDecision" + counter,
                     ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
                         .document(orderElement.getValue().getOrder()).build());
                 counter++;
             }
+        }
+
+        if (counter > 1) {
+            String numOfDraftOrders = IntStream.range(1, counter)
+                .mapToObj(String::valueOf).collect(Collectors.joining(""));
+            data.put("draftBlankOrdersCount", numOfDraftOrders);
         }
         return data;
     }
