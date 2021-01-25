@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewDraftOrdersTitles",
     "Label": " ",
-    "FieldType": "Text",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
