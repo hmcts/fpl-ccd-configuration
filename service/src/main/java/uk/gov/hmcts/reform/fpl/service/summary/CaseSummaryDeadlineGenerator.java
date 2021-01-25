@@ -13,7 +13,7 @@ public class CaseSummaryDeadlineGenerator implements CaseSummaryFieldsGenerator 
     public SyntheticCaseSummary generate(CaseData caseData) {
         return SyntheticCaseSummary.builder()
             .caseSummaryDateOfIssue(Optional.ofNullable(caseData.getDateSubmitted()).orElse(null))
-            .caseSummaryApplicationDeadline(Optional.ofNullable(caseData.getDateSubmitted())
+            .deadline26week(Optional.ofNullable(caseData.getDateSubmitted())
                 .map(date -> date.plusWeeks(26))
                 .orElse(null))
             .build();
