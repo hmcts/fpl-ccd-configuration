@@ -10,7 +10,7 @@ public class CaseSummaryMessagesGenerator implements CaseSummaryFieldsGenerator 
     public SyntheticCaseSummary generate(CaseData caseData) {
         return SyntheticCaseSummary.builder()
             .caseSummaryHasUnresolvedMessages(
-                caseData.getJudicialMessages().size() > 0 ? "Yes" : null
+                !caseData.getJudicialMessages().isEmpty() ? "Yes" : null
             ).build();
     }
 }
