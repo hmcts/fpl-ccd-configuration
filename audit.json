@@ -79,6 +79,7 @@
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/generate-document/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/submitted_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/about-to-submit_POST": "ignore",
+  "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/case-extension/about-to-submit_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/create-order/add-final-order-flags/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-submit_POST": "ignore",
