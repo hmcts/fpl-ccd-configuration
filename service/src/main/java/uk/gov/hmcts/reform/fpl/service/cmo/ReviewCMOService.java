@@ -275,8 +275,8 @@ public class ReviewCMOService {
                 } else {
                     return String.format("%s Order - %s for %s", C21, order.getTitle(), hearingOrdersBundle.getHearingName());
                 }
-            }).collect(Collectors.joining("\n"));
-        return String.format("%s has sent the following orders for approval.\n%s", caseName, ordersSummary);
+            }).collect(Collectors.joining("<br>"));
+        return String.format("<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseName, ordersSummary);
     }
 
     private Map<String, Object> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
