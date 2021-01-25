@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
@@ -27,10 +29,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -41,6 +49,8 @@ public class ReviewCMOService {
 
     private final ObjectMapper mapper;
     private final Time time;
+    private final DraftOrderService draftOrderService;
+    private final DocumentSealingService documentSealingService;
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -88,6 +98,37 @@ public class ReviewCMOService {
 
         data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(caseData.getCaseName(), selectedCMO.getValue()));
         data.putAll(buildDraftOrdersReviewData(selectedCMO.getValue()));
+
+        return data;
+    }
+
+    public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
+        Map<String, Object> data = new HashMap<>();
+        Element<HearingOrder> cmo = selectedOrdersBundle.getValue().getOrders().stream()
+            .filter(order -> order.getValue().getType().isCmo())
+            .findFirst().orElse(null);
+
+        if (cmo != null) {
+            ReviewDecision cmoReviewDecision = caseData.getReviewCMODecision();
+            if (cmoReviewDecision.getDecision() != null) {
+                if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
+                    Element<HearingOrder> cmoToSeal = getCMOToSeal(cmoReviewDecision, cmo);
+                    cmoToSeal.getValue().setLastUploadedOrder(cmoToSeal.getValue().getOrder());
+                    cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
+
+                    List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
+                    sealedCMOs.add(cmoToSeal);
+
+                    data.put("sealedCMOs", sealedCMOs);
+                    data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, cmoToSeal.getId()));
+                }
+                //TODO: check if draft order need to be removed when judge requests changes for CMO?
+                caseData.getDraftUploadedCMOs().remove(cmo);
+
+                data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+                data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+            }
+        }
 
         return data;
     }
@@ -151,6 +192,60 @@ public class ReviewCMOService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void reviewC21Orders(CaseData caseData, Map<String, Object> data,
+                                Element<HearingOrdersBundle> selectedOrdersBundle) {
+        List<Element<HearingOrder>> draftOrders = selectedOrdersBundle.getValue().getOrders().stream()
+            .filter(order -> !order.getValue().getType().isCmo()).collect(Collectors.toList());
+
+        int counter = 1;
+        List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
+        for (Element<HearingOrder> orderElement : draftOrders) {
+            Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+            ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+            if (reviewDecision != null && reviewDecision.getDecision() != null) {
+                if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
+                    GeneratedOrder sealedC21Order = getSealedC21Order(orderElement, reviewDecision);
+                    reviewedOrders.add(element(orderElement.getId(), sealedC21Order));
+                }
+                selectedOrdersBundle.getValue().getOrders().remove(orderElement);
+            }
+            counter++;
+        }
+        if (selectedOrdersBundle.getValue().getOrders().isEmpty()) {
+            caseData.getHearingOrdersBundlesDrafts().removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
+        } else {
+            caseData.getHearingOrdersBundlesDrafts().stream()
+                .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
+                .forEach(bundle -> bundle.getValue().setOrders(selectedOrdersBundle.getValue().getOrders()));
+        }
+        data.put("orderCollection", reviewedOrders);
+        data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
+
+    }
+
+    public GeneratedOrder getSealedC21Order(Element<HearingOrder> orderElement, ReviewDecision reviewDecision) {
+        HearingOrder draftOrder = orderElement.getValue();
+        DocumentReference order;
+
+        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
+            order = reviewDecision.getJudgeAmendedDocument();
+        } else {
+            order = orderElement.getValue().getOrder();
+        }
+
+        return GeneratedOrder.builder()
+            .type(BLANK_ORDER.getLabel())
+            .title(draftOrder.getTitle())
+            .document(documentSealingService.sealDocument(order))
+            .dateOfIssue(draftOrder.getDateIssued() != null
+                ? formatLocalDateToString(draftOrder.getDateIssued(), DATE) : null)
+            .judgeAndLegalAdvisor(null) // TODO: set judge and legal advisor
+            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
+            //.children(getChildren(BLANK_ORDER, caseData)) //TODO
+            .build();
+    }
+
     public State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {
         State currentState = caseData.getState();
         Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
@@ -193,7 +288,7 @@ public class ReviewCMOService {
                     ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
                         .document(orderElement.getValue().getOrder()).build());
             } else {
-                data.put("reviewDecision_" + counter,
+                data.put("reviewDecision" + counter,
                     ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
                         .document(orderElement.getValue().getOrder()).build());
                 counter++;

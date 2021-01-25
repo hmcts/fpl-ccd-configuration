@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -76,39 +75,22 @@ public class ReviewCMOController extends CallbackController {
         Element<HearingOrdersBundle> selectedOrdersBundle =
             reviewCMOService.getSelectedHearingDraftOrdersBundle(caseData);
 
-        Element<HearingOrder> cmo = selectedOrdersBundle.getValue().getOrders().stream()
-            .filter(order -> order.getValue().getType().isCmo())
-            .findFirst().orElse(null);
+        // review cmo
+        data.putAll(reviewCMOService.reviewCMO(caseData, selectedOrdersBundle));
 
-        if (cmo != null) {
-            ReviewDecision cmoReviewDecision = caseData.getReviewCMODecision();
-            if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                Element<HearingOrder> cmoToSeal = reviewCMOService.getCMOToSeal(cmoReviewDecision, cmo);
-                cmoToSeal.getValue().setLastUploadedOrder(cmoToSeal.getValue().getOrder());
-                cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
+        // review C21 orders
+        reviewCMOService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
-                List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
-                sealedCMOs.add(cmoToSeal);
-
-                data.put("sealedCMOs", sealedCMOs);
-                data.put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmoReviewDecision, cmoToSeal.getId()));
-            }
-            //TODO: check if draft order need to be removed when judge requests changes for CMO?
-            caseData.getDraftUploadedCMOs().remove(cmo);
-        }
-
-        data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
-        data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
         data.remove("numDraftCMOs");
         data.remove("cmoToReviewList");
         data.remove("reviewDraftOrdersTitles");
 
         //TODO: fix - do not remove the following
         data.remove("reviewCMODecision");
-        data.remove("reviewDecision_1");
-        data.remove("reviewDecision_2");
-        data.remove("reviewDecision_3");
-        data.remove("reviewDecision_4");
+        data.remove("reviewDecision1");
+        data.remove("reviewDecision2");
+        data.remove("reviewDecision3");
+        data.remove("reviewDecision4");
 
         return respond(caseDetails);
     }

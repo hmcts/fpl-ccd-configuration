@@ -77,7 +77,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_1",
+    "CaseFieldID": "reviewDecision1",
     "ListElementCode": "hearing",
     "AccessControl": [
       {
@@ -92,7 +92,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_1",
+    "CaseFieldID": "reviewDecision1",
     "ListElementCode": "document",
     "AccessControl": [
       {
@@ -107,7 +107,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_1",
+    "CaseFieldID": "reviewDecision1",
     "ListElementCode": "decision",
     "AccessControl": [
       {
@@ -122,7 +122,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_1",
+    "CaseFieldID": "reviewDecision1",
     "ListElementCode": "changesRequestedByJudge",
     "AccessControl": [
       {
@@ -137,7 +137,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_1",
+    "CaseFieldID": "reviewDecision1",
     "ListElementCode": "judgeAmendedDocument",
     "AccessControl": [
       {
@@ -152,7 +152,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_2",
+    "CaseFieldID": "reviewDecision2",
     "ListElementCode": "hearing",
     "AccessControl": [
       {
@@ -167,7 +167,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_2",
+    "CaseFieldID": "reviewDecision2",
     "ListElementCode": "document",
     "AccessControl": [
       {
@@ -182,7 +182,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_2",
+    "CaseFieldID": "reviewDecision2",
     "ListElementCode": "decision",
     "AccessControl": [
       {
@@ -197,7 +197,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_2",
+    "CaseFieldID": "reviewDecision2",
     "ListElementCode": "changesRequestedByJudge",
     "AccessControl": [
       {
@@ -212,7 +212,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_2",
+    "CaseFieldID": "reviewDecision2",
     "ListElementCode": "judgeAmendedDocument",
     "AccessControl": [
       {
@@ -227,7 +227,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_3",
+    "CaseFieldID": "reviewDecision3",
     "ListElementCode": "hearing",
     "AccessControl": [
       {
@@ -242,7 +242,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_3",
+    "CaseFieldID": "reviewDecision3",
     "ListElementCode": "document",
     "AccessControl": [
       {
@@ -257,7 +257,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_3",
+    "CaseFieldID": "reviewDecision3",
     "ListElementCode": "decision",
     "AccessControl": [
       {
@@ -272,7 +272,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_3",
+    "CaseFieldID": "reviewDecision3",
     "ListElementCode": "changesRequestedByJudge",
     "AccessControl": [
       {
@@ -287,7 +287,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_3",
+    "CaseFieldID": "reviewDecision3",
     "ListElementCode": "judgeAmendedDocument",
     "AccessControl": [
       {
@@ -302,7 +302,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_4",
+    "CaseFieldID": "reviewDecision4",
     "ListElementCode": "hearing",
     "AccessControl": [
       {
@@ -317,7 +317,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_4",
+    "CaseFieldID": "reviewDecision4",
     "ListElementCode": "document",
     "AccessControl": [
       {
@@ -332,7 +332,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_4",
+    "CaseFieldID": "reviewDecision4",
     "ListElementCode": "decision",
     "AccessControl": [
       {
@@ -347,7 +347,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_4",
+    "CaseFieldID": "reviewDecision4",
     "ListElementCode": "changesRequestedByJudge",
     "AccessControl": [
       {
@@ -362,7 +362,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_4",
+    "CaseFieldID": "reviewDecision4",
     "ListElementCode": "judgeAmendedDocument",
     "AccessControl": [
       {

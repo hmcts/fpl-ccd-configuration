@@ -17,7 +17,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_1",
+    "CaseFieldID": "reviewDecision1",
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary"],
@@ -32,7 +32,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_2",
+    "CaseFieldID": "reviewDecision2",
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary"],
@@ -47,7 +47,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_3",
+    "CaseFieldID": "reviewDecision3",
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary"],
@@ -62,7 +62,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "reviewDecision_4",
+    "CaseFieldID": "reviewDecision4",
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary"],
