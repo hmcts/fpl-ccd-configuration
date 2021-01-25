@@ -152,7 +152,7 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Updates the summary tab'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryCaseDetails'
-      cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 2 ? * * *} # might be a longer running job
+      cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 3 ? * * *} # might be a longer running job
 
 testing:
   support:
