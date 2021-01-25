@@ -15,10 +15,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
-
-import java.util.List;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -36,43 +33,31 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2623".equals(migrationId)) {
-            run2623(caseDetails);
+        if ("FPLA-2637".equals(migrationId)) {
+            run2637(caseDetails);
         }
 
-        if ("FPLA-2636".equals(migrationId)) {
-            run2636(caseDetails);
+        if ("FPLA-2640".equals(migrationId)) {
+            run2640(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2623(CaseDetails caseDetails) {
+    private void run2637(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("CF20C50072".equals(caseData.getFamilyManCaseNumber())) {
-
-            removeDuplicateOrder(caseData, caseDetails, 3);
-        }
-    }
-
-    private void run2636(CaseDetails caseDetails) {
-        if ("1605534056983302".equals(caseDetails.getId().toString())) {
+        if ("LE20C50024".equals(caseData.getFamilyManCaseNumber())) {
             removeFirstDraftCaseManagementOrder(caseDetails);
         }
     }
 
-    private void removeDuplicateOrder(CaseData caseData, CaseDetails data, int orderElement) {
-        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+    private void run2640(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
 
-        if (isEmpty(orders)) {
-            data.getData().remove("orderCollection");
-        } else {
-            if (orders.size() > orderElement) {
-                orders.remove(orderElement);
-                data.getData().put("orderCollection", orders);
-            }
+        if ("NE20C50006".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
         }
     }
 
