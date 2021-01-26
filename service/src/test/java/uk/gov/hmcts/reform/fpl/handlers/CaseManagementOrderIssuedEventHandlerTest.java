@@ -57,8 +57,11 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Autowired
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
-    private final IssuedCMOTemplate digitalRepCMOTemplateData = IssuedCMOTemplate.builder().build();
-    private final IssuedCMOTemplate emailRepCMOTemplateData = IssuedCMOTemplate.builder().build();
+    private final IssuedCMOTemplate digitalRepCMOTemplateData
+        = IssuedCMOTemplate.builder().familyManCaseNumber("1").build();
+
+    private final IssuedCMOTemplate emailRepCMOTemplateData
+        = IssuedCMOTemplate.builder().familyManCaseNumber("2").build();
 
     private final CaseData caseData = caseData();
     private final CaseManagementOrder cmo = buildCmo();

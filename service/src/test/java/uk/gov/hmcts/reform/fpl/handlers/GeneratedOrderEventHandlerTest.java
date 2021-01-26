@@ -26,7 +26,10 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.List;
 import java.util.Set;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
@@ -41,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
 
@@ -161,6 +165,27 @@ class GeneratedOrderEventHandlerTest {
         generatedOrderEventHandler.notifyAllocatedJudge(event);
 
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldNotBuildNotificationTemplateDataForEmailRepresentativesWhenEmailRepresentativesDoNotExist() {
+        CaseData caseData = caseData().toBuilder()
+            .representatives(List.of(
+                element(Representative.builder()
+                    .servingPreferences(DIGITAL_SERVICE)
+                    .fullName("Test user")
+                    .email("testuser@test.co.uk")
+                    .build())
+            )).build();
+
+        GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
+
+        generatedOrderEventHandler.notifyParties(event);
+
+        verify(orderIssuedEmailContentProvider, never()).getNotifyDataWithoutCaseUrl(any(), any(), any());
+
+        verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
+            any(), any(), any(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES));
     }
 
     private AllocatedJudgeTemplateForGeneratedOrder getOrderIssuedAllocatedJudgeParameters() {

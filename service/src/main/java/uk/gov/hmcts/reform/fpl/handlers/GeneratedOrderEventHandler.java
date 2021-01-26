@@ -96,14 +96,12 @@ public class GeneratedOrderEventHandler {
 
         sendToLocalAuthority(caseData, notifyData);
 
-        if (!digitalRepresentatives.isEmpty()) {
-            representativeNotificationService.sendNotificationToRepresentatives(
-                caseData.getId(),
-                notifyData,
-                digitalRepresentatives,
-                ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES
-            );
-        }
+        representativeNotificationService.sendNotificationToRepresentatives(
+            caseData.getId(),
+            notifyData,
+            digitalRepresentatives,
+            ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES
+        );
     }
 
     private void sendToLocalAuthority(final CaseData caseData,

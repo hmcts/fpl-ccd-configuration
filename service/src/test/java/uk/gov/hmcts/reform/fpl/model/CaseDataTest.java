@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 class CaseDataTest {
 
@@ -1070,43 +1071,43 @@ class CaseDataTest {
 
     @Nested
     class GetRepresentativesByServedPreference {
-        private Representative emailRepOne = Representative.builder().servingPreferences(EMAIL).build();
-        private Representative emailRepTwo = Representative.builder().servingPreferences(EMAIL).build();
-        private Representative digitalRepOne = Representative.builder().servingPreferences(DIGITAL_SERVICE).build();
-        private Representative digitalRepTwo = Representative.builder().servingPreferences(DIGITAL_SERVICE).build();
+        private Representative emailRepOne = testRepresentative(EMAIL);
+        private Representative emailRepTwo = testRepresentative(EMAIL);
+        private Representative digitalRepOne = testRepresentative(DIGITAL_SERVICE);
+        private Representative digitalRepTwo = testRepresentative(DIGITAL_SERVICE);
 
         @Test
         void shouldReturnListOfEmailRepresentatives() {
             CaseData caseData = CaseData.builder()
-                .representatives(getRepresentatives())
+                .representatives(getRepresentativesOfMixedServingPreferences())
                 .build();
 
             List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
 
-            assertThat(emailRepresentatives).isEqualTo(List.of(emailRepOne, emailRepTwo));
+            assertThat(emailRepresentatives).containsExactlyInAnyOrder(emailRepOne, emailRepTwo);
         }
 
         @Test
         void shouldReturnListOfDigitalRepresentatives() {
             CaseData caseData = CaseData.builder()
-                .representatives(getRepresentatives())
+                .representatives(getRepresentativesOfMixedServingPreferences())
                 .build();
 
             List<Representative> digitalRepresentatives
                 = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
 
-            assertThat(digitalRepresentatives).isEqualTo(List.of(digitalRepOne, digitalRepTwo));
+            assertThat(digitalRepresentatives).containsExactlyInAnyOrder(digitalRepOne, digitalRepTwo);
         }
 
         @Test
         void shouldReturnAnEmptyListWhenRepresentativesDoNotMatchServingPreference() {
             CaseData caseData = CaseData.builder()
-                .representatives(getRepresentatives())
+                .representatives(getRepresentativesOfMixedServingPreferences())
                 .build();
 
             List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
 
-            assertThat(digitalRepresentatives).isEqualTo(List.of());
+            assertThat(digitalRepresentatives).isEmpty();
         }
 
         @Test
@@ -1116,10 +1117,10 @@ class CaseDataTest {
 
             List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
 
-            assertThat(digitalRepresentatives).isEqualTo(List.of());
+            assertThat(digitalRepresentatives).isEmpty();
         }
 
-        private List<Element<Representative>> getRepresentatives() {
+        private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
             return List.of(
                 element(emailRepOne),
                 element(emailRepTwo),

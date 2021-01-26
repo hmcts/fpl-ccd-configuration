@@ -70,7 +70,6 @@ public class CaseManagementOrderIssuedEventHandler {
     private void sendToRepresentatives(final CaseData caseData,
                                        CaseManagementOrder cmo,
                                        RepresentativeServingPreferences servingPreference) {
-        caseData.getRepresentativesByServedPreference(servingPreference);
         List<Representative> representatives = caseData.getRepresentativesByServedPreference(servingPreference);
 
         representatives.stream()
