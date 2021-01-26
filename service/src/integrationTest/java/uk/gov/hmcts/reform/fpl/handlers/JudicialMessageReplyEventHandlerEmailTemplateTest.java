@@ -25,10 +25,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ObjectMapper.class,
     CaseUrlService.class
 })
-public class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
-    public static final String RESPONDENT_LAST_NAME = "Watson";
-    public static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
+    private static final String RESPONDENT_LAST_NAME = "Watson";
+    private static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
         .lastName(RESPONDENT_LAST_NAME).build())
         .build();
 
@@ -58,13 +58,13 @@ public class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemp
                 .start()
                 .line("You've received a message about:")
                 .line()
-                .line("^" + RESPONDENT_LAST_NAME)
+                .callout(RESPONDENT_LAST_NAME)
                 .line()
                 .line("Message: some reply")
                 .line()
                 .line("To respond, sign in to:")
                 .line()
-                .line("http://fake-url/cases/case-details/123#JudicialMessagesTab")
+                .line("http://fake-url/cases/case-details/123#Judicial%20messages")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .end("Do not reply to this email. If you need to contact us, "
