@@ -174,7 +174,8 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             eq("populateSDO"),
             anyMap());
 
-        verifyNoInteractions(notificationClient, coreCaseDataService);
+        verifyNoInteractions(notificationClient);
+        verifyNoMoreInteractions(coreCaseDataService);
     }
 
     @Test

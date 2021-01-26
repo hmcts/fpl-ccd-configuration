@@ -48,7 +48,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -172,7 +171,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
-        verifyNoInteractions(coreCaseDataService);
+        verify(coreCaseDataService,never()).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
     }
 
     @Test
