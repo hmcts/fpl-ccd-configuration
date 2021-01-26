@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftCMOUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
@@ -31,6 +33,8 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
@@ -64,6 +68,14 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
+    }
+
     protected UploadCMOSubmittedControllerTest() {
         super("upload-cmo");
     }
@@ -92,6 +104,33 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
 
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
+    }
+
+    @Test
+    void shouldSendNotificationsIfNewAgreedCMOUploadedToggledOff() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
+
+        CallbackRequest callbackRequest = callbackRequest(SEND_TO_JUDGE);
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE),
+                eq(ADMIN_EMAIL),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
+            verify(notificationClient).sendEmail(
+                eq(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE),
+                eq(JUDGE_EMAIL),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+        });
+
+        verifyNoInteractions(coreCaseDataService);
     }
 
     @Test
