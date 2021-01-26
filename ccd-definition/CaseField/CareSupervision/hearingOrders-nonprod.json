@@ -12,14 +12,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoDraftOrderTitle",
     "Label": " ",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoDraftOrderTitleLabel",
-    "Label": "${cmoDraftOrderTitle}",
+    "Label": "<h2>Case Management Order</h2>",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -36,14 +36,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftOrder1Title",
     "Label": " ",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftOrder1TitleLabel",
-    "Label": "${draftOrder1Title}",
+    "Label": "<h2>Order 1</h2>",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -60,14 +60,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftOrder2Title",
     "Label": " ",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftOrder2TitleLabel",
-    "Label": "${draftOrder2Title}",
+    "Label": "<h2>Order 2</h2>",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },

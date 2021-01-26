@@ -173,18 +173,12 @@ class ReviewCMOServiceTest {
             .orders(asList(agreedCMO)).build());
 
         CaseData caseData = CaseData.builder()
-            .caseName("case1")
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .build();
 
-        String ordersSummary = String.format(
-            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
-            "CMO for Case management hearing, 2 March 2020");
-
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", SINGLE,
-            "reviewDraftOrdersTitles", ordersSummary, //tODO: fix
-            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
+            "cmoDraftOrderTitle", hearing1,
             "cmoDraftOrderDocument", order,
             "draftCMOExists", "Y"
         );
@@ -207,7 +201,6 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-        /* multiple orders in bundle */
     void shouldReturnDraftOrdersDataWhenSelectedHearingOrdersBundleHaveCMOAndDraftOrdersForApproval() {
         Element<HearingOrder> cmo = agreedCMO(hearing1);
         Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing1);
@@ -216,21 +209,14 @@ class ReviewCMOServiceTest {
             buildDraftOrdersBundle(hearing1, asList(cmo, blankOrder));
 
         CaseData caseData = CaseData.builder()
-            .caseName("case1")
             .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
             .build();
 
-        String ordersSummary = String.format(
-            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
-            "CMO for Case management hearing, 2 March 2020<br>"
-                + "C21 Order - Draft C21 order for Case management hearing, 2 March 2020");
-
         Map<String, Object> expectedData = Map.of(
-            "reviewDraftOrdersTitles", ordersSummary,
-            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
+            "cmoDraftOrderTitle", hearing1,
             "cmoDraftOrderDocument", order,
             "draftCMOExists", "Y",
-            "draftOrder1Title", "<h3>Order 1</h3>\n\n<b>Draft C21 order</b>",
+            "draftOrder1Title", blankOrder.getValue().getTitle(),
             "draftOrder1Document", order,
             "draftBlankOrdersCount", "1");
 
@@ -249,13 +235,8 @@ class ReviewCMOServiceTest {
             .cmoToReviewList(draftOrdersBundle.getId())
             .build();
 
-        String ordersSummary = String.format(
-            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
-            "CMO for Case management hearing, 2 March 2020");
-
         Map<String, Object> expectedData = Map.of(
-            "reviewDraftOrdersTitles", ordersSummary,
-            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
+            "cmoDraftOrderTitle", hearing1,
             "cmoDraftOrderDocument", order,
             "draftCMOExists", "Y"
         );
@@ -274,21 +255,14 @@ class ReviewCMOServiceTest {
             hearing1, asList(blankOrder1, blankOrder2));
 
         CaseData caseData = CaseData.builder()
-            .caseName("case1")
             .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
             .cmoToReviewList(draftOrdersBundle.getId())
             .build();
 
-        String ordersSummary = String.format(
-            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
-            "C21 Order - Draft C21 order1 for Case management hearing, 2 March 2020<br>"
-                + "C21 Order - Draft C21 order2 for Case management hearing, 2 March 2020");
-
         Map<String, Object> expectedData = Map.of(
-            "reviewDraftOrdersTitles", ordersSummary,
-            "draftOrder1Title", "<h3>Order 1</h3>\n\n<b>Draft C21 order1</b>",
+            "draftOrder1Title", blankOrder1.getValue().getTitle(),
             "draftOrder1Document", order,
-            "draftOrder2Title", "<h3>Order 2</h3>\n\n<b>Draft C21 order2</b>",
+            "draftOrder2Title", blankOrder2.getValue().getTitle(),
             "draftOrder2Document", order,
             "draftBlankOrdersCount", "12");
 

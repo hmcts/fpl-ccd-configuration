@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,13 +30,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.C21;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -83,7 +83,6 @@ public class ReviewCMOService {
                 HearingOrdersBundle hearingOrdersBundle = draftOrdersReadyForApproval.get(0).getValue();
                 data.put(numDraftCMOs, "SINGLE");
 
-                data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(caseData.getCaseName(), hearingOrdersBundle));
                 data.putAll(buildDraftOrdersReviewData(hearingOrdersBundle));
                 break;
             default:
@@ -97,13 +96,9 @@ public class ReviewCMOService {
     }
 
     public Map<String, Object> populateDraftOrdersData(CaseData caseData) {
-        Map<String, Object> data = new HashMap<>();
         Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
 
-        data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(selectedCMO.getValue()));
-        data.putAll(buildDraftOrdersReviewData(selectedCMO.getValue()));
-
-        return data;
+        return buildDraftOrdersReviewData(selectedCMO.getValue());
     }
 
     public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
@@ -126,7 +121,6 @@ public class ReviewCMOService {
                     data.put("sealedCMOs", sealedCMOs);
                     data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, cmoToSeal.getId()));
                 }
-                //TODO: check if draft order need to be removed when judge requests changes for CMO?
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
@@ -135,6 +129,35 @@ public class ReviewCMOService {
         }
 
         return data;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> isReviewDecisionValid(CaseData caseData, Map<String, Object> data) {
+        Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
+
+        List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
+        List<String> errors = new ArrayList<>();
+
+        int counter = 1;
+        for (HearingOrder order : hearingOrders) {
+            if (order.getType().isCmo() && isDecisionIncomplete(caseData.getReviewCMODecision())) {
+                errors.add("CMO decision fields are incomplete");
+            } else {
+                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+                ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+                if (isDecisionIncomplete(reviewDecision)) {
+                    errors.add(String.format("Order %d decision fields are incomplete", counter));
+                }
+                counter++;
+            }
+        }
+        return errors;
+    }
+
+    private boolean isDecisionIncomplete(ReviewDecision cmoDecision) {
+        return cmoDecision != null && cmoDecision.getDecision() != null
+            && (!SEND_TO_ALL_PARTIES.equals(cmoDecision.getDecision())
+            && cmoDecision.getJudgeAmendedDocument() == null && isBlank(cmoDecision.getChangesRequestedByJudge()));
     }
 
     public Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
@@ -270,30 +293,17 @@ public class ReviewCMOService {
         return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
     }
 
-    private String buildDraftOrdersBundleSummary(HearingOrdersBundle hearingOrdersBundle) {
-        return unwrapElements(hearingOrdersBundle.getOrders()).stream()
-            .map(order -> {
-                if (order.getType().isCmo()) {
-                    return String.format("%s for %s", CMO, order.getHearing());
-                } else {
-                    return String.format("%s Order - %s for %s", C21, order.getTitle(), order.getHearing());
-                }
-            }).collect(Collectors.joining("\n"));
-    }
-
     private Map<String, Object> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
         Map<String, Object> data = new HashMap<>();
 
         int counter = 1;
         for (Element<HearingOrder> orderElement : ordersBundle.getOrders()) {
             if (orderElement.getValue().getType().isCmo()) {
-                data.put("cmoDraftOrderTitle",
-                    String.format("<h3>%s </h3>", orderElement.getValue().getTitle()));
+                data.put("cmoDraftOrderTitle", orderElement.getValue().getTitle());
                 data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
                 data.put("draftCMOExists", "Y");
             } else {
-                data.put(String.format("draftOrder%dTitle", counter),
-                    String.format("<h3>Order %d</h3>\n\n<b>%s</b>", counter, orderElement.getValue().getTitle()));
+                data.put(String.format("draftOrder%dTitle", counter), orderElement.getValue().getTitle());
                 data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
                 counter++;
             }

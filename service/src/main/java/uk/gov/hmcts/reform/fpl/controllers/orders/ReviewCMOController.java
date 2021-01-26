@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,9 @@ public class ReviewCMOController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().remove("reviewCMODecision");
+        //TODO: move data fields to event data class
+        resetReviewDecisionData(caseDetails);
+
         caseDetails.getData().putAll(reviewCMOService.getPageDisplayControls(caseData));
 
         return respond(caseDetails);
@@ -62,6 +65,17 @@ public class ReviewCMOController extends CallbackController {
         return respond(caseDetails);
     }
 
+    @PostMapping("/validate-review-decision/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateReviewDecision(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
+
+        List<String> errors = reviewCMOService.isReviewDecisionValid(caseData, data);
+
+        return respond(caseDetails, errors);
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -77,11 +91,7 @@ public class ReviewCMOController extends CallbackController {
         // review C21 orders
         reviewCMOService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
-        data.remove("numDraftCMOs");
-        data.remove("cmoToReviewList");
-        data.remove("reviewDraftOrdersTitles");
-        data.remove("draftCMOExists");
-        data.remove("draftBlankOrdersCount");
+        removeTransientFields(caseDetails);
 
         return respond(caseDetails);
     }
@@ -95,8 +105,7 @@ public class ReviewCMOController extends CallbackController {
         List<Element<HearingOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
             caseDataBefore);
 
-        if (!cmosReadyForApproval.isEmpty()) {
-            //TODO: fix NPE which is caused by removing the reviewCMODecision fields from case data
+        if (!cmosReadyForApproval.isEmpty() && caseData.getReviewCMODecision() != null) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 HearingOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
                 DocumentReference documentToBeSent = sealed.getOrder();
@@ -121,5 +130,21 @@ public class ReviewCMOController extends CallbackController {
                 publishEvent(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
             }
         }
+    }
+
+    private void removeTransientFields(CaseDetails caseDetails) {
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "numDraftCMOs", "cmoToReviewList",
+            "draftCMOExists", "draftBlankOrdersCount", "cmoDraftOrderTitle",
+            "draftOrder1Title", "draftOrder2Title", "draftOrder3Title", "draftOrder4Title", "draftOrder5Title",
+            "draftOrder6Title", "draftOrder7Title", "draftOrder8Title", "draftOrder9Title", "draftOrder10Title",
+            "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
+            "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
+            "draftOrder8Document", "draftOrder9Document", "draftOrder10Document");
+    }
+
+    private void resetReviewDecisionData(CaseDetails caseDetails) {
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, "reviewCMODecision", "reviewDecision1",
+            "reviewDecision2", "reviewDecision3", "reviewDecision4", "reviewDecision5", "reviewDecision6",
+            "reviewDecision7", "reviewDecision8", "reviewDecision9", "reviewDecision10");
     }
 }
