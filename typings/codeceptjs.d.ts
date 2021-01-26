@@ -308,6 +308,7 @@ declare namespace CodeceptJS {
     addAnotherElementToCollection(collectionName: string): void,
     removeElementFromCollection(): void,
     retryUntilExists(action: Function, locator: string) : void,
+    retryUntilExists(action: Function, locator: ILocator) : void,
     fillDate(date: {day: number; month: number; year: number}): void
     fillDate(date: {day: number, month: number, year: number}, dateId: string): void,
     fillDateAndTime(date: {day: number, month: number, year: number, hour: number, minute: number, second: number}): void,

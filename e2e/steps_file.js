@@ -1,5 +1,6 @@
 /* global process */
 const output = require('codeceptjs').output;
+const tryTo = require('codeceptjs').container.plugins('tryTo');
 const lodash = require('lodash');
 const config = require('./config');
 const moment = require('moment');
@@ -17,6 +18,7 @@ const baseUrl = process.env.URL || 'http://localhost:3333';
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
 const maxRetries = 5;
+const timeout = parseInt(process.env.WAIT_FOR_TIMEOUT || '20000') / 1000; // ms -> s
 let currentUser = {};
 
 'use strict';
@@ -49,12 +51,12 @@ module.exports = function () {
       }
     },
 
-    async goToPage(url){
-      this.amOnPage(url);
+    async goToPage(url) {
+      this.retry(5).amOnPage(url);
       await this.logWithHmctsAccount();
     },
 
-    async logWithHmctsAccount(){
+    async logWithHmctsAccount() {
       const hmctsLoginIn = 'div.win-scroll';
 
       if (await this.hasSelector(hmctsLoginIn)) {
@@ -186,7 +188,7 @@ module.exports = function () {
       }
     },
 
-    seeTextInTab (pathToField) {
+    seeTextInTab(pathToField) {
       const fieldSelector = this.tabFieldSelector(pathToField);
       this.seeElement(locate(fieldSelector));
     },
@@ -319,12 +321,12 @@ module.exports = function () {
       return caseId;
     },
 
-    async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries){
+    async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries) {
       const currentUrl = await this.grabCurrentUrl();
       this.click(label);
 
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
-        if(await this.grabCurrentUrl() !== currentUrl){
+        if (await this.grabCurrentUrl() !== currentUrl) {
           break;
         } else {
           //To mitigate https://tools.hmcts.net/jira/browse/EUI-2498
@@ -352,7 +354,6 @@ module.exports = function () {
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @param checkUrlChanged - check if the url has changed, if true skip the action
      * @param maxNumberOfTries - maximum number of attempts to retry
-     * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
     async retryUntilExists(action, locator, checkUrlChanged = true, maxNumberOfTries = maxRetries) {
       const originalUrl = await this.grabCurrentUrl();
@@ -372,7 +373,7 @@ module.exports = function () {
         } catch (error) {
           output.error(error);
         }
-        if (await this.waitForSelector(locator) != null) {
+        if (await tryTo(() => this.waitForElement(locator, timeout))) {
           output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
           break;
         } else {

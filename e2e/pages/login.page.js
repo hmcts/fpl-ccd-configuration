@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 
 module.exports = {
 

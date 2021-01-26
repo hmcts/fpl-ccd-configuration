@@ -1,5 +1,6 @@
 const {I} = inject();
 const config = require('../config');
+const dateFormat = require('dateformat');
 
 module.exports = {
 
@@ -18,22 +19,12 @@ module.exports = {
     I.click(this.fields.caseList);
   },
 
-  changeStateFilter(desiredState) {
-    this.setInitialSearchFields(desiredState);
-    I.click(this.fields.search);
-  },
-
   async searchForCasesWithHandledEvidences(submittedAt, state = 'Any') {
     this.setInitialSearchFields(state);
     I.waitForElement(this.fields.evidenceHandled, 30);
     await I.fillDate(submittedAt);
     I.click(this.fields.evidenceHandled);
-    I.click(this.fields.search);
-  },
-
-  searchForCasesWithUnhandledEvidences() {
-    I.click(this.fields.evidenceNotHandled);
-    I.click(this.fields.search);
+    this.search({state: state, evidenceHandled: 'Yes', dateSubmitted: dateFormat(submittedAt, 'isoDate')});
   },
 
   searchForCasesWithName(caseName, state='Any') {
@@ -41,7 +32,22 @@ module.exports = {
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
+
+    this.search({state: state, caseName: normaliseCaseName(caseName)});
+  },
+
+  search(searchFields) {
     I.click(this.fields.search);
+
+    if (searchFields['state'] === 'Any') {
+      delete searchFields.state; // this is not added to the url
+    }
+
+    searchFields['ctid'] = config.definition.caseType;
+
+    I.waitForResponse(response => urlContainsSearchFields(response.url(), searchFields) && response.request().method() === 'POST', 240);
+
+    I.wait(1); // give time for the list to populate
   },
 
   setInitialSearchFields(state='Any') {
@@ -61,5 +67,12 @@ module.exports = {
     const caseProperty = locate(`//td[${columnNumber}]`);
     return caseProperty.inside(caseRow);
   },
+};
 
+const normaliseCaseName = (caseName) => {
+  return caseName.replaceAll(' ', '%20');
+};
+
+const urlContainsSearchFields = (url, searchFields) => {
+  return Object.keys(searchFields).every(field => url.includes(`${field}=${searchFields[field]}`));
 };

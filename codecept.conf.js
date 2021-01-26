@@ -140,6 +140,9 @@ exports.config = {
       enabled: true,
       fullPageScreenshots: true,
     },
+    tryTo: {
+      enabled: true,
+    },
   },
   tests: './e2e/tests/*_test.js',
   teardownAll: require('./e2e/hooks/aggregate-metrics'),
