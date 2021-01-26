@@ -98,7 +98,7 @@ public class ReviewCMOService {
         Map<String, Object> data = new HashMap<>();
         Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
 
-        data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(caseData.getCaseName(), selectedCMO.getValue()));
+        data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(selectedCMO.getValue()));
         data.putAll(buildDraftOrdersReviewData(selectedCMO.getValue()));
 
         return data;
@@ -268,16 +268,15 @@ public class ReviewCMOService {
         return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
     }
 
-    private String buildDraftOrdersBundleSummary(String caseName, HearingOrdersBundle hearingOrdersBundle) {
-        String ordersSummary = unwrapElements(hearingOrdersBundle.getOrders()).stream()
+    private String buildDraftOrdersBundleSummary(HearingOrdersBundle hearingOrdersBundle) {
+        return unwrapElements(hearingOrdersBundle.getOrders()).stream()
             .map(order -> {
                 if (order.getType().isCmo()) {
                     return String.format("%s for %s", CMO, order.getHearing());
                 } else {
                     return String.format("%s Order - %s for %s", C21, order.getTitle(), hearingOrdersBundle.getHearingName());
                 }
-            }).collect(Collectors.joining("<br>"));
-        return String.format("<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseName, ordersSummary);
+            }).collect(Collectors.joining("\n"));
     }
 
     private Map<String, Object> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {

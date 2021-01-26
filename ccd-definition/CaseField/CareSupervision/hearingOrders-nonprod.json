@@ -3,16 +3,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewDraftOrdersTitles",
-    "Label": " ",
+    "Label": "Local authority has sent the following orders for approval:",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "reviewDraftOrdersLabel",
-    "Label": "${reviewDraftOrdersTitles}",
-    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
