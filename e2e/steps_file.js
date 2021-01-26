@@ -29,7 +29,7 @@ module.exports = function () {
         currentUser = {}; // reset in case the login fails
 
         await this.retryUntilExists(async () => {
-
+          //To mitigate situation when idam response with blank page
           await this.goToPage(baseUrl);
 
           if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
@@ -213,8 +213,9 @@ module.exports = function () {
       if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
         await this.retryUntilExists(async () => {
           await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-        }, '.ccd-dropdown');
+        }, signedInSelector);
       }
+      await this.waitForSelector('.ccd-dropdown');
     },
 
     async navigateToCaseDetailsAs(user, caseId) {
@@ -326,7 +327,9 @@ module.exports = function () {
         if(await this.grabCurrentUrl() !== currentUrl){
           break;
         } else {
-          this.wait(20);
+          //To mitigate https://tools.hmcts.net/jira/browse/EUI-2498
+          //TODO find more clever way
+          this.wait(15);
           if(await this.grabCurrentUrl() === currentUrl){
             this.click(label);
             output.print('Go to next page failed ' + currentUrl);
