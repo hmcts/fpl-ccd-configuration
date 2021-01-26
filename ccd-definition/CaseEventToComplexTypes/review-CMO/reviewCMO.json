@@ -4,26 +4,8 @@
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewCMODecision",
-    "ListElementCode": "hearing",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMODecision",
-    "ListElementCode": "document",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewCaseManagementOrder",
-    "CaseEventID": "reviewCMO",
-    "CaseFieldID": "reviewCMODecision",
     "ListElementCode": "decision",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -32,7 +14,7 @@
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewCMODecision",
     "ListElementCode": "changesRequestedByJudge",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -41,7 +23,7 @@
     "CaseEventID": "reviewCMO",
     "CaseFieldID": "reviewCMODecision",
     "ListElementCode": "judgeAmendedDocument",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   }
 ]

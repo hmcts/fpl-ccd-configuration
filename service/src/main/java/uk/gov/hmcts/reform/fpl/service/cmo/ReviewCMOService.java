@@ -86,7 +86,8 @@ public class ReviewCMOService {
                 break;
             default:
                 data.put(numDraftCMOs, "MULTI");
-                data.put("cmoToReviewList", buildUnselectedDynamicList(caseData));
+                DynamicList value = buildUnselectedDynamicList(caseData);
+                data.put("cmoToReviewList", value);
                 break;
         }
 
@@ -285,14 +286,14 @@ public class ReviewCMOService {
         int counter = 1;
         for (Element<HearingOrder> orderElement : ordersBundle.getOrders()) {
             if (orderElement.getValue().getType().isCmo()) {
-                data.put("reviewCMODecision",
-                    ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
-                        .document(orderElement.getValue().getOrder()).build());
+                data.put("cmoDraftOrderTitle",
+                    String.format("<h3>%s </h3>", orderElement.getValue().getTitle()));
+                data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
                 data.put("draftCMOExists", "Y");
             } else {
-                data.put("reviewDecision" + counter,
-                    ReviewDecision.builder().hearing(orderElement.getValue().getTitle())
-                        .document(orderElement.getValue().getOrder()).build());
+                data.put(String.format("draftOrder%dTitle", counter),
+                    String.format("<h3>Order %d</h3>\n\n<b>%s</b>", counter, orderElement.getValue().getTitle()));
+                data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
                 counter++;
             }
         }

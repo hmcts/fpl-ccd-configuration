@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
@@ -30,10 +31,15 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,6 +49,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FURTHER_CASE_MANAGEMENT;
@@ -64,7 +72,6 @@ class ReviewCMOServiceTest {
     private final UUID cmoID = UUID.randomUUID();
     private static final Time TIME = new FixedTimeConfiguration().stoppedTime();
     private LocalDateTime futureDate;
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Mock
     private DocumentSealingService documentSealingService;
@@ -76,7 +83,7 @@ class ReviewCMOServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ReviewCMOService(mapper, TIME, draftOrderService, documentSealingService);
+        service = new ReviewCMOService(new ObjectMapper(), TIME, draftOrderService, documentSealingService);
         futureDate = TIME.now().plusDays(1);
     }
 
@@ -112,9 +119,11 @@ class ReviewCMOServiceTest {
     @Test
     void shouldBuildUnselectedDynamicList() {
         Element<HearingOrdersBundle> hearingOrdersBundle1 = element(HearingOrdersBundle.builder()
+            .hearingName(hearing1)
             .orders(List.of(agreedCMO(hearing1))).build());
 
         Element<HearingOrdersBundle> hearingOrdersBundle2 = element(HearingOrdersBundle.builder()
+            .hearingName(hearing2)
             .orders(List.of(agreedCMO(hearing2), element(HearingOrder.builder().build()))).build());
 
         List<Element<HearingOrdersBundle>> hearingOrderBundlesDrafts = List.of(
@@ -152,28 +161,97 @@ class ReviewCMOServiceTest {
             "numDraftCMOs", MULTI,
             "cmoToReviewList", DynamicList.builder()
                 .value(EMPTY)
-                .listItems(dynamicListItems(
-                    hearingOrderBundlesDrafts.get(0).getId(), hearingOrderBundlesDrafts.get(1).getId())).build());
+                .listItems(List.of(
+                    DynamicListElement.builder().code(hearingOrdersBundle1.getId()).build(),
+                    DynamicListElement.builder().code(hearingOrdersBundle2.getId()).build()))
+                .build());
 
         assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
 
     @Test
+    void shouldReturnDraftOrdersDataWhenSelectedHearingOrdersBundleHaveCMOAndDraftOrdersForApproval() {
+        Element<HearingOrder> cmo = agreedCMO(hearing1);
+        Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing1);
+
+        Element<HearingOrdersBundle> draftOrdersBundle =
+            buildDraftOrdersBundle(hearing1, asList(cmo, blankOrder));
+
+        CaseData caseData = CaseData.builder()
+            .caseName("case1")
+            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .cmoToReviewList(draftOrdersBundle.getId())
+            .build();
+
+        String ordersSummary = String.format(
+            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
+            "CMO for Case management hearing, 2 March 2020<br>"
+                + "C21 Order - Draft C21 order for Case management hearing, 2 March 2020");
+
+        Map<String, Object> expectedData = Map.of(
+            "reviewDraftOrdersTitles", ordersSummary,
+            "cmoDraftOrderTitle", String.format("<h3>%s </h3><br/><br/>", hearing1),
+            "cmoDraftOrderDocument", order,
+            "draftCMOExists", "Y",
+            "draftOrder1Title", "<h4>Order 1</h4>\n\n<b>Draft C21 order</b><br/><br/>",
+            "draftOrder1Document", order,
+            "draftBlankOrdersCount", "1"
+        );
+
+        assertThat(service.populateDraftOrdersData(caseData)).containsAllEntriesOf(expectedData);
+    }
+
+    @Test
+    void shouldReturnCMODraftOrderWhenSelectedHearingOrdersBundleHaveOnlyDraftCMOForApproval() {
+        Element<HearingOrder> cmo = agreedCMO(hearing1);
+
+        Element<HearingOrdersBundle> draftOrdersBundle = buildDraftOrdersBundle(hearing1, asList(cmo));
+
+        CaseData caseData = CaseData.builder()
+            .caseName("case1")
+            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .cmoToReviewList(draftOrdersBundle.getId())
+            .build();
+
+        String ordersSummary = String.format(
+            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
+            "CMO for Case management hearing, 2 March 2020");
+
+        Map<String, Object> expectedData = Map.of(
+            "reviewDraftOrdersTitles", ordersSummary,
+            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
+            "cmoDraftOrderDocument", order,
+            "draftCMOExists", "Y"
+        );
+
+        Map<String, Object> actualData = service.populateDraftOrdersData(caseData);
+        assertThat(actualData).containsAllEntriesOf(expectedData);
+        assertThat(actualData).doesNotContainKeys("draftOrder1Title", "draftOrder1Document", "draftBlankOrdersCount");
+    }
+
+    @Test
     void shouldReturnSinglePageDataWhenThereIsOneDraftCMOReadyForApproval() {
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of(agreedCMO(hearing1))).build();
+        Element<HearingOrdersBundle> draftOrdersBundle =
+            buildDraftOrdersBundle(hearing1, asList(agreedCMO(hearing1)));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", SINGLE,
-            "reviewCMODecision", ReviewDecision.builder()
-                .hearing(hearing1)
-                .document(order).build());
+            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
+            "cmoDraftOrderDocument", order,
+            "draftCMOExists", "Y");
 
         assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
     }
 
     @Test
     void shouldReturnNonePageDataWhenThereAreNoDraftCMOsReadyForApproval() {
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(emptyList())
+            .build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", NONE);
@@ -386,8 +464,28 @@ class ReviewCMOServiceTest {
     private static Element<HearingOrder> buildCMO(String hearing, CMOStatus status) {
         return element(HearingOrder.builder()
             .hearing(hearing)
+            .title(hearing)
+            .type(AGREED_CMO.equals(status) ? AGREED_CMO : DRAFT_CMO)
             .order(order)
             .status(status)
+            .judgeTitleAndName("Her Honour Judge Judy").build());
+    }
+
+    private static Element<HearingOrder> buildBlankOrder(String title, String hearing) {
+        return element(HearingOrder.builder()
+            .hearing(hearing)
+            .title(title)
+            .order(order)
+            .type(HearingOrderType.C21)
+            .status(SEND_TO_JUDGE)
+            .judgeTitleAndName("Her Honour Judge Judy").build());
+    }
+
+    private static Element<HearingOrdersBundle> buildDraftOrdersBundle(
+        String hearing, List<Element<HearingOrder>> draftOrders) {
+        return element(HearingOrdersBundle.builder()
+            .hearingName(hearing)
+            .orders(draftOrders)
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 

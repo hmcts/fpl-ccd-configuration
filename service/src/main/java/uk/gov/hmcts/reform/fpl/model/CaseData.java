@@ -632,6 +632,30 @@ public class CaseData {
     private final ReviewDecision reviewDecision9;
     private final ReviewDecision reviewDecision10;
 
+    private final String cmoDraftOrderTitle;
+    private final String draftOrder1Title;
+    private final String draftOrder2Title;
+    private final String draftOrder3Title;
+    private final String draftOrder4Title;
+    /*private final String draftOrder5Title;
+    private final String draftOrder6Title;
+    private final String draftOrder7Title;
+    private final String draftOrder8Title;
+    private final String draftOrder9Title;
+    private final String draftOrder10Title;*/
+
+    private final DocumentReference cmoDraftOrderDocument;
+    private final DocumentReference draftOrder1Document;
+    private final DocumentReference draftOrder2Document;
+    private final DocumentReference draftOrder3Document;
+    private final DocumentReference draftOrder4Document;
+    /*private final DocumentReference draftOrder5Document;
+    private final DocumentReference draftOrder6Document;
+    private final DocumentReference draftOrder7Document;
+    private final DocumentReference draftOrder8Document;
+    private final DocumentReference draftOrder9Document;
+    private final DocumentReference draftOrder10Document;*/
+
     private final String numDraftCMOs;
     private final String draftCMOExists;
     private final String draftBlankOrdersCount;

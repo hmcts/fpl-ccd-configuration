@@ -2,25 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReviewDecision",
-    "ListElementCode": "hearing",
-    "FieldType": "Text",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewDecision",
-    "ListElementCode": "document",
-    "FieldType": "Document",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewDecision",
     "ListElementCode": "decision",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Does the CMO reflect all decisions made at the hearing?",
+    "ElementLabel": "Is this order ready to be sealed and issued?",
     "FieldTypeParameter": "CMOReviewOutcome",
     "SecurityClassification": "Public"
   },
