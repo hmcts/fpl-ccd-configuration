@@ -87,6 +87,7 @@ withNightlyPipeline(type, product, component) {
     env.MOCKED_PAYMENTS = false
     env.TEST_RETRIES = 2
     env.ENV = 'aat'
+    env.TESTS_SELECTOR = '@nightly-tests'
   }
 
   after('fullFunctionalTest') {

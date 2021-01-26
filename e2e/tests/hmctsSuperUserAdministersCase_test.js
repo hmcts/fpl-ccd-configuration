@@ -5,7 +5,7 @@ const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
 let caseId;
 
-Feature('Case administration by super user');
+Feature('Case administration by super user @nightly-tests');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(caseManagementCaseData);

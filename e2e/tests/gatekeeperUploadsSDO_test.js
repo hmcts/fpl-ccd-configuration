@@ -4,7 +4,7 @@ const dateFormat = require('dateformat');
 
 let caseId;
 
-Feature('Gatekeeper uploads standard directions order');
+Feature('Gatekeeper uploads standard directions order @nightly-tests');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeeping);

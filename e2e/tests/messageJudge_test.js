@@ -5,7 +5,7 @@ let caseId;
 let message = 'Some note';
 let reply = 'This is a reply';
 
-Feature('Message judge or legal adviser');
+Feature('Message judge or legal adviser @nightly-tests');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithC2DocumentBundle);
