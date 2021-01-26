@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
+import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
+import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
 @Api
 @RestController
@@ -42,8 +44,7 @@ public class ReviewCMOController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //TODO: move data fields to event data class
-        resetReviewDecisionData(caseDetails);
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
         caseDetails.getData().putAll(reviewCMOService.getPageDisplayControls(caseData));
 
@@ -91,7 +92,7 @@ public class ReviewCMOController extends CallbackController {
         // review C21 orders
         reviewCMOService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
-        removeTransientFields(caseDetails);
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 
         return respond(caseDetails);
     }
@@ -130,21 +131,5 @@ public class ReviewCMOController extends CallbackController {
                 publishEvent(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
             }
         }
-    }
-
-    private void removeTransientFields(CaseDetails caseDetails) {
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, "numDraftCMOs", "cmoToReviewList",
-            "draftCMOExists", "draftBlankOrdersCount", "cmoDraftOrderTitle",
-            "draftOrder1Title", "draftOrder2Title", "draftOrder3Title", "draftOrder4Title", "draftOrder5Title",
-            "draftOrder6Title", "draftOrder7Title", "draftOrder8Title", "draftOrder9Title", "draftOrder10Title",
-            "cmoDraftOrderDocument", "draftOrder1Document", "draftOrder2Document", "draftOrder3Document",
-            "draftOrder4Document", "draftOrder5Document", "draftOrder6Document", "draftOrder7Document",
-            "draftOrder8Document", "draftOrder9Document", "draftOrder10Document");
-    }
-
-    private void resetReviewDecisionData(CaseDetails caseDetails) {
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, "reviewCMODecision", "reviewDecision1",
-            "reviewDecision2", "reviewDecision3", "reviewDecision4", "reviewDecision5", "reviewDecision6",
-            "reviewDecision7", "reviewDecision8", "reviewDecision9", "reviewDecision10");
     }
 }

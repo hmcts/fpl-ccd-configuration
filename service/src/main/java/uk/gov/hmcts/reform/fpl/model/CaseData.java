@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -621,45 +622,11 @@ public class CaseData {
 
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
-    private final ReviewDecision reviewDecision1;
-    private final ReviewDecision reviewDecision2;
-    private final ReviewDecision reviewDecision3;
-    private final ReviewDecision reviewDecision4;
-    private final ReviewDecision reviewDecision5;
-    private final ReviewDecision reviewDecision6;
-    private final ReviewDecision reviewDecision7;
-    private final ReviewDecision reviewDecision8;
-    private final ReviewDecision reviewDecision9;
-    private final ReviewDecision reviewDecision10;
-
-    private final String cmoDraftOrderTitle;
-    private final String draftOrder1Title;
-    private final String draftOrder2Title;
-    private final String draftOrder3Title;
-    private final String draftOrder4Title;
-    /*private final String draftOrder5Title;
-    private final String draftOrder6Title;
-    private final String draftOrder7Title;
-    private final String draftOrder8Title;
-    private final String draftOrder9Title;
-    private final String draftOrder10Title;*/
-
-    private final DocumentReference cmoDraftOrderDocument;
-    private final DocumentReference draftOrder1Document;
-    private final DocumentReference draftOrder2Document;
-    private final DocumentReference draftOrder3Document;
-    private final DocumentReference draftOrder4Document;
-    /*private final DocumentReference draftOrder5Document;
-    private final DocumentReference draftOrder6Document;
-    private final DocumentReference draftOrder7Document;
-    private final DocumentReference draftOrder8Document;
-    private final DocumentReference draftOrder9Document;
-    private final DocumentReference draftOrder10Document;*/
-
     private final String numDraftCMOs;
-    private final String draftCMOExists;
-    private final String draftBlankOrdersCount;
     private final List<Element<HearingOrder>> sealedCMOs;
+
+    @JsonUnwrapped
+    private final ReviewDraftOrdersData reviewDraftOrdersData;
 
     public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
