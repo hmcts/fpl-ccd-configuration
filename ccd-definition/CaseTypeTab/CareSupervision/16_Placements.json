@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
     "TabLabel": "Placement",
-    "TabDisplayOrder": 10,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "placements",
     "TabFieldDisplayOrder": 1
   },
@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
     "TabLabel": "Placement",
-    "TabDisplayOrder": 10,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "confidentialPlacements",
     "TabFieldDisplayOrder": 1
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "PlacementTab",
     "TabLabel": "Placement",
-    "TabDisplayOrder": 10,
+    "TabDisplayOrder": 16,
     "CaseFieldID": "placementsWithoutPlacementOrder",
     "TabFieldDisplayOrder": 1
   }
