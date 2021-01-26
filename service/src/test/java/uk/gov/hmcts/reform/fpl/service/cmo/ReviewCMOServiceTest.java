@@ -31,11 +31,8 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
@@ -170,6 +167,47 @@ class ReviewCMOServiceTest {
     }
 
     @Test
+    void shouldReturnSinglePageDataWhenThereIsOnlyOneHearingOrdersDraftBundleExists() {
+        Element<HearingOrder> agreedCMO = agreedCMO(hearing1);
+        Element<HearingOrdersBundle> hearingOrdersBundle = element(HearingOrdersBundle.builder()
+            .orders(asList(agreedCMO)).build());
+
+        CaseData caseData = CaseData.builder()
+            .caseName("case1")
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .build();
+
+        String ordersSummary = String.format(
+            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
+            "CMO for Case management hearing, 2 March 2020");
+
+        Map<String, Object> expectedData = Map.of(
+            "numDraftCMOs", SINGLE,
+            "reviewDraftOrdersTitles", ordersSummary, //tODO: fix
+            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
+            "cmoDraftOrderDocument", order,
+            "draftCMOExists", "Y"
+        );
+
+        Map<String, Object> actualData = service.getPageDisplayControls(caseData);
+        assertThat(actualData).containsAllEntriesOf(expectedData);
+        assertThat(actualData).doesNotContainKey("cmoToReviewList");
+    }
+
+    @Test
+    void shouldReturnNonePageDataWhenThereAreNoDraftCMOsReadyForApproval() {
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(emptyList())
+            .build();
+
+        Map<String, Object> expectedData = Map.of(
+            "numDraftCMOs", NONE);
+
+        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
+    }
+
+    @Test
+        /* multiple orders in bundle */
     void shouldReturnDraftOrdersDataWhenSelectedHearingOrdersBundleHaveCMOAndDraftOrdersForApproval() {
         Element<HearingOrder> cmo = agreedCMO(hearing1);
         Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing1);
@@ -180,7 +218,6 @@ class ReviewCMOServiceTest {
         CaseData caseData = CaseData.builder()
             .caseName("case1")
             .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
-            .cmoToReviewList(draftOrdersBundle.getId())
             .build();
 
         String ordersSummary = String.format(
@@ -190,13 +227,12 @@ class ReviewCMOServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             "reviewDraftOrdersTitles", ordersSummary,
-            "cmoDraftOrderTitle", String.format("<h3>%s </h3><br/><br/>", hearing1),
+            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
             "cmoDraftOrderDocument", order,
             "draftCMOExists", "Y",
-            "draftOrder1Title", "<h4>Order 1</h4>\n\n<b>Draft C21 order</b><br/><br/>",
+            "draftOrder1Title", "<h3>Order 1</h3>\n\n<b>Draft C21 order</b>",
             "draftOrder1Document", order,
-            "draftBlankOrdersCount", "1"
-        );
+            "draftBlankOrdersCount", "1");
 
         assertThat(service.populateDraftOrdersData(caseData)).containsAllEntriesOf(expectedData);
     }
@@ -230,34 +266,39 @@ class ReviewCMOServiceTest {
     }
 
     @Test
-    void shouldReturnSinglePageDataWhenThereIsOneDraftCMOReadyForApproval() {
-        Element<HearingOrdersBundle> draftOrdersBundle =
-            buildDraftOrdersBundle(hearing1, asList(agreedCMO(hearing1)));
+    void shouldReturnDraftC21OrdersWhenSelectedHearingOrdersBundleHaveOnlyDraftC21OrdersForApproval() {
+        Element<HearingOrder> blankOrder1 = buildBlankOrder("Draft C21 order1", hearing1);
+        Element<HearingOrder> blankOrder2 = buildBlankOrder("Draft C21 order2", hearing1);
+
+        Element<HearingOrdersBundle> draftOrdersBundle = buildDraftOrdersBundle(
+            hearing1, asList(blankOrder1, blankOrder2));
 
         CaseData caseData = CaseData.builder()
+            .caseName("case1")
             .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .cmoToReviewList(draftOrdersBundle.getId())
             .build();
 
-        Map<String, Object> expectedData = Map.of(
-            "numDraftCMOs", SINGLE,
-            "cmoDraftOrderTitle", String.format("<h3>%s </h3>", hearing1),
-            "cmoDraftOrderDocument", order,
-            "draftCMOExists", "Y");
-
-        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
-    }
-
-    @Test
-    void shouldReturnNonePageDataWhenThereAreNoDraftCMOsReadyForApproval() {
-        CaseData caseData = CaseData.builder()
-            .hearingOrdersBundlesDrafts(emptyList())
-            .build();
+        String ordersSummary = String.format(
+            "<h3>%s has sent the following orders for approval.</h3>\n\n%s", caseData.getCaseName(),
+            "C21 Order - Draft C21 order1 for Case management hearing, 2 March 2020<br>"
+                + "C21 Order - Draft C21 order2 for Case management hearing, 2 March 2020");
 
         Map<String, Object> expectedData = Map.of(
-            "numDraftCMOs", NONE);
+            "reviewDraftOrdersTitles", ordersSummary,
+            "draftOrder1Title", "<h3>Order 1</h3>\n\n<b>Draft C21 order1</b>",
+            "draftOrder1Document", order,
+            "draftOrder2Title", "<h3>Order 2</h3>\n\n<b>Draft C21 order2</b>",
+            "draftOrder2Document", order,
+            "draftBlankOrdersCount", "12");
 
-        assertThat(service.getPageDisplayControls(caseData)).isEqualTo(expectedData);
+        Map<String, Object> actualData = service.populateDraftOrdersData(caseData);
+        assertThat(actualData).containsAllEntriesOf(expectedData);
+        assertThat(actualData).doesNotContainKeys("cmoDraftOrderTitle", "cmoDraftOrderDocument", "draftCMOExists");
     }
+
+
+    // TODO: review tests
 
     @Test
     void shouldReturnCMOsThatAreReadyForApproval() {

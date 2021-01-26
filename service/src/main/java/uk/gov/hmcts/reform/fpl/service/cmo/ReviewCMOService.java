@@ -82,6 +82,8 @@ public class ReviewCMOService {
             case 1:
                 HearingOrdersBundle hearingOrdersBundle = draftOrdersReadyForApproval.get(0).getValue();
                 data.put(numDraftCMOs, "SINGLE");
+
+                data.put("reviewDraftOrdersTitles", buildDraftOrdersBundleSummary(caseData.getCaseName(), hearingOrdersBundle));
                 data.putAll(buildDraftOrdersReviewData(hearingOrdersBundle));
                 break;
             default:
@@ -274,7 +276,7 @@ public class ReviewCMOService {
                 if (order.getType().isCmo()) {
                     return String.format("%s for %s", CMO, order.getHearing());
                 } else {
-                    return String.format("%s Order - %s for %s", C21, order.getTitle(), hearingOrdersBundle.getHearingName());
+                    return String.format("%s Order - %s for %s", C21, order.getTitle(), order.getHearing());
                 }
             }).collect(Collectors.joining("\n"));
     }
