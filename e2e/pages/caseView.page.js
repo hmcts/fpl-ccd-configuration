@@ -34,7 +34,7 @@ module.exports = {
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
-      if(await I.waitForSelector(this.actionsDropdown, 10) != null) {
+      if(await I.waitForSelector(this.actionsDropdown, 60) != null) {
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
       } else {

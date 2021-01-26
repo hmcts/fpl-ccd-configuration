@@ -28,10 +28,11 @@ module.exports = function () {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
 
-        await this.goToPage(baseUrl);
-
         await this.retryUntilExists(async () => {
-          if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
+
+          await this.goToPage(baseUrl);
+
+          if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
             return;
           }
 
@@ -40,7 +41,7 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-        }, signedInSelector, false, 20);
+        }, signedInSelector, false, 10);
         output.debug(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
@@ -212,7 +213,7 @@ module.exports = function () {
       if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
         await this.retryUntilExists(async () => {
           await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-        }, signedInSelector);
+        }, '.ccd-dropdown');
       }
     },
 
@@ -325,9 +326,10 @@ module.exports = function () {
         if(await this.grabCurrentUrl() !== currentUrl){
           break;
         } else {
-          this.wait(1);
+          this.wait(20);
           if(await this.grabCurrentUrl() === currentUrl){
             this.click(label);
+            output.print('Go to next page failed ' + currentUrl);
           }
         }
       }
