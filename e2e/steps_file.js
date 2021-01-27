@@ -28,10 +28,11 @@ module.exports = function () {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
 
-        await this.goToPage(baseUrl);
-
         await this.retryUntilExists(async () => {
-          if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
+          //To mitigate situation when idam response with blank page
+          await this.goToPage(baseUrl);
+
+          if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
             return;
           }
 
@@ -40,7 +41,7 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-        }, signedInSelector, false, 20);
+        }, signedInSelector, false, 10);
         output.debug(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
@@ -214,6 +215,7 @@ module.exports = function () {
           await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
       }
+      await this.waitForSelector('.ccd-dropdown');
     },
 
     async navigateToCaseDetailsAs(user, caseId) {
@@ -325,9 +327,12 @@ module.exports = function () {
         if(await this.grabCurrentUrl() !== currentUrl){
           break;
         } else {
-          this.wait(1);
+          //To mitigate https://tools.hmcts.net/jira/browse/EUI-2498
+          //TODO find more clever way
+          this.wait(15);
           if(await this.grabCurrentUrl() === currentUrl){
             this.click(label);
+            output.print('Go to next page failed ' + currentUrl);
           }
         }
       }
