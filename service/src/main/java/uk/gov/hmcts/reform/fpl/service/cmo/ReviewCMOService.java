@@ -11,9 +11,11 @@ import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -96,9 +99,32 @@ public class ReviewCMOService {
     }
 
     public Map<String, Object> populateDraftOrdersData(CaseData caseData) {
-        Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
+        Element<HearingOrdersBundle> selectedHearingOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
 
-        return buildDraftOrdersReviewData(selectedCMO.getValue());
+        return buildDraftOrdersReviewData(selectedHearingOrdersBundle.getValue());
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> isReviewDecisionValid(CaseData caseData, Map<String, Object> data) {
+        Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
+
+        List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
+        List<String> errors = new ArrayList<>();
+
+        int counter = 1;
+        for (HearingOrder order : hearingOrders) {
+            if (order.getType().isCmo() && isInvalidReviewDecision(caseData.getReviewCMODecision())) {
+                errors.add("CMO decision fields are incomplete");
+            } else {
+                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
+                ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+                if (isInvalidReviewDecision(reviewDecision)) {
+                    errors.add(String.format("Order %d decision fields are incomplete", counter));
+                }
+                counter++;
+            }
+        }
+        return errors;
     }
 
     public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
@@ -131,50 +157,6 @@ public class ReviewCMOService {
         return data;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<String> isReviewDecisionValid(CaseData caseData, Map<String, Object> data) {
-        Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
-
-        List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
-        List<String> errors = new ArrayList<>();
-
-        int counter = 1;
-        for (HearingOrder order : hearingOrders) {
-            if (order.getType().isCmo() && isDecisionIncomplete(caseData.getReviewCMODecision())) {
-                errors.add("CMO decision fields are incomplete");
-            } else {
-                Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
-                ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
-                if (isDecisionIncomplete(reviewDecision)) {
-                    errors.add(String.format("Order %d decision fields are incomplete", counter));
-                }
-                counter++;
-            }
-        }
-        return errors;
-    }
-
-    private boolean isDecisionIncomplete(ReviewDecision cmoDecision) {
-        return cmoDecision != null && cmoDecision.getDecision() != null
-            && (!SEND_TO_ALL_PARTIES.equals(cmoDecision.getDecision())
-            && cmoDecision.getJudgeAmendedDocument() == null && isBlank(cmoDecision.getChangesRequestedByJudge()));
-    }
-
-    public Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
-        DocumentReference order;
-
-        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
-            order = reviewDecision.getJudgeAmendedDocument();
-        } else {
-            order = cmo.getValue().getOrder();
-        }
-        return element(cmo.getId(), cmo.getValue().toBuilder()
-            .dateIssued(time.now().toLocalDate())
-            .status(CMOStatus.APPROVED)
-            .order(order)
-            .build());
-    }
-
     public List<Element<HearingOrder>> getCMOsReadyForApproval(CaseData caseData) {
         return caseData.getDraftUploadedCMOs().stream()
             .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
@@ -193,20 +175,6 @@ public class ReviewCMOService {
                     "Could not find draft cmo with id " + selectedCMOCode));
         } else {
             return ordersBundleReadyForApproval.get(0);
-        }
-    }
-
-    public Element<HearingOrdersBundle> getSelectedCMO(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> readyForApproval = caseData.getHearingOrdersBundlesDrafts();
-        if (readyForApproval.size() > 1) {
-            UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
-
-            return readyForApproval.stream()
-                .filter(element -> element.getId().equals(selectedCMOCode))
-                .findFirst()
-                .orElseThrow(() -> new CMONotFoundException("Could not find draft cmo with id " + selectedCMOCode));
-        } else {
-            return readyForApproval.get(0);
         }
     }
 
@@ -232,7 +200,7 @@ public class ReviewCMOService {
             ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
             if (reviewDecision != null && reviewDecision.getDecision() != null) {
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    GeneratedOrder sealedC21Order = getSealedC21Order(orderElement, reviewDecision);
+                    GeneratedOrder sealedC21Order = getSealedC21Order(caseData, orderElement, reviewDecision);
                     reviewedOrders.add(element(orderElement.getId(), sealedC21Order));
                 }
                 selectedOrdersBundle.getValue().getOrders().remove(orderElement);
@@ -248,10 +216,26 @@ public class ReviewCMOService {
         }
         data.put("orderCollection", reviewedOrders);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
-
     }
 
-    public GeneratedOrder getSealedC21Order(Element<HearingOrder> orderElement, ReviewDecision reviewDecision) {
+    private Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
+        DocumentReference order;
+
+        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
+            order = reviewDecision.getJudgeAmendedDocument();
+        } else {
+            order = cmo.getValue().getOrder();
+        }
+        return element(cmo.getId(), cmo.getValue().toBuilder()
+            .dateIssued(time.now().toLocalDate())
+            .status(CMOStatus.APPROVED)
+            .order(order)
+            .build());
+    }
+
+    private GeneratedOrder getSealedC21Order(CaseData caseData,
+                                             Element<HearingOrder> orderElement,
+                                             ReviewDecision reviewDecision) {
         HearingOrder draftOrder = orderElement.getValue();
         DocumentReference order;
 
@@ -267,13 +251,21 @@ public class ReviewCMOService {
             .document(documentSealingService.sealDocument(order))
             .dateOfIssue(draftOrder.getDateIssued() != null
                 ? formatLocalDateToString(draftOrder.getDateIssued(), DATE) : null)
-            .judgeAndLegalAdvisor(null) // TODO: set judge and legal advisor
+            .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor(caseData.getAllocatedJudge()))
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
-            //.children(getChildren(BLANK_ORDER, caseData)) //TODO
+            .children(caseData.getAllChildren())
             .build();
     }
 
-    public State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {
+    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(Judge allocatedJudge) {
+        String assignedJudgeLabel = buildAllocatedJudgeLabel(allocatedJudge);
+
+        return JudgeAndLegalAdvisor.builder()
+            .allocatedJudgeLabel(assignedJudgeLabel)
+            .build();
+    }
+
+    private State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {
         State currentState = caseData.getState();
         Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
@@ -315,5 +307,11 @@ public class ReviewCMOService {
             data.put("draftBlankOrdersCount", numOfDraftOrders);
         }
         return data;
+    }
+
+    private boolean isInvalidReviewDecision(ReviewDecision cmoDecision) {
+        return cmoDecision != null && cmoDecision.getDecision() != null
+            && (!SEND_TO_ALL_PARTIES.equals(cmoDecision.getDecision())
+            && cmoDecision.getJudgeAmendedDocument() == null && isBlank(cmoDecision.getChangesRequestedByJudge()));
     }
 }
