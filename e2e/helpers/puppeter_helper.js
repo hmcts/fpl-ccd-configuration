@@ -43,8 +43,8 @@ module.exports = class PuppeteerHelpers extends Helper {
     }
   }
 
-  async waitForAnySelector(selectors) {
-    return this.waitForSelector([].concat(selectors).join(','));
+  async waitForAnySelector(selectors, maxWaitInSecond) {
+    return this.waitForSelector([].concat(selectors).join(','), maxWaitInSecond);
   }
 
   async canSee(selector){
