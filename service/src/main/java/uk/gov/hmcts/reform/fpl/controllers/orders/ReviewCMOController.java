@@ -74,7 +74,7 @@ public class ReviewCMOController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        List<String> errors = reviewCMOService.isReviewDecisionValid(caseData, data);
+        List<String> errors = reviewCMOService.validateReviewDecision(caseData, data);
 
         return respond(caseDetails, errors);
     }
@@ -111,17 +111,19 @@ public class ReviewCMOController extends CallbackController {
         if (!cmosReadyForApproval.isEmpty() && caseData.getReviewCMODecision() != null) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
                 HearingOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
-                DocumentReference documentToBeSent = sealed.getOrder();
+                if (sealed != null) {
+                    DocumentReference documentToBeSent = sealed.getOrder();
 
-                coreCaseDataService.triggerEvent(
-                    callbackRequest.getCaseDetails().getJurisdiction(),
-                    callbackRequest.getCaseDetails().getCaseTypeId(),
-                    callbackRequest.getCaseDetails().getId(),
-                    "internal-change-SEND_DOCUMENT",
-                    Map.of("documentToBeSent", documentToBeSent)
-                );
+                    coreCaseDataService.triggerEvent(
+                        callbackRequest.getCaseDetails().getJurisdiction(),
+                        callbackRequest.getCaseDetails().getCaseTypeId(),
+                        callbackRequest.getCaseDetails().getId(),
+                        "internal-change-SEND_DOCUMENT",
+                        Map.of("documentToBeSent", documentToBeSent)
+                    );
 
-                publishEvent(new CaseManagementOrderIssuedEvent(caseData, sealed));
+                    publishEvent(new CaseManagementOrderIssuedEvent(caseData, sealed));
+                }
             } else {
                 List<Element<HearingOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
                 List<Element<HearingOrder>> draftCMOs = caseData.getDraftUploadedCMOs();

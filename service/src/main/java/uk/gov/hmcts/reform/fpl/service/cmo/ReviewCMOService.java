@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -105,7 +106,7 @@ public class ReviewCMOService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> isReviewDecisionValid(CaseData caseData, Map<String, Object> data) {
+    public List<String> validateReviewDecision(CaseData caseData, Map<String, Object> data) {
         Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
 
         List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
@@ -113,13 +114,17 @@ public class ReviewCMOService {
 
         int counter = 1;
         for (HearingOrder order : hearingOrders) {
-            if (order.getType().isCmo() && isInvalidReviewDecision(caseData.getReviewCMODecision())) {
-                errors.add("CMO decision fields are incomplete");
+            if (order.getType().isCmo()) {
+                String error = validateReviewDecision(caseData.getReviewCMODecision());
+                if (isNoneBlank(error)) {
+                    errors.add(String.format("CMO - %s", error));
+                }
             } else {
                 Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
                 ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
-                if (isInvalidReviewDecision(reviewDecision)) {
-                    errors.add(String.format("Order %d decision fields are incomplete", counter));
+                String error = validateReviewDecision(reviewDecision);
+                if (isNoneBlank(error)) {
+                    errors.add(String.format("Order %d - %s", counter, error));
                 }
                 counter++;
             }
@@ -257,7 +262,8 @@ public class ReviewCMOService {
             .document(documentSealingService.sealDocument(order))
             .dateOfIssue(draftOrder.getDateIssued() != null
                 ? formatLocalDateToString(draftOrder.getDateIssued(), DATE) : null)
-            .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor(caseData.getAllocatedJudge()))
+            .judgeAndLegalAdvisor(
+                caseData.getAllocatedJudge() != null ? buildJudgeAndLegalAdvisor(caseData.getAllocatedJudge()) : null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren())
             .build();
@@ -315,9 +321,18 @@ public class ReviewCMOService {
         return data;
     }
 
-    private boolean isInvalidReviewDecision(ReviewDecision cmoDecision) {
-        return cmoDecision != null && cmoDecision.getDecision() != null
-            && (!SEND_TO_ALL_PARTIES.equals(cmoDecision.getDecision())
-            && cmoDecision.getJudgeAmendedDocument() == null && isBlank(cmoDecision.getChangesRequestedByJudge()));
+    private String validateReviewDecision(ReviewDecision cmoDecision) {
+        String fileNotUploadedError = "new file not uploaded";
+        String requestedChanges = "complete the requested changes";
+        if (cmoDecision != null && cmoDecision.getDecision() != null) {
+            if (JUDGE_AMENDS_DRAFT.equals(cmoDecision.getDecision())
+                && cmoDecision.getJudgeAmendedDocument() == null) {
+                return fileNotUploadedError;
+            } else if (JUDGE_REQUESTED_CHANGES.equals(cmoDecision.getDecision())
+                && isBlank(cmoDecision.getChangesRequestedByJudge())) {
+                return requestedChanges;
+            }
+        }
+        return null;
     }
 }
