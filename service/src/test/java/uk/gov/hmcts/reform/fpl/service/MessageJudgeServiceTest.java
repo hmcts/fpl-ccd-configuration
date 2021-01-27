@@ -319,6 +319,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_SENDER)
             .requestedBy(selectedJudicialMessage.getRequestedBy())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
+            .urgency(selectedJudicialMessage.getUrgency())
             .latestMessage("")
             .build();
 
