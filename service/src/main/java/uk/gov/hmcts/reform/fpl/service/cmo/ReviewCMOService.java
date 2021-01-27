@@ -32,6 +32,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
@@ -62,21 +64,27 @@ public class ReviewCMOService {
      * There is dedicated method below to support this functionality.
      */
     public DynamicList buildDynamicList(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> cmosReadyForApproval = caseData.getHearingOrdersBundlesDrafts();
+        List<Element<HearingOrdersBundle>> cmosReadyForApproval = getBundlesForApproval(caseData);
         Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
 
         return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), HearingOrdersBundle::getHearingName);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> orderBundlesForApproval = caseData.getHearingOrdersBundlesDrafts();
-
+        List<Element<HearingOrdersBundle>> orderBundlesForApproval = getBundlesForApproval(caseData);
         return asDynamicList(orderBundlesForApproval, null, HearingOrdersBundle::getHearingName);
     }
 
+    private List<Element<HearingOrdersBundle>> getBundlesForApproval(CaseData caseData) {
+        return caseData.getHearingOrdersBundlesDrafts().stream()
+            .filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .collect(toList());
+    }
+
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> draftOrdersReadyForApproval = caseData.getHearingOrdersBundlesDrafts();
+        List<Element<HearingOrdersBundle>> draftOrdersReadyForApproval = getBundlesForApproval(caseData);
         Map<String, Object> data = new HashMap<>();
+
         String numDraftCMOs = "numDraftCMOs";
 
         switch (draftOrdersReadyForApproval.size()) {
@@ -155,9 +163,9 @@ public class ReviewCMOService {
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
                 caseData.getHearingDetails().stream()
-                    .filter(h->h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
+                    .filter(h -> h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
                     .findFirst()
-                    .ifPresent(h-> h.getValue().setCaseManagementOrderId(null));
+                    .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
 
                 data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
@@ -171,11 +179,11 @@ public class ReviewCMOService {
     public List<Element<HearingOrder>> getCMOsReadyForApproval(CaseData caseData) {
         return caseData.getDraftUploadedCMOs().stream()
             .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> ordersBundleReadyForApproval = caseData.getHearingOrdersBundlesDrafts();
+        List<Element<HearingOrdersBundle>> ordersBundleReadyForApproval = getBundlesForApproval(caseData);
         if (ordersBundleReadyForApproval.size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
@@ -202,7 +210,7 @@ public class ReviewCMOService {
     public void reviewC21Orders(CaseData caseData, Map<String, Object> data,
                                 Element<HearingOrdersBundle> selectedOrdersBundle) {
         List<Element<HearingOrder>> draftOrders = selectedOrdersBundle.getValue().getOrders().stream()
-            .filter(order -> !order.getValue().getType().isCmo()).collect(Collectors.toList());
+            .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
 
         int counter = 1;
         List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
@@ -301,7 +309,9 @@ public class ReviewCMOService {
         Map<String, Object> data = new HashMap<>();
 
         int counter = 1;
-        for (Element<HearingOrder> orderElement : ordersBundle.getOrders()) {
+
+        data.put("draftCMOExists", "N");
+        for (Element<HearingOrder> orderElement : ordersBundle.getOrders(SEND_TO_JUDGE)) {
             if (orderElement.getValue().getType().isCmo()) {
                 data.put("cmoDraftOrderTitle", orderElement.getValue().getTitle());
                 data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
