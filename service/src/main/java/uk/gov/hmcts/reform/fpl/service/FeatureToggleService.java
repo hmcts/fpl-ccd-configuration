@@ -64,7 +64,7 @@ public class FeatureToggleService {
     }
 
     public boolean isDraftOrdersEnabled() {
-        return ldClient.boolVariation("draft-orders", createLDUser(), false);
+        return ldClient.boolVariation("draft-orders", createLDUser(), true);
     }
 
     private LDUser createLDUser() {

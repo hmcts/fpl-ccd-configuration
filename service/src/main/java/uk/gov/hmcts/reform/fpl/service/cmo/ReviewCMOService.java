@@ -149,6 +149,12 @@ public class ReviewCMOService {
                 }
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
+                caseData.getHearingDetails().stream()
+                    .filter(h->h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
+                    .findFirst()
+                    .ifPresent(h-> h.getValue().setCaseManagementOrderId(null));
+
+                data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
                 data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
             }

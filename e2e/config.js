@@ -101,7 +101,7 @@ module.exports = {
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
     uploadCMO: 'Upload draft orders',
-    reviewAgreedCmo: 'Review agreed CMO',
+    approveOrders: 'Approve orders',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
     manageLegalRepresentatives: 'Manage legal representatives',

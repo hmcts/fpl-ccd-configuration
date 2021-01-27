@@ -20,6 +20,12 @@ const draftOrder1 = {
   title: 'draft order 1',
   file: config.testWordFile,
 };
+
+const draftOrder1Updated = {
+  title: 'draft order 1 Updated',
+  file: config.testWordFile,
+  number: 2,
+};
 const draftOrder2 = {
   title: 'draft order 2',
   file: config.testWordFile,
@@ -79,14 +85,14 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
-  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
   await I.goToNextPage();
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   assertSealedCMO(I, 1, hearing2);
@@ -100,17 +106,21 @@ Scenario('Judge sends agreed CMO back to the local authority', async ({I, caseVi
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
+  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
+  await I.goToNextPage();
   I.see('mockFile.docx');
+
   reviewAgreedCaseManagementOrderEventPage.selectReturnCmoForChanges();
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequested(changeRequestReason);
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  reviewAgreedCaseManagementOrderEventPage.selectReturnC21ForChanges(1);
+  reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
+
+  await I.completeEvent('Save and continue',null, false, '.alert-warning');
+  //TODO replace wait with:  I.completeEvent('Save and continue') once submitted callback is fixed
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
   assertDraftCMO(I, 1, hearing1, [
-    {title: agreedCMO, status: returnedStatus},
-    {title: draftOrder1.title, status: withJudgeStatus},
     {title: draftOrder2.title, status: withJudgeStatus},
   ]);
 });
@@ -120,25 +130,29 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   assertDraftCMO(I, 1, hearing1, [
-    {title: agreedCMO, status: returnedStatus},
-    {title: draftOrder1.title, status: withJudgeStatus},
     {title: draftOrder2.title, status: withJudgeStatus},
   ]);
 
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1);
+  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1Updated);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  assertDraftCMO(I, 1, hearing1, [{title: agreedCMO, status: withJudgeStatus}]);
+
+  assertDraftCMO(I, 1, hearing1, [
+    {title: agreedCMO, status: withJudgeStatus},
+    {title: draftOrder2.title, status: withJudgeStatus},
+    {title: draftOrder1Updated.title, status: withJudgeStatus},
+  ]);
+
   I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends the agreed CMO to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+xScenario('Judge seals and sends the agreed CMO to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
-  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   assertSealedCMO(I, 1, hearing2);

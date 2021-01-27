@@ -56,6 +56,8 @@ public class ReviewCMOController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+
         caseDetails.getData().putAll(reviewCMOService.populateDraftOrdersData(caseData));
 
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {

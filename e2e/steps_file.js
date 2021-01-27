@@ -84,12 +84,12 @@ module.exports = function () {
       return caseId;
     },
 
-    async completeEvent(button, changeDetails, confirmationPage = false) {
+    async completeEvent(button, changeDetails, confirmationPage = false, selector = '.alert-success') {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
-      await this.submitEvent(button, confirmationPage);
+      await this.submitEvent(button, confirmationPage, selector);
     },
 
     async seeCheckAnswersAndCompleteEvent(button, confirmationPage = false) {
@@ -98,9 +98,9 @@ module.exports = function () {
       await this.submitEvent(button, confirmationPage);
     },
 
-    async submitEvent(button, confirmationPage) {
+    async submitEvent(button, confirmationPage, selector) {
       if (!confirmationPage) {
-        await eventSummaryPage.submit(button);
+        await eventSummaryPage.submit(button, selector);
       } else {
         await eventSummaryPage.submit(button, '#confirmation-body');
         await this.retryUntilExists(() => this.click('Close and Return to case details'), '.alert-success');

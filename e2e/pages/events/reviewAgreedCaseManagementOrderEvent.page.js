@@ -29,7 +29,16 @@ module.exports = {
     I.click(this.fields.reviewCmoRadioGroup.return);
   },
 
+  selectReturnC21ForChanges(index) {
+    I.click(`#reviewDecision${index}_decision-JUDGE_REQUESTED_CHANGES`);
+  },
+
+  enterChangesRequestedC21(index, note) {
+    I.fillField(`#reviewDecision${index}_changesRequestedByJudge`, note);
+  },
+
   enterChangesRequested(note) {
+
     I.fillField(this.fields.changesRequested, note);
   },
 
