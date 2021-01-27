@@ -194,35 +194,35 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
 
 Scenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
-});
+}).retry(1); //Async case update in prev test
 
 // Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
@@ -276,7 +276,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   I.navigateToCaseList();
   await I.retryUntilExists(async () => await caseListPage.searchForCasesWithHandledEvidences(submittedAt), caseListPage.locateCase(caseId));
   I.seeCaseInSearchResult(caseId);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async ({I, caseViewPage, sendCaseToGatekeeperEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
