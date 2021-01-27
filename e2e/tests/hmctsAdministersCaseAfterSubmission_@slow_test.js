@@ -295,7 +295,7 @@ Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNote
   I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
   caseViewPage.selectTab(caseViewPage.tabs.notes);
   I.seeInTab(['Note 1', 'Note'], note);
-}).retry(1); // async processing in previous test
+});
 
 Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExpertReportEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
