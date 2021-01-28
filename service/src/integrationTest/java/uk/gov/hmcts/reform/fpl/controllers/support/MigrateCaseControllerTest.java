@@ -91,21 +91,6 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void shouldThrowAnExceptionIfCaseContainsFewerHearingsThanExpected() {
-            Element<HearingBooking> hearingOne = element(HEARING_ID_1, HEARING);
-            Element<HearingBooking> hearingTwo = element(HEARING_ID_2, HEARING);
-            Element<HearingBooking> hearingThree = element(HEARING_ID_3, HEARING);
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne, hearingTwo, hearingThree);
-
-            CaseDetails caseDetails = caseDetailsWithHearings(
-                migrationId, familyManNumber, hearingBookings);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Expected 4 hearings in the case but found 3");
-        }
-
-        @Test
         void shouldThrowAnExceptionIfCaseDoesNotContainHearings() {
             CaseDetails caseDetails = caseDetails(
                 migrationId, familyManNumber, null);

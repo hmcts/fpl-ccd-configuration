@@ -75,11 +75,6 @@ public class MigrateCaseController extends CallbackController {
                 throw new IllegalArgumentException("No hearings in the case");
             }
 
-            if (hearings.size() < 4) {
-                throw new IllegalArgumentException(String.format("Expected 4 hearings in the case but found %s",
-                    hearings.size()));
-            }
-
             Element<HearingBooking> hearingToBeRemoved = hearings.get(0);
 
             hearings.remove(hearingToBeRemoved);
