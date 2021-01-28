@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -818,7 +819,7 @@ class ManageHearingsServiceTest {
         }
 
         @Test
-        void shouldAdjournAndReListHearingWithoutDocumentReassignment() {
+        void shouldAdjournAndReListHearingWithoutDocumentReassignmentAndRemoveLinkedCMO() {
             final UUID reListedHearingId = randomUUID();
 
             when(identityService.generateId()).thenReturn(reListedHearingId);
@@ -836,9 +837,13 @@ class ManageHearingsServiceTest {
                     .cancellationReason(adjournmentReason.getReason())
                     .build());
 
+            final Element<CaseManagementOrder> orderToBeRemoved = element(hearingToBeAdjourned.getId(),
+                CaseManagementOrder.builder().build());
+
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeAdjourned, otherHearing))
                 .adjournmentReason(adjournmentReason)
+                .draftUploadedCMOs(newArrayList(orderToBeRemoved))
                 .build();
 
             service.adjournAndReListHearing(caseData, hearingToBeAdjourned.getId(), reListedHearing.getValue());
@@ -846,10 +851,12 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(expectedAdjournedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
+            assertThat(caseData.getDraftUploadedCMOs()).isEmpty();
+
         }
 
         @Test
-        void shouldAdjournAndReListHearingWithDocumentReassignment() {
+        void shouldAdjournAndReListHearingWithDocumentReassignmentAndRemoveLinkedCMO() {
             final UUID reListedHearingId = randomUUID();
 
             when(identityService.generateId()).thenReturn(reListedHearingId);
@@ -874,10 +881,15 @@ class ManageHearingsServiceTest {
                     .hearingName(reListedHearing.getValue().toLabel())
                     .build());
 
+            final Element<CaseManagementOrder> orderToBeRemoved = element(hearingToBeAdjourned.getId(),
+                CaseManagementOrder.builder().build());
+            final Element<CaseManagementOrder> additionalOrder = element(CaseManagementOrder.builder().build());
+
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeAdjourned, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .adjournmentReason(adjournmentReason)
+                .draftUploadedCMOs(newArrayList(orderToBeRemoved, additionalOrder))
                 .build();
 
             service.adjournAndReListHearing(caseData, hearingToBeAdjourned.getId(), reListedHearing.getValue());
@@ -885,6 +897,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+            assertThat(caseData.getDraftUploadedCMOs()).containsExactly(additionalOrder);
         }
 
         void shouldAdjournHearing(HearingReListOption hearingReListOption, HearingStatus expectedStatus) {
@@ -981,7 +994,7 @@ class ManageHearingsServiceTest {
         }
 
         @Test
-        void shouldVacateAndReListHearingWithoutDocumentReassignment() {
+        void shouldVacateAndReListHearingWithoutDocumentReassignmentAndRemoveLinkedCMO() {
             final UUID reListedHearingId = randomUUID();
 
             when(identityService.generateId()).thenReturn(reListedHearingId);
@@ -999,9 +1012,14 @@ class ManageHearingsServiceTest {
                     .cancellationReason(vacatedReason.getReason())
                     .build());
 
+            final Element<CaseManagementOrder> orderToBeRemoved = element(hearingToBeVacated.getId(),
+                CaseManagementOrder.builder().build());
+            final Element<CaseManagementOrder> additionalOrder = element(CaseManagementOrder.builder().build());
+
             CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .vacatedReason(vacatedReason)
+                .draftUploadedCMOs(newArrayList(orderToBeRemoved, additionalOrder))
                 .build();
 
             service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
@@ -1009,10 +1027,11 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).isEmpty();
+            assertThat(caseData.getDraftUploadedCMOs()).containsExactly(additionalOrder);
         }
 
         @Test
-        void shouldVacateAndReListHearingWithDocumentReassignment() {
+        void shouldVacateAndReListHearingWithDocumentReassignmentAndRemoveLinkedCMO() {
             final UUID reListedHearingId = randomUUID();
 
             when(identityService.generateId()).thenReturn(reListedHearingId);
@@ -1037,10 +1056,14 @@ class ManageHearingsServiceTest {
                     .hearingName(reListedHearing.getValue().toLabel())
                     .build());
 
+            final Element<CaseManagementOrder> orderToBeRemoved = element(hearingToBeVacated.getId(),
+                CaseManagementOrder.builder().build());
+
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
+                .draftUploadedCMOs(newArrayList(orderToBeRemoved))
                 .build();
 
             service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
@@ -1048,6 +1071,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+            assertThat(caseData.getDraftUploadedCMOs()).isEmpty();
         }
 
         void shouldVacateHearing(HearingReListOption reListOption, HearingStatus expectedStatus) {
