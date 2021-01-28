@@ -23,18 +23,6 @@ class ValidateEmailServiceTest {
 
     private static final String ERROR_MESSAGE = "Enter a valid email address";
 
-    @ParameterizedTest
-    @MethodSource("validEmailAddresses")
-    void shouldNotReturnAnErrorMessageIfEmailIsInvalid(String email) {
-        assertThat(validateEmailService.validate(email)).isEmpty();
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidEmailAddresses")
-    void shouldReturnAnErrorMessageIfEmailIsInvalid(String email) {
-        assertThat(validateEmailService.validate(email)).isEqualTo(ERROR_MESSAGE);
-    }
-
     @Test
     void shouldReturnAListOfErrorMessagesWhenListContainsSomeInvalidEmailAddresses() {
         List<String> emailAddresses = List.of(
@@ -59,6 +47,18 @@ class ValidateEmailServiceTest {
         List<String> errorMessages = validateEmailService.validate(emailAddresses, "Gatekeeper");
 
         assertThat(errorMessages).isEmpty();
+    }
+
+    @ParameterizedTest
+    @MethodSource("validEmailAddresses")
+    void shouldNotReturnAnErrorMessageIfEmailIsInvalid(String email) {
+        assertThat(validateEmailService.validate(email)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidEmailAddresses")
+    void shouldReturnAnErrorMessageIfEmailIsInvalid(String email) {
+        assertThat(validateEmailService.validate(email)).isEqualTo(ERROR_MESSAGE);
     }
 
     private static Stream<Arguments> validEmailAddresses() {
