@@ -7,7 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -55,9 +55,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ReviewCMOController.class)
+@WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
+class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
@@ -68,8 +68,8 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
     private final DocumentReference sealedDocument = DocumentReference.builder().filename("sealed").build();
 
-    ReviewCMOControllerAboutToSubmitTest() {
-        super("review-cmo");
+    ApproveDraftOrdersControllerAboutToSubmitTest() {
+        super("approve-draft-orders");
     }
 
     @Test

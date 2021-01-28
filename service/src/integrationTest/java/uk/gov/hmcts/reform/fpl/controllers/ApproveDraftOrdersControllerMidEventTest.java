@@ -5,7 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -29,9 +29,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ReviewCMOController.class)
+@WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ReviewCMOControllerMidEventTest extends AbstractControllerTest {
+class ApproveDraftOrdersControllerMidEventTest extends AbstractControllerTest {
 
     private final String hearing1 = "Test hearing 21st August 2020";
     private final String hearing2 = "Test hearing 9th April 2021";
@@ -45,8 +45,8 @@ class ReviewCMOControllerMidEventTest extends AbstractControllerTest {
     private final Element<HearingOrder> draftOrder1 = element(buildDraftOrder(hearing1, orderForBlankOrder, C21));
     private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(hearing2, orderForBlankOrder, C21));
 
-    ReviewCMOControllerMidEventTest() {
-        super("review-cmo");
+    ApproveDraftOrdersControllerMidEventTest() {
+        super("approve-draft-orders");
     }
 
     @Test

@@ -76,7 +76,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
-class ReviewCMOServiceTest {
+class ReviewDraftOrdersServiceTest {
 
     private static final String SINGLE = "SINGLE";
     private static final String MULTI = "MULTI";
@@ -99,11 +99,11 @@ class ReviewCMOServiceTest {
     private ObjectMapper mapper;
 
     @InjectMocks
-    private ReviewCMOService service;
+    private ReviewDraftOrdersService service;
 
     @BeforeEach
     void setUp() {
-        service = new ReviewCMOService(mapper, TIME, draftOrderService, documentSealingService);
+        service = new ReviewDraftOrdersService(mapper, TIME, draftOrderService, documentSealingService);
         futureDate = TIME.now().plusDays(1);
     }
 
@@ -624,7 +624,7 @@ class ReviewCMOServiceTest {
 
     @Test
     void shouldThrowAnExceptionWhenNoUpcomingHearingsAreAvailable() {
-        Element<HearingOrder> agreedCMO = draftCMO(hearing2);
+        Element<HearingOrder> agreedCMO = agreedCMO(hearing2);
         Element<HearingOrdersBundle> ordersBundleElement =
             buildDraftOrdersBundle(hearing2, newArrayList(agreedCMO));
 

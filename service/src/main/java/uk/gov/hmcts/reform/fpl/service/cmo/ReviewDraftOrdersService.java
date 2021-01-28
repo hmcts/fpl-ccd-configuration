@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ReviewCMOService {
+public class ReviewDraftOrdersService {
 
     private final ObjectMapper mapper;
     private final Time time;
@@ -63,21 +63,15 @@ public class ReviewCMOService {
      * There is dedicated method below to support this functionality.
      */
     public DynamicList buildDynamicList(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> cmosReadyForApproval = getBundlesForApproval(caseData);
-        Element<HearingOrdersBundle> selectedCMO = getSelectedHearingDraftOrdersBundle(caseData);
+        List<Element<HearingOrdersBundle>> bundlesReadyForApproval = getBundlesForApproval(caseData);
+        Element<HearingOrdersBundle> selectedBundle = getSelectedHearingDraftOrdersBundle(caseData);
 
-        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), HearingOrdersBundle::getHearingName);
+        return asDynamicList(bundlesReadyForApproval, selectedBundle.getId(), HearingOrdersBundle::getHearingName);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
         List<Element<HearingOrdersBundle>> orderBundlesForApproval = getBundlesForApproval(caseData);
         return asDynamicList(orderBundlesForApproval, null, HearingOrdersBundle::getHearingName);
-    }
-
-    private List<Element<HearingOrdersBundle>> getBundlesForApproval(CaseData caseData) {
-        return caseData.getHearingOrdersBundlesDrafts().stream()
-            .filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
-            .collect(toList());
     }
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
@@ -289,6 +283,12 @@ public class ReviewCMOService {
             return State.FINAL_HEARING;
         }
         return currentState;
+    }
+
+    private List<Element<HearingOrdersBundle>> getBundlesForApproval(CaseData caseData) {
+        return caseData.getHearingOrdersBundlesDrafts().stream()
+            .filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .collect(toList());
     }
 
     private UUID getSelectedCMOId(Object dynamicList) {

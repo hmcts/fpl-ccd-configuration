@@ -7,7 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -40,6 +40,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -54,9 +56,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ReviewCMOController.class)
+@WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
+class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
     private static final long CASE_ID = 12345L;
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -76,8 +78,8 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    ReviewCMOControllerSubmittedTest() {
-        super("review-cmo");
+    ApproveDraftOrdersControllerSubmittedTest() {
+        super("approve-draft-orders");
     }
 
     @Test
@@ -188,7 +190,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
             .sealedCMOs(wrapElements(caseManagementOrders))
-            //.reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
+            .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .build());
 
@@ -204,7 +206,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         return asCaseDetails(CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(RETURNED))))
-            //.reviewCMODecision(buildReviewDecision(JUDGE_REQUESTED_CHANGES))
+            .reviewCMODecision(buildReviewDecision(JUDGE_REQUESTED_CHANGES))
             .build());
     }
 

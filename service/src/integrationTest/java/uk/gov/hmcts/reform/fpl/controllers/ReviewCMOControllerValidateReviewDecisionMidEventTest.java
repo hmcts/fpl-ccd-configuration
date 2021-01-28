@@ -5,7 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ReviewCMOController.class)
+@WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ReviewCMOControllerValidateReviewDecisionMidEventTest extends AbstractControllerTest {
 
@@ -45,7 +45,7 @@ class ReviewCMOControllerValidateReviewDecisionMidEventTest extends AbstractCont
     private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(C21));
 
     ReviewCMOControllerValidateReviewDecisionMidEventTest() {
-        super("review-cmo");
+        super("approve-draft-orders");
     }
 
     @Test
