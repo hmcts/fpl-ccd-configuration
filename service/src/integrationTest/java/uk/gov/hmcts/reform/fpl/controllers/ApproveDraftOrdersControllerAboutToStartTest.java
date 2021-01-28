@@ -4,18 +4,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -39,6 +44,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ApproveDraftOrdersControllerAboutToStartTest extends AbstractControllerTest {
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private final String hearing1 = "Test hearing 21st August 2020";
     private final String hearing2 = "Test hearing 9th April 2021";
@@ -54,6 +62,8 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractControllerTes
 
     @Test
     void shouldReturnCorrectDataWhenMultipleHearingDraftOrdersBundlesExist() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
+
         UUID hearingOrdersBundle1 = UUID.randomUUID();
         UUID hearingOrdersBundle2 = UUID.randomUUID();
 
@@ -87,6 +97,8 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractControllerTes
 
     @Test
     void shouldReturnAgreedCMOWhenOneHearingBundleExistsWithADraftCMOsReadyForApproval() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
+
         UUID hearingOrdersBundleId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle =
             buildHearingDraftOrdersBundles(hearingOrdersBundleId, hearing1, newArrayList(agreedCMO, draftCMO));
@@ -114,7 +126,8 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractControllerTes
     }
 
     @Test
-    void shouldReturnCorrectDataWhenNoDraftCMOsReadyForApproval() {
+    void shouldReturnCorrectDataWhenNoDraftOrderBundlesAreReadyForApproval() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
         CaseData caseData = CaseData.builder().draftUploadedCMOs(emptyList())
             .hearingOrdersBundlesDrafts(emptyList()).build();
 
@@ -124,6 +137,7 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractControllerTes
 
     @Test
     void shouldReturnCorrectDataWhenNoCMOsExistForReadyForApprovalInTheSelectedBundle() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
         UUID hearingOrdersBundleId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle =
             buildHearingDraftOrdersBundles(hearingOrdersBundleId, hearing1, newArrayList(draftCMO));
@@ -133,6 +147,73 @@ class ApproveDraftOrdersControllerAboutToStartTest extends AbstractControllerTes
 
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
         assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
+    }
+
+    @Test
+    void shouldReturnCorrectDataWhenMultipleCMOsReadyForApproval() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
+
+        DocumentReference order = TestDataHelper.testDocumentReference();
+        List<Element<HearingOrder>> draftCMOs = List.of(
+            element(buildCMO("Test hearing 21st August 2020", order)),
+            element(buildCMO("Test hearing 9th April 2021", order)));
+
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+
+        DynamicList cmoList = DynamicList.builder()
+            .value(DynamicListElement.EMPTY)
+            .listItems(draftCMOs.stream().map(cmo -> DynamicListElement.builder()
+                .code(cmo.getId())
+                .label(cmo.getValue().getHearing())
+                .build())
+                .collect(Collectors.toList()))
+            .build();
+
+        CaseData responseData = extractCaseData(response);
+
+        assertThat(responseData.getNumDraftCMOs()).isEqualTo("MULTI");
+        assertThat(responseData.getCmoToReviewList()).isEqualTo(
+            mapper.convertValue(cmoList, new TypeReference<Map<String, Object>>() {}));
+    }
+
+    @Test
+    void shouldReturnCorrectDataWhenOneDraftCMOReadyForApproval() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
+
+        ReviewDecision expectedDecision = ReviewDecision.builder()
+            .hearing("Test hearing 21st August 2020")
+            .document(TestDataHelper.testDocumentReference())
+            .build();
+
+        List<Element<HearingOrder>> draftCMOs = List.of(
+            element(buildCMO(expectedDecision.getHearing(), expectedDecision.getDocument())));
+
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
+
+        CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
+
+        assertThat(responseData.getNumDraftCMOs()).isEqualTo("SINGLE");
+        assertThat(responseData.getReviewCMODecision()).isEqualTo(expectedDecision);
+    }
+
+    @Test
+    void shouldReturnCorrectDataWhenNoDraftCMOsReadyForApproval() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+
+        assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
+    }
+
+    private static HearingOrder buildCMO(String hearing, DocumentReference order) {
+        return HearingOrder.builder()
+            .hearing(hearing)
+            .order(order)
+            .status(SEND_TO_JUDGE).build();
     }
 
     private Element<HearingOrdersBundle> buildHearingDraftOrdersBundles(

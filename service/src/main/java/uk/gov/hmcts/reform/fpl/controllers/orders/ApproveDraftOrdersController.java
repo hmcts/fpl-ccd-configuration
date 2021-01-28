@@ -14,18 +14,22 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
@@ -38,15 +42,21 @@ public class ApproveDraftOrdersController extends CallbackController {
 
     private final ReviewDraftOrdersService reviewDraftOrdersService;
     private final CoreCaseDataService coreCaseDataService;
+    private final ReviewCMOService reviewCMOService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
-
-        caseDetails.getData().putAll(reviewDraftOrdersService.getPageDisplayControls(caseData));
+        if (featureToggleService.isDraftOrdersEnabled()) {
+            CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+            caseDetails.getData().putAll(reviewDraftOrdersService.getPageDisplayControls(caseData));
+        } else {
+            caseDetails.getData().remove("reviewCMODecision");
+            caseDetails.getData().putAll(reviewCMOService.getPageDisplayControls(caseData));
+        }
 
         return respond(caseDetails);
     }
@@ -56,15 +66,28 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+        if (featureToggleService.isDraftOrdersEnabled()) {
+            CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
-        caseDetails.getData().putAll(reviewDraftOrdersService.populateDraftOrdersData(caseData));
+            caseDetails.getData().putAll(reviewDraftOrdersService.populateDraftOrdersData(caseData));
 
-        if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
-            // reconstruct dynamic list
-            caseDetails.getData().put("cmoToReviewList", reviewDraftOrdersService.buildDynamicList(caseData));
+            if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
+                // reconstruct dynamic list
+                caseDetails.getData().put("cmoToReviewList", reviewDraftOrdersService.buildDynamicList(caseData));
+            }
+        } else {
+            Element<HearingOrder> selectedCMO = reviewCMOService.getSelectedCMO(caseData);
+
+            caseDetails.getData().put("reviewCMODecision", ReviewDecision.builder()
+                .hearing(selectedCMO.getValue().getHearing())
+                .document(selectedCMO.getValue().getOrder())
+                .build());
+
+            if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
+                // reconstruct dynamic list
+                caseDetails.getData().put("cmoToReviewList", reviewCMOService.buildDynamicList(caseData));
+            }
         }
-
         return respond(caseDetails);
     }
 
@@ -74,9 +97,12 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        List<String> errors = reviewDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+        if (featureToggleService.isDraftOrdersEnabled()) {
+            List<String> errors = reviewDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+            return respond(caseDetails, errors);
+        }
 
-        return respond(caseDetails, errors);
+        return respond(caseDetails, emptyList());
     }
 
     @PostMapping("/about-to-submit")
@@ -85,16 +111,23 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        Element<HearingOrdersBundle> selectedOrdersBundle =
-            reviewDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
+        if (featureToggleService.isDraftOrdersEnabled()) {
+            Element<HearingOrdersBundle> selectedOrdersBundle =
+                reviewDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
 
-        // review cmo
-        data.putAll(reviewDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
+            // review cmo
+            data.putAll(reviewDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
 
-        // review C21 orders
-        reviewDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+            // review C21 orders
+            reviewDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
+            CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
+        } else {
+            data.putAll(reviewCMOService.reviewCMO(caseData));
+
+            data.remove("numDraftCMOs");
+            data.remove("cmoToReviewList");
+        }
 
         return respond(caseDetails);
     }
@@ -128,10 +161,15 @@ public class ApproveDraftOrdersController extends CallbackController {
             } else {
                 List<Element<HearingOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
                 List<Element<HearingOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
-
-                //Get the CMO that was modified (status changed from READY -> RETURNED)
-                draftCMOsBefore.removeAll(draftCMOs);
-                HearingOrder cmoToReturn = draftCMOsBefore.get(0).getValue();
+                HearingOrder cmoToReturn;
+                if (featureToggleService.isDraftOrdersEnabled()) {
+                    draftCMOsBefore.removeAll(draftCMOs);
+                    cmoToReturn = draftCMOsBefore.get(0).getValue();
+                } else {
+                    //Get the CMO that was modified (status changed from READY -> RETURNED)
+                    draftCMOs.removeAll(draftCMOsBefore);
+                    cmoToReturn = draftCMOs.get(0).getValue();
+                }
 
                 publishEvent(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
             }
