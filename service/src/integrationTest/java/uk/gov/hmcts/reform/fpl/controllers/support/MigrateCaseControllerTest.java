@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 
@@ -31,6 +32,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     private final UUID orderToBeRemovedId = UUID.randomUUID();
     private final UUID orderTwoId = UUID.randomUUID();
     private final CaseManagementOrder cmo = CaseManagementOrder.builder().build();
+    private static final UUID HEARING_ID_1 = UUID.randomUUID();
+    private static final UUID HEARING_ID_2 = UUID.randomUUID();
+    private static final UUID HEARING_ID_3 = UUID.randomUUID();
+    private static final UUID HEARING_ID_4 = UUID.randomUUID();
+    private static final HearingBooking HEARING = HearingBooking.builder().build();
 
     @Nested
     class Fpla2640 {
@@ -54,22 +60,53 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-1111";
+        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null);
 
-            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No draft case management orders in the case");
+        }
+    }
 
-            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved,
-                additionalOrder);
+    @Nested
+    class Fpla2651 {
 
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, draftCaseManagementOrders);
+        String familyManNumber = "NE21C50001";
+        String migrationId = "FPLA-2651";
 
+        @Test
+        void shouldRemoveFirstHearing() {
+            Element<HearingBooking> hearingOne = element(HEARING_ID_1, HEARING);
+            Element<HearingBooking> hearingTwo = element(HEARING_ID_2, HEARING);
+            Element<HearingBooking> hearingThree = element(HEARING_ID_3, HEARING);
+            Element<HearingBooking> hearingFour = element(HEARING_ID_4, HEARING);
+
+            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne, hearingTwo,
+                hearingThree, hearingFour);
+            CaseDetails caseDetails = caseDetailsWithHearings(migrationId, familyManNumber, hearingBookings);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
+            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(hearingTwo, hearingThree, hearingFour));
         }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainHearings() {
+            CaseDetails caseDetails = caseDetails(
+                migrationId, familyManNumber, null);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No hearings in the case");
+        }
+
+    }
+
+    @Nested
+    class IsCorrectCaseAndMigration {
+
+        String familyManNumber = "NE21C50001";
+        String migrationId = "FPLA-2651";
 
         @Test
         void shouldNotChangeCaseIfNotExpectedCaseNumber() {
@@ -90,13 +127,23 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null);
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            String incorrectMigrationId = "FPLA-1111";
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No draft case management orders in the case");
+            Element<CaseManagementOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
+            Element<CaseManagementOrder> additionalOrder = element(orderTwoId, cmo);
+
+            List<Element<CaseManagementOrder>> draftCaseManagementOrders = newArrayList(
+                orderToBeRemoved,
+                additionalOrder);
+
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, draftCaseManagementOrders);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
         }
+
     }
 
     private CaseDetails caseDetails(String migrationId,
@@ -105,6 +152,18 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .familyManCaseNumber(familyManNumber)
             .draftUploadedCMOs(draftCaseManagementOrders)
+            .build());
+
+        caseDetails.getData().put("migrationId", migrationId);
+        return caseDetails;
+    }
+
+    private CaseDetails caseDetailsWithHearings(String migrationId,
+                                                String familyManCaseNumber,
+                                                List<Element<HearingBooking>> hearingBookings) {
+        CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+            .familyManCaseNumber(familyManCaseNumber)
+            .hearingDetails(hearingBookings)
             .build());
 
         caseDetails.getData().put("migrationId", migrationId);
