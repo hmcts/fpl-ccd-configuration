@@ -15,11 +15,15 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidEmailGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Validator;
 
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
@@ -32,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class NotifyGatekeeperController extends CallbackController {
     private static final String GATEKEEPER_EMAIL_KEY = "gatekeeperEmails";
     private final ValidateGroupService validateGroupService;
+    private final ValidateEmailService validateEmailService;
 
     //TODO: can we validate a hearing has been added at this point? Saves some nasty exceptions in the case of
     // no hearing being present when populating standard directions FPLA-1516
@@ -49,6 +54,24 @@ public class NotifyGatekeeperController extends CallbackController {
         caseDetails.getData().put(RETURN_APPLICATION, null);
 
         return respond(caseDetails, errors);
+    }
+
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<String> emails = caseData.getGatekeeperEmails().stream()
+                .map(Element::getValue)
+                .map(EmailAddress::getEmail).collect(Collectors.toList());
+
+        List<String> errors = validateEmailService.validate(emails, "Gatekeeper");
+
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")

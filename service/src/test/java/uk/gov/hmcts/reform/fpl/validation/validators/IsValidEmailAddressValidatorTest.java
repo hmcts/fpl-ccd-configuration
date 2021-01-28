@@ -4,6 +4,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.validation.AbstractValidationTest;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidEmailGroup;
 
@@ -13,6 +14,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class IsValidEmailAddressValidatorTest extends AbstractValidationTest {
+    private ValidateEmailService validateEmailService;
+
     private static final String ERROR_MESSAGE = "Enter a valid email address";
 
     @ParameterizedTest
@@ -29,7 +32,7 @@ class IsValidEmailAddressValidatorTest extends AbstractValidationTest {
     void shouldReturnAnErrorWhenEmailIsFormattedIncorrectly(String emailAddress) {
         List<String> validationErrors = validate(
             EmailAddress.builder().email(emailAddress).build(), ValidEmailGroup.class);
-        
+
         assertThat(validationErrors).contains(ERROR_MESSAGE);
     }
 
