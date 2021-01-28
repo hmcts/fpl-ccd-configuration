@@ -37,7 +37,8 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(),
                 caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))
-            .documentLinks(List.of(new JSONObject()))
+            .documentLinks(hasDigitalServingPreference(servingPreference)
+                ? buildDocumentCaseLinks(orders) : List.of(new JSONObject()))
             .digitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No")
             .caseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseData.getId(), ORDERS) : ""))
             .build();
@@ -78,5 +79,11 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
         return orders.stream()
             .map(HearingOrder::getTitle)
             .collect(joining(lineSeparator()));
+    }
+
+    private List<Object> buildDocumentCaseLinks(List<HearingOrder> orders) {
+        List<Object> documentCaseLinks = new ArrayList<>();
+        orders.forEach(order -> documentCaseLinks.add(getDocumentUrl(order.getOrder())));
+        return documentCaseLinks;
     }
 }

@@ -66,9 +66,11 @@ public class DraftOrdersRejectedEventHandler {
         List<HearingOrder> modifiedOrders = new ArrayList<>(draftOrdersBefore);
         modifiedOrders.removeAll(draftOrders);
 
-        modifiedOrders.stream()
-            .filter(order -> order.getRequestedChanges() == null)
-            .forEach(modifiedOrders::remove);
+        for (HearingOrder order: modifiedOrders) {
+            if (order.getRequestedChanges() == null) {
+                modifiedOrders.remove(order);
+            }
+        }
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());

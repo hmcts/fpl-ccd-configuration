@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -96,6 +97,9 @@ class ReviewDraftOrdersServiceTest {
     private DraftOrderService draftOrderService;
 
     @Mock
+    private FeatureToggleService featureToggleService;
+
+    @Mock
     private ObjectMapper mapper;
 
     @InjectMocks
@@ -103,7 +107,8 @@ class ReviewDraftOrdersServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ReviewDraftOrdersService(mapper, TIME, draftOrderService, documentSealingService);
+        service = new ReviewDraftOrdersService(mapper, TIME, draftOrderService, documentSealingService,
+            featureToggleService);
         futureDate = TIME.now().plusDays(1);
     }
 

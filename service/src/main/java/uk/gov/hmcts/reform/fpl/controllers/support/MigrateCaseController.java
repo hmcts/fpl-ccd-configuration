@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -68,7 +68,7 @@ public class MigrateCaseController extends CallbackController {
             throw new IllegalArgumentException("No draft case management orders in the case");
         }
 
-        Element<CaseManagementOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
 
         cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }

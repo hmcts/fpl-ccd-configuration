@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderRejectedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRejected;
+import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -21,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
@@ -57,6 +63,7 @@ public class ReviewDraftOrdersService {
     private final Time time;
     private final DraftOrderService draftOrderService;
     private final DocumentSealingService documentSealingService;
+    private final FeatureToggleService featureToggleService;
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -223,6 +230,49 @@ public class ReviewDraftOrdersService {
         }
         data.put("orderCollection", reviewedOrders);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
+    }
+
+    public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData, CaseData caseDataBefore) {
+
+        List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
+        if (featureToggleService.isDraftOrdersEnabled()) {
+            //TODO add logic for which event to publish
+            eventsToPublish.add(new DraftOrdersApproved(caseData, caseDataBefore));
+            eventsToPublish.add(new DraftOrdersRejected(caseData, caseDataBefore));
+        } else {
+            //Checks caseDataBefore as caseData has been modified by this point
+            List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseDataBefore);
+
+            if (!cmosReadyForApproval.isEmpty() && caseData.getReviewCMODecision() != null
+                && caseData.getReviewCMODecision().getDecision() != null) {
+                if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
+                    HearingOrder sealed = getLatestSealedCMO(caseData);
+                    if (sealed != null) {
+/*                        DocumentReference documentToBeSent = sealed.getOrder();
+
+                        coreCaseDataService.triggerEvent(
+                            callbackRequest.getCaseDetails().getJurisdiction(),
+                            callbackRequest.getCaseDetails().getCaseTypeId(),
+                            callbackRequest.getCaseDetails().getId(),
+                            "internal-change-SEND_DOCUMENT",
+                            Map.of("documentToBeSent", documentToBeSent)
+                        );*/
+
+                        eventsToPublish.add(new CaseManagementOrderIssuedEvent(caseData, sealed));
+                    }
+                } else {
+                    List<Element<HearingOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
+                    List<Element<HearingOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+
+                    //Get the CMO that was modified (status changed from READY -> RETURNED)
+                    draftCMOsBefore.removeAll(draftCMOs);
+                    HearingOrder cmoToReturn = draftCMOsBefore.get(0).getValue();
+
+                    eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
+                }
+            }
+        }
+        return eventsToPublish;
     }
 
     private Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
