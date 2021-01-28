@@ -8,7 +8,7 @@ const returnedStatus = 'Returned';
 const noHearing = 'No hearing';
 const withJudgeStatus = 'With judge for approval';
 const draftStatus = 'Draft order, to review before hearing';
-const linkLabel = 'Review agreed CMO';
+const linkLabel = 'Approve orders';
 const agreedCMO = 'Agreed CMO discussed at hearing';
 const draftCMO = 'Draft CMO from advocates\' meeting';
 const hearing1 = 'Case management hearing, 1 January 2020';
@@ -114,7 +114,7 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   reviewAgreedCaseManagementOrderEventPage.selectReturnC21ForChanges(1);
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
 
-  await I.completeEvent('Save and continue',null, false, '.alert-warning');
+  await I.completeEvent('Save and continue');
   //TODO replace wait with:  I.completeEvent('Save and continue') once submitted callback is fixed
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
@@ -154,7 +154,7 @@ Scenario('Judge seals and sends draft orders to parties', async ({I, caseViewPag
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
 
-  await I.completeEvent('Save and continue',null, false, '.alert-warning');
+  await I.completeEvent('Save and continue');
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
