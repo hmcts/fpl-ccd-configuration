@@ -74,7 +74,7 @@ public class ReviewCMOController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        List<String> errors = reviewCMOService.validateReviewDecision(caseData, data);
+        List<String> errors = reviewCMOService.validateDraftOrdersReviewDecision(caseData, data);
 
         return respond(caseDetails, errors);
     }

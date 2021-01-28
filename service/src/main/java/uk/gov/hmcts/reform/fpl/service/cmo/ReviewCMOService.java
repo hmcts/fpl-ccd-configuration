@@ -35,7 +35,6 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
@@ -114,7 +113,7 @@ public class ReviewCMOService {
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> validateReviewDecision(CaseData caseData, Map<String, Object> data) {
+    public List<String> validateDraftOrdersReviewDecision(CaseData caseData, Map<String, Object> data) {
         Element<HearingOrdersBundle> selectedOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
 
         List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
@@ -123,17 +122,11 @@ public class ReviewCMOService {
         int counter = 1;
         for (HearingOrder order : hearingOrders) {
             if (order.getType().isCmo()) {
-                String error = validateReviewDecision(caseData.getReviewCMODecision());
-                if (isNoneBlank(error)) {
-                    errors.add(String.format("CMO - %s", error));
-                }
+                validateReviewDecision(errors, caseData.getReviewCMODecision(), "CMO");
             } else {
                 Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
                 ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
-                String error = validateReviewDecision(reviewDecision);
-                if (isNoneBlank(error)) {
-                    errors.add(String.format("Order %d - %s", counter, error));
-                }
+                validateReviewDecision(errors, reviewDecision, "draft order " + counter);
                 counter++;
             }
         }
@@ -142,13 +135,13 @@ public class ReviewCMOService {
 
     public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
         Map<String, Object> data = new HashMap<>();
-        Element<HearingOrder> cmo = selectedOrdersBundle.getValue().getOrders().stream()
+        Element<HearingOrder> cmo = selectedOrdersBundle.getValue().getOrders(SEND_TO_JUDGE).stream()
             .filter(order -> order.getValue().getType().isCmo())
             .findFirst().orElse(null);
 
         if (cmo != null) {
             ReviewDecision cmoReviewDecision = caseData.getReviewCMODecision();
-            if (cmoReviewDecision.getDecision() != null) {
+            if (cmoReviewDecision != null && cmoReviewDecision.getDecision() != null) {
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
                     Element<HearingOrder> cmoToSeal = getCMOToSeal(cmoReviewDecision, cmo);
                     cmoToSeal.getValue().setLastUploadedOrder(cmoToSeal.getValue().getOrder());
@@ -185,13 +178,13 @@ public class ReviewCMOService {
     public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {
         List<Element<HearingOrdersBundle>> ordersBundleReadyForApproval = getBundlesForApproval(caseData);
         if (ordersBundleReadyForApproval.size() > 1) {
-            UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
+            UUID selectedHearingDraftOrdersBundleCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
             return ordersBundleReadyForApproval.stream()
-                .filter(element -> element.getId().equals(selectedCMOCode))
+                .filter(element -> element.getId().equals(selectedHearingDraftOrdersBundleCode))
                 .findFirst()
                 .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-                    "Could not find draft cmo with id " + selectedCMOCode));
+                    "Could not find hearing draft orders bundle with id " + selectedHearingDraftOrdersBundleCode));
         } else {
             return ordersBundleReadyForApproval.get(0);
         }
@@ -227,7 +220,8 @@ public class ReviewCMOService {
             counter++;
         }
         if (selectedOrdersBundle.getValue().getOrders().isEmpty()) {
-            caseData.getHearingOrdersBundlesDrafts().removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
+            caseData.getHearingOrdersBundlesDrafts()
+                .removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
         } else {
             caseData.getHearingOrdersBundlesDrafts().stream()
                 .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
@@ -331,18 +325,16 @@ public class ReviewCMOService {
         return data;
     }
 
-    private String validateReviewDecision(ReviewDecision cmoDecision) {
-        String fileNotUploadedError = "new file not uploaded";
-        String requestedChanges = "complete the requested changes";
+    private void validateReviewDecision(
+        List<String> errors, ReviewDecision cmoDecision, String orderName) {
         if (cmoDecision != null && cmoDecision.getDecision() != null) {
             if (JUDGE_AMENDS_DRAFT.equals(cmoDecision.getDecision())
                 && cmoDecision.getJudgeAmendedDocument() == null) {
-                return fileNotUploadedError;
+                errors.add(String.format("Add the new %s", orderName));
             } else if (JUDGE_REQUESTED_CHANGES.equals(cmoDecision.getDecision())
                 && isBlank(cmoDecision.getChangesRequestedByJudge())) {
-                return requestedChanges;
+                errors.add(String.format("Add what the LA needs to change on the %s", orderName));
             }
         }
-        return null;
     }
 }

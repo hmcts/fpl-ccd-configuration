@@ -7,48 +7,72 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ReviewCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
 
+    private final String hearing1 = "Test hearing 21st August 2020";
+    private final String hearing2 = "Test hearing 9th April 2021";
+
+    private final Element<HearingOrder> agreedCMO = element(buildDraftOrder(hearing1, AGREED_CMO));
+    private final Element<HearingOrder> draftCMO = element(buildDraftOrder(hearing1, DRAFT_CMO));
+    private final Element<HearingOrder> draftOrder1 = element(buildDraftOrder(hearing1, C21));
+    private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(hearing2, C21));
+
     ReviewCMOControllerAboutToStartTest() {
         super("review-cmo");
     }
 
     @Test
-    void shouldReturnCorrectDataWhenMultipleCMOsReadyForApproval() {
-        DocumentReference order = TestDataHelper.testDocumentReference();
-        List<Element<HearingOrder>> draftCMOs = List.of(
-            element(buildCMO("Test hearing 21st August 2020", order)),
-            element(buildCMO("Test hearing 9th April 2021", order)));
+    void shouldReturnCorrectDataWhenMultipleHearingDraftOrdersBundlesExist() {
+        UUID hearingOrdersBundle1 = UUID.randomUUID();
+        UUID hearingOrdersBundle2 = UUID.randomUUID();
 
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
+        List<Element<HearingOrdersBundle>> hearingOrdersBundles = List.of(
+            buildHearingDraftOrdersBundles(hearingOrdersBundle1, hearing1, newArrayList(agreedCMO, draftOrder1)),
+            buildHearingDraftOrdersBundles(hearingOrdersBundle2, hearing2, newArrayList(draftCMO, draftOrder2)));
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(agreedCMO, draftCMO))
+            .hearingOrdersBundlesDrafts(hearingOrdersBundles)
+            .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
-        DynamicList cmoList = DynamicList.builder()
+        DynamicList bundlesList = DynamicList.builder()
             .value(DynamicListElement.EMPTY)
-            .listItems(draftCMOs.stream().map(cmo -> DynamicListElement.builder()
-                .code(cmo.getId())
-                .label(cmo.getValue().getHearing())
+            .listItems(hearingOrdersBundles.stream().map(bundle -> DynamicListElement.builder()
+                .code(bundle.getId())
+                .label(bundle.getValue().getHearingName())
                 .build())
                 .collect(Collectors.toList()))
             .build();
@@ -57,41 +81,74 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
 
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("MULTI");
         assertThat(responseData.getCmoToReviewList()).isEqualTo(
-            mapper.convertValue(cmoList, new TypeReference<Map<String, Object>>() {}));
+            mapper.convertValue(bundlesList, new TypeReference<Map<String, Object>>() {
+            }));
     }
 
     @Test
-    void shouldReturnCorrectDataWhenOneDraftCMOReadyForApproval() {
-        ReviewDecision expectedDecision = ReviewDecision.builder()
-            //.hearing("Test hearing 21st August 2020")
-            //.document(TestDataHelper.testDocumentReference())
+    void shouldReturnAgreedCMOWhenOneHearingBundleExistsWithADraftCMOsReadyForApproval() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+        Element<HearingOrdersBundle> hearingOrdersBundle =
+            buildHearingDraftOrdersBundles(hearingOrdersBundleId, hearing1, newArrayList(agreedCMO, draftCMO));
+
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of(agreedCMO, draftCMO))
+            .hearingOrdersBundlesDrafts(singletonList(hearingOrdersBundle))
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder()
+                .reviewDecision1(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+                .build())
             .build();
 
-        List<Element<HearingOrder>> draftCMOs = List.of(
-            //element(buildCMO(expectedDecision.getHearing(), expectedDecision.getDocument()))
-            );
+        ReviewDraftOrdersData expectedReviewDraftOrdersData = ReviewDraftOrdersData.builder()
+            .cmoDraftOrderTitle(agreedCMO.getValue().getTitle())
+            .cmoDraftOrderDocument(agreedCMO.getValue().getOrder())
+            .draftCMOExists("Y")
+            .build();
 
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
+        CaseData responseData = extractCaseData(callbackResponse);
 
-        CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
-
+        assertThat(callbackResponse.getData()).doesNotContainKeys(ReviewDraftOrdersData.reviewDecisionFields());
         assertThat(responseData.getNumDraftCMOs()).isEqualTo("SINGLE");
-        assertThat(responseData.getReviewCMODecision()).isEqualTo(expectedDecision);
+        assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedReviewDraftOrdersData);
     }
 
     @Test
     void shouldReturnCorrectDataWhenNoDraftCMOsReadyForApproval() {
-        CaseData caseData = CaseData.builder().draftUploadedCMOs(List.of()).build();
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(emptyList())
+            .hearingOrdersBundlesDrafts(emptyList()).build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
-
         assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
     }
 
-    private static HearingOrder buildCMO(String hearing, DocumentReference order) {
+    @Test
+    void shouldReturnCorrectDataWhenNoCMOsExistForReadyForApprovalInTheSelectedBundle() {
+        UUID hearingOrdersBundleId = UUID.randomUUID();
+        Element<HearingOrdersBundle> hearingOrdersBundle =
+            buildHearingDraftOrdersBundles(hearingOrdersBundleId, hearing1, newArrayList(draftCMO));
+
+        CaseData caseData = CaseData.builder().draftUploadedCMOs(newArrayList(draftCMO))
+            .hearingOrdersBundlesDrafts(singletonList(hearingOrdersBundle)).build();
+
+        CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+        assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
+    }
+
+    private Element<HearingOrdersBundle> buildHearingDraftOrdersBundles(
+        UUID hearingOrdersBundleId, String hearing, List<Element<HearingOrder>> orders) {
+        return element(hearingOrdersBundleId,
+            HearingOrdersBundle.builder().hearingId(UUID.randomUUID())
+                .orders(orders)
+                .hearingName(hearing).build());
+    }
+
+    private HearingOrder buildDraftOrder(String hearing, HearingOrderType orderType) {
         return HearingOrder.builder()
             .hearing(hearing)
-            .order(order)
-            .status(SEND_TO_JUDGE).build();
+            .title(hearing)
+            .order(testDocumentReference())
+            .type(orderType)
+            .status(DRAFT_CMO.equals(orderType) ? DRAFT : SEND_TO_JUDGE).build();
     }
 }
