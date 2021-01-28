@@ -97,4 +97,4 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
     config.applicationActions.enterAllocationDecision,
     config.administrationActions.draftStandardDirections,
   ]);
-});
+}).retry(1); //async processing in prev test
