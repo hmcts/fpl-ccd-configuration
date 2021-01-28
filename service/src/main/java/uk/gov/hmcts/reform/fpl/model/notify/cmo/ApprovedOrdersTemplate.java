@@ -1,16 +1,19 @@
 package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import org.json.JSONObject;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class ApprovedOrdersTemplate extends IssuedCMOTemplate {
-    private final List<String> orderList;
-    private final List<JSONObject> orderDocumentList;
+public class ApprovedOrdersTemplate implements NotifyData {
+    private final String orderList;
+    private final List<JSONObject> documentLinks;
+    private final String subjectLineWithHearingDate;
+    private final String respondentLastName;
+    private final String caseUrl;
+    private final String digitalPreference;
 }

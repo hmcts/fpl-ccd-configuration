@@ -9,13 +9,14 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
@@ -56,12 +57,16 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
             element(buildOrder("order 5", "12 September 2018", "Another Order"))
         );
 
-        List<Element<CaseManagementOrder>> caseManagementOrders = List.of(
-            element(CaseManagementOrder.builder()
+        List<Element<HearingOrder>> caseManagementOrders = List.of(
+            element(HearingOrder.builder()
+                .type(HearingOrderType.AGREED_CMO)
+                .title("Agreed CMO discussed at hearing")
                 .status(APPROVED)
                 .dateIssued(dateNow())
                 .build()),
-            element(CaseManagementOrder.builder()
+            element(HearingOrder.builder()
+                .type(HearingOrderType.DRAFT_CMO)
+                .title("Draft CMO from advocates' meeting")
                 .status(DRAFT)
                 .dateIssued(dateNow())
                 .build())
@@ -84,9 +89,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
                 buildListElement(generatedOrders.get(0).getId(), "order 1 - 12 March 1234"),
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 28 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 29 August 2021"),
-                buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022"),
-                buildListElement(caseManagementOrders.get(0).getId(), String.format("Case management order - %s",
-                    formatLocalDateToString(dateNow(), "d MMMM yyyy")))
+                buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022")
             )).build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);

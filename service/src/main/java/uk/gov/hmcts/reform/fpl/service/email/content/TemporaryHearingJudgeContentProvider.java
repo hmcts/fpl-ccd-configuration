@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.TemporaryHearingJudgeTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
@@ -22,22 +21,9 @@ public class TemporaryHearingJudgeContentProvider extends AbstractEmailContentPr
     public TemporaryHearingJudgeTemplate buildNotificationParameters(CaseData caseData, HearingBooking hearingBooking) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
-        String judgeTitle = judgeAndLegalAdvisor.getJudgeOrMagistrateTitle();
-        String judgeName = judgeAndLegalAdvisor.getJudgeName();
-
-        if (judgeAndLegalAdvisor.getJudgeTitle().equals(MAGISTRATES)) {
-            if (judgeName != null) {
-                judgeTitle = "";
-                judgeName = judgeName.concat(" (JP)");
-            } else {
-                judgeTitle = "Justice of the Peace";
-                judgeName = "";
-            }
-        }
-
         TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = TemporaryHearingJudgeTemplate.builder()
-            .judgeTitle(judgeTitle)
-            .judgeName(judgeName)
+            .judgeTitle(getJudgeTitle(judgeAndLegalAdvisor))
+            .judgeName(getJudgeName(judgeAndLegalAdvisor))
             .hearingType(hearingBooking.getType().getLabel())
             .caseUrl(getCaseUrl(caseData.getId()))
             .callout(buildCallout(caseData, hearingBooking))

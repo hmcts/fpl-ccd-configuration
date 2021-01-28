@@ -3,12 +3,15 @@ package uk.gov.hmcts.reform.fpl.model.notify.cmo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public class RejectedOrdersTemplate extends RejectedCMOTemplate {
+public class RejectedOrdersTemplate implements NotifyData {
     private final List<String> ordersAndRequestedChanges;
+    private final String subjectLineWithHearingDate;
+    private final String respondentLastName;
+    private final String caseUrl;
 }
