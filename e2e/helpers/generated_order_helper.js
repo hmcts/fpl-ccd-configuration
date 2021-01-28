@@ -125,7 +125,6 @@ const uploadOrder = async (I, createOrderEventPage, order) => {
 };
 
 const fillInterimEndDate = async (I, createOrderEventPage, order) => {
-  await I.goToNextPage();
   if (order.interimEndDate.isNamedDate) {
     await createOrderEventPage.selectAndEnterNamedDate(order.interimEndDate.endDate);
   } else {
