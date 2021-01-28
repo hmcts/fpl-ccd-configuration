@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
@@ -26,9 +25,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -39,8 +36,6 @@ public class ReviewCMOService {
 
     private final ObjectMapper mapper;
     private final Time time;
-    private final DraftOrderService draftOrderService;
-    private final DocumentSealingService documentSealingService;
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -58,39 +53,6 @@ public class ReviewCMOService {
 
         return asDynamicList(cmosReadyForApproval, null, HearingOrder::getHearing);
     }
-
-    public Map<String, Object> reviewCMO(CaseData caseData) { //tODO tests
-        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
-        Map<String, Object> data = new HashMap<>();
-
-        if (!cmosReadyForApproval.isEmpty()) {
-            Element<HearingOrder> cmo = getSelectedCMO(caseData);
-
-            if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
-                Element<HearingOrder> cmoToSeal = getCMOToSeal(caseData);
-
-                caseData.getDraftUploadedCMOs().remove(cmo);
-
-                cmoToSeal.getValue().setLastUploadedOrder(cmoToSeal.getValue().getOrder());
-                cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
-
-                List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
-                sealedCMOs.add(cmoToSeal);
-
-                data.put("sealedCMOs", sealedCMOs);
-                data.put("state", getStateBasedOnNextHearing(caseData, cmo.getId()));
-            } else {
-                cmo.getValue().setStatus(RETURNED);
-                cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
-            }
-
-            data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
-            data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-        }
-
-        return data;
-    }
-
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
         List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);

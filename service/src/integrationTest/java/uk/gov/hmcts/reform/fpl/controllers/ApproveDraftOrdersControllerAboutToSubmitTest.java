@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
@@ -39,7 +38,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
@@ -64,9 +62,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
     @MockBean
     private DocumentSealingService documentSealingService;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     private final HearingOrder cmo = buildDraftOrder(AGREED_CMO);
     private final HearingOrder draftOrder = buildDraftOrder(C21);
     private final String hearing = "Test hearing 21st August 2020";
@@ -79,8 +74,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldRemoveCMOFromDraftCMOsAndRequestedChangesWhenJudgeRejectsOrder() {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
         UUID hearingOrdersBundleId = UUID.randomUUID();
 
         Element<HearingOrder> cmoElement = element(cmo);
@@ -109,8 +102,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldSealPDFAndAddToSealedCMOsListAndSaveUnsealedCMOWhenJudgeApprovesOrders() {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
         DocumentReference order = cmo.getOrder();
         UUID cmoId = UUID.randomUUID();
 
@@ -145,8 +136,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties() {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-        when(documentSealingService.sealDocument(convertedDocument)).thenReturn(sealedDocument);
+        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
@@ -169,7 +159,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties() {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
@@ -193,8 +182,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldNotModifyDataIfNoDraftCMOsAreReviewedReadyForApproval() {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
         ArrayList<Element<HearingOrder>> draftCMOs = newArrayList(element(cmo));
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
             UUID.randomUUID(), draftCMOs);
@@ -215,8 +202,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
     @ParameterizedTest
     @EnumSource(value = CMOReviewOutcome.class, names = {"JUDGE_AMENDS_DRAFT", "SEND_TO_ALL_PARTIES"})
     void shouldSealPDFAndCreateBlankOrderWhenJudgeApprovesBlankOrders(CMOReviewOutcome reviewOutcome) {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
         DocumentReference order = draftOrder.getOrder();
         UUID draftOrderId = UUID.randomUUID();
 
@@ -259,8 +244,6 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
 
     @Test
     void shouldRemoveRejectedBlankOrderAndSealApprovedOrderWhenJudgeRejectsOneOrderAndApprovesTheOther() {
-        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
         DocumentReference order = cmo.getOrder();
         given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
 

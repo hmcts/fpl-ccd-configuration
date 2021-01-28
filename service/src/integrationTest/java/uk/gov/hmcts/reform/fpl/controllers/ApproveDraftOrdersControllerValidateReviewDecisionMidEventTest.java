@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ReviewCMOControllerValidateReviewDecisionMidEventTest extends AbstractControllerTest {
+class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends AbstractControllerTest {
 
     private final String validateDecisionEventPath = "validate-review-decision";
     private final String hearing = "Test hearing 21st August 2020";
@@ -44,7 +44,7 @@ class ReviewCMOControllerValidateReviewDecisionMidEventTest extends AbstractCont
     private final Element<HearingOrder> draftOrder1 = element(buildDraftOrder(C21));
     private final Element<HearingOrder> draftOrder2 = element(buildDraftOrder(C21));
 
-    ReviewCMOControllerValidateReviewDecisionMidEventTest() {
+    ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest() {
         super("approve-draft-orders");
     }
 

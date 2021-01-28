@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -56,6 +57,7 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
         .build();
 
     @Test
+    @Disabled
     void shouldPrepareInitialDataWhenDraftOrdersFeatureIsDisabled() {
         when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
 
@@ -76,6 +78,7 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
     }
 
     @Test
+    @Disabled
     void shouldPrepareInitialDataWhenDraftOrdersFeatureIsEnabled() {
         when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
 
