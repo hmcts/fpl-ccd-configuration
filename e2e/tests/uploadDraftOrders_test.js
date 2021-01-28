@@ -115,7 +115,6 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
 
   await I.completeEvent('Save and continue');
-  //TODO replace wait with:  I.completeEvent('Save and continue') once submitted callback is fixed
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
