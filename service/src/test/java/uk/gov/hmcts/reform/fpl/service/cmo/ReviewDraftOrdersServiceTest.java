@@ -167,15 +167,17 @@ class ReviewDraftOrdersServiceTest {
             .orders(newArrayList(agreedCMO(hearing1))).build());
 
         Element<HearingOrdersBundle> hearingOrdersBundle2 = element(HearingOrdersBundle.builder()
-            .orders(newArrayList(agreedCMO(hearing2), element(HearingOrder.builder().type(C21).build()))).build());
+            .orders(newArrayList(draftCMO(hearing2),
+                element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build()))).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle3 = element(HearingOrdersBundle.builder()
+            .orders(newArrayList(draftCMO("hearing3"))).build());
 
         List<Element<HearingOrdersBundle>> hearingOrderBundlesDrafts = List.of(
-            hearingOrdersBundle1, hearingOrdersBundle2
+            hearingOrdersBundle1, hearingOrdersBundle2, hearingOrdersBundle3
         );
 
-        CaseData caseData = CaseData.builder()
-            .hearingOrdersBundlesDrafts(hearingOrderBundlesDrafts)
-            .build();
+        CaseData caseData = CaseData.builder().hearingOrdersBundlesDrafts(hearingOrderBundlesDrafts).build();
 
         Map<String, Object> expectedData = Map.of(
             "numDraftCMOs", MULTI,
