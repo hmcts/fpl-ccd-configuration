@@ -15,6 +15,6 @@ public class IsValidEmailAddressValidator implements ConstraintValidator<IsValid
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {
-        return Boolean.valueOf(validateEmailService.validate(email));
+        return validateEmailService.isValidInternetAddress(email);
     }
 }

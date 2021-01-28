@@ -36,7 +36,7 @@ public class ValidateEmailService {
         return "";
     }
 
-    private boolean isValidInternetAddress(String email) {
+    public boolean isValidInternetAddress(String email) {
         InternetAddress internetAddress = new InternetAddress();
         internetAddress.setAddress(email);
 

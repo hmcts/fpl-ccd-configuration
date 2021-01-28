@@ -42,6 +42,7 @@ public class RepresentativeService {
     private final CaseService caseService;
     private final OrganisationService organisationService;
     private final RepresentativeCaseRoleService representativeCaseRoleService;
+    private final ValidateEmailService validateEmailService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -139,6 +140,10 @@ public class RepresentativeService {
                                                   Representative representative, String representativeLabel) {
         if (isEmpty(representative.getEmail())) {
             validationErrors.add(format("Enter an email address for %s", representativeLabel));
+        } else if (!validateEmailService.isValidInternetAddress(representative.getEmail())) {
+            String errorMessage = validateEmailService.validate(representative.getEmail());
+            
+            validationErrors.add(String.format(errorMessage, representativeLabel));
         } else {
             Optional<String> userId = organisationService.findUserByEmail(representative.getEmail());
 
