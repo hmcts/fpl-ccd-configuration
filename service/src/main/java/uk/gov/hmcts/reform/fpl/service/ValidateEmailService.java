@@ -9,7 +9,8 @@ import javax.mail.internet.InternetAddress;
 
 @Service
 public class ValidateEmailService {
-    private static final String ERROR_MESSAGE = "Enter a valid email address";
+    private static final String ERROR_MESSAGE = "Enter an email address in the correct format,"
+        + " for example name@example.com";
 
     public List<String> validate(List<String> emailAddresses, String key) {
         List<String> validationErrors = new ArrayList<>();

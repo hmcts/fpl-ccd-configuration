@@ -34,8 +34,8 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
         assertThat(callbackResponse.getErrors()).contains(
-            "Gatekeeper 2: Enter a valid email address",
-            "Gatekeeper 4: Enter a valid email address");
+            "Gatekeeper 2: Enter an email address in the correct format, for example name@example.com",
+            "Gatekeeper 4: Enter an email address in the correct format, for example name@example.com");
     }
 
     @Test

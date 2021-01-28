@@ -16,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class IsValidEmailAddressValidatorTest extends AbstractValidationTest {
     private ValidateEmailService validateEmailService;
 
-    private static final String ERROR_MESSAGE = "Enter a valid email address";
+    private static final String ERROR_MESSAGE = "Enter an email address in the correct format,"
+        + " for example name@example.com";
 
     @ParameterizedTest
     @MethodSource("validEmailAddresses")

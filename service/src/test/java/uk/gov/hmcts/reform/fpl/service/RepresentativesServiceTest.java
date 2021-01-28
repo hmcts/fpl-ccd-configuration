@@ -83,7 +83,8 @@ class RepresentativesServiceTest {
         when(validateEmailService.isValidInternetAddress(VALID_EMAIL)).thenReturn(true);
         when(validateEmailService.isValidInternetAddress(INVALID_EMAIL)).thenReturn(false);
         when(validateEmailService.validate(VALID_EMAIL)).thenReturn("");
-        when(validateEmailService.validate(INVALID_EMAIL)).thenReturn("Enter an email address");
+        when(validateEmailService.validate(INVALID_EMAIL)).thenReturn("Enter an email address in the correct format,"
+            + " for example name@example.com");
     }
 
     @AfterEach
@@ -199,7 +200,8 @@ class RepresentativesServiceTest {
         CaseData caseData = caseWithRepresentatives(representative);
         List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
-        assertThat(validationErrors).containsExactly("Enter an email address for Representative");
+        assertThat(validationErrors).containsExactly("Enter an email address in the correct format,"
+            + " for example name@example.com for Representative");
     }
 
     @Test
@@ -279,7 +281,8 @@ class RepresentativesServiceTest {
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData);
 
-        assertThat(validationErrors).containsExactly("Enter an email address for Representative");
+        assertThat(validationErrors).containsExactly("Enter an email address in the correct format,"
+            + " for example name@example.com for Representative");
     }
 
     @Test
