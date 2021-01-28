@@ -106,6 +106,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @EPOTimeRange(message = "Date must be within 8 days of the order date", groups = EPOEndDateGroup.class,
     maxDate = @TimeDifference(amount = 8, unit = DAYS))
 public class CaseData {
+    private final String searchDocumentFilter;
     private final Long id;
     private final State state;
     @NotBlank(message = "Enter a case name")

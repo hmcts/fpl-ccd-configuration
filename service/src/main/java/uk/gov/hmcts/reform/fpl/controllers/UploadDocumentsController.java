@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.handlers.DocumentListService;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
@@ -30,6 +31,7 @@ public class UploadDocumentsController extends CallbackController {
     private final ApplicationDocumentsService applicationDocumentsService;
     private final FeatureToggleService featureToggleService;
     private final UploadDocumentsMigrationService uploadDocumentsMigrationService;
+    private final DocumentListService documentListService;
 
     //Delete after toggle on (no mid-event for new event)
     @PostMapping("/mid-event")
@@ -57,11 +59,14 @@ public class UploadDocumentsController extends CallbackController {
             caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
                 caseData.getApplicationDocuments(),
                 caseDataBefore.getApplicationDocuments()));
+
+            caseDetails.getData().put("documentsList", documentListService.getDocumentsList(caseData));
         } else {
             // New document event is not enabled so move old collection to new
             Map<String, Object> data = caseDetails.getData();
             data.putAll(uploadDocumentsMigrationService.transformFromOldCaseData(caseData));
         }
+
 
         return respond(caseDetails);
     }
