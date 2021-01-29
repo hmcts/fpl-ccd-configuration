@@ -71,6 +71,14 @@ public class FeatureToggleService {
         return ldClient.boolVariation("draft-orders", createLDUser(), false);
     }
 
+    public boolean isSummaryTabEnabled() {
+        return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
+    }
+
+    public boolean isSummaryTabFirstCronRunEnabled() {
+        return ldClient.boolVariation("summary-tab-first-run", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
