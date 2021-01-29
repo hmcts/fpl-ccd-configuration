@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -145,7 +145,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().build();
 
         List<Element<StandardDirectionOrder>> hiddenSDOs = singletonList(element(previousSDO));
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(element(CaseManagementOrder.builder().build()));
+        List<Element<HearingOrder>> hiddenCMOs = singletonList(element(HearingOrder.builder().build()));
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, emptyList());
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList());
@@ -175,7 +175,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
         List<Element<GeneratedOrder>> previousHiddenOrders = singletonList(order);
         List<Element<StandardDirectionOrder>> hiddenSDOs =
             singletonList(element(StandardDirectionOrder.builder().build()));
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(element(CaseManagementOrder.builder().build()));
+        List<Element<HearingOrder>> hiddenCMOs = singletonList(element(HearingOrder.builder().build()));
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders);
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, previousHiddenOrders);
@@ -191,10 +191,10 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
     @Test
     void shouldNotifyLocalAuthorityIfACMOIsRemoved() throws NotificationClientException {
-        Element<CaseManagementOrder> previousCMO =
-            element(CaseManagementOrder.builder().removalReason(REMOVAL_REASON).build());
+        Element<HearingOrder> previousCMO =
+            element(HearingOrder.builder().removalReason(REMOVAL_REASON).build());
 
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(previousCMO);
+        List<Element<HearingOrder>> hiddenCMOs = singletonList(previousCMO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList());
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList());
@@ -214,13 +214,13 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
     @Test
     void shouldNotifyLocalAuthorityIfAnAdditionalCMOHasBeenRemoved() throws NotificationClientException {
-        Element<CaseManagementOrder> removedCMO =
-            element(CaseManagementOrder.builder().removalReason(REMOVAL_REASON).build());
-        Element<CaseManagementOrder> previousCMO =
-            element(CaseManagementOrder.builder().removalReason("test reason").build());
+        Element<HearingOrder> removedCMO =
+            element(HearingOrder.builder().removalReason(REMOVAL_REASON).build());
+        Element<HearingOrder> previousCMO =
+            element(HearingOrder.builder().removalReason("test reason").build());
 
-        List<Element<CaseManagementOrder>> hiddenCMOs = List.of(previousCMO, removedCMO);
-        List<Element<CaseManagementOrder>> previouHiddenCMOs = singletonList(previousCMO);
+        List<Element<HearingOrder>> hiddenCMOs = List.of(previousCMO, removedCMO);
+        List<Element<HearingOrder>> previouHiddenCMOs = singletonList(previousCMO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList());
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(previouHiddenCMOs, emptyList(), emptyList());
@@ -268,7 +268,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
     }
 
     private CaseDetails caseDetailsWithRemovableOrders(
-        List<Element<CaseManagementOrder>> hiddenCMOs,
+        List<Element<HearingOrder>> hiddenCMOs,
         List<Element<StandardDirectionOrder>> hiddenSDOs,
         List<Element<GeneratedOrder>> hiddenOrders
     ) {

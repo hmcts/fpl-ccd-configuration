@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,16 +18,24 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
-import static org.mockito.Mockito.never;
+import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -37,16 +49,36 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest {
 
+    private static final String REPPRESENTATIVE_FULLNAME = "John Smith";
+
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private static final Long CASE_ID = 12345L;
     private static final String CASE_REFERENCE = "12345";
     private static final String RESPONDENT_SURNAME = "Watson";
+    private static final SyntheticCaseSummary CASE_SUMMARY = SyntheticCaseSummary.builder()
+        .caseSummaryFirstRespondentLegalRep(REPPRESENTATIVE_FULLNAME)
+        .caseSummaryFirstRespondentLastName(RESPONDENT_SURNAME)
+        .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     RepresentativeSubmittedEventControllerTest() {
         super("manage-representatives");
+    }
+
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
     }
 
     @Test
@@ -57,8 +89,9 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
         Representative representative = buildRepresentative(EMAIL);
 
-        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList());
-        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)));
+        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList(), emptyMap());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)),
+            emptyMap());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
 
@@ -67,6 +100,12 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         verify(notificationClient).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, "test@test.com",
             expectedTemplateParametersEmail(), NOTIFICATION_REFERENCE);
+
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_ID,
+            "internal-update-case-summary",
+            caseSummary());
     }
 
 
@@ -79,8 +118,9 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
         Representative representative = buildRepresentative(DIGITAL_SERVICE);
 
-        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList());
-        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)));
+        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList(), emptyMap());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)),
+            emptyMap());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
 
@@ -89,6 +129,37 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         verify(notificationClient).sendEmail(
             PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
             expectedTemplateParametersDigitalService(), NOTIFICATION_REFERENCE);
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            CASE_ID,
+            "internal-update-case-summary",
+            caseSummary());
+    }
+
+    @Test
+    void shouldSendNotificationWhenNewPartyIsAddedOrUpdatedToCaseThroughDigitalServiceToggledOff()
+        throws NotificationClientException {
+
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
+
+        final UUID representativeId = UUID.randomUUID();
+
+        Respondent respondent = buildRespondent();
+
+        Representative representative = buildRepresentative(DIGITAL_SERVICE);
+
+        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList(), emptyMap());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)),
+            emptyMap());
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
+            expectedTemplateParametersDigitalService(), NOTIFICATION_REFERENCE);
+        verifyNoInteractions(coreCaseDataService);
     }
 
     @Test
@@ -99,17 +170,17 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
         Representative representative = buildRepresentative(POST);
 
-        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList());
-        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)));
+        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList(), caseSummary());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)),
+            caseSummary());
 
         CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
 
         postSubmittedEvent(callbackRequest);
 
-        verify(notificationClient, never())
-            .sendEmail(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE, "test@test.com",
-                expectedTemplateParametersEmail(), CASE_REFERENCE);
+        verifyNoInteractions(notificationClient, coreCaseDataService);
     }
+
 
     private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
         return CallbackRequest.builder()
@@ -120,7 +191,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     private Representative buildRepresentative(RepresentativeServingPreferences servingPreference) {
         return Representative.builder()
-            .fullName("John Smith")
+            .fullName(REPPRESENTATIVE_FULLNAME)
             .positionInACase("Position")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
             .servingPreferences(servingPreference)
@@ -150,12 +221,20 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
         );
     }
 
-    private static CaseDetails buildCaseData(Respondent respondent, List<Element<Representative>> representatives) {
+    private CaseDetails buildCaseData(Respondent respondent, List<Element<Representative>> representatives,
+                                      Map<String, Object> caseSummary) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("representatives", representatives);
+        data.put("respondents1", wrapElements(respondent));
+        data.putAll(caseSummary);
         return CaseDetails.builder()
             .id(CASE_ID)
-            .data(Map.of(
-                "representatives", representatives,
-                "respondents1", wrapElements(respondent)))
+            .data(data)
             .build();
+    }
+
+    private Map<String, Object> caseSummary() {
+        return objectMapper.convertValue(
+            CASE_SUMMARY, new TypeReference<>() {});
     }
 }

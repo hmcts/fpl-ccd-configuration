@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import static java.lang.String.format;
@@ -29,7 +29,7 @@ class OrderRemovalActionsTest {
     @InjectMocks
     private OrderRemovalActions orderRemovalActions;
 
-    private static final CaseManagementOrder CASE_MANAGEMENT_ORDER = CaseManagementOrder.builder().build();
+    private static final HearingOrder CASE_MANAGEMENT_ORDER = HearingOrder.builder().build();
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
     private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
 
