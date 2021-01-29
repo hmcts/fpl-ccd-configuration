@@ -95,6 +95,7 @@ public class MessageJudgeService {
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
             .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .urgency(selectedJudicialMessage.getUrgency())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
             .build();
