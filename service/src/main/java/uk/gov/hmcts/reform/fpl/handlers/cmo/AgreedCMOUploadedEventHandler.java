@@ -29,21 +29,26 @@ public class AgreedCMOUploadedEventHandler {
     @EventListener
     public void sendNotificationForAdmin(final AgreedCMOUploaded event) {
         CaseData caseData = event.getCaseData();
+        JudgeAndLegalAdvisor judgeAttendingHearing = event.getHearing().getJudgeAndLegalAdvisor();
 
-        CMOReadyToSealTemplate template = contentProvider.buildTemplate(
-            event.getHearing(),
-            caseData.getId(),
-            caseData.getAllocatedJudge(),
-            caseData.getAllRespondents(),
-            caseData.getFamilyManCaseNumber()
-        );
+        if (judgeAttendingHearing.getJudgeEmailAddress() != null || caseData.hasAllocatedJudgeEmail()) {
+            AbstractJudge judge = getJudgeToNotify(judgeAttendingHearing, caseData.getAllocatedJudge());
 
-        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
+            CMOReadyToSealTemplate template = contentProvider.buildTemplate(
+                event.getHearing(),
+                caseData.getId(),
+                judge,
+                caseData.getAllRespondents(),
+                caseData.getFamilyManCaseNumber()
+            );
 
-        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            email,
-            template,
-            caseData.getId().toString());
+            String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
+
+            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+                email,
+                template,
+                caseData.getId().toString());
+        }
     }
 
     @Async

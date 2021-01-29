@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 @Api
 @RestController
 @RequestMapping("/callback/migrate-case")
@@ -32,30 +34,48 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2531".equals(migrationId)) {
-            run2531(caseDetails);
+        if ("FPLA-2640".equals(migrationId)) {
+            run2640(caseDetails);
+        }
+
+        if ("FPLA-2651".equals(migrationId)) {
+            run2651(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2531(CaseDetails caseDetails) {
+    private void run2640(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("PR20C50001".equals(caseData.getFamilyManCaseNumber())) {
+        if ("NE20C50006".equals(caseData.getFamilyManCaseNumber())) {
+
+            if (isEmpty(caseData.getDraftUploadedCMOs())) {
+                throw new IllegalStateException("No draft case management orders in the case");
+            }
+
+            caseData.getDraftUploadedCMOs().remove(0);
+
+            if (isEmpty(caseData.getDraftUploadedCMOs())) {
+                caseDetails.getData().remove("draftUploadedCMOs");
+            } else {
+                caseDetails.getData().put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+            }
+        }
+    }
+
+    private void run2651(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("NE21C50001".equals(caseData.getFamilyManCaseNumber())) {
             List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
 
             if (ObjectUtils.isEmpty(hearings)) {
                 throw new IllegalArgumentException("No hearings in the case");
             }
 
-            if (hearings.size() < 2) {
-                throw new IllegalArgumentException(String.format("Expected 2 hearings in the case but found %s",
-                    hearings.size()));
-            }
-
-            Element<HearingBooking> hearingToBeRemoved = hearings.get(1);
+            Element<HearingBooking> hearingToBeRemoved = hearings.get(0);
 
             hearings.remove(hearingToBeRemoved);
 

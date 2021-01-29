@@ -107,7 +107,7 @@ module.exports = {
     manageLegalRepresentatives: 'Manage legal representatives',
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
-    messageJudge: 'Message judge or legal adviser',
+    messageJudge: 'Send and reply to messages',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
