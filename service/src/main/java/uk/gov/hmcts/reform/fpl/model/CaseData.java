@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
@@ -537,11 +538,15 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+    public Optional<HearingBooking> getNextHearingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
-            .min(comparing(HearingBooking::getStartDate))
-            .orElseThrow(NoHearingBookingException::new);
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
+    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+        return getNextHearingAfter(time).orElseThrow(NoHearingBookingException::new);
     }
 
     @JsonIgnore
@@ -738,4 +743,8 @@ public class CaseData {
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());
     }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
 }

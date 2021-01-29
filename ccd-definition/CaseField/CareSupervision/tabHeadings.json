@@ -30,5 +30,62 @@
     "Label": "## Closed messages",
     "FieldType": "Label",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryTabHeading",
+    "Label": "## Case information",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryUnresolvedMessagesHeading",
+    "Label": "## Unresolved messages",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryUnresolvedMessagesLabel",
+    "Label": "There are some unresolved messages",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryNextHearingHeading",
+    "Label": "## Next hearing",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryPreviousHearingHeading",
+    "Label": "## Previous hearing",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryNominatedFinalHearingHeading",
+    "Label": "## Nominated final hearing",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseSummaryPeopleInTheCaseHeading",
+    "Label": "## People in the case",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
   }
+
 ]

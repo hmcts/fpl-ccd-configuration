@@ -27,6 +27,7 @@ Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudge
   I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser);
   I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
   I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Message'], 'Some note');
   I.seeInTab(['Message 1', 'Status'], 'Open');
   I.dontSeeInTab(['Closed messages']);
@@ -46,6 +47,7 @@ Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOr
   I.seeInTab(['Message 1', 'From'], config.judicaryUser);
   I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
   I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Message'], reply);
   I.seeInTab(['Message 1', 'Status'], 'Open');
   I.dontSeeInTab(['Closed messages']);
@@ -67,6 +69,7 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
   I.seeInTab(['Message 1', 'From'], config.judicaryUser);
   I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
   I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Message history'], history);
   I.seeInTab(['Message 1', 'Status'], 'Closed');
 });
