@@ -84,10 +84,10 @@ public class UpdateSummaryCaseDetails implements Job {
             try {
                 List<CaseDetails> cases = searchService.search(query, ES_DEFAULT_SIZE, i * ES_DEFAULT_SIZE);
                 for (CaseDetails caseDetails : cases) {
-                    CaseData caseData = converter.convert(caseDetails);
-                    Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
                     final Long caseId = caseDetails.getId();
                     try {
+                        CaseData caseData = converter.convert(caseDetails);
+                        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
                         if (shouldUpdate(updatedData, caseData)) {
                             log.debug("Job '{}' updating case {}", jobName, caseId);
                             ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
