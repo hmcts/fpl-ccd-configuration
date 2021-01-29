@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -41,9 +41,9 @@ public class CaseSummaryPreviousHearingGenerator implements CaseSummaryFieldsGen
         ).orElse(SyntheticCaseSummary.builder().build());
     }
 
-    private DocumentReference getAssociatedCMO(HearingBooking hearing, List<Element<CaseManagementOrder>> sealedCMOs) {
+    private DocumentReference getAssociatedCMO(HearingBooking hearing, List<Element<HearingOrder>> sealedCMOs) {
         UUID cmoId = hearing.getCaseManagementOrderId();
-        Optional<Element<CaseManagementOrder>> cmo = findElement(cmoId, sealedCMOs);
+        Optional<Element<HearingOrder>> cmo = findElement(cmoId, sealedCMOs);
         return cmo.map(element -> element.getValue().getOrder()).orElse(null);
     }
 }

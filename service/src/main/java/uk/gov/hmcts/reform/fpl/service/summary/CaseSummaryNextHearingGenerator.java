@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -69,7 +69,7 @@ public class CaseSummaryNextHearingGenerator implements CaseSummaryFieldsGenerat
             .build());
     }
 
-    private DocumentReference getCMO(HearingBooking hearingBooking, List<Element<CaseManagementOrder>> cmos) {
+    private DocumentReference getCMO(HearingBooking hearingBooking, List<Element<HearingOrder>> cmos) {
         return ElementUtils.findElement(hearingBooking.getCaseManagementOrderId(), cmos)
             .map(cmo -> cmo.getValue().getOrder())
             .orElse(null);
