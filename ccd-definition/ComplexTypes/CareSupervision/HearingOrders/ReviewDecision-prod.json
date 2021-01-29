@@ -20,7 +20,7 @@
     "ID": "ReviewDecision",
     "ListElementCode": "decision",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Is this order ready to be sealed and issued?",
+    "ElementLabel": "Does the CMO reflect all decisions made at the hearing?",
     "FieldTypeParameter": "CMOReviewOutcome",
     "SecurityClassification": "Public"
   },
