@@ -7,7 +7,8 @@
     "TabLabel": "Overview",
     "TabDisplayOrder": 16,
     "CaseFieldID": "returnApplication",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "TabShowCondition": "[STATE] = \"RETURNED\""
   },
   {
     "LiveFrom": "01/01/2017",

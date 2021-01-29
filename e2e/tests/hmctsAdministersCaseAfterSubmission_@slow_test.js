@@ -41,8 +41,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     I_doActionsOnEditPage();
     await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
-    I.see(summary);
-    I.see(description);
+    I.see('Case information');
   };
 
   const summaryText = 'Summary of change';
@@ -194,35 +193,35 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
 
 Scenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, blankOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates interim supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimSuperVisionOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates final supervision order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalSuperVisionOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates emergency protection order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, emergencyProtectionOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates interim care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, interimCareOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin uploads order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, uploadedOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates final care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, finalCareOrder);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage, createOrderEventPage}) => {
   await verifyOrderCreation(I, caseViewPage, createOrderEventPage, dischargeOfCareOrder);
-});
+}).retry(1); //Async case update in prev test
 
 // Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
@@ -276,7 +275,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   I.navigateToCaseList();
   await I.retryUntilExists(async () => await caseListPage.searchForCasesWithHandledEvidences(submittedAt), caseListPage.locateCase(caseId));
   I.seeCaseInSearchResult(caseId);
-});
+}).retry(1); //Async case update in prev test
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async ({I, caseViewPage, sendCaseToGatekeeperEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
@@ -295,7 +294,7 @@ Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNote
   I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
   caseViewPage.selectTab(caseViewPage.tabs.notes);
   I.seeInTab(['Note 1', 'Note'], note);
-});
+}).retry(1); // async processing in previous test
 
 Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExpertReportEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
@@ -307,7 +306,7 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
-});
+}).retry(1);
 
 Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
@@ -319,21 +318,23 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
-  caseViewPage.selectTab(caseViewPage.tabs.overview);
-  I.seeInTab('26-week timeline date', '10 Oct 2030');
+  caseViewPage.selectTab(caseViewPage.tabs.summary);
+  I.seeInTab('Date of issue', dateFormat(Date.now(), 'd mmm yyyy'));
+  I.seeInTab('26-week timeline date', dateFormat(new Date().setDate(new Date().getDate() + 26 * 7), 'd mmm yyyy'));
+  I.seeInTab('Extended timeline date', '10 Oct 2030');
   I.seeInTab('Why is this case being extended?', 'Timetable for child');
   I.seeInTab('Add comments', 'Comment');
-});
+}).retry(1);
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
   await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation);
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
-  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
-});
+}).retry(1);
 
 const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);

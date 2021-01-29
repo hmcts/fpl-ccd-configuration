@@ -5,7 +5,7 @@
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "codeceptjs": "3.0.4",
-    "dateformat": "^4.4.2",
+    "dateformat": "^4.5.0",
     "eslint": "7.18.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
     "glob": "^7.1.6",
@@ -23,7 +23,7 @@
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
-    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep @smoke-tests --reporter mocha-multi"
+    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi"
   },
   "husky": {
     "hooks": {
