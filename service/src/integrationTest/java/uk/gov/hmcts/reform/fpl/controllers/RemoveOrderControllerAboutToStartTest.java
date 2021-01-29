@@ -9,13 +9,14 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
@@ -56,12 +57,14 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
             element(buildOrder("order 5", "12 September 2018", "Another Order"))
         );
 
-        List<Element<CaseManagementOrder>> caseManagementOrders = List.of(
-            element(CaseManagementOrder.builder()
+        List<Element<HearingOrder>> caseManagementOrders = List.of(
+            element(HearingOrder.builder()
+                .type(HearingOrderType.AGREED_CMO)
                 .status(APPROVED)
                 .dateIssued(dateNow())
                 .build()),
-            element(CaseManagementOrder.builder()
+            element(HearingOrder.builder()
+                .type(HearingOrderType.DRAFT_CMO)
                 .status(DRAFT)
                 .dateIssued(dateNow())
                 .build())

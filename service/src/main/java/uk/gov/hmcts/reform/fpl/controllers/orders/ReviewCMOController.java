@@ -1,9 +1,8 @@
-package uk.gov.hmcts.reform.fpl.controllers.cmo;
+package uk.gov.hmcts.reform.fpl.controllers.orders;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewCMOService;
 
 import java.util.List;
@@ -38,8 +38,8 @@ public class ReviewCMOController extends CallbackController {
 
     private final ReviewCMOService reviewCMOService;
     private final DocumentSealingService documentSealingService;
-    private final ApplicationEventPublisher eventPublisher;
     private final CoreCaseDataService coreCaseDataService;
+    private final DraftOrderService draftOrderService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -57,7 +57,7 @@ public class ReviewCMOController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        Element<CaseManagementOrder> selectedCMO = reviewCMOService.getSelectedCMO(caseData);
+        Element<HearingOrder> selectedCMO = reviewCMOService.getSelectedCMO(caseData);
 
         caseDetails.getData().put("reviewCMODecision", ReviewDecision.builder()
             .hearing(selectedCMO.getValue().getHearing())
@@ -76,34 +76,34 @@ public class ReviewCMOController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(caseData);
+        Map<String, Object> data = caseDetails.getData();
+        List<Element<HearingOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(caseData);
 
         if (!cmosReadyForApproval.isEmpty()) {
-            Element<CaseManagementOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
-
+            Element<HearingOrder> cmo = reviewCMOService.getSelectedCMO(caseData);
 
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
-                Element<CaseManagementOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData);
+                Element<HearingOrder> cmoToSeal = reviewCMOService.getCMOToSeal(caseData);
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
 
                 cmoToSeal.getValue().setLastUploadedOrder(cmoToSeal.getValue().getOrder());
                 cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
 
-                List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
+                List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                 sealedCMOs.add(cmoToSeal);
 
-                caseDetails.getData().put("sealedCMOs", sealedCMOs);
-                caseDetails.getData().put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmo.getId()));
+                data.put("sealedCMOs", sealedCMOs);
+                data.put("state", reviewCMOService.getStateBasedOnNextHearing(caseData, cmo.getId()));
             } else {
                 cmo.getValue().setStatus(RETURNED);
                 cmo.getValue().setRequestedChanges(caseData.getReviewCMODecision().getChangesRequestedByJudge());
             }
 
-            caseDetails.getData().put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
-            caseDetails.getData().remove("numDraftCMOs");
-            caseDetails.getData().remove("cmoToReviewList");
+            data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+            data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+            data.remove("numDraftCMOs");
+            data.remove("cmoToReviewList");
         }
 
         return respond(caseDetails);
@@ -115,12 +115,12 @@ public class ReviewCMOController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest);
 
         //Checks caseDataBefore as caseData has been modified by this point
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
+        List<Element<HearingOrder>> cmosReadyForApproval = reviewCMOService.getCMOsReadyForApproval(
             caseDataBefore);
 
         if (!cmosReadyForApproval.isEmpty()) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
-                CaseManagementOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
+                HearingOrder sealed = reviewCMOService.getLatestSealedCMO(caseData);
                 DocumentReference documentToBeSent = sealed.getOrder();
 
                 coreCaseDataService.triggerEvent(
@@ -133,12 +133,12 @@ public class ReviewCMOController extends CallbackController {
 
                 publishEvent(new CaseManagementOrderIssuedEvent(caseData, sealed));
             } else {
-                List<Element<CaseManagementOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
-                List<Element<CaseManagementOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
+                List<Element<HearingOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
+                List<Element<HearingOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
 
                 //Get the CMO that was modified (status changed from READY -> RETURNED)
                 draftCMOs.removeAll(draftCMOsBefore);
-                CaseManagementOrder cmoToReturn = draftCMOs.get(0).getValue();
+                HearingOrder cmoToReturn = draftCMOs.get(0).getValue();
 
                 publishEvent(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
             }
