@@ -40,6 +40,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 class CaseDataTest {
 
@@ -1093,6 +1097,66 @@ class CaseDataTest {
                 .dateSent(dateSent)
                 .isRelatedToC2(isRelatedToC2)
                 .build();
+        }
+    }
+
+    @Nested
+    class GetRepresentativesByServedPreference {
+        private Representative emailRepOne = testRepresentative(EMAIL);
+        private Representative emailRepTwo = testRepresentative(EMAIL);
+        private Representative digitalRepOne = testRepresentative(DIGITAL_SERVICE);
+        private Representative digitalRepTwo = testRepresentative(DIGITAL_SERVICE);
+
+        @Test
+        void shouldReturnListOfEmailRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+
+            assertThat(emailRepresentatives).containsExactlyInAnyOrder(emailRepOne, emailRepTwo);
+        }
+
+        @Test
+        void shouldReturnListOfDigitalRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives
+                = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).containsExactlyInAnyOrder(digitalRepOne, digitalRepTwo);
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotMatchServingPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
+            return List.of(
+                element(emailRepOne),
+                element(emailRepTwo),
+                element(digitalRepOne),
+                element(digitalRepTwo));
         }
     }
 
