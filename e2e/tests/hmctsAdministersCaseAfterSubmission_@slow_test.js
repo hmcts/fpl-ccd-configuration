@@ -306,7 +306,7 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
-});
+}).retry(1);
 
 Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
@@ -324,7 +324,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   I.seeInTab('Extended timeline date', '10 Oct 2030');
   I.seeInTab('Why is this case being extended?', 'Timetable for child');
   I.seeInTab('Add comments', 'Comment');
-});
+}).retry(1);
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
@@ -334,7 +334,7 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEve
   caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
-});
+}).retry(1);
 
 const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
