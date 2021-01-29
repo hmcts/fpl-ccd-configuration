@@ -63,7 +63,7 @@ class DraftCMOUploadedContentProviderTest extends AbstractEmailContentProviderTe
             .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
-        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(template).isEqualTo(expected);
     }
 
     @Test
@@ -97,6 +97,6 @@ class DraftCMOUploadedContentProviderTest extends AbstractEmailContentProviderTe
             .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
-        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(template).isEqualTo(expected);
     }
 }
