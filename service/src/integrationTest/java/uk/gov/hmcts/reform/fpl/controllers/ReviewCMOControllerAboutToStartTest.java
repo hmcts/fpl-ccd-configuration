@@ -6,14 +6,14 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
@@ -36,7 +36,7 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldReturnCorrectDataWhenMultipleCMOsReadyForApproval() {
         DocumentReference order = TestDataHelper.testDocumentReference();
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(
+        List<Element<HearingOrder>> draftCMOs = List.of(
             element(buildCMO("Test hearing 21st August 2020", order)),
             element(buildCMO("Test hearing 9th April 2021", order)));
 
@@ -67,7 +67,7 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
             .document(TestDataHelper.testDocumentReference())
             .build();
 
-        List<Element<CaseManagementOrder>> draftCMOs = List.of(
+        List<Element<HearingOrder>> draftCMOs = List.of(
             element(buildCMO(expectedDecision.getHearing(), expectedDecision.getDocument())));
 
         CaseData caseData = CaseData.builder().draftUploadedCMOs(draftCMOs).build();
@@ -87,8 +87,8 @@ class ReviewCMOControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(updatedCaseData.getNumDraftCMOs()).isEqualTo("NONE");
     }
 
-    private static CaseManagementOrder buildCMO(String hearing, DocumentReference order) {
-        return CaseManagementOrder.builder()
+    private static HearingOrder buildCMO(String hearing, DocumentReference order) {
+        return HearingOrder.builder()
             .hearing(hearing)
             .order(order)
             .status(SEND_TO_JUDGE).build();

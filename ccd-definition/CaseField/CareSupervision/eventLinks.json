@@ -190,5 +190,15 @@
     "FieldType": "Label",
     "Label": "[Message judge or legal adviser](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "extend26WeekTimelineLink",
+    "FieldType": "Label",
+    "Label": "[Extend 26-week timeline](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/extend26WeekTimeline)",
+    "SecurityClassification": "Public"
   }
+
+
 ]

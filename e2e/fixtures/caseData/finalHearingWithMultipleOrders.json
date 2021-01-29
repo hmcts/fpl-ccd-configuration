@@ -335,6 +335,7 @@
       {
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
+          "type": "AGREED_CMO",
           "order":"TO BE FILLED WITH VALID DATA",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
