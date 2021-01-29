@@ -1,7 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -9,8 +16,11 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -23,6 +33,8 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
@@ -30,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@ExtendWith(MockitoExtension.class)
 class CMORemovalActionTest {
 
     private static final UUID TO_REMOVE_ORDER_ID = UUID.randomUUID();
@@ -41,11 +54,29 @@ class CMORemovalActionTest {
     private static final UUID ANOTHER_HEARING_ID = UUID.randomUUID();
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.now();
 
-    private final CMORemovalAction underTest = new CMORemovalAction();
+    @Mock
+    private DraftOrderService draftOrderService;
+
+    @InjectMocks
+    private CMORemovalAction underTest;
+
+    @ParameterizedTest
+    @EnumSource(value = HearingOrderType.class, names = {"C21"}, mode = EnumSource.Mode.EXCLUDE)
+    void isAcceptedIfCaseManagementOrder(HearingOrderType hearingOrderType) {
+        RemovableOrder order = HearingOrder.builder()
+            .type(hearingOrderType)
+            .build();
+
+        assertThat(underTest.isAccepted(order)).isTrue();
+    }
 
     @Test
-    void isAcceptedIfCaseManagementOrder() {
-        assertThat(underTest.isAccepted(mock(CaseManagementOrder.class))).isTrue();
+    void isNotAcceptedC21HearingOrder() {
+        RemovableOrder order = HearingOrder.builder()
+            .type(C21)
+            .build();
+
+        assertThat(underTest.isAccepted(order)).isFalse();
     }
 
     @Test
@@ -55,7 +86,7 @@ class CMORemovalActionTest {
 
     @Test
     void shouldNotRemoveOrderWhenUniqueHearingAssociationCannotBeDetermined() {
-        CaseManagementOrder cmoToRemove = cmo(HEARING_START_DATE);
+        HearingOrder cmoToRemove = cmo(HEARING_START_DATE);
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmoToRemove)))
@@ -78,7 +109,7 @@ class CMORemovalActionTest {
     @Test
     void shouldRemoveOrderWhenNoMatchingIDButMatchingHearingLabel() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
-        CaseManagementOrder cmoToRemove = cmo(differentStartDate);
+        HearingOrder cmoToRemove = cmo(differentStartDate);
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
             .sealedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmoToRemove)))
@@ -171,7 +202,7 @@ class CMORemovalActionTest {
 
     @Test
     void shouldThrowExceptionIfOrderNotFound() {
-        CaseManagementOrder emptyCaseManagementOrder = cmo();
+        HearingOrder emptyCaseManagementOrder = cmo();
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
@@ -191,7 +222,7 @@ class CMORemovalActionTest {
     @Test
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByCMOId() {
         DocumentReference orderDocument = DocumentReference.builder().build();
-        CaseManagementOrder removedOrder = cmo(orderDocument);
+        HearingOrder removedOrder = cmo(orderDocument);
 
         HearingBooking hearingToBeUnlinked = hearing(TO_REMOVE_ORDER_ID);
 
@@ -225,7 +256,7 @@ class CMORemovalActionTest {
     void shouldPopulateCaseFieldsFromRemovedCMOAndHearingLinkedByLabel() {
         LocalDateTime startDate = HEARING_START_DATE.plusDays(3);
         DocumentReference orderDocument = DocumentReference.builder().build();
-        CaseManagementOrder removedOrder = cmo(orderDocument, startDate);
+        HearingOrder removedOrder = cmo(orderDocument, startDate);
         HearingBooking hearingToBeUnlinked = hearing(UUID.randomUUID(), startDate);
 
         CaseData caseData = CaseData.builder()
@@ -256,7 +287,7 @@ class CMORemovalActionTest {
 
     @Test
     void shouldThrowAnExceptionIfUniqueHearingNotFound() {
-        CaseManagementOrder removedOrder = cmo(HEARING_START_DATE);
+        HearingOrder removedOrder = cmo(HEARING_START_DATE);
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
@@ -279,7 +310,7 @@ class CMORemovalActionTest {
 
     @Test
     void shouldRemoveDraftCaseManagementOrderAndUnlinkHearing() {
-        Element<CaseManagementOrder> orderToBeRemoved = element(TO_REMOVE_ORDER_ID, cmo());
+        Element<HearingOrder> orderToBeRemoved = element(TO_REMOVE_ORDER_ID, cmo());
 
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(newArrayList(
@@ -293,6 +324,11 @@ class CMORemovalActionTest {
             .build();
 
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+        List<Element<HearingOrdersBundle>> ordersBundle = ElementUtils.wrapElements(HearingOrdersBundle.builder()
+            .hearingId(HEARING_ID)
+            .build());
+
+        when(draftOrderService.migrateCmoDraftToOrdersBundles(caseData)).thenReturn(ordersBundle);
 
         underTest.removeDraftCaseManagementOrder(caseData, caseDetails, orderToBeRemoved);
 
@@ -301,7 +337,8 @@ class CMORemovalActionTest {
                 element(HEARING_ID, hearing(null)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
             ),
-            "draftUploadedCMOs", List.of(element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo()))
+            "draftUploadedCMOs", List.of(element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, cmo())),
+            "hearingOrdersBundlesDrafts", ordersBundle
         );
 
         assertThat(caseDetails.getData()).isEqualTo(expectedData);
@@ -309,7 +346,7 @@ class CMORemovalActionTest {
 
     @Test
     void shouldNotRemoveHearingWhenCannotSafelyDetermineUniqueHearingToBeRemoved() {
-        Element<CaseManagementOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, CaseManagementOrder.builder().build());
+        Element<HearingOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, HearingOrder.builder().build());
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
@@ -330,7 +367,7 @@ class CMORemovalActionTest {
     @Test
     void shouldRemoveDraftOrderWhenNoMatchingIDButMatchingHearingLabel() {
         LocalDateTime differentStartDate = HEARING_START_DATE.plusDays(3);
-        Element<CaseManagementOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo(differentStartDate));
+        Element<HearingOrder> cmoToRemove = element(TO_REMOVE_ORDER_ID, cmo(differentStartDate));
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(newArrayList(cmoToRemove))
             .hearingDetails(List.of(
@@ -341,19 +378,27 @@ class CMORemovalActionTest {
 
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
+        List<Element<HearingOrdersBundle>> ordersBundle = ElementUtils.wrapElements(HearingOrdersBundle.builder()
+            .hearingId(HEARING_ID)
+            .build());
+
+        when(draftOrderService.migrateCmoDraftToOrdersBundles(caseData)).thenReturn(ordersBundle);
+
         underTest.removeDraftCaseManagementOrder(caseData, caseDetails, cmoToRemove);
 
         assertThat(caseDetails.getData()).isEqualTo(Map.of(
             "hearingDetails", List.of(
                 element(HEARING_ID, hearing(null, differentStartDate)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
-            ))
+            ),
+            "hearingOrdersBundlesDrafts", ordersBundle
+            )
         );
     }
 
     @Test
     void shouldThrowAnExceptionIfDraftOrderToBeRemovedIsNotFound() {
-        Element<CaseManagementOrder> removedOrder = element(ALREADY_REMOVED_ORDER_ID, cmo());
+        Element<HearingOrder> removedOrder = element(ALREADY_REMOVED_ORDER_ID, cmo());
 
         CaseData caseData = CaseData.builder()
             .reasonToRemoveOrder(REASON)
@@ -383,32 +428,32 @@ class CMORemovalActionTest {
             .build();
     }
 
-    private CaseManagementOrder cmoWithRemovalReason() {
+    private HearingOrder cmoWithRemovalReason() {
         return cmo(null, null, REASON);
     }
 
-    private CaseManagementOrder cmo() {
+    private HearingOrder cmo() {
         return cmo(null, null, null);
     }
 
-    private CaseManagementOrder cmo(DocumentReference order) {
+    private HearingOrder cmo(DocumentReference order) {
         return cmo(order, null, null);
     }
 
-    private CaseManagementOrder cmo(LocalDateTime startDate) {
+    private HearingOrder cmo(LocalDateTime startDate) {
         return cmo(null, startDate, null);
     }
 
-    private CaseManagementOrder cmo(DocumentReference order, LocalDateTime startDate) {
+    private HearingOrder cmo(DocumentReference order, LocalDateTime startDate) {
         return cmo(order, startDate, null);
     }
 
-    private CaseManagementOrder cmo(LocalDateTime startDate, String removalReason) {
+    private HearingOrder cmo(LocalDateTime startDate, String removalReason) {
         return cmo(null, startDate, removalReason);
     }
 
-    private CaseManagementOrder cmo(DocumentReference order, LocalDateTime startDate, String removalReason) {
-        return CaseManagementOrder.builder()
+    private HearingOrder cmo(DocumentReference order, LocalDateTime startDate, String removalReason) {
+        return HearingOrder.builder()
             .order(order)
             .hearing(startDate != null
                 ? "Case management hearing, " + formatLocalDateTimeBaseUsingFormat(startDate, DATE)

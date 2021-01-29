@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -64,7 +64,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
         = IssuedCMOTemplate.builder().familyManCaseNumber("2").build();
 
     private final CaseData caseData = caseData();
-    private final CaseManagementOrder cmo = buildCmo();
+    private final HearingOrder cmo = buildCmo();
 
     private final CaseManagementOrderIssuedEvent event = new CaseManagementOrderIssuedEvent(caseData, cmo);
 
@@ -75,6 +75,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
 
     @Test
     void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
+        CaseData caseData = caseData();
+        HearingOrder cmo = buildCmo();
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
@@ -101,7 +103,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Test
     void shouldNotifyRepresentativesOfCMOIssued() {
         CaseData caseData = caseData();
-        CaseManagementOrder cmo = buildCmo();
+        HearingOrder cmo = buildCmo();
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
             DIGITAL_SERVICE))
@@ -132,8 +134,8 @@ class CaseManagementOrderIssuedEventHandlerTest {
             caseData.getId());
     }
 
-    private CaseManagementOrder buildCmo() {
-        return CaseManagementOrder.builder().order(DocumentReference.builder()
+    private HearingOrder buildCmo() {
+        return HearingOrder.builder().order(DocumentReference.builder()
             .filename("CMO")
             .url("url")
             .binaryUrl("testUrl")

@@ -1,7 +1,5 @@
-package uk.gov.hmcts.reform.fpl.controllers.cmo;
+package uk.gov.hmcts.reform.fpl.controllers.orders;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,55 +16,63 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.cmo.UploadCMOService;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
-@RequestMapping("/callback/upload-cmo")
+@RequestMapping("/callback/upload-draft-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class UploadCMOController extends CallbackController {
+public class UploadDraftOrdersController extends CallbackController {
 
-    private final UploadCMOService service;
-    private final ObjectMapper mapper;
+    private static final int MAX_ORDERS = 10;
+    private final DraftOrderService service;
+    private final CaseConverter caseConverter;
 
+    //TO-DO remove
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        UploadCMOEventData pageData = service.getInitialPageData(caseData);
+        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
 
-        caseDetails.getData().putAll(mapper.convertValue(pageData, new TypeReference<>() {}));
-
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 
-    @PostMapping("/populate-cmo-info/mid-event")
-    public CallbackResponse handlePopulateCmoInfo(@RequestBody CallbackRequest request) {
+    @PostMapping("/populate-initial-data/mid-event")
+    public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        caseDetails.getData().putAll(mapper.convertValue(service.getCMOInfo(caseData), new TypeReference<>() {}));
+        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
 
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 
-    @PostMapping("/review-info/mid-event")
-    public CallbackResponse handleReviewCMO(@RequestBody CallbackRequest request) {
+    @PostMapping("/populate-drafts-info/mid-event")
+    public CallbackResponse handlePopulateDraftInfo(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        caseDetails.getData().putAll(mapper.convertValue(service.getReviewData(caseData), new TypeReference<>() {}));
+        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getDraftsInfo(caseData)));
 
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 
     @PostMapping("/about-to-submit")
@@ -74,20 +80,28 @@ public class UploadCMOController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        UploadCMOEventData eventData = caseData.getUploadCMOEventData();
-        List<Element<CaseManagementOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
+        UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
+
+        if (isNotEmpty(eventData.getCurrentHearingOrderDrafts())
+            && eventData.getCurrentHearingOrderDrafts().size() > MAX_ORDERS) {
+            return respond(caseDetails, List.of(String.format("Maximum number of draft orders is %s", MAX_ORDERS)));
+        }
+
+        List<Element<HearingOrder>> unsealedCMOs = caseData.getDraftUploadedCMOs();
         List<Element<HearingBooking>> hearings = defaultIfNull(caseData.getHearingDetails(), new ArrayList<>());
         List<Element<HearingFurtherEvidenceBundle>> evidenceDocuments = caseData.getHearingFurtherEvidenceDocuments();
+        List<Element<HearingOrdersBundle>> bundles = service.migrateCmoDraftToOrdersBundles(caseData);
 
-        service.updateHearingsAndOrders(eventData, hearings, unsealedCMOs, evidenceDocuments);
+        UUID hearingId = service.updateCase(eventData, hearings, unsealedCMOs, evidenceDocuments, bundles);
 
         // update case data
         caseDetails.getData().put("draftUploadedCMOs", unsealedCMOs);
         caseDetails.getData().put("hearingDetails", hearings);
         caseDetails.getData().put("hearingFurtherEvidenceDocuments", evidenceDocuments);
+        caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
+        caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
 
-        // remove transient fields
-        removeTemporaryFields(caseDetails, UploadCMOEventData.transientFields());
+        removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
         return respond(caseDetails);
     }
