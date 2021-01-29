@@ -563,7 +563,7 @@ class MessageJudgeServiceTest {
                 .build())))
             .build();
 
-        assertThat(messageJudgeService.getFirstHearingLabel(caseData))
+        assertThat(messageJudgeService.getNextHearingLabel(caseData))
             .isEqualTo(String.format("Next hearing in the case: %s hearing, %s", hearingType.getLabel(),
                 formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE)));
     }
@@ -572,7 +572,7 @@ class MessageJudgeServiceTest {
     void shouldNotPopulateFirstHearingLabelWhenHearingDoesNotExists() {
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(messageJudgeService.getFirstHearingLabel(caseData)).isEmpty();
+        assertThat(messageJudgeService.getNextHearingLabel(caseData)).isEmpty();
     }
 
     @Test

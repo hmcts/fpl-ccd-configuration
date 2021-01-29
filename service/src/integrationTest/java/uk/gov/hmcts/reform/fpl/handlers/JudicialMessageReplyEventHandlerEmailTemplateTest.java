@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.JudicialMessageReplyContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
@@ -23,7 +24,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     NotificationService.class,
     JudicialMessageReplyContentProvider.class,
     ObjectMapper.class,
-    CaseUrlService.class
+    CaseUrlService.class,
+    FixedTimeConfiguration.class
 })
 class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
