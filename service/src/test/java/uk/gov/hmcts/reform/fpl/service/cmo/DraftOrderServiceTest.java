@@ -228,6 +228,9 @@ class DraftOrderServiceTest {
                 .cmoHearingInfo("Case management hearing, 2 March 2020")
                 .cmoJudgeInfo("His Honour Judge Dredd")
                 .cmoSupportingDocs(bundle)
+                .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
+                .futureHearingsForCMO(dynamicList(emptyList()))
+                .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);
@@ -298,6 +301,8 @@ class DraftOrderServiceTest {
                 .cmoHearingInfo("Case management hearing, 2 March 2020")
                 .showReplacementCMO(YES)
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
+                .futureHearingsForCMO(dynamicList(emptyList()))
+                .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
                 .build();
 
             assertThat(reviewData).isEqualTo(expectedData);
@@ -331,6 +336,9 @@ class DraftOrderServiceTest {
                 .cmoJudgeInfo("His Honour Judge Dredd")
                 .cmoHearingInfo("Case management hearing, 2 March 2020")
                 .showReplacementCMO(YES)
+                .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
+                .futureHearingsForCMO(dynamicList(emptyList()))
+                .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
                 .build();
 
             assertThat(reviewData).isEqualTo(expectedData);

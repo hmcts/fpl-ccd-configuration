@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -71,10 +70,7 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
 
-        CaseData expectedCaseData = caseData.toBuilder()
-            .uploadDraftOrdersEventData(expectedEventData)
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
-            .build();
+        CaseData expectedCaseData = caseData.toBuilder().uploadDraftOrdersEventData(expectedEventData).build();
 
         assertThat(responseData).isEqualTo(expectedCaseData);
     }
@@ -93,10 +89,7 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
 
-        CaseData expectedCaseData = caseData.toBuilder()
-            .uploadDraftOrdersEventData(expectedEventData)
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
-            .build();
+        CaseData expectedCaseData = caseData.toBuilder().uploadDraftOrdersEventData(expectedEventData).build();
 
         assertThat(responseData).isEqualTo(expectedCaseData);
     }

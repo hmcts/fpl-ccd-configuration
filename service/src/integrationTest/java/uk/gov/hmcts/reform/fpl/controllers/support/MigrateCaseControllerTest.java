@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -31,7 +32,10 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
     private final UUID orderToBeRemovedId = UUID.randomUUID();
     private final UUID orderTwoId = UUID.randomUUID();
-    private final HearingOrder cmo = HearingOrder.builder().build();
+    private final HearingOrder cmo = HearingOrder.builder()
+        .type(HearingOrderType.AGREED_CMO)
+        .title("Agreed CMO discussed at hearing")
+        .build();
     private static final UUID HEARING_ID_1 = UUID.randomUUID();
     private static final UUID HEARING_ID_2 = UUID.randomUUID();
     private static final UUID HEARING_ID_3 = UUID.randomUUID();

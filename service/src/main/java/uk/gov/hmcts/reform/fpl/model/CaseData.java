@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -64,6 +65,13 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasHearingEndDateAfter
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeDifference;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -72,18 +80,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
-import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -334,6 +337,18 @@ public class CaseData {
 
     private final List<Element<Representative>> representatives;
 
+    @JsonIgnore
+    public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
+        if (isNotEmpty(representatives)) {
+            return representatives.stream()
+                .filter(Objects::nonNull)
+                .map(Element::getValue)
+                .filter(representative -> preference == representative.getServingPreferences())
+                .collect(toList());
+        }
+        return emptyList();
+    }
+
     private final List<Element<LegalRepresentative>> legalRepresentatives;
 
     // EPO Order
@@ -572,7 +587,8 @@ public class CaseData {
     private final UUID lastHearingOrderDraftsHearingId;
 
     @JsonUnwrapped
-    private final UploadDraftOrdersData uploadDraftOrdersEventData;
+    @Builder.Default
+    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
 
     public List<Element<HearingOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
