@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -140,13 +141,17 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
     }
 
     @Test
-    void shouldAdjournAndReListHearing() {
+    void shouldAdjournAndReListHearingAndRemoveCMO() {
         Element<HearingBooking> pastHearing = element(testHearing(LocalDateTime.now().minusDays(1)));
         Element<HearingBooking> pastHearingToBeAdjourned = element(testHearing(LocalDateTime.now().minusDays(2)));
         Element<HearingBooking> futureHearing = element(testHearing(LocalDateTime.now().plusDays(1)));
 
         LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
+
+        Element<CaseManagementOrder> orderToBeRemoved = element(pastHearingToBeAdjourned.getId(),
+            CaseManagementOrder.builder().build());
+        Element<CaseManagementOrder> additionalOrder = element(CaseManagementOrder.builder().build());
 
         HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
             .reason("Test reason")
@@ -169,6 +174,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .adjournmentReason(adjournmentReason)
             .noticeOfHearingNotes(pastHearingToBeAdjourned.getValue().getAdditionalNotes())
             .children1(ElementUtils.wrapElements(Child.builder().party(ChildParty.builder().build()).build()))
+            .draftUploadedCMOs(List.of(orderToBeRemoved, additionalOrder))
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
@@ -190,6 +196,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedAdjournedHearing);
         assertThat(updatedCaseData.getSelectedHearingId())
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
+        assertThat(updatedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
     }
 
     @Test
@@ -200,6 +207,9 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
         LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
+
+        Element<CaseManagementOrder> orderToBeRemoved = element(futureHearingToBeVacated.getId(),
+            CaseManagementOrder.builder().build());
 
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
             .reason("Test reason")
@@ -222,6 +232,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .vacatedReason(vacatedReason)
             .noticeOfHearingNotes(futureHearingToBeVacated.getValue().getAdditionalNotes())
             .children1(ElementUtils.wrapElements(Child.builder().party(ChildParty.builder().build()).build()))
+            .draftUploadedCMOs(List.of(orderToBeRemoved))
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
@@ -243,6 +254,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
         assertThat(updatedCaseData.getSelectedHearingId())
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));
+        assertThat(updatedCaseData.getDraftUploadedCMOs()).isEmpty();
     }
 
     @Test

@@ -404,12 +404,12 @@ public class ManageHearingsService {
         Element<HearingBooking> cancelledBooking = cancelHearing(caseData, hearingId, hearingStatus);
         Element<HearingBooking> reListedBooking = reList(caseData, hearingToBeReListed);
 
-        removePreviousCaseManagementOrder(caseData, cancelledBooking.getId());
+        removePreviousDraftCaseManagementOrder(caseData, cancelledBooking.getId());
         reassignDocumentsBundle(caseData, cancelledBooking, reListedBooking);
         return reListedBooking.getId();
     }
 
-    private void removePreviousCaseManagementOrder(CaseData caseData, UUID hearingId) {
+    private void removePreviousDraftCaseManagementOrder(CaseData caseData, UUID hearingId) {
         caseData.getDraftUploadedCMOs().removeIf(item -> item.getId().equals(hearingId));
     }
 

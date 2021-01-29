@@ -292,6 +292,7 @@ public class ManageHearingsController extends CallbackController {
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
         data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
+        data.putIfNotEmpty("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
