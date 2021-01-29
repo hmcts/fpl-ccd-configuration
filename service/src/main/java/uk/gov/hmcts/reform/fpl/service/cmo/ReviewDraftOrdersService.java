@@ -138,30 +138,20 @@ public class ReviewDraftOrdersService {
             if (cmoReviewDecision != null && cmoReviewDecision.getDecision() != null) {
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
                     Element<HearingOrder> cmoToSeal = getCMOToSeal(cmoReviewDecision, cmo);
-                    cmoToSeal.getValue().setLastUploadedOrder(cmoToSeal.getValue().getOrder());
-                    cmoToSeal.getValue().setOrder(documentSealingService.sealDocument(cmoToSeal.getValue().getOrder()));
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(cmoToSeal);
-
                     data.put("sealedCMOs", sealedCMOs);
                     data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, cmoToSeal.getId()));
                 }
                 caseData.getDraftUploadedCMOs().remove(cmo);
-
-                if (caseData.getHearingDetails() != null) {
-                    caseData.getHearingDetails().stream()
-                        .filter(h -> h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
-                        .findFirst()
-                        .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
-                }
+                updateHearingCMO(caseData, cmo);
 
                 data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
                 data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
             }
         }
-
         return data;
     }
 
@@ -191,7 +181,7 @@ public class ReviewDraftOrdersService {
         if (!sealedCMOs.isEmpty()) {
             return sealedCMOs.get(sealedCMOs.size() - 1).getValue();
         } else {
-            throw new CMONotFoundException("No sealed CMOS found");
+            throw new CMONotFoundException("No sealed CMOs found");
         }
     }
 
@@ -203,9 +193,11 @@ public class ReviewDraftOrdersService {
 
         int counter = 1;
         List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
+
         for (Element<HearingOrder> orderElement : draftOrders) {
             Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
             ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
+
             if (reviewDecision != null && reviewDecision.getDecision() != null) {
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     GeneratedOrder sealedC21Order = getSealedC21Order(caseData, orderElement, reviewDecision);
@@ -215,6 +207,13 @@ public class ReviewDraftOrdersService {
             }
             counter++;
         }
+
+        updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
+        data.put("orderCollection", reviewedOrders);
+        data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
+    }
+
+    private void updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
         if (selectedOrdersBundle.getValue().getOrders().isEmpty()) {
             caseData.getHearingOrdersBundlesDrafts()
                 .removeIf(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()));
@@ -223,8 +222,6 @@ public class ReviewDraftOrdersService {
                 .filter(bundle -> bundle.getId().equals(selectedOrdersBundle.getId()))
                 .forEach(bundle -> bundle.getValue().setOrders(selectedOrdersBundle.getValue().getOrders()));
         }
-        data.put("orderCollection", reviewedOrders);
-        data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
     private Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
@@ -238,8 +235,18 @@ public class ReviewDraftOrdersService {
         return element(cmo.getId(), cmo.getValue().toBuilder()
             .dateIssued(time.now().toLocalDate())
             .status(CMOStatus.APPROVED)
-            .order(order)
+            .order(documentSealingService.sealDocument(order))
+            .lastUploadedOrder(order)
             .build());
+    }
+
+    private void updateHearingCMO(CaseData caseData, Element<HearingOrder> cmo) {
+        if (caseData.getHearingDetails() != null) {
+            caseData.getHearingDetails().stream()
+                .filter(h -> h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
+                .findFirst()
+                .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
+        }
     }
 
     private GeneratedOrder getSealedC21Order(CaseData caseData,
@@ -308,6 +315,7 @@ public class ReviewDraftOrdersService {
 
         data.put("draftCMOExists", "N");
         for (Element<HearingOrder> orderElement : ordersBundle.getOrders(SEND_TO_JUDGE)) {
+
             if (orderElement.getValue().getType().isCmo()) {
                 data.put("cmoDraftOrderTitle", orderElement.getValue().getTitle());
                 data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
@@ -329,7 +337,9 @@ public class ReviewDraftOrdersService {
 
     private void validateReviewDecision(
         List<String> errors, ReviewDecision cmoDecision, String orderName) {
+
         if (cmoDecision != null && cmoDecision.getDecision() != null) {
+
             if (JUDGE_AMENDS_DRAFT.equals(cmoDecision.getDecision())
                 && cmoDecision.getJudgeAmendedDocument() == null) {
                 errors.add(String.format("Add the new %s", orderName));
