@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
@@ -62,4 +63,30 @@ class CaseDetailsMapTest {
 
         assertThat(caseDetailsMap).isEmpty();
     }
+
+
+    @Test
+    void shouldUpdateBatchOfProperties() {
+
+        final Map<String, Object> initialMap = new HashMap<>();
+        initialMap.put("K0", "V0");
+        initialMap.put("K1", "V1");
+
+        final Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("K0", null);
+        updateMap.put("K2", "");
+        updateMap.put("K3", "V3");
+
+        final Map<String, Object> expectedMap = new HashMap<>();
+        expectedMap.put("K1", "V1");
+        expectedMap.put("K3", "V3");
+
+        CaseDetails caseDetails = CaseDetails.builder().data(initialMap).build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails)
+            .putIfNotEmpty(updateMap);
+
+        assertThat(caseDetailsMap).isEqualTo(expectedMap);
+    }
+
 }

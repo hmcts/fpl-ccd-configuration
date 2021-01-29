@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -14,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
@@ -73,7 +74,8 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .caseManagementOrderId(removedOrderId)
             .build();
 
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+        HearingOrder caseManagementOrder = HearingOrder.builder()
+            .type(HearingOrderType.DRAFT_CMO)
             .order(documentReference)
             .build();
 
@@ -150,7 +152,8 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .caseManagementOrderId(UUID.randomUUID())
             .build();
 
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+        HearingOrder caseManagementOrder = HearingOrder.builder()
+            .type(HearingOrderType.AGREED_CMO)
             .order(documentReference)
             .build();
 
