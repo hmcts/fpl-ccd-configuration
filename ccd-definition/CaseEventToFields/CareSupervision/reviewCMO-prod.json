@@ -9,7 +9,30 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "PageShowCondition": "numDraftCMOs=\"MULTI\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/approve-draft-orders/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/review-cmo/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "numDraftCMOs",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "ReviewDecision",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "cmoToReviewList=\"DO_NOT_SHOW\"",
+    "PageShowCondition": "numDraftCMOs!=\"NONE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "reviewCMO",
+    "CaseFieldID": "reviewCMODecision",
+    "DisplayContext": "COMPLEX",
+    "PageID": "ReviewDecision",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
