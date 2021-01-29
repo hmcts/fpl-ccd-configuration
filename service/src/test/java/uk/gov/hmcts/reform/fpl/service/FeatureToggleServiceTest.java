@@ -45,6 +45,18 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsSummaryTabOnEventEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isSummaryTabOnEventEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("summary-tab-on-event-update"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -128,12 +140,36 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabledBoolean(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(service.isEpoOrderTypeAndExclusionEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("epo-order-type-and-exclusion"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isSummaryTabEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("summary-tab-update"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isSummaryTabFirstCronRunEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("summary-tab-first-run"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

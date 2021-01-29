@@ -968,6 +968,37 @@ class CaseDataTest {
     }
 
     @Nested
+    class GetNextHearingAfter {
+
+        @Test
+        void shouldReturnNextHearingAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+            HearingBooking futureHearing = HearingBooking.builder().startDate(now().plusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing, futureHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).contains(futureHearing);
+        }
+
+        @Test
+        void shouldReturnNothingIfNoHearingsAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).isEmpty();
+        }
+    }
+
+    @Nested
     class GetFirstHearingOfType {
 
         @Test
