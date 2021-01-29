@@ -354,8 +354,7 @@ public class ManageHearingsService {
                 .max(comparing(HearingBooking::getStartDate))
                 .orElseThrow(NoHearingBookingException::new);
         } else {
-            previousHearingBooking = caseData.getNextHearingAfter(time.now())
-                .orElseThrow(NoHearingBookingException::new);
+            previousHearingBooking = caseData.getMostUrgentHearingBookingAfter(time.now());
         }
 
         return hearingVenueLookUpService.getHearingVenue(previousHearingBooking);
