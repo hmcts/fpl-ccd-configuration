@@ -303,6 +303,9 @@ public class ManageHearingsController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
+
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingState(callbackRequest.getCaseDetails())
                 && standardDirectionsService.hasEmptyDates(caseData)) {
@@ -320,8 +323,7 @@ public class ManageHearingsController extends CallbackController {
                     }
                 });
         }
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
-            getCaseDataBefore(callbackRequest)));
+
     }
 
     private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
