@@ -20,7 +20,7 @@
     "ID": "JudicialMessage",
     "ListElementCode": "requestedBy",
     "FieldType": "Text",
-    "ElementLabel": "Requested by",
+    "ElementLabel": "Message subject",
     "SecurityClassification": "Public"
   },
   {

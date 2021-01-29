@@ -12,7 +12,7 @@
     "ID": "JudicialMessageMetaData",
     "ListElementCode": "requestedBy",
     "FieldType": "Text",
-    "ElementLabel": "To review an application from:",
+    "ElementLabel": "Message subject",
     "SecurityClassification": "Public"
   },
   {
