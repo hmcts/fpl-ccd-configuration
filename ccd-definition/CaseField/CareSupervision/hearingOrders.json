@@ -157,5 +157,64 @@
     "Label": "Which hearing does this CMO relate to?",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingOrderDraftInfo",
+    "Label": "<div class='panel panel-border-wide'>You can add CMOs and C21s that relates to the same hearing in one go.<br/><br/>If they are for different hearings, or are not related to any hearings, add these separately.</div>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingOrderDraftKind",
+    "Label": "What order are you adding?",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DraftOrderKind",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingsForHearingOrderDrafts",
+    "Label": "Which hearing does the order relates to?",
+    "HintText": "Choose 'No hearing' if it does not relate to hearing",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "currentHearingOrderDrafts",
+    "Label": "Order",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "UploadedCaseManagementOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingOrdersBundlesDrafts",
+    "Label": "Hearing",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OrdersBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "lastHearingOrderDraftsHearingId",
+    "Label": "Hearing",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Field used to pass context between about-to-submit and submitted callback"
   }
 ]

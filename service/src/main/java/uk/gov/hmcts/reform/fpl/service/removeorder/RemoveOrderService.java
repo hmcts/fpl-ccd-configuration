@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
@@ -74,9 +74,9 @@ public class RemoveOrderService {
         return getRemovedOrder(hiddenSDOs, previousHiddenSDOs);
     }
 
-    public Optional<CaseManagementOrder> getRemovedCMO(
-        List<Element<CaseManagementOrder>> hiddenCMOs,
-        List<Element<CaseManagementOrder>> previousHiddenCMOs
+    public Optional<HearingOrder> getRemovedCMO(
+        List<Element<HearingOrder>> hiddenCMOs,
+        List<Element<HearingOrder>> previousHiddenCMOs
     ) {
         return getRemovedOrder(hiddenCMOs, previousHiddenCMOs);
     }
