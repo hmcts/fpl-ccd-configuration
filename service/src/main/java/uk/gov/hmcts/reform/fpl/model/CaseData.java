@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -71,6 +72,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -83,6 +85,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -332,6 +335,18 @@ public class CaseData {
     private final Others others;
 
     private final List<Element<Representative>> representatives;
+
+    @JsonIgnore
+    public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
+        if (isNotEmpty(representatives)) {
+            return representatives.stream()
+                .filter(Objects::nonNull)
+                .map(Element::getValue)
+                .filter(representative -> preference == representative.getServingPreferences())
+                .collect(toList());
+        }
+        return emptyList();
+    }
 
     private final List<Element<LegalRepresentative>> legalRepresentatives;
 

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +23,6 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.OTHER;
@@ -172,18 +170,6 @@ public class RepresentativeService {
         caseRolesToBeUpdated.forEach((email, roles) ->
             organisationService.findUserByEmail(email)
                 .ifPresent(userId -> caseService.addUser(Long.toString(caseId), userId, roles)));
-    }
-
-    public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
-                                                                     RepresentativeServingPreferences preference) {
-        if (isNotEmpty(representatives)) {
-            return representatives.stream()
-                .filter(Objects::nonNull)
-                .map(Element::getValue)
-                .filter(representative -> preference == representative.getServingPreferences())
-                .collect(toList());
-        }
-        return emptyList();
     }
 
     private void associatedRepresentativesWithParties(CaseData caseData) {

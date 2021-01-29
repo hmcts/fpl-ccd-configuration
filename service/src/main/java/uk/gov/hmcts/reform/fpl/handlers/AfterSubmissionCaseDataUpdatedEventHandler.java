@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
@@ -24,23 +25,26 @@ public class AfterSubmissionCaseDataUpdatedEventHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final CaseSummaryService caseSummaryService;
     private final ObjectMapper objectMapper;
+    private final FeatureToggleService featureToggleService;
 
     @EventListener
     public void handleCaseDataChange(final AfterSubmissionCaseDataUpdated event) {
 
-        Map<String, Object> originalSummaryFields = objectMapper.convertValue(
-            originalSyntheticCaseSummary(event),
-            new TypeReference<>() {});
+        if (featureToggleService.isSummaryTabOnEventEnabled()) {
+            Map<String, Object> originalSummaryFields = objectMapper.convertValue(
+                originalSyntheticCaseSummary(event),
+                new TypeReference<>() {});
 
-        Map<String, Object> updatedSummaryFields = caseSummaryService.generateSummaryFields(event.getCaseData());
+            Map<String, Object> updatedSummaryFields = caseSummaryService.generateSummaryFields(event.getCaseData());
 
-        if (fieldsHaveChanged(originalSummaryFields, updatedSummaryFields)) {
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                event.getCaseData().getId(),
-                "internal-update-case-summary",
-                updatedSummaryFields);
+            if (fieldsHaveChanged(originalSummaryFields, updatedSummaryFields)) {
+                coreCaseDataService.triggerEvent(
+                    JURISDICTION,
+                    CASE_TYPE,
+                    event.getCaseData().getId(),
+                    "internal-update-case-summary",
+                    updatedSummaryFields);
+            }
         }
 
     }

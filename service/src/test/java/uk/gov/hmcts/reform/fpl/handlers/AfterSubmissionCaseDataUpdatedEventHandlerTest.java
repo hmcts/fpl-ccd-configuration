@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.summary.CaseSummaryService;
 
@@ -42,11 +44,33 @@ class AfterSubmissionCaseDataUpdatedEventHandlerTest {
     private final CoreCaseDataService coreCaseDataService = mock(CoreCaseDataService.class);
     private final CaseSummaryService caseSummaryService = mock(CaseSummaryService.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
+    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
 
     AfterSubmissionCaseDataUpdatedEventHandler underTest = new AfterSubmissionCaseDataUpdatedEventHandler(
         coreCaseDataService,
         caseSummaryService,
-        objectMapper);
+        objectMapper,
+        featureToggleService);
+
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
+    }
+
+    @Test
+    void testIfToggleOff() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
+
+        underTest.handleCaseDataChange(AfterSubmissionCaseDataUpdated.builder()
+            .caseData(CASE_DATA_WITH_SUMMARY)
+            .caseDataBefore(CaseData.builder()
+                .id(CASE_DATA_ID)
+                .syntheticCaseSummary(ANOTHER_SYNTHETIC_CASE_SUMMARY)
+                .build())
+            .build());
+
+        verifyNoInteractions(coreCaseDataService, caseSummaryService, objectMapper);
+    }
 
     @Test
     void testIfNoCaseDataBefore() {

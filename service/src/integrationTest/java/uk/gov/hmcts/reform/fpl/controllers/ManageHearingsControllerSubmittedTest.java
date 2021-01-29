@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
@@ -96,11 +99,19 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @SpyBean
     private EventService eventPublisher;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");
+    }
+
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
     }
 
     @Test
@@ -136,6 +147,35 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoMoreInteractions(coreCaseDataService);
 
+    }
+
+    @Test
+    void shouldTriggerPopulateDatesEventWhenEmptyDatesExistAndCaseInGatekeepingToggledOff() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
+
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .id(parseLong(CASE_ID))
+            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
+            .state("Gatekeeping")
+            .build();
+        CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
+
+        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
+
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
+            eq(JURISDICTION),
+            eq(CASE_TYPE),
+            eq(CASE_REFERENCE),
+            eq("populateSDO"),
+            anyMap());
+
+        verifyNoInteractions(notificationClient);
+        verifyNoMoreInteractions(coreCaseDataService);
     }
 
     @Test

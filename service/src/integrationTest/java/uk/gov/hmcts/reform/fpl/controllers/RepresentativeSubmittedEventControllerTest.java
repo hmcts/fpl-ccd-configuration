@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -31,6 +33,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
@@ -57,6 +60,9 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     private static final Long CASE_ID = 12345L;
     private static final String CASE_REFERENCE = "12345";
     private static final String RESPONDENT_SURNAME = "Watson";
@@ -68,6 +74,11 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     RepresentativeSubmittedEventControllerTest() {
         super("manage-representatives");
+    }
+
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
     }
 
     @Test
@@ -123,6 +134,32 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
             CASE_ID,
             "internal-update-case-summary",
             caseSummary());
+    }
+
+    @Test
+    void shouldSendNotificationWhenNewPartyIsAddedOrUpdatedToCaseThroughDigitalServiceToggledOff()
+        throws NotificationClientException {
+
+        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
+
+        final UUID representativeId = UUID.randomUUID();
+
+        Respondent respondent = buildRespondent();
+
+        Representative representative = buildRepresentative(DIGITAL_SERVICE);
+
+        CaseDetails caseDetailsBefore = buildCaseData(respondent, emptyList(), emptyMap());
+        CaseDetails caseDetails = buildCaseData(respondent, List.of(element(representativeId, representative)),
+            emptyMap());
+
+        CallbackRequest callbackRequest = buildCallbackRequest(caseDetailsBefore, caseDetails);
+
+        postSubmittedEvent(callbackRequest);
+
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE, "test@test.com",
+            expectedTemplateParametersDigitalService(), NOTIFICATION_REFERENCE);
+        verifyNoInteractions(coreCaseDataService);
     }
 
     @Test
