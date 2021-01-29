@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -99,5 +100,9 @@ public class MessageJudgeController extends CallbackController {
                 publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
             }
         }
+
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
+
     }
 }
