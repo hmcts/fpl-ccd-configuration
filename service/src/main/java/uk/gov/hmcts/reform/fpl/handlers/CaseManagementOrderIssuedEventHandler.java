@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
@@ -31,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 public class CaseManagementOrderIssuedEventHandler {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
-    private final RepresentativeService representativeService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
@@ -72,8 +70,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private void sendToRepresentatives(final CaseData caseData,
                                        HearingOrder cmo,
                                        RepresentativeServingPreferences servingPreference) {
-        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), servingPreference);
+        List<Representative> representatives = caseData.getRepresentativesByServedPreference(servingPreference);
 
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))

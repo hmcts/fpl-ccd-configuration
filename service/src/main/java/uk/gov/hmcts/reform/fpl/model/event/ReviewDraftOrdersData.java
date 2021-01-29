@@ -48,7 +48,6 @@ public class ReviewDraftOrdersData {
     DocumentReference draftOrder9Document;
     DocumentReference draftOrder10Document;
 
-
     public static String[] transientFields() {
         return new String[]{
             "numDraftCMOs", "cmoToReviewList", "draftCMOExists", "draftBlankOrdersCount", "cmoDraftOrderTitle",

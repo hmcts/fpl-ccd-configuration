@@ -60,13 +60,6 @@ class PartyAddedToCaseEventHandlerTest {
 
     @BeforeEach
     void init() {
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
-            DIGITAL_SERVICE))
-            .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
-
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), EMAIL))
-            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
-
         given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), EMAIL))
             .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());

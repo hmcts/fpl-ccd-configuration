@@ -60,13 +60,11 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
         List<Element<HearingOrder>> caseManagementOrders = List.of(
             element(HearingOrder.builder()
                 .type(HearingOrderType.AGREED_CMO)
-                .title("Agreed CMO discussed at hearing")
                 .status(APPROVED)
                 .dateIssued(dateNow())
                 .build()),
             element(HearingOrder.builder()
                 .type(HearingOrderType.DRAFT_CMO)
-                .title("Draft CMO from advocates' meeting")
                 .status(DRAFT)
                 .dateIssued(dateNow())
                 .build())
@@ -89,7 +87,9 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
                 buildListElement(generatedOrders.get(0).getId(), "order 1 - 12 March 1234"),
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 28 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 29 August 2021"),
-                buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022")
+                buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022"),
+                buildListElement(caseManagementOrders.get(0).getId(), String.format("Case management order - %s",
+                    formatLocalDateToString(dateNow(), "d MMMM yyyy")))
             )).build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);

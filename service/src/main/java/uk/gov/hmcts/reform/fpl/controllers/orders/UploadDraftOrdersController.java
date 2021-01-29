@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.orders;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,30 +39,40 @@ public class UploadDraftOrdersController extends CallbackController {
 
     private static final int MAX_ORDERS = 10;
     private final DraftOrderService service;
-    private final ObjectMapper mapper;
+    private final CaseConverter caseConverter;
 
+    //TO-DO remove
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        UploadDraftOrdersData pageData = service.getInitialData(caseData);
+        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
 
-        caseDetails.getData().putAll(mapper.convertValue(pageData, new TypeReference<>() {
-        }));
+        return respond(caseDetailsMap);
+    }
 
-        return respond(caseDetails);
+    @PostMapping("/populate-initial-data/mid-event")
+    public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
+
+        return respond(caseDetailsMap);
     }
 
     @PostMapping("/populate-drafts-info/mid-event")
     public CallbackResponse handlePopulateDraftInfo(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        caseDetails.getData().putAll(mapper.convertValue(service.getDraftsInfo(caseData), new TypeReference<>() {
-        }));
+        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getDraftsInfo(caseData)));
 
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 
     @PostMapping("/about-to-submit")
@@ -91,8 +101,7 @@ public class UploadDraftOrdersController extends CallbackController {
         caseDetails.getData().put("hearingOrdersBundlesDrafts", bundles);
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", hearingId);
 
-        // remove transient fields
-        removeTemporaryFields(caseDetails, UploadDraftOrdersData.transientFields());
+        removeTemporaryFields(caseDetails, UploadDraftOrdersData.temporaryFields());
 
         return respond(caseDetails);
     }

@@ -1,41 +1,41 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOType.AGREED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOType.DRAFT;
+import static uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData.builder;
 
 class UploadDraftOrdersDataTest {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
     @Test
-    void shouldNotMapNullValues() {
-        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-            .showReplacementCMO(YesNo.YES)
-            .build();
-
-        Map<String, Object> mapped = mapper.convertValue(eventData, new TypeReference<>() {
-        });
-
-        assertThat(mapped).isEqualTo(Map.of("showReplacementCMO", "YES"));
+    void shouldReturnTemporaryFields() {
+        assertThat(UploadDraftOrdersData.temporaryFields())
+            .containsExactlyInAnyOrder(
+                "hearingOrderDraftKind",
+                "currentHearingOrderDrafts",
+                "uploadedCaseManagementOrder",
+                "replacementCMO",
+                "cmoSupportingDocs",
+                "pastHearingsForCMO",
+                "futureHearingsForCMO",
+                "hearingsForHearingOrderDrafts",
+                "cmoUploadType",
+                "cmosSentToJudge",
+                "cmoHearingInfo",
+                "previousCMO",
+                "cmoJudgeInfo",
+                "cmoToSend",
+                "showCMOsSentToJudge",
+                "showReplacementCMO");
     }
 
     @Test
-    void shouldNotMapEmptyValues() {
-        UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
-            .cmoJudgeInfo("")
-            .showReplacementCMO(YesNo.YES)
-            .build();
-
-        Map<String, Object> mapped = mapper.convertValue(eventData, new TypeReference<>() {
-        });
-
-        assertThat(mapped).isEqualTo(Map.of("showReplacementCMO", "YES"));
+    void shouldReturnIsCmoAgreedBasedOnCmoUploadType() {
+        assertThat(builder().cmoUploadType(AGREED).build().isCmoAgreed()).isTrue();
+        assertThat(builder().cmoUploadType(DRAFT).build().isCmoAgreed()).isFalse();
+        assertThat(builder().cmoUploadType(null).build().isCmoAgreed()).isFalse();
     }
 
 }
