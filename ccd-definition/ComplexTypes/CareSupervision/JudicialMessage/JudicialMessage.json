@@ -46,9 +46,9 @@
     "ID": "JudicialMessage",
     "ListElementCode": "urgency",
     "FieldType": "Text",
-    "ElementLabel": " ",
+    "ElementLabel": "Urgency",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "dateSent=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "urgency!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
