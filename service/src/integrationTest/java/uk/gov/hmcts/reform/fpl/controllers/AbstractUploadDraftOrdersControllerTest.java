@@ -102,6 +102,7 @@ abstract class AbstractUploadDraftOrdersControllerTest extends AbstractControlle
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(startDate)
+            .endDate(startDate.plusHours(1))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
