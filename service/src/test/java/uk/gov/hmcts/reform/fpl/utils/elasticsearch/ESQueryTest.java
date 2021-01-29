@@ -8,23 +8,14 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ESQueryTest {
-
     @Test
-    void shouldWrapWithQueryField() {
+    void shouldCreateQueryWithSizeAndFromFields() {
         ESQuery query = new TestClass();
 
-        final JSONObject queryInContext = query.toQueryContext();
-        final JSONObject expectedContext = new JSONObject(Map.of("query", Map.of("test", "query")));
-
-        assertThat(queryInContext).usingRecursiveComparison().isEqualTo(expectedContext);
-    }
-
-    @Test
-    void shouldAddSizeFieldWhenProvided() {
-        ESQuery query = new TestClass();
-
-        final JSONObject queryInContext = query.toQueryContext(2);
-        final JSONObject expectedContext = new JSONObject(Map.of("query", Map.of("test", "query"), "size", 2));
+        final JSONObject queryInContext = query.toQueryContext(2, 3);
+        final JSONObject expectedContext = new JSONObject(
+            Map.of("query", Map.of("test", "query"), "size", 2,  "from", 3)
+        );
 
         assertThat(queryInContext).usingRecursiveComparison().isEqualTo(expectedContext);
     }
