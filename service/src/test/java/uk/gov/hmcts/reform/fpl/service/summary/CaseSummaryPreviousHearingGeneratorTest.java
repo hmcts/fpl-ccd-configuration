@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -74,7 +74,7 @@ class CaseSummaryPreviousHearingGeneratorTest {
                     .build())
             )).sealedCMOs(List.of(
                 element(ANOTHER_CMO_ID,
-                    CaseManagementOrder.builder()
+                    HearingOrder.builder()
                         .order(DOCUMENT_REFERENCE)
                         .build())
             ))
@@ -99,7 +99,7 @@ class CaseSummaryPreviousHearingGeneratorTest {
                     .build())
             )).sealedCMOs(List.of(
                 element(CASE_MANAGEMENT_ORDER_ID,
-                    CaseManagementOrder.builder()
+                    HearingOrder.builder()
                         .order(DOCUMENT_REFERENCE)
                         .build())
             ))
