@@ -9,23 +9,30 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.UploadCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftCMOUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -37,30 +44,34 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE_JUDGE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(UploadCMOController.class)
+@WebMvcTest(UploadDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
+class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
-    static final String JUDGE_EMAIL = "judge@hmcts.gov.uk";
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
-        .binaryUrl("FAKE BINARY")
-        .url("FAKE URL")
-        .filename("FAKE FILE")
-        .build();
-    private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final long CASE_ID = 12345L;
+    private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2020, Month.NOVEMBER, 3, 0, 0, 0);
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -82,6 +93,8 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
 
     @Test
     void shouldSendNotificationsIfNewAgreedCMOUploaded() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
+
         CallbackRequest callbackRequest = callbackRequest(SEND_TO_JUDGE);
 
         postSubmittedEvent(callbackRequest);
@@ -135,6 +148,8 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
 
     @Test
     void shouldSendToJudgeIfDraftCMOUploaded() {
+        when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
+
         CallbackRequest callbackRequest = callbackRequest(DRAFT);
 
         postSubmittedEvent(callbackRequest);
@@ -159,14 +174,26 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             .judgeName("Judy")
             .caseUrl("http://fake-url/cases/case-details/12345#Draft%20orders")
             .build();
-        return mapper.convertValue(template, new TypeReference<>() {
-        });
+        return convert(template);
+    }
+
+    private Map<String, Object> draftOrdersUploadedEmailCustomizations() {
+        DraftOrdersUploadedTemplate template = DraftOrdersUploadedTemplate.builder()
+            .subjectLineWithHearingDate(String.format("Davidson, %s, case management hearing, 3 November 2020",
+                FAMILY_MAN_CASE_NUMBER))
+            .respondentLastName("Davidson")
+            .judgeTitle("Her Honour Judge")
+            .judgeName("Judy")
+            .caseUrl("http://fake-url/cases/case-details/" + CASE_ID + "#Draft%20orders")
+            .draftOrders("Draft CMO from advocates' meeting\nBlank order")
+            .build();
+        return convert(template);
     }
 
     private CallbackRequest callbackRequest(CMOStatus status) {
-        List<Element<HearingBooking>> hearingsBefore = hearings(LocalDateTime.of(2020, 11, 3, 12, 0));
+        List<Element<HearingBooking>> hearingsBefore = hearings(HEARING_DATE);
         List<Element<HearingBooking>> hearings = hearings(
-            LocalDateTime.of(2020, 11, 3, 12, 0),
+            HEARING_DATE,
             hearingsBefore.get(0).getId(),
             hearingsBefore.get(1).getId()
         );
@@ -176,12 +203,12 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             .draftUploadedCMOs(List.of())
             .build();
 
-        Element<CaseManagementOrder> order = element(order(hearings.get(0).getValue(), status));
+        Element<HearingOrder> order = element(order(hearings.get(0).getValue(), status));
 
         hearings.get(0).getValue().setCaseManagementOrderId(order.getId());
 
         Judge judy = Judge.builder()
-            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .judgeEmailAddress(JUDGE_EMAIL)
             .build();
@@ -203,11 +230,11 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
         return toCallBackRequest(caseDetails, asCaseDetails(caseDataBefore));
     }
 
-    private CaseManagementOrder order(HearingBooking hearing, CMOStatus status) {
-        return CaseManagementOrder.builder()
+    private HearingOrder order(HearingBooking hearing, CMOStatus status) {
+        return HearingOrder.builder()
             .status(status)
             .hearing(hearing.toLabel())
-            .order(DOCUMENT_REFERENCE)
+            .order(TestDataHelper.testDocumentReference())
             .dateSent(dateNow())
             .build();
     }
@@ -224,5 +251,12 @@ class UploadCMOSubmittedControllerTest extends AbstractUploadCMOControllerTest {
             hearing(id1, startDate),
             hearing(id2, startDate.plusDays(1))
         );
+    }
+
+    private HearingOrder hearingOrder(HearingOrderType type, String title) {
+        return HearingOrder.builder()
+            .type(type)
+            .title(title)
+            .build();
     }
 }

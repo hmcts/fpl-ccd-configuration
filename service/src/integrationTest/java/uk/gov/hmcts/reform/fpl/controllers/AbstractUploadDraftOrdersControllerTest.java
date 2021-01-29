@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -11,41 +12,63 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.controllers.UploadCMOSubmittedControllerTest.JUDGE_EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-public abstract class AbstractUploadCMOControllerTest extends AbstractControllerTest {
-    AbstractUploadCMOControllerTest(String eventName) {
-        super(eventName);
+abstract class AbstractUploadDraftOrdersControllerTest extends AbstractControllerTest {
+
+    static final String JUDGE_EMAIL = "judge@hmcts.gov.uk";
+
+    AbstractUploadDraftOrdersControllerTest() {
+        super("upload-draft-orders");
+    }
+
+    Pair<String, UUID> option(String label, UUID code) {
+        return Pair.of(label, code);
+    }
+
+    Pair<String, UUID> option(String label, Element element) {
+        return option(label, element.getId());
+    }
+
+    Map<String, Object> convert(Object o) {
+        return mapper.convertValue(o, new TypeReference<>() {
+        });
     }
 
     @SafeVarargs
-    protected final DynamicList dynamicListWithoutSelected(Pair<String, UUID>... pairs) {
+    final Map<String, Object> dynamicList(Pair<String, UUID>... options) {
+        return mapper.convertValue(dynamicListWithoutSelected(options), new TypeReference<>() {
+        });
+    }
+
+    @SafeVarargs
+    final DynamicList dynamicListWithFirstSelected(Pair<String, UUID>... pairs) {
+        return dynamicListWithSelected(0, pairs);
+    }
+
+    @SafeVarargs
+    final DynamicList dynamicListWithSelected(int index, Pair<String, UUID>... pairs) {
+        return dynamicListWithSelected(pairs[index].getLeft(), pairs[index].getRight(), pairs);
+    }
+
+    @SafeVarargs
+    final DynamicList dynamicListWithSelected(String label, UUID code, Pair<String, UUID>... pairs) {
         return DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
+            .value(DynamicListElement.builder().label(label).code(code).build())
             .listItems(listItems(pairs))
             .build();
     }
 
     @SafeVarargs
-    protected final DynamicList dynamicListWithFirstSelected(Pair<String, UUID>... pairs) {
-        return dynamicListWithSelected(0, pairs);
-    }
-
-    @SafeVarargs
-    protected final DynamicList dynamicListWithSelected(int index, Pair<String, UUID>... pairs) {
-        return dynamicListWithSelected(pairs[index].getLeft(), pairs[index].getRight(), pairs);
-    }
-
-    @SafeVarargs
-    protected final DynamicList dynamicListWithSelected(String label, UUID code, Pair<String, UUID>... pairs) {
+    private DynamicList dynamicListWithoutSelected(Pair<String, UUID>... items) {
         return DynamicList.builder()
-            .value(DynamicListElement.builder().label(label).code(code).build())
-            .listItems(listItems(pairs))
+            .value(DynamicListElement.EMPTY)
+            .listItems(listItems(items))
             .build();
     }
 
@@ -56,22 +79,22 @@ public abstract class AbstractUploadCMOControllerTest extends AbstractController
             .collect(Collectors.toList());
     }
 
-    protected List<Element<HearingBooking>> hearings() {
+    List<Element<HearingBooking>> hearings() {
         return List.of(
             hearing(LocalDateTime.of(2020, 3, 15, 20, 20)),
             hearing(LocalDateTime.of(2020, 3, 16, 10, 10))
         );
     }
 
-    protected Element<HearingBooking> hearingWithCMOId(LocalDateTime startDate, UUID cmoId) {
+    Element<HearingBooking> hearingWithCMOId(LocalDateTime startDate, UUID cmoId) {
         return element(hearing(startDate, cmoId));
     }
 
-    protected Element<HearingBooking> hearing(UUID hearingId, LocalDateTime startDate) {
+    Element<HearingBooking> hearing(UUID hearingId, LocalDateTime startDate) {
         return element(hearingId, hearing(startDate, null));
     }
 
-    protected Element<HearingBooking> hearing(LocalDateTime startDate) {
+    Element<HearingBooking> hearing(LocalDateTime startDate) {
         return hearingWithCMOId(startDate, null);
     }
 
