@@ -7,7 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -100,7 +100,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
         given(documentDownloadService.downloadDocument(order.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        CaseManagementOrder caseManagementOrder = buildCMO(APPROVED);
+        HearingOrder caseManagementOrder = buildCMO(APPROVED);
 
         CaseDetails caseDetails = buildCaseDetailsForApprovedCMO(caseManagementOrder);
 
@@ -182,7 +182,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    private CaseDetails buildCaseDetailsForApprovedCMO(CaseManagementOrder... caseManagementOrders) {
+    private CaseDetails buildCaseDetailsForApprovedCMO(HearingOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
@@ -210,8 +210,8 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
             .build());
     }
 
-    private static CaseManagementOrder buildCMO(CMOStatus status) {
-        return CaseManagementOrder.builder()
+    private static HearingOrder buildCMO(CMOStatus status) {
+        return HearingOrder.builder()
             .hearing("Test hearing 25th December 2020")
             .order(order)
             .status(status).build();

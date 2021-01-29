@@ -32,14 +32,16 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
@@ -584,11 +586,15 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
-    private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
-    @JsonUnwrapped
-    private final UploadCMOEventData uploadCMOEventData;
+    private final List<Element<HearingOrder>> draftUploadedCMOs;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private final UUID lastHearingOrderDraftsHearingId;
 
-    public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
+
+    public List<Element<HearingOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
     }
 
@@ -637,9 +643,9 @@ public class CaseData {
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
-    private final List<Element<CaseManagementOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> sealedCMOs;
 
-    public List<Element<CaseManagementOrder>> getSealedCMOs() {
+    public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
 
@@ -656,10 +662,10 @@ public class CaseData {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
+    private final List<Element<HearingOrder>> hiddenCaseManagementOrders;
 
     @JsonIgnore
-    public List<Element<CaseManagementOrder>> getHiddenCMOs() {
+    public List<Element<HearingOrder>> getHiddenCMOs() {
         return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
     }
 
@@ -733,4 +739,8 @@ public class CaseData {
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());
     }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
 }
