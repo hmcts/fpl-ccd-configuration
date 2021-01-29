@@ -100,7 +100,7 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
-    uploadCMO: 'Upload CMO',
+    uploadCMO: 'Upload draft orders',
     reviewAgreedCmo: 'Review agreed CMO',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',

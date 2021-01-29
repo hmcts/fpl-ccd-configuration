@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -108,7 +108,7 @@ class RemoveOrderServiceTest {
             element(buildOrder(SUPERVISION_ORDER, "order 4", "18 September 2020"))
         );
 
-        List<Element<CaseManagementOrder>> caseManagementOrders = buildCaseManagementOrders();
+        List<Element<HearingOrder>> caseManagementOrders = buildCaseManagementOrders();
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -216,11 +216,11 @@ class RemoveOrderServiceTest {
     @MethodSource("generateGetRemovedCMOArgumentsSource")
     void shouldReturnRemovedCMO(
         String testName,
-        List<Element<CaseManagementOrder>> hiddenCMOs,
-        List<Element<CaseManagementOrder>> previousHiddenCMOs,
-        Element<CaseManagementOrder> expectedRemovedCMO
+        List<Element<HearingOrder>> hiddenCMOs,
+        List<Element<HearingOrder>> previousHiddenCMOs,
+        Element<HearingOrder> expectedRemovedCMO
     ) {
-        Optional<CaseManagementOrder> removedOrder = underTest.getRemovedCMO(hiddenCMOs, previousHiddenCMOs);
+        Optional<HearingOrder> removedOrder = underTest.getRemovedCMO(hiddenCMOs, previousHiddenCMOs);
 
         if (expectedRemovedCMO == null) {
             assertThat(removedOrder).isEmpty();
@@ -243,8 +243,8 @@ class RemoveOrderServiceTest {
     }
 
     private static Stream<Arguments> generateGetRemovedCMOArgumentsSource() {
-        Element<CaseManagementOrder> hiddenCMO1 = element(CaseManagementOrder.builder().build());
-        Element<CaseManagementOrder> hiddenCMO2 = element(CaseManagementOrder.builder().build());
+        Element<HearingOrder> hiddenCMO1 = element(HearingOrder.builder().build());
+        Element<HearingOrder> hiddenCMO2 = element(HearingOrder.builder().build());
 
         return Stream.of(
             Arguments.of("A CMO is removed", singletonList(hiddenCMO2), emptyList(), hiddenCMO2),
@@ -279,13 +279,13 @@ class RemoveOrderServiceTest {
             .build();
     }
 
-    private List<Element<CaseManagementOrder>> buildCaseManagementOrders() {
+    private List<Element<HearingOrder>> buildCaseManagementOrders() {
         return List.of(
-            element(CaseManagementOrder.builder()
+            element(HearingOrder.builder()
                 .status(APPROVED)
                 .dateIssued(NOW)
                 .build()),
-            element(CaseManagementOrder.builder()
+            element(HearingOrder.builder()
                 .status(DRAFT)
                 .dateIssued(NOW)
                 .build())
