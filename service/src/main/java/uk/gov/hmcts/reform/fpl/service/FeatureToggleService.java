@@ -67,6 +67,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
     }
 
+    public boolean isDraftOrdersEnabled() {
+        return ldClient.boolVariation("draft-orders", createLDUser(), false);
+    }
+
     public boolean isSummaryTabEnabled() {
         return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
     }
