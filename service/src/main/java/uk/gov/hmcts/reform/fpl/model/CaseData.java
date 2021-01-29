@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -31,9 +32,10 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -70,6 +72,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -82,6 +85,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -332,6 +336,18 @@ public class CaseData {
 
     private final List<Element<Representative>> representatives;
 
+    @JsonIgnore
+    public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
+        if (isNotEmpty(representatives)) {
+            return representatives.stream()
+                .filter(Objects::nonNull)
+                .map(Element::getValue)
+                .filter(representative -> preference == representative.getServingPreferences())
+                .collect(toList());
+        }
+        return emptyList();
+    }
+
     private final List<Element<LegalRepresentative>> legalRepresentatives;
 
     // EPO Order
@@ -565,11 +581,15 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
-    private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
-    @JsonUnwrapped
-    private final UploadCMOEventData uploadCMOEventData;
+    private final List<Element<HearingOrder>> draftUploadedCMOs;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private final UUID lastHearingOrderDraftsHearingId;
 
-    public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
+
+    public List<Element<HearingOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
     }
 
@@ -618,9 +638,9 @@ public class CaseData {
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
-    private final List<Element<CaseManagementOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> sealedCMOs;
 
-    public List<Element<CaseManagementOrder>> getSealedCMOs() {
+    public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
 
@@ -637,10 +657,10 @@ public class CaseData {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
+    private final List<Element<HearingOrder>> hiddenCaseManagementOrders;
 
     @JsonIgnore
-    public List<Element<CaseManagementOrder>> getHiddenCMOs() {
+    public List<Element<HearingOrder>> getHiddenCMOs() {
         return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
     }
 

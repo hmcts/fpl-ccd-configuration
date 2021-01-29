@@ -138,6 +138,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForDraftOrders(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isDraftOrdersEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("draft-orders"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
