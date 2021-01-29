@@ -15,6 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -179,6 +181,8 @@ class UpdateSummaryCaseDetailsTest {
             .syntheticCaseSummary(SyntheticCaseSummary.builder()
                 .caseSummaryHasNextHearing("No")
                 .build())
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .build();
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder()
@@ -245,8 +249,12 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID).build();
-        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID)
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build()).build();
+        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L)
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build()).build();
 
         verify(summaryService).generateSummaryFields(expectedCaseData1);
         verify(summaryService).generateSummaryFields(expectedCaseData2);
