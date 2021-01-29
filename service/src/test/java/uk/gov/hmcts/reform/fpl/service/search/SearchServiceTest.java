@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
@@ -31,6 +32,7 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 class SearchServiceTest {
 
     private static final List<CaseDetails> EXPECTED_CASES = List.of(CaseDetails.builder().id(nextLong()).build());
+    private static final SearchResult SEARCH_RESULT = SearchResult.builder().total(1).cases(EXPECTED_CASES).build();
 
     @Captor
     private ArgumentCaptor<String> queryCaptor;
@@ -46,7 +48,7 @@ class SearchServiceTest {
         String property = "a.b";
         LocalDate date = LocalDate.now();
 
-        when(coreCaseDataService.searchCases(any(), any())).thenReturn(EXPECTED_CASES);
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
 
         List<CaseDetails> casesFound = searchService.search(property, date);
 
@@ -67,11 +69,12 @@ class SearchServiceTest {
             .mustNot(MustNot.builder().clauses(List.of(MatchQuery.of("a", "b"))).build())
             .build();
 
-        when(coreCaseDataService.searchCases(any(), any())).thenReturn(EXPECTED_CASES);
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
 
-        List<CaseDetails> casesFound = searchService.search(query);
+        List<CaseDetails> casesFound = searchService.search(query, 15, 0);
 
-        String expectedQuery = "{\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{\"query\":\"b\"}}}]}}}";
+        String expectedQuery = "{\"size\":15,\"from\":0,\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{"
+            + "\"query\":\"b\"}}}]}}}";
 
         assertThat(casesFound).isEqualTo(EXPECTED_CASES);
 
@@ -81,19 +84,16 @@ class SearchServiceTest {
     }
 
     @Test
-    void shouldAddSizePropertyToESQuery() {
-        ESQuery query = BooleanQuery.builder()
-            .mustNot(MustNot.builder().clauses(List.of(MatchQuery.of("a", "b"))).build())
-            .build();
+    void shouldReturnTheNumberOfCasesFound() {
+        ESQuery query = MatchQuery.of("a", "b");
 
-        when(coreCaseDataService.searchCases(any(), any())).thenReturn(EXPECTED_CASES);
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
 
-        List<CaseDetails> casesFound = searchService.search(query, 15);
+        int numberOfCases = searchService.searchResultsSize(query);
 
-        String expectedQuery = "{\"size\":15,\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{\"query\":\"b"
-            + "\"}}}]}}}";
+        String expectedQuery = "{\"size\": 1,\"from\": 0,\"query\": {\"match\": {\"a\":{\"query\": \"b\"}}}}";
 
-        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
+        assertThat(numberOfCases).isEqualTo(1);
 
         verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
 
