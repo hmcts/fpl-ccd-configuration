@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.cmo.ReviewDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transien
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApproveDraftOrdersController extends CallbackController {
 
-    private final ReviewDraftOrdersService reviewDraftOrdersService;
+    private final ApproveDraftOrdersService approveDraftOrdersService;
     private final CoreCaseDataService coreCaseDataService;
 
     @PostMapping("/about-to-start")
@@ -46,7 +46,7 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
-        caseDetails.getData().putAll(reviewDraftOrdersService.getPageDisplayControls(caseData));
+        caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
         return respond(caseDetails);
     }
@@ -58,11 +58,11 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
-        caseDetails.getData().putAll(reviewDraftOrdersService.populateDraftOrdersData(caseData));
+        caseDetails.getData().putAll(approveDraftOrdersService.populateDraftOrdersData(caseData));
 
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
             // reconstruct dynamic list
-            caseDetails.getData().put("cmoToReviewList", reviewDraftOrdersService.buildDynamicList(caseData));
+            caseDetails.getData().put("cmoToReviewList", approveDraftOrdersService.buildDynamicList(caseData));
         }
 
         return respond(caseDetails);
@@ -74,7 +74,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        List<String> errors = reviewDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+        List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
 
         return respond(caseDetails, errors);
     }
@@ -86,13 +86,13 @@ public class ApproveDraftOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         Element<HearingOrdersBundle> selectedOrdersBundle =
-            reviewDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
+            approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
 
         // review cmo
-        data.putAll(reviewDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
+        data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
 
         // review C21 orders
-        reviewDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+        approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 
@@ -105,13 +105,13 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(callbackRequest);
 
         //Checks caseDataBefore as caseData has been modified by this point
-        List<Element<HearingOrder>> cmosReadyForApproval = reviewDraftOrdersService.getCMOsReadyForApproval(
+        List<Element<HearingOrder>> cmosReadyForApproval = approveDraftOrdersService.getCMOsReadyForApproval(
             caseDataBefore);
 
         if (!cmosReadyForApproval.isEmpty() && caseData.getReviewCMODecision() != null
             && caseData.getReviewCMODecision().getDecision() != null) {
             if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
-                HearingOrder sealed = reviewDraftOrdersService.getLatestSealedCMO(caseData);
+                HearingOrder sealed = approveDraftOrdersService.getLatestSealedCMO(caseData);
                 DocumentReference documentToBeSent = sealed.getOrder();
 
                 coreCaseDataService.triggerEvent(

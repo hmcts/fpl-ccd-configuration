@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
@@ -51,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ReviewDraftOrdersService {
+public class ApproveDraftOrdersService {
 
     private final ObjectMapper mapper;
     private final Time time;
@@ -241,12 +242,10 @@ public class ReviewDraftOrdersService {
     }
 
     private void updateHearingCMO(CaseData caseData, Element<HearingOrder> cmo) {
-        if (caseData.getHearingDetails() != null) {
-            caseData.getHearingDetails().stream()
-                .filter(h -> h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
-                .findFirst()
-                .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
-        }
+        defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(h -> h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
+            .findFirst()
+            .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
     }
 
     private GeneratedOrder getSealedC21Order(CaseData caseData,
@@ -336,15 +335,15 @@ public class ReviewDraftOrdersService {
     }
 
     private void validateReviewDecision(
-        List<String> errors, ReviewDecision cmoDecision, String orderName) {
+        List<String> errors, ReviewDecision reviewDecision, String orderName) {
 
-        if (cmoDecision != null && cmoDecision.getDecision() != null) {
+        if (reviewDecision != null && reviewDecision.getDecision() != null) {
 
-            if (JUDGE_AMENDS_DRAFT.equals(cmoDecision.getDecision())
-                && cmoDecision.getJudgeAmendedDocument() == null) {
+            if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())
+                && reviewDecision.getJudgeAmendedDocument() == null) {
                 errors.add(String.format("Add the new %s", orderName));
-            } else if (JUDGE_REQUESTED_CHANGES.equals(cmoDecision.getDecision())
-                && isBlank(cmoDecision.getChangesRequestedByJudge())) {
+            } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())
+                && isBlank(reviewDecision.getChangesRequestedByJudge())) {
                 errors.add(String.format("Add what the LA needs to change on the %s", orderName));
             }
         }
