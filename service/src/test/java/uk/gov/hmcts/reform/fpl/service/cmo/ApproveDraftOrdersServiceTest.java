@@ -576,7 +576,6 @@ class ApproveDraftOrdersServiceTest {
 
     @ParameterizedTest
     @MethodSource("populateNullAndEmptyReviewDecisionValues")
-        // null and empty values
     void shouldNotMakeAnyChangesToCMOWhenTheCMOReviewDecisionIsNotSet() {
         Element<HearingOrder> agreedCMO = agreedCMO(hearing1);
         Element<HearingOrder> blankOrder = buildBlankOrder("order1", hearing1);
@@ -598,7 +597,6 @@ class ApproveDraftOrdersServiceTest {
         assertThat(actualData).containsAllEntriesOf(emptyMap());
     }
 
-    // judge approves order / uploads amended order
     @ParameterizedTest
     @MethodSource("reviewDecisionForDraftOrders")
     void shouldSealTheDraftOrderAndCreateBlankOrderWhenJudgeDoesNotRejectTheDraftOrder(
