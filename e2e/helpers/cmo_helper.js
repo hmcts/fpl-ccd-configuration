@@ -27,7 +27,7 @@ const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, upload
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('Case management hearing, 1 January 2020');
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 };
 
