@@ -209,8 +209,8 @@ class ApproveDraftOrdersServiceTest {
         );
 
         Map<String, Object> actualData = service.getPageDisplayControls(caseData);
-        assertThat(actualData).containsAllEntriesOf(expectedData);
-        assertThat(actualData).doesNotContainKey("cmoToReviewList");
+        assertThat(actualData).containsAllEntriesOf(expectedData)
+            .doesNotContainKey("cmoToReviewList");
     }
 
     @Test
@@ -267,8 +267,8 @@ class ApproveDraftOrdersServiceTest {
         );
 
         Map<String, Object> actualData = service.populateDraftOrdersData(caseData);
-        assertThat(actualData).containsAllEntriesOf(expectedData);
-        assertThat(actualData).doesNotContainKeys("draftOrder1Title", "draftOrder1Document", "draftBlankOrdersCount");
+        assertThat(actualData).containsAllEntriesOf(expectedData)
+            .doesNotContainKeys("draftOrder1Title", "draftOrder1Document", "draftBlankOrdersCount");
     }
 
     @Test
@@ -293,8 +293,8 @@ class ApproveDraftOrdersServiceTest {
             "draftCMOExists", "N");
 
         Map<String, Object> actualData = service.populateDraftOrdersData(caseData);
-        assertThat(actualData).containsAllEntriesOf(expectedData);
-        assertThat(actualData).doesNotContainKeys("cmoDraftOrderTitle", "cmoDraftOrderDocument");
+        assertThat(actualData).containsAllEntriesOf(expectedData)
+            .doesNotContainKeys("cmoDraftOrderTitle", "cmoDraftOrderDocument");
     }
 
     @Test
@@ -570,8 +570,8 @@ class ApproveDraftOrdersServiceTest {
 
         Map<String, Object> actualData = service.reviewCMO(caseData, ordersBundleElement);
 
-        assertThat(actualData).containsAllEntriesOf(expectedData);
-        assertThat(actualData).doesNotContainKeys("selectedCMOs", "state");
+        assertThat(actualData).containsAllEntriesOf(expectedData)
+            .doesNotContainKeys("selectedCMOs", "state");
     }
 
     @ParameterizedTest
@@ -623,7 +623,7 @@ class ApproveDraftOrdersServiceTest {
         DocumentReference documentToSeal = JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())
             ? reviewDecision.getJudgeAmendedDocument() : draftOrder1.getValue().getOrder();
 
-        when(documentSealingService.sealDocument(eq(documentToSeal))).thenReturn(sealedOrder);
+        when(documentSealingService.sealDocument(documentToSeal)).thenReturn(sealedOrder);
 
         GeneratedOrder expectedBlankOrder = expectedBlankOrder(draftOrder1.getValue().getTitle());
         Map<String, Object> expectedData = Map.of(
