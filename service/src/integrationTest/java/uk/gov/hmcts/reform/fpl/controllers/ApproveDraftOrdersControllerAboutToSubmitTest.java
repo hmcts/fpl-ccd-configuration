@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
@@ -42,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHA
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -51,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -98,6 +103,10 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
         assertThat(responseData.getHearingOrdersBundlesDrafts()).isEmpty();
         assertThat(responseData.getReviewCMODecision()).isEqualTo(reviewDecision);
+        assertThat(responseData.getOrdersToBeSent()).containsOnly(
+            element(cmoElement.getId(),
+                cmo.toBuilder().status(RETURNED).requestedChanges("Please change XYZ").build())
+        );
     }
 
     @Test
@@ -117,6 +126,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .ordersToBeSent(List.of(element(UUID.randomUUID(), HearingOrder.builder().build()))) // should be reset
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -129,13 +139,15 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .build();
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
-        assertThat(responseData.getSealedCMOs())
-            .extracting(Element::getValue)
-            .containsExactly(expectedSealedCmo);
+        assertThat(responseData.getSealedCMOs()).containsOnly(element(cmoElement.getId(), expectedSealedCmo));
+        assertThat(responseData.getOrdersToBeSent()).containsOnly(element(cmoElement.getId(), expectedSealedCmo));
     }
 
-    @Test
-    void shouldKeepStateInCaseManagementWhenNextHearingTypeIsIssueResolutionAndCmoDecisionIsSendToAllParties() {
+    @ParameterizedTest
+    @MethodSource("populateCaseDataWithState")
+    void shouldUpdateCaseStateWhenCmoDecisionIsSendToAllParties(
+        String testName, HearingType hearingType, State expectedCaseState) {
+
         given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
@@ -148,36 +160,13 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .hearingDetails(List.of(
                 element(hearing(cmoId)),
-                element(buildHearingOfType(ISSUE_RESOLUTION))))
+                element(buildHearingOfType(hearingType))))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(State.CASE_MANAGEMENT).isEqualTo(responseData.getState());
-    }
-
-    @Test
-    void shouldUpdateStateToFinalHearingWhenNextHearingTypeIsFinalAndCmoDecisionIsSendToAllParties() {
-        given(documentSealingService.sealDocument(convertedDocument)).willReturn(sealedDocument);
-
-        UUID cmoId = UUID.randomUUID();
-
-        Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
-            UUID.randomUUID(), newArrayList(element(cmoId, cmo)));
-
-        CaseData caseData = CaseData.builder()
-            .state(State.CASE_MANAGEMENT)
-            .draftUploadedCMOs(List.of(element(cmoId, cmo)))
-            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
-            .hearingDetails(List.of(
-                element(hearing(cmoId)),
-                element(buildHearingOfType(FINAL))))
-            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
-            .build();
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
-
-        assertThat(State.FINAL_HEARING).isEqualTo(responseData.getState());
+        assertThat(expectedCaseState).isEqualTo(responseData.getState());
     }
 
     @Test
@@ -231,10 +220,15 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .allocatedJudgeLabel("Case assigned to: Her Honour Judge Judy").build();
 
+        Element<HearingOrder> expectedOrderToReturn = element(draftOrderId,
+            draftOrder.toBuilder().status(APPROVED).order(sealedDocument)
+                .lastUploadedOrder(SEND_TO_ALL_PARTIES.equals(reviewOutcome) ? order : convertedDocument).build());
+
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getHearingOrdersBundlesDrafts()).isEmpty();
         assertThat(responseData.getOrderCollection()).isNotEmpty();
+        assertThat(responseData.getOrdersToBeSent()).containsOnly(expectedOrderToReturn);
 
         assertThat(responseData.getOrderCollection().get(0).getValue())
             .extracting("type", "title", "document", "judgeAndLegalAdvisor", "children")
@@ -248,8 +242,9 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         given(documentSealingService.sealDocument(order)).willReturn(sealedDocument);
 
         UUID cmoId = UUID.randomUUID();
+        UUID draftOrderId = UUID.randomUUID();
         Element<HearingOrdersBundle> hearingOrdersBundle = buildHearingOrdersBundle(
-            UUID.randomUUID(), newArrayList(element(cmoId, cmo), element(UUID.randomUUID(), draftOrder)));
+            UUID.randomUUID(), newArrayList(element(cmoId, cmo), element(draftOrderId, draftOrder)));
 
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
@@ -271,16 +266,26 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .status(APPROVED)
             .build();
 
+        HearingOrder expectedRejectedOrder = draftOrder.toBuilder()
+            .status(RETURNED).requestedChanges("missing data").build();
+
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
-        assertThat(responseData.getSealedCMOs())
-            .extracting(Element::getValue)
-            .containsExactly(expectedSealedCmo);
+        assertThat(responseData.getSealedCMOs()).containsOnly(element(cmoId, expectedSealedCmo));
+        assertThat(responseData.getOrdersToBeSent()).containsOnly(element(cmoId, expectedSealedCmo),
+            element(draftOrderId, expectedRejectedOrder));
 
         assertThat(responseData.getOrderCollection()).isEmpty();
         assertThat(responseData.getHearingOrdersBundlesDrafts()).isEmpty();
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
+    }
+
+    private static Stream<Arguments> populateCaseDataWithState() {
+        return Stream.of(
+            Arguments.of("Next hearing type is issue resolution", ISSUE_RESOLUTION, State.CASE_MANAGEMENT),
+            Arguments.of("Next hearing type is final", FINAL, FINAL_HEARING)
+        );
     }
 
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(

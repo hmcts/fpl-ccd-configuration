@@ -2,6 +2,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "ordersToBeSent",
+    "UserRoles": ["caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary"],
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "reviewDraftOrdersTitles",
     "UserRoles": ["caseworker-publiclaw-gatekeeper", "caseworker-publiclaw-judiciary"],
     "CRUD": "CRU"

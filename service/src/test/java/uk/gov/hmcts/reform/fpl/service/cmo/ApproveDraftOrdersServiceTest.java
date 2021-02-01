@@ -489,9 +489,9 @@ class ApproveDraftOrdersServiceTest {
             .build();
 
         HearingOrder expectedCmo = expectedSealedCMO(order);
-
         Map<String, Object> expectedData = Map.of(
             "sealedCMOs", List.of(element(agreedCMO.getId(), expectedCmo)),
+            "ordersToBeSent", List.of(element(agreedCMO.getId(), expectedCmo)),
             "state", expectedState,
             "draftUploadedCMOs", emptyList(),
             "hearingOrdersBundlesDrafts", emptyList()
@@ -532,6 +532,7 @@ class ApproveDraftOrdersServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             "sealedCMOs", List.of(element(agreedCMO.getId(), expectedCmo)),
+            "ordersToBeSent", List.of(element(agreedCMO.getId(), expectedCmo)),
             "state", State.CASE_MANAGEMENT,
             "draftUploadedCMOs", emptyList(),
             "hearingOrdersBundlesDrafts", emptyList()
@@ -563,9 +564,13 @@ class ApproveDraftOrdersServiceTest {
                 .changesRequestedByJudge("requested changes text").build())
             .build();
 
+        List<Element<HearingOrder>> expectedOrdersToReturn = List.of(element(agreedCMO.getId(),
+            agreedCMO.getValue().toBuilder().status(RETURNED).requestedChanges("requested changes text").build()));
+
         Map<String, Object> expectedData = Map.of(
             "draftUploadedCMOs", emptyList(),
-            "hearingOrdersBundlesDrafts", emptyList()
+            "hearingOrdersBundlesDrafts", emptyList(),
+            "ordersToBeSent", expectedOrdersToReturn
         );
 
         Map<String, Object> actualData = service.reviewCMO(caseData, ordersBundleElement);
@@ -594,7 +599,7 @@ class ApproveDraftOrdersServiceTest {
 
         Map<String, Object> actualData = service.reviewCMO(caseData, ordersBundleElement);
 
-        assertThat(actualData).containsAllEntriesOf(emptyMap());
+        assertThat(actualData).isEmpty();
     }
 
     @ParameterizedTest
@@ -626,9 +631,15 @@ class ApproveDraftOrdersServiceTest {
         when(documentSealingService.sealDocument(documentToSeal)).thenReturn(sealedOrder);
 
         GeneratedOrder expectedBlankOrder = expectedBlankOrder(draftOrder1.getValue().getTitle());
+
+        List<Element<HearingOrder>> expectedOrdersToReturn = List.of(element(draftOrder1.getId(),
+            draftOrder1.getValue().toBuilder().status(APPROVED).order(sealedOrder)
+                .lastUploadedOrder(documentToSeal).build()));
+
         Map<String, Object> expectedData = Map.of(
             "orderCollection", List.of(element(draftOrder1.getId(), expectedBlankOrder)),
-            "hearingOrdersBundlesDrafts", emptyList()
+            "hearingOrdersBundlesDrafts", emptyList(),
+            "ordersToBeSent", expectedOrdersToReturn
         );
 
         service.reviewC21Orders(caseData, data, ordersBundleElement);
@@ -643,7 +654,7 @@ class ApproveDraftOrdersServiceTest {
             buildDraftOrdersBundle(hearing1, newArrayList(draftOrder1));
 
         ReviewDecision reviewDecision = ReviewDecision.builder().decision(JUDGE_REQUESTED_CHANGES)
-            .judgeAmendedDocument(order).build();
+            .changesRequestedByJudge("some change").build();
 
         Map<String, Object> data = new HashMap<>();
         data.put("reviewDecision1", Map.of("decision", JUDGE_REQUESTED_CHANGES));
@@ -658,9 +669,13 @@ class ApproveDraftOrdersServiceTest {
 
         when(mapper.convertValue(anyMap(), eq(ReviewDecision.class))).thenReturn(reviewDecision);
 
+        List<Element<HearingOrder>> expectedOrdersToReturn = List.of(element(draftOrder1.getId(),
+            draftOrder1.getValue().toBuilder().status(RETURNED).requestedChanges("some change").build()));
+
         Map<String, Object> expectedData = Map.of(
             "orderCollection", emptyList(),
-            "hearingOrdersBundlesDrafts", emptyList()
+            "hearingOrdersBundlesDrafts", emptyList(),
+            "ordersToBeSent", expectedOrdersToReturn
         );
         service.reviewC21Orders(caseData, data, ordersBundleElement);
         assertThat(data).containsAllEntriesOf(expectedData);
@@ -684,7 +699,8 @@ class ApproveDraftOrdersServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             "orderCollection", emptyList(),
-            "hearingOrdersBundlesDrafts", List.of(ordersBundleElement)
+            "hearingOrdersBundlesDrafts", List.of(ordersBundleElement),
+            "ordersToBeSent", emptyList()
         );
 
         Map<String, Object> data = new HashMap<>();

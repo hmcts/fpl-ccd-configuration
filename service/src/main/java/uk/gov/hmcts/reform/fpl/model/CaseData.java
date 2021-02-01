@@ -645,6 +645,7 @@ public class CaseData {
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> ordersToBeSent;
 
     @JsonUnwrapped
     private final ReviewDraftOrdersData reviewDraftOrdersData;
