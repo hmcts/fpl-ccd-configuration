@@ -234,7 +234,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldPrePopulateRecipientWhenNewMassageIsInitiatedByJudge() {
+    void shouldPrePopulateRecipientWhenNewMessageIsInitiatedByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
 
         CaseData caseData = CaseData.builder().build();
@@ -245,7 +245,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldNotPrePopulateRecipientWhenNewMassageIsInitiatedNotByJudge() {
+    void shouldNotPrePopulateRecipientWhenNewMessageIsInitiatedNotByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
 
         CaseData caseData = CaseData.builder().build();
@@ -330,7 +330,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldPrePopulateRecipientWhenMassageIsInitiatedByJudge() {
+    void shouldPrePopulateRecipientWhenMessageIsInitiatedByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
 
         CaseData caseData = CaseData.builder().build();
@@ -340,7 +340,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldNotPrePopulateRecipientWhenMassageIsInitiatedNotByJudge() {
+    void shouldNotPrePopulateRecipientWhenMessageIsInitiatedNotByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
 
         CaseData caseData = CaseData.builder().build();

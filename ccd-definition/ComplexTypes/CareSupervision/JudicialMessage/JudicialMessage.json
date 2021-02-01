@@ -18,14 +18,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "requestedBy",
-    "FieldType": "Text",
-    "ElementLabel": "Message subject",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudicialMessage",
     "ListElementCode": "dateSent",
     "FieldType": "Text",
     "ElementLabel": "Date sent",
@@ -49,6 +41,14 @@
     "ElementLabel": "Urgency",
     "SecurityClassification": "Public",
     "FieldShowCondition": "urgency!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "requestedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Message subject",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
