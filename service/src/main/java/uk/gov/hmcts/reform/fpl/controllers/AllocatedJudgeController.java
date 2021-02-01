@@ -23,7 +23,7 @@ public class AllocatedJudgeController extends CallbackController {
     private final ValidateEmailService validateEmailService;
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         String email = caseData.getAllocatedJudge().getJudgeEmailAddress();

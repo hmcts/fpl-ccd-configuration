@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
@@ -68,6 +69,7 @@ public class ManageHearingsController extends CallbackController {
     private final ManageHearingsService hearingsService;
     private final FeatureToggleService featureToggleService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -219,6 +221,33 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().putAll(hearingsService.updateHearingDates(caseData));
 
             return respond(caseDetails, errors);
+        }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("validate-judge-email/mid-event")
+    public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        //THIS SEEMS TO WORK
+        String name = caseData.getJudgeAndLegalAdvisor().getJudgeFullName();
+
+        String email = caseData.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+
+        HearingBooking hearingBooking = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
+            caseData.getHearingDetails()).orElse(null);
+
+
+        if(hearingBooking != null) {
+            email = hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
+            System.out.println("Email is" + email);
+            String error = validateEmailService.validate(email);
+
+            if (!error.isBlank()) {
+                return respond(caseDetails, List.of(error));
+            }
         }
 
         return respond(caseDetails);

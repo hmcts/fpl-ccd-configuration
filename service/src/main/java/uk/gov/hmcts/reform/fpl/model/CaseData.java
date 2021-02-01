@@ -714,4 +714,6 @@ public class CaseData {
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());
     }
+
+    private String judgeFullName;
 }
