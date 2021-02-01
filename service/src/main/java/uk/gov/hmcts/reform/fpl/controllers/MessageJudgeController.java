@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.service.MessageJudgeService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MessageJudgeController extends CallbackController {
     private final MessageJudgeService messageJudgeService;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -57,6 +59,24 @@ public class MessageJudgeController extends CallbackController {
         }
 
         caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
+
+        return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/validate-email-mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleValidationMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
+
+        if (!caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
+            String email = caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipient();
+            String error = validateEmailService.validate(email);
+
+            if (!error.isBlank()) {
+                return respond(caseDetailsMap, List.of(error));
+            }
+        }
 
         return respond(caseDetailsMap);
     }
