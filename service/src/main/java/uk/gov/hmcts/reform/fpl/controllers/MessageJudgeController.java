@@ -63,7 +63,7 @@ public class MessageJudgeController extends CallbackController {
         return respond(caseDetailsMap);
     }
 
-    @PostMapping("/validate-email-mid-event")
+    @PostMapping("/validate-email/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleValidationMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);

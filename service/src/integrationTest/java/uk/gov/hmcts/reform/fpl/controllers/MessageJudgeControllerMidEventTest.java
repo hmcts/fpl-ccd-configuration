@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 
 import java.util.List;
 import java.util.UUID;
@@ -157,5 +158,40 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
 
         assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
         assertThat(judicialMessageDynamicList).isEqualTo(expectedJudicialMessageDynamicList);
+    }
+
+    @Test
+    void shouldNotReturnAValidationErrorWhenEmailIsValid() {
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(MessageJudgeEventData
+                .builder()
+                .judicialMessageMetaData(JudicialMessageMetaData
+                    .builder()
+                    .recipient("valid-email@test.com")
+                    .build())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "validate-email");
+
+        assertThat(response.getErrors()).isNull();
+    }
+
+    @Test
+    void shouldReturnAValidationErrorWhenEmailIsInvalid() {
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(MessageJudgeEventData
+                .builder()
+                .judicialMessageMetaData(JudicialMessageMetaData
+                    .builder()
+                    .recipient("Khaled Fahmy <Khaled.Fahmy@HMCTS.NET>")
+                    .build())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "validate-email");
+
+        assertThat(response.getErrors()).contains(
+            "Enter an email address in the correct format, for example name@example.com");
     }
 }
