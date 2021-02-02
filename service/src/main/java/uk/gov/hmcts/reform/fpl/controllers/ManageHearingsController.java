@@ -240,7 +240,7 @@ public class ManageHearingsController extends CallbackController {
             caseData.getHearingDetails()).orElse(null);
 
 
-        if(hearingBooking != null) {
+        if (hearingBooking != null) {
             email = hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
             System.out.println("Email is" + email);
             String error = validateEmailService.validate(email);

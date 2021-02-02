@@ -112,19 +112,16 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
     }
 
     @Test
-    void shouldNotReturnErrorsLALegalRepresentativeEmailsAreValid() {
-        CaseData caseData = CaseData.builder()
-            .legalRepresentatives(List.of(
-                element(LegalRepresentative.builder()
-                    .email("email@example.com")
-                    .build()),
-                element(LegalRepresentative.builder()
-                    .email("email@example.com")
-                    .build()))).build();
+    void shouldNotReturnErrorsWhenLALegalRepresentativeEmailIsValid() {
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
+            .willReturn(new OrganisationUser(USER_ID));
 
-        assertThat(callbackResponse.getErrors()).isNull();
+        AboutToStartOrSubmitCallbackResponse actual = postMidEvent(caseDetails);
+
+        assertThat(actual.getErrors()).isEmpty();
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
