@@ -58,6 +58,6 @@ class HearingUrgencyCheckerTest {
         final boolean isCompleted = hearingUrgencyChecker.isCompleted(caseData);
 
         assertThat(errors).isEmpty();
-        assertThat(isCompleted).isTrue();
+        assertThat(isCompleted).isFalse();
     }
 }

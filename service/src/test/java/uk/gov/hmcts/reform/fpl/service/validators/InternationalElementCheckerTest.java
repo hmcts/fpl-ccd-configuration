@@ -50,18 +50,6 @@ class InternationalElementCheckerTest {
                         .significantEventsReason("")
                         .internationalAuthorityInvolvement("")
                         .internationalAuthorityInvolvementDetails("")
-                        .build(),
-                InternationalElement.builder()
-                        .issues("Test")
-                        .issuesReason("Test")
-                        .proceedings("Test")
-                        .proceedingsReason("Test")
-                        .possibleCarer("Test")
-                        .possibleCarerReason("Test")
-                        .significantEvents("Test")
-                        .significantEventsReason("Test")
-                        .internationalAuthorityInvolvement("Test")
-                        .internationalAuthorityInvolvementDetails("Test")
                         .build())
                 .map(Arguments::of);
     }

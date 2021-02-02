@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +150,11 @@ public class TaskListRenderer {
                 lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
                 break;
             case COMPLETED:
-                lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
+                if (useFinishedTag(task)) {
+                    lines.add(renderLink(task) + renderImage("finished.png", "Finished"));
+                } else {
+                    lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
+                }
                 break;
             default:
                 lines.add(renderLink(task));
@@ -182,5 +187,18 @@ public class TaskListRenderer {
 
     private String renderHeader(String text) {
         return format("## %s", text);
+    }
+
+    private Boolean useFinishedTag(Task task) {
+        List<Event> events =
+            Arrays.asList(CASE_NAME, ORDERS_SOUGHT, HEARING_URGENCY, GROUNDS, RISK_AND_HARM,
+                FACTORS_AFFECTING_PARENTING, ALLOCATION_PROPOSAL, OTHER_PROCEEDINGS,
+                INTERNATIONAL_ELEMENT, COURT_SERVICES);
+
+        if (featureToggleService.isFinishedTagEnabled()) {
+            return events.contains(task.getEvent());
+        }
+
+        return false;
     }
 }

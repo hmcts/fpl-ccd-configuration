@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class ProceedingsCheckerTest {
@@ -45,12 +44,6 @@ class ProceedingsCheckerTest {
                 Proceeding.builder()
                         .onGoingProceeding("")
                         .additionalProceedings(emptyList())
-                        .build(),
-                Proceeding.builder()
-                        .onGoingProceeding("Test")
-                        .additionalProceedings(wrapElements(List.of(Proceeding.builder()
-                                .guardian("Yes")
-                                .build())))
                         .build())
                 .map(Arguments::of);
     }

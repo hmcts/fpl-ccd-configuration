@@ -67,6 +67,6 @@ class OrdersSoughtCheckerTest {
         final boolean isCompleted = ordersSoughtChecker.isCompleted(caseData);
 
         assertThat(errors).isEmpty();
-        assertThat(isCompleted).isTrue();
+        assertThat(isCompleted).isFalse();
     }
 }
