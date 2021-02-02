@@ -136,7 +136,7 @@ public class ApproveDraftOrdersService {
             }
         }
 
-        if (hearingOrders.isEmpty() && noReviewDecisionExists) {
+        if (!hearingOrders.isEmpty() && noReviewDecisionExists) {
             errors.add("Approve, amend or reject draft orders");
         }
 

@@ -137,7 +137,7 @@ class ApproveDraftOrdersControllerValidateReviewDecisionMidEventTest extends Abs
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData, validateDecisionEventPath);
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getErrors()).containsOnly("Approve, amend or reject draft orders");
     }
 
     @Test

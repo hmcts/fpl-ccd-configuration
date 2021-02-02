@@ -387,21 +387,6 @@ class ApproveDraftOrdersServiceTest {
             .containsOnly("Add what the LA needs to change on the CMO");
     }
 
-    @ParameterizedTest
-    @MethodSource("populateNullAndEmptyReviewDecisionValues")
-    void shouldNotReturnErrorWhenJudgeDoesNotReviewDraftCMOOrder(ReviewDecision reviewDecision) {
-        Element<HearingOrder> cmo = agreedCMO(hearing1);
-
-        Element<HearingOrdersBundle> draftOrdersBundle = buildDraftOrdersBundle(hearing1, newArrayList(cmo));
-
-        CaseData caseData = CaseData.builder()
-            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
-            .reviewCMODecision(reviewDecision)
-            .build();
-
-        assertThat(service.validateDraftOrdersReviewDecision(caseData, emptyMap())).isEmpty();
-    }
-
     @Test
     void shouldNotReturnErrorWhenDraftOrdersBundleContainsCMOAndBlankOrdersAndJudgeReviewsOnlyCMO() {
         Element<HearingOrder> cmo = agreedCMO(hearing1);
@@ -431,8 +416,8 @@ class ApproveDraftOrdersServiceTest {
 
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
-            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
-            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .reviewCMODecision(ReviewDecision.builder().build()) // ReviewDecision.decision not set
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(null).build())
             .build();
 
         assertThat(service.validateDraftOrdersReviewDecision(caseData, emptyMap()))
