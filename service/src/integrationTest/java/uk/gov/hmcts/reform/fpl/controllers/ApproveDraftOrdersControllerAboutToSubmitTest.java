@@ -95,7 +95,9 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .draftUploadedCMOs(newArrayList(cmoElement))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .cmoToReviewList(hearingOrdersBundleId.toString())
-            .reviewCMODecision(reviewDecision).build();
+            .reviewCMODecision(reviewDecision)
+            .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
+            .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
@@ -125,7 +127,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
-            .ordersToBeSent(List.of(element(UUID.randomUUID(), HearingOrder.builder().build()))) // should be reset
+            .ordersToBeSent(List.of(element(HearingOrder.builder().build()))) // should be reset
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
