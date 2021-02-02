@@ -699,8 +699,7 @@ class ApproveDraftOrdersServiceTest {
 
         Map<String, Object> expectedData = Map.of(
             "orderCollection", emptyList(),
-            "hearingOrdersBundlesDrafts", List.of(ordersBundleElement),
-            "ordersToBeSent", emptyList()
+            "hearingOrdersBundlesDrafts", List.of(ordersBundleElement)
         );
 
         Map<String, Object> data = new HashMap<>();
