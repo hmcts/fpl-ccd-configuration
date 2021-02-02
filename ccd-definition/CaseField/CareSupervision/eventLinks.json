@@ -188,7 +188,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "messageJudgeLegalAdviserLink",
     "FieldType": "Label",
-    "Label": "[Message judge or legal adviser](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",
+    "Label": "[Send and reply to messages](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",
     "SecurityClassification": "Public"
   },
   {
