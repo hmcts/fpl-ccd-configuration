@@ -134,9 +134,9 @@ class CoreCaseDataServiceTest {
         when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
         when(coreCaseDataApi.searchCases(userAuthToken, serviceAuthToken, caseType, query)).thenReturn(searchResult);
 
-        List<CaseDetails> casesFound = service.searchCases(caseType, query);
+        SearchResult returnedSearchResult = service.searchCases(caseType, query);
 
-        assertThat(casesFound).isEqualTo(cases);
+        assertThat(returnedSearchResult).isEqualTo(searchResult);
         verify(coreCaseDataApi).searchCases(userAuthToken, serviceAuthToken, caseType, query);
         verify(idamClient).getAccessToken(userConfig.getUserName(), userConfig.getPassword());
     }

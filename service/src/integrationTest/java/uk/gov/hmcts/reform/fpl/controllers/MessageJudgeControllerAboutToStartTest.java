@@ -4,8 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -24,6 +27,10 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerAboutToStartTest extends AbstractControllerTest {
+
+    @SpyBean
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+
     MessageJudgeControllerAboutToStartTest() {
         super("message-judge");
     }
@@ -63,7 +70,7 @@ class MessageJudgeControllerAboutToStartTest extends AbstractControllerTest {
             .judicialMessages(judicialMessages)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
         DynamicList c2DynamicList = mapper.convertValue(response.getData().get("c2DynamicList"), DynamicList.class);
 
@@ -91,11 +98,21 @@ class MessageJudgeControllerAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldNotInitialiseCaseFieldsWhenJudicialMessagesAndC2DocumentsDoNotExist() {
         CaseData caseData = CaseData.builder().id(1111L).build();
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(asCaseDetails(caseData));
+        Map<String, Object> caseDetails = postAboutToStartEvent(caseData).getData();
 
-        assertThat(response.getData().get("c2DynamicList")).isNull();
-        assertThat(response.getData().get("judicialMessageDynamicList")).isNull();
-        assertThat(response.getData().get("hasC2Applications")).isNull();
-        assertThat(response.getData().get("hasJudicialMessages")).isNull();
+        assertThat(caseDetails.get("c2DynamicList")).isNull();
+        assertThat(caseDetails.get("judicialMessageDynamicList")).isNull();
+        assertThat(caseDetails.get("hasC2Applications")).isNull();
+        assertThat(caseDetails.get("hasJudicialMessages")).isNull();
+        assertThat(caseDetails.get("judicialMessageMetaData")).isNull();
+    }
+
+    @Test
+    void shouldPrePopulateRecipientIfCaseInitiatedByJudge() {
+        CaseData caseData = CaseData.builder().build();
+        Map<String, Object> caseDetails = postAboutToStartEvent(caseData, "caseworker-publiclaw-judiciary").getData();
+
+        assertThat(caseDetails.get("judicialMessageMetaData")).extracting("recipient")
+            .isEqualTo(ctscEmailLookupConfiguration.getEmail());
     }
 }

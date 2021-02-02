@@ -59,7 +59,7 @@ class DocumentDownloadServiceTest {
     void setup() {
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")
-            .roles(CAFCASS.getRoles())
+            .roles(CAFCASS.getRoleNames())
             .uid(USER_ID)
             .build();
 
@@ -87,7 +87,7 @@ class DocumentDownloadServiceTest {
             .willReturn(expectedResponse.getBody());
 
         given(documentDownloadClient.downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
+            eq(join(",", CAFCASS.getRoleNames())), anyString(), anyString()))
             .willReturn(resourceResponseEntity);
 
         byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
@@ -96,7 +96,7 @@ class DocumentDownloadServiceTest {
 
         verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,
-            join(",", CAFCASS.getRoles()),
+            join(",", CAFCASS.getRoleNames()),
             USER_ID,
             "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
     }
