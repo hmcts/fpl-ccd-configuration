@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewCMOLink",
     "FieldType": "Label",
-    "Label": "[Approve orders](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/reviewCMO)",
+    "Label": "[Approve orders](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/approve-draft-orders)",
     "SecurityClassification": "Public"
   }
 ]
