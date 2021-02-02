@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.fpl.events.cmo;
 
 import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+
+import java.util.List;
 
 @Value
 public class DraftOrdersRejected implements ReviewCMOEvent {
     CaseData caseData;
-    CaseData caseDataBefore;
+    List<HearingOrder> rejectedOrders;
 }

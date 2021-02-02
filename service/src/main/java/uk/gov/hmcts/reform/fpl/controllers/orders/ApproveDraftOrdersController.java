@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.cmo.ReviewDraftOrdersService;
@@ -89,6 +90,8 @@ public class ApproveDraftOrdersController extends CallbackController {
         // review C21 orders
         reviewDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
+        caseDetails.getData().put("lastHearingOrderDraftsHearingId", selectedOrdersBundle.getValue().getHearingId());
+
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 
         return respond(caseDetails);
@@ -96,9 +99,13 @@ public class ApproveDraftOrdersController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
         CaseData caseData = getCaseData(callbackRequest);
 
-        reviewDraftOrdersService.buildEventsToPublish(caseData, caseDataBefore).forEach(this::publishEvent);
+        List<Element<HearingOrder>> ordersToBeSent = caseData.getOrdersToBeSent();
+        if (caseData.getOrdersToBeSent().size() == 1) {
+            publishEvent(reviewDraftOrdersService.buildEventToPublish(caseData, ordersToBeSent.get(0).getValue()));
+        } else if (!caseData.getOrdersToBeSent().isEmpty()) {
+            reviewDraftOrdersService.buildEventsToPublish(caseData).forEach(this::publishEvent);
+        }
     }
 }

@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderRejectedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRejected;
 import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
@@ -41,6 +43,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -216,39 +220,45 @@ public class ReviewDraftOrdersService {
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
-    public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData, CaseData caseDataBefore) {
-
-        List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
-        //Checks caseDataBefore as caseData has been modified by this point
-        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseDataBefore);
-
-        if (!cmosReadyForApproval.isEmpty() && caseData.getReviewCMODecision() != null
-            && caseData.getReviewCMODecision().getDecision() != null) {
-            if (!JUDGE_REQUESTED_CHANGES.equals(caseData.getReviewCMODecision().getDecision())) {
-                HearingOrder sealed = getLatestSealedCMO(caseData);
-                if (sealed != null) {
-/*                        DocumentReference documentToBeSent = sealed.getOrder();
-
-                        coreCaseDataService.triggerEvent(
-                            callbackRequest.getCaseDetails().getJurisdiction(),
-                            callbackRequest.getCaseDetails().getCaseTypeId(),
-                            callbackRequest.getCaseDetails().getId(),
-                            "internal-change-SEND_DOCUMENT",
-                            Map.of("documentToBeSent", documentToBeSent)
-                        );*/
-
-                    eventsToPublish.add(new CaseManagementOrderIssuedEvent(caseData, sealed));
-                }
-            } else {
-                List<Element<HearingOrder>> draftCMOsBefore = caseDataBefore.getDraftUploadedCMOs();
-                List<Element<HearingOrder>> draftCMOs = caseData.getDraftUploadedCMOs();
-
-                //Get the CMO that was modified (status changed from READY -> RETURNED)
-                draftCMOsBefore.removeAll(draftCMOs);
-                HearingOrder cmoToReturn = draftCMOsBefore.get(0).getValue();
-
-                eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmoToReturn));
+    public ReviewCMOEvent buildEventToPublish(CaseData caseData, HearingOrder order) {
+        if (order.getType().isCmo()) {
+            if (order.getStatus().equals(APPROVED)) {
+                return new CaseManagementOrderIssuedEvent(caseData, order);
+            } else if (order.getStatus().equals(RETURNED)) {
+                return new CaseManagementOrderRejectedEvent(caseData, order);
             }
+        } else {
+            if (order.getStatus().equals(APPROVED)) {
+                return new DraftOrdersApproved(caseData, List.of(order));
+            } else if (order.getStatus().equals(RETURNED)) {
+                return new DraftOrdersRejected(caseData, List.of(order));
+            } else {
+                throw new CMONotFoundException("Cannot find order to send - no approved or returned status set");
+            }
+        }
+        return null;
+    }
+
+    public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData) {
+        List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
+        List<Element<HearingOrder>> ordersToBeSent = caseData.getOrdersToBeSent();
+        List<HearingOrder> approvedOrders = new ArrayList<>();
+        List<HearingOrder> rejectedOrders = new ArrayList<>();
+
+        unwrapElements(ordersToBeSent).forEach(order -> {
+            if (order.getStatus().equals(APPROVED)) {
+                approvedOrders.add(order);
+            } else if (order.getStatus().equals(RETURNED)) {
+                rejectedOrders.add(order);
+            }
+        });
+
+        if (!approvedOrders.isEmpty()) {
+            eventsToPublish.add(new DraftOrdersApproved(caseData, approvedOrders));
+        }
+
+        if (!rejectedOrders.isEmpty()) {
+            eventsToPublish.add(new DraftOrdersRejected(caseData, rejectedOrders));
         }
 
         return eventsToPublish;
@@ -278,6 +288,35 @@ public class ReviewDraftOrdersService {
             .status(CMOStatus.APPROVED)
             .order(documentSealingService.sealDocument(order))
             .lastUploadedOrder(order)
+            .build());
+    }
+
+    private Element<HearingOrder> getSealedHearingOrder(ReviewDecision reviewDecision,
+                                                        Element<HearingOrder> orderElement) {
+        DocumentReference order;
+
+        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
+            order = reviewDecision.getJudgeAmendedDocument();
+        } else {
+            order = orderElement.getValue().getOrder();
+        }
+        return element(orderElement.getId(), orderElement.getValue().toBuilder()
+            .dateIssued(time.now().toLocalDate())
+            .status(CMOStatus.APPROVED)
+            .order(documentSealingService.sealDocument(order))
+            .lastUploadedOrder(order)
+            .build());
+    }
+
+    private Element<HearingOrder> getRejectedHearingOrder(ReviewDecision reviewDecision,
+                                                          Element<HearingOrder> orderElement) {
+        HearingOrder hearingOrder = orderElement.getValue();
+
+        return element(orderElement.getId(), hearingOrder.toBuilder()
+            .status(CMOStatus.RETURNED)
+            .requestedChanges(reviewDecision.getChangesRequestedByJudge())
+            .order(hearingOrder.getOrder())
+            .lastUploadedOrder(hearingOrder.getOrder())
             .build());
     }
 

@@ -103,7 +103,7 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
             .lastHearingOrderDraftsHearingId(hearingBooking.getId())
             .build();
 
-        DraftOrdersApproved event = new DraftOrdersApproved(caseData, caseDataBefore);
+        DraftOrdersApproved event = new DraftOrdersApproved(caseData, List.of(cmo, c21));
 
         underTest.sendNotificationToLA(event);
 
