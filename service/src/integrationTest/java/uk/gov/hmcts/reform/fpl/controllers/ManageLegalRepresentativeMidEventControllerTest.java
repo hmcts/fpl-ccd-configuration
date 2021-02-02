@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.LegalRepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -90,6 +91,40 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
 
         assertThat(actual.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenLALegalRepresentativeEmailsAreInValid() {
+        CaseData caseData = CaseData.builder()
+            .legalRepresentatives(List.of(
+                element(LegalRepresentative.builder()
+                    .email("Khaled Fahmy <Khaled.Fahmy@HMCTS.NET>")
+                    .build()),
+                element(LegalRepresentative.builder()
+                    .email("Khaled Fahmy <Test.Fahmy@HMCTS.NET>")
+                    .build()))).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(callbackResponse.getErrors()).contains(
+            "LA Legal Representative 1: Enter an email address in the correct format, for example name@example.com",
+            "LA Legal Representative 2: Enter an email address in the correct format, for example name@example.com");
+    }
+
+    @Test
+    void shouldNotReturnErrorsLALegalRepresentativeEmailsAreValid() {
+        CaseData caseData = CaseData.builder()
+            .legalRepresentatives(List.of(
+                element(LegalRepresentative.builder()
+                    .email("email@example.com")
+                    .build()),
+                element(LegalRepresentative.builder()
+                    .email("email@example.com")
+                    .build()))).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(callbackResponse.getErrors()).isNull();
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
