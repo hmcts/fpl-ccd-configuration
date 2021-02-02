@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @OverrideAutoConfiguration(enabled = true)
 class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
-    private static final UserInfo USER_INFO_CAFCASS = UserInfo.builder().roles(UserRole.CAFCASS.getRoles()).build();
+    private static final UserInfo USER_INFO_CAFCASS = UserInfo.builder().roles(UserRole.CAFCASS.getRoleNames()).build();
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final Long CASE_ID = 12345L;

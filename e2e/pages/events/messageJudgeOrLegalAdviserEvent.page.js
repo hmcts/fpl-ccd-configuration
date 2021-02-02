@@ -4,7 +4,7 @@ module.exports = {
   fields: {
     messageRegardingC2: {
       yes: '#isMessageRegardingC2-Yes',
-      no: '#isMessageRegardingC2-Yes',
+      no: '#isMessageRegardingC2-No',
     },
     eventOptions: {
       newMessage: '#messageJudgeOption-NEW_MESSAGE',
@@ -21,14 +21,18 @@ module.exports = {
       },
     },
     closeMessageLabel: '#judicialMessageReply_closeMessageLabel',
-    requested: '#judicialMessageMetaData_requestedBy',
+    subject: '#judicialMessageMetaData_requestedBy',
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',
     replyMessage: '#judicialMessageReply_latestMessage',
   },
 
-  relatedMessageToAC2() {
+  selectMessageRelatedToC2() {
     I.click(this.fields.messageRegardingC2.yes);
+  },
+
+  selectMessageNotRelatedToC2() {
+    I.click(this.fields.messageRegardingC2.no);
   },
 
   async selectC2() {
@@ -41,8 +45,8 @@ module.exports = {
     I.fillField(this.fields.recipientEmail, email);
   },
 
-  enterRequester(requester) {
-    I.fillField(this.fields.requested, requester);
+  enterSubject(subject) {
+    I.fillField(this.fields.subject, subject);
   },
 
   enterUrgency(urgency) {
