@@ -16,11 +16,9 @@ import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -32,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -57,7 +56,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -67,6 +66,8 @@ public class ApproveDraftOrdersService {
     private final Time time;
     private final DraftOrderService draftOrderService;
     private final DocumentSealingService documentSealingService;
+
+    private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -168,7 +169,7 @@ public class ApproveDraftOrdersService {
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
                 data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
 
-                data.put("ordersToBeSent", newArrayList(reviewedOrder));
+                data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
             }
         }
         return data;
@@ -211,7 +212,7 @@ public class ApproveDraftOrdersService {
             .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
 
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
-            List<Element<HearingOrder>>) data.get("ordersToBeSent"), newArrayList());
+            List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
 
         int counter = 1;
         List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
@@ -225,7 +226,7 @@ public class ApproveDraftOrdersService {
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     reviewedOrder = buildSealedHearingOrder(reviewDecision, orderElement);
-                    reviewedOrders.add(buildBlankOrder(caseData, reviewedOrder));
+                    reviewedOrders.add(buildBlankOrder(caseData, selectedOrdersBundle, reviewedOrder));
 
                     ordersToBeSent.add(reviewedOrder);
                 } else {
@@ -238,9 +239,9 @@ public class ApproveDraftOrdersService {
         }
 
         if (ordersToBeSent.isEmpty()) {
-            data.remove("ordersToBeSent");
+            data.remove(ORDERS_TO_BE_SENT);
         } else {
-            data.put("ordersToBeSent", ordersToBeSent);
+            data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
         }
 
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
@@ -351,7 +352,15 @@ public class ApproveDraftOrdersService {
             .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
     }
 
-    private Element<GeneratedOrder> buildBlankOrder(CaseData caseData, Element<HearingOrder> sealedOrder) {
+    private Element<GeneratedOrder> buildBlankOrder(
+        CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle, Element<HearingOrder> sealedOrder) {
+
+        Element<HearingBooking> hearingElement =
+            defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>())
+                .stream()
+                .filter(hearing -> Objects.equals(hearing.getId(), selectedOrdersBundle.getValue().getHearingId()))
+                .findFirst().orElse(null);
+
         HearingOrder order = sealedOrder.getValue();
 
         return element(sealedOrder.getId(), GeneratedOrder.builder()
@@ -359,19 +368,12 @@ public class ApproveDraftOrdersService {
             .title(order.getTitle())
             .document(order.getOrder())
             .dateOfIssue(order.getDateIssued() != null ? formatLocalDateToString(order.getDateIssued(), DATE) : null)
-            .judgeAndLegalAdvisor(
-                caseData.getAllocatedJudge() != null ? buildJudgeAndLegalAdvisor(caseData.getAllocatedJudge()) : null)
+            .judgeAndLegalAdvisor(hearingElement != null
+                ? getSelectedJudge(hearingElement.getValue().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge())
+                : null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren())
             .build());
-    }
-
-    private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(Judge allocatedJudge) {
-        String assignedJudgeLabel = buildAllocatedJudgeLabel(allocatedJudge);
-
-        return JudgeAndLegalAdvisor.builder()
-            .allocatedJudgeLabel(assignedJudgeLabel)
-            .build();
     }
 
     private State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {

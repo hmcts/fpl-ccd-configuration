@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -208,17 +207,22 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             reviewOutcome.equals(SEND_TO_ALL_PARTIES) ? ReviewDecision.builder().decision(reviewOutcome).build()
                 : ReviewDecision.builder().decision(reviewOutcome).judgeAmendedDocument(convertedDocument).build();
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
+        Judge allocatedJudge = buildJudge();
+
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(newArrayList())
             .children1(children())
-            .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
-            .allocatedJudge(buildJudge())
+            .hearingDetails(List.of(element(
+                hearingOrdersBundle.getValue().getHearingId(),
+                HearingBooking.builder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build())))
+            .allocatedJudge(allocatedJudge)
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().reviewDecision1(reviewDecision).build())
             .build();
 
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .allocatedJudgeLabel("Case assigned to: Her Honour Judge Judy").build();
+        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = expectedJudgeAndLegalAdviser(
+            judgeAndLegalAdvisor, allocatedJudge);
 
         Element<HearingOrder> expectedOrderToReturn = element(draftOrderId,
             draftOrder.toBuilder().status(APPROVED).order(sealedDocument)
@@ -231,9 +235,9 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         assertThat(responseData.getOrdersToBeSent()).containsOnly(expectedOrderToReturn);
 
         assertThat(responseData.getOrderCollection().get(0).getValue())
-            .extracting("type", "title", "document", "judgeAndLegalAdvisor", "children")
+            .extracting("type", "title", "document", "children", "judgeAndLegalAdvisor")
             .containsExactlyInAnyOrder(BLANK_ORDER.getLabel(), draftOrder.getTitle(), sealedDocument,
-                expectedJudgeAndLegalAdvisor, caseData.getAllChildren());
+                caseData.getChildren1(), expectedJudgeAndLegalAdvisor);
     }
 
     @Test
@@ -319,10 +323,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.now())
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .build())
+            .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor())
             .caseManagementOrderId(cmoId)
             .build();
     }
@@ -339,9 +340,23 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
     }
 
     private List<Element<Child>> children() {
-        return ElementUtils.wrapElements(
+        return List.of(element(
             Child.builder()
                 .party(ChildParty.builder().build())
-                .build());
+                .build()));
+    }
+
+    private JudgeAndLegalAdvisor expectedJudgeAndLegalAdviser(
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor, Judge allocatedJudge) {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(allocatedJudge.getJudgeTitle())
+            .otherTitle(allocatedJudge.getOtherTitle())
+            .judgeLastName(allocatedJudge.getJudgeLastName())
+            .judgeFullName(allocatedJudge.getJudgeFullName())
+            .judgeEmailAddress(allocatedJudge.getJudgeEmailAddress())
+            .legalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
+            .allocatedJudgeLabel(judgeAndLegalAdvisor.getAllocatedJudgeLabel())
+            .useAllocatedJudge(judgeAndLegalAdvisor.getUseAllocatedJudge())
+            .build();
     }
 }
