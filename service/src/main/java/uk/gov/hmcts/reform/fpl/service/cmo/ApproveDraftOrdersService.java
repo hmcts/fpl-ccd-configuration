@@ -60,6 +60,8 @@ public class ApproveDraftOrdersService {
     private final DraftOrderService draftOrderService;
     private final DocumentSealingService documentSealingService;
 
+    private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
+
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
      * There is dedicated method below to support this functionality.
@@ -160,7 +162,7 @@ public class ApproveDraftOrdersService {
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
                 data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
 
-                data.put("ordersToBeSent", newArrayList(reviewedOrder));
+                data.put(ORDERS_TO_BE_SENT, newArrayList(reviewedOrder));
             }
         }
         return data;
@@ -203,7 +205,7 @@ public class ApproveDraftOrdersService {
             .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
 
         List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
-            List<Element<HearingOrder>>) data.get("ordersToBeSent"), newArrayList());
+            List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
 
         int counter = 1;
         List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
@@ -230,9 +232,9 @@ public class ApproveDraftOrdersService {
         }
 
         if (ordersToBeSent.isEmpty()) {
-            data.remove("ordersToBeSent");
+            data.remove(ORDERS_TO_BE_SENT);
         } else {
-            data.put("ordersToBeSent", ordersToBeSent);
+            data.put(ORDERS_TO_BE_SENT, ordersToBeSent);
         }
 
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
