@@ -87,14 +87,14 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
 
   await caseViewPage.checkActionsAreAvailable([
     config.administrationActions.manageHearings,
+  ]);
+  await caseViewPage.checkActionsAreNotAvailable([
+    config.applicationActions.enterAllocationDecision,
     config.administrationActions.amendChildren,
     config.administrationActions.amendRespondents,
     config.administrationActions.amendOther,
     config.administrationActions.amendInternationalElement,
     config.administrationActions.amendAttendingHearing,
-  ]);
-  await caseViewPage.checkActionsAreNotAvailable([
-    config.applicationActions.enterAllocationDecision,
     config.administrationActions.draftStandardDirections,
   ]);
-});
+}).retry(1); //async processing in prev test

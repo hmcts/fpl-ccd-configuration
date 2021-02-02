@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.HashMap;
@@ -42,20 +42,20 @@ public class ReviewCMOService {
      * There is dedicated method below to support this functionality.
      */
     public DynamicList buildDynamicList(CaseData caseData) {
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
-        Element<CaseManagementOrder> selectedCMO = getSelectedCMO(caseData);
+        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+        Element<HearingOrder> selectedCMO = getSelectedCMO(caseData);
 
-        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), CaseManagementOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, selectedCMO.getId(), HearingOrder::getHearing);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
 
-        return asDynamicList(cmosReadyForApproval, null, CaseManagementOrder::getHearing);
+        return asDynamicList(cmosReadyForApproval, null, HearingOrder::getHearing);
     }
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
-        List<Element<CaseManagementOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
+        List<Element<HearingOrder>> cmosReadyForApproval = getCMOsReadyForApproval(caseData);
         Map<String, Object> data = new HashMap<>();
         String numDraftCMOs = "numDraftCMOs";
 
@@ -64,7 +64,7 @@ public class ReviewCMOService {
                 data.put(numDraftCMOs, "NONE");
                 break;
             case 1:
-                CaseManagementOrder cmo = cmosReadyForApproval.get(0).getValue();
+                HearingOrder cmo = cmosReadyForApproval.get(0).getValue();
                 data.put(numDraftCMOs, "SINGLE");
                 data.put("reviewCMODecision",
                     ReviewDecision.builder().hearing(cmo.getHearing()).document(cmo.getOrder()).build());
@@ -78,8 +78,8 @@ public class ReviewCMOService {
         return data;
     }
 
-    public Element<CaseManagementOrder> getCMOToSeal(CaseData caseData) {
-        Element<CaseManagementOrder> cmo = getSelectedCMO(caseData);
+    public Element<HearingOrder> getCMOToSeal(CaseData caseData) {
+        Element<HearingOrder> cmo = getSelectedCMO(caseData);
         DocumentReference order;
 
         if (JUDGE_AMENDS_DRAFT.equals(caseData.getReviewCMODecision().getDecision())) {
@@ -94,14 +94,14 @@ public class ReviewCMOService {
             .build());
     }
 
-    public List<Element<CaseManagementOrder>> getCMOsReadyForApproval(CaseData caseData) {
+    public List<Element<HearingOrder>> getCMOsReadyForApproval(CaseData caseData) {
         return caseData.getDraftUploadedCMOs().stream()
             .filter(cmo -> cmo.getValue().getStatus().equals(SEND_TO_JUDGE))
             .collect(Collectors.toList());
     }
 
-    public Element<CaseManagementOrder> getSelectedCMO(CaseData caseData) {
-        List<Element<CaseManagementOrder>> readyForApproval = getCMOsReadyForApproval(caseData);
+    public Element<HearingOrder> getSelectedCMO(CaseData caseData) {
+        List<Element<HearingOrder>> readyForApproval = getCMOsReadyForApproval(caseData);
         if (readyForApproval.size() > 1) {
             UUID selectedCMOCode = getSelectedCMOId(caseData.getCmoToReviewList());
 
@@ -114,8 +114,8 @@ public class ReviewCMOService {
         }
     }
 
-    public CaseManagementOrder getLatestSealedCMO(CaseData caseData) {
-        List<Element<CaseManagementOrder>> sealedCMOs = caseData.getSealedCMOs();
+    public HearingOrder getLatestSealedCMO(CaseData caseData) {
+        List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
         if (!sealedCMOs.isEmpty()) {
             return sealedCMOs.get(sealedCMOs.size() - 1).getValue();
         } else {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
@@ -302,6 +303,9 @@ public class ManageHearingsController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
+
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingState(callbackRequest.getCaseDetails())
                 && standardDirectionsService.hasEmptyDates(caseData)) {
@@ -319,6 +323,7 @@ public class ManageHearingsController extends CallbackController {
                     }
                 });
         }
+
     }
 
     private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
