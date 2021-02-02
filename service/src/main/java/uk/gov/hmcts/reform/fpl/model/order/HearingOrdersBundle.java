@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
@@ -56,5 +57,11 @@ public class HearingOrdersBundle {
             orders.sort(comparingInt(order -> order.getValue().getType().ordinal()));
         }
         return orders;
+    }
+
+    public List<Element<HearingOrder>> getCaseManagementOrders() {
+        return orders.stream()
+            .filter(hearingOrderElement -> hearingOrderElement.getValue().getType().isCmo())
+            .collect(Collectors.toList());
     }
 }

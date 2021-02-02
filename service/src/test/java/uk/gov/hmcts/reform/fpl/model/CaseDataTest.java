@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -30,6 +32,9 @@ import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
@@ -1157,6 +1162,53 @@ class CaseDataTest {
                 element(emailRepTwo),
                 element(digitalRepOne),
                 element(digitalRepTwo));
+        }
+    }
+
+    @Nested
+    class GetHearingOrderDraftCMOs {
+        @Test
+        void shouldReturnAListOfDraftCaseManagementOrders() {
+            Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), HearingOrder.builder().type(
+                DRAFT_CMO).build());
+
+            Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), HearingOrder.builder().type(
+                AGREED_CMO).build());
+
+            Element<HearingOrder> draftCMOThree = element(UUID.randomUUID(), HearingOrder.builder().type(
+                DRAFT_CMO).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        draftCMOThree,
+                        element(HearingOrder.builder().type(C21).build())
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEqualTo(List.of(draftCMOOne, draftCMOTwo, draftCMOThree));
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfNoCaseManagementOrdersHaveBeenMade() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(HearingOrder.builder().type(C21).build()))).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(HearingOrder.builder().type(C21).build())
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfHearingOrderBundlesDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
         }
     }
 

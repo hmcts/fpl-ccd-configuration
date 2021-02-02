@@ -598,6 +598,18 @@ public class CaseData {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
     }
 
+    public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
+        if (hearingOrdersBundlesDrafts != null) {
+            return hearingOrdersBundlesDrafts.stream()
+                .map(Element::getValue)
+                .flatMap((HearingOrdersBundle hearingOrdersBundle)
+                    -> hearingOrdersBundle.getCaseManagementOrders().stream())
+                .collect(toList());
+        }
+
+        return new ArrayList<>();
+    }
+
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),

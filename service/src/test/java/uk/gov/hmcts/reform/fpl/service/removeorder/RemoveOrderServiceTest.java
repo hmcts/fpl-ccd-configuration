@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -39,6 +40,9 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
@@ -108,12 +112,27 @@ class RemoveOrderServiceTest {
             element(buildOrder(SUPERVISION_ORDER, "order 4", "18 September 2020"))
         );
 
-        List<Element<HearingOrder>> caseManagementOrders = buildCaseManagementOrders();
+        List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
+
+        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), HearingOrder.builder().type(
+            DRAFT_CMO).build());
+
+        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), HearingOrder.builder().type(
+            AGREED_CMO).build());
+
+        Element<HearingOrder> draftCMOThree = element(UUID.randomUUID(), HearingOrder.builder().type(
+            DRAFT_CMO).build());
 
         CaseData caseData = CaseData.builder()
             .state(state)
             .orderCollection(generatedOrders)
-            .sealedCMOs(caseManagementOrders)
+            .sealedCMOs(sealedCaseManagementOrders)
+            .hearingOrdersBundlesDrafts(List.of(
+                element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
+                element(HearingOrdersBundle.builder().orders(List.of(
+                    draftCMOThree,
+                    element(HearingOrder.builder().type(C21).build())
+                )).build())))
             .build();
 
         DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
@@ -125,8 +144,11 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
-                buildListElement(caseManagementOrders.get(0).getId(), format("Case management order - %s",
-                    formatLocalDateToString(NOW, "d MMMM yyyy")))))
+                buildListElement(sealedCaseManagementOrders.get(0).getId(), format("Case management order - %s",
+                    formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                buildListElement(draftCMOOne.getId(), "Draft CMO"),
+                buildListElement(draftCMOTwo.getId(), "Draft CMO"),
+                buildListElement(draftCMOThree.getId(), "Draft CMO")))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -279,14 +301,10 @@ class RemoveOrderServiceTest {
             .build();
     }
 
-    private List<Element<HearingOrder>> buildCaseManagementOrders() {
+    private List<Element<HearingOrder>> buildSealedCaseManagementOrders() {
         return List.of(
             element(HearingOrder.builder()
                 .status(APPROVED)
-                .dateIssued(NOW)
-                .build()),
-            element(HearingOrder.builder()
-                .status(DRAFT)
                 .dateIssued(NOW)
                 .build())
         );

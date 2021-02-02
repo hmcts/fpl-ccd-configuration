@@ -15,12 +15,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Data
@@ -61,12 +60,18 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return APPROVED.equals(status);
+        return !SEND_TO_JUDGE.equals(status);
     }
 
     public String asLabel() {
-        return format("%s - %s", defaultIfNull(title, "Case management order"),
-            formatLocalDateToString(dateIssued, "d MMMM yyyy"));
-    }
+        String statusLabel = "";
 
+        if (status.equals(APPROVED)) {
+            statusLabel = "Sealed";
+        } else if (status.equals(RETURNED) || status.equals(DRAFT)) {
+            statusLabel = "Draft";
+        }
+
+        return format("%s %s", statusLabel, hearing);
+    }
 }
