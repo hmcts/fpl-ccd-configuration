@@ -63,7 +63,7 @@ public class ReviewDraftOrdersData {
         return new String[]{
             "reviewCMODecision", "reviewDecision1", "reviewDecision2", "reviewDecision3", "reviewDecision4",
             "reviewDecision5", "reviewDecision6", "reviewDecision7", "reviewDecision8", "reviewDecision9",
-            "reviewDecision10", "ordersToBeSent"
+            "reviewDecision10"
         };
     }
 

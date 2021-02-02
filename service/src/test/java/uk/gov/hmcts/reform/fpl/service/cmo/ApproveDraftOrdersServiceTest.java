@@ -422,6 +422,24 @@ class ApproveDraftOrdersServiceTest {
     }
 
     @Test
+    void shouldReturnErrorWhenJudgeDoesNotReviewAnyOrdersInTheSelectedHearingOrdersBundle() {
+        Element<HearingOrder> cmo = agreedCMO(hearing1);
+        Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing1);
+
+        Element<HearingOrdersBundle> draftOrdersBundle = buildDraftOrdersBundle(
+            hearing1, asList(cmo, blankOrder));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(List.of(draftOrdersBundle))
+            .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .build();
+
+        assertThat(service.validateDraftOrdersReviewDecision(caseData, emptyMap()))
+            .containsOnly("Approve, amend or reject draft orders");
+    }
+
+    @Test
     void shouldReturnErrorsWhenDraftCMOAndDraftBlankOrderReviewDecisionFieldsAreInvalid() {
         Element<HearingOrder> cmo = agreedCMO(hearing1);
         Element<HearingOrder> blankOrder = buildBlankOrder("Draft C21 order", hearing1);

@@ -116,17 +116,30 @@ public class ApproveDraftOrdersService {
         List<HearingOrder> hearingOrders = unwrapElements(selectedOrdersBundle.getValue().getOrders());
         List<String> errors = new ArrayList<>();
 
+        boolean noReviewDecisionExists = true;
         int counter = 1;
         for (HearingOrder order : hearingOrders) {
-            if (order.getType().isCmo()) {
+            if (order.getType().isCmo() && caseData.getReviewCMODecision() != null
+                && caseData.getReviewCMODecision().getDecision() != null) {
+
+                noReviewDecisionExists = false;
                 validateReviewDecision(errors, caseData.getReviewCMODecision(), "CMO");
             } else {
                 Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
                 ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
-                validateReviewDecision(errors, reviewDecision, "draft order " + counter);
-                counter++;
+                if (reviewDecision != null && reviewDecision.getDecision() != null) {
+
+                    noReviewDecisionExists = false;
+                    validateReviewDecision(errors, reviewDecision, "draft order " + counter);
+                    counter++;
+                }
             }
         }
+
+        if (hearingOrders.isEmpty() && noReviewDecisionExists) {
+            errors.add("Approve, amend or reject draft orders");
+        }
+
         return errors;
     }
 
@@ -363,16 +376,12 @@ public class ApproveDraftOrdersService {
 
     private void validateReviewDecision(
         List<String> errors, ReviewDecision reviewDecision, String orderName) {
-
-        if (reviewDecision != null && reviewDecision.getDecision() != null) {
-
-            if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())
-                && reviewDecision.getJudgeAmendedDocument() == null) {
-                errors.add(String.format("Add the new %s", orderName));
-            } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())
-                && isBlank(reviewDecision.getChangesRequestedByJudge())) {
-                errors.add(String.format("Add what the LA needs to change on the %s", orderName));
-            }
+        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())
+            && reviewDecision.getJudgeAmendedDocument() == null) {
+            errors.add(String.format("Add the new %s", orderName));
+        } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())
+            && isBlank(reviewDecision.getChangesRequestedByJudge())) {
+            errors.add(String.format("Add what the LA needs to change on the %s", orderName));
         }
     }
 }

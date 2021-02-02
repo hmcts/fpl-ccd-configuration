@@ -85,6 +85,9 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
+        // reset ordersToBeSent in the notifications
+        caseDetails.getData().remove("ordersToBeSent");
+
         Element<HearingOrdersBundle> selectedOrdersBundle =
             approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
 
