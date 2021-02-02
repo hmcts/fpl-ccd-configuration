@@ -11,18 +11,22 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.cmo.ReviewDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
@@ -32,8 +36,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transien
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApproveDraftOrdersController extends CallbackController {
 
-    private final ReviewDraftOrdersService reviewDraftOrdersService;
-    private final CoreCaseDataService coreCaseDataService;
+    private final ApproveDraftOrdersService approveDraftOrdersService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -42,7 +45,7 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
-        caseDetails.getData().putAll(reviewDraftOrdersService.getPageDisplayControls(caseData));
+        caseDetails.getData().putAll(approveDraftOrdersService.getPageDisplayControls(caseData));
 
         return respond(caseDetails);
     }
@@ -54,11 +57,11 @@ public class ApproveDraftOrdersController extends CallbackController {
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
 
-        caseDetails.getData().putAll(reviewDraftOrdersService.populateDraftOrdersData(caseData));
+        caseDetails.getData().putAll(approveDraftOrdersService.populateDraftOrdersData(caseData));
 
         if (!(caseData.getCmoToReviewList() instanceof DynamicList)) {
             // reconstruct dynamic list
-            caseDetails.getData().put("cmoToReviewList", reviewDraftOrdersService.buildDynamicList(caseData));
+            caseDetails.getData().put("cmoToReviewList", approveDraftOrdersService.buildDynamicList(caseData));
         }
 
         return respond(caseDetails);
@@ -70,7 +73,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        List<String> errors = reviewDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
+        List<String> errors = approveDraftOrdersService.validateDraftOrdersReviewDecision(caseData, data);
 
         return respond(caseDetails, errors);
     }
@@ -82,13 +85,13 @@ public class ApproveDraftOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
 
         Element<HearingOrdersBundle> selectedOrdersBundle =
-            reviewDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
+            approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
 
         // review cmo
-        data.putAll(reviewDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
+        data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
 
         // review C21 orders
-        reviewDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+        approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
 
         caseDetails.getData().put("lastHearingOrderDraftsHearingId", selectedOrdersBundle.getValue().getHearingId());
 
@@ -100,12 +103,7 @@ public class ApproveDraftOrdersController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
-
-        List<Element<HearingOrder>> ordersToBeSent = caseData.getOrdersToBeSent();
-        if (caseData.getOrdersToBeSent().size() == 1) {
-            publishEvent(reviewDraftOrdersService.buildEventToPublish(caseData, ordersToBeSent.get(0).getValue()));
-        } else if (!caseData.getOrdersToBeSent().isEmpty()) {
-            reviewDraftOrdersService.buildEventsToPublish(caseData).forEach(this::publishEvent);
-        }
+        System.out.println(caseData.getOrdersToBeSent());
+        approveDraftOrdersService.buildEventsToPublish(caseData).forEach(this::publishEvent);
     }
 }

@@ -64,9 +64,9 @@ public class HearingOrdersBundle {
 
     @JsonIgnore
     public List<Element<HearingOrder>> getOrders(CMOStatus status) {
-        List<Element<HearingOrder>> orders = defaultIfNull(getOrders(), newArrayList());
+        List<Element<HearingOrder>> hearingOrders = defaultIfNull(getOrders(), newArrayList());
 
-        return orders.stream()
+        return hearingOrders.stream()
             .filter(order -> status.equals(order.getValue().getStatus()))
             .collect(Collectors.toList());
     }

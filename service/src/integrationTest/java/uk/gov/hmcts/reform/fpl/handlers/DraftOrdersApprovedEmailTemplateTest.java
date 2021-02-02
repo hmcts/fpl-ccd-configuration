@@ -75,11 +75,6 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
             .order(DocumentReference.builder().binaryUrl("/99999").build())
             .build();
 
-        HearingOrdersBundle bundle = HearingOrdersBundle.builder()
-            .hearingId(hearingBooking.getId())
-            .orders(ElementUtils.wrapElements(cmo, c21))
-            .build();
-
         CaseData caseData = CaseData.builder()
             .id(100L)
             .respondents1(wrapElements(Respondent.builder()
@@ -88,18 +83,7 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
                     .build())
                 .build()))
             .hearingDetails(List.of(hearingBooking))
-            .lastHearingOrderDraftsHearingId(hearingBooking.getId())
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .id(100L)
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName("Smith")
-                    .build())
-                .build()))
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .hearingDetails(List.of(hearingBooking))
+            .ordersToBeSent(List.of(element(cmo), element(c21)))
             .lastHearingOrderDraftsHearingId(hearingBooking.getId())
             .build();
 

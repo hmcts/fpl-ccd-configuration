@@ -37,7 +37,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
@@ -58,7 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllo
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ReviewDraftOrdersService {
+public class ApproveDraftOrdersService {
 
     private final ObjectMapper mapper;
     private final Time time;
@@ -136,6 +139,7 @@ public class ReviewDraftOrdersService {
 
     public Map<String, Object> reviewCMO(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
         Map<String, Object> data = new HashMap<>();
+
         Element<HearingOrder> cmo = selectedOrdersBundle.getValue().getOrders(SEND_TO_JUDGE).stream()
             .filter(order -> order.getValue().getType().isCmo())
             .findFirst().orElse(null);
@@ -143,20 +147,28 @@ public class ReviewDraftOrdersService {
         if (cmo != null) {
             ReviewDecision cmoReviewDecision = caseData.getReviewCMODecision();
             if (cmoReviewDecision != null && cmoReviewDecision.getDecision() != null) {
+
+                Element<HearingOrder> reviewedOrder;
+
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    Element<HearingOrder> cmoToSeal = getCMOToSeal(cmoReviewDecision, cmo);
+                    reviewedOrder = buildSealedHearingOrder(cmoReviewDecision, cmo);
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
-                    sealedCMOs.add(cmoToSeal);
+                    sealedCMOs.add(reviewedOrder);
                     data.put("sealedCMOs", sealedCMOs);
-                    data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, cmoToSeal.getId()));
+                    data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, reviewedOrder.getId()));
+                } else {
+                    reviewedOrder = buildRejectedHearingOrder(cmo, cmoReviewDecision.getChangesRequestedByJudge());
                 }
+
                 caseData.getDraftUploadedCMOs().remove(cmo);
-                updateHearingCMO(caseData, cmo);
+                updateHearingCMO(caseData, cmo.getId());
 
                 data.put("hearingDetails", caseData.getHearingDetails());
                 data.put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
                 data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+
+                data.put("ordersToBeSent", newArrayList(reviewedOrder));
             }
         }
         return data;
@@ -198,6 +210,9 @@ public class ReviewDraftOrdersService {
         List<Element<HearingOrder>> draftOrders = selectedOrdersBundle.getValue().getOrders().stream()
             .filter(order -> !order.getValue().getType().isCmo()).collect(toList());
 
+        List<Element<HearingOrder>> ordersToBeSent = defaultIfNull((
+            List<Element<HearingOrder>>) data.get("ordersToBeSent"), newArrayList());
+
         int counter = 1;
         List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
 
@@ -206,13 +221,26 @@ public class ReviewDraftOrdersService {
             ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
 
             if (reviewDecision != null && reviewDecision.getDecision() != null) {
+                Element<HearingOrder> reviewedOrder;
+
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    GeneratedOrder sealedC21Order = getSealedC21Order(caseData, orderElement, reviewDecision);
-                    reviewedOrders.add(element(orderElement.getId(), sealedC21Order));
+                    reviewedOrder = buildSealedHearingOrder(reviewDecision, orderElement);
+                    reviewedOrders.add(buildBlankOrder(caseData, reviewedOrder));
+
+                    ordersToBeSent.add(reviewedOrder);
+                } else {
+                    ordersToBeSent.add(
+                        buildRejectedHearingOrder(orderElement, reviewDecision.getChangesRequestedByJudge()));
                 }
                 selectedOrdersBundle.getValue().getOrders().remove(orderElement);
             }
             counter++;
+        }
+
+        if (ordersToBeSent.isEmpty()) {
+            data.remove("ordersToBeSent");
+        } else {
+            data.put("ordersToBeSent", ordersToBeSent);
         }
 
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
@@ -220,32 +248,48 @@ public class ReviewDraftOrdersService {
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 
-    public ReviewCMOEvent buildEventToPublish(CaseData caseData, HearingOrder order) {
-        if (order.getType().isCmo()) {
-            if (order.getStatus().equals(APPROVED)) {
-                return new CaseManagementOrderIssuedEvent(caseData, order);
-            } else if (order.getStatus().equals(RETURNED)) {
-                return new CaseManagementOrderRejectedEvent(caseData, order);
-            }
-        } else {
-            if (order.getStatus().equals(APPROVED)) {
-                return new DraftOrdersApproved(caseData, List.of(order));
-            } else if (order.getStatus().equals(RETURNED)) {
-                return new DraftOrdersRejected(caseData, List.of(order));
-            } else {
-                throw new CMONotFoundException("Cannot find order to send - no approved or returned status set");
-            }
-        }
-        return null;
-    }
-
     public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData) {
         List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
-        List<Element<HearingOrder>> ordersToBeSent = caseData.getOrdersToBeSent();
+        List<Element<HearingOrder>> orders = caseData.getOrdersToBeSent();
+
+        if (orders.isEmpty()) {
+            return emptyList();
+        }
+
+        Optional<Element<HearingOrder>> optionalCmo = orders.stream()
+            .filter(order -> order.getValue().getType().isCmo()).findFirst();
+
+        List<Element<HearingOrder>> c21s = orders.stream()
+            .filter(order -> !order.getValue().getType().isCmo())
+            .collect(toList());
+
+        //If CMO is the only approved/rejected order, then publish specific event for CMO (and generic for others)
+        if (optionalCmo.isPresent()) {
+            HearingOrder cmo = optionalCmo.get().getValue();
+            if (cmo.getStatus().equals(APPROVED)
+                && c21s.stream().noneMatch(c21 -> c21.getValue().getStatus().equals(APPROVED))) {
+
+                if (c21s.stream().anyMatch(c21 -> c21.getValue().getStatus().equals(RETURNED))) {
+                    eventsToPublish.add(new DraftOrdersRejected(caseData, unwrapElements(c21s)));
+                }
+                eventsToPublish.add(new CaseManagementOrderIssuedEvent(caseData, cmo));
+
+                return eventsToPublish;
+            } else if (cmo.getStatus().equals(RETURNED)
+                && c21s.stream().noneMatch(c21 -> c21.getValue().getStatus().equals(RETURNED))) {
+
+                if (c21s.stream().anyMatch(c21 -> c21.getValue().getStatus().equals(APPROVED))) {
+                    eventsToPublish.add(new DraftOrdersApproved(caseData, unwrapElements(c21s)));
+                }
+                eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmo));
+                return eventsToPublish;
+            }
+        }
+
         List<HearingOrder> approvedOrders = new ArrayList<>();
         List<HearingOrder> rejectedOrders = new ArrayList<>();
 
-        unwrapElements(ordersToBeSent).forEach(order -> {
+        unwrapElements(orders).forEach(order -> {
             if (order.getStatus().equals(APPROVED)) {
                 approvedOrders.add(order);
             } else if (order.getStatus().equals(RETURNED)) {
@@ -275,83 +319,51 @@ public class ReviewDraftOrdersService {
         }
     }
 
-    private Element<HearingOrder> getCMOToSeal(ReviewDecision reviewDecision, Element<HearingOrder> cmo) {
+    private Element<HearingOrder> buildSealedHearingOrder(
+        ReviewDecision reviewDecision, Element<HearingOrder> hearingOrderElement) {
         DocumentReference order;
 
         if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
             order = reviewDecision.getJudgeAmendedDocument();
         } else {
-            order = cmo.getValue().getOrder();
+            order = hearingOrderElement.getValue().getOrder();
         }
+
+        return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
+            .dateIssued(time.now().toLocalDate())
+            .status(CMOStatus.APPROVED)
+            .order(documentSealingService.sealDocument(order))
+            .lastUploadedOrder(order)
+            .build());
+    }
+
+    private Element<HearingOrder> buildRejectedHearingOrder(Element<HearingOrder> cmo, String changesRequested) {
         return element(cmo.getId(), cmo.getValue().toBuilder()
-            .dateIssued(time.now().toLocalDate())
-            .status(CMOStatus.APPROVED)
-            .order(documentSealingService.sealDocument(order))
-            .lastUploadedOrder(order)
-            .build());
-    }
-
-    private Element<HearingOrder> getSealedHearingOrder(ReviewDecision reviewDecision,
-                                                        Element<HearingOrder> orderElement) {
-        DocumentReference order;
-
-        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
-            order = reviewDecision.getJudgeAmendedDocument();
-        } else {
-            order = orderElement.getValue().getOrder();
-        }
-        return element(orderElement.getId(), orderElement.getValue().toBuilder()
-            .dateIssued(time.now().toLocalDate())
-            .status(CMOStatus.APPROVED)
-            .order(documentSealingService.sealDocument(order))
-            .lastUploadedOrder(order)
-            .build());
-    }
-
-    private Element<HearingOrder> getRejectedHearingOrder(ReviewDecision reviewDecision,
-                                                          Element<HearingOrder> orderElement) {
-        HearingOrder hearingOrder = orderElement.getValue();
-
-        return element(orderElement.getId(), hearingOrder.toBuilder()
             .status(CMOStatus.RETURNED)
-            .requestedChanges(reviewDecision.getChangesRequestedByJudge())
-            .order(hearingOrder.getOrder())
-            .lastUploadedOrder(hearingOrder.getOrder())
+            .requestedChanges(changesRequested)
             .build());
     }
 
-    private void updateHearingCMO(CaseData caseData, Element<HearingOrder> cmo) {
-        if (caseData.getHearingDetails() != null) {
-            caseData.getHearingDetails().stream()
-                .filter(h -> h.getValue().getCaseManagementOrderId().equals(cmo.getId()))
-                .findFirst()
-                .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
-        }
+    private void updateHearingCMO(CaseData caseData, UUID cmoId) {
+        defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>()).stream()
+            .filter(hearing -> cmoId.equals(hearing.getValue().getCaseManagementOrderId()))
+            .findFirst()
+            .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
     }
 
-    private GeneratedOrder getSealedC21Order(CaseData caseData,
-                                             Element<HearingOrder> orderElement,
-                                             ReviewDecision reviewDecision) {
-        HearingOrder draftOrder = orderElement.getValue();
-        DocumentReference order;
+    private Element<GeneratedOrder> buildBlankOrder(CaseData caseData, Element<HearingOrder> sealedOrder) {
+        HearingOrder order = sealedOrder.getValue();
 
-        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
-            order = reviewDecision.getJudgeAmendedDocument();
-        } else {
-            order = orderElement.getValue().getOrder();
-        }
-
-        return GeneratedOrder.builder()
+        return element(sealedOrder.getId(), GeneratedOrder.builder()
             .type(BLANK_ORDER.getLabel())
-            .title(draftOrder.getTitle())
-            .document(documentSealingService.sealDocument(order))
-            .dateOfIssue(draftOrder.getDateIssued() != null
-                ? formatLocalDateToString(draftOrder.getDateIssued(), DATE) : null)
+            .title(order.getTitle())
+            .document(order.getOrder())
+            .dateOfIssue(order.getDateIssued() != null ? formatLocalDateToString(order.getDateIssued(), DATE) : null)
             .judgeAndLegalAdvisor(
                 caseData.getAllocatedJudge() != null ? buildJudgeAndLegalAdvisor(caseData.getAllocatedJudge()) : null)
             .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
             .children(caseData.getAllChildren())
-            .build();
+            .build());
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(Judge allocatedJudge) {
@@ -415,16 +427,15 @@ public class ReviewDraftOrdersService {
         return data;
     }
 
-    private void validateReviewDecision(
-        List<String> errors, ReviewDecision cmoDecision, String orderName) {
+    private void validateReviewDecision(List<String> errors, ReviewDecision reviewDecision, String orderName) {
 
-        if (cmoDecision != null && cmoDecision.getDecision() != null) {
+        if (reviewDecision != null && reviewDecision.getDecision() != null) {
 
-            if (JUDGE_AMENDS_DRAFT.equals(cmoDecision.getDecision())
-                && cmoDecision.getJudgeAmendedDocument() == null) {
+            if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())
+                && reviewDecision.getJudgeAmendedDocument() == null) {
                 errors.add(String.format("Add the new %s", orderName));
-            } else if (JUDGE_REQUESTED_CHANGES.equals(cmoDecision.getDecision())
-                && isBlank(cmoDecision.getChangesRequestedByJudge())) {
+            } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())
+                && isBlank(reviewDecision.getChangesRequestedByJudge())) {
                 errors.add(String.format("Add what the LA needs to change on the %s", orderName));
             }
         }

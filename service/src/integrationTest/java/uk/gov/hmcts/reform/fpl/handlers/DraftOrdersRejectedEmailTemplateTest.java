@@ -72,11 +72,6 @@ class DraftOrdersRejectedEmailTemplateTest extends EmailTemplateTest {
             .requestedChanges("Please make these changes")
             .build();
 
-        HearingOrdersBundle bundle = HearingOrdersBundle.builder()
-            .hearingId(hearingBooking.getId())
-            .orders(ElementUtils.wrapElements(cmo, c21))
-            .build();
-
         CaseData caseData = CaseData.builder()
             .id(100L)
             .respondents1(wrapElements(Respondent.builder()
@@ -85,22 +80,11 @@ class DraftOrdersRejectedEmailTemplateTest extends EmailTemplateTest {
                     .build())
                 .build()))
             .hearingDetails(List.of(hearingBooking))
+            .ordersToBeSent(List.of(element(c21)))
             .lastHearingOrderDraftsHearingId(hearingBooking.getId())
             .build();
 
-        CaseData caseDataBefore = CaseData.builder()
-            .id(100L)
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName("Smith")
-                    .build())
-                .build()))
-            .hearingOrdersBundlesDrafts(wrapElements(bundle))
-            .hearingDetails(List.of(hearingBooking))
-            .lastHearingOrderDraftsHearingId(hearingBooking.getId())
-            .build();
-
-        DraftOrdersRejected event = new DraftOrdersRejected(caseData, List.of(cmo, c21));
+        DraftOrdersRejected event = new DraftOrdersRejected(caseData, List.of(c21));
 
         underTest.sendNotificationToLA(event);
 
