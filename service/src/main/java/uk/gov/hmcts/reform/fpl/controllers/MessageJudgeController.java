@@ -57,7 +57,7 @@ public class MessageJudgeController extends CallbackController {
             caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
         }
 
-        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
+        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getNextHearingLabel(caseData));
 
         return respond(caseDetailsMap);
     }

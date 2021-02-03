@@ -130,6 +130,10 @@ public class CaseSubmissionController extends CallbackController {
     public SubmittedCallbackResponse handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
+
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
+
         if (caseDataBefore.getState() == OPEN) {
             publishEvent(new SubmittedCaseEvent(caseData, caseDataBefore));
             publishEvent(new CaseDataChanged(caseData));
@@ -138,9 +142,6 @@ public class CaseSubmissionController extends CallbackController {
         }
 
         MarkdownData markdownData = markdownService.getMarkdownData(caseData.getCaseName());
-
-        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
-            getCaseDataBefore(callbackRequest)));
 
         return SubmittedCallbackResponse.builder()
             .confirmationHeader(markdownData.getHeader())

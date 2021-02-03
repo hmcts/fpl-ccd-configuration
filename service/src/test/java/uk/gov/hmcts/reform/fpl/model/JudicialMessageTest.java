@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 class JudicialMessageTest {
     private static String DATE_SENT = "11 November at 08:30am";
     private static String URGENCY = "High urgency";
+    private static String SUBJECT = "Subject";
 
     @Test
     void shouldBuildJudicialMessageLabel() {
@@ -16,9 +17,10 @@ class JudicialMessageTest {
             .urgency(URGENCY)
             .isRelatedToC2(YES)
             .dateSent(DATE_SENT)
+            .subject(SUBJECT)
             .build();
 
-        assertThat(judicialMessage.toLabel()).isEqualTo(String.format("C2, %s, %s", URGENCY, DATE_SENT));
+        assertThat(judicialMessage.toLabel()).isEqualTo(String.format("C2, %s, %s, %s", SUBJECT, DATE_SENT, URGENCY));
     }
 
     @Test
@@ -26,9 +28,10 @@ class JudicialMessageTest {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .urgency(URGENCY)
             .dateSent(DATE_SENT)
+            .subject(SUBJECT)
             .build();
 
-        assertThat(judicialMessage.toLabel()).isEqualTo(String.format("%s, %s", URGENCY, DATE_SENT));
+        assertThat(judicialMessage.toLabel()).isEqualTo(String.format("%s, %s, %s", SUBJECT, DATE_SENT, URGENCY));
     }
 
     @Test

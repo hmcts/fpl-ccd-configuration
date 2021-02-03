@@ -144,6 +144,18 @@ kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
 ```
 then connect to data-store db on port 5020
 
+
+## Connecting to local open idm database:
+
+```$bash
+host: localhost
+port: 5051
+user: openidm
+password: openidm
+database: openidm
+```
+User details are kept in openidm.managedobjects table
+
 ## Connecting to PR elastic search:
 ```$bash
 kubectl port-forward fpl-case-service-pr-<PR-ID>-es-master-0 9210:9200

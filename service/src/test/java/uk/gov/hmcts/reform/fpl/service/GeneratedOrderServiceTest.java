@@ -339,7 +339,7 @@ class GeneratedOrderServiceTest {
         given(requestData.authorisation()).willReturn(Constants.USER_AUTH_TOKEN);
         given(idamClient.getUserDetails(Constants.USER_AUTH_TOKEN)).willReturn(
             UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoles())
+                .roles(UserRole.HMCTS_ADMIN.getRoleNames())
                 .build()
         );
 

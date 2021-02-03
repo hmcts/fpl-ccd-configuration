@@ -2,9 +2,19 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -18,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,10 +36,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.lang.String.format;
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
@@ -43,15 +52,11 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
+@ExtendWith({MockitoExtension.class})
+@MockitoSettings(strictness = Strictness.LENIENT)
 class MessageJudgeServiceTest {
-    private final Time time = new FixedTimeConfiguration().stoppedTime();
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final IdentityService identityService = mock(IdentityService.class);
-    private final UserService userService = mock(UserService.class);
-    private final MessageJudgeService messageJudgeService = new MessageJudgeService(
-        time, identityService, mapper, userService
-    );
 
+    private static final String COURT_EMAIL = "ctsc@test.com";
     private static final String MESSAGE_NOTE = "Message note";
     private static final String MESSAGE_SENDER = "sender@fpla.com";
     private static final String MESSAGE_REQUESTED_BY = "request review from some court";
@@ -60,6 +65,25 @@ class MessageJudgeServiceTest {
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final UUID NEW_ELEMENT_ID = UUID.randomUUID();
+
+    @Mock
+    private Time time;
+    @Mock
+    private IdentityService identityService;
+    @Mock
+    private UserService userService;
+    @Mock
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+    @Spy
+    private ObjectMapper mapper = new ObjectMapper();
+    @InjectMocks
+    private MessageJudgeService messageJudgeService;
+
+    @BeforeEach
+    void init() {
+        when(ctscEmailLookupConfiguration.getEmail()).thenReturn(COURT_EMAIL);
+        when(time.now()).thenReturn(LocalDateTime.now());
+    }
 
     @Test
     void shouldInitialiseCaseFieldsWhenC2DocumentsAndJudicialMessagesExist() {
@@ -210,6 +234,26 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    void shouldPrePopulateRecipientWhenNewMessageIsInitiatedByJudge() {
+        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
+
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(messageJudgeService.initialiseCaseFields(caseData))
+            .containsExactly(
+                entry("judicialMessageMetaData", JudicialMessageMetaData.builder().recipient(COURT_EMAIL).build()));
+    }
+
+    @Test
+    void shouldNotPrePopulateRecipientWhenNewMessageIsInitiatedNotByJudge() {
+        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
+
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(messageJudgeService.initialiseCaseFields(caseData)).isEmpty();
+    }
+
+    @Test
     void shouldRebuildC2DynamicListAndFormatC2DocumentsCorrectlyWhenC2HasBeenSelected() {
         C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
             .document(DocumentReference.builder()
@@ -286,13 +330,34 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    void shouldPrePopulateRecipientWhenMessageIsInitiatedByJudge() {
+        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
+
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(messageJudgeService.populateNewMessageFields(caseData)).containsExactly(
+            entry("judicialMessageMetaData", JudicialMessageMetaData.builder().recipient(COURT_EMAIL).build()));
+    }
+
+    @Test
+    void shouldNotPrePopulateRecipientWhenMessageIsInitiatedNotByJudge() {
+        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
+
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(messageJudgeService.populateNewMessageFields(caseData)).isEmpty();
+    }
+
+    @Test
     void shouldBuildRelatedDocumentsLabelAndRebuildJudicialMessagesDynamicListWhenReplyingToAMessage() {
         JudicialMessage selectedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_SENDER)
             .relatedDocumentFileNames("file1.doc")
             .messageHistory("message history")
             .latestMessage("Some note")
-            .urgency("very")
+            .subject("Test subject")
+            .dateSent("12 January 2021")
+            .urgency("high")
             .build();
 
         List<Element<JudicialMessage>> judicialMessages = List.of(
@@ -301,7 +366,7 @@ class MessageJudgeServiceTest {
         );
 
         DynamicList judicialMessageDynamicList = buildDynamicList(0,
-            Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "very, null"),
+            Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "Test subject, 12 January 2021, high"),
             Pair.of(judicialMessages.get(1).getId(), "null")
         );
 
@@ -317,7 +382,7 @@ class MessageJudgeServiceTest {
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(MESSAGE_SENDER)
-            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .urgency(selectedJudicialMessage.getUrgency())
             .latestMessage("")
@@ -361,7 +426,7 @@ class MessageJudgeServiceTest {
     @Test
     void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentNotSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .recipient(MESSAGE_RECIPIENT)
             .urgency("High urgency")
             .build();
@@ -385,7 +450,7 @@ class MessageJudgeServiceTest {
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
             .sender(MESSAGE_SENDER)
             .recipient(MESSAGE_RECIPIENT)
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .urgency("High urgency")
             .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
             .build());
@@ -450,7 +515,7 @@ class MessageJudgeServiceTest {
     @Test
     void shouldAppendNewJudicialMessageToExistingJudicialMessageList() {
         JudicialMessage newMessage = JudicialMessage.builder()
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .recipient(MESSAGE_RECIPIENT)
             .build();
 
@@ -475,7 +540,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(time.now())
             .status(OPEN)
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
             .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
             .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
@@ -521,7 +586,7 @@ class MessageJudgeServiceTest {
             JudicialMessage.builder()
                 .sender(MESSAGE_RECIPIENT)
                 .recipient(MESSAGE_SENDER)
-                .requestedBy(MESSAGE_REQUESTED_BY)
+                .subject(MESSAGE_REQUESTED_BY)
                 .updatedTime(time.now())
                 .status(OPEN)
                 .latestMessage(messageReply)
@@ -563,7 +628,7 @@ class MessageJudgeServiceTest {
                 .build())))
             .build();
 
-        assertThat(messageJudgeService.getFirstHearingLabel(caseData))
+        assertThat(messageJudgeService.getNextHearingLabel(caseData))
             .isEqualTo(String.format("Next hearing in the case: %s hearing, %s", hearingType.getLabel(),
                 formatLocalDateTimeBaseUsingFormat(hearingStartDate, DATE)));
     }
@@ -572,7 +637,7 @@ class MessageJudgeServiceTest {
     void shouldNotPopulateFirstHearingLabelWhenHearingDoesNotExists() {
         CaseData caseData = CaseData.builder().build();
 
-        assertThat(messageJudgeService.getFirstHearingLabel(caseData)).isEmpty();
+        assertThat(messageJudgeService.getNextHearingLabel(caseData)).isEmpty();
     }
 
     @Test
@@ -649,7 +714,7 @@ class MessageJudgeServiceTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(time.now().minusDays(1))
             .status(OPEN)
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(MESSAGE_NOTE)
             .messageHistory(String.format("%s - %s", MESSAGE_SENDER, MESSAGE_NOTE))
             .dateSent(dateSent)

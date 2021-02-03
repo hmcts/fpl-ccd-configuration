@@ -269,7 +269,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(JURISDICTION,
             CASE_TYPE,
             CASE_REFERENCE,
             "internal-change-SEND_DOCUMENT",

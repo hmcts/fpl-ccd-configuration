@@ -91,7 +91,7 @@ class C2UploadedEventHandlerTest {
         CaseData caseData = caseData();
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
+            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build());
 
         given(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()))
             .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
@@ -118,7 +118,7 @@ class C2UploadedEventHandlerTest {
             .build();
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
+            UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoleNames()).build());
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
@@ -142,7 +142,7 @@ class C2UploadedEventHandlerTest {
         CaseData caseData = caseData();
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
+            UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoleNames()).build());
 
         c2UploadedEventHandler.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
 

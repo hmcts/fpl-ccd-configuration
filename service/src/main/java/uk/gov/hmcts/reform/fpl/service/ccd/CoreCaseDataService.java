@@ -8,12 +8,12 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
@@ -71,10 +71,9 @@ public class CoreCaseDataService {
         return coreCaseDataApi.getCase(requestData.authorisation(), authTokenGenerator.generate(), caseId);
     }
 
-    public List<CaseDetails> searchCases(String caseType, String query) {
+    public SearchResult searchCases(String caseType, String query) {
         String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
 
-        return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), caseType, query)
-            .getCases();
+        return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), caseType, query);
     }
 }
