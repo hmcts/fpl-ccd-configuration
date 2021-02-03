@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @Api
@@ -73,7 +72,7 @@ public class ApplicantController extends CallbackController {
 
         String solicitorEmail = caseData.getSolicitor().getEmail();
 
-        if(!isNull(solicitorEmail) && !isBlank(solicitorEmail)) {
+        if(!isBlank(solicitorEmail)) {
             String error = validateEmailService.validate(solicitorEmail);
             if(!error.isBlank()) {
                 errors.add(error);
