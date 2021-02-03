@@ -266,6 +266,8 @@ class UpdateSummaryCaseDetailsTest {
         when(searchService.searchResultsSize(any())).thenReturn(2);
 
         CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .syntheticCaseSummary(SyntheticCaseSummary.builder()
                 .caseSummaryHasNextHearing("No")
                 .build())
@@ -306,6 +308,8 @@ class UpdateSummaryCaseDetailsTest {
         when(searchService.searchResultsSize(any())).thenReturn(2);
 
         CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .syntheticCaseSummary(SyntheticCaseSummary.builder()
                 .caseSummaryHasNextHearing("No")
                 .build())
