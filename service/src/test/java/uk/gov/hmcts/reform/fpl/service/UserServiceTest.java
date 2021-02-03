@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -17,13 +19,16 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_SUPERUSER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
+// TODO: 03/02/2021 Add tests
 class UserServiceTest {
 
     private static final String USER_AUTHORISATION = "USER_AUTH";
 
     private final RequestData requestData = mock(RequestData.class);
     private final IdamClient client = mock(IdamClient.class);
-    private final UserService underTest = new UserService(client, requestData);
+    private final AuthTokenGenerator authTokenGenerator = mock(AuthTokenGenerator.class);
+    private final CaseAccessDataStoreApi caseAccessApi = mock(CaseAccessDataStoreApi.class);
+    private final UserService underTest = new UserService(client, requestData, caseAccessApi, authTokenGenerator);
 
     @Test
     void shouldReturnUserEmail() {
