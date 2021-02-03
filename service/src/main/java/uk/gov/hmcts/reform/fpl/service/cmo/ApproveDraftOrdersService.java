@@ -60,6 +60,7 @@ public class ApproveDraftOrdersService {
     private final DocumentSealingService documentSealingService;
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
+    private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
 
     /**
      * That methods shouldn't be invoked without any cmo selected as the outcome is unexpected.
@@ -81,20 +82,18 @@ public class ApproveDraftOrdersService {
         List<Element<HearingOrdersBundle>> draftOrdersReadyForApproval = getBundlesForApproval(caseData);
         Map<String, Object> data = new HashMap<>();
 
-        String numDraftCMOs = "numDraftCMOs";
-
         switch (draftOrdersReadyForApproval.size()) {
             case 0:
-                data.put(numDraftCMOs, "NONE");
+                data.put(NUM_DRAFT_CMOS, "NONE");
                 break;
             case 1:
                 HearingOrdersBundle hearingOrdersBundle = draftOrdersReadyForApproval.get(0).getValue();
-                data.put(numDraftCMOs, "SINGLE");
+                data.put(NUM_DRAFT_CMOS, "SINGLE");
 
                 data.putAll(buildDraftOrdersReviewData(hearingOrdersBundle));
                 break;
             default:
-                data.put(numDraftCMOs, "MULTI");
+                data.put(NUM_DRAFT_CMOS, "MULTI");
                 DynamicList value = buildUnselectedDynamicList(caseData);
                 data.put("cmoToReviewList", value);
                 break;
@@ -334,8 +333,8 @@ public class ApproveDraftOrdersService {
     }
 
     private List<Element<HearingOrdersBundle>> getBundlesForApproval(CaseData caseData) {
-        return caseData.getHearingOrdersBundlesDrafts().stream()
-            .filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+        return defaultIfNull(caseData.getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
             .collect(toList());
     }
 
