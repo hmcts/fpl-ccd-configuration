@@ -46,8 +46,7 @@ public class FactorsAffectingParentingChecker implements EventChecker {
         }
 
         if (factors.getAlcoholDrugAbuse().equals("Yes")
-            && isNullOrEmpty(factors.getAlcoholDrugAbuseReason())
-        ) {
+            && isNullOrEmpty(factors.getAlcoholDrugAbuseReason())) {
             return false;
         } else if (factors.getDomesticViolence().equals("Yes")
             && isNullOrEmpty(factors.getDomesticViolenceReason())) {
