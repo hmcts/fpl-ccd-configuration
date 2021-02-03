@@ -280,22 +280,23 @@ public class ApproveDraftOrdersService {
         //If CMO is the only approved/rejected order, then publish specific event for CMO (and generic for others)
         if (optionalCmo.isPresent()) {
             HearingOrder cmo = optionalCmo.get().getValue();
-            if (cmo.getStatus().equals(APPROVED)
-                && c21s.stream().noneMatch(c21 -> c21.getValue().getStatus().equals(APPROVED))) {
+            if (cmo.getStatus().equals(APPROVED) && noC21sHaveStatus(c21s, APPROVED)) {
 
-                if (c21s.stream().anyMatch(c21 -> c21.getValue().getStatus().equals(RETURNED))) {
-                    eventsToPublish.add(new DraftOrdersRejected(caseData, unwrapElements(c21s)));
-                }
                 eventsToPublish.add(new CaseManagementOrderIssuedEvent(caseData, cmo));
 
-                return eventsToPublish;
-            } else if (cmo.getStatus().equals(RETURNED)
-                && c21s.stream().noneMatch(c21 -> c21.getValue().getStatus().equals(RETURNED))) {
+                if (anyC21sHaveStatus(c21s, RETURNED)) {
+                    eventsToPublish.add(new DraftOrdersRejected(caseData, unwrapElements(c21s)));
+                }
 
-                if (c21s.stream().anyMatch(c21 -> c21.getValue().getStatus().equals(APPROVED))) {
+                return eventsToPublish;
+            } else if (cmo.getStatus().equals(RETURNED) && noC21sHaveStatus(c21s, RETURNED)) {
+
+                eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmo));
+
+                if (anyC21sHaveStatus(c21s, APPROVED)) {
                     eventsToPublish.add(new DraftOrdersApproved(caseData, unwrapElements(c21s)));
                 }
-                eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmo));
+
                 return eventsToPublish;
             }
         }
@@ -320,6 +321,14 @@ public class ApproveDraftOrdersService {
         }
 
         return eventsToPublish;
+    }
+
+    private boolean anyC21sHaveStatus(List<Element<HearingOrder>> c21s, CMOStatus status) {
+        return c21s.stream().anyMatch(c21 -> c21.getValue().getStatus().equals(status));
+    }
+
+    private boolean noC21sHaveStatus(List<Element<HearingOrder>> c21s, CMOStatus status) {
+        return c21s.stream().noneMatch(c21 -> c21.getValue().getStatus().equals(status));
     }
 
     private void updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {

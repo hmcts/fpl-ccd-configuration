@@ -13,13 +13,12 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
@@ -36,21 +35,22 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
 
         ApprovedOrdersTemplate.ApprovedOrdersTemplateBuilder templateBuilder = ApprovedOrdersTemplate.builder();
 
+        List<Map<String, Object>> attachedDocuments = new ArrayList<>();
         if (servingPreference.equals(EMAIL)) {
-/*            for (HearingOrder order : orders) {
-                templateBuilder.attachedDocument1(linkToAttachedDocument(order.getOrder()));
-            }*/
+            for (HearingOrder order : orders) {
+                attachedDocuments.add(linkToAttachedDocument(order.getOrder()));
+            }
 
             templateBuilder
                 .digitalPreference("No")
-                .caseUrl("");
-                //.documentLinks(emptyList());
+                .caseUrl("")
+                .attachedDocuments(attachedDocuments);
 
         } else {
             templateBuilder
                 .digitalPreference("Yes")
-                .caseUrl(getCaseUrl(caseData.getId(), ORDERS));
-                //.documentLinks(buildDocumentCaseLinks(orders));
+                .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
+                .documentLinks(buildDocumentCaseLinks(orders));
         }
 
         return templateBuilder
