@@ -15,5 +15,23 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "ElementLabel": "Documents",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingFurtherEvidenceBundle",
+    "ListElementCode": "supportingEvidenceBundleLAConf",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents with la conf",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingFurtherEvidenceBundle",
+    "ListElementCode": "supportingEvidenceBundleNoConf",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents with no conf",
+    "SecurityClassification": "Public"
   }
 ]
