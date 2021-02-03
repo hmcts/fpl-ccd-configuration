@@ -58,11 +58,9 @@ public class HearingUrgencyChecker extends PropertiesChecker {
         } else if (hearing.getReducedNotice().equals("Yes")
             && isNullOrEmpty(hearing.getReducedNoticeReason())) {
             return false;
-        } else if (hearing.getRespondentsAware().equals("Yes")
-            && isNullOrEmpty(hearing.getRespondentsAwareReason())) {
-            return false;
+        } else {
+            return !hearing.getRespondentsAware().equals("Yes")
+                || !isNullOrEmpty(hearing.getRespondentsAwareReason());
         }
-
-        return super.isCompleted(caseData);
     }
 }

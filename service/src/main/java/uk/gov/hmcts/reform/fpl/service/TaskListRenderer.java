@@ -150,7 +150,7 @@ public class TaskListRenderer {
                 lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
                 break;
             case COMPLETED:
-                if (useFinishedTag(task)) {
+                if (useFinishedTag(task).equals(true)) {
                     lines.add(renderLink(task) + renderImage("finished.png", "Finished"));
                 } else {
                     lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
