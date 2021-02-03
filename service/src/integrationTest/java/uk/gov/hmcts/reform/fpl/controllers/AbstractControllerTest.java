@@ -27,9 +27,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 public abstract class AbstractControllerTest {
 
-    static final String USER_AUTH_TOKEN = "Bearer token";
-    static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-    static final String USER_ID = "1";
+    protected static final String USER_AUTH_TOKEN = "Bearer token";
+    protected static final String SERVICE_AUTH_TOKEN = "Bearer service token";
+    protected static final String USER_ID = "1";
 
     @Autowired
     MockMvc mockMvc;
