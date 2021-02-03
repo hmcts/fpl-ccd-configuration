@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -10,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -17,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,6 +99,15 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractControllerTest {
 
         CaseData responseData = extractCaseData(postMidEvent(caseDetails));
 
+        DynamicList expectedCmoToReviewList = DynamicList.builder()
+            .value(DynamicListElement.builder().code(hearingOrdersBundle2).label(hearing2).build())
+            .listItems(hearingOrdersBundles.stream().map(bundle -> DynamicListElement.builder()
+                .code(bundle.getId())
+                .label(bundle.getValue().getHearingName())
+                .build())
+                .collect(Collectors.toList()))
+            .build();
+
         ReviewDraftOrdersData expectedPageData = ReviewDraftOrdersData.builder()
             .draftCMOExists("N")
             .draftOrder1Title(draftOrder2.getValue().getTitle())
@@ -103,6 +116,9 @@ class ApproveDraftOrdersControllerMidEventTest extends AbstractControllerTest {
             .build();
 
         assertThat(responseData.getReviewDraftOrdersData()).isEqualTo(expectedPageData);
+        assertThat(responseData.getCmoToReviewList()).isEqualTo(
+            mapper.convertValue(expectedCmoToReviewList, new TypeReference<Map<String, Object>>() {
+            }));
     }
 
     private Element<HearingOrdersBundle> buildHearingOrdersBundle(

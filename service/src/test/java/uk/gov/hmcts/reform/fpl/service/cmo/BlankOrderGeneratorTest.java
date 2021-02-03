@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ class BlankOrderGeneratorTest {
     void testShouldCreateBlankOrderFromC21DraftForABundleWithHearing() {
         DocumentReference amendedDocument = testDocumentReference();
 
-        Element<HearingOrder> draftOrder1 = buildBlankOrder();
+        Element<HearingOrder> draftOrder1 = buildBlankOrder(TIME.now().toLocalDate());
 
         Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(
             newArrayList(draftOrder1), HEARING_ID);
@@ -71,14 +72,15 @@ class BlankOrderGeneratorTest {
             ordersBundleElement,
             draftOrder1);
 
-        assertThat(actual.getValue()).isEqualTo(expectedBlankOrder(judgeAndLegalAdvisor));
+        assertThat(actual.getValue())
+            .isEqualTo(expectedBlankOrder(draftOrder1.getValue().getDateIssued(), judgeAndLegalAdvisor));
     }
 
     @Test
     void testShouldCreateBlankOrderFromC21DraftForNoHearingBundle() {
         DocumentReference amendedDocument = testDocumentReference();
 
-        Element<HearingOrder> draftOrder1 = buildBlankOrder();
+        Element<HearingOrder> draftOrder1 = buildBlankOrder(null);
 
         Element<HearingOrdersBundle> ordersBundleElement = buildDraftOrdersBundle(
             newArrayList(draftOrder1), null);
@@ -96,17 +98,17 @@ class BlankOrderGeneratorTest {
             ordersBundleElement,
             draftOrder1);
 
-        assertThat(actual.getValue()).isEqualTo(expectedBlankOrder(null));
+        assertThat(actual.getValue()).isEqualTo(expectedBlankOrder(draftOrder1.getValue().getDateIssued(), null));
     }
 
-    private static Element<HearingOrder> buildBlankOrder() {
+    private static Element<HearingOrder> buildBlankOrder(LocalDate dateIssued) {
         return element(HearingOrder.builder()
             .hearing(hearing1)
             .title("test order1")
             .order(order)
             .type(HearingOrderType.C21)
             .status(SEND_TO_JUDGE)
-            .dateIssued(TIME.now().toLocalDate())
+            .dateIssued(dateIssued)
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
@@ -119,12 +121,12 @@ class BlankOrderGeneratorTest {
             .judgeTitleAndName("Her Honour Judge Judy").build());
     }
 
-    private GeneratedOrder expectedBlankOrder(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    private GeneratedOrder expectedBlankOrder(LocalDate dateIssued, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         return GeneratedOrder.builder()
             .type(BLANK_ORDER.getLabel())
             .title("test order1")
             .document(order)
-            .dateOfIssue(formatLocalDateToString(TIME.now().toLocalDate(), DATE))
+            .dateOfIssue(dateIssued != null ? formatLocalDateToString(dateIssued, DATE) : null)
             .children(emptyList())
             .date(formatLocalDateTimeBaseUsingFormat(TIME.now(), TIME_DATE))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
