@@ -150,7 +150,7 @@ public class TaskListRenderer {
                 lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
                 break;
             case COMPLETED:
-                if (useFinishedTag(task).equals(true)) {
+                if (useFinishedTag(task)) {
                     lines.add(renderLink(task) + renderImage("finished.png", "Finished"));
                 } else {
                     lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
@@ -189,7 +189,7 @@ public class TaskListRenderer {
         return format("## %s", text);
     }
 
-    private Boolean useFinishedTag(Task task) {
+    private boolean useFinishedTag(Task task) {
         List<Event> events =
             Arrays.asList(CASE_NAME, ORDERS_SOUGHT, HEARING_URGENCY, GROUNDS, RISK_AND_HARM,
                 FACTORS_AFFECTING_PARENTING, ALLOCATION_PROPOSAL, OTHER_PROCEEDINGS,

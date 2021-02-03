@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 
 import java.util.List;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
@@ -49,18 +48,18 @@ public class HearingUrgencyChecker extends PropertiesChecker {
             return false;
         }
 
-        if (!hearing.getTimeFrame().equals("Within 18 days")
-            && isNullOrEmpty(hearing.getReason())) {
+        if (!("Within 18 days").equals(hearing.getTimeFrame())
+            && isEmpty(hearing.getReason())) {
             return false;
-        } else if (hearing.getWithoutNotice().equals("Yes")
-            && isNullOrEmpty(hearing.getWithoutNoticeReason())) {
+        } else if (("Yes").equals(hearing.getWithoutNotice())
+            && isEmpty(hearing.getWithoutNoticeReason())) {
             return false;
-        } else if (hearing.getReducedNotice().equals("Yes")
-            && isNullOrEmpty(hearing.getReducedNoticeReason())) {
+        } else if (("Yes").equals(hearing.getReducedNotice())
+            && isEmpty(hearing.getReducedNoticeReason())) {
             return false;
         } else {
-            return !hearing.getRespondentsAware().equals("Yes")
-                || !isNullOrEmpty(hearing.getRespondentsAwareReason());
+            return ("No").equals(hearing.getRespondentsAware())
+                || !isEmpty(hearing.getRespondentsAwareReason());
         }
     }
 }

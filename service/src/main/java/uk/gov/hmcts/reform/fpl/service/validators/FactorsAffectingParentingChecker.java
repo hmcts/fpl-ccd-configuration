@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
 
 import java.util.List;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
 import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
@@ -45,15 +44,15 @@ public class FactorsAffectingParentingChecker implements EventChecker {
             return false;
         }
 
-        if (factors.getAlcoholDrugAbuse().equals("Yes")
-            && isNullOrEmpty(factors.getAlcoholDrugAbuseReason())) {
+        if (("Yes").equals(factors.getAlcoholDrugAbuse())
+            && isEmpty(factors.getAlcoholDrugAbuseReason())) {
             return false;
-        } else if (factors.getDomesticViolence().equals("Yes")
-            && isNullOrEmpty(factors.getDomesticViolenceReason())) {
+        } else if (("Yes").equals(factors.getDomesticViolence())
+            && isEmpty(factors.getDomesticViolenceReason())) {
             return false;
         } else {
-            return !factors.getAnythingElse().equals("Yes")
-                || !isNullOrEmpty(factors.getAnythingElseReason());
+            return ("No").equals(factors.getAnythingElse())
+                || !isEmpty(factors.getAnythingElseReason());
         }
     }
 }

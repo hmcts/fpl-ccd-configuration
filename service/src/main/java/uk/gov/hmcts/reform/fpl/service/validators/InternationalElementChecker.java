@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.InternationalElement;
 
 import java.util.List;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
@@ -49,22 +48,21 @@ public class InternationalElementChecker implements EventChecker {
             return false;
         }
 
-        if (internationalElement.getIssues().equals("Yes")
-            && isNullOrEmpty(internationalElement.getIssuesReason())) {
+        if (("Yes").equals(internationalElement.getIssues())
+            && isEmpty(internationalElement.getIssuesReason())) {
             return false;
-        } else if (internationalElement.getProceedings().equals("Yes")
-            && isNullOrEmpty(internationalElement.getProceedingsReason())) {
+        } else if (("Yes").equals(internationalElement.getProceedings())
+            && isEmpty(internationalElement.getProceedingsReason())) {
             return false;
-        } else if (internationalElement.getPossibleCarer().equals("Yes")
-            && isNullOrEmpty(internationalElement.getPossibleCarerReason())) {
+        } else if (("Yes").equals(internationalElement.getPossibleCarer())
+            && isEmpty(internationalElement.getPossibleCarerReason())) {
             return false;
-        } else if (internationalElement.getSignificantEvents().equals("Yes")
-            && isNullOrEmpty(internationalElement.getSignificantEventsReason())) {
+        } else if (("Yes").equals(internationalElement.getSignificantEvents())
+            && isEmpty(internationalElement.getSignificantEventsReason())) {
             return false;
         } else {
-            return !internationalElement.getInternationalAuthorityInvolvement().equals("Yes")
-                ||
-                !isNullOrEmpty(internationalElement.getInternationalAuthorityInvolvementDetails());
+            return ("No").equals(internationalElement.getInternationalAuthorityInvolvement())
+                || !isEmpty(internationalElement.getInternationalAuthorityInvolvementDetails());
         }
     }
 }

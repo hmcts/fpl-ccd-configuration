@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.Proceeding;
 
 import java.util.List;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -32,9 +31,9 @@ public class ProceedingsChecker implements EventChecker {
 
         if (proceeding == null || isEmpty(proceeding.getOnGoingProceeding())) {
             return false;
-        } else if (proceeding.getOnGoingProceeding().equals("Yes")) {
-            if (proceeding.getSameGuardianNeeded().equals("No")
-                && isNullOrEmpty(proceeding.getSameGuardianDetails())) {
+        } else if (("Yes").equals(proceeding.getOnGoingProceeding())) {
+            if (("No").equals(proceeding.getSameGuardianNeeded())
+                && isEmpty(proceeding.getSameGuardianDetails())) {
                 return false;
             }
             return !anyEmpty(

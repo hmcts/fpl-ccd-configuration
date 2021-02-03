@@ -46,16 +46,16 @@ public class RiskAndHarmChecker implements EventChecker {
             return false;
         }
 
-        if (risks.getNeglect().equals("Yes") && risks.getNeglectOccurrences().isEmpty()) {
+        if (("Yes").equals(risks.getNeglect()) && risks.getNeglectOccurrences().isEmpty()) {
             return false;
-        } else if (risks.getSexualAbuse().equals("Yes")
+        } else if (("Yes").equals(risks.getSexualAbuse())
             && isEmpty(risks.getSexualAbuseOccurrences())) {
             return false;
-        } else if (risks.getPhysicalHarm().equals("Yes")
+        } else if (("Yes").equals(risks.getPhysicalHarm())
             && isEmpty(risks.getPhysicalHarmOccurrences())) {
             return false;
         } else {
-            return !risks.getEmotionalHarm().equals("Yes")
+            return ("No").equals(risks.getEmotionalHarm())
                 || !isEmpty(risks.getEmotionalHarmOccurrences());
         }
     }

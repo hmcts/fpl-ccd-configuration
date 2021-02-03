@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingPreferences;
 
 import java.util.List;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
@@ -49,24 +48,24 @@ public class CourtServiceChecker implements EventChecker {
             return false;
         }
 
-        if (hearingPreferences.getWelsh().equals("Yes")
-            && isNullOrEmpty(hearingPreferences.getWelshDetails())) {
+        if (("Yes").equals(hearingPreferences.getWelsh())
+            && isEmpty(hearingPreferences.getWelshDetails())) {
             return false;
-        } else if (hearingPreferences.getInterpreter().equals("Yes")
-            && isNullOrEmpty(hearingPreferences.getInterpreterDetails())) {
+        } else if (("Yes").equals(hearingPreferences.getInterpreter())
+            && isEmpty(hearingPreferences.getInterpreterDetails())) {
             return false;
-        } else if (hearingPreferences.getIntermediary().equals("Yes")
-            && isNullOrEmpty(hearingPreferences.getIntermediaryDetails())) {
+        } else if (("Yes").equals(hearingPreferences.getIntermediary())
+            && isEmpty(hearingPreferences.getIntermediaryDetails())) {
             return false;
-        } else if (hearingPreferences.getDisabilityAssistance().equals("Yes")
-            && isNullOrEmpty(hearingPreferences.getDisabilityAssistanceDetails())) {
+        } else if (("Yes").equals(hearingPreferences.getDisabilityAssistance())
+            && isEmpty(hearingPreferences.getDisabilityAssistanceDetails())) {
             return false;
-        } else if (hearingPreferences.getExtraSecurityMeasures().equals("Yes")
-            && isNullOrEmpty(hearingPreferences.getExtraSecurityMeasuresDetails())) {
+        } else if (("Yes").equals(hearingPreferences.getExtraSecurityMeasures())
+            && isEmpty(hearingPreferences.getExtraSecurityMeasuresDetails())) {
             return false;
         } else {
-            return !hearingPreferences.getSomethingElse().equals("Yes")
-                || !isNullOrEmpty(hearingPreferences.getSomethingElseDetails());
+            return ("No").equals(hearingPreferences.getSomethingElse())
+                || !isEmpty(hearingPreferences.getSomethingElseDetails());
         }
     }
 }
