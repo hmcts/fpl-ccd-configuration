@@ -4,21 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,12 +26,10 @@ import java.util.UUID;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
@@ -43,13 +37,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class ApproveDraftOrdersService {
 
     private final ObjectMapper mapper;
-    private final Time time;
     private final DraftOrderService draftOrderService;
-    private final DocumentSealingService documentSealingService;
     private final DraftOrdersReviewDataBuilder buildDraftOrdersReviewData;
     private final ReviewDecisionValidator reviewDecisionValidator;
     private final DraftOrdersBundleHearingSelector draftOrdersBundleHearingSelector;
     private final BlankOrderGenerator blankOrderGenerator;
+    private final HearingOrderGenerator hearingOrderGenerator;
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
@@ -151,14 +144,15 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(cmoReviewDecision.getDecision())) {
-                    reviewedOrder = buildSealedHearingOrder(cmoReviewDecision, cmo);
+                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(cmoReviewDecision, cmo);
 
                     List<Element<HearingOrder>> sealedCMOs = caseData.getSealedCMOs();
                     sealedCMOs.add(reviewedOrder);
                     data.put("sealedCMOs", sealedCMOs);
                     data.put("state", getStateBasedOnNextHearing(caseData, cmoReviewDecision, reviewedOrder.getId()));
                 } else {
-                    reviewedOrder = buildRejectedHearingOrder(cmo, cmoReviewDecision.getChangesRequestedByJudge());
+                    reviewedOrder = hearingOrderGenerator.buildRejectedHearingOrder(
+                        cmo, cmoReviewDecision.getChangesRequestedByJudge());
                 }
 
                 caseData.getDraftUploadedCMOs().remove(cmo);
@@ -213,15 +207,15 @@ public class ApproveDraftOrdersService {
                 Element<HearingOrder> reviewedOrder;
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
-                    reviewedOrder = buildSealedHearingOrder(reviewDecision, orderElement);
+                    reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, orderElement);
                     reviewedOrders.add(blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle,
                         reviewedOrder));
 
                     ordersToBeSent.add(reviewedOrder);
                 } else {
-                    ordersToBeSent.add(
-                        buildRejectedHearingOrder(orderElement, reviewDecision.getChangesRequestedByJudge()));
+                    ordersToBeSent.add(hearingOrderGenerator.buildRejectedHearingOrder(
+                        orderElement, reviewDecision.getChangesRequestedByJudge()));
                 }
                 selectedOrdersBundle.getValue().getOrders().remove(orderElement);
             }
@@ -250,30 +244,6 @@ public class ApproveDraftOrdersService {
         }
     }
 
-    private Element<HearingOrder> buildSealedHearingOrder(
-        ReviewDecision reviewDecision, Element<HearingOrder> hearingOrderElement) {
-        DocumentReference order;
-
-        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())) {
-            order = reviewDecision.getJudgeAmendedDocument();
-        } else {
-            order = hearingOrderElement.getValue().getOrder();
-        }
-
-        return element(hearingOrderElement.getId(), hearingOrderElement.getValue().toBuilder()
-            .dateIssued(time.now().toLocalDate())
-            .status(CMOStatus.APPROVED)
-            .order(documentSealingService.sealDocument(order))
-            .lastUploadedOrder(order)
-            .build());
-    }
-
-    private Element<HearingOrder> buildRejectedHearingOrder(Element<HearingOrder> cmo, String changesRequested) {
-        return element(cmo.getId(), cmo.getValue().toBuilder()
-            .status(CMOStatus.RETURNED)
-            .requestedChanges(changesRequested)
-            .build());
-    }
 
     private void updateHearingCMO(CaseData caseData, UUID cmoId) {
         defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>()).stream()
@@ -281,7 +251,6 @@ public class ApproveDraftOrdersService {
             .findFirst()
             .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
     }
-
 
     private State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {
         State currentState = caseData.getState();
