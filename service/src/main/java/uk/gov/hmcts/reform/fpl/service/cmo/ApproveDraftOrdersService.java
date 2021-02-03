@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingOrdersBundleNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
@@ -25,31 +24,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -59,6 +46,10 @@ public class ApproveDraftOrdersService {
     private final Time time;
     private final DraftOrderService draftOrderService;
     private final DocumentSealingService documentSealingService;
+    private final DraftOrdersReviewDataBuilder buildDraftOrdersReviewData;
+    private final ReviewDecisionValidator reviewDecisionValidator;
+    private final DraftOrdersBundleHearingSelector draftOrdersBundleHearingSelector;
+    private final BlankOrderGenerator blankOrderGenerator;
 
     private static final String ORDERS_TO_BE_SENT = "ordersToBeSent";
     private static final String NUM_DRAFT_CMOS = "numDraftCMOs";
@@ -68,19 +59,19 @@ public class ApproveDraftOrdersService {
      * There is dedicated method below to support this functionality.
      */
     public DynamicList buildDynamicList(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> bundlesReadyForApproval = getBundlesForApproval(caseData);
+        List<Element<HearingOrdersBundle>> bundlesReadyForApproval = caseData.getBundlesForApproval();
         Element<HearingOrdersBundle> selectedBundle = getSelectedHearingDraftOrdersBundle(caseData);
 
         return asDynamicList(bundlesReadyForApproval, selectedBundle.getId(), HearingOrdersBundle::getHearingName);
     }
 
     public DynamicList buildUnselectedDynamicList(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> orderBundlesForApproval = getBundlesForApproval(caseData);
+        List<Element<HearingOrdersBundle>> orderBundlesForApproval = caseData.getBundlesForApproval();
         return asDynamicList(orderBundlesForApproval, null, HearingOrdersBundle::getHearingName);
     }
 
     public Map<String, Object> getPageDisplayControls(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> draftOrdersReadyForApproval = getBundlesForApproval(caseData);
+        List<Element<HearingOrdersBundle>> draftOrdersReadyForApproval = caseData.getBundlesForApproval();
         Map<String, Object> data = new HashMap<>();
 
         switch (draftOrdersReadyForApproval.size()) {
@@ -91,7 +82,7 @@ public class ApproveDraftOrdersService {
                 HearingOrdersBundle hearingOrdersBundle = draftOrdersReadyForApproval.get(0).getValue();
                 data.put(NUM_DRAFT_CMOS, "SINGLE");
 
-                data.putAll(buildDraftOrdersReviewData(hearingOrdersBundle));
+                data.putAll(buildDraftOrdersReviewData.buildDraftOrdersReviewData(hearingOrdersBundle));
                 break;
             default:
                 data.put(NUM_DRAFT_CMOS, "MULTI");
@@ -106,7 +97,7 @@ public class ApproveDraftOrdersService {
     public Map<String, Object> populateDraftOrdersData(CaseData caseData) {
         Element<HearingOrdersBundle> selectedHearingOrdersBundle = getSelectedHearingDraftOrdersBundle(caseData);
 
-        return buildDraftOrdersReviewData(selectedHearingOrdersBundle.getValue());
+        return buildDraftOrdersReviewData.buildDraftOrdersReviewData(selectedHearingOrdersBundle.getValue());
     }
 
     @SuppressWarnings("unchecked")
@@ -123,7 +114,8 @@ public class ApproveDraftOrdersService {
                 if (caseData.getReviewCMODecision() != null && caseData.getReviewCMODecision().getDecision() != null) {
 
                     noReviewDecisionExists = false;
-                    validateReviewDecision(errors, caseData.getReviewCMODecision(), "CMO");
+                    errors.addAll(reviewDecisionValidator.validateReviewDecision(caseData.getReviewCMODecision(),
+                        "CMO"));
                 }
             } else {
                 Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
@@ -131,7 +123,8 @@ public class ApproveDraftOrdersService {
                 if (reviewDecision != null && reviewDecision.getDecision() != null) {
 
                     noReviewDecisionExists = false;
-                    validateReviewDecision(errors, reviewDecision, "draft order " + counter);
+                    errors.addAll(reviewDecisionValidator.validateReviewDecision(reviewDecision,
+                        "draft order " + counter));
                 }
                 counter++;
             }
@@ -188,18 +181,7 @@ public class ApproveDraftOrdersService {
     }
 
     public Element<HearingOrdersBundle> getSelectedHearingDraftOrdersBundle(CaseData caseData) {
-        List<Element<HearingOrdersBundle>> ordersBundleReadyForApproval = getBundlesForApproval(caseData);
-        if (ordersBundleReadyForApproval.size() > 1) {
-            UUID selectedHearingDraftOrdersBundleCode = getSelectedCMOId(caseData.getCmoToReviewList());
-
-            return ordersBundleReadyForApproval.stream()
-                .filter(element -> element.getId().equals(selectedHearingDraftOrdersBundleCode))
-                .findFirst()
-                .orElseThrow(() -> new HearingOrdersBundleNotFoundException(
-                    "Could not find hearing draft orders bundle with id " + selectedHearingDraftOrdersBundleCode));
-        } else {
-            return ordersBundleReadyForApproval.get(0);
-        }
+        return draftOrdersBundleHearingSelector.getSelectedHearingDraftOrdersBundle(caseData);
     }
 
     public HearingOrder getLatestSealedCMO(CaseData caseData) {
@@ -232,7 +214,9 @@ public class ApproveDraftOrdersService {
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     reviewedOrder = buildSealedHearingOrder(reviewDecision, orderElement);
-                    reviewedOrders.add(buildBlankOrder(caseData, selectedOrdersBundle, reviewedOrder));
+                    reviewedOrders.add(blankOrderGenerator.buildBlankOrder(caseData,
+                        selectedOrdersBundle,
+                        reviewedOrder));
 
                     ordersToBeSent.add(reviewedOrder);
                 } else {
@@ -298,29 +282,6 @@ public class ApproveDraftOrdersService {
             .ifPresent(h -> h.getValue().setCaseManagementOrderId(null));
     }
 
-    private Element<GeneratedOrder> buildBlankOrder(
-        CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle, Element<HearingOrder> sealedOrder) {
-
-        Element<HearingBooking> hearingElement =
-            defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>())
-                .stream()
-                .filter(hearing -> Objects.equals(hearing.getId(), selectedOrdersBundle.getValue().getHearingId()))
-                .findFirst().orElse(null);
-
-        HearingOrder order = sealedOrder.getValue();
-
-        return element(sealedOrder.getId(), GeneratedOrder.builder()
-            .type(BLANK_ORDER.getLabel())
-            .title(order.getTitle())
-            .document(order.getOrder())
-            .dateOfIssue(order.getDateIssued() != null ? formatLocalDateToString(order.getDateIssued(), DATE) : null)
-            .judgeAndLegalAdvisor(hearingElement != null
-                ? getSelectedJudge(hearingElement.getValue().getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge())
-                : null)
-            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
-            .children(caseData.getAllChildren())
-            .build());
-    }
 
     private State getStateBasedOnNextHearing(CaseData caseData, ReviewDecision reviewDecision, UUID cmoID) {
         State currentState = caseData.getState();
@@ -332,62 +293,5 @@ public class ApproveDraftOrdersService {
             return State.FINAL_HEARING;
         }
         return currentState;
-    }
-
-    private List<Element<HearingOrdersBundle>> getBundlesForApproval(CaseData caseData) {
-        return defaultIfNull(caseData.getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
-            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
-            .collect(toList());
-    }
-
-    private UUID getSelectedCMOId(Object dynamicList) {
-        //see RDM-5696 and RDM-6651
-        if (dynamicList instanceof String) {
-            return UUID.fromString(dynamicList.toString());
-        }
-        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
-    }
-
-    private Map<String, Object> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
-        Map<String, Object> data = new HashMap<>();
-
-        List<String> draftOrdersTitles = new ArrayList<>();
-        data.put("draftCMOExists", "N");
-
-        int counter = 1;
-        for (Element<HearingOrder> orderElement : ordersBundle.getOrders(SEND_TO_JUDGE)) {
-
-            if (orderElement.getValue().getType().isCmo()) {
-                draftOrdersTitles.add(String.format("CMO%s", ordersBundle.getHearingId() != null
-                    ? " for " + ordersBundle.getHearingName() : EMPTY));
-                data.put("cmoDraftOrderTitle", orderElement.getValue().getTitle());
-                data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
-                data.put("draftCMOExists", "Y");
-            } else {
-                draftOrdersTitles.add(String.format("C21 Order%s", ordersBundle.getHearingId() != null
-                    ? " - " + ordersBundle.getHearingName() : EMPTY));
-                data.put(String.format("draftOrder%dTitle", counter), orderElement.getValue().getTitle());
-                data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
-                counter++;
-            }
-        }
-        data.put("draftOrdersTitlesInBundle", String.join("\n", draftOrdersTitles));
-        if (counter > 1) {
-            String numOfDraftOrders = IntStream.range(1, counter)
-                .mapToObj(String::valueOf).collect(Collectors.joining(""));
-            data.put("draftBlankOrdersCount", numOfDraftOrders);
-        }
-        return data;
-    }
-
-    private void validateReviewDecision(
-        List<String> errors, ReviewDecision reviewDecision, String orderName) {
-        if (JUDGE_AMENDS_DRAFT.equals(reviewDecision.getDecision())
-            && reviewDecision.getJudgeAmendedDocument() == null) {
-            errors.add(String.format("Add the new %s", orderName));
-        } else if (JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())
-            && isBlank(reviewDecision.getChangesRequestedByJudge())) {
-            errors.add(String.format("Add what the LA needs to change on the %s", orderName));
-        }
     }
 }

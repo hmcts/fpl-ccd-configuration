@@ -95,6 +95,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -590,6 +591,13 @@ public class CaseData {
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private final UUID lastHearingOrderDraftsHearingId;
+
+    @JsonIgnore // todo: unit test this.
+    public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
+        return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .collect(toList());
+    }
 
     @JsonUnwrapped
     @Builder.Default
