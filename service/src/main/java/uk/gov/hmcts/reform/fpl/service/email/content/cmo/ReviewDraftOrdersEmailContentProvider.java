@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,9 +16,11 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -32,15 +33,31 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
                                                              HearingBooking hearing,
                                                              List<HearingOrder> orders,
                                                              RepresentativeServingPreferences servingPreference) {
-        return ApprovedOrdersTemplate.builder()
+
+        ApprovedOrdersTemplate.ApprovedOrdersTemplateBuilder templateBuilder = ApprovedOrdersTemplate.builder();
+
+        if (servingPreference.equals(EMAIL)) {
+/*            for (HearingOrder order : orders) {
+                templateBuilder.attachedDocument1(linkToAttachedDocument(order.getOrder()));
+            }*/
+
+            templateBuilder
+                .digitalPreference("No")
+                .caseUrl("");
+                //.documentLinks(emptyList());
+
+        } else {
+            templateBuilder
+                .digitalPreference("Yes")
+                .caseUrl(getCaseUrl(caseData.getId(), ORDERS));
+                //.documentLinks(buildDocumentCaseLinks(orders));
+        }
+
+        return templateBuilder
             .respondentLastName(getFirstRespondentLastName(caseData))
-            .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(),
-                caseData.getFamilyManCaseNumber()))
+            .subjectLineWithHearingDate(
+                subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))
-            .documentLinks(hasDigitalServingPreference(servingPreference)
-                ? buildDocumentCaseLinks(orders) : List.of(new JSONObject()))
-            .digitalPreference(hasDigitalServingPreference(servingPreference) ? "Yes" : "No")
-            .caseUrl((hasDigitalServingPreference(servingPreference) ? getCaseUrl(caseData.getId(), ORDERS) : ""))
             .build();
     }
 
@@ -53,10 +70,6 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .ordersAndRequestedChanges(ordersAndRequestedChanges(hearingOrders))
             .build();
-    }
-
-    private boolean hasDigitalServingPreference(RepresentativeServingPreferences servingPreference) {
-        return servingPreference == DIGITAL_SERVICE;
     }
 
     private String subject(HearingBooking hearing, List<Element<Respondent>> respondents, String familyManCaseNumber) {
@@ -81,8 +94,8 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .collect(joining(lineSeparator()));
     }
 
-    private List<Object> buildDocumentCaseLinks(List<HearingOrder> orders) {
-        List<Object> documentCaseLinks = new ArrayList<>();
+    private List<String> buildDocumentCaseLinks(List<HearingOrder> orders) {
+        List<String> documentCaseLinks = new ArrayList<>();
         orders.forEach(order -> documentCaseLinks.add(getDocumentUrl(order.getOrder())));
         return documentCaseLinks;
     }
