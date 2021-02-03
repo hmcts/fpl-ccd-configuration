@@ -28,4 +28,11 @@ public class DynamicListElement {
      * Property that maps to the label attribute of the option tag.
      */
     private final String label;
+
+    public static DynamicListElement defaultListItem(String label) {
+        return DynamicListElement.builder()
+            .code(DEFAULT_CODE)
+            .label(label)
+            .build();
+    }
 }

@@ -26,6 +26,10 @@ public class FeatureToggleService {
         this.environment = environment;
     }
 
+    public boolean isSummaryTabOnEventEnabled() {
+        return ldClient.boolVariation("summary-tab-on-event-update", createLDUser(), false);
+    }
+
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -65,6 +69,18 @@ public class FeatureToggleService {
 
     public boolean isFinishedTagEnabled() {
         return ldClient.boolVariation("finished-tag", createLDUser(), false);
+    }
+
+    public boolean isDraftOrdersEnabled() {
+        return ldClient.boolVariation("draft-orders", createLDUser(), false);
+    }
+
+    public boolean isSummaryTabEnabled() {
+        return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
+    }
+
+    public boolean isSummaryTabFirstCronRunEnabled() {
+        return ldClient.boolVariation("summary-tab-first-run", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

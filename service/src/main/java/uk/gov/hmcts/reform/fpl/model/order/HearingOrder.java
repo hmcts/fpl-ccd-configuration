@@ -1,0 +1,72 @@
+package uk.gov.hmcts.reform.fpl.model.order;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Builder;
+import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+
+@Data
+@Builder(toBuilder = true)
+public class HearingOrder implements RemovableOrder {
+    private String title;
+    private HearingOrderType type;
+    private DocumentReference order;
+    private DocumentReference lastUploadedOrder;
+    private String hearing;
+    // Case management order, 21 June 2020
+    private LocalDate dateSent;
+    private LocalDate dateIssued;
+    private CMOStatus status;
+    private String judgeTitleAndName;
+    private String requestedChanges;
+    private List<Element<SupportingEvidenceBundle>> supportingDocs;
+    private String removalReason;
+
+    public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date) {
+        return from(order, hearing, date, AGREED_CMO, null);
+    }
+
+    public static HearingOrder from(DocumentReference order, HearingBooking hearing, LocalDate date,
+                                    HearingOrderType orderType,
+                                    List<Element<SupportingEvidenceBundle>> supportingDocs) {
+        return HearingOrder.builder()
+            .type(orderType)
+            .title(orderType == AGREED_CMO ? "Agreed CMO discussed at hearing" : "Draft CMO from advocates' meeting")
+            .order(order)
+            .hearing(hearing.toLabel())
+            .dateSent(date)
+            .status(orderType == AGREED_CMO ? SEND_TO_JUDGE : DRAFT)
+            .judgeTitleAndName(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
+            .supportingDocs(supportingDocs)
+            .build();
+    }
+
+    @JsonIgnore
+    public boolean isRemovable() {
+        return APPROVED.equals(status);
+    }
+
+    public String asLabel() {
+        return format("%s - %s", defaultIfNull(title, "Case management order"),
+            formatLocalDateToString(dateIssued, "d MMMM yyyy"));
+    }
+
+}

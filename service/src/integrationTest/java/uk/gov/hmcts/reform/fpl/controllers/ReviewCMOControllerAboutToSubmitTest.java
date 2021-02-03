@@ -5,7 +5,8 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.fpl.controllers.cmo.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.controllers.orders.ReviewCMOController;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -15,8 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 
 import java.time.LocalDate;
@@ -45,7 +46,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     @MockBean
     private DocumentSealingService documentSealingService;
 
-    private final CaseManagementOrder cmo = buildCMO();
+    private final HearingOrder cmo = buildCMO();
     private final DocumentReference convertedDocument = DocumentReference.builder().filename("converted").build();
     private final DocumentReference sealedDocument = DocumentReference.builder().filename("sealed").build();
 
@@ -68,9 +69,11 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseManagementOrder returnedCMO = responseData.getDraftUploadedCMOs().get(0).getValue();
+        HearingOrder returnedCMO = responseData.getDraftUploadedCMOs().get(0).getValue();
 
-        CaseManagementOrder expectedCMO = cmo.toBuilder()
+        HearingOrder expectedCMO = cmo.toBuilder()
+            .title("Agreed CMO discussed at hearing")
+            .type(HearingOrderType.AGREED_CMO)
             .requestedChanges(reviewDecision.getChangesRequestedByJudge())
             .status(RETURNED)
             .build();
@@ -93,7 +96,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        CaseManagementOrder expectedSealedCmo = cmo.toBuilder()
+        HearingOrder expectedSealedCmo = cmo.toBuilder()
             .order(sealedDocument)
             .lastUploadedOrder(order)
             .dateIssued(LocalDate.now())
@@ -144,7 +147,8 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldNotModifyDataIfNoDraftCMOsReadyForApproval() {
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(List.of())
-            .uploadCMOEventData(UploadCMOEventData.builder().build()) // required due to the json unwrapping
+            // required due to the json unwrapping
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -160,8 +164,8 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .build();
     }
 
-    private CaseManagementOrder buildCMO() {
-        return CaseManagementOrder.builder()
+    private HearingOrder buildCMO() {
+        return HearingOrder.builder()
             .hearing("Test hearing 25th December 2020")
             .order(testDocumentReference())
             .judgeTitleAndName("Her Honour Judge Judy")

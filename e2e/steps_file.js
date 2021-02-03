@@ -28,10 +28,11 @@ module.exports = function () {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
 
-        await this.goToPage(baseUrl);
-
         await this.retryUntilExists(async () => {
-          if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
+          //To mitigate situation when idam response with blank page
+          await this.goToPage(baseUrl);
+
+          if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
             return;
           }
 
@@ -40,7 +41,7 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-        }, signedInSelector, false, 20);
+        }, signedInSelector, false, 10);
         output.debug(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
@@ -214,6 +215,7 @@ module.exports = function () {
           await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
       }
+      await this.waitForSelector('.ccd-dropdown');
     },
 
     async navigateToCaseDetailsAs(user, caseId) {
@@ -318,18 +320,24 @@ module.exports = function () {
     },
 
     async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries){
-      const currentUrl = await this.grabCurrentUrl();
-      this.click(label);
+      const originalUrl = await this.grabCurrentUrl();
 
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
-        if(await this.grabCurrentUrl() !== currentUrl){
-          break;
-        } else {
-          this.wait(1);
-          if(await this.grabCurrentUrl() === currentUrl){
-            this.click(label);
+        this.click(label);
+        //Caused by https://tools.hmcts.net/jira/browse/EUI-2498
+        for(let attempt = 0; attempt < 20; attempt++) {
+          let currentUrl = await this.grabCurrentUrl();
+          if (currentUrl !== originalUrl) {
+            if (attempt > 5){
+              output.print(`Page changed in try ${tryNumber} in ${attempt} sec - (${originalUrl} -> ${currentUrl})`);
+            }
+            return;
+          } else {
+            this.wait(1);
           }
         }
+
+        output.print(`Page change failed (${originalUrl})`);
       }
     },
 

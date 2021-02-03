@@ -46,4 +46,4 @@ Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
-});
+}).retry(1); //async action in previous test

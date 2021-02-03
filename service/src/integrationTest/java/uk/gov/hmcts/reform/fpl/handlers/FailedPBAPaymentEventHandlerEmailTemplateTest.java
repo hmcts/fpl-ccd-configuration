@@ -43,7 +43,7 @@ class FailedPBAPaymentEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("The online payment has failed for:")
                 .line()
-                .callout("http://fake-url/cases/case-details/123#C2Tab")
+                .callout("http://fake-url/cases/case-details/123#C2")
                 .line()
                 .end("Contact the relevant court so they can take the payment.")
             );
