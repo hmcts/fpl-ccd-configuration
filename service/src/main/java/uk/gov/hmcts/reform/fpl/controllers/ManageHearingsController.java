@@ -231,19 +231,10 @@ public class ManageHearingsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //THIS SEEMS TO WORK
-        String name = caseData.getJudgeAndLegalAdvisor().getJudgeFullName();
+        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
 
-        String email = caseData.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-
-        HearingBooking hearingBooking = hearingsService.findHearingBooking(caseData.getSelectedHearingId(),
-            caseData.getHearingDetails()).orElse(null);
-
-
-        if (hearingBooking != null) {
-            email = hearingBooking.getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-            System.out.println("Email is" + email);
-            String error = validateEmailService.validate(email);
+        if (tempJudge.getJudgeTitle() != null) {
+            String error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
             if (!error.isBlank()) {
                 return respond(caseDetails, List.of(error));
