@@ -335,7 +335,7 @@ class UpdateSummaryCaseDetailsTest {
 
         verify(summaryService).generateSummaryFields(expectedCaseData2);
         verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
-        verifyNoMoreInteractions(summaryService,ccdService);
+        verifyNoMoreInteractions(summaryService, ccdService);
     }
 
     @Test
