@@ -20,7 +20,7 @@ BeforeSuite(async ({I}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
-Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
@@ -35,7 +35,20 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
-  I.wait(5);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+  I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
+  I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
+  I.seeInTab(['Hearing 1', 'Start date and time'],  formatHearingTime(hearingStartDate));
+  I.seeInTab(['Hearing 1', 'End date and time'], formatHearingTime(hearingEndDate));
+  I.seeInTab(['Hearing 1', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
+  I.seeInTab(['Hearing 1', 'Hearing judge or magistrate'], 'Her Honour Judge Reed');
+  I.seeInTab(['Hearing 1', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
+  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+});
+
+Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
@@ -49,23 +62,14 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
-  I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
-  I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
-  I.seeInTab(['Hearing 1', 'Start date and time'],  formatHearingTime(hearingStartDate));
-  I.seeInTab(['Hearing 1', 'End date and time'], formatHearingTime(hearingEndDate));
-  I.seeInTab(['Hearing 1', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
-  I.seeInTab(['Hearing 1', 'Hearing judge or magistrate'], 'Her Honour Judge Reed');
-  I.seeInTab(['Hearing 1', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
-  I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
-  I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
-
   I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
   I.seeInTab(['Hearing 2', 'Venue'], hearingDetails[0].venue);
   I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[1].startDate));
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[1].endDate));
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
+});
 
-  I.wait(5);
+Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
