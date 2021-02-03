@@ -35,6 +35,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_AMENDS_DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
@@ -118,11 +119,12 @@ public class ApproveDraftOrdersService {
         boolean noReviewDecisionExists = true;
         int counter = 1;
         for (HearingOrder order : hearingOrders) {
-            if (order.getType().isCmo() && caseData.getReviewCMODecision() != null
-                && caseData.getReviewCMODecision().getDecision() != null) {
+            if (order.getType().isCmo()) {
+                if (caseData.getReviewCMODecision() != null && caseData.getReviewCMODecision().getDecision() != null) {
 
-                noReviewDecisionExists = false;
-                validateReviewDecision(errors, caseData.getReviewCMODecision(), "CMO");
+                    noReviewDecisionExists = false;
+                    validateReviewDecision(errors, caseData.getReviewCMODecision(), "CMO");
+                }
             } else {
                 Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
                 ReviewDecision reviewDecision = mapper.convertValue(reviewDecisionMap, ReviewDecision.class);
@@ -130,8 +132,8 @@ public class ApproveDraftOrdersService {
 
                     noReviewDecisionExists = false;
                     validateReviewDecision(errors, reviewDecision, "draft order " + counter);
-                    counter++;
                 }
+                counter++;
             }
         }
 
@@ -349,22 +351,27 @@ public class ApproveDraftOrdersService {
     private Map<String, Object> buildDraftOrdersReviewData(HearingOrdersBundle ordersBundle) {
         Map<String, Object> data = new HashMap<>();
 
-        int counter = 1;
-
+        List<String> draftOrdersTitles = new ArrayList<>();
         data.put("draftCMOExists", "N");
+
+        int counter = 1;
         for (Element<HearingOrder> orderElement : ordersBundle.getOrders(SEND_TO_JUDGE)) {
 
             if (orderElement.getValue().getType().isCmo()) {
+                draftOrdersTitles.add(String.format("CMO%s", ordersBundle.getHearingId() != null
+                    ? " for " + ordersBundle.getHearingName() : EMPTY));
                 data.put("cmoDraftOrderTitle", orderElement.getValue().getTitle());
                 data.put("cmoDraftOrderDocument", orderElement.getValue().getOrder());
                 data.put("draftCMOExists", "Y");
             } else {
+                draftOrdersTitles.add(String.format("C21 Order%s", ordersBundle.getHearingId() != null
+                    ? " - " + ordersBundle.getHearingName() : EMPTY));
                 data.put(String.format("draftOrder%dTitle", counter), orderElement.getValue().getTitle());
                 data.put(String.format("draftOrder%dDocument", counter), orderElement.getValue().getOrder());
                 counter++;
             }
         }
-
+        data.put("draftOrdersTitlesInBundle", String.join("\n", draftOrdersTitles));
         if (counter > 1) {
             String numOfDraftOrders = IntStream.range(1, counter)
                 .mapToObj(String::valueOf).collect(Collectors.joining(""));
