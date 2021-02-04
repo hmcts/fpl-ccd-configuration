@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 
@@ -82,16 +83,20 @@ public class ApproveDraftOrdersController extends CallbackController {
         // reset ordersToBeSent in the notifications
         caseDetails.getData().remove("ordersToBeSent");
 
-        Element<HearingOrdersBundle> selectedOrdersBundle =
-            approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
+        if (isNotEmpty(caseData.getBundlesForApproval())) {
 
-        // review cmo
-        data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
+            Element<HearingOrdersBundle> selectedOrdersBundle =
+                approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
 
-        // review C21 orders
-        approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+            // review cmo
+            data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
 
-        caseDetails.getData().put("lastHearingOrderDraftsHearingId", selectedOrdersBundle.getValue().getHearingId());
+            // review C21 orders
+            approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+
+            caseDetails.getData().put("lastHearingOrderDraftsHearingId",
+                selectedOrdersBundle.getValue().getHearingId());
+        }
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 

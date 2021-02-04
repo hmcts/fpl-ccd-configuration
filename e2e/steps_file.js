@@ -320,21 +320,24 @@ module.exports = function () {
     },
 
     async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries){
-      const currentUrl = await this.grabCurrentUrl();
-      this.click(label);
+      const originalUrl = await this.grabCurrentUrl();
 
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
-        if(await this.grabCurrentUrl() !== currentUrl){
-          break;
-        } else {
-          //To mitigate https://tools.hmcts.net/jira/browse/EUI-2498
-          //TODO find more clever way
-          this.wait(15);
-          if(await this.grabCurrentUrl() === currentUrl){
-            this.click(label);
-            output.print('Go to next page failed ' + currentUrl);
+        this.click(label);
+        //Caused by https://tools.hmcts.net/jira/browse/EUI-2498
+        for(let attempt = 0; attempt < 20; attempt++) {
+          let currentUrl = await this.grabCurrentUrl();
+          if (currentUrl !== originalUrl) {
+            if (attempt > 5){
+              output.print(`Page changed in try ${tryNumber} in ${attempt} sec - (${originalUrl} -> ${currentUrl})`);
+            }
+            return;
+          } else {
+            this.wait(1);
           }
         }
+
+        output.print(`Page change failed (${originalUrl})`);
       }
     },
 

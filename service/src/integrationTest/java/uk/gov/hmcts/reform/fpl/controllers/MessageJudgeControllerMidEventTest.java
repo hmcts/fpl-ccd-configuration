@@ -136,7 +136,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
-            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
             .build();

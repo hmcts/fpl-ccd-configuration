@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 
 import java.util.List;
 
@@ -28,6 +30,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final CMORemovalAction cmoRemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -40,6 +43,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2651".equals(migrationId)) {
             run2651(caseDetails);
+        }
+
+        if ("FPLA-2654".equals(migrationId)) {
+            run2654(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -81,5 +88,25 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("hearingDetails", hearings);
         }
+    }
+
+    private void run2654(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("NE20C50011".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getDraftUploadedCMOs())) {
+            throw new IllegalArgumentException("No draft case management orders in the case");
+        }
+
+        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+
+        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }
 }

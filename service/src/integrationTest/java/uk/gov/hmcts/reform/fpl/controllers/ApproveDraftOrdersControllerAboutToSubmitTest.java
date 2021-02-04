@@ -288,6 +288,23 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         assertThat(responseData.getDraftUploadedCMOs()).isEmpty();
     }
 
+    @Test
+    void shouldReviewDraftOrdersOnlyWhenHearingBundlesForApprovalExists() {
+        CaseData caseData = CaseData.builder()
+            .state(State.CASE_MANAGEMENT)
+            .hearingDetails(emptyList())
+            .draftUploadedCMOs(newArrayList())
+            .hearingOrdersBundlesDrafts(emptyList())
+            .ordersToBeSent(List.of(element(HearingOrder.builder().build())))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseData.getSealedCMOs()).isEmpty();
+        assertThat(responseData.getOrderCollection()).isEmpty();
+        assertThat(responseData.getOrdersToBeSent()).isNull();
+    }
+
     private static Stream<Arguments> populateCaseDataWithState() {
         return Stream.of(
             Arguments.of("Next hearing type is issue resolution", ISSUE_RESOLUTION, State.CASE_MANAGEMENT),

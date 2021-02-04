@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -41,6 +43,7 @@ public class MessageJudgeService {
     private final IdentityService identityService;
     private final ObjectMapper mapper;
     private final UserService userService;
+    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -54,6 +57,8 @@ public class MessageJudgeService {
             data.put("hasJudicialMessages", YES.getValue());
             data.put("judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
         }
+
+        data.putAll(prePopulateRecipient());
 
         return data;
     }
@@ -72,6 +77,8 @@ public class MessageJudgeService {
             data.put("relatedDocumentsLabel", documentFileNames);
             data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
         }
+
+        data.putAll(prePopulateRecipient());
 
         return data;
     }
@@ -94,7 +101,7 @@ public class MessageJudgeService {
         JudicialMessage judicialMessageReply = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
-            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .subject(selectedJudicialMessage.getSubject())
             .urgency(selectedJudicialMessage.getUrgency())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
@@ -117,7 +124,7 @@ public class MessageJudgeService {
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(sender)
             .recipient(judicialMessageMetaData.getRecipient())
-            .requestedBy(judicialMessageMetaData.getRequestedBy())
+            .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
             .messageHistory(buildMessageHistory(latestMessage, sender))
             .updatedTime(time.now())
@@ -254,5 +261,17 @@ public class MessageJudgeService {
 
     private boolean hasJudicialMessages(CaseData caseData) {
         return !caseData.getJudicialMessages().isEmpty();
+    }
+
+    private Map<String, Object> prePopulateRecipient() {
+        Map<String, Object> data = new HashMap<>();
+
+        if (userService.hasUserRole(JUDICIARY)) {
+            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
+                .recipient(ctscEmailLookupConfiguration.getEmail())
+                .build());
+        }
+
+        return data;
     }
 }
