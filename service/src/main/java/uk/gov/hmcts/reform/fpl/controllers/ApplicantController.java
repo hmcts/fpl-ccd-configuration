@@ -84,7 +84,7 @@ public class ApplicantController extends CallbackController {
     }
 
     private List<String> getApplicantEmails(List<Element<Applicant>> applicants) {
-       return applicants.stream()
+        return applicants.stream()
             .map(Element::getValue)
             .map(Applicant::getParty)
             .map(ApplicantParty::getEmail)
@@ -94,7 +94,7 @@ public class ApplicantController extends CallbackController {
     }
 
     private void validateSolicitorEmail(String solicitorEmail, List<String> errors) {
-        if(!isBlank(solicitorEmail)) {
+        if (!isBlank(solicitorEmail)) {
             String error = validateEmailService.validate(solicitorEmail,
                 "Solicitor: Enter an email address in the correct format,"
                     + " for example name@example.com");
