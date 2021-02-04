@@ -21,7 +21,8 @@ class ValidateEmailServiceTest {
     @Autowired
     private ValidateEmailService validateEmailService;
 
-    private static final String ERROR_MESSAGE = "Enter a valid email address";
+    private static final String ERROR_MESSAGE = "Enter an email address in the correct format, "
+        + "for example name@example.com";
 
     @Test
     void shouldReturnAListOfErrorMessagesWhenListContainsSomeInvalidEmailAddresses() {
@@ -34,8 +35,8 @@ class ValidateEmailServiceTest {
         List<String> errorMessages = validateEmailService.validate(emailAddresses, "Gatekeeper");
 
         assertThat(errorMessages).contains(
-            "Gatekeeper 2: Enter a valid email address",
-            "Gatekeeper 4: Enter a valid email address");
+            "Gatekeeper 2: Enter an email address in the correct format, for example name@example.com",
+            "Gatekeeper 4: Enter an email address in the correct format, for example name@example.com");
     }
 
     @Test
