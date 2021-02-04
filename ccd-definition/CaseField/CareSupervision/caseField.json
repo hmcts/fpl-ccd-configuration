@@ -28,7 +28,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case name",
-    "HintText": "Include the Local Authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
+    "HintText": "Include the local authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -40,6 +40,15 @@
     "FieldType": "FixedList",
     "FieldTypeParameter": "AuthorityFixedList",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseLocalAuthorityName",
+    "Label": "Local Authority :",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Comment": "Workaround for unassigned-cases page in Manage Org as it does not use fixed list to display #caseLocalAuthority"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1258,6 +1267,14 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "outsourcingPolicy",
+    "Label": "Outsourcing policy",
+    "FieldType": "OrganisationPolicy",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderTabHeading",
     "Label": "## Orders",
     "FieldType": "Label",
@@ -1333,5 +1350,24 @@
     "SecurityClassification": "Public",
     "Searchable": "N",
     "Comment": "Generic YesOrNo to aid with redirect on refresh within multi paged events"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "outsourcingLAs",
+    "Label": "Select the local authority you're representing",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "outsourcingAvailable",
+    "Label": "Is outsourcing available",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Temporary hidden field"
   }
 ]

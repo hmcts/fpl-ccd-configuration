@@ -144,6 +144,10 @@ public abstract class AbstractControllerTest {
         return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath);
     }
 
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData) {
+        return postMidEvent(asCaseDetails(caseData), SC_OK);
+    }
+
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData, String additionalPath) {
         return postMidEvent(asCaseDetails(caseData), SC_OK, additionalPath);
     }

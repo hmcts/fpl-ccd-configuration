@@ -117,6 +117,9 @@ Custom configuration parameters:
 |fpl.local_authority_code_to_hmcts_court.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_cafcass.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_shared_inbox.mapping|SECRET|Explained below.|
+|fpl.local_authority_code_to_org_id.mapping|SECRET|Explained below.|
+|fpl.eps_to_local_authorities.mapping|SECRET|Explained below.|
+|fpl.mla_to_local_authorities.mapping|SECRET|Explained below.|
 |fpl.local_authority_fallback_inbox|SECRET|Fallback notification inbox when the system cannot determine where the LA notification should be delivered|
 |fpl.system_update.username|SECRET|System user username, used for automated state transitions and data modifications|
 |fpl.system_update.password|SECRET|System user password, used for automated state transitions and data modifications|
@@ -179,6 +182,32 @@ Example:
 ```
 FPL_LOCAL_AUTHORITY_CODE_TO_SHARED_INBOX_MAPPING:
 EX=>local-authority@local-authority.com
+```
+
+### Local Authority code to org id (fpl.local_authority_code_to_org_id.mapping)
+Maps local authority fpl code to organisation id in PRD
+
+Example:
+```
+EX=>ORGEX2;EX2=>ORGEX2
+```
+
+### External private solicitors to local authorities (fpl.eps_to_local_authorities.mapping)
+Maps external solicitors organisation PRD id to list of local authorities codes. 
+If external organisation has this mapping then users can create cases on behalf of specified local authorities.
+
+Example:
+```
+ORGEXT1=>LA1,LA2;ORGEXT2=>LA1,LA3
+```
+
+### Managing local authority to local authorities (fpl.mla_to_local_authorities.mapping)
+Maps local authority PRD id to list of local authorities codes. 
+If local authority has this mapping then users can create cases on behalf of specified local authorities.
+
+Example:
+```
+ORGLA3=>LA1,LA2;ORGLA2=>LA1,LA3
 ```
 
 ## Feature Toggle

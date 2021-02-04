@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -34,7 +35,12 @@ public class DynamicList {
     }
 
     @JsonIgnore
-    public UUID getValueCode() {
+    public UUID getValueCodeAsUUID() {
+        return Optional.ofNullable(getValueCode()).map(UUID::fromString).orElse(null);
+    }
+
+    @JsonIgnore
+    public String getValueCode() {
         return value == null ? null : value.getCode();
     }
 }
