@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 
@@ -22,8 +23,9 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenGatekeeperEmailsAreInValid() {
+    void shouldReturnErrorsWhenGatekeeperEmailsAreInValidAndCaseInGatekeeping() {
         CaseData caseData = CaseData.builder()
+            .state(State.GATEKEEPING)
             .gatekeeperEmails(List.of(
                 element(EmailAddress.builder().email("email@example.com").build()),
                 element(EmailAddress.builder().email("<John Doe> johndoe@email.com").build()),
@@ -39,8 +41,9 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotReturnErrorsWhenGatekeeperEmailsAreValid() {
+    void shouldNotReturnErrorsWhenGatekeeperEmailsAreValidAndCaseInGatekeeping() {
         CaseData caseData = CaseData.builder()
+            .state(State.GATEKEEPING)
             .gatekeeperEmails(List.of(
                 element(EmailAddress.builder().email("email@example.com").build()),
                 element(EmailAddress.builder().email("email@example.name").build())))
@@ -48,6 +51,33 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(callbackResponse.getErrors()).isNull();
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenGatekeeperEmailIsInValidAndCaseInSubmitted() {
+        CaseData caseData = CaseData.builder()
+            .state(State.SUBMITTED)
+            .gatekeeperEmails(List.of(
+                element(EmailAddress.builder().email("<John Doe> johndoe@email.com").build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(callbackResponse.getErrors()).contains(
+            "Gatekeeper 1: Enter an email address in the correct format, for example name@example.com");
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenGatekeeperEmailIsValidAndCaseInSubmitted() {
+        CaseData caseData = CaseData.builder()
+            .state(State.GATEKEEPING)
+            .gatekeeperEmails(List.of(
+                element(EmailAddress.builder().email("email@example.name").build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 }

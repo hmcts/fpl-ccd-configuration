@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -59,13 +60,10 @@ public class NotifyGatekeeperController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> emails = caseData.getGatekeeperEmails().stream()
-                .map(Element::getValue)
-                .map(EmailAddress::getEmail).collect(Collectors.toList());
+        List<String> errors = validateGatekeeperEmailsBasedOnState(caseData.getState(), caseData.getGatekeeperEmails());
 
-        List<String> errors = validateEmailService.validate(emails, "Gatekeeper");
-
-        if (!errors.isEmpty()) {
+        if(!errors.contains(""))
+        {
             return respond(caseDetails, errors);
         }
 
@@ -85,5 +83,23 @@ public class NotifyGatekeeperController extends CallbackController {
         return List.of(
             element(EmailAddress.builder().email("").build())
         );
+    }
+
+    private List<String> validateGatekeeperEmailsBasedOnState(State state, List<Element<EmailAddress>> gatekeeperEmails) {
+        List<String> errors = new ArrayList<>();
+
+        if (SUBMITTED.getValue().equals(state)) {
+            String email = gatekeeperEmails.get(0).getValue().getEmail();
+            String error = validateEmailService.validate(email);
+            errors.add(error);
+
+        } else {
+            List<String> emails = gatekeeperEmails.stream()
+                .map(Element::getValue)
+                .map(EmailAddress::getEmail).collect(Collectors.toList());
+
+            errors = validateEmailService.validate(emails, "Gatekeeper");
+        }
+        return errors;
     }
 }
