@@ -197,7 +197,7 @@ public class ApproveDraftOrdersService {
             List<Element<HearingOrder>>) data.get(ORDERS_TO_BE_SENT), newArrayList());
 
         int counter = 1;
-        List<Element<GeneratedOrder>> reviewedOrders = caseData.getOrderCollection();
+        List<Element<GeneratedOrder>> orderCollection = caseData.getOrderCollection();
 
         for (Element<HearingOrder> orderElement : draftOrders) {
             Map<String, Object> reviewDecisionMap = (Map<String, Object>) data.get("reviewDecision" + counter);
@@ -208,7 +208,7 @@ public class ApproveDraftOrdersService {
 
                 if (!JUDGE_REQUESTED_CHANGES.equals(reviewDecision.getDecision())) {
                     reviewedOrder = hearingOrderGenerator.buildSealedHearingOrder(reviewDecision, orderElement);
-                    reviewedOrders.add(blankOrderGenerator.buildBlankOrder(caseData,
+                    orderCollection.add(blankOrderGenerator.buildBlankOrder(caseData,
                         selectedOrdersBundle,
                         reviewedOrder));
 
@@ -229,7 +229,7 @@ public class ApproveDraftOrdersService {
         }
 
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
-        data.put("orderCollection", reviewedOrders);
+        data.put("orderCollection", orderCollection);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
     }
 

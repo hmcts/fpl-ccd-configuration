@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
@@ -88,7 +89,7 @@ public class ApproveDraftOrdersController extends CallbackController {
         // reset ordersToBeSent in the notifications
         caseDetails.getData().remove("ordersToBeSent");
 
-        if (caseData.getCmoToReviewList() != null) {
+        if (isNotEmpty(caseData.getBundlesForApproval())) {
 
             Element<HearingOrdersBundle> selectedOrdersBundle =
                 approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
