@@ -592,7 +592,7 @@ public class CaseData {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private final UUID lastHearingOrderDraftsHearingId;
 
-    @JsonIgnore // todo: unit test this.
+    @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
         return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
             .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))

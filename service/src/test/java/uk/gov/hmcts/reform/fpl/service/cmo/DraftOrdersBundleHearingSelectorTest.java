@@ -26,12 +26,11 @@ class DraftOrdersBundleHearingSelectorTest {
 
     @Test
     void testIfNullBundles() {
+        CaseData caseDa = CaseData.builder().build();
         Exception exception = assertThrows(IllegalStateException.class,
-            () -> underTest.getSelectedHearingDraftOrdersBundle(
-                CaseData.builder().build()
-            ));
+            () -> underTest.getSelectedHearingDraftOrdersBundle(caseDa));
 
-        assertThat(exception.getMessage()).isEqualTo("Bundle not found");
+        assertThat(exception).hasMessageContaining("Bundle not found");
     }
 
     @Test
@@ -94,14 +93,13 @@ class DraftOrdersBundleHearingSelectorTest {
                     .build()
             ))).build());
 
+        CaseData caseData = CaseData.builder()
+            .cmoToReviewList(BUNDLE_ID.toString())
+            .hearingOrdersBundlesDrafts(List.of(hearingBundle, anotherHearingBundle))
+            .build();
 
         HearingOrdersBundleNotFoundException exception = assertThrows(HearingOrdersBundleNotFoundException.class,
-            () -> underTest.getSelectedHearingDraftOrdersBundle(
-                CaseData.builder()
-                    .cmoToReviewList(BUNDLE_ID.toString())
-                    .hearingOrdersBundlesDrafts(List.of(hearingBundle, anotherHearingBundle))
-                    .build()
-            ));
+            () -> underTest.getSelectedHearingDraftOrdersBundle(caseData));
 
         assertThat(exception.getMessage()).isEqualTo(String.format(
             "Could not find hearing draft orders bundle with id %s",

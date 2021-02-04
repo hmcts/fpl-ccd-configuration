@@ -529,11 +529,10 @@ class ApproveDraftOrdersServiceTest {
         );
 
         underTest.reviewC21Orders(caseData, data, ordersBundleElement);
-        assertThat(data).containsAllEntriesOf(expectedData);
-        assertThat(data).doesNotContainKey("ordersToBeSent");
+        assertThat(data).containsAllEntriesOf(expectedData)
+            .doesNotContainKey("ordersToBeSent");
 
-        verifyNoInteractions(hearingOrderGenerator);
-        verifyNoInteractions(blankOrderGenerator);
+        verifyNoInteractions(hearingOrderGenerator, blankOrderGenerator);
     }
 
     @Test
