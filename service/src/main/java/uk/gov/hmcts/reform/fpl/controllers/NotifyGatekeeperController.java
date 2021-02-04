@@ -62,8 +62,7 @@ public class NotifyGatekeeperController extends CallbackController {
 
         List<String> errors = validateGatekeeperEmailsBasedOnState(caseData.getState(), caseData.getGatekeeperEmails());
 
-        if(!errors.contains(""))
-        {
+        if (!errors.contains("")) {
             return respond(caseDetails, errors);
         }
 
@@ -85,7 +84,8 @@ public class NotifyGatekeeperController extends CallbackController {
         );
     }
 
-    private List<String> validateGatekeeperEmailsBasedOnState(State state, List<Element<EmailAddress>> gatekeeperEmails) {
+    private List<String> validateGatekeeperEmailsBasedOnState(State state,
+                                                              List<Element<EmailAddress>> gatekeeperEmails) {
         List<String> errors = new ArrayList<>();
 
         if (SUBMITTED.getValue().equals(state)) {

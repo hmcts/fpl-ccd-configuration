@@ -29,7 +29,8 @@ public class ManageHearingsControllerValidateJudgeEmailMidEventTest extends Mana
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "validate-judge-email");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData),
+            "validate-judge-email");
 
         assertThat(callbackResponse.getErrors()).isNull();
     }
@@ -43,7 +44,8 @@ public class ManageHearingsControllerValidateJudgeEmailMidEventTest extends Mana
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "validate-judge-email");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData),
+            "validate-judge-email");
 
         assertThat(callbackResponse.getErrors()).contains(
             "Enter an email address in the correct format, for example name@example.com");
@@ -59,7 +61,8 @@ public class ManageHearingsControllerValidateJudgeEmailMidEventTest extends Mana
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "validate-judge-email");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData),
+            "validate-judge-email");
 
         assertThat(callbackResponse.getErrors()).isNull();
     }
