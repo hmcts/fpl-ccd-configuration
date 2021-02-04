@@ -65,9 +65,12 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
             .data(Map.of("applicants", ImmutableList.of(Element.builder()
                 .id(UUID.randomUUID())
                 .value(Applicant.builder()
-                    .party(ApplicantParty.builder().build())
+                    .party(ApplicantParty.builder()
+                        .email(EmailAddress.builder().build())
+                        .build())
                     .build())
-                .build())))
+                .build()),
+                "solicitor", Solicitor.builder().build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -170,10 +173,12 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
                 .id(UUID.randomUUID())
                 .value(Applicant.builder()
                     .party(ApplicantParty.builder()
+                        .email(EmailAddress.builder().build())
                         .pbaNumber(pbaNumber)
                         .build())
                     .build())
-                .build())))
+                .build()),
+                "solicitor", Solicitor.builder().build()))
             .build();
     }
 }
