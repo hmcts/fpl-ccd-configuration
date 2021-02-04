@@ -88,14 +88,17 @@ public class ApproveDraftOrdersController extends CallbackController {
         // reset ordersToBeSent in the notifications
         caseDetails.getData().remove("ordersToBeSent");
 
-        Element<HearingOrdersBundle> selectedOrdersBundle =
-            approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
+        if (caseData.getCmoToReviewList() != null) {
 
-        // review cmo
-        data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
+            Element<HearingOrdersBundle> selectedOrdersBundle =
+                approveDraftOrdersService.getSelectedHearingDraftOrdersBundle(caseData);
 
-        // review C21 orders
-        approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+            // review cmo
+            data.putAll(approveDraftOrdersService.reviewCMO(caseData, selectedOrdersBundle));
+
+            // review C21 orders
+            approveDraftOrdersService.reviewC21Orders(caseData, data, selectedOrdersBundle);
+        }
 
         CaseDetailsHelper.removeTemporaryFields(caseDetails, transientFields());
 
