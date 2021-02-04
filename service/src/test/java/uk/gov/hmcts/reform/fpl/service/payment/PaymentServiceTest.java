@@ -81,7 +81,6 @@ class PaymentServiceTest {
         void setup() {
             when(feeService.getFeesDataForC2(WITH_NOTICE)).thenReturn(buildFeesData(feeForC2WithNotice));
             when(feeService.getFeesDataForC2(WITHOUT_NOTICE)).thenReturn(buildFeesData(feeForC2WithoutNotice));
-            when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(false);
         }
 
         @ParameterizedTest
@@ -204,6 +203,35 @@ class PaymentServiceTest {
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
 
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
+            String customerReference = "customerReference";
+            CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA")
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .pbaNumber("PBA123")
+                    .clientCode("clientCode")
+                    .fileReference(customerReference)
+                    .build())))
+                .build();
+
+            when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference(customerReference)
+                .amount(feeForC2WithNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithNotice))
+                .build();
+
+            paymentService.makePaymentForC2(CASE_ID, caseData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForC2(WITH_NOTICE);
+        }
+
         private FeesData buildFeesData(FeeDto feeDto) {
             return FeesData.builder()
                 .totalAmount(feeDto.getCalculatedAmount())
@@ -306,6 +334,41 @@ class PaymentServiceTest {
             CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequestForC110Application(
                 clientCode,
                 customerReference);
+
+            paymentService.makePaymentForCaseOrders(caseData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForOrders(orders);
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
+            when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
+                .totalAmount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build());
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority("LA")
+                .applicants(List.of(element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .pbaNumber("PBA123")
+                        .clientCode("clientCode")
+                        .customerReference("customerReference")
+                        .build())
+                    .build())))
+                .orders(orders)
+                .build();
+
+            when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .amount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build();
 
             paymentService.makePaymentForCaseOrders(caseData);
 
