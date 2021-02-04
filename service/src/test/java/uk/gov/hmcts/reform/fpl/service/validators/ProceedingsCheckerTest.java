@@ -24,8 +24,8 @@ class ProceedingsCheckerTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource("proceedings")
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent(Proceeding proceeding) {
+    @MethodSource("incompleteProceedings")
+    void shouldReturnEmptyErrorsAndNonCompletedState(Proceeding proceeding) {
         final CaseData caseData = CaseData.builder()
                 .proceeding(proceeding)
                 .build();
@@ -37,7 +37,21 @@ class ProceedingsCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    private static Stream<Arguments> proceedings() {
+    @ParameterizedTest
+    @MethodSource("completeProceedings")
+    void shouldReturnEmptyErrorsAndCompletedState(Proceeding proceeding) {
+        final CaseData caseData = CaseData.builder()
+            .proceeding(proceeding)
+            .build();
+
+        final List<String> errors = proceedingsChecker.validate(caseData);
+        final boolean isCompleted = proceedingsChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    private static Stream<Arguments> incompleteProceedings() {
         return Stream.of(
                 Proceeding.builder()
                         .build(),
@@ -46,5 +60,28 @@ class ProceedingsCheckerTest {
                         .additionalProceedings(emptyList())
                         .build())
                 .map(Arguments::of);
+    }
+
+    private static Stream<Arguments> completeProceedings() {
+        return Stream.of(
+            Proceeding.builder()
+                .onGoingProceeding("No")
+                .build(),
+            Proceeding.builder()
+                .onGoingProceeding("DontKnow")
+                .build(),
+            Proceeding.builder()
+                .onGoingProceeding("Yes")
+                .proceedingStatus("Test")
+                .caseNumber("Test")
+                .started("Test")
+                .ended("Test")
+                .ordersMade("Test")
+                .judge("Test")
+                .children("Test")
+                .guardian("Test")
+                .build()
+            )
+            .map(Arguments::of);
     }
 }

@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -23,11 +24,11 @@ class RiskAndHarmCheckerTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource("risks")
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent(Risks risks) {
+    @MethodSource("incompleteRisks")
+    void shouldReturnEmptyErrorsAndNonCompletedState(Risks risks) {
         final CaseData caseData = CaseData.builder()
-                .risks(risks)
-                .build();
+            .risks(risks)
+            .build();
 
         final List<String> errors = riskAndHarmChecker.validate(caseData);
         final boolean isCompleted = riskAndHarmChecker.isCompleted(caseData);
@@ -36,21 +37,76 @@ class RiskAndHarmCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    private static Stream<Arguments> risks() {
+    @ParameterizedTest
+    @MethodSource("completeRisks")
+    void shouldReturnEmptyErrorsAndCompletedState(Risks risks) {
+        final CaseData caseData = CaseData.builder()
+            .risks(risks)
+            .build();
+
+        final List<String> errors = riskAndHarmChecker.validate(caseData);
+        final boolean isCompleted = riskAndHarmChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    private static Stream<Arguments> incompleteRisks() {
         return Stream.of(
-                Risks.builder().build(),
-                Risks.builder()
-                        .emotionalHarm("")
-                        .physicalHarm("")
-                        .sexualAbuse("")
-                        .neglect("")
-                        .build(),
-                Risks.builder()
-                        .emotionalHarm("Yes")
-                        .physicalHarm("No")
-                        .sexualAbuse("Yes")
-                        .neglect("No")
-                        .build())
-                .map(Arguments::of);
+            Risks.builder().build(),
+            Risks.builder()
+                .emotionalHarm("")
+                .physicalHarm("")
+                .sexualAbuse("")
+                .neglect("")
+                .build(),
+            Risks.builder()
+                .emotionalHarm("Yes")
+                .physicalHarm("No")
+                .sexualAbuse("No")
+                .neglect("No")
+                .build(),
+            Risks.builder()
+                .emotionalHarm("No")
+                .physicalHarm("Yes")
+                .sexualAbuse("No")
+                .neglect("No")
+                .build(),
+            Risks.builder()
+                .emotionalHarm("No")
+                .physicalHarm("No")
+                .sexualAbuse("Yes")
+                .neglect("No")
+                .build(),
+            Risks.builder()
+                .emotionalHarm("No")
+                .physicalHarm("No")
+                .sexualAbuse("No")
+                .neglect("Yes")
+                .build()
+        )
+            .map(Arguments::of);
+    }
+
+    private static Stream<Arguments> completeRisks() {
+        return Stream.of(
+            Risks.builder()
+                .emotionalHarm("No")
+                .physicalHarm("No")
+                .sexualAbuse("No")
+                .neglect("No")
+                .build(),
+            Risks.builder()
+                .emotionalHarm("Yes")
+                .emotionalHarmOccurrences(Collections.singletonList("Past harm"))
+                .physicalHarm("Yes")
+                .physicalHarmOccurrences(Collections.singletonList("Past harm"))
+                .sexualAbuse("Yes")
+                .sexualAbuseOccurrences(Collections.singletonList("Past harm"))
+                .neglect("Yes")
+                .neglectOccurrences(Collections.singletonList("Past harm"))
+                .build()
+        )
+            .map(Arguments::of);
     }
 }

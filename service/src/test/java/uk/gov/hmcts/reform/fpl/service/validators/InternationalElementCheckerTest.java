@@ -23,11 +23,11 @@ class InternationalElementCheckerTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource("internationalElement")
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent(InternationalElement internationalElement) {
+    @MethodSource("incompleteInternationalElement")
+    void shouldReturnEmptyErrorsAndNonCompletedState(InternationalElement internationalElement) {
         final CaseData caseData = CaseData.builder()
-                .internationalElement(internationalElement)
-                .build();
+            .internationalElement(internationalElement)
+            .build();
 
         final List<String> errors = internationalElementChecker.validate(caseData);
         final boolean isCompleted = internationalElementChecker.isCompleted(caseData);
@@ -36,21 +36,96 @@ class InternationalElementCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    private static Stream<Arguments> internationalElement() {
+    @ParameterizedTest
+    @MethodSource("completeInternationalElement")
+    void shouldReturnEmptyErrorsAndCompletedState(InternationalElement internationalElement) {
+        final CaseData caseData = CaseData.builder()
+            .internationalElement(internationalElement)
+            .build();
+
+        final List<String> errors = internationalElementChecker.validate(caseData);
+        final boolean isCompleted = internationalElementChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    private static Stream<Arguments> incompleteInternationalElement() {
         return Stream.of(
-                InternationalElement.builder().build(),
-                InternationalElement.builder()
-                        .issues("")
-                        .issuesReason("")
-                        .proceedings("")
-                        .proceedingsReason("")
-                        .possibleCarer("")
-                        .possibleCarerReason("")
-                        .significantEvents("")
-                        .significantEventsReason("")
-                        .internationalAuthorityInvolvement("")
-                        .internationalAuthorityInvolvementDetails("")
-                        .build())
-                .map(Arguments::of);
+            InternationalElement.builder().build(),
+            InternationalElement.builder()
+                .issues("")
+                .issuesReason("")
+                .proceedings("")
+                .proceedingsReason("")
+                .possibleCarer("")
+                .possibleCarerReason("")
+                .significantEvents("")
+                .significantEventsReason("")
+                .internationalAuthorityInvolvement("")
+                .internationalAuthorityInvolvementDetails("")
+                .build(),
+            InternationalElement.builder()
+                .issues("Yes")
+                .proceedings("No")
+                .possibleCarer("No")
+                .significantEvents("No")
+                .internationalAuthorityInvolvement("No")
+                .build(),
+            InternationalElement.builder()
+                .issues("No")
+                .proceedings("Yes")
+                .possibleCarer("No")
+                .significantEvents("No")
+                .internationalAuthorityInvolvement("No")
+                .build(),
+            InternationalElement.builder()
+                .issues("No")
+                .proceedings("No")
+                .possibleCarer("Yes")
+                .significantEvents("No")
+                .internationalAuthorityInvolvement("No")
+                .build(),
+            InternationalElement.builder()
+                .issues("No")
+                .proceedings("No")
+                .possibleCarer("No")
+                .significantEvents("Yes")
+                .internationalAuthorityInvolvement("No")
+                .build(),
+            InternationalElement.builder()
+                .issues("No")
+                .proceedings("No")
+                .possibleCarer("No")
+                .significantEvents("No")
+                .internationalAuthorityInvolvement("Yes")
+                .build()
+        )
+            .map(Arguments::of);
+    }
+
+    private static Stream<Arguments> completeInternationalElement() {
+        return Stream.of(
+            InternationalElement.builder()
+                .issues("No")
+                .proceedings("No")
+                .possibleCarer("No")
+                .significantEvents("No")
+                .internationalAuthorityInvolvement("No")
+                .build(),
+            InternationalElement.builder()
+                .issues("Yes")
+                .issuesReason("Test")
+                .proceedings("Yes")
+                .proceedingsReason("Test")
+                .possibleCarer("Yes")
+                .possibleCarerReason("Test")
+                .significantEvents("Yes")
+                .significantEventsReason("Test")
+                .internationalAuthorityInvolvement("Yes")
+                .internationalAuthorityInvolvementDetails("Test")
+                .build()
+        )
+            .map(Arguments::of);
     }
 }

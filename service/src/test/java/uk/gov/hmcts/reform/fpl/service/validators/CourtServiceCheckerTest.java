@@ -23,11 +23,11 @@ class CourtServiceCheckerTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource("hearingPreferences")
-    void shouldReturnEmptyErrorsAndNonCompletedStateForOptionalEvent(HearingPreferences hearingPreferences) {
+    @MethodSource("incompleteHearingPreferences")
+    void shouldReturnEmptyErrorsAndNonCompletedState(HearingPreferences hearingPreferences) {
         final CaseData caseData = CaseData.builder()
-                .hearingPreferences(hearingPreferences)
-                .build();
+            .hearingPreferences(hearingPreferences)
+            .build();
 
         final List<String> errors = courtServiceChecker.validate(caseData);
         final boolean isCompleted = courtServiceChecker.isCompleted(caseData);
@@ -36,23 +36,108 @@ class CourtServiceCheckerTest {
         assertThat(isCompleted).isFalse();
     }
 
-    private static Stream<Arguments> hearingPreferences() {
+    @ParameterizedTest
+    @MethodSource("completeHearingPreferences")
+    void shouldReturnEmptyErrorsAndCompletedState(HearingPreferences hearingPreferences) {
+        final CaseData caseData = CaseData.builder()
+            .hearingPreferences(hearingPreferences)
+            .build();
+
+        final List<String> errors = courtServiceChecker.validate(caseData);
+        final boolean isCompleted = courtServiceChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    private static Stream<Arguments> incompleteHearingPreferences() {
         return Stream.of(
-                HearingPreferences.builder().build(),
-                HearingPreferences.builder()
-                        .welsh("")
-                        .intermediary("")
-                        .disabilityAssistance("")
-                        .extraSecurityMeasures("")
-                        .somethingElse("")
-                        .build(),
-                HearingPreferences.builder()
-                        .welsh("Yes")
-                        .intermediary("No")
-                        .disabilityAssistance("Yes")
-                        .extraSecurityMeasures("No")
-                        .somethingElse("Yes")
-                        .build())
-                .map(Arguments::of);
+            HearingPreferences.builder().build(),
+            HearingPreferences.builder()
+                .welsh("")
+                .interpreter("")
+                .intermediary("")
+                .disabilityAssistance("")
+                .extraSecurityMeasures("")
+                .somethingElse("")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("Yes")
+                .interpreter("No")
+                .intermediary("No")
+                .disabilityAssistance("No")
+                .extraSecurityMeasures("No")
+                .somethingElse("No")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("No")
+                .interpreter("Yes")
+                .intermediary("No")
+                .disabilityAssistance("No")
+                .extraSecurityMeasures("No")
+                .somethingElse("No")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("No")
+                .interpreter("No")
+                .intermediary("Yes")
+                .disabilityAssistance("No")
+                .extraSecurityMeasures("No")
+                .somethingElse("No")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("No")
+                .interpreter("No")
+                .intermediary("No")
+                .disabilityAssistance("Yes")
+                .extraSecurityMeasures("No")
+                .somethingElse("No")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("No")
+                .interpreter("No")
+                .intermediary("No")
+                .disabilityAssistance("No")
+                .extraSecurityMeasures("Yes")
+                .somethingElse("No")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("No")
+                .interpreter("No")
+                .intermediary("No")
+                .disabilityAssistance("No")
+                .extraSecurityMeasures("No")
+                .somethingElse("Yes")
+                .build()
+            )
+            .map(Arguments::of);
+    }
+
+    private static Stream<Arguments> completeHearingPreferences() {
+        return Stream.of(
+            HearingPreferences.builder()
+                .welsh("No")
+                .interpreter("No")
+                .intermediary("No")
+                .disabilityAssistance("No")
+                .extraSecurityMeasures("No")
+                .somethingElse("No")
+                .build(),
+            HearingPreferences.builder()
+                .welsh("Yes")
+                .welshDetails("Test")
+                .interpreter("Yes")
+                .interpreterDetails("Yes")
+                .intermediary("Yes")
+                .intermediaryDetails("Test")
+                .disabilityAssistance("Yes")
+                .disabilityAssistanceDetails("Test")
+                .extraSecurityMeasures("Yes")
+                .extraSecurityMeasuresDetails("Test")
+                .somethingElse("Yes")
+                .somethingElseDetails("Test")
+                .build()
+        )
+            .map(Arguments::of);
     }
 }
