@@ -49,7 +49,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -243,7 +244,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -262,7 +264,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -353,7 +356,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -401,7 +405,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -420,7 +425,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -439,7 +445,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -458,7 +465,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -477,7 +485,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -496,7 +505,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -515,7 +525,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -534,7 +545,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -618,7 +630,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -709,7 +722,8 @@
       {
         "UserRoles": [
           "[LABARRISTER]",
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -751,7 +765,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageLegalRepresentatives",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "CR"
   },
   {
@@ -834,7 +851,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -875,7 +893,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -894,7 +913,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -934,6 +954,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[EPSMANAGING]",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
@@ -958,6 +979,7 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "[LASOLICITOR]",
+          "[EPSMANAGING]",
           "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-magistrate"
         ],
@@ -994,7 +1016,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },
@@ -1021,6 +1044,7 @@
           "[LABARRISTER]",
           "[SOLICITOR]",
           "[LASOLICITOR]",
+          "[EPSMANAGING]",
           "[CAFCASSSOLICITOR]",
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-cafcass"
@@ -1046,6 +1070,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[EPSMANAGING]",
           "[LABARRISTER]"
         ],
         "CRUD": "CR"
@@ -1070,6 +1095,7 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[EPSMANAGING]",
           "[LABARRISTER]"
         ],
         "CRUD": "CR"
@@ -1089,7 +1115,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]"
         ],
         "CRUD": "CR"
       },

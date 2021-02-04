@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class CaseDetailsMap extends HashMap<String, Object> {
 
@@ -28,5 +29,9 @@ public class CaseDetailsMap extends HashMap<String, Object> {
 
     public static CaseDetailsMap caseDetailsMap(CaseDetails caseDetail) {
         return new CaseDetailsMap(caseDetail.getData());
+    }
+
+    public void removeAll(String... keys) {
+        Stream.of(keys).forEach(this::remove);
     }
 }

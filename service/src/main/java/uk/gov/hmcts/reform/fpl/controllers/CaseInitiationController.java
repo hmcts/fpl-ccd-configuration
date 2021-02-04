@@ -12,50 +12,63 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityValidationService;
-import uk.gov.hmcts.reform.fpl.service.OrganisationService;
+import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import java.util.Map;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
 @RestController
 @RequestMapping("/callback/case-initiation")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseInitiationController extends CallbackController {
-    private final LocalAuthorityService localAuthorityNameService;
-    private final LocalAuthorityUserService localAuthorityUserService;
-    private final LocalAuthorityValidationService localAuthorityOnboardedValidationService;
-    private final OrganisationService organisationService;
+
+    private final CaseInitiationService caseInitiationService;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
+
+        caseInitiationService.getOutsourcingLocalAuthoritiesDynamicList().ifPresent(outsourcingLAs -> {
+            caseData.putIfNotEmpty("outsourcingLAs", outsourcingLAs);
+            caseData.putIfNotEmpty("outsourcingAvailable", YES);
+        });
+
+        return respond(caseData);
+    }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        final CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        final CaseData caseData = getCaseData(caseDetails);
 
-        return respond(caseDetails, localAuthorityOnboardedValidationService.validateIfUserIsOnboarded());
+        return respond(caseDetails, caseInitiationService.checkUserAllowedToCreateCase(caseData));
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestBody CallbackRequest callbackrequest) {
-        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
+        final CaseData caseData = getCaseData(callbackrequest);
+        final CaseDetailsMap caseDetails = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        Map<String, Object> data = caseDetails.getData();
-        data.put("caseLocalAuthority", caseLocalAuthority);
-        organisationService.findOrganisationPolicy().ifPresent(policy -> data.put("localAuthorityPolicy", policy));
+        final CaseData updatedCaseData = caseInitiationService.updateOrganisationsDetails(caseData);
+
+        caseDetails.putIfNotEmpty("caseLocalAuthority", updatedCaseData.getCaseLocalAuthority());
+        caseDetails.putIfNotEmpty("caseLocalAuthorityName", updatedCaseData.getCaseLocalAuthorityName());
+        caseDetails.putIfNotEmpty("localAuthorityPolicy", updatedCaseData.getLocalAuthorityPolicy());
+        caseDetails.putIfNotEmpty("outsourcingPolicy", updatedCaseData.getOutsourcingPolicy());
+
+        caseDetails.removeAll("outsourcingLAs", "outsourcingAvailable");
 
         return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = getCaseData(callbackRequest);
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        final CaseData caseData = getCaseData(callbackRequest);
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(caseData.getId().toString(),
-            caseData.getCaseLocalAuthority());
+        caseInitiationService.grantCaseAccess(caseData);
+
         publishEvent(new CaseDataChanged(caseData));
     }
 }

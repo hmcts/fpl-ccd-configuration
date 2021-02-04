@@ -32,6 +32,12 @@ module.exports = {
     I.click(this.fields.search);
   },
 
+  searchForCasesWithId(caseId, state = 'Any') {
+    this.setInitialSearchFields(state);
+    I.fillField(this.fields.caseId, caseId);
+    I.click(this.fields.search);
+  },
+
   searchForCasesWithUnhandledEvidences() {
     I.click(this.fields.evidenceNotHandled);
     I.click(this.fields.search);
@@ -61,6 +67,10 @@ module.exports = {
     const caseRow = this.locateCase(caseId);
     const caseProperty = locate(`//td[${columnNumber}]`);
     return caseProperty.inside(caseRow);
+  },
+
+  verifyCaseIsShareable(caseId){
+    I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 
 };

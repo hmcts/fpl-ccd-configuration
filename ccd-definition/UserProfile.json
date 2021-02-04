@@ -63,6 +63,20 @@
     "WorkBasketDefaultState": "Open"
   },
   {
+    "LiveFrom": "12/02/2021",
+    "UserIDAMId": "solicitor1@solicitors.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": "21/02/2021",
+    "UserIDAMId": "solicitor2@solicitors.uk",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Open"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "hmcts-admin@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",

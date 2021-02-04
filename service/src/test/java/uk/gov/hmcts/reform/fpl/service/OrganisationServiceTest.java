@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
@@ -188,48 +187,6 @@ class OrganisationServiceTest {
             when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN)).thenThrow(expectedException);
 
             Exception actualException = assertThrows(Exception.class, organisationService::findOrganisation);
-
-            assertThat(actualException).isEqualTo(expectedException);
-        }
-    }
-
-    @Nested
-    class FindOrganisationPolicy {
-
-        @Test
-        void shouldReturnOrganisationPolicyWhenUserRegisteredInOrganisation() {
-            OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
-                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
-                    .organisationID(POPULATED_ORGANISATION.getOrganisationIdentifier())
-                    .build())
-                .orgPolicyCaseAssignedRole("[LASOLICITOR]")
-                .build();
-
-            when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN))
-                .thenReturn(POPULATED_ORGANISATION);
-
-            Optional<OrganisationPolicy> actualOrganisationPolicy = organisationService.findOrganisationPolicy();
-
-            assertThat(actualOrganisationPolicy).contains(expectedOrganisationPolicy);
-        }
-
-        @Test
-        void shouldReturnEmptyOrganisationPolicyWhenUserNotRegisteredInOrganisation() {
-            when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN))
-                .thenThrow(feignException(SC_NOT_FOUND));
-
-            Optional<OrganisationPolicy> actualOrganisationPolicy = organisationService.findOrganisationPolicy();
-
-            assertThat(actualOrganisationPolicy).isEmpty();
-        }
-
-        @Test
-        void shouldRethrowUnexpectedExceptions() {
-            Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
-
-            when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN)).thenThrow(expectedException);
-
-            Exception actualException = assertThrows(Exception.class, organisationService::findOrganisationPolicy);
 
             assertThat(actualException).isEqualTo(expectedException);
         }
