@@ -124,6 +124,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         CaseData caseData = CaseData.builder()
             .state(State.CASE_MANAGEMENT)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .cmoToReviewList(hearingOrdersBundle.getId())
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .reviewCMODecision(ReviewDecision.builder().decision(SEND_TO_ALL_PARTIES).build())
@@ -159,6 +160,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .cmoToReviewList(hearingOrdersBundle.getId())
             .hearingDetails(List.of(
                 element(hearing(cmoId)),
                 element(buildHearingOfType(hearingType))))
@@ -215,6 +217,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
             .draftUploadedCMOs(newArrayList())
+            .cmoToReviewList(hearingOrdersBundle.getId())
             .children1(children())
             .hearingDetails(List.of(element(
                 hearingOrdersBundle.getValue().getHearingId(),
@@ -256,6 +259,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
             .state(State.CASE_MANAGEMENT)
             .draftUploadedCMOs(List.of(element(cmoId, cmo)))
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .cmoToReviewList(hearingOrdersBundle.getId())
             .hearingDetails(List.of(
                 element(hearing(cmoId)),
                 element(buildHearingOfType(ISSUE_RESOLUTION))))
