@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @Service
 public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentProvider {
 
-    //TODO multiple document links
     public ApprovedOrdersTemplate buildOrdersApprovedContent(CaseData caseData,
                                                              HearingBooking hearing,
                                                              List<HearingOrder> orders,
@@ -44,6 +43,7 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             templateBuilder
                 .digitalPreference("No")
                 .caseUrl("")
+                .documentLinks(List.of())
                 .attachedDocuments(attachedDocuments);
 
         } else {

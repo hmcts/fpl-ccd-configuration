@@ -12,22 +12,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
-import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderRejectedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transientFields;
 

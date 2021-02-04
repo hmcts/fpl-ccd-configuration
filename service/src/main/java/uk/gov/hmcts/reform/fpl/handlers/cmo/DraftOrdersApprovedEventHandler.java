@@ -93,7 +93,7 @@ public class DraftOrdersApprovedEventHandler {
         List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
         List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
         NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
-        ;
+
         final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
         notificationService.sendEmail(

@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
-import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersUploadedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -18,13 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -36,19 +35,25 @@ import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailCon
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @SpringBootTest(classes = {
     DraftOrdersApprovedEventHandler.class,
     ReviewDraftOrdersEmailContentProvider.class,
     NotificationService.class,
     ObjectMapper.class,
-    CaseUrlService.class
+    CaseUrlService.class,
+    RepresentativeNotificationService.class,
 })
 class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
 
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Test
     void notifyLA() {
@@ -89,7 +94,7 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
 
         DraftOrdersApproved event = new DraftOrdersApproved(caseData, List.of(cmo, c21));
 
-        underTest.sendNotificationToLA(event);
+        underTest.sendNotificationToAdminAndLA(event);
 
         assertThat(response())
             .hasSubject("New orders issued, Smith")
@@ -109,6 +114,28 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
                 .line("You can review the orders by:")
                 .list("signing into http://fake-url/cases/case-details/100#Orders")
                 .list("using these links: \n\n* http://fake-url/54321\n* http://fake-url/99999")
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
+                .line()
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()

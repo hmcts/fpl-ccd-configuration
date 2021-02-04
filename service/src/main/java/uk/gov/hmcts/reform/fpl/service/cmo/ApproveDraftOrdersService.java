@@ -266,7 +266,7 @@ public class ApproveDraftOrdersService {
         List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
         List<Element<HearingOrder>> orders = caseData.getOrdersToBeSent();
 
-        if (orders.isEmpty()) {
+        if (orders == null || orders.isEmpty()) {
             return emptyList();
         }
 

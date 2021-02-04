@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 public class ApprovedOrdersTemplateSerializer extends JsonSerializer<ApprovedOrdersTemplate> {
 
     @Override
@@ -27,10 +29,11 @@ public class ApprovedOrdersTemplateSerializer extends JsonSerializer<ApprovedOrd
         serializers.defaultSerializeField("caseUrl", value.getCaseUrl(), gen);
         serializers.defaultSerializeField("digitalPreference", value.getDigitalPreference(), gen);
 
-        List<Map<String, Object>> attachedDocuments = value.getAttachedDocuments();
+        List<Map<String, Object>> attachedDocuments = defaultIfNull(value.getAttachedDocuments(), List.of());
 
-        for (int i = 0; i < attachedDocuments.size(); i++) {
-            serializers.defaultSerializeField("attachedDocument" + (i + 1), attachedDocuments.get(i), gen);
+        for (int i = 0; i <= 10; i++) {
+            Object val = attachedDocuments.size() > i ? attachedDocuments.get(i) : "";
+            serializers.defaultSerializeField("attachedDocument" + (i + 1), val, gen);
         }
         gen.writeEndObject();
     }

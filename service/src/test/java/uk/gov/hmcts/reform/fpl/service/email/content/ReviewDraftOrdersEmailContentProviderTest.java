@@ -118,6 +118,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .subjectLineWithHearingDate("Jones, SN2000, case management hearing, 20 February 2020")
             .attachedDocuments(List.of(jsonFileObject.toMap(), jsonFileObject.toMap()))
             .digitalPreference("No")
+            .documentLinks(List.of())
             .build();
 
         assertThat(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(caseData, hearing, orders,
