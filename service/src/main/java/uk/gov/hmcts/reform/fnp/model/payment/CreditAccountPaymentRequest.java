@@ -38,4 +38,6 @@ public class CreditAccountPaymentRequest {
     private String siteId;
     @JsonProperty("fees")
     private List<FeeDto> fees;
+    @JsonProperty("case_type")
+    private String caseType;
 }
