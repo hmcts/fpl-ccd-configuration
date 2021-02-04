@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -480,6 +482,12 @@ public class ManageHearingsService {
 
         updateDocumentsBundleName(caseData, cancelledHearing);
 
+        if (caseData.getHearingOrdersBundlesDrafts() != null) {
+            updateHearingOrderBundles(caseData, cancelledHearing);
+        } else if (caseData.getDraftUploadedCMOs() != null) {
+            updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
+        }
+
         return cancelledHearing;
     }
 
@@ -500,6 +508,44 @@ public class ManageHearingsService {
         findElement(hearing.getId(), caseData.getHearingFurtherEvidenceDocuments())
             .map(Element::getValue)
             .ifPresent(bundle -> bundle.setHearingName(hearing.getValue().toLabel()));
+    }
+
+    private void updateDraftUploadedCaseManagementOrders(CaseData caseData, Element<HearingBooking> hearing) {
+        UUID linkedCmoId = hearing.getValue().getCaseManagementOrderId();
+        Optional<Element<HearingOrder>> draftUploadedOrderElement = caseData.getDraftUploadedCMOWithId(linkedCmoId);
+
+        if (draftUploadedOrderElement.isPresent()) {
+            List<Element<HearingOrder>> updatedDraftOrders = caseData.getDraftUploadedCMOs().stream()
+                .map(hearingOrderElement -> {
+                    if (hearingOrderElement.getId().equals(draftUploadedOrderElement.get().getId())) {
+                        hearingOrderElement.getValue().setHearing(hearing.getValue().toLabel());
+                    }
+                    return hearingOrderElement;
+                }).collect(toList());
+
+            caseData.toBuilder().draftUploadedCMOs(updatedDraftOrders).build();
+        }
+    }
+
+    private void updateHearingOrderBundles(CaseData caseData, Element<HearingBooking> hearing) {
+        UUID linkedCmoId = hearing.getValue().getCaseManagementOrderId();
+
+        Optional<Element<HearingOrdersBundle>> hearingFurtherEvidenceBundleElement =
+            caseData.getHearingOrderBundleThatContainsOrder(linkedCmoId);
+
+        if (hearingFurtherEvidenceBundleElement.isPresent()) {
+            List<Element<HearingOrdersBundle>> updatedHearingOrderBundle = caseData.getHearingOrdersBundlesDrafts()
+                .stream()
+                .map(hearingOrdersBundleElement -> {
+                    if (hearingFurtherEvidenceBundleElement.get().getId().equals(hearingOrdersBundleElement.getId())) {
+                        hearingOrdersBundleElement.getValue().setHearingName(hearing.getValue().toLabel());
+                    }
+
+                    return hearingOrdersBundleElement;
+                }).collect(Collectors.toList());
+
+            caseData.toBuilder().hearingOrdersBundlesDrafts(updatedHearingOrderBundle).build();
+        }
     }
 
     private void reassignDocumentsBundle(CaseData caseData,

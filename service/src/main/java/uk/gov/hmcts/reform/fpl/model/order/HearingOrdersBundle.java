@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @Builder(toBuilder = true)
 public class HearingOrdersBundle {
     private UUID hearingId;
-    private String hearingName;
+    String hearingName;
     private String judgeTitleAndName;
     private List<Element<HearingOrder>> orders;
 
@@ -60,8 +60,12 @@ public class HearingOrdersBundle {
     }
 
     public List<Element<HearingOrder>> getCaseManagementOrders() {
-        return orders.stream()
-            .filter(hearingOrderElement -> hearingOrderElement.getValue().getType().isCmo())
-            .collect(Collectors.toList());
+        if (isNotEmpty(orders)) {
+            return orders.stream()
+                .filter(hearingOrderElement -> hearingOrderElement.getValue().getType().isCmo())
+                .collect(Collectors.toList());
+        }
+
+        return List.of();
     }
 }

@@ -222,10 +222,17 @@ class HearingOrdersBundleTest {
         }
 
         @Test
-        void shouldReturnAnEmptyListIfNoCaseManagementOrdersAreAvailable() {
+        void shouldReturnAnEmptyListIfCaseManagementOrdersAreNotPresent() {
             HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder()
                 .orders(List.of(element(HearingOrder.builder().type(C21).build())))
                 .build();
+
+            assertThat(hearingOrdersBundle.getCaseManagementOrders()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfOrdersAreNotPresent() {
+            HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder().build();
 
             assertThat(hearingOrdersBundle.getCaseManagementOrders()).isEmpty();
         }

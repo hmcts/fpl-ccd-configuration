@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -35,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -114,23 +114,17 @@ class RemoveOrderServiceTest {
 
         List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), HearingOrder.builder().type(
-            DRAFT_CMO).build());
-
-        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), HearingOrder.builder().type(
-            AGREED_CMO).build());
-
-        Element<HearingOrder> draftCMOThree = element(UUID.randomUUID(), HearingOrder.builder().type(
-            DRAFT_CMO).build());
+        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildHearingOrder(DRAFT_CMO));
 
         CaseData caseData = CaseData.builder()
             .state(state)
             .orderCollection(generatedOrders)
             .sealedCMOs(sealedCaseManagementOrders)
             .hearingOrdersBundlesDrafts(List.of(
-                element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
+                element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne)).build()),
                 element(HearingOrdersBundle.builder().orders(List.of(
-                    draftCMOThree,
+                    draftCMOTwo,
                     element(HearingOrder.builder().type(C21).build())
                 )).build())))
             .build();
@@ -144,11 +138,13 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 16 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 17 August 2020"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
-                buildListElement(sealedCaseManagementOrders.get(0).getId(), format("Case management order - %s",
+                buildListElement(sealedCaseManagementOrders.get(0).getId(),
+                    format("Sealed case management order issued on %s",
                     formatLocalDateToString(NOW, "d MMMM yyyy"))),
-                buildListElement(draftCMOOne.getId(), "Draft CMO"),
-                buildListElement(draftCMOTwo.getId(), "Draft CMO"),
-                buildListElement(draftCMOThree.getId(), "Draft CMO")))
+                buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
+                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -303,10 +299,16 @@ class RemoveOrderServiceTest {
 
     private List<Element<HearingOrder>> buildSealedCaseManagementOrders() {
         return List.of(
-            element(HearingOrder.builder()
+            element(buildHearingOrder(AGREED_CMO).toBuilder()
                 .status(APPROVED)
                 .dateIssued(NOW)
-                .build())
-        );
+                .build()));
+    }
+
+    private HearingOrder buildHearingOrder(HearingOrderType type) {
+        return HearingOrder.builder()
+            .type(type)
+            .dateSent(NOW.minusDays(1))
+            .build();
     }
 }

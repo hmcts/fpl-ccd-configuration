@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -22,19 +21,21 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class CMORemovalAction implements OrderRemovalAction {
+public class SealedCMORemovalAction implements OrderRemovalAction {
 
     private final DraftOrderService draftOrderService;
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
-        return removableOrder instanceof HearingOrder && Optional.ofNullable(((HearingOrder) removableOrder).getType())
-            .filter(HearingOrderType::isCmo)
+        return removableOrder instanceof HearingOrder
+            && Optional.ofNullable(((HearingOrder) removableOrder).getStatus())
+            .filter(APPROVED::equals)
             .isPresent();
     }
 
@@ -89,7 +90,7 @@ public class CMORemovalAction implements OrderRemovalAction {
         HearingBooking hearing = getHearingToUnlink(caseData, removableOrderId, caseManagementOrder);
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
-        data.put("orderTitleToBeRemoved", "Case management order");
+        data.put("orderTitleToBeRemoved", "Sealed case management order");
         data.put("hearingToUnlink", hearing.toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
     }

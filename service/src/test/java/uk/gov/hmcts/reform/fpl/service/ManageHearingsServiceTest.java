@@ -11,6 +11,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -30,6 +31,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -1048,6 +1051,113 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+        }
+
+        @Test
+        void shouldVacateAndUpdateDraftCaseManagementOrder() {
+            final UUID reListedHearingId = randomUUID();
+            final UUID linkedCMOId = randomUUID();
+
+            when(identityService.generateId()).thenReturn(reListedHearingId);
+
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            final Element<HearingBooking> hearingToBeVacated = element(randomHearing().toBuilder()
+                .caseManagementOrderId(linkedCMOId)
+                .build());
+
+            final Element<HearingBooking> otherHearing = element(randomHearing());
+            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
+                hearingToBeVacated.getValue().toBuilder()
+                    .status(HearingStatus.VACATED_AND_RE_LISTED)
+                    .cancellationReason(vacatedReason.getReason())
+                    .build());
+
+            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
+
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+                documentBundle.getValue().toBuilder()
+                    .hearingName(reListedHearing.getValue().toLabel())
+                    .build());
+
+            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId, HearingOrder.builder().build());
+
+            final CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
+                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
+                .vacatedReason(vacatedReason)
+                .draftUploadedCMOs(List.of(linkedDraftCMO))
+                .build();
+
+            service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+            assertThat(caseData.getDraftUploadedCMOs()).containsExactly(
+                element(linkedCMOId, HearingOrder.builder().hearing(vacatedHearing.getValue().toLabel())
+                .build()));
+        }
+
+        @Test
+        void shouldVacateAndUpdateHearingOrdersBundleDrafts() {
+            final UUID reListedHearingId = randomUUID();
+            final UUID linkedCMOId = randomUUID();
+            final UUID HearingOrderBundleId = randomUUID();
+
+            when(identityService.generateId()).thenReturn(reListedHearingId);
+
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            final Element<HearingBooking> hearingToBeVacated = element(randomHearing().toBuilder()
+                .caseManagementOrderId(linkedCMOId)
+                .build());
+
+            final Element<HearingBooking> otherHearing = element(randomHearing());
+            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
+                hearingToBeVacated.getValue().toBuilder()
+                    .status(HearingStatus.VACATED_AND_RE_LISTED)
+                    .cancellationReason(vacatedReason.getReason())
+                    .build());
+
+            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
+
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+                documentBundle.getValue().toBuilder()
+                    .hearingName(reListedHearing.getValue().toLabel())
+                    .build());
+
+            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId, HearingOrder.builder()
+                .type(HearingOrderType.DRAFT_CMO)
+                .build());
+
+            final CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
+                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
+                .vacatedReason(vacatedReason)
+                .hearingOrdersBundlesDrafts(newArrayList(
+                    element(HearingOrderBundleId, HearingOrdersBundle.builder()
+                        .orders(newArrayList(linkedDraftCMO))
+                        .build())
+                ))
+                .build();
+
+            service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+            assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
+                element(HearingOrderBundleId, HearingOrdersBundle.builder()
+                        .hearingName(vacatedHearing.getValue().toLabel())
+                        .orders(newArrayList(linkedDraftCMO))
+                    .build()));
         }
 
         void shouldVacateHearing(HearingReListOption reListOption, HearingStatus expectedStatus) {

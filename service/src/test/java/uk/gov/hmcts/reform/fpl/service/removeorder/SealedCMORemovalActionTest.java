@@ -2,13 +2,11 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -43,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
-class CMORemovalActionTest {
+class SealedCMORemovalActionTest {
 
     private static final UUID TO_REMOVE_ORDER_ID = UUID.randomUUID();
     private static final UUID ALREADY_REMOVED_ORDER_ID = UUID.randomUUID();
@@ -58,23 +56,25 @@ class CMORemovalActionTest {
     private DraftOrderService draftOrderService;
 
     @InjectMocks
-    private CMORemovalAction underTest;
+    private SealedCMORemovalAction underTest;
 
-    @ParameterizedTest
-    @EnumSource(value = HearingOrderType.class, names = {"C21"}, mode = EnumSource.Mode.EXCLUDE)
-    void isAcceptedIfCaseManagementOrder(HearingOrderType hearingOrderType) {
-        RemovableOrder order = HearingOrder.builder()
-            .type(hearingOrderType)
-            .build();
+    @Test
+    void isAcceptedOfAgreedCaseManagementOrders() {
+        RemovableOrder order = HearingOrder.builder().status(CMOStatus.APPROVED).build();
 
         assertThat(underTest.isAccepted(order)).isTrue();
     }
 
     @Test
     void isNotAcceptedC21HearingOrder() {
-        RemovableOrder order = HearingOrder.builder()
-            .type(C21)
-            .build();
+        RemovableOrder order = HearingOrder.builder().type(C21).build();
+
+        assertThat(underTest.isAccepted(order)).isFalse();
+    }
+
+    @Test
+    void isNotAcceptedDraftCaseManagementOrder() {
+        RemovableOrder order = HearingOrder.builder().status(CMOStatus.DRAFT).build();
 
         assertThat(underTest.isAccepted(order)).isFalse();
     }
@@ -247,7 +247,7 @@ class CMORemovalActionTest {
                 "hearingToUnlink",
                 "showRemoveCMOFieldsFlag")
             .containsExactly(orderDocument,
-                "Case management order",
+                "Sealed case management order",
                 hearingToBeUnlinked.toLabel(),
                 YES.getValue());
     }
@@ -280,7 +280,7 @@ class CMORemovalActionTest {
                 "hearingToUnlink",
                 "showRemoveCMOFieldsFlag")
             .containsExactly(orderDocument,
-                "Case management order",
+                "Sealed case management order",
                 hearingToBeUnlinked.toLabel(),
                 YES.getValue());
     }

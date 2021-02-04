@@ -598,6 +598,13 @@ public class CaseData {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
     }
 
+    public Optional<Element<HearingOrder>> getDraftUploadedCMOWithId(UUID orderId) {
+        return getDraftUploadedCMOs().stream()
+            .filter(draftCmoElement -> orderId.equals(draftCmoElement.getId()))
+            .findFirst();
+    }
+
+    @JsonIgnore
     public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
         if (hearingOrdersBundlesDrafts != null) {
             return hearingOrdersBundlesDrafts.stream()
@@ -608,6 +615,14 @@ public class CaseData {
         }
 
         return new ArrayList<>();
+    }
+
+    public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
+        return hearingOrdersBundlesDrafts.stream()
+            .filter(hearingOrdersBundleElement
+                -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
+                .anyMatch(o -> o.getId().equals(orderId)))
+            .findFirst();
     }
 
     @JsonIgnore

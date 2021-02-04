@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
@@ -28,10 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -186,7 +189,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldRemoveCaseManagementOrderAndRemoveHearingAssociation() {
+    void shouldRemoveSealedCaseManagementOrderAndRemoveHearingAssociation() {
         UUID removedOrderId = UUID.randomUUID();
 
         Element<HearingOrder> caseManagementOrder1 = element(removedOrderId, HearingOrder.builder()
@@ -207,7 +210,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .sealedCMOs(caseManagementOrders)
             .hearingDetails(hearingBookings)
             .removableOrderList(DynamicList.builder()
-                .value(buildListElement(removedOrderId, "Case management order - 15 June 2020"))
+                .value(buildListElement(removedOrderId, "Sealed case management order - 15 June 2020"))
                 .build())
             .build();
 
@@ -256,6 +259,50 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(responseData.getHiddenStandardDirectionOrders()).isEqualTo(List.of(element(newSDOId, expectedSDO)));
         assertThat(responseData.getState()).isEqualTo(GATEKEEPING);
         assertNull(responseData.getNoticeOfProceedingsBundle());
+    }
+
+    @Test
+    void shouldRemoveDraftCaseManagementOrderAndRemoveHearingAssociation() {
+        UUID removedOrderId = UUID.randomUUID();
+        UUID additionalOrderId = UUID.randomUUID();
+        UUID hearingOrderBundleId = UUID.randomUUID();
+
+        Element<HearingOrder> caseManagementOrder1 = element(removedOrderId, HearingOrder.builder()
+            .status(DRAFT)
+            .type(HearingOrderType.DRAFT_CMO)
+            .build());
+
+        List<Element<HearingOrder>> caseManagementOrders = newArrayList(
+            caseManagementOrder1,
+            element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(HearingBooking.builder()
+                .caseManagementOrderId(removedOrderId)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(newArrayList(
+                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
+            ))
+            .hearingDetails(hearingBookings)
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseData = extractCaseData(response);
+        HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
+
+        assertThat(responseData.getHearingOrdersBundlesDrafts()).isEqualTo(newArrayList(
+            element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(newArrayList(
+                element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build())
+            )).build())
+        ));
+
+        assertNull(unlinkedHearing.getCaseManagementOrderId());
     }
 
     private CaseData buildCaseData(Element<GeneratedOrder> order) {
