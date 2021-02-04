@@ -37,6 +37,14 @@ public class ValidateEmailService {
         return "";
     }
 
+    public String validate(String email, String errorMessage) {
+        if (!isValidInternetAddress(email)) {
+            return errorMessage;
+        }
+
+        return "";
+    }
+
     public boolean isValidInternetAddress(String email) {
         InternetAddress internetAddress = new InternetAddress();
         internetAddress.setAddress(email);

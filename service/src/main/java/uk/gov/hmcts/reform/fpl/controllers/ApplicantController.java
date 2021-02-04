@@ -60,24 +60,11 @@ public class ApplicantController extends CallbackController {
         var updatedApplicants = pbaNumberService.update(caseData.getApplicants());
         data.put(APPLICANTS_PROPERTY, updatedApplicants);
 
-        List<String> applicantEmails = caseData.getApplicants().stream()
-            .map(Element::getValue)
-            .map(Applicant::getParty)
-            .map(ApplicantParty::getEmail)
-            .map(EmailAddress::getEmail)
-            .filter(StringUtils::isNotEmpty)
-            .collect(Collectors.toList());
-
+        List<String> applicantEmails = getApplicantEmails(caseData.getApplicants());
         List<String> errors = validateEmailService.validate(applicantEmails, "Applicant");
 
         String solicitorEmail = caseData.getSolicitor().getEmail();
-
-        if(!isBlank(solicitorEmail)) {
-            String error = validateEmailService.validate(solicitorEmail);
-            if(!error.isBlank()) {
-                errors.add(error);
-            }
-        }
+        validateSolicitorEmail(solicitorEmail, errors);
 
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
@@ -94,5 +81,26 @@ public class ApplicantController extends CallbackController {
         caseDetails.getData().put(APPLICANTS_PROPERTY, applicantService.addHiddenValues(caseData));
 
         return respond(caseDetails);
+    }
+
+    private List<String> getApplicantEmails(List<Element<Applicant>> applicants) {
+       return applicants.stream()
+            .map(Element::getValue)
+            .map(Applicant::getParty)
+            .map(ApplicantParty::getEmail)
+            .map(EmailAddress::getEmail)
+            .filter(StringUtils::isNotEmpty)
+            .collect(Collectors.toList());
+    }
+
+    private void validateSolicitorEmail(String solicitorEmail, List<String> errors) {
+        if(!isBlank(solicitorEmail)) {
+            String error = validateEmailService.validate(solicitorEmail,
+                "Solicitor: Enter an email address in the correct format,"
+                    + " for example name@example.com");
+            if (!error.isBlank()) {
+                errors.add(error);
+            }
+        }
     }
 }
