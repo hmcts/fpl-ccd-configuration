@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
@@ -19,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -48,12 +45,6 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
 
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;
-
-    @MockBean
-    private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Test
     void notifyLA() {
@@ -114,29 +105,7 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
                 .line("You can review the orders by:")
                 .list("signing into http://fake-url/cases/case-details/100#Orders")
                 .list("using these links: \n\n* http://fake-url/54321\n* http://fake-url/99999")
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
-                .line()
+                .lines(23)
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, "

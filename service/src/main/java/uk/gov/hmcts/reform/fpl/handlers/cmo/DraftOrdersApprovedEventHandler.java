@@ -90,8 +90,6 @@ public class DraftOrdersApprovedEventHandler {
             .map(Element::getValue)
             .orElse(null);
 
-        List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
-        List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
         NotifyData content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, EMAIL);
 
         final String cafcassEmail = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
@@ -103,6 +101,8 @@ public class DraftOrdersApprovedEventHandler {
             caseData.getId().toString()
         );
 
+        List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+
         if (!emailRepresentatives.isEmpty()) {
             representativeNotificationService.sendNotificationToRepresentatives(
                 caseData.getId(),
@@ -111,6 +111,8 @@ public class DraftOrdersApprovedEventHandler {
                 JUDGE_APPROVES_DRAFT_ORDERS
             );
         }
+
+        List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
 
         if (!digitalRepresentatives.isEmpty()) {
             content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, DIGITAL_SERVICE);

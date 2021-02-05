@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.lang.System.lineSeparator;
@@ -32,29 +32,37 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
                                                              List<HearingOrder> orders,
                                                              RepresentativeServingPreferences servingPreference) {
 
-        ApprovedOrdersTemplate.ApprovedOrdersTemplateBuilder templateBuilder = ApprovedOrdersTemplate.builder();
-
-        List<Map<String, Object>> attachedDocuments = new ArrayList<>();
         if (servingPreference.equals(EMAIL)) {
-            for (HearingOrder order : orders) {
-                attachedDocuments.add(linkToAttachedDocument(order.getOrder()));
-            }
-
-            templateBuilder
-                .digitalPreference("No")
-                .caseUrl("")
-                .documentLinks(List.of())
-                .attachedDocuments(attachedDocuments);
-
-        } else {
-            templateBuilder
-                .digitalPreference("Yes")
-                .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-                .documentLinks(buildDocumentCaseLinks(orders));
+            return buildTemplateForEmailPreference(caseData, hearing, orders);
         }
 
-        return templateBuilder
+        return buildTemplateForDigitalPreference(caseData, hearing, orders);
+    }
+
+    private ApprovedOrdersTemplate buildTemplateForDigitalPreference(CaseData caseData,
+                                                                     HearingBooking hearing,
+                                                                     List<HearingOrder> orders) {
+        return ApprovedOrdersTemplate.builder()
+            .digitalPreference("Yes")
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
+            .documentLinks(buildDocumentCaseLinks(orders))
             .respondentLastName(getFirstRespondentLastName(caseData))
+            .subjectLineWithHearingDate(
+                subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
+            .orderList(formatOrders(orders))
+            .build();
+    }
+
+    private ApprovedOrdersTemplate buildTemplateForEmailPreference(CaseData caseData,
+                                                                   HearingBooking hearing,
+                                                                   List<HearingOrder> orders) {
+        return ApprovedOrdersTemplate.builder()
+            .digitalPreference("No")
+            .caseUrl("")
+            .documentLinks(List.of())
+            .attachedDocuments(orders.stream()
+                .map(order -> linkToAttachedDocument(order.getOrder()))
+                .collect(Collectors.toList())).respondentLastName(getFirstRespondentLastName(caseData))
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))

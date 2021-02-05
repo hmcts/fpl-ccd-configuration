@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cmo.ApproveDraftOrdersService;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrdersEventNotificationBuilder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.transien
 public class ApproveDraftOrdersController extends CallbackController {
 
     private final ApproveDraftOrdersService approveDraftOrdersService;
+    private final DraftOrdersEventNotificationBuilder draftOrdersEventNotificationBuilder;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -107,8 +109,8 @@ public class ApproveDraftOrdersController extends CallbackController {
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
-        approveDraftOrdersService.buildEventsToPublish(caseData).forEach(this::publishEvent);
-
         publishEvent(new AfterSubmissionCaseDataUpdated(caseData, getCaseDataBefore(callbackRequest)));
+
+        draftOrdersEventNotificationBuilder.buildEventsToPublish(caseData).forEach(this::publishEvent);
     }
 }

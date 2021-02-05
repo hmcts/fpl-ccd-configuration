@@ -37,9 +37,10 @@ class ApproveOrdersTemplateSerializerTest extends SerializerTest {
 
         Map<String, Object> templateMap = mapper.convertValue(template, new TypeReference<>() {});
 
-        assertThat(templateMap).doesNotContainKey("attachedDocuments");
-        assertThat(templateMap).hasFieldOrPropertyWithValue("attachedDocument1", map1);
-        assertThat(templateMap).hasFieldOrPropertyWithValue("attachedDocument2", map2);
-        assertThat(templateMap).hasFieldOrPropertyWithValue("attachedDocument3", "");
+        assertThat(templateMap)
+            .doesNotContainKey("attachedDocuments")
+            .hasFieldOrPropertyWithValue("attachedDocument1", map1)
+            .hasFieldOrPropertyWithValue("attachedDocument2", map2)
+            .hasFieldOrPropertyWithValue("attachedDocument3", "");
     }
 }

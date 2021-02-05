@@ -4,14 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderRejectedEvent;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersRejected;
-import uk.gov.hmcts.reform.fpl.events.cmo.ReviewCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -30,13 +24,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -240,75 +231,6 @@ public class ApproveDraftOrdersService {
         updateHearingDraftOrdersBundle(caseData, selectedOrdersBundle);
         data.put("orderCollection", orderCollection);
         data.put("hearingOrdersBundlesDrafts", caseData.getHearingOrdersBundlesDrafts());
-    }
-
-    public List<ReviewCMOEvent> buildEventsToPublish(CaseData caseData) {
-        List<ReviewCMOEvent> eventsToPublish = new ArrayList<>();
-        List<Element<HearingOrder>> orders = caseData.getOrdersToBeSent();
-
-        if (orders == null || orders.isEmpty()) {
-            return emptyList();
-        }
-
-        Optional<Element<HearingOrder>> optionalCmo = orders.stream()
-            .filter(order -> order.getValue().getType().isCmo()).findFirst();
-
-        List<Element<HearingOrder>> c21s = orders.stream()
-            .filter(order -> !order.getValue().getType().isCmo())
-            .collect(toList());
-
-        //If CMO is the only approved/rejected order, then publish specific event for CMO (and generic for others)
-        if (optionalCmo.isPresent()) {
-            HearingOrder cmo = optionalCmo.get().getValue();
-            if (cmo.getStatus().equals(APPROVED) && noC21sHaveStatus(c21s, APPROVED)) {
-
-                eventsToPublish.add(new CaseManagementOrderIssuedEvent(caseData, cmo));
-
-                if (anyC21sHaveStatus(c21s, RETURNED)) {
-                    eventsToPublish.add(new DraftOrdersRejected(caseData, unwrapElements(c21s)));
-                }
-
-                return eventsToPublish;
-            } else if (cmo.getStatus().equals(RETURNED) && noC21sHaveStatus(c21s, RETURNED)) {
-
-                eventsToPublish.add(new CaseManagementOrderRejectedEvent(caseData, cmo));
-
-                if (anyC21sHaveStatus(c21s, APPROVED)) {
-                    eventsToPublish.add(new DraftOrdersApproved(caseData, unwrapElements(c21s)));
-                }
-
-                return eventsToPublish;
-            }
-        }
-
-        List<HearingOrder> approvedOrders = new ArrayList<>();
-        List<HearingOrder> rejectedOrders = new ArrayList<>();
-
-        unwrapElements(orders).forEach(order -> {
-            if (order.getStatus().equals(APPROVED)) {
-                approvedOrders.add(order);
-            } else if (order.getStatus().equals(RETURNED)) {
-                rejectedOrders.add(order);
-            }
-        });
-
-        if (!approvedOrders.isEmpty()) {
-            eventsToPublish.add(new DraftOrdersApproved(caseData, approvedOrders));
-        }
-
-        if (!rejectedOrders.isEmpty()) {
-            eventsToPublish.add(new DraftOrdersRejected(caseData, rejectedOrders));
-        }
-
-        return eventsToPublish;
-    }
-
-    private boolean anyC21sHaveStatus(List<Element<HearingOrder>> c21s, CMOStatus status) {
-        return c21s.stream().anyMatch(c21 -> c21.getValue().getStatus().equals(status));
-    }
-
-    private boolean noC21sHaveStatus(List<Element<HearingOrder>> c21s, CMOStatus status) {
-        return c21s.stream().noneMatch(c21 -> c21.getValue().getStatus().equals(status));
     }
 
     private void updateHearingDraftOrdersBundle(CaseData caseData, Element<HearingOrdersBundle> selectedOrdersBundle) {
