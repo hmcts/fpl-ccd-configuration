@@ -42,6 +42,7 @@ class DraftCMORemovalActionTest {
     private static final UUID TO_REMOVE_ORDER_ID = UUID.randomUUID();
     private static final UUID CASE_MANAGEMENT_ORDER_ID = UUID.randomUUID();
     private static final UUID ANOTHER_CASE_MANAGEMENT_ORDER_ID = UUID.randomUUID();
+    private static final UUID ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID = UUID.randomUUID();
     private static final UUID HEARING_ID = UUID.randomUUID();
     private static final UUID ANOTHER_HEARING_ID = UUID.randomUUID();
     private static final UUID HEARING_ORDER_BUNDLE_ID_ONE = UUID.randomUUID();
@@ -193,6 +194,7 @@ class DraftCMORemovalActionTest {
                         element(TO_REMOVE_ORDER_ID, cmoToRemove)
                     )).build())
             ))
+            .draftUploadedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmoToRemove)))
             .hearingDetails(List.of(
                 element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID, differentStartDate)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
@@ -209,10 +211,6 @@ class DraftCMORemovalActionTest {
             "hearingDetails", List.of(
                 element(HEARING_ID, hearing(null, differentStartDate)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
-            ),
-            "hearingOrdersBundlesDrafts", List.of(
-                element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
-                    .orders(newArrayList()).build())
             )
         ));
     }
@@ -225,13 +223,17 @@ class DraftCMORemovalActionTest {
             .hearingOrdersBundlesDrafts(List.of(
                 element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
                     .orders(newArrayList(
-                        element(TO_REMOVE_ORDER_ID, draftCMO)
+                        element(TO_REMOVE_ORDER_ID, draftCMO),
+                        element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)
                     )).build()),
                 element(HEARING_ORDER_BUNDLE_ID_TWO, HearingOrdersBundle.builder()
                     .orders(newArrayList(
                         element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, draftCMO)
                     )).build())
             ))
+            .draftUploadedCMOs(newArrayList(
+                element(TO_REMOVE_ORDER_ID, draftCMO),
+                element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)))
             .hearingDetails(newArrayList(
                 element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
@@ -251,15 +253,16 @@ class DraftCMORemovalActionTest {
             ),
             "hearingOrdersBundlesDrafts", List.of(
                 element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
-                    .orders(newArrayList()).build()),
+                    .orders(newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))).build()),
                 element(HEARING_ORDER_BUNDLE_ID_TWO, HearingOrdersBundle.builder()
                     .orders(newArrayList(
                         element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, draftCMO)
                     )).build())
-            )
+            ),
+            "draftUploadedCMOs", newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))
         );
 
-        assertThat(caseDetailsMap).isEqualTo(expectedData);
+        assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 
     @Test
@@ -287,12 +290,8 @@ class DraftCMORemovalActionTest {
         assertThat(caseDetailsMap).isEqualTo(Map.of(
             "hearingDetails", List.of(
                 element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
-                element(ANOTHER_HEARING_ID, hearing(null))),
-            "hearingOrdersBundlesDrafts", List.of(
-                element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
-                    .orders(newArrayList()).build())
-            )
-        ));
+                element(ANOTHER_HEARING_ID, hearing(null))))
+        );
     }
 
     @Test

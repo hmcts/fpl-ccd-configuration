@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,18 +63,34 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         Element<HearingOrder> cmoElement = element(removedOrderId, caseManagementOrder);
 
         selectedHearingOrderBundle.getValue().getOrders().remove(cmoElement);
+        caseData.getDraftUploadedCMOs().remove(cmoElement);
 
-        List<Element<HearingOrdersBundle>> updatedHearingOrderBundle = hearingOrdersBundlesDrafts.stream()
-            .map(hearingOrdersBundleElement -> {
-                if (selectedHearingOrderBundle.getId().equals(hearingOrdersBundleElement.getId())) {
-                    return selectedHearingOrderBundle;
-                }
+        updateHearingOrderBundlesDrafts(data, hearingOrdersBundlesDrafts, selectedHearingOrderBundle);
 
-                return hearingOrdersBundleElement;
-            }).collect(Collectors.toList());
+        data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
+        data.putIfNotEmpty("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+    }
+
+    private void updateHearingOrderBundlesDrafts(CaseDetailsMap data,
+                                                 List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts,
+                                                 Element<HearingOrdersBundle> selectedHearingOrderBundle) {
+        List<Element<HearingOrdersBundle>> updatedHearingOrderBundle;
+
+        if (selectedHearingOrderBundle.getValue().getOrders().isEmpty()) {
+            updatedHearingOrderBundle = new ArrayList<>(hearingOrdersBundlesDrafts);
+            updatedHearingOrderBundle.removeIf(bundle -> bundle.getId().equals(selectedHearingOrderBundle.getId()));
+        } else {
+            updatedHearingOrderBundle = hearingOrdersBundlesDrafts.stream()
+                .map(hearingOrdersBundleElement -> {
+                    if (selectedHearingOrderBundle.getId().equals(hearingOrdersBundleElement.getId())) {
+                        return selectedHearingOrderBundle;
+                    }
+
+                    return hearingOrdersBundleElement;
+                }).collect(Collectors.toList());
+        }
 
         data.putIfNotEmpty("hearingOrdersBundlesDrafts", updatedHearingOrderBundle);
-        data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
     }
 
     private List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,

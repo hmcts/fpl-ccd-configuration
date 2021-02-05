@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
@@ -59,6 +60,7 @@ public class HearingOrdersBundle {
         return orders;
     }
 
+    @JsonIgnore
     public List<Element<HearingOrder>> getCaseManagementOrders() {
         if (isNotEmpty(orders)) {
             return orders.stream()

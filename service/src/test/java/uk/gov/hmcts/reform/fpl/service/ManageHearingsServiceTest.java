@@ -1099,7 +1099,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getDraftUploadedCMOs()).containsExactly(
                 element(linkedCMOId, HearingOrder.builder().hearing(vacatedHearing.getValue().toLabel())
-                .build()));
+                    .build()));
         }
 
         @Test
@@ -1155,8 +1155,8 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
                 element(HearingOrderBundleId, HearingOrdersBundle.builder()
-                        .hearingName(vacatedHearing.getValue().toLabel())
-                        .orders(newArrayList(linkedDraftCMO))
+                    .hearingName(vacatedHearing.getValue().toLabel())
+                    .orders(newArrayList(linkedDraftCMO))
                     .build()));
         }
 
@@ -1192,6 +1192,33 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
             assertThat(vacatedHearingBundle.getValue().getHearingName()).isEqualTo(updatedDocumentBundleName);
+        }
+
+        @Test
+        void shouldAdjournHearingIsAdjournedToBeRelisted() {
+            HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            Element<HearingBooking> hearingElement1 = element(hearing(time.now().plusDays(1), time.now().plusDays(2)));
+            Element<HearingBooking> hearingElement2 = element(hearing(time.now().plusDays(2), time.now().plusDays(3)));
+
+            Element<HearingBooking> adjournedHearing = element(hearingElement1.getId(),
+                hearingElement1.getValue().toBuilder()
+                    .status(ADJOURNED_TO_BE_RE_LISTED)
+                    .cancellationReason(adjournmentReason.getReason())
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingElement1, hearingElement2))
+                .hearingReListOption(RE_LIST_LATER)
+                .adjournmentReason(adjournmentReason)
+                .build();
+
+            service.adjournHearing(caseData, hearingElement1.getId());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(hearingElement2);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
         }
     }
 
