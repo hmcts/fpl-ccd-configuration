@@ -23,9 +23,8 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenGatekeeperEmailsAreInValidAndCaseInGatekeeping() {
+    void shouldReturnErrorsWhenGatekeeperEmailsAreInValid() {
         CaseData caseData = CaseData.builder()
-            .state(State.GATEKEEPING)
             .gatekeeperEmails(List.of(
                 element(EmailAddress.builder().email("email@example.com").build()),
                 element(EmailAddress.builder().email("<John Doe> johndoe@email.com").build()),
@@ -41,9 +40,8 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotReturnErrorsWhenGatekeeperEmailsAreValidAndCaseInGatekeeping() {
+    void shouldNotReturnErrorsWhenGatekeeperEmailsAreValid() {
         CaseData caseData = CaseData.builder()
-            .state(State.GATEKEEPING)
             .gatekeeperEmails(List.of(
                 element(EmailAddress.builder().email("email@example.com").build()),
                 element(EmailAddress.builder().email("email@example.name").build())))
@@ -55,7 +53,7 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenGatekeeperEmailIsInValidAndCaseInSubmitted() {
+    void shouldReturnErrorWhenSingleGatekeeperEmailIsInValid() {
         CaseData caseData = CaseData.builder()
             .state(State.SUBMITTED)
             .gatekeeperEmails(List.of(
@@ -65,19 +63,18 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
         assertThat(callbackResponse.getErrors()).contains(
-            "Gatekeeper 1: Enter an email address in the correct format, for example name@example.com");
+            "Enter an email address in the correct format, for example name@example.com");
     }
 
     @Test
-    void shouldNotReturnAnErrorWhenGatekeeperEmailIsValidAndCaseInSubmitted() {
+    void shouldNotReturnAnErrorWhenSingleGatekeeperEmailIsValid() {
         CaseData caseData = CaseData.builder()
-            .state(State.GATEKEEPING)
             .gatekeeperEmails(List.of(
                 element(EmailAddress.builder().email("email@example.name").build())))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getErrors()).isNull();
     }
 }
