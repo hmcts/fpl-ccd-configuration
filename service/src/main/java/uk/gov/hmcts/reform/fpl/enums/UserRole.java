@@ -12,19 +12,23 @@ public enum UserRole {
     JUDICIARY("caseworker-publiclaw-judiciary"),
     HMCTS_SUPERUSER("caseworker-publiclaw-superuser");
 
-    private final String role;
+    private final String roleName;
 
-    UserRole(String role) {
-        this.role = role;
+    UserRole(String roleName) {
+        this.roleName = roleName;
     }
 
-    public List<String> getRoles() {
-        return ImmutableList.of("caseworker", "caseworker-publiclaw", this.role);
+    public List<String> getRoleNames() {
+        return ImmutableList.of("caseworker", "caseworker-publiclaw", this.roleName);
     }
 
     public static boolean isHmctsUser(String userRole) {
         List<UserRole> hmctsRoles = ImmutableList.of(HMCTS_ADMIN, GATEKEEPER, JUDICIARY, HMCTS_SUPERUSER);
 
-        return hmctsRoles.stream().anyMatch(user -> user.role.equals(userRole));
+        return hmctsRoles.stream().anyMatch(user -> user.roleName.equals(userRole));
+    }
+
+    public String getRoleName() {
+        return roleName;
     }
 }

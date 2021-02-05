@@ -28,7 +28,7 @@
     "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 3,
-    "EventElementLabel": "About a request from",
+    "EventElementLabel": "Message subject",
     "DisplayContext": "READONLY",
     "FieldShowCondition": "recipient!=\"ALWAYS_SHOW\""
   },

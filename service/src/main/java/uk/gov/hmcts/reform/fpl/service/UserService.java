@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -14,5 +15,9 @@ public class UserService {
 
     public String getUserEmail() {
         return idamClient.getUserDetails(requestData.authorisation()).getEmail();
+    }
+
+    public boolean hasUserRole(UserRole userRole) {
+        return requestData.userRoles().contains(userRole.getRoleName());
     }
 }
