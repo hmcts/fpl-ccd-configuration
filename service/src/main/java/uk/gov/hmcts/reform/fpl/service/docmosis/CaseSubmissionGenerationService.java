@@ -62,6 +62,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
@@ -211,7 +212,7 @@ public class CaseSubmissionGenerationService
     private String getDirectionsNeeded(final Orders orders) {
         StringBuilder stringBuilder = new StringBuilder();
         if (hasDirections(orders)) {
-            if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
+            if (isNotEmpty(orders.getEmergencyProtectionOrderDirections())) {
                 stringBuilder.append(orders.getEmergencyProtectionOrderDirections().stream()
                     .map(EmergencyProtectionOrderDirectionsType::getLabel)
                     .collect(joining(NEW_LINE)));
