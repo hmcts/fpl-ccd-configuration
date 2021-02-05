@@ -5,9 +5,20 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "reviewCMOLink",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "draftUploadedCMOs!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 5,
     "CaseFieldID": "draftUploadedCMOs",
-    "TabFieldDisplayOrder": 3,
+    "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"*\"",
     "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
   },
@@ -17,8 +28,8 @@
     "Channel": "CaseWorker",
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "hearingOrdersBundlesDrafts",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 4
   }
 ]

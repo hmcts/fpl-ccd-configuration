@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -30,6 +32,11 @@ import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
@@ -1151,6 +1158,45 @@ class CaseDataTest {
             List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
 
             assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnHearingOrdersBundlesForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(AGREED_CMO).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            Element<HearingOrdersBundle> bundle2 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build()),
+                        element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1, bundle2))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval())
+                .extracting(Element::getId)
+                .containsExactly(bundle1.getId(), bundle2.getId());
+        }
+
+        @Test
+        void shouldReturnEmptyWhenNoHearingOrdersBundlesExistForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval()).isEmpty();
         }
 
         private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
