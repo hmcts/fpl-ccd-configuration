@@ -8,13 +8,12 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
-import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -33,18 +32,20 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_REJECTS_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.JUDGE_REQUESTED_CHANGES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.RETURNED;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -65,7 +66,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
-    private static final DocumentReference order = testDocumentReference();
+    private static final DocumentReference orderDocument = testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
 
@@ -85,7 +86,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     @Test
     void shouldNotSendNotificationsIfNoCMOsReadyForApproval() {
         CaseDetails caseDetails = CaseDetails.builder().data(
-            Map.of("draftUploadedCMOs", List.of(element(buildCMO(RETURNED))))).build();
+            Map.of("ordersToBeSent", List.of())).build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
@@ -98,17 +99,13 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
-        given(documentDownloadService.downloadDocument(order.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocument.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        HearingOrder caseManagementOrder = buildCMO(APPROVED);
+        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED);
 
-        CaseDetails caseDetails = buildCaseDetailsForApprovedCMO(caseManagementOrder);
+        CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
 
-        CaseDetails caseDetailsBefore = CaseDetails.builder().data(
-            Map.of("draftUploadedCMOs", List.of(element(buildCMO(SEND_TO_JUDGE))))).build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore).build();
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         postSubmittedEvent(callbackRequest);
 
@@ -159,16 +156,77 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
+    void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders() {
+        given(documentDownloadService.downloadDocument(orderDocument.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+
+        HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED);
+        HearingOrder c21 = buildOrder(C21, APPROVED);
+
+        CaseDetails caseDetails = buildCaseDetails(cmo, c21);
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> {
+            verify(notificationClient).sendEmail(
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
+            verify(notificationClient).sendEmail(
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(CAFCASS_EMAIL),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
+            verify(notificationClient).sendEmail(
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq("robert@example.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
+            verify(notificationClient).sendEmail(
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq("charlie@example.com"),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
+            verify(notificationClient).sendEmail(
+                eq(JUDGE_APPROVES_DRAFT_ORDERS),
+                eq(ADMIN_EMAIL),
+                anyMap(),
+                eq(NOTIFICATION_REFERENCE)
+            );
+
+            verify(coreCaseDataService, times(2)).triggerEvent(JURISDICTION,
+                CASE_TYPE,
+                CASE_ID,
+                SEND_DOCUMENT_EVENT,
+                Map.of("documentToBeSent", cmo.getOrder())
+            );
+
+            verify(coreCaseDataService, times(2)).triggerEvent(JURISDICTION,
+                CASE_TYPE,
+                CASE_ID,
+                SEND_DOCUMENT_EVENT,
+                Map.of("documentToBeSent", c21.getOrder()));
+
+            verifyNoMoreInteractions(notificationClient);
+        });
+    }
+
+    @Test
     void shouldSendCMORejectedNotificationIfJudgeRequestedChanges() {
-        CaseDetails caseDetails = buildCaseDetailsForRejectedCMO();
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED));
         caseDetails.setId(CASE_ID);
 
-        CaseDetails caseDetailsBefore = CaseDetails.builder().data(
-            Map.of("draftUploadedCMOs", List.of(element(buildCMO(SEND_TO_JUDGE))))).build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore).build();
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         postSubmittedEvent(callbackRequest);
 
@@ -182,15 +240,32 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         verifyNoMoreInteractions(notificationClient);
     }
 
-    private CaseDetails buildCaseDetailsForApprovedCMO(HearingOrder... caseManagementOrders) {
+    @Test
+    void shouldSendDraftOrdersRejectedNotificationIfJudgeRequestedChangesOnMultipleOrders() {
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED), buildOrder(C21, RETURNED));
+        caseDetails.setId(CASE_ID);
+
+        CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(JUDGE_REJECTS_DRAFT_ORDERS),
+            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+
+        verifyNoMoreInteractions(notificationClient);
+    }
+
+    private CaseDetails buildCaseDetails(HearingOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
-            .sealedCMOs(wrapElements(caseManagementOrders))
-            .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
+            .ordersToBeSent(wrapElements(caseManagementOrders))
             .hearingDetails(List.of(element(hearing(cmoId))))
             .build());
 
@@ -200,26 +275,11 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         return caseDetails;
     }
 
-    private CaseDetails buildCaseDetailsForRejectedCMO() {
-        UUID cmoId = UUID.randomUUID();
-
-        return asCaseDetails(CaseData.builder()
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .draftUploadedCMOs(List.of(element(cmoId, buildCMO(RETURNED))))
-            .reviewCMODecision(buildReviewDecision(JUDGE_REQUESTED_CHANGES))
-            .build());
-    }
-
-    private static HearingOrder buildCMO(CMOStatus status) {
+    private HearingOrder buildOrder(HearingOrderType type, CMOStatus status) {
         return HearingOrder.builder()
-            .hearing("Test hearing 25th December 2020")
-            .order(order)
-            .status(status).build();
-    }
-
-    private static ReviewDecision buildReviewDecision(CMOReviewOutcome judgeDecision) {
-        return ReviewDecision.builder()
-            .decision(judgeDecision)
+            .type(type)
+            .status(status)
+            .order(orderDocument)
             .build();
     }
 
