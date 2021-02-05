@@ -247,37 +247,44 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LBC",
+    "ListElement": "Luton Borough Council",
+    "DisplayOrder": 36
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "MWC",
     "ListElement": "Medway Council",
-    "DisplayOrder": 36
+    "DisplayOrder": 37
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MTC",
     "ListElement": "Merthyr Tydfil CBC",
-    "DisplayOrder": 37
+    "DisplayOrder": 38
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MDB",
     "ListElement": "Middlesbrough Council",
-    "DisplayOrder": 38
+    "DisplayOrder": 39
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MKC",
     "ListElement": "Milton Keynes Council",
-    "DisplayOrder": 39
+    "DisplayOrder": 40
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NCC",
     "ListElement": "Newcastle City Council",
-    "DisplayOrder": 40
+    "DisplayOrder": 41
   },
   {
     "LiveFrom": "01/01/2017",

@@ -29,7 +29,7 @@ public class C2UploadedEventHandler {
     @EventListener
     public void notifyAdmin(final C2UploadedEvent event) {
         List<String> roles = idamClient.getUserInfo(requestData.authorisation()).getRoles();
-        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
+        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
             CaseData caseData = event.getCaseData();
 
             NotifyData notifyData = c2UploadedEmailContentProvider

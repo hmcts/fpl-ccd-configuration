@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -81,6 +83,14 @@ public class ApplicantController extends CallbackController {
         caseDetails.getData().put(APPLICANTS_PROPERTY, applicantService.addHiddenValues(caseData));
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        publishEvent(new CaseDataChanged(getCaseData(callbackRequest)));
+        publishEvent(
+            new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest))
+        );
     }
 
     private List<String> getApplicantEmails(List<Element<Applicant>> applicants) {

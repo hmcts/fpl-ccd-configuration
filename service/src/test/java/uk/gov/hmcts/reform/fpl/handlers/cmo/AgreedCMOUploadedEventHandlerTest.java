@@ -74,16 +74,17 @@ class AgreedCMOUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationForAdmin() {
+    void shouldSendNotificationForAdminWhenTemporaryJudgeAssigned() {
         CaseData caseData = caseData();
-        HearingBooking hearing = buildHearing(allocatedJudge);
-        CMOReadyToSealTemplate template = expectedJudgeTemplate(allocatedJudge.getJudgeName());
+        HearingBooking hearing = buildHearing(tempJudge);
+
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(hearing.getJudgeAndLegalAdvisor().getJudgeName());
 
         mockContentProvider(
             caseData.getAllRespondents(),
             caseData.getFamilyManCaseNumber(),
             hearing,
-            caseData.getAllocatedJudge(),
+            hearing.getJudgeAndLegalAdvisor(),
             template
         );
 
@@ -99,7 +100,37 @@ class AgreedCMOUploadedEventHandlerTest {
     }
 
     @Test
-    void shouldSendNotificationToTemporaryHearingJudgeWhenTemporaryJudgeHasEmai() {
+    void shouldSendNotificationForAdminWhenNoTemporaryJudgeAssigned() {
+        CaseData caseData = caseData();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(HearingType.CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(2020, 2, 1, 0, 0))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+            .build();
+        CMOReadyToSealTemplate template = expectedJudgeTemplate(allocatedJudge.getJudgeName());
+
+        mockContentProvider(
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber(),
+            hearing,
+            allocatedJudge,
+            template
+        );
+
+        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
+        eventHandler.sendNotificationForAdmin(event);
+
+        verify(notificationService).sendEmail(
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+            HMCTS_ADMIN_EMAIL,
+            template,
+            caseData.getId().toString()
+        );
+    }
+
+    @Test
+    void shouldSendNotificationToTemporaryHearingJudgeWhenTemporaryJudgeHasEmail() {
         CaseData caseData = caseData();
         HearingBooking hearing = buildHearing(tempJudge);
         CMOReadyToSealTemplate template = expectedJudgeTemplate(tempJudge.getJudgeName());

@@ -74,6 +74,7 @@ module.exports = {
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
+  ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
   definition: {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
@@ -100,7 +101,7 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
-    uploadCMO: 'Upload CMO',
+    uploadCMO: 'Upload draft orders',
     reviewAgreedCmo: 'Review agreed CMO',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',

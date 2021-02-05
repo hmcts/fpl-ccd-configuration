@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +22,7 @@ import java.util.Optional;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 public abstract class AbstractControllerTest {
@@ -49,8 +49,9 @@ public abstract class AbstractControllerTest {
         this.eventName = eventName;
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(byte[] data, int expectedStatus) {
-        return postEvent(String.format("/callback/%s/about-to-start", eventName), data, expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(byte[] data, int expectedStatus,
+                                                                         String... userRoles) {
+        return postEvent(String.format("/callback/%s/about-to-start", eventName), data, expectedStatus, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(byte[] data) {
@@ -58,16 +59,17 @@ public abstract class AbstractControllerTest {
     }
 
     protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CallbackRequest callbackRequest,
-                                                                         int expectedStatus) {
-        return postAboutToStartEvent(toBytes(callbackRequest), expectedStatus);
+                                                                         int expectedStatus, String... userRoles) {
+        return postAboutToStartEvent(toBytes(callbackRequest), expectedStatus, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CallbackRequest callbackRequest) {
         return postAboutToStartEvent(callbackRequest, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseDetails caseDetails, int expectedStatus) {
-        return postAboutToStartEvent(toCallbackRequest(caseDetails), expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseDetails caseDetails, int expectedStatus,
+                                                                         String... userRoles) {
+        return postAboutToStartEvent(toCallbackRequest(caseDetails), expectedStatus, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseDetails caseDetails) {
@@ -82,8 +84,8 @@ public abstract class AbstractControllerTest {
         return postAboutToStartEvent(filename, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseData caseData) {
-        return postAboutToStartEvent(asCaseDetails(caseData), SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseData caseData, String... userRoles) {
+        return postAboutToStartEvent(asCaseDetails(caseData), SC_OK, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus) {
@@ -221,6 +223,10 @@ public abstract class AbstractControllerTest {
         return postSubmittedEvent(caseDetails, SC_OK);
     }
 
+    protected SubmittedCallbackResponse postSubmittedEvent(CaseData caseData) {
+        return postSubmittedEvent(asCaseDetails(caseData), SC_OK);
+    }
+
     protected SubmittedCallbackResponse postSubmittedEvent(String filename, int expectedStatus) {
         return postSubmittedEvent(readBytes(filename), expectedStatus);
     }
@@ -237,7 +243,7 @@ public abstract class AbstractControllerTest {
         return CaseDetails.builder()
             .id(caseData.getId())
             .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
-            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .data(mapper.convertValue(caseData, MAP_TYPE))
             .build();
     }
 
@@ -256,16 +262,18 @@ public abstract class AbstractControllerTest {
         return time.now().toLocalDate();
     }
 
-    private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus) {
-        return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class);
+    private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus,
+                                                           String... userRoles) {
+        return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class, userRoles);
     }
 
-    private <T> T postEvent(String path, byte[] data, int expectedStatus, Class<T> responseType) {
+    private <T> T postEvent(String path, byte[] data, int expectedStatus, Class<T> responseType, String... userRoles) {
         try {
             MvcResult response = mockMvc
                 .perform(post(path)
                     .header("authorization", USER_AUTH_TOKEN)
                     .header("user-id", USER_ID)
+                    .header("user-roles", String.join(",", userRoles))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(data))
                 .andExpect(status().is(expectedStatus))

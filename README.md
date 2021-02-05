@@ -144,6 +144,18 @@ kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
 ```
 then connect to data-store db on port 5020
 
+
+## Connecting to local open idm database:
+
+```$bash
+host: localhost
+port: 5051
+user: openidm
+password: openidm
+database: openidm
+```
+User details are kept in openidm.managedobjects table
+
 ## Connecting to PR elastic search:
 ```$bash
 kubectl port-forward fpl-case-service-pr-<PR-ID>-es-master-0 9210:9200
@@ -155,8 +167,8 @@ curl http://localhost:9210/care_supervision_epo_cases-000001/_search
 
 ## Uploading ccd definition into PR environment
 On PR env following ccd definition files are generated and stored as jenkins job artefacts:
-- ccd-fpl-preview-<PR_ID>-toggle-on.xlsx (uploaded automatically by jenkins)	
-- ccd-fpl-preview-<PR_ID>-toggle-off.xlsx	
+- ccd-fpl-preview-<PR_ID>-toggle-on.xlsx (uploaded automatically by jenkins)
+- ccd-fpl-preview-<PR_ID>-toggle-off.xlsx
 
 you can download these files and import against PR env like follow (vpn needed):
 
@@ -206,4 +218,5 @@ To connect preview env to azure app insight:
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+
 

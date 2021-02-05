@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,12 @@ public class EmailNotificationHelper {
         return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),
             caseData.getFirstHearing().orElse(null));
+    }
+
+    public static String buildCalloutWithNextHearing(final CaseData caseData, LocalDateTime time) {
+        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+            caseData.getRespondents1(),
+            caseData.getNextHearingAfter(time).orElse(null));
     }
 
     public static List<String> getDistinctGatekeeperEmails(List<Element<EmailAddress>> emailCollection) {

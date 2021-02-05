@@ -41,8 +41,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     I_doActionsOnEditPage();
     await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
-    I.see(summary);
-    I.see(description);
+    I.see('Case information');
   };
 
   const summaryText = 'Summary of change';
@@ -307,7 +306,7 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
   I.seeInTab(['Report 1', 'Has it been approved?'], 'Yes');
   I.seeInTab(['Report 1', 'Date approved'], '2 Apr 2020');
-});
+}).retry(1);
 
 Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
@@ -319,21 +318,23 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
-  caseViewPage.selectTab(caseViewPage.tabs.overview);
-  I.seeInTab('26-week timeline date', '10 Oct 2030');
+  caseViewPage.selectTab(caseViewPage.tabs.summary);
+  I.seeInTab('Date of issue', dateFormat(Date.now(), 'd mmm yyyy'));
+  I.seeInTab('26-week timeline date', dateFormat(new Date().setDate(new Date().getDate() + 26 * 7), 'd mmm yyyy'));
+  I.seeInTab('Extended timeline date', '10 Oct 2030');
   I.seeInTab('Why is this case being extended?', 'Timetable for child');
   I.seeInTab('Add comments', 'Comment');
-});
+}).retry(1);
 
 Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.closeTheCase);
   await closeTheCaseEventPage.closeCase({day: 12, month: 3, year: 2020}, closeTheCaseEventPage.fields.reasons.deprivation);
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.administrationActions.closeTheCase);
-  caseViewPage.selectTab(caseViewPage.tabs.overview);
+  caseViewPage.selectTab(caseViewPage.tabs.summary);
   I.seeInTab(['Close the case', 'Date'], '12 Mar 2020');
   I.seeInTab(['Close the case', 'Reason'], 'Deprivation of liberty');
-});
+}).retry(1);
 
 const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);

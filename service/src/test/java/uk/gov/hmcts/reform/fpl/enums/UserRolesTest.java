@@ -19,11 +19,21 @@ class UserRolesTest {
 
         List<String> standardRoles = List.of("caseworker", "caseworker-publiclaw");
 
-        assertThat(CAFCASS.getRoles()).containsAll(standardRoles).contains("caseworker-publiclaw-cafcass");
-        assertThat(GATEKEEPER.getRoles()).containsAll(standardRoles).contains("caseworker-publiclaw-gatekeeper");
-        assertThat(HMCTS_ADMIN.getRoles()).containsAll(standardRoles).contains("caseworker-publiclaw-courtadmin");
-        assertThat(JUDICIARY.getRoles()).containsAll(standardRoles).contains("caseworker-publiclaw-judiciary");
-        assertThat(LOCAL_AUTHORITY.getRoles()).containsAll(standardRoles).contains("caseworker-publiclaw-solicitor");
+        assertThat(CAFCASS.getRoleNames())
+            .containsAll(standardRoles)
+            .contains("caseworker-publiclaw-cafcass");
+        assertThat(GATEKEEPER.getRoleNames())
+            .containsAll(standardRoles)
+            .contains("caseworker-publiclaw-gatekeeper");
+        assertThat(HMCTS_ADMIN.getRoleNames())
+            .containsAll(standardRoles)
+            .contains("caseworker-publiclaw-courtadmin");
+        assertThat(JUDICIARY.getRoleNames())
+            .containsAll(standardRoles)
+            .contains("caseworker-publiclaw-judiciary");
+        assertThat(LOCAL_AUTHORITY.getRoleNames())
+            .containsAll(standardRoles)
+            .contains("caseworker-publiclaw-solicitor");
     }
 
     @Test

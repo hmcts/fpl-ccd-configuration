@@ -14,10 +14,10 @@ BeforeSuite(async ({I}) => {
 Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
-  messageJudgeOrLegalAdviserEventPage.relatedMessageToAC2();
+  messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToC2();
   await messageJudgeOrLegalAdviserEventPage.selectC2();
   messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
-  messageJudgeOrLegalAdviserEventPage.enterRequester('Swansea city council');
+  messageJudgeOrLegalAdviserEventPage.enterSubject('Subject 1');
   messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
   await I.goToNextPage();
   messageJudgeOrLegalAdviserEventPage.enterMessage(message);
@@ -26,7 +26,8 @@ Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudge
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
   I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser);
   I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
-  I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
+  I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Message'], 'Some note');
   I.seeInTab(['Message 1', 'Status'], 'Open');
   I.dontSeeInTab(['Closed messages']);
@@ -45,7 +46,8 @@ Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOr
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
   I.seeInTab(['Message 1', 'From'], config.judicaryUser);
   I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
-  I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
+  I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Message'], reply);
   I.seeInTab(['Message 1', 'Status'], 'Open');
   I.dontSeeInTab(['Closed messages']);
@@ -66,7 +68,28 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
   I.see('Closed messages');
   I.seeInTab(['Message 1', 'From'], config.judicaryUser);
   I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
-  I.seeInTab(['Message 1', 'Requested by'], 'Swansea city council');
+  I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
+  I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Message history'], history);
   I.seeInTab(['Message 1', 'Status'], 'Closed');
+});
+
+Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+
+  await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
+  messageJudgeOrLegalAdviserEventPage.selectMessageNotRelatedToC2();
+  messageJudgeOrLegalAdviserEventPage.enterSubject('Judge subject');
+  await I.goToNextPage();
+
+  messageJudgeOrLegalAdviserEventPage.enterMessage('Judge message');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
+
+  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'Sent to'], config.ctscEmail);
+  I.seeInTab(['Message 1', 'Message subject'], 'Judge subject');
+  I.seeInTab(['Message 1', 'Message'], 'Judge message');
+  I.seeInTab(['Message 1', 'Status'], 'Open');
 });

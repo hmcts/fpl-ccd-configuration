@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
-import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Api
 @RestController
@@ -45,7 +44,7 @@ public class NotifyGatekeeperController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<String> errors = new ArrayList<>();
-        if (SUBMITTED.getValue().equals(caseDetails.getState())) {
+        if (SUBMITTED.equals(caseData.getState())) {
             errors = validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class);
         }
 
@@ -72,16 +71,12 @@ public class NotifyGatekeeperController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
-        if (SUBMITTED.equals(caseData.getState())) {
-            publishEvent(new PopulateStandardDirectionsEvent(callbackRequest));
-        }
+
         publishEvent(new NotifyGatekeepersEvent(caseData));
     }
 
     private List<Element<EmailAddress>> resetGateKeeperEmailCollection() {
-        return List.of(
-            element(EmailAddress.builder().email("").build())
-        );
+        return wrapElements(EmailAddress.builder().email("").build());
     }
 
     private List<String> validateGatekeeperEmailsBasedOnState(State state,
