@@ -492,36 +492,43 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WIC",
+    "ListElement": "Wigan Council",
+    "DisplayOrder": 97
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SNW",
     "ListElement": "Wiltshire Council",
-    "DisplayOrder": 97
+    "DisplayOrder": 98
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WIR",
     "ListElement": "Wirral Borough Council",
-    "DisplayOrder": 98
+    "DisplayOrder": 99
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WOL",
     "ListElement": "Wolverhampton City Council",
-    "DisplayOrder": 99
+    "DisplayOrder": 100
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WSC",
     "ListElement": "Worcestershire County Council",
-    "DisplayOrder": 100
+    "DisplayOrder": 105
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "YCC",
     "ListElement": "York City Council",
-    "DisplayOrder": 101
+    "DisplayOrder": 110
   }
 ]
