@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public final class IssuedCMOTemplate extends SharedNotifyTemplate {
+public class IssuedCMOTemplate extends SharedNotifyTemplate {
     private final String respondentLastName;
     private final String familyManCaseNumber;
     private final String hearing;
