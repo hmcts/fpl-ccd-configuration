@@ -591,14 +591,6 @@ public class CaseData {
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private final UUID lastHearingOrderDraftsHearingId;
-    private List<Element<HearingOrder>> ordersToBeSent;
-
-    @JsonIgnore
-    public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
-        return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
-            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
-            .collect(toList());
-    }
 
     @JsonIgnore
     public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
@@ -662,9 +654,6 @@ public class CaseData {
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
     private final List<Element<HearingOrder>> ordersToBeSent;
-
-    @JsonUnwrapped
-    private final ReviewDraftOrdersData reviewDraftOrdersData;
 
     @JsonUnwrapped
     private final ReviewDraftOrdersData reviewDraftOrdersData;

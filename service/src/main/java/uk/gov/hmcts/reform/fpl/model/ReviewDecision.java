@@ -6,8 +6,6 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
-import java.util.UUID;
-
 @Data
 @Builder(toBuilder = true)
 public class ReviewDecision {
@@ -16,7 +14,6 @@ public class ReviewDecision {
     private final String hearing;
     private final CMOReviewOutcome decision;
     private final String changesRequestedByJudge;
-    private final UUID orderId;
 
     @JsonIgnore
     public boolean hasReviewOutcomeOf(CMOReviewOutcome reviewOutcome) {
