@@ -364,7 +364,7 @@ public class CaseSubmissionGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(isNotBlank(other.getDateOfBirth())
+            .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())
                 ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE)
                 : DEFAULT_STRING
             )
