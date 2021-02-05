@@ -62,6 +62,16 @@ class ValidateEmailServiceTest {
         assertThat(validateEmailService.validate(email)).isEqualTo(ERROR_MESSAGE);
     }
 
+    @Test
+    void shouldReturnCustomizedErrorMessageWhenEmailAddressIsInvalid() {
+        String email = "<John Doe> johndoe@email.com";
+
+        String error = validateEmailService.validate(email, "Custom error message");
+
+        assertThat(error).contains(
+            "Custom error message");
+    }
+
     private static Stream<Arguments> validEmailAddresses() {
         return Stream.of(
             "email@example.com",

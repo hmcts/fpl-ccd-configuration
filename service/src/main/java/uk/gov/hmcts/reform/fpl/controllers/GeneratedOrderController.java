@@ -188,7 +188,7 @@ public class GeneratedOrderController extends CallbackController {
 
         JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
 
-        if (!orderTypeAndDocument.isUploaded() && tempJudge.getJudgeTitle() != null) {
+        if (!orderTypeAndDocument.isUploaded() && caseData.hasSelectedTemporaryJudge(tempJudge)) {
             String error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
             if (!error.isBlank()) {
