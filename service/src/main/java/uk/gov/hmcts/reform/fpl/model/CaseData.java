@@ -600,6 +600,13 @@ public class CaseData {
             .collect(toList());
     }
 
+    @JsonIgnore
+    public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
+        return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .collect(toList());
+    }
+
     @JsonUnwrapped
     @Builder.Default
     private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
@@ -654,6 +661,10 @@ public class CaseData {
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> ordersToBeSent;
+
+    @JsonUnwrapped
+    private final ReviewDraftOrdersData reviewDraftOrdersData;
 
     @JsonUnwrapped
     private final ReviewDraftOrdersData reviewDraftOrdersData;
