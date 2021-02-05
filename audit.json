@@ -112,6 +112,8 @@
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/notice-of-proceedings/about-to-submit_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/validate-order/epo-end-date/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-case-number/submitted_POST": "ignore",
+  "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/approve-draft-orders/validate-review-decision/mid-event_POST": "ignore",
+  "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/approve-draft-orders/mid-event_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-start_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-legal-representatives/about-to-start_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/enter-applicant/about-to-start_POST": "ignore",

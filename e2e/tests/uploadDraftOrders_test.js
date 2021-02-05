@@ -1,6 +1,6 @@
 const config = require('../config.js');
 const standardDirectionOrder = require('../fixtures/caseData/prepareForHearing.json');
-const cmoHelper = require('../helpers/cmo_helper');
+const draftOrdersHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
 
 const changeRequestReason = 'Timetable for the proceedings is incomplete';
@@ -8,7 +8,7 @@ const returnedStatus = 'Returned';
 const noHearing = 'No hearing';
 const withJudgeStatus = 'With judge for approval';
 const draftStatus = 'Draft order, to review before hearing';
-const linkLabel = 'Review agreed CMO';
+const linkLabel = 'Approve orders';
 const agreedCMO = 'Agreed CMO discussed at hearing';
 const draftCMO = 'Draft CMO from advocates\' meeting';
 const hearing1 = 'Case management hearing, 1 January 2020';
@@ -20,6 +20,12 @@ const draftOrder1 = {
   title: 'draft order 1',
   file: config.testWordFile,
 };
+
+const draftOrder1Updated = {
+  title: 'draft order 1 Updated',
+  file: config.testWordFile,
+  number: 2,
+};
 const draftOrder2 = {
   title: 'draft order 2',
   file: config.testWordFile,
@@ -30,7 +36,6 @@ const draftOrder3 = {
   file: config.testWordFile,
 };
 const supportingDoc = {name: 'case summary', notes: 'this is the case summary', file: config.testFile, fileName: 'mockFile.txt'};
-
 
 let caseId;
 let today;
@@ -46,26 +51,26 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1);
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
-  await cmoHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing3, supportingDoc);
-  await cmoHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder2, hearing1);
-  await cmoHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
+  await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1);
+  await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
+  await draftOrdersHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing3, supportingDoc);
+  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder2, hearing1);
+  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
-  assertDraftCMO(I, 1, hearing1, [
+  assertDraftOrders(I, 1, hearing1, [
     {title: agreedCMO, status: withJudgeStatus},
     {title: draftOrder1.title, status: withJudgeStatus},
     {title: draftOrder2.title, status: withJudgeStatus},
   ]);
-  assertDraftCMO(I, 2, hearing2, [
+  assertDraftOrders(I, 2, hearing2, [
     {title: agreedCMO, status: withJudgeStatus, supportingDocs: supportingDoc},
   ]);
-  assertDraftCMO(I, 3, hearing3, [
+  assertDraftOrders(I, 3, hearing3, [
     {title: draftCMO, status: draftStatus, supportingDocs: supportingDoc},
   ]);
-  assertDraftCMO(I, 4, hearing4, [
+  assertDraftOrders(I, 4, hearing4, [
     {title: draftOrder3.title, status: withJudgeStatus},
   ]);
 
@@ -79,14 +84,14 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
-  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
   await I.goToNextPage();
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   assertSealedCMO(I, 1, hearing2);
@@ -95,22 +100,25 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   I.dontSeeInTab(hearing2);
 });
 
-Scenario('Judge sends agreed CMO back to the local authority', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge sends draft orders to the local authority', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
+  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
+  await I.goToNextPage();
   I.see('mockFile.docx');
+
   reviewAgreedCaseManagementOrderEventPage.selectReturnCmoForChanges();
   reviewAgreedCaseManagementOrderEventPage.enterChangesRequested(changeRequestReason);
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  reviewAgreedCaseManagementOrderEventPage.selectReturnC21ForChanges(1);
+  reviewAgreedCaseManagementOrderEventPage.enterChangesRequestedC21(1,'note2');
+
+  await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
-  assertDraftCMO(I, 1, hearing1, [
-    {title: agreedCMO, status: returnedStatus},
-    {title: draftOrder1.title, status: withJudgeStatus},
+  assertDraftOrders(I, 1, hearing1, [
     {title: draftOrder2.title, status: withJudgeStatus},
   ]);
 });
@@ -119,42 +127,61 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  assertDraftCMO(I, 1, hearing1, [
-    {title: agreedCMO, status: returnedStatus},
-    {title: draftOrder1.title, status: withJudgeStatus},
+  assertDraftOrders(I, 1, hearing1, [
     {title: draftOrder2.title, status: withJudgeStatus},
   ]);
 
-  await cmoHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1);
+  await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing1,null, draftOrder1Updated);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  assertDraftCMO(I, 1, hearing1, [{title: agreedCMO, status: withJudgeStatus}]);
+
+  assertDraftOrders(I, 1, hearing1, [
+    {title: agreedCMO, status: withJudgeStatus},
+    {title: draftOrder2.title, status: withJudgeStatus},
+    {title: draftOrder1Updated.title, status: withJudgeStatus},
+  ]);
+
   I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends the agreed CMO to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends draft orders to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
-  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
+
+  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
+  await I.goToNextPage();
+  reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
+
+  await I.completeEvent('Save and continue');
+
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
+  reviewAgreedCaseManagementOrderEventPage.selectSealC21(2);
+
+  await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
+
   assertSealedCMO(I, 1, hearing2);
   assertSealedCMO(I, 2, hearing1);
+  assertSealedC21(I, 1, draftOrder3);
+  assertSealedC21(I, 2, draftOrder2);
+  assertSealedC21(I, 3, draftOrder1Updated);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  assertDraftCMO(I, 1, hearing1, [
-    {title: draftOrder1.title, status: withJudgeStatus},
-    {title: draftOrder2.title, status: withJudgeStatus},
-  ]);
+
+  I.dontSee(hearing1);
+  I.dontSee(hearing2);
+  I.see(hearing3);
+  I.dontSee(noHearing);
 
   caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
   assertDocumentSentToParties(I);
 });
 
-const assertDraftCMO = function (I, collectionId, hearingName, orders, title, status, supportingDocs) {
+const assertDraftOrders = function (I, collectionId, hearingName, orders, title, status, supportingDocs) {
   const hearing = `Hearing ${collectionId}`;
 
   I.seeInTab([hearing, 'Hearing'], hearingName);
@@ -191,6 +218,14 @@ const assertSealedCMO = (I, collectionId, hearingName) => {
   I.seeInTab([sealedCMO, 'Hearing'], hearingName);
   I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'd mmm yyyy'));
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
+};
+
+const assertSealedC21 = (I, collectionId, draftOrder) => {
+  const order = `Order ${collectionId}`;
+
+  I.seeInTab([order, 'Type of order'], 'Blank order (C21)');
+  I.seeInTab([order, 'Order title'], draftOrder.title);
+  I.seeInTab([order, 'Order document'], 'mockFile.pdf');
 };
 
 const assertDocumentSentToParties = I => {
