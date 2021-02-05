@@ -22,7 +22,7 @@
     "ID": "ReviewDecision",
     "ListElementCode": "judgeAmendedDocument",
     "FieldType": "Document",
-    "ElementLabel": "Use the link above to download the order. After you’ve made changes, save the final order in Word or as a PDF and upload. This will then be sealed and sent to all parties.",
+    "ElementLabel": "Use the link above to download the order. After you’ve made changes, save the final order in Word and upload. This will then be sealed and sent to all parties.",
     "FieldShowCondition": "decision=\"JUDGE_AMENDS_DRAFT\"",
     "SecurityClassification": "Public",
     "RegularExpression": ".doc,.docx"
