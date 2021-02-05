@@ -62,6 +62,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
@@ -364,7 +365,7 @@ public class CaseSubmissionGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(other.getDateOfBirth() != null
+            .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())
                 ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE)
                 : DEFAULT_STRING
             )

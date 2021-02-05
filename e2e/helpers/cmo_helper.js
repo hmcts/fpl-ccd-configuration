@@ -23,12 +23,12 @@ const judgeSendsReviewedCmoToAllParties = async (I, caseId, caseViewPage, upload
   await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Case management hearing, 1 January 2020');
   await localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, 'Final hearing, 1 March 2020');
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
-  await caseViewPage.goToNewActions(config.applicationActions.reviewAgreedCmo);
+  await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
   reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('Case management hearing, 1 January 2020');
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.applicationActions.reviewAgreedCmo);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
 };
 
 const uploadCMO = async (I, caseViewPage, uploadCMOEventPage, hearing, supportingDocs, c21s, selectHearing) => {
