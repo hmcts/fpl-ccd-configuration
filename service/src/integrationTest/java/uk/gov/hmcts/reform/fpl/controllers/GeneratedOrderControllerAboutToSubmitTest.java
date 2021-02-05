@@ -235,7 +235,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldAddUploadedOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(
             UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoles())
+                .roles(UserRole.HMCTS_ADMIN.getRoleNames())
                 .build()
         );
 
@@ -361,7 +361,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldSetFinalOrderIssuedForUploadedEducationSupervisionOrder() {
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(
             UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoles())
+                .roles(UserRole.HMCTS_ADMIN.getRoleNames())
                 .build()
         );
 

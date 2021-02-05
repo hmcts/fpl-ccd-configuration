@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForNoticeOfProceedings;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.HEARINGS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 
 @ContextConfiguration(classes = {NoticeOfProceedingsEmailContentProvider.class})
@@ -26,7 +27,7 @@ class NoticeOfProceedingsEmailContentProviderTest extends AbstractEmailContentPr
 
     private AllocatedJudgeTemplateForNoticeOfProceedings getExpectedAllocatedJudgeParameters() {
         return AllocatedJudgeTemplateForNoticeOfProceedings.builder()
-            .caseUrl(caseUrl(CASE_REFERENCE, "HearingTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, HEARINGS))
             .familyManCaseNumber("12345")
             .hearingDate("1 January 2020")
             .judgeName("Moley")

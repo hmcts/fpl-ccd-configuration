@@ -8,7 +8,7 @@
         "UserRoles": [
           "caseworker-publiclaw-systemupdate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -27,7 +27,7 @@
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-systemupdate"],
-        "CRUD": "CRUD"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -46,7 +46,7 @@
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-systemupdate"],
-        "CRUD": "CRUD"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [
@@ -65,7 +65,7 @@
     "AccessControl": [
       {
         "UserRoles": ["caseworker-publiclaw-systemupdate"],
-        "CRUD": "CRUD"
+        "CRUD": "CR"
       },
       {
         "UserRoles": [

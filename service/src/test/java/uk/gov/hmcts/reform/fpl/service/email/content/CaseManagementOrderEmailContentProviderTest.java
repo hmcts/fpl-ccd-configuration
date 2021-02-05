@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 
@@ -42,7 +43,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
-        final CaseManagementOrder cmo = buildCmo();
+
+        final HearingOrder cmo = buildCmo();
         IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
             .respondentLastName("lastName")
             .familyManCaseNumber("11")
@@ -64,14 +66,14 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
 
         IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
             .respondentLastName("lastName")
             .familyManCaseNumber("11")
             .digitalPreference("Yes")
             .hearing("test hearing, 20th June")
-            .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .documentLink(DOC_URL)
             .build();
 
@@ -83,13 +85,13 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
     @Test
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
         cmo.setRequestedChanges("change it");
 
         RejectedCMOTemplate expectedTemplate = RejectedCMOTemplate.builder()
             .requestedChanges("change it")
             .hearing("test hearing, 20th June")
-            .caseUrl(caseUrl(CASE_REFERENCE, "OrdersTab"))
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .respondentLastName("lastName")
             .familyManCaseNumber("11")
             .build();
@@ -99,8 +101,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .usingRecursiveComparison().isEqualTo(expectedTemplate);
     }
 
-    private CaseManagementOrder buildCmo() {
-        return CaseManagementOrder.builder()
+    private HearingOrder buildCmo() {
+        return HearingOrder.builder()
             .order(testDocument)
             .hearing("Test hearing, 20th June").build();
     }

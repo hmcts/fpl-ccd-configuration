@@ -12,9 +12,9 @@ module.exports = {
     judgeAmendedDocument: '#reviewCMODecision_judgeAmendedDocument',
   },
 
-  selectCMOToReview(date) {
+  selectCMOToReview(hearing) {
     I.waitForElement(this.fields.cmoToReviewList);
-    I.selectOption(this.fields.cmoToReviewList, `Case management hearing, ${date}`);
+    I.selectOption(this.fields.cmoToReviewList, hearing);
   },
 
   selectSealCmo() {

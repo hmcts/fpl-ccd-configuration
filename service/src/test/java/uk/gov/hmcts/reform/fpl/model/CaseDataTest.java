@@ -40,6 +40,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 class CaseDataTest {
 
@@ -964,6 +968,37 @@ class CaseDataTest {
     }
 
     @Nested
+    class GetNextHearingAfter {
+
+        @Test
+        void shouldReturnNextHearingAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+            HearingBooking futureHearing = HearingBooking.builder().startDate(now().plusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing, futureHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).contains(futureHearing);
+        }
+
+        @Test
+        void shouldReturnNothingIfNoHearingsAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).isEmpty();
+        }
+    }
+
+    @Nested
     class GetFirstHearingOfType {
 
         @Test
@@ -1021,16 +1056,16 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
-                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
-                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+                element(firstId, buildJudicialMessage("Subject 1", "Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Subject 2", "Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("Subject 3", "High", "13 November 2020", YES))
             );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(firstId, "C2, Low, 11 November 2020"),
-                Pair.of(secondId, "Medium, 12 November 2020"),
-                Pair.of(thirdId, "C2, High, 13 November 2020")
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
             );
 
             assertThat(caseData.buildJudicialMessageDynamicList())
@@ -1040,28 +1075,90 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
-                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
-                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+                element(firstId, buildJudicialMessage("Subject 1", "Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Subject 2", "Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("Subject 3", "High", "13 November 2020", YES))
             );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = buildDynamicList(2,
-                Pair.of(firstId, "C2, Low, 11 November 2020"),
-                Pair.of(secondId, "Medium, 12 November 2020"),
-                Pair.of(thirdId, "C2, High, 13 November 2020")
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
             );
 
             assertThat(caseData.buildJudicialMessageDynamicList(thirdId))
                 .isEqualTo(expectedDynamicList);
         }
 
-        private JudicialMessage buildJudicialMessage(String urgency, String dateSent, YesNo isRelatedToC2) {
+        private JudicialMessage buildJudicialMessage(String subject, String urgency, String dateSent,
+                                                     YesNo isRelatedToC2) {
             return JudicialMessage.builder()
+                .subject(subject)
                 .urgency(urgency)
                 .dateSent(dateSent)
                 .isRelatedToC2(isRelatedToC2)
                 .build();
+        }
+    }
+
+    @Nested
+    class GetRepresentativesByServedPreference {
+        private Representative emailRepOne = testRepresentative(EMAIL);
+        private Representative emailRepTwo = testRepresentative(EMAIL);
+        private Representative digitalRepOne = testRepresentative(DIGITAL_SERVICE);
+        private Representative digitalRepTwo = testRepresentative(DIGITAL_SERVICE);
+
+        @Test
+        void shouldReturnListOfEmailRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+
+            assertThat(emailRepresentatives).containsExactlyInAnyOrder(emailRepOne, emailRepTwo);
+        }
+
+        @Test
+        void shouldReturnListOfDigitalRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives
+                = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).containsExactlyInAnyOrder(digitalRepOne, digitalRepTwo);
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotMatchServingPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
+            return List.of(
+                element(emailRepOne),
+                element(emailRepTwo),
+                element(digitalRepOne),
+                element(digitalRepTwo));
         }
     }
 
