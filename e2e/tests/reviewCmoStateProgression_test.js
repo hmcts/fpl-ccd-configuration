@@ -10,5 +10,5 @@ Scenario('Judge transitions CMO to final hearing case state', async ({I, caseVie
   caseId = await I.submitNewCaseWithData(finalHearing);
   await cmoHelper.judgeSendsReviewedCmoToAllParties(I, caseId, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage);
   caseViewPage.selectTab(caseViewPage.tabs.history);
-  I.seeEndStateForEvent(config.applicationActions.reviewAgreedCmo, 'Final hearing');
+  I.seeEndStateForEvent(config.applicationActions.approveOrders, 'Final hearing');
 });

@@ -5,9 +5,17 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.GATEKEEPER;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_SUPERUSER;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 class UserServiceTest {
 
@@ -30,4 +38,18 @@ class UserServiceTest {
 
         assertThat(email).isEqualTo(expectedEmail);
     }
+
+    @Test
+    void shouldCheckIfCurrentUserHasRole() {
+        when(requestData.userRoles()).thenReturn(Set.of(GATEKEEPER.getRoleName(), CAFCASS.getRoleName()));
+
+        assertThat(underTest.hasUserRole(JUDICIARY)).isFalse();
+        assertThat(underTest.hasUserRole(HMCTS_ADMIN)).isFalse();
+        assertThat(underTest.hasUserRole(HMCTS_SUPERUSER)).isFalse();
+        assertThat(underTest.hasUserRole(LOCAL_AUTHORITY)).isFalse();
+
+        assertThat(underTest.hasUserRole(GATEKEEPER)).isTrue();
+        assertThat(underTest.hasUserRole(CAFCASS)).isTrue();
+    }
+
 }

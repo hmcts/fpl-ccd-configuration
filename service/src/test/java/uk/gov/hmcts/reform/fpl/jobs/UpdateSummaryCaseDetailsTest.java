@@ -15,6 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -193,6 +195,8 @@ class UpdateSummaryCaseDetailsTest {
             .syntheticCaseSummary(SyntheticCaseSummary.builder()
                 .caseSummaryHasNextHearing("No")
                 .build())
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .build();
 
         List<CaseDetails> caseDetails = List.of(CaseDetails.builder()
@@ -242,13 +246,96 @@ class UpdateSummaryCaseDetailsTest {
 
         underTest.execute(executionContext);
 
-        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID).build();
-        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID)
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build()).build();
+        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L)
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build()).build();
 
         verify(summaryService).generateSummaryFields(expectedCaseData1);
         verify(summaryService).generateSummaryFields(expectedCaseData2);
         verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, CASE_ID, EVENT_NAME, caseSummaryData);
         verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
+    }
+
+    @Test
+    void shouldGracefullyHandleErrorsFromGenerateSummaryFields() {
+        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
+        when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
+        when(searchService.searchResultsSize(any())).thenReturn(2);
+
+        CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .syntheticCaseSummary(SyntheticCaseSummary.builder()
+                .caseSummaryHasNextHearing("No")
+                .build())
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
+
+        CaseDetails caseDetails2 = CaseDetails.builder()
+            .id(54321L)
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
+
+        List<CaseDetails> allCaseDetails = List.of(caseDetails, caseDetails2);
+
+        when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(allCaseDetails);
+        when(summaryService.generateSummaryFields(any()))
+            .thenThrow(new RuntimeException("boom"))
+            .thenReturn(caseSummaryData);
+
+        underTest.execute(executionContext);
+
+        CaseData expectedCaseData1 = caseData.toBuilder().id(CASE_ID).build();
+        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+
+        verify(summaryService).generateSummaryFields(expectedCaseData1);
+        verify(summaryService).generateSummaryFields(expectedCaseData2);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
+        verifyNoMoreInteractions(ccdService);
+    }
+
+    @Test
+    void shouldGracefullyHandleErrorsFromConversion() {
+        when(toggleService.isSummaryTabEnabled()).thenReturn(true);
+        when(toggleService.isSummaryTabFirstCronRunEnabled()).thenReturn(false);
+        when(searchService.searchResultsSize(any())).thenReturn(2);
+
+        CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
+            .syntheticCaseSummary(SyntheticCaseSummary.builder()
+                .caseSummaryHasNextHearing("No")
+                .build())
+            .build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
+            .build();
+
+        CaseDetails caseDetails2 = CaseDetails.builder()
+            .id(54321L)
+            .data(mapper.convertValue(caseData, new TypeReference<>() {}))
+            .build();
+
+        List<CaseDetails> allCaseDetails = List.of(caseDetails, caseDetails2);
+
+        when(searchService.search(ES_QUERY, SEARCH_SIZE, 0)).thenReturn(allCaseDetails);
+        when(summaryService.generateSummaryFields(any())).thenReturn(caseSummaryData);
+
+        underTest.execute(executionContext);
+
+        CaseData expectedCaseData2 = caseData.toBuilder().id(54321L).build();
+
+        verify(summaryService).generateSummaryFields(expectedCaseData2);
+        verify(ccdService).triggerEvent(JURISDICTION, CASE_TYPE, 54321L, EVENT_NAME, caseSummaryData);
+        verifyNoMoreInteractions(summaryService, ccdService);
     }
 
     @Test

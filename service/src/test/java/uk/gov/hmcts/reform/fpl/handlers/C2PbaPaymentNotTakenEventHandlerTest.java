@@ -74,7 +74,7 @@ class C2PbaPaymentNotTakenEventHandlerTest {
             .build();
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoles()).build());
+            UserInfo.builder().sub(CTSC_INBOX).roles(LOCAL_AUTHORITY.getRoleNames()).build());
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))

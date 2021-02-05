@@ -931,6 +931,22 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsEmpty() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .dateOfBirth("")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("-");
+        }
+
+        @Test
         void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
