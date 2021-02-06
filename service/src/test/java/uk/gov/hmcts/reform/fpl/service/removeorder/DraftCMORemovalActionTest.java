@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -111,11 +112,13 @@ class DraftCMORemovalActionTest {
             .extracting("orderToBeRemoved",
                 "orderTitleToBeRemoved",
                 "hearingToUnlink",
-                "showRemoveCMOFieldsFlag")
+                "showRemoveCMOFieldsFlag",
+                "showReasonFieldFlag")
             .containsExactly(orderDocument,
                 "Draft case management order",
                 hearingToBeUnlinked.toLabel(),
-                YES.getValue());
+                YES.getValue(),
+                NO.getValue());
     }
 
     @Test
@@ -148,11 +151,13 @@ class DraftCMORemovalActionTest {
             .extracting("orderToBeRemoved",
                 "orderTitleToBeRemoved",
                 "hearingToUnlink",
-                "showRemoveCMOFieldsFlag")
+                "showRemoveCMOFieldsFlag",
+                "showReasonFieldFlag")
             .containsExactly(orderDocument,
                 "Draft case management order",
                 hearingToBeUnlinked.toLabel(),
-                YES.getValue());
+                YES.getValue(),
+                NO.getValue());
     }
 
     @Test

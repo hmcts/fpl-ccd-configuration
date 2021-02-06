@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -44,13 +45,13 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         data.put("orderTitleToBeRemoved", "Draft case management order");
         data.put("hearingToUnlink", hearing.toLabel());
         data.put("showRemoveCMOFieldsFlag", YES.getValue());
+        data.put("showReasonFieldFlag", NO.getValue());
     }
 
     @Override
     public void remove(CaseData caseData, CaseDetailsMap data, UUID removedOrderId, RemovableOrder removableOrder) {
         HearingOrder caseManagementOrder = (HearingOrder) removableOrder;
 
-        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = caseData.getHearingOrdersBundlesDrafts();
         Optional<Element<HearingOrdersBundle>> optionalHearingOrderBundle
             = caseData.getHearingOrderBundleThatContainsOrder(removedOrderId);
 
@@ -65,7 +66,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         selectedHearingOrderBundle.getValue().getOrders().remove(cmoElement);
         caseData.getDraftUploadedCMOs().remove(cmoElement);
 
-        updateHearingOrderBundlesDrafts(data, hearingOrdersBundlesDrafts, selectedHearingOrderBundle);
+        updateHearingOrderBundlesDrafts(data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
 
         data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
         data.putIfNotEmpty("draftUploadedCMOs", caseData.getDraftUploadedCMOs());

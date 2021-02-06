@@ -91,6 +91,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 "orderDateToBeRemoved", "dummy data",
                 "hearingToUnlink", "dummy data",
                 "showRemoveCMOFieldsFlag", "dummy data",
+                "showReasonFieldFlag", "dummy data",
                 "showRemoveSDOWarningFlag", "dummy data"
             )
         );
@@ -106,6 +107,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             "orderDateToBeRemoved",
             "hearingToUnlink",
             "showRemoveCMOFieldsFlag",
+            "showReasonFieldFlag",
             "showRemoveSDOWarningFlag"
         );
     }
