@@ -927,6 +927,47 @@ class ManageHearingsServiceTest {
         void shouldAdjournAndReListHearingAndUpdateDraftCaseManagementOrder() {
             final UUID reListedHearingId = randomUUID();
             final UUID linkedCMOId = randomUUID();
+
+            when(identityService.generateId()).thenReturn(reListedHearingId);
+
+            HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            Element<HearingBooking> hearingToBeAdjourned = element(randomHearingWithCMO(linkedCMOId));
+            final Element<HearingBooking> otherHearing = element(randomHearing());
+            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> adjournedHearing = element(hearingToBeAdjourned.getId(),
+                hearingToBeAdjourned.getValue().toBuilder()
+                    .status(HearingStatus.ADJOURNED_AND_RE_LISTED)
+                    .cancellationReason(adjournmentReason.getReason())
+                    .caseManagementOrderId(linkedCMOId)
+                    .build());
+
+            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId,
+                HearingOrder.builder().type(DRAFT_CMO).hearing(reListedHearing.getValue().toLabel()).build());
+
+            final CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingToBeAdjourned, otherHearing))
+                .adjournmentReason(adjournmentReason)
+                .draftUploadedCMOs(newArrayList(linkedDraftCMO))
+                .build();
+
+            service.adjournAndReListHearing(caseData, hearingToBeAdjourned.getId(), reListedHearing.getValue());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
+            assertThat(caseData.getDraftUploadedCMOs()).containsExactly(
+                element(linkedCMOId, HearingOrder.builder()
+                    .type(DRAFT_CMO)
+                    .hearing(adjournedHearing.getValue().toLabel())
+                    .build()));
+        }
+
+        @Test
+        void shouldAdjournAndReListHearingAndUpdateHearingOrdersBundle() {
+            final UUID reListedHearingId = randomUUID();
+            final UUID linkedCMOId = randomUUID();
             final UUID hearingBundleId = randomUUID();
 
             when(identityService.generateId()).thenReturn(reListedHearingId);
@@ -935,7 +976,7 @@ class ManageHearingsServiceTest {
                 .reason("Reason 1")
                 .build();
 
-            final Element<HearingBooking> hearingToBeAdjourned = element(randomHearing());
+            final Element<HearingBooking> hearingToBeAdjourned = element(randomHearingWithCMO(linkedCMOId));
             final Element<HearingBooking> otherHearing = element(randomHearing());
             final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
             final Element<HearingBooking> adjournedHearing = element(hearingToBeAdjourned.getId(),
@@ -944,24 +985,14 @@ class ManageHearingsServiceTest {
                     .cancellationReason(adjournmentReason.getReason())
                     .build());
 
-            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeAdjourned);
-
             final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId,
                 HearingOrder.builder().type(DRAFT_CMO).hearing(reListedHearing.getValue().toLabel()).build());
 
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
-                documentBundle.getValue().toBuilder()
-                    .hearingName(reListedHearing.getValue().toLabel())
-                    .build());
-
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeAdjourned, otherHearing))
-                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .adjournmentReason(adjournmentReason)
-                .draftUploadedCMOs(List.of(linkedDraftCMO))
                 .hearingOrdersBundlesDrafts(List.of(element(hearingBundleId,
                     HearingOrdersBundle.builder()
-                        .hearingId(reListedHearing.getId())
                         .orders(newArrayList(linkedDraftCMO))
                         .build())))
                 .build();
@@ -970,11 +1001,9 @@ class ManageHearingsServiceTest {
 
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
-            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
-            assertThat(caseData.getDraftUploadedCMOs()).containsExactly(linkedDraftCMO);
             assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
                 element(hearingBundleId, HearingOrdersBundle.builder()
-                    .hearingId(reListedHearingId)
+                    .hearingName(adjournedHearing.getValue().toLabel())
                     .orders(newArrayList(linkedDraftCMO))
                     .build()));
         }
@@ -1162,7 +1191,7 @@ class ManageHearingsServiceTest {
         void shouldVacateAndUpdateHearingOrdersBundleDrafts() {
             final UUID reListedHearingId = randomUUID();
             final UUID linkedCMOId = randomUUID();
-            final UUID HearingOrderBundleId = randomUUID();
+            final UUID hearingOrderBundleId = randomUUID();
 
             when(identityService.generateId()).thenReturn(reListedHearingId);
 
@@ -1198,7 +1227,7 @@ class ManageHearingsServiceTest {
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
                 .hearingOrdersBundlesDrafts(newArrayList(
-                    element(HearingOrderBundleId, HearingOrdersBundle.builder()
+                    element(hearingOrderBundleId, HearingOrdersBundle.builder()
                         .orders(newArrayList(linkedDraftCMO))
                         .build())
                 ))
@@ -1210,7 +1239,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
-                element(HearingOrderBundleId, HearingOrdersBundle.builder()
+                element(hearingOrderBundleId, HearingOrdersBundle.builder()
                     .hearingName(vacatedHearing.getValue().toLabel())
                     .orders(newArrayList(linkedDraftCMO))
                     .build()));
@@ -1498,6 +1527,14 @@ class ManageHearingsServiceTest {
     }
 
     private HearingBooking randomHearing(HearingStatus status) {
+        return randomHearing(status, null);
+    }
+
+    private HearingBooking randomHearingWithCMO(UUID cmoId) {
+        return randomHearing(null, cmoId);
+    }
+
+    private HearingBooking randomHearing(HearingStatus status, UUID cmoId) {
         LocalDateTime startDate = LocalDateTime.now().plusDays(nextLong(1, 100));
         return HearingBooking.builder()
             .status(status)
@@ -1506,6 +1543,7 @@ class ManageHearingsServiceTest {
             .venue(randomAlphanumeric(10))
             .additionalNotes(randomAlphanumeric(100))
             .type(CASE_MANAGEMENT)
+            .caseManagementOrderId(cmoId)
             .build();
     }
 
