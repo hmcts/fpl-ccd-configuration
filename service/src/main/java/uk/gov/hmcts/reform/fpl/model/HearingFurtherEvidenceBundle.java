@@ -25,7 +25,6 @@ public class HearingFurtherEvidenceBundle implements ConfidentialBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
-    // TODO: 03/02/2021 update case field name
     @JsonGetter(value = "supportingEvidenceLA")
     @Override
     public List<Element<SupportingEvidenceBundle>> getLABundle() {
@@ -33,7 +32,7 @@ public class HearingFurtherEvidenceBundle implements ConfidentialBundle {
             .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidential()))
             .collect(Collectors.toList());
     }
-    // TODO: 03/02/2021 update case field name
+
     @JsonGetter(value = "supportingEvidenceNC")
     @Override
     public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {

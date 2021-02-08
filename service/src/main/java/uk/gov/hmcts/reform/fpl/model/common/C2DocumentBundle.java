@@ -45,7 +45,6 @@ public class C2DocumentBundle implements ConfidentialBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
-    // TODO: 03/02/2021 add case field name
     @JsonGetter(value = "supportingEvidenceLA")
     @Override
     public List<Element<SupportingEvidenceBundle>> getLABundle() {
@@ -54,7 +53,6 @@ public class C2DocumentBundle implements ConfidentialBundle {
             .collect(Collectors.toList());
     }
 
-    // TODO: 03/02/2021 add case field name
     @JsonGetter(value = "supportingEvidenceNC")
     @Override
     public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {

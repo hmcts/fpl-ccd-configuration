@@ -19,7 +19,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingFurtherEvidenceBundle",
-    "ListElementCode": "supportingEvidenceBundleLAConf",
+    "ListElementCode": "supportingEvidenceLA",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "ElementLabel": "Documents with la conf",
@@ -28,7 +28,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingFurtherEvidenceBundle",
-    "ListElementCode": "supportingEvidenceBundleNoConf",
+    "ListElementCode": "supportingEvidenceNC",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "ElementLabel": "Documents with no conf",
