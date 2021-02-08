@@ -1530,10 +1530,6 @@ class ManageHearingsServiceTest {
         return randomHearing(status, null);
     }
 
-    private HearingBooking randomHearingWithCMO(UUID cmoId) {
-        return randomHearing(null, cmoId);
-    }
-
     private HearingBooking randomHearing(HearingStatus status, UUID cmoId) {
         LocalDateTime startDate = LocalDateTime.now().plusDays(nextLong(1, 100));
         return HearingBooking.builder()
@@ -1545,6 +1541,10 @@ class ManageHearingsServiceTest {
             .type(CASE_MANAGEMENT)
             .caseManagementOrderId(cmoId)
             .build();
+    }
+
+    private HearingBooking randomHearingWithCMO(UUID cmoId) {
+        return randomHearing(null, cmoId);
     }
 
     private HearingBooking hearingWithCustomAddress(LocalDateTime start, LocalDateTime end) {

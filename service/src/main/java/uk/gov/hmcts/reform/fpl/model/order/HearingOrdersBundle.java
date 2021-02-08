@@ -62,6 +62,14 @@ public class HearingOrdersBundle {
         return orders;
     }
 
+    public List<Element<HearingOrder>> getOrders(CMOStatus status) {
+        List<Element<HearingOrder>> hearingOrders = defaultIfNull(getOrders(), newArrayList());
+
+        return hearingOrders.stream()
+            .filter(order -> status.equals(order.getValue().getStatus()))
+            .collect(Collectors.toList());
+    }
+
     @JsonIgnore
     public List<Element<HearingOrder>> getCaseManagementOrders() {
         if (isNotEmpty(orders)) {
@@ -71,13 +79,5 @@ public class HearingOrdersBundle {
         }
 
         return List.of();
-    }
-  
-    public List<Element<HearingOrder>> getOrders(CMOStatus status) {
-        List<Element<HearingOrder>> hearingOrders = defaultIfNull(getOrders(), newArrayList());
-
-        return hearingOrders.stream()
-            .filter(order -> status.equals(order.getValue().getStatus()))
-            .collect(Collectors.toList());
     }
 }
