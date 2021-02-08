@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers.cmo;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -17,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_DRAFT_UPLOADED_NOTIFICATION_TEMPLATE;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftCMOUploadedEventHandler {
     private final NotificationService notificationService;
@@ -40,6 +42,7 @@ public class DraftCMOUploadedEventHandler {
         }
 
         if (email == null) {
+            log.warn("Email not sent to judge for DraftCMOUploadedEventHandler due to no judge address found");
             return;
         }
 
