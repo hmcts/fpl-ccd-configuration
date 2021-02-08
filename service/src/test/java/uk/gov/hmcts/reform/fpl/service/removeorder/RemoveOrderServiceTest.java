@@ -114,8 +114,8 @@ class RemoveOrderServiceTest {
 
         List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -140,11 +140,11 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
-                    formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
-                    buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                        formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -299,13 +299,14 @@ class RemoveOrderServiceTest {
 
     private List<Element<HearingOrder>> buildSealedCaseManagementOrders() {
         return List.of(
-            element(buildHearingOrder(AGREED_CMO).toBuilder()
+            element(HearingOrder.builder()
+                .type(AGREED_CMO)
                 .status(APPROVED)
                 .dateIssued(NOW)
                 .build()));
     }
 
-    private HearingOrder buildHearingOrder(HearingOrderType type) {
+    private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
             .dateSent(NOW.minusDays(1))

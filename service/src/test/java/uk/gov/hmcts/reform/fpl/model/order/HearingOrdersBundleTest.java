@@ -202,7 +202,7 @@ class HearingOrdersBundleTest {
     @Nested
     class GetCaseManagementOrders {
         @Test
-        void shouldReturnAListOfAllCaseManagementOrders() {
+        void shouldReturnAListOfAllCaseManagementOrdersWhenHearingOrdersBundlesContainCMOs() {
             Element<HearingOrder> draftCaseManagementOrderOne
                 = element(UUID.randomUUID(), HearingOrder.builder().type(AGREED_CMO).build());
 

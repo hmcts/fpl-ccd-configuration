@@ -212,7 +212,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .sealedCMOs(caseManagementOrders)
             .hearingDetails(hearingBookings)
             .removableOrderList(DynamicList.builder()
-                .value(buildListElement(removedOrderId, "Sealed case management order - 15 June 2020"))
+                .value(buildListElement(removedOrderId, "Sealed case management order issued on 15 June 2020"))
                 .build())
             .build();
 

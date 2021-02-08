@@ -30,7 +30,7 @@ class CaseManagementOrderTest {
     }
 
     @Test
-    void shouldFormatSealedCaseManagementOrderWithDateIssuedAsLabel() {
+    void shouldFormatSealedCaseManagementOrderAsLabelWithDateIssued() {
         LocalDate issueDate = LocalDate.of(2021, Month.JANUARY, 7);
 
         HearingOrder caseManagementOrder = HearingOrder.builder().status(APPROVED).dateIssued(issueDate).build();
@@ -39,7 +39,7 @@ class CaseManagementOrderTest {
     }
 
     @Test
-    void shouldFormatDraftCaseManagementOrderWithDateSentAsLabel() {
+    void shouldFormatDraftCaseManagementOrderAsLabelWithDateSent() {
         LocalDate dateSent = LocalDate.of(2021, Month.JANUARY, 10);
 
         HearingOrder caseManagementOrder = HearingOrder.builder().status(DRAFT).dateSent(dateSent).build();

@@ -30,7 +30,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "removeOrder",
     "CaseFieldID": "showReasonFieldFlag",
-    "PageFieldDisplayOrder": 5,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "RemoveOrderSummary",
     "PageDisplayOrder": 2,

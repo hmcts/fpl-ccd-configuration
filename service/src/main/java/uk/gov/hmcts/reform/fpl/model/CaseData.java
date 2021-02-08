@@ -630,7 +630,7 @@ public class CaseData {
         return hearingOrdersBundlesDrafts.stream()
             .filter(hearingOrdersBundleElement
                 -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
-                .anyMatch(o -> o.getId().equals(orderId)))
+                .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
             .findFirst();
     }
 

@@ -1213,7 +1213,7 @@ class CaseDataTest {
     @Nested
     class GetHearingOrderDraftCMOs {
         @Test
-        void shouldReturnAListOfDraftCaseManagementOrders() {
+        void shouldReturnAListOfDraftCaseManagementOrdersWhenExistingWithinHearingOrderBundleDrafts() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
             Element<HearingOrder> draftCMOTwo = element(randomUUID(), buildHearingOrder(AGREED_CMO));
             Element<HearingOrder> draftCMOThree = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
@@ -1231,7 +1231,7 @@ class CaseDataTest {
         }
 
         @Test
-        void shouldReturnAnEmptyListIfNoCaseManagementOrdersHaveBeenMade() {
+        void shouldReturnAnEmptyListWhenHearingOrderBundlesWithDraftCMOsDoNotExist() {
             CaseData caseData = CaseData.builder()
                 .hearingOrdersBundlesDrafts(List.of(
                     element(HearingOrdersBundle.builder().orders(List.of(
@@ -1255,7 +1255,7 @@ class CaseDataTest {
     @Nested
     class GetDraftUploadedCMOWithId {
         @Test
-        void shouldReturnHearingOrderBundleWhenOrdersContainOrderId() {
+        void shouldReturnDraftCMOWhenDraftUploadedCMOsContainTheExpectedOrder() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             CaseData caseData = CaseData.builder()
@@ -1270,7 +1270,7 @@ class CaseDataTest {
         }
 
         @Test
-        void shouldReturnAnEmptyOptionalWhenExpectedOrderIsNotContainedWithinHearingOrderBundle() {
+        void shouldReturnAnEmptyOptionalWhenDraftUploadedCMOsDoNotContainExpectedOrder() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             CaseData caseData = CaseData.builder()
@@ -1287,7 +1287,7 @@ class CaseDataTest {
     @Nested
     class GetHearingOrderBundleThatContainsOrder {
         @Test
-        void shouldReturnHearingOrderBundleWhenOrdersContainOrderId() {
+        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedOrder() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()

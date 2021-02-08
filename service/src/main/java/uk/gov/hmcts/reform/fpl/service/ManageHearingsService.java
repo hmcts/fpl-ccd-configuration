@@ -484,7 +484,8 @@ public class ManageHearingsService {
 
         if (caseData.getHearingOrdersBundlesDrafts() != null) {
             updateHearingOrderBundles(caseData, cancelledHearing);
-        } else if (caseData.getDraftUploadedCMOs() != null) {
+        }
+        if (caseData.getDraftUploadedCMOs() != null) {
             updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
         }
 
@@ -495,7 +496,7 @@ public class ManageHearingsService {
         if (caseData.getVacatedReason() != null
             && VACATED.equals(hearingStatus) || VACATED_AND_RE_LISTED.equals(hearingStatus)
             || VACATED_TO_BE_RE_LISTED.equals(hearingStatus)) {
-            return caseData.getVacatedReason().getReason();
+            return caseData.getVacatedReason() != null ? caseData.getVacatedReason().getReason() : null;
         } else if (ADJOURNED.equals(hearingStatus) || ADJOURNED_AND_RE_LISTED.equals(hearingStatus)
             || ADJOURNED_TO_BE_RE_LISTED.equals(hearingStatus)) {
             return caseData.getAdjournmentReason().getReason();

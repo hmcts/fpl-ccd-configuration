@@ -62,13 +62,13 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
         );
 
         List<Element<HearingOrder>> sealedCaseManagementOrders = List.of(
-            element(buildHearingOrder(AGREED_CMO).toBuilder()
+            element(buildPastHearingOrder(AGREED_CMO).toBuilder()
                 .status(APPROVED)
                 .dateIssued(dateNow())
                 .build()));
 
-        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -78,7 +78,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
                 element(HearingOrdersBundle.builder()
                     .orders(newArrayList(
                         draftCMOOne, draftCMOTwo,
-                        element(buildHearingOrder(C21))))
+                        element(buildPastHearingOrder(C21))))
                     .build())
             ))
             .build();
@@ -169,7 +169,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
             .build();
     }
 
-    private HearingOrder buildHearingOrder(HearingOrderType type) {
+    private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
             .dateSent(dateNow().minusDays(1))
