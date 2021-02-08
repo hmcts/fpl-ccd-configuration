@@ -3,23 +3,28 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -33,6 +38,7 @@ public class CaseManagementOrderIssuedEventHandler {
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
+    private final CoreCaseDataService coreCaseDataService;
 
     @EventListener
     public void notifyParties(final CaseManagementOrderIssuedEvent event) {
@@ -82,5 +88,16 @@ public class CaseManagementOrderIssuedEventHandler {
                 notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
                     representativeNotificationParameters, caseData.getId());
             });
+    }
+
+    @Async
+    @EventListener
+    public void sendDocumentToPostRepresentatives(final CaseManagementOrderIssuedEvent event) {
+        coreCaseDataService.triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            event.getCaseData().getId(),
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", event.getCmo().getOrder()));
     }
 }

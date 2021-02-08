@@ -2,25 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ReviewDecision",
-    "ListElementCode": "hearing",
-    "FieldType": "Text",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewDecision",
-    "ListElementCode": "document",
-    "FieldType": "Document",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ReviewDecision",
     "ListElementCode": "decision",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Does the CMO reflect all decisions made at the hearing?",
+    "ElementLabel": "Is this order ready to be sealed and issued?",
     "FieldTypeParameter": "CMOReviewOutcome",
     "SecurityClassification": "Public"
   },
@@ -38,7 +22,7 @@
     "ID": "ReviewDecision",
     "ListElementCode": "judgeAmendedDocument",
     "FieldType": "Document",
-    "ElementLabel": "Use the link above to download the order. After you’ve made changes, save the final order in Word or as a PDF and upload. This will then be sealed and sent to all parties.",
+    "ElementLabel": "Use the link above to download the order. After you’ve made changes, save the final order in Word and upload. This will then be sealed and sent to all parties.",
     "FieldShowCondition": "decision=\"JUDGE_AMENDS_DRAFT\"",
     "SecurityClassification": "Public",
     "RegularExpression": ".doc,.docx"

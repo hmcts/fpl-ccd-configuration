@@ -22,8 +22,8 @@ public class DraftCMOUploadedContentProvider extends AbstractEmailContentProvide
                                                   List<Element<Respondent>> respondents, String familyManCaseNumber) {
         return DraftCMOUploadedTemplate.builder()
             .caseUrl(getCaseUrl(caseId, DRAFT_ORDERS))
-            .judgeName(judge.getJudgeName())
-            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .judgeName(getJudgeName(judge))
+            .judgeTitle(getJudgeTitle(judge))
             .respondentLastName(getFirstRespondentLastName(respondents))
             .subjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber))
             .build();

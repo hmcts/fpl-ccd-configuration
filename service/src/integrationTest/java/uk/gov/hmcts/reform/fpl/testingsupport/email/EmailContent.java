@@ -27,6 +27,11 @@ public class EmailContent {
         return this;
     }
 
+    public EmailContent lines(int lines) {
+        body.append(NEW_LINE.repeat(Math.max(0, lines)));
+        return this;
+    }
+
     public String body() {
         return body.toString();
     }
