@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +28,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
@@ -153,11 +151,7 @@ public class ManageDocumentService {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
 
-        if (isNotEmpty(c2DocumentBundle.getSupportingEvidenceBundle())) {
-            return getUserSpecificSupportingEvidences(c2DocumentBundle.getSupportingEvidenceBundle());
-        }
-
-        return defaultSupportingEvidences();
+        return getUserSpecificSupportingEvidences(c2DocumentBundle.getSupportingEvidenceBundle());
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -259,7 +253,7 @@ public class ManageDocumentService {
         UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
 
         List<Element<SupportingEvidenceBundle>> previousSupportingDocuments =
-            ElementUtils.findElement(selectedHearingCode, caseDataBefore.getHearingFurtherEvidenceDocuments())
+            findElement(selectedHearingCode, caseDataBefore.getHearingFurtherEvidenceDocuments())
                 .map(Element::getValue)
                 .map(HearingFurtherEvidenceBundle::getSupportingEvidenceBundle)
                 .orElse(List.of());
@@ -267,11 +261,11 @@ public class ManageDocumentService {
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
-    public Map<String, List<Element<SupportingEvidenceBundle>>> splitIntoAllAndNonConfidential(
-        List<Element<SupportingEvidenceBundle>> documents, String keyPrefix) {
+    public Map<String, Object> splitIntoAllAndNonConfidential(List<Element<SupportingEvidenceBundle>> documents,
+                                                              String keyPrefix) {
         return Map.of(
             keyPrefix, documents, // HMCTS can see this (occasionally LA SOLICITOR)
-            keyPrefix + "NonConf", buildNonConfidentialCopy(documents)
+            keyPrefix + "NC", buildNonConfidentialCopy(documents)
         );
     }
 

@@ -34,7 +34,7 @@ public class HearingFurtherEvidenceBundle implements ConfidentialBundle {
             .collect(Collectors.toList());
     }
     // TODO: 03/02/2021 update case field name
-    @JsonGetter(value = "supportingEvidenceNonConf")
+    @JsonGetter(value = "supportingEvidenceNC")
     @Override
     public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
         return getSupportingEvidenceBundle().stream()

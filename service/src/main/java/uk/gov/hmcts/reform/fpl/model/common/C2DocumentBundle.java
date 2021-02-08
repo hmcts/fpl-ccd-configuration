@@ -55,7 +55,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
     }
 
     // TODO: 03/02/2021 add case field name
-    @JsonGetter(value = "supportingEvidenceNonConf")
+    @JsonGetter(value = "supportingEvidenceNC")
     @Override
     public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
         return getSupportingEvidenceBundle().stream()
