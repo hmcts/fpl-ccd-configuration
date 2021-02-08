@@ -38,13 +38,13 @@ public class StandardDirectionOrderGenerationService extends
         HearingBooking firstHearing = caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT)
             .orElse(null);
 
-        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?,?> orderBuilder =
+        DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
                 .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .dateOfIssue(standardDirectionOrder.getDateOfIssue())
-                .complianceDeadline(caseData.getComplianceDeadline())
+                .complianceDeadline(caseData.getDateSubmitted() != null ? caseData.getComplianceDeadline() : null)
                 .children(dataService.getChildrenDetails(caseData.getAllChildren()))
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))

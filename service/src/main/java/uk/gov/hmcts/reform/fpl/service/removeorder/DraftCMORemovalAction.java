@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
-import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemovedException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -28,6 +27,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftCMORemovalAction implements OrderRemovalAction {
 
+    private final UpdateCMOHearing updateCmoHearing;
+
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
         return removableOrder instanceof HearingOrder && Optional.ofNullable(((HearingOrder) removableOrder).getType())
@@ -39,7 +40,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
     public void populateCaseFields(CaseData caseData, CaseDetailsMap data, UUID removedOrderId,
                                    RemovableOrder removableOrder) {
         HearingOrder caseManagementOrder = (HearingOrder) removableOrder;
-        HearingBooking hearing = getHearingToUnlink(caseData, removedOrderId, caseManagementOrder);
+        HearingBooking hearing = updateCmoHearing.getHearingToUnlink(caseData, removedOrderId, caseManagementOrder);
 
         data.put("orderToBeRemoved", caseManagementOrder.getOrder());
         data.put("orderTitleToBeRemoved", "Draft case management order");
@@ -68,7 +69,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
 
         updateHearingOrderBundlesDrafts(data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
 
-        data.put("hearingDetails", removeHearingLinkedToCMO(caseData, cmoElement));
+        data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
         data.putIfNotEmpty("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
     }
 
@@ -92,40 +93,5 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         }
 
         data.putIfNotEmpty("hearingOrdersBundlesDrafts", updatedHearingOrderBundle);
-    }
-
-    private List<Element<HearingBooking>> removeHearingLinkedToCMO(CaseData caseData,
-                                                                   Element<HearingOrder> cmoElement) {
-        HearingBooking hearingToUnlink = getHearingToUnlink(
-            caseData,
-            cmoElement.getId(),
-            cmoElement.getValue());
-
-        // this will still be the same reference as the one in the case data list so just update it
-        hearingToUnlink.setCaseManagementOrderId(null);
-
-        return caseData.getHearingDetails();
-    }
-
-    private HearingBooking getHearingToUnlink(CaseData caseData, UUID cmoId, HearingOrder cmo) {
-        Optional<Element<HearingBooking>> hearingBooking = caseData.getHearingLinkedToCMO(cmoId);
-
-        if (hearingBooking.isEmpty()) {
-            List<Element<HearingBooking>> matchingLabel = caseData.getHearingDetails()
-                .stream()
-                .filter(hearing -> hearing.getValue().toLabel().equals(cmo.getHearing()))
-                .collect(Collectors.toList());
-
-            if (matchingLabel.size() != 1) {
-                throw new UnexpectedNumberOfCMOsRemovedException(
-                    cmoId,
-                    format("CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "
-                        + "(%s links found) to a hearing with the same label", cmoId, matchingLabel.size())
-                );
-            }
-
-            return matchingLabel.get(0).getValue();
-        }
-        return hearingBooking.get().getValue();
     }
 }

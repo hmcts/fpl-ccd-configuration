@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.removeorder.UnexpectedNumberOfCMOsRemo
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -26,6 +27,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
@@ -52,6 +54,9 @@ class DraftCMORemovalActionTest {
 
     @Mock
     private DraftOrderService draftOrderService;
+
+    @Mock
+    private UpdateCMOHearing updateCMOHearing;
 
     @InjectMocks
     private DraftCMORemovalAction underTest;
@@ -106,6 +111,9 @@ class DraftCMORemovalActionTest {
             .data(Map.of())
             .build());
 
+        when(updateCMOHearing.getHearingToUnlink(caseData, TO_REMOVE_ORDER_ID, removedOrder))
+            .thenReturn(hearing());
+
         underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, removedOrder);
 
         assertThat(caseDetailsMap)
@@ -144,6 +152,9 @@ class DraftCMORemovalActionTest {
         CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
             .data(Map.of())
             .build());
+
+        when(updateCMOHearing.getHearingToUnlink(caseData, TO_REMOVE_ORDER_ID, removedOrder))
+            .thenReturn(hearingToBeUnlinked);
 
         underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, removedOrder);
 
@@ -210,6 +221,13 @@ class DraftCMORemovalActionTest {
             .data(Map.of())
             .build());
 
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(HEARING_ID, hearing(null, differentStartDate)),
+            element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID)));
+
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, cmoToRemove)))
+            .thenReturn(updatedHearings);
+
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, cmoToRemove);
 
         assertThat(caseDetailsMap).isEqualTo(Map.of(
@@ -249,13 +267,17 @@ class DraftCMORemovalActionTest {
             .data(Map.of())
             .build());
 
-        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(HEARING_ID, hearing(null)),
+            element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+        );
 
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(updatedHearings);
+
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
         Map<String, List<?>> expectedData = Map.of(
-            "hearingDetails", List.of(
-                element(HEARING_ID, hearing(null)),
-                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
-            ),
+            "hearingDetails", updatedHearings,
             "hearingOrdersBundlesDrafts", List.of(
                 element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
                     .orders(newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))).build()),
@@ -290,12 +312,17 @@ class DraftCMORemovalActionTest {
             .data(Map.of())
             .build());
 
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
+            element(ANOTHER_HEARING_ID, hearing(null)));
+
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(updatedHearings);
+
         underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
 
         assertThat(caseDetailsMap).isEqualTo(Map.of(
-            "hearingDetails", List.of(
-                element(HEARING_ID, hearing(CASE_MANAGEMENT_ORDER_ID)),
-                element(ANOTHER_HEARING_ID, hearing(null))))
+            "hearingDetails", updatedHearings)
         );
     }
 
