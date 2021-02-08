@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListCompletedMarkGenerator;
+import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
 import java.util.List;
 
@@ -36,10 +38,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 class TaskListRendererTest {
     private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
-    private final TaskListRenderer taskListRenderer = new TaskListRenderer(
-        "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/",
-        featureToggleService
+    private final TaskListRenderElements taskListRenderElements = new TaskListRenderElements(
+        "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
     );
+
+    private final TaskListRenderer taskListRenderer = new TaskListRenderer(
+        featureToggleService,
+        new TaskListCompletedMarkGenerator(featureToggleService, taskListRenderElements),
+        taskListRenderElements);
 
     private List<Task> getTasks(Event event) {
         return List.of(
