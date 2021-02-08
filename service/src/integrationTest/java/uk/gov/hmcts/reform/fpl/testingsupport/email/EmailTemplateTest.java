@@ -10,10 +10,12 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
 import uk.gov.service.notify.NotificationClient;
@@ -50,6 +52,12 @@ public class EmailTemplateTest {
 
     @MockBean
     private InboxLookupService inboxLookupService;
+
+    @MockBean
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     private ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
