@@ -24,13 +24,15 @@ import uk.gov.hmcts.reform.fpl.utils.elasticsearch.Must;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 import uk.gov.hmcts.reform.fpl.utils.elasticsearch.RangeQuery;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.math.RoundingMode.UP;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.service.search.SearchService.MAX_SEARCH_SIZE;
+import static uk.gov.hmcts.reform.fpl.service.search.SearchService.ES_DEFAULT_SIZE;
 
 @Slf4j
 @Component
@@ -57,34 +59,56 @@ public class UpdateSummaryCaseDetails implements Job {
         log.info("Job '{}' started", jobName);
 
         log.debug("Job '{}' searching for cases", jobName);
-        final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
-        List<CaseDetails> cases = searchService.search(query, MAX_SEARCH_SIZE);
 
-        int total = cases.size();
+        final ESQuery query = buildQuery(toggleService.isSummaryTabFirstCronRunEnabled());
+
+        int total;
         int skipped = 0;
         int updated = 0;
         int failed = 0;
 
-        log.info("Job '{}' found {} cases", jobName, total);
-        for (CaseDetails caseDetails : cases) {
-            CaseData caseData = converter.convert(caseDetails);
-            Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
-            final Long caseId = caseDetails.getId();
+        try {
+            total = searchService.searchResultsSize(query);
+            log.info("Job '{}' found {} cases", jobName, total);
+        } catch (Exception e) {
+            log.error("Job '{}' could not determine the number of cases to search for due to {}",
+                jobName, e.getMessage(), e
+            );
+            log.info("Job '{}' finished unsuccessfully.", jobName);
+            return;
+        }
+
+        int pages = paginate(total);
+        log.debug("Job '{}' split the search query over {} pages", jobName, pages);
+        for (int i = 0; i < pages; i++) {
             try {
-                if (shouldUpdate(updatedData, caseData)) {
-                    log.debug("Job '{}' updating case {}", jobName, caseId);
-                    ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
-                    log.info("Job '{}' updated case {}", jobName, caseId);
-                    updated++;
-                } else {
-                    log.debug("Job '{}' skipped case {}", jobName, caseId);
-                    skipped++;
+                List<CaseDetails> cases = searchService.search(query, ES_DEFAULT_SIZE, i * ES_DEFAULT_SIZE);
+                for (CaseDetails caseDetails : cases) {
+                    final Long caseId = caseDetails.getId();
+                    try {
+                        CaseData caseData = converter.convert(caseDetails);
+                        Map<String, Object> updatedData = summaryService.generateSummaryFields(caseData);
+                        if (shouldUpdate(updatedData, caseData)) {
+                            log.debug("Job '{}' updating case {}", jobName, caseId);
+                            ccdService.triggerEvent(JURISDICTION, CASE_TYPE, caseId, EVENT_NAME, updatedData);
+                            log.info("Job '{}' updated case {}", jobName, caseId);
+                            updated++;
+                        } else {
+                            log.debug("Job '{}' skipped case {}", jobName, caseId);
+                            skipped++;
+                        }
+                    } catch (Exception e) {
+                        log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
+                        failed++;
+                        Thread.sleep(3000); // give ccd time to recover in case it was getting too many request
+                    }
                 }
             } catch (Exception e) {
-                log.error("Job '{}' could not update case {} due to {}", jobName, caseId, e.getMessage(), e);
-                failed++;
+                log.error("Job '{}' could not search for cases due to {}", jobName, e.getMessage(), e);
+                failed += ES_DEFAULT_SIZE;
             }
         }
+
         log.info("Job '{}' finished. {}", jobName, buildStats(total, skipped, updated, failed));
     }
 
@@ -122,6 +146,11 @@ public class UpdateSummaryCaseDetails implements Job {
             .mustNot(mustNot.build())
             .build();
     }
+
+    private int paginate(int total) {
+        return new BigDecimal(total).divide(new BigDecimal(ES_DEFAULT_SIZE), UP).intValue();
+    }
+
 
     private String buildStats(int total, int skipped, int updated, int failed) {
         double percentUpdated = updated * 100.0 / total;

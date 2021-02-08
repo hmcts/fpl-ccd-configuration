@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.order;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -69,5 +71,13 @@ public class HearingOrdersBundle {
         }
 
         return List.of();
+    }
+  
+    public List<Element<HearingOrder>> getOrders(CMOStatus status) {
+        List<Element<HearingOrder>> hearingOrders = defaultIfNull(getOrders(), newArrayList());
+
+        return hearingOrders.stream()
+            .filter(order -> status.equals(order.getValue().getStatus()))
+            .collect(Collectors.toList());
     }
 }

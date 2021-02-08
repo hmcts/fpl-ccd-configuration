@@ -130,14 +130,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "reviewCMOLink",
-    "FieldType": "Label",
-    "Label": "[Review agreed CMO](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/reviewCMO)",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadC2Link",
     "FieldType": "Label",
     "Label": "[Upload a new C2 application](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadC2)",
@@ -188,7 +180,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "messageJudgeLegalAdviserLink",
     "FieldType": "Label",
-    "Label": "[Message judge or legal adviser](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",
+    "Label": "[Send and reply to messages](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",
     "SecurityClassification": "Public"
   },
   {

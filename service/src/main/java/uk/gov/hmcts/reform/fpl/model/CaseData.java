@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -94,6 +95,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -590,6 +592,13 @@ public class CaseData {
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
     private final UUID lastHearingOrderDraftsHearingId;
 
+    @JsonIgnore
+    public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
+        return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .collect(toList());
+    }
+
     @JsonUnwrapped
     @Builder.Default
     private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
@@ -671,6 +680,10 @@ public class CaseData {
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
     private final List<Element<HearingOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> ordersToBeSent;
+
+    @JsonUnwrapped
+    private final ReviewDraftOrdersData reviewDraftOrdersData;
 
     public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
