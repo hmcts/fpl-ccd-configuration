@@ -57,7 +57,7 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
+            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build());
 
         given(c2UploadedEmailContentProvider.getNotifyData(caseData,
             c2DocumentBundle.getDocument()))
