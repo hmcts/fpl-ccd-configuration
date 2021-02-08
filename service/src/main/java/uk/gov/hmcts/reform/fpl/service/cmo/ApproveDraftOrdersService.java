@@ -244,7 +244,6 @@ public class ApproveDraftOrdersService {
         }
     }
 
-
     private void updateHearingCMO(CaseData caseData, UUID cmoId) {
         defaultIfNull(caseData.getHearingDetails(), new ArrayList<Element<HearingBooking>>()).stream()
             .filter(hearing -> cmoId.equals(hearing.getValue().getCaseManagementOrderId()))
