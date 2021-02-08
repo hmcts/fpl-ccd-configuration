@@ -1,10 +1,9 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.document;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -13,12 +12,11 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +32,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -45,8 +43,7 @@ public class ManageDocumentService {
     private final ObjectMapper mapper;
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
+    private final UserService user;
     private final FeatureToggleService featureToggleService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
@@ -270,21 +267,35 @@ public class ManageDocumentService {
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
-    //Separate collection based on idam role (only show users their own documents)
+    public Map<String, List<Element<SupportingEvidenceBundle>>> splitIntoAllAndNonConfidential(
+        List<Element<SupportingEvidenceBundle>> documents, String keyPrefix) {
+        return Map.of(
+            keyPrefix, documents, // HMCTS can see this (occasionally LA SOLICITOR)
+            keyPrefix + "NonConf", buildNonConfidentialCopy(documents)
+        );
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildNonConfidentialCopy(
+        List<Element<SupportingEvidenceBundle>> documents) {
+
+        return documents.stream()
+            .filter(doc -> !doc.getValue().isConfidential())
+            .collect(Collectors.toList());
+    }
+
+
+    // Separate collection based on idam role (only show users their own documents)
     private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
-        List<Element<SupportingEvidenceBundle>> bundleList) {
-        UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
-        boolean isHmctsUser = userDetails.getRoles().stream().anyMatch(UserRole::isHmctsUser);
+        List<Element<SupportingEvidenceBundle>> bundles) {
 
-        Predicate<Element<SupportingEvidenceBundle>> userFilter =
-            evidenceBundleElement -> "HMCTS".equals(evidenceBundleElement.getValue().getUploadedBy());
+        Predicate<Element<SupportingEvidenceBundle>> bundleFilter = bundle -> bundle.getValue().isUploadedByHMCTS();
 
-        if (!isHmctsUser) {
-            userFilter = userFilter.negate();
+        if (!user.isHmctsUser()) {
+            bundleFilter = bundleFilter.negate();
         }
 
-        List<Element<SupportingEvidenceBundle>> supportingEvidences = bundleList.stream()
-            .filter(userFilter)
+        List<Element<SupportingEvidenceBundle>> supportingEvidences = bundles.stream()
+            .filter(bundleFilter)
             .collect(Collectors.toList());
 
         return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
