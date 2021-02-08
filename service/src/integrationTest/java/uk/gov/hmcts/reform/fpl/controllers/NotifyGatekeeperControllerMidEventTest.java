@@ -53,7 +53,7 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenSingleGatekeeperEmailIsInValid() {
+    void shouldReturnErrorWhenSingleGatekeeperEmailIsInvalid() {
         CaseData caseData = CaseData.builder()
             .state(State.SUBMITTED)
             .gatekeeperEmails(List.of(

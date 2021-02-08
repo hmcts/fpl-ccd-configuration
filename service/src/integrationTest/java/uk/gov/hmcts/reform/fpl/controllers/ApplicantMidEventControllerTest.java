@@ -17,12 +17,11 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
@@ -62,14 +61,11 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
     void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsNull() {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(12345L)
-            .data(Map.of("applicants", ImmutableList.of(Element.builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
+            .data(Map.of("applicants", wrapElements(Applicant.builder()
                     .party(ApplicantParty.builder()
                         .email(EmailAddress.builder().build())
                         .build())
-                    .build())
-                .build()),
+                    .build()),
                 "solicitor", Solicitor.builder().build()))
             .build();
 
@@ -79,40 +75,30 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenApplicantEmailsAreInValid() {
+    void shouldReturnErrorsWhenApplicantAndSolicitorEmailsAreInvalid() {
         CaseData caseData = CaseData.builder()
-            .applicants(List.of(element(buildApplicant("email@example.com")),
-                element(buildApplicant("<John Doe> johndoe@email.com")),
-                element(buildApplicant("email@example.com")),
-                element(buildApplicant("very.unusual.”@”.unusual.com@example.com"))))
-            .solicitor(Solicitor.builder().build())
+            .applicants(wrapElements(buildApplicant("email@example.com"),
+                buildApplicant("<John Doe> johndoe@email.com"),
+                buildApplicant("email@example.com"),
+                buildApplicant("very.unusual.”@”.unusual.com@example.com")))
+            .solicitor(Solicitor.builder()
+                .email("<John Doe> johndoe@email.com")
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(callbackResponse.getErrors()).contains(
+        assertThat(callbackResponse.getErrors()).containsExactly(
             "Applicant 2: Enter an email address in the correct format, for example name@example.com",
-            "Applicant 4: Enter an email address in the correct format, for example name@example.com");
+            "Applicant 4: Enter an email address in the correct format, for example name@example.com",
+            "Solicitor: ");
     }
 
     @Test
-    void shouldNotReturnErrorsWhenApplicantEmailsAreValid() {
+    void shouldNotReturnErrorsWhenApplicantAndSolicitorEmailsAreValid() {
         CaseData caseData = CaseData.builder()
-            .applicants(List.of(element(buildApplicant("email@example.com")),
-                element(buildApplicant("email@example.com"))))
-            .solicitor(Solicitor.builder().build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldNotReturnErrorsWhenSolicitorEmailIsValid() {
-        CaseData caseData = CaseData.builder()
-            .applicants(List.of(element(buildApplicant("email@example.com")),
-                element(buildApplicant("email@example.com"))))
+            .applicants(wrapElements(buildApplicant("email@example.com"),
+                buildApplicant("email@example.com")))
             .solicitor(Solicitor.builder()
                 .email("email@example.com")
                 .build())
@@ -121,39 +107,6 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
         assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnErrorWhenSolicitorEmailIsInValid() {
-        CaseData caseData = CaseData.builder()
-            .applicants(List.of(element(buildApplicant("email@example.com")),
-                element(buildApplicant("email@example.com"))))
-            .solicitor(Solicitor.builder()
-                .email("<John Doe> johndoe@email.com")
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
-
-        assertThat(callbackResponse.getErrors()).contains(
-            "Solicitor: Enter an email address in the correct format, for example name@example.com");
-    }
-
-    @Test
-    void shouldReturnErrorsWhenBothSolicitorAndApplicantEmailIsInValid() {
-        CaseData caseData = CaseData.builder()
-            .applicants(List.of(element(buildApplicant("<John Doe> johndoe@email.com")),
-                element(buildApplicant("email@example.com"))))
-            .solicitor(Solicitor.builder()
-                .email("<John Doe> johndoe@email.com")
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
-
-        assertThat(callbackResponse.getErrors()).contains(
-            "Applicant 1: Enter an email address in the correct format, for example name@example.com",
-            "Solicitor: Enter an email address in the correct format, for example name@example.com");
     }
 
     private Applicant buildApplicant(String email) {

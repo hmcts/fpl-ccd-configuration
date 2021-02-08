@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("integration-test")
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
-public class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHearingsControllerTest {
+class ManageHearingsControllerValidateJudgeEmailMidEventTest extends ManageHearingsControllerTest {
 
     ManageHearingsControllerValidateJudgeEmailMidEventTest() {
         super("manage-hearings");

@@ -94,7 +94,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
     }
 
     @Test
-    void shouldReturnErrorsWhenLALegalRepresentativeEmailsAreInValid() {
+    void shouldReturnErrorsWhenLALegalRepresentativeEmailsAreInvalid() {
         CaseData caseData = CaseData.builder()
             .legalRepresentatives(List.of(
                 element(LegalRepresentative.builder()
