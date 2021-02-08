@@ -42,7 +42,7 @@ class AllocationProposalCheckerTest {
         final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
 
         assertThat(errors).contains("Enter an allocation proposal");
-        assertThat(isCompleted).isTrue();
+        assertThat(isCompleted).isFalse();
     }
 
     @Test
@@ -58,7 +58,7 @@ class AllocationProposalCheckerTest {
         final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
 
         assertThat(errors).contains("Enter an allocation proposal");
-        assertThat(isCompleted).isTrue();
+        assertThat(isCompleted).isFalse();
     }
 
     @Test

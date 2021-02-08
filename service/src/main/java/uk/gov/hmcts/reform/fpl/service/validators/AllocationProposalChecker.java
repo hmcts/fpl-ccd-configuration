@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Component
@@ -28,7 +29,7 @@ public class AllocationProposalChecker extends PropertiesChecker {
     public boolean isCompleted(CaseData caseData) {
         final Allocation allocationProposal = caseData.getAllocationProposal();
 
-        return allocationProposal != null && !anyNonEmpty(allocationProposal.getProposal(),
+        return allocationProposal != null && !anyEmpty(allocationProposal.getProposal(),
             allocationProposal.getProposalReason());
     }
 }
