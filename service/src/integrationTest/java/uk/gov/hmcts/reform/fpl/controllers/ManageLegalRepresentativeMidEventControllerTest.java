@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
@@ -96,19 +97,20 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
     @Test
     void shouldReturnErrorsWhenLALegalRepresentativeEmailsAreInvalid() {
         CaseData caseData = CaseData.builder()
-            .legalRepresentatives(List.of(
-                element(LegalRepresentative.builder()
-                    .email("Khaled Fahmy <Khaled.Fahmy@HMCTS.NET>")
-                    .build()),
-                element(LegalRepresentative.builder()
-                    .email("Khaled Fahmy <Test.Fahmy@HMCTS.NET>")
-                    .build()))).build();
+            .legalRepresentatives(wrapElements(LegalRepresentative.builder()
+                    .email("Test user <Test.User@HMCTS.NET>")
+                    .build(), LegalRepresentative.builder()
+                .email("test@test.com")
+                    .build(),
+                LegalRepresentative.builder()
+                    .email("Test user <Test.User@HMCTS.NET>")
+                    .build())).build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
         assertThat(callbackResponse.getErrors()).contains(
             "LA Legal Representative 1: Enter an email address in the correct format, for example name@example.com",
-            "LA Legal Representative 2: Enter an email address in the correct format, for example name@example.com");
+            "LA Legal Representative 3: Enter an email address in the correct format, for example name@example.com");
     }
 
     @Test

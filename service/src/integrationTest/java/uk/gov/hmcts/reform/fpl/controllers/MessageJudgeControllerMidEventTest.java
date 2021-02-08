@@ -184,7 +184,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
                 .builder()
                 .judicialMessageMetaData(JudicialMessageMetaData
                     .builder()
-                    .recipient("Khaled Fahmy <Khaled.Fahmy@HMCTS.NET>")
+                    .recipient("Test user <Test.User@HMCTS.NET>")
                     .build())
                 .build())
             .build();
