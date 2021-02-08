@@ -15,7 +15,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by HMCTS",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +34,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "HMCTS further evidence documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -70,6 +72,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by local authority",
+    "Searchable": "N",
     "SecurityClassification": "Public"
   },
   {
@@ -80,6 +83,7 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by local authority",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Non confidential version"
   },
   {
