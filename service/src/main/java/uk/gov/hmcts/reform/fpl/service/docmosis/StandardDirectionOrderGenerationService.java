@@ -44,7 +44,7 @@ public class StandardDirectionOrderGenerationService extends
                 .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .dateOfIssue(standardDirectionOrder.getDateOfIssue())
-                .complianceDeadline(caseData.getDateSubmitted() != null ? caseData.getComplianceDeadline() : null)
+                .complianceDeadline(caseData.getComplianceDeadline())
                 .children(dataService.getChildrenDetails(caseData.getAllChildren()))
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
