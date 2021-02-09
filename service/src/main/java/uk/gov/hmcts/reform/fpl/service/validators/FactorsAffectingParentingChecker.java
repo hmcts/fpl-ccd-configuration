@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FactorsParenting;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
@@ -54,5 +56,10 @@ public class FactorsAffectingParentingChecker implements EventChecker {
             return ("No").equals(factors.getAnythingElse())
                 || !isEmpty(factors.getAnythingElseReason());
         }
+    }
+
+    @Override
+    public TaskState completedState() {
+        return COMPLETED_FINISHED;
     }
 }

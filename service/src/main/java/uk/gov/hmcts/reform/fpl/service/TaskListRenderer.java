@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
-import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListCompletedMarkGenerator;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
 import java.util.LinkedList;
@@ -43,7 +42,6 @@ public class TaskListRenderer {
     private static final String NEW_LINE = "<br/>";
 
     private final FeatureToggleService featureToggleService;
-    private final TaskListCompletedMarkGenerator taskListCompletedMarkGenerator;
     private final TaskListRenderElements taskListRenderElements;
 
     //TODO consider templating solution like mustache
@@ -147,7 +145,12 @@ public class TaskListRenderer {
                     + taskListRenderElements.renderImage("in-progress.png", "In progress"));
                 break;
             case COMPLETED:
-                lines.add(taskListCompletedMarkGenerator.generate(task));
+                lines.add(taskListRenderElements.renderLink(task)
+                    + taskListRenderElements.renderImage("information-added.png", "Information added"));
+                break;
+            case COMPLETED_FINISHED:
+                lines.add(taskListRenderElements.renderLink(task)
+                    + taskListRenderElements.renderImage("finished.png", "Finished"));
                 break;
             default:
                 lines.add(taskListRenderElements.renderLink(task));

@@ -5,11 +5,13 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
@@ -63,5 +65,10 @@ public class OrdersSoughtChecker extends PropertiesChecker {
         }
 
         return super.isCompleted(caseData);
+    }
+
+    @Override
+    public TaskState completedState() {
+        return COMPLETED_FINISHED;
     }
 }
