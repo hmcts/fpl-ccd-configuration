@@ -71,8 +71,7 @@ class UpdateCMOHearingTest {
             .type(AGREED_CMO).status(APPROVED)
             .hearing(hearingWithCMOId.toLabel()).build());
 
-        Element<HearingOrder> anotherCMO = element(ANOTHER_CMO_ID,
-            HearingOrder.builder().type(AGREED_CMO).status(APPROVED).build());
+        HearingOrder anotherCMO = HearingOrder.builder().type(AGREED_CMO).status(APPROVED).build();
 
         CaseData caseData = CaseData.builder()
             .sealedCMOs(newArrayList(sealedCMO))
@@ -80,7 +79,7 @@ class UpdateCMOHearingTest {
             .build();
 
         Exception exception = assertThrows(UnexpectedNumberOfCMOsRemovedException.class,
-            () -> underTest.getHearingToUnlink(caseData, anotherCMO.getId(), anotherCMO.getValue()));
+            () -> underTest.getHearingToUnlink(caseData, ANOTHER_CMO_ID, anotherCMO));
 
         AssertionsForClassTypes.assertThat(exception).hasMessageContaining(String.format(
             "CMO %s could not be linked to hearing by CMO id and there wasn't a unique link "

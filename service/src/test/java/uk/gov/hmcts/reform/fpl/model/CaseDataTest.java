@@ -1265,8 +1265,8 @@ class CaseDataTest {
             Optional<Element<HearingOrder>> matchingHearingOrder =
                 caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
 
-            assertThat(matchingHearingOrder.isPresent()).isTrue();
-            assertThat(matchingHearingOrder.get()).isEqualTo(draftCMOOne);
+            assertThat(matchingHearingOrder).isPresent();
+            assertThat(matchingHearingOrder).contains(draftCMOOne);
         }
 
         @Test
@@ -1280,7 +1280,7 @@ class CaseDataTest {
             Optional<Element<HearingOrder>> matchingHearingOrder =
                 caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
 
-            assertThat(matchingHearingOrder.isPresent()).isFalse();
+            assertThat(matchingHearingOrder).isNotPresent();
         }
     }
 
@@ -1309,8 +1309,8 @@ class CaseDataTest {
             Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
                 caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
 
-            assertThat(matchingHearingOrderBundle.isPresent()).isTrue();
-            assertThat(matchingHearingOrderBundle.get()).isEqualTo(hearingOrdersBundleOne);
+            assertThat(matchingHearingOrderBundle).isPresent();
+            assertThat(matchingHearingOrderBundle).contains(hearingOrdersBundleOne);
         }
 
         @Test
@@ -1330,7 +1330,7 @@ class CaseDataTest {
             Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
                 caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
 
-            assertThat(matchingHearingOrderBundle.isPresent()).isFalse();
+            assertThat(matchingHearingOrderBundle).isEmpty();
         }
     }
 
