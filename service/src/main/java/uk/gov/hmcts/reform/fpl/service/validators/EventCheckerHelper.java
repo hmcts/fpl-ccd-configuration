@@ -39,6 +39,10 @@ public class EventCheckerHelper {
         return Stream.of(properties).allMatch(ObjectUtils::isEmpty);
     }
 
+    public static boolean allNonEmpty(Object... properties) {
+        return Stream.of(properties).allMatch(ObjectUtils::isNotEmpty);
+    }
+
     public static boolean anyEmpty(Object... properties) {
         return Stream.of(properties).anyMatch(ObjectUtils::isEmpty);
     }
