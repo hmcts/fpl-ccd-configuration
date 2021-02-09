@@ -111,7 +111,7 @@ public class RepresentativeService {
             if (isEmpty(representative.getEmail())) {
                 validationErrors.add(format("Enter an email address for %s", representativeLabel));
             } else if (!validateEmailService.isValid(representative.getEmail())) {
-                Optional error = validateEmailService.validate(representative.getEmail());
+                Optional<String> error = validateEmailService.validate(representative.getEmail());
 
                 if (error.isPresent()) {
                     validationErrors.add(String.format("%s for %s",
@@ -148,7 +148,7 @@ public class RepresentativeService {
         if (isEmpty(representative.getEmail())) {
             validationErrors.add(format("Enter an email address for %s", representativeLabel));
         } else if (!validateEmailService.isValid(representative.getEmail())) {
-            Optional error = validateEmailService.validate(representative.getEmail());
+            Optional<String> error = validateEmailService.validate(representative.getEmail());
 
             if (error.isPresent()) {
                 validationErrors.add(String.format("%s for %s",

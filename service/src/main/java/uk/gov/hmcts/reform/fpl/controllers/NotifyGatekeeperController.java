@@ -97,10 +97,10 @@ public class NotifyGatekeeperController extends CallbackController {
     }
 
     private List<String> handleSingleGatekeeperEmailValidation(String email) {
-        Optional error = validateEmailService.validate(email);
+        Optional<String> error = validateEmailService.validate(email);
 
         if (error.isPresent()) {
-            return List.of(error.get().toString());
+            return List.of(error.get());
         }
 
         return emptyList();

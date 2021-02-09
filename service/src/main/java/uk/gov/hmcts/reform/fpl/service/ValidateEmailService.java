@@ -20,7 +20,7 @@ public class ValidateEmailService {
         int index = 1;
 
         for (String email : emailAddresses) {
-            Optional validationMessage = Optional.empty();
+            Optional<String> validationMessage = Optional.empty();
 
             if (isEmpty(email)) {
                 if (!emailIsOptional(key)) {

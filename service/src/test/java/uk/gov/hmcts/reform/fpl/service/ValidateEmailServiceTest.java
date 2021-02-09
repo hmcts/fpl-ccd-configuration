@@ -60,7 +60,7 @@ class ValidateEmailServiceTest {
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
     void shouldReturnAnErrorMessageIfEmailIsInvalid(String email) {
-        assertThat(validateEmailService.validate(email).get()).isEqualTo(ERROR_MESSAGE);
+        assertThat(validateEmailService.validate(email).get()).contains(ERROR_MESSAGE);
     }
 
     @Test
