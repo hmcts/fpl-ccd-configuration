@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,7 +61,7 @@ public class NotifyGatekeeperController extends CallbackController {
 
         List<String> errors = validateGatekeeperEmails(caseData.getGatekeeperEmails());
 
-        if (!errors.contains("")) {
+        if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
         }
 
@@ -86,7 +85,6 @@ public class NotifyGatekeeperController extends CallbackController {
         List<String> emails = gatekeeperEmails.stream()
             .map(Element::getValue)
             .map(EmailAddress::getEmail)
-            .filter(StringUtils::isNotEmpty)
             .collect(Collectors.toList());
 
         if (emails.size() == 1) {
