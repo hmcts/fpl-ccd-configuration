@@ -9,15 +9,11 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-judiciary",
+          "[LASOLICITOR]",
+          "[LABARRISTER]"
         ],
         "CRUD": "CRUD"
-      },
-      {
-        "UserRoles": [
-          "[LASOLICITOR]"
-        ],
-        "CRUD": "R"
       }
     ]
   },
@@ -37,7 +33,8 @@
       },
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[LABARRISTER]"
         ],
         "CRUD": "CU"
       }
@@ -47,7 +44,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "ListElementCode": "supportingEvidenceBundleLAConf",
+    "ListElementCode": "supportingEvidenceLA",
     "AccessControl": [
       {
         "UserRoles": [
@@ -59,9 +56,28 @@
       },
       {
         "UserRoles": [
-          "[LASOLICITOR]"
+          "[LASOLICITOR]",
+          "[LABARRISTER]"
         ],
         "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "ListElementCode": "supportingEvidenceNC",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "[LASOLICITOR]",
+          "[LABARRISTER]"
+        ],
+        "CRUD": "CUD"
       }
     ]
   }
