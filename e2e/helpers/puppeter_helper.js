@@ -80,4 +80,18 @@ module.exports = class PuppeteerHelpers extends Helper {
       return undefined;
     }
   }
+
+  async runAccessibilityTest() {
+
+    const testConfig = require('e2e/config.js');
+    const {runAccessibility} = require('./accessibility/runner');
+
+    if (!testConfig.TestForAccessibility) {
+      return;
+    }
+    const url = await this.helpers['Puppeteer'].grabCurrentUrl();
+    const {page} = await this.helpers['Puppeteer'];
+
+    runAccessibility(url, page);
+  }
 };

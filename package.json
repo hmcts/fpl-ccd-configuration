@@ -14,10 +14,15 @@
     "mocha-junit-reporter": "^2.0.0",
     "mocha-multi": "^1.1.3",
     "mochawesome": "^6.2.1",
+    "moment": "2.29.1",
     "node-fetch": "^2.6.1",
+<<<<<<< HEAD
     "puppeteer": "7.1.0",
     "moment": "2.29.1",
     "html_codesniffer": "^2.5.1"
+=======
+    "puppeteer": "7.0.1"
+>>>>>>> added accessibility files
   },
   "scripts": {
     "lint": "eslint e2e",
@@ -25,6 +30,10 @@
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "TESTS_FOR_ACCESSIBILITY='true' MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
     "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi"
+  },
+  "dependencies": {
+    "e2e": "^0.0.8",
+    "html_codesniffer": "^2.5.1"
   },
   "husky": {
     "hooks": {
