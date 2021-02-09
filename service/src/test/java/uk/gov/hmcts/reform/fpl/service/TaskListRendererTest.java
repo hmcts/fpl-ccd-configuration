@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.Task.task;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
@@ -46,12 +47,12 @@ class TaskListRendererTest {
 
     private List<Task> getTasks(Event event) {
         return List.of(
-            task(CASE_NAME, COMPLETED),
+            task(CASE_NAME, COMPLETED_FINISHED),
             task(ORDERS_SOUGHT, IN_PROGRESS),
-            task(HEARING_URGENCY, COMPLETED),
+            task(HEARING_URGENCY, COMPLETED_FINISHED),
             task(GROUNDS, COMPLETED),
             task(RISK_AND_HARM, IN_PROGRESS),
-            task(FACTORS_AFFECTING_PARENTING, COMPLETED),
+            task(FACTORS_AFFECTING_PARENTING, COMPLETED_FINISHED),
             task(event, COMPLETED),
             task(ORGANISATION_DETAILS, COMPLETED),
             task(CHILDREN, COMPLETED),
