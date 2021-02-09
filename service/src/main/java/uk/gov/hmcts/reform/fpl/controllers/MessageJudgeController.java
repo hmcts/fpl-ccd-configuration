@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
@@ -72,10 +73,10 @@ public class MessageJudgeController extends CallbackController {
 
         if (!caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
             String email = caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipient();
-            List<String> errors = validateEmailService.validate(email);
+            Optional<String> error = validateEmailService.validate(email);
 
-            if (!errors.isEmpty()) {
-                return respond(caseDetailsMap, errors);
+            if (!error.isEmpty()) {
+                return respond(caseDetailsMap, List.of(error.get()));
             }
         }
 

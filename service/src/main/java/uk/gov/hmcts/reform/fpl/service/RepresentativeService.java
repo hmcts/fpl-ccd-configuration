@@ -110,9 +110,13 @@ public class RepresentativeService {
         if (EMAIL.equals(servingPreferences)) {
             if (isEmpty(representative.getEmail())) {
                 validationErrors.add(format("Enter an email address for %s", representativeLabel));
-            } else if (!validateEmailService.isValidInternetAddress(representative.getEmail())) {
-                validationErrors.add(String.format("%s for %s",
-                    validateEmailService.validate(representative.getEmail()).get(0), representativeLabel));
+            } else if (!validateEmailService.isValid(representative.getEmail())) {
+                Optional error = validateEmailService.validate(representative.getEmail());
+
+                if (error.isPresent()) {
+                    validationErrors.add(String.format("%s for %s",
+                        error.get(), representativeLabel));
+                }
             }
         }
     }
@@ -143,9 +147,13 @@ public class RepresentativeService {
                                                   Representative representative, String representativeLabel) {
         if (isEmpty(representative.getEmail())) {
             validationErrors.add(format("Enter an email address for %s", representativeLabel));
-        } else if (!validateEmailService.isValidInternetAddress(representative.getEmail())) {
-            validationErrors.add(String.format("%s for %s",
-                validateEmailService.validate(representative.getEmail()), representativeLabel));
+        } else if (!validateEmailService.isValid(representative.getEmail())) {
+            Optional error = validateEmailService.validate(representative.getEmail());
+
+            if (error.isPresent()) {
+                validationErrors.add(String.format("%s for %s",
+                    error.get(), representativeLabel));
+            }
         } else {
             Optional<String> userId = organisationService.findUserByEmail(representative.getEmail());
 

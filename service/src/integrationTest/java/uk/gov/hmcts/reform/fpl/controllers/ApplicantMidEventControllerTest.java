@@ -91,7 +91,7 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly(
             "Applicant 2: Enter an email address in the correct format, for example name@example.com",
             "Applicant 4: Enter an email address in the correct format, for example name@example.com",
-            "Solicitor: ");
+            "Solicitor: Enter an email address in the correct format, for example name@example.com");
     }
 
     @Test

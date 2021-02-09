@@ -25,9 +25,10 @@ import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.apache.logging.log4j.util.Strings.isEmpty;
 
 @Api
 @RestController
@@ -104,12 +105,12 @@ public class ApplicantController extends CallbackController {
     }
 
     private void validateSolicitorEmail(String solicitorEmail, List<String> errors) {
-        if (!isBlank(solicitorEmail)) {
-            String error = validateEmailService.validate(solicitorEmail,
+        if (!isEmpty(solicitorEmail)) {
+            Optional<String> error = validateEmailService.validate(solicitorEmail,
                 "Solicitor: Enter an email address in the correct format,"
-                    + " for example name@example.com").get(0);
-            if (!error.isBlank()) {
-                errors.add(error);
+                    + " for example name@example.com");
+            if (!error.isEmpty()) {
+                errors.add(error.get());
             }
         }
     }

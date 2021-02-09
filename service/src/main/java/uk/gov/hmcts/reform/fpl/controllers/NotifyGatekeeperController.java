@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGrou
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
@@ -80,7 +81,7 @@ public class NotifyGatekeeperController extends CallbackController {
     }
 
     private List<String> validateGatekeeperEmails(List<Element<EmailAddress>> gatekeeperEmails) {
-        List<String> errors;
+        List<String> errors = new ArrayList<>();
 
         List<String> emails = gatekeeperEmails.stream()
             .map(Element::getValue)
@@ -90,7 +91,11 @@ public class NotifyGatekeeperController extends CallbackController {
 
         if (emails.size() == 1) {
             String email = emails.get(0);
-            errors = validateEmailService.validate(email);
+            Optional error = validateEmailService.validate(email);
+
+            if (error.isPresent()) {
+                errors.add(error.get().toString());
+            }
         } else {
             errors = validateEmailService.validate(emails, "Gatekeeper");
         }

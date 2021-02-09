@@ -4,10 +4,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-
-import static java.util.Collections.emptyList;
 
 @Service
 public class ValidateEmailService {
@@ -19,10 +18,10 @@ public class ValidateEmailService {
         int index = 1;
 
         for (String email : emailAddresses) {
-            List<String> validationMessage = validate(email);
+            Optional validationMessage = validate(email);
 
-            if (!validationMessage.isEmpty()) {
-                validationErrors.add(String.format("%s %s: %s", key, index, validationMessage));
+            if (validationMessage.isPresent()) {
+                validationErrors.add(String.format("%s %s: %s", key, index, validationMessage.get()));
             }
 
             index++;
@@ -31,15 +30,15 @@ public class ValidateEmailService {
         return validationErrors;
     }
 
-    public List<String> validate(String email) {
-        return isValidInternetAddress(email) ? emptyList() : List.of(ERROR_MESSAGE);
+    public Optional<String> validate(String email) {
+        return isValid(email) ? Optional.empty() : Optional.ofNullable(ERROR_MESSAGE);
     }
 
-    public List<String> validate(String email, String errorMessage) {
-        return isValidInternetAddress(email) ? emptyList() : List.of(errorMessage);
+    public Optional<String> validate(String email, String errorMessage) {
+        return isValid(email) ? Optional.empty() : Optional.ofNullable(errorMessage);
     }
 
-    public boolean isValidInternetAddress(String email) {
+    public boolean isValid(String email) {
         InternetAddress internetAddress = new InternetAddress();
         internetAddress.setAddress(email);
 

@@ -10,6 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,16 +60,16 @@ class ValidateEmailServiceTest {
     @ParameterizedTest
     @MethodSource("invalidEmailAddresses")
     void shouldReturnAnErrorMessageIfEmailIsInvalid(String email) {
-        assertThat(validateEmailService.validate(email)).isEqualTo(ERROR_MESSAGE);
+        assertThat(validateEmailService.validate(email).get()).isEqualTo(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnCustomizedErrorMessageWhenEmailAddressIsInvalid() {
         String email = "<John Doe> johndoe@email.com";
 
-        List<String> error = validateEmailService.validate(email, "Custom error message");
+        Optional<String> error = validateEmailService.validate(email, "Custom error message");
 
-        assertThat(error).contains(
+        assertThat(error.get()).contains(
             "Custom error message");
     }
 

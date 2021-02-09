@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -235,10 +236,10 @@ public class ManageHearingsController extends CallbackController {
         JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
 
         if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
-            List<String> errors = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
-            if (!errors.isEmpty()) {
-                return respond(caseDetails, errors);
+            if (!error.isEmpty()) {
+                return respond(caseDetails, List.of(error.get()));
             }
         }
 

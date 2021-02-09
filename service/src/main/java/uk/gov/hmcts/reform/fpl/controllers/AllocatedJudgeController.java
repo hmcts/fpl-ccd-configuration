@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Api
 @RestController
@@ -28,10 +29,10 @@ public class AllocatedJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-        List<String> errors = validateEmailService.validate(email);
+        Optional<String> error = validateEmailService.validate(email);
 
-        if (!errors.isEmpty()) {
-            return respond(caseDetails, errors);
+        if (!error.isEmpty()) {
+            return respond(caseDetails, List.of(error.get()));
         }
 
         return respond(caseDetails);
