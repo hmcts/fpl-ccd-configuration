@@ -169,7 +169,7 @@ public class ManageDocumentService {
     }
 
     public List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceCollection(
-        CaseData caseData, List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
+        CaseData caseData, List<Element<SupportingEvidenceBundle>> modifiedEvidence) {
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle
             = caseData.getHearingFurtherEvidenceDocuments();
@@ -182,19 +182,22 @@ public class ManageDocumentService {
         }
 
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
-            List<Element<HearingFurtherEvidenceBundle>> updateEvidenceBundles = new ArrayList<>();
             for (Element<HearingFurtherEvidenceBundle> element : hearingFurtherEvidenceBundle) {
                 if (element.getId().equals(selectedHearingCode)) {
-                    element.getValue().setSupportingEvidenceBundle(supportingEvidenceBundle);
+                    List<Element<SupportingEvidenceBundle>> existingEvidence =
+                        new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
+
+                    updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+
+                    element.getValue().setSupportingEvidenceBundle(existingEvidence);
                 }
-                updateEvidenceBundles.add(element);
             }
-            return updateEvidenceBundles;
+            return hearingFurtherEvidenceBundle;
         } else {
             hearingFurtherEvidenceBundle.add(buildHearingSupportingEvidenceBundle(
                 selectedHearingCode,
                 hearingBooking.get().getValue(),
-                supportingEvidenceBundle
+                modifiedEvidence
             ));
             return hearingFurtherEvidenceBundle;
         }
@@ -240,16 +243,20 @@ public class ManageDocumentService {
 
         C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
 
-        List<Element<SupportingEvidenceBundle>> updatedCorrespondenceDocuments =
+        List<Element<SupportingEvidenceBundle>> modifiedEvidence =
             setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                 c2DocumentBundle.getSupportingEvidenceBundle());
 
-        List<Element<C2DocumentBundle>> updatedC2Bundles = new ArrayList<>();
-        for (Element<C2DocumentBundle> c2DocumentBundleElement : caseData.getC2DocumentBundle()) {
-            if (selected.equals(c2DocumentBundleElement.getId())) {
-                c2DocumentBundleElement.getValue().setSupportingEvidenceBundle(updatedCorrespondenceDocuments);
+        List<Element<C2DocumentBundle>> updatedC2Bundles = caseData.getC2DocumentBundle();
+        for (Element<C2DocumentBundle> element : updatedC2Bundles) {
+            if (selected.equals(element.getId())) {
+                List<Element<SupportingEvidenceBundle>> existingEvidence
+                    = new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
+
+                updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+
+                element.getValue().setSupportingEvidenceBundle(existingEvidence);
             }
-            updatedC2Bundles.add(c2DocumentBundleElement);
         }
         return updatedC2Bundles;
     }
@@ -302,5 +309,15 @@ public class ManageDocumentService {
 
     private List<Element<SupportingEvidenceBundle>> defaultSupportingEvidences() {
         return List.of(element(SupportingEvidenceBundle.builder().build()));
+    }
+
+    private void updateExistingEvidenceWithChanges(List<Element<SupportingEvidenceBundle>> existingEvidence,
+                                                   List<Element<SupportingEvidenceBundle>> updatedEvidence) {
+        List<Element<SupportingEvidenceBundle>> userSpecificDocuments
+            = getUserSpecificSupportingEvidences(existingEvidence);
+
+        existingEvidence.removeAll(userSpecificDocuments);
+
+        existingEvidence.addAll(updatedEvidence);
     }
 }

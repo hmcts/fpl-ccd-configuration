@@ -486,7 +486,7 @@ class ManageDocumentServiceTest {
 
         Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
         Element<SupportingEvidenceBundle> supportingEvidenceBundleElement
-            = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(0);
+            = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(1);
 
         assertThat(hearingFurtherEvidenceBundle.size()).isEqualTo(2);
         assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
