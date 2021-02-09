@@ -10,10 +10,20 @@
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
           "[LASOLICITOR]",
           "[LABARRISTER]"
         ],
         "CRUD": "CRUD"
+      },
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
       }
     ]
   },
@@ -27,7 +37,8 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "CRUD"
       },
@@ -36,7 +47,17 @@
           "[LASOLICITOR]",
           "[LABARRISTER]"
         ],
-        "CRUD": "CU"
+        "CRUD": "CUD"
+      },
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
       }
     ]
   },
@@ -50,7 +71,8 @@
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate"
         ],
         "CRUD": "CUD"
       },
@@ -60,6 +82,16 @@
           "[LABARRISTER]"
         ],
         "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
       }
     ]
   },
@@ -78,6 +110,15 @@
           "[LABARRISTER]"
         ],
         "CRUD": "CUD"
+      },
+      {
+        "UserRoles": [
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
       }
     ]
   }
