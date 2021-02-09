@@ -43,8 +43,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Local authority further evidence documents",
-    "SecurityClassification": "Public",
-    "Comment": "TODO: perms"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
