@@ -68,11 +68,15 @@ public class ApplicantController extends CallbackController {
         String solicitorEmail = caseData.getSolicitor().getEmail();
         validateSolicitorEmail(solicitorEmail, errors);
 
+        List<String> pbaErrors = pbaNumberService.validate(updatedApplicants);
+
+        errors.addAll(pbaErrors);
+
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
         }
 
-        return respond(caseDetails, pbaNumberService.validate(updatedApplicants));
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 
+import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("integration-test")
@@ -28,7 +29,7 @@ class AllocatedJudgeControllerMidEventTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(callbackResponse.getErrors()).isNull();
+        assertThat(isEmpty(callbackResponse.getErrors()));
     }
 
     @Test

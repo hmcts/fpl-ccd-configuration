@@ -22,8 +22,8 @@ public class ValidateEmailService {
         for (String email : emailAddresses) {
             Optional validationMessage = Optional.empty();
 
-            if(isEmpty(email)) {
-                if(!emailIsOptional(key)) {
+            if (isEmpty(email)) {
+                if (!emailIsOptional(key)) {
                     validationMessage = validate(email);
                 }
             } else {
@@ -40,16 +40,16 @@ public class ValidateEmailService {
         return validationErrors;
     }
 
-    private boolean emailIsOptional(String key) {
-        return key.equals("Applicant");
+    public Optional<String> validate(String email, String errorMessage) {
+        return isValid(email) ? Optional.empty() : Optional.ofNullable(errorMessage);
     }
 
     public Optional<String> validate(String email) {
         return isValid(email) ? Optional.empty() : Optional.ofNullable(ERROR_MESSAGE);
     }
 
-    public Optional<String> validate(String email, String errorMessage) {
-        return isValid(email) ? Optional.empty() : Optional.ofNullable(errorMessage);
+    private boolean emailIsOptional(String key) {
+        return key.equals("Applicant");
     }
 
     public boolean isValid(String email) {

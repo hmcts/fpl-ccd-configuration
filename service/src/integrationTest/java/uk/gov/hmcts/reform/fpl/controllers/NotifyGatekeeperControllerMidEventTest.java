@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 
 import java.util.List;
 
+import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -48,7 +49,7 @@ class NotifyGatekeeperControllerMidEventTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(isEmpty(callbackResponse.getErrors()));
     }
 
     @Test

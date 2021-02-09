@@ -40,9 +40,10 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).isNull();
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
 
         assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
     }
@@ -71,7 +72,7 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).isNull();
     }
 
     @Test
@@ -106,7 +107,7 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getErrors()).isNull();
     }
 
     private Applicant buildApplicant(String email) {

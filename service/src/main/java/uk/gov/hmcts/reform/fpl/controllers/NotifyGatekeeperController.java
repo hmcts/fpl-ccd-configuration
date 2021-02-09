@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -80,23 +81,28 @@ public class NotifyGatekeeperController extends CallbackController {
     }
 
     private List<String> validateGatekeeperEmails(List<Element<EmailAddress>> gatekeeperEmails) {
-        List<String> errors = new ArrayList<>();
-
         List<String> emails = gatekeeperEmails.stream()
             .map(Element::getValue)
             .map(EmailAddress::getEmail)
             .collect(Collectors.toList());
 
-        if (emails.size() == 1) {
-            String email = emails.get(0);
-            Optional error = validateEmailService.validate(email);
+        List<String> errors;
 
-            if (error.isPresent()) {
-                errors.add(error.get().toString());
-            }
+        if (emails.size() == 1) {
+            errors = handleSingleGatekeeperEmailValidation(emails.get(0));
         } else {
             errors = validateEmailService.validate(emails, "Gatekeeper");
         }
         return errors;
+    }
+
+    private List<String> handleSingleGatekeeperEmailValidation(String email) {
+        Optional error = validateEmailService.validate(email);
+
+        if (error.isPresent()) {
+            return List.of(error.get().toString());
+        }
+
+        return emptyList();
     }
 }
