@@ -66,7 +66,7 @@ class ValidateEmailServiceTest {
     void shouldReturnCustomizedErrorMessageWhenEmailAddressIsInvalid() {
         String email = "<John Doe> johndoe@email.com";
 
-        String error = validateEmailService.validate(email, "Custom error message");
+        List<String> error = validateEmailService.validate(email, "Custom error message");
 
         assertThat(error).contains(
             "Custom error message");

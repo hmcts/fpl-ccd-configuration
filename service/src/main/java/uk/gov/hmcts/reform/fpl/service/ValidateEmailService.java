@@ -7,6 +7,8 @@ import java.util.List;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import static java.util.Collections.emptyList;
+
 @Service
 public class ValidateEmailService {
     private static final String ERROR_MESSAGE = "Enter an email address in the correct format,"
@@ -17,9 +19,9 @@ public class ValidateEmailService {
         int index = 1;
 
         for (String email : emailAddresses) {
-            String validationMessage = validate(email);
+            List<String> validationMessage = validate(email);
 
-            if (!validationMessage.isBlank()) {
+            if (!validationMessage.isEmpty()) {
                 validationErrors.add(String.format("%s %s: %s", key, index, validationMessage));
             }
 
@@ -29,20 +31,12 @@ public class ValidateEmailService {
         return validationErrors;
     }
 
-    public String validate(String email) {
-        if (!isValidInternetAddress(email)) {
-            return ERROR_MESSAGE;
-        }
-
-        return "";
+    public List<String> validate(String email) {
+        return isValidInternetAddress(email) ? emptyList() : List.of(ERROR_MESSAGE);
     }
 
-    public String validate(String email, String errorMessage) {
-        if (!isValidInternetAddress(email)) {
-            return errorMessage;
-        }
-
-        return "";
+    public List<String> validate(String email, String errorMessage) {
+        return isValidInternetAddress(email) ? emptyList() : List.of(errorMessage);
     }
 
     public boolean isValidInternetAddress(String email) {

@@ -107,7 +107,7 @@ public class ApplicantController extends CallbackController {
         if (!isBlank(solicitorEmail)) {
             String error = validateEmailService.validate(solicitorEmail,
                 "Solicitor: Enter an email address in the correct format,"
-                    + " for example name@example.com");
+                    + " for example name@example.com").get(0);
             if (!error.isBlank()) {
                 errors.add(error);
             }

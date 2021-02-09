@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,7 +51,9 @@ public class ManageLegalRepresentativesController extends CallbackController {
 
         List<String> emails = caseData.getLegalRepresentatives().stream()
             .map(Element::getValue)
-            .map(LegalRepresentative::getEmail).collect(Collectors.toList());
+            .map(LegalRepresentative::getEmail)
+            .filter(StringUtils::isNotEmpty)
+            .collect(Collectors.toList());
 
         List<String> errors = validateEmailService.validate(emails, "LA Legal Representative");
 

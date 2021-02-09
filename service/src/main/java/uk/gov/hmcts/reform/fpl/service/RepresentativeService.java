@@ -112,7 +112,7 @@ public class RepresentativeService {
                 validationErrors.add(format("Enter an email address for %s", representativeLabel));
             } else if (!validateEmailService.isValidInternetAddress(representative.getEmail())) {
                 validationErrors.add(String.format("%s for %s",
-                    validateEmailService.validate(representative.getEmail()), representativeLabel));
+                    validateEmailService.validate(representative.getEmail()).get(0), representativeLabel));
             }
         }
     }

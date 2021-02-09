@@ -72,10 +72,10 @@ public class MessageJudgeController extends CallbackController {
 
         if (!caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
             String email = caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipient();
-            String error = validateEmailService.validate(email);
+            List<String> errors = validateEmailService.validate(email);
 
-            if (!error.isBlank()) {
-                return respond(caseDetailsMap, List.of(error));
+            if (!errors.isEmpty()) {
+                return respond(caseDetailsMap, errors);
             }
         }
 

@@ -235,10 +235,10 @@ public class ManageHearingsController extends CallbackController {
         JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
 
         if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
-            String error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+            List<String> errors = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
 
-            if (!error.isBlank()) {
-                return respond(caseDetails, List.of(error));
+            if (!errors.isEmpty()) {
+                return respond(caseDetails, errors);
             }
         }
 

@@ -28,10 +28,10 @@ public class AllocatedJudgeController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         String email = caseData.getAllocatedJudge().getJudgeEmailAddress();
 
-        String error = validateEmailService.validate(email);
+        List<String> errors = validateEmailService.validate(email);
 
-        if (!error.isBlank()) {
-            return respond(caseDetails, List.of(error));
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
         }
 
         return respond(caseDetails);

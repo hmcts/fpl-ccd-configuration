@@ -82,9 +82,9 @@ class RepresentativesServiceTest {
         when(requestData.authorisation()).thenReturn(authorisation);
         when(validateEmailService.isValidInternetAddress(VALID_EMAIL)).thenReturn(true);
         when(validateEmailService.isValidInternetAddress(INVALID_EMAIL)).thenReturn(false);
-        when(validateEmailService.validate(VALID_EMAIL)).thenReturn("");
-        when(validateEmailService.validate(INVALID_EMAIL)).thenReturn("Enter an email address in the correct format,"
-            + " for example name@example.com");
+        when(validateEmailService.validate(VALID_EMAIL)).thenReturn(emptyList());
+        when(validateEmailService.validate(INVALID_EMAIL)).thenReturn(List.of("Enter an email address in the correct format,"
+            + " for example name@example.com"));
     }
 
     @AfterEach
