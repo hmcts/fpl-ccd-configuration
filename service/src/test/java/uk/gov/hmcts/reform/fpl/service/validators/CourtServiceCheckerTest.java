@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHE
 class CourtServiceCheckerTest {
 
     private static final CaseData ANY_CASE_DATA = mock(CaseData.class);
+
     @InjectMocks
     private CourtServiceChecker courtServiceChecker;
 
