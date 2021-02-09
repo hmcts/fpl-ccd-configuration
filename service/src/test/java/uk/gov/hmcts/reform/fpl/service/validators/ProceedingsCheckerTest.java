@@ -58,7 +58,12 @@ class ProceedingsCheckerTest {
                 Proceeding.builder()
                         .onGoingProceeding("")
                         .additionalProceedings(emptyList())
-                        .build())
+                        .build(),
+                Proceeding.builder()
+                    .onGoingProceeding("Yes")
+                    .sameGuardianNeeded("No")
+                    .build()
+            )
                 .map(Arguments::of);
     }
 

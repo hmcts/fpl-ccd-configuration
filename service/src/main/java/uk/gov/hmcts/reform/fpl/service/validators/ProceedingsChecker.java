@@ -10,6 +10,8 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 
@@ -33,8 +35,10 @@ public class ProceedingsChecker implements EventChecker {
 
         if (proceeding == null || isEmpty(proceeding.getOnGoingProceeding())) {
             return false;
-        } else if (("Yes").equals(proceeding.getOnGoingProceeding())) {
-            if (("No").equals(proceeding.getSameGuardianNeeded())
+        }
+
+        if (YES.getValue().equals(proceeding.getOnGoingProceeding())) {
+            if (NO.getValue().equals(proceeding.getSameGuardianNeeded())
                 && isEmpty(proceeding.getSameGuardianDetails())) {
                 return false;
             }

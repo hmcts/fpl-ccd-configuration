@@ -9,6 +9,8 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
@@ -50,25 +52,32 @@ public class CourtServiceChecker implements EventChecker {
             return false;
         }
 
-        if (("Yes").equals(hearingPreferences.getWelsh())
+        if (YES.getValue().equals(hearingPreferences.getWelsh())
             && isEmpty(hearingPreferences.getWelshDetails())) {
             return false;
-        } else if (("Yes").equals(hearingPreferences.getInterpreter())
+        }
+
+        if (YES.getValue().equals(hearingPreferences.getInterpreter())
             && isEmpty(hearingPreferences.getInterpreterDetails())) {
             return false;
-        } else if (("Yes").equals(hearingPreferences.getIntermediary())
+        }
+
+        if (YES.getValue().equals(hearingPreferences.getIntermediary())
             && isEmpty(hearingPreferences.getIntermediaryDetails())) {
             return false;
-        } else if (("Yes").equals(hearingPreferences.getDisabilityAssistance())
+        }
+
+        if (YES.getValue().equals(hearingPreferences.getDisabilityAssistance())
             && isEmpty(hearingPreferences.getDisabilityAssistanceDetails())) {
             return false;
-        } else if (("Yes").equals(hearingPreferences.getExtraSecurityMeasures())
+        }
+
+        if (YES.getValue().equals(hearingPreferences.getExtraSecurityMeasures())
             && isEmpty(hearingPreferences.getExtraSecurityMeasuresDetails())) {
             return false;
-        } else {
-            return ("No").equals(hearingPreferences.getSomethingElse())
-                || !isEmpty(hearingPreferences.getSomethingElseDetails());
         }
+        return NO.getValue().equals(hearingPreferences.getSomethingElse())
+            || !isEmpty(hearingPreferences.getSomethingElseDetails());
     }
 
     @Override

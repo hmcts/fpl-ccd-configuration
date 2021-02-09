@@ -26,6 +26,18 @@ class HearingUrgencyCheckerTest {
     private HearingUrgencyChecker hearingUrgencyChecker;
 
     @ParameterizedTest
+    @MethodSource("incompleteHearing")
+    void shouldReturnEmptyErrorsAndNonCompletedState(Hearing hearing) {
+        final CaseData caseData = CaseData.builder().hearing(hearing).build();
+
+        final List<String> errors = hearingUrgencyChecker.validate(caseData);
+        final boolean isCompleted = hearingUrgencyChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isFalse();
+    }
+
+    @ParameterizedTest
     @MethodSource("completeHearing")
     void shouldReturnEmptyErrorsAndCompletedState(Hearing hearing) {
         final CaseData caseData = CaseData.builder().hearing(hearing).build();
@@ -76,6 +88,47 @@ class HearingUrgencyCheckerTest {
 
         assertThat(errors).isEmpty();
         assertThat(isCompleted).isFalse();
+    }
+
+    private static Stream<Arguments> incompleteHearing() {
+        return Stream.of(
+            Hearing.builder()
+                .timeFrame("Same day")
+                .build(),
+            Hearing.builder()
+                .timeFrame("Same day")
+                .type("Standard case management hearing")
+                .typeGiveReason("Test")
+                .withoutNotice("Yes")
+                .reducedNotice("No")
+                .respondentsAware("No")
+                .build(),
+            Hearing.builder()
+                .timeFrame("Within 18 days")
+                .type("Standard case management hearing")
+                .typeGiveReason("Test")
+                .withoutNotice("Yes")
+                .reducedNotice("No")
+                .respondentsAware("No")
+                .build(),
+            Hearing.builder()
+                .timeFrame("Within 18 days")
+                .type("Standard case management hearing")
+                .typeGiveReason("Test")
+                .withoutNotice("No")
+                .reducedNotice("Yes")
+                .respondentsAware("No")
+                .build(),
+            Hearing.builder()
+                .timeFrame("Within 18 days")
+                .type("Standard case management hearing")
+                .typeGiveReason("Test")
+                .withoutNotice("No")
+                .reducedNotice("No")
+                .respondentsAware("Yes")
+                .build()
+        )
+            .map(Arguments::of);
     }
 
     private static Stream<Arguments> completeHearing() {

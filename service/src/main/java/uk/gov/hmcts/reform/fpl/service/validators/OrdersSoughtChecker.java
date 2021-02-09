@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
@@ -45,26 +46,38 @@ public class OrdersSoughtChecker extends PropertiesChecker {
         if (orders.orderContainsEPO()) {
             if (isEmpty(orders.getEpoType())) {
                 return false;
-            } else if (orders.getEmergencyProtectionOrders() != null
-                && orders.getEmergencyProtectionOrders().contains(EmergencyProtectionOrdersType.OTHER)
-                && isEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
+            }
+            if (isEmergencyProtectionOtherNotCompleted(orders)) {
                 return false;
-            } else if (orders.getEmergencyProtectionOrderDirections() != null
-                && orders.getEmergencyProtectionOrderDirections().contains(EXCLUSION_REQUIREMENT)) {
-                if (isEmpty(orders.getExcluded())) {
-                    return false;
-                }
+            }
+            if (isEmergencyProtectionOrderDirectionNotCompleted(orders)) {
+                return false;
             }
         }
 
-        if (orders.getOrderType().contains(OrderType.OTHER) && isEmpty(orders.getOtherOrder())) {
+        if (orders.getOrderType().contains(OrderType.OTHER)
+            && isEmpty(orders.getOtherOrder())) {
             return false;
-        } else if (("Yes").equals(orders.getDirections())
+        }
+
+        if (YES.getValue().equals(orders.getDirections())
             && isEmpty(orders.getDirectionDetails())) {
             return false;
         }
 
         return super.isCompleted(caseData);
+    }
+
+    private boolean isEmergencyProtectionOrderDirectionNotCompleted(Orders orders) {
+        return orders.getEmergencyProtectionOrderDirections() != null
+            && orders.getEmergencyProtectionOrderDirections().contains(EXCLUSION_REQUIREMENT)
+            && isEmpty(orders.getExcluded());
+    }
+
+    private boolean isEmergencyProtectionOtherNotCompleted(Orders orders) {
+        return orders.getEmergencyProtectionOrders() != null
+            && orders.getEmergencyProtectionOrders().contains(EmergencyProtectionOrdersType.OTHER)
+            && isEmpty(orders.getEmergencyProtectionOrderDirectionDetails());
     }
 
     @Override

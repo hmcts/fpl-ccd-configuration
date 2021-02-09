@@ -11,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -113,13 +115,25 @@ class OrdersSoughtCheckerTest {
                 .build(),
             Orders.builder()
                 .orderType(Collections.singletonList(EMERGENCY_PROTECTION_ORDER))
-                .emergencyProtectionOrderDirections(Collections.singletonList(
-                    EmergencyProtectionOrderDirectionsType.OTHER))
+                .directions("Yes")
                 .build(),
             Orders.builder()
                 .orderType(Collections.singletonList(EMERGENCY_PROTECTION_ORDER))
+                .epoType(REMOVE_TO_ACCOMMODATION)
+                .emergencyProtectionOrders(Collections.singletonList(EmergencyProtectionOrdersType.OTHER))
+                .directions("Yes")
+                .build(),
+            Orders.builder()
+                .orderType(Collections.singletonList(EMERGENCY_PROTECTION_ORDER))
+                .epoType(REMOVE_TO_ACCOMMODATION)
                 .emergencyProtectionOrderDirections(Collections.singletonList(
                     EXCLUSION_REQUIREMENT))
+                .excluded(null)
+                .directions("Yes")
+                .build(),
+            Orders.builder()
+                .orderType(Collections.singletonList(OrderType.OTHER))
+                .directions("Yes")
                 .build()
             )
             .map(Arguments::of);

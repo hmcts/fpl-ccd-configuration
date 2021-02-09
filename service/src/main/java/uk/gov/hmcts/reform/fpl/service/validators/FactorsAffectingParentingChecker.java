@@ -9,6 +9,8 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.springframework.util.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
@@ -46,16 +48,18 @@ public class FactorsAffectingParentingChecker implements EventChecker {
             return false;
         }
 
-        if (("Yes").equals(factors.getAlcoholDrugAbuse())
+        if (YES.getValue().equals(factors.getAlcoholDrugAbuse())
             && isEmpty(factors.getAlcoholDrugAbuseReason())) {
             return false;
-        } else if (("Yes").equals(factors.getDomesticViolence())
+        }
+
+        if (YES.getValue().equals(factors.getDomesticViolence())
             && isEmpty(factors.getDomesticViolenceReason())) {
             return false;
-        } else {
-            return ("No").equals(factors.getAnythingElse())
-                || !isEmpty(factors.getAnythingElseReason());
         }
+
+        return NO.getValue().equals(factors.getAnythingElse())
+            || !isEmpty(factors.getAnythingElseReason());
     }
 
     @Override

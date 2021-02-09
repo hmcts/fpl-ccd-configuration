@@ -9,6 +9,8 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
@@ -50,22 +52,28 @@ public class InternationalElementChecker implements EventChecker {
             return false;
         }
 
-        if (("Yes").equals(internationalElement.getIssues())
+        if (YES.getValue().equals(internationalElement.getIssues())
             && isEmpty(internationalElement.getIssuesReason())) {
             return false;
-        } else if (("Yes").equals(internationalElement.getProceedings())
+        }
+
+        if (YES.getValue().equals(internationalElement.getProceedings())
             && isEmpty(internationalElement.getProceedingsReason())) {
             return false;
-        } else if (("Yes").equals(internationalElement.getPossibleCarer())
+        }
+
+        if (YES.getValue().equals(internationalElement.getPossibleCarer())
             && isEmpty(internationalElement.getPossibleCarerReason())) {
             return false;
-        } else if (("Yes").equals(internationalElement.getSignificantEvents())
+        }
+
+        if (YES.getValue().equals(internationalElement.getSignificantEvents())
             && isEmpty(internationalElement.getSignificantEventsReason())) {
             return false;
-        } else {
-            return ("No").equals(internationalElement.getInternationalAuthorityInvolvement())
-                || !isEmpty(internationalElement.getInternationalAuthorityInvolvementDetails());
         }
+
+        return NO.getValue().equals(internationalElement.getInternationalAuthorityInvolvement())
+            || !isEmpty(internationalElement.getInternationalAuthorityInvolvementDetails());
     }
 
     @Override
