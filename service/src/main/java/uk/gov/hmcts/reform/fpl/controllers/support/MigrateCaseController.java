@@ -40,6 +40,12 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("hiddenOrders", hiddenOrders);
         }
 
+        if ("FPLA-2687".equals(migrationId)) {
+            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
+            run2687(caseDetails);
+            caseDetails.getData().put("hiddenOrders", hiddenOrders);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -48,6 +54,25 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if ("CF20C50070".equals(caseData.getFamilyManCaseNumber())) {
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+            if (caseData.getOrderCollection().size() < 3) {
+                throw new IllegalArgumentException(format("Expected at least three orders but found %s",
+                    caseData.getOrderCollection().size()));
+            }
+
+            Element<GeneratedOrder> orderThree = caseData.getOrderCollection().get(2);
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderThree.getId(), orderThree.getValue());
+
+            caseDetails.setData(caseDetailsMap);
+        }
+    }
+
+    private void run2687(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("SN20C50009".equals(caseData.getFamilyManCaseNumber())) {
             CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
             if (caseData.getOrderCollection().size() < 3) {
