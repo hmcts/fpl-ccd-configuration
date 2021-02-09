@@ -55,14 +55,16 @@ public class ManageLegalRepresentativesController extends CallbackController {
 
         List<String> errors = validateEmailService.validate(emails, "LA Legal Representative");
 
+        final List<String> emailNotRegisteredErrors =
+            manageLegalRepresentativesValidator.validate(caseData.getLegalRepresentatives());
+
+        errors.addAll(emailNotRegisteredErrors);
+
         if (!errors.isEmpty()) {
             return respond(caseDetails, errors);
         }
 
-        final List<String> validationErrors =
-            manageLegalRepresentativesValidator.validate(caseData.getLegalRepresentatives());
-
-        return respond(caseDetails, validationErrors);
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")

@@ -45,6 +45,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
         .build();
     private static final Long CASE_ID = 12345L;
     private static final String USER_ID = RandomStringUtils.randomAlphanumeric(10);
+    private static final String USER_ID_2 = RandomStringUtils.randomAlphanumeric(10);
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
@@ -91,7 +92,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
 
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
 
-        assertThat(actual.getErrors()).isEmpty();
+        assertThat(actual.getErrors()).isNull();
     }
 
     @Test
@@ -105,6 +106,12 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
                 LegalRepresentative.builder()
                     .email("Test user <Test.User@HMCTS.NET>")
                     .build())).build();
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, "Test user <Test.User@HMCTS.NET>"))
+            .willReturn(new OrganisationUser(USER_ID));
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, "test@test.com"))
+            .willReturn(new OrganisationUser(USER_ID));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
 
@@ -123,7 +130,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
 
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(caseDetails);
 
-        assertThat(actual.getErrors()).isEmpty();
+        assertThat(actual.getErrors()).isNull();
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
