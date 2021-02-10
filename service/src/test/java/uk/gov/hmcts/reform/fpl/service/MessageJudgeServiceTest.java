@@ -330,16 +330,6 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldPrePopulateRecipientWhenMessageIsInitiatedByJudge() {
-        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
-
-        CaseData caseData = CaseData.builder().build();
-
-        assertThat(messageJudgeService.populateNewMessageFields(caseData)).containsExactly(
-            entry("judicialMessageMetaData", JudicialMessageMetaData.builder().recipient(COURT_EMAIL).build()));
-    }
-
-    @Test
     void shouldNotPrePopulateRecipientWhenMessageIsInitiatedNotByJudge() {
         when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(false);
 

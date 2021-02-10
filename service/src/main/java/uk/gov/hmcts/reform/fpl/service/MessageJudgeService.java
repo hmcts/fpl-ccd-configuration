@@ -78,8 +78,6 @@ public class MessageJudgeService {
             data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
         }
 
-        data.putAll(prePopulateRecipient());
-
         return data;
     }
 

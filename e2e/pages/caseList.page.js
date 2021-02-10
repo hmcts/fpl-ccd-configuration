@@ -9,6 +9,7 @@ module.exports = {
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
+    caseId: 'CCD Case Number',
     caseName: '#caseName',
     search: 'Apply',
     caseList: 'Case list',
@@ -23,10 +24,10 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  async searchForCasesWithHandledEvidences(submittedAt, state = 'Any') {
+  searchForCasesWithHandledEvidences(caseId, state = 'Any') {
     this.setInitialSearchFields(state);
     I.waitForElement(this.fields.evidenceHandled, 30);
-    await I.fillDate(submittedAt);
+    I.fillField(this.fields.caseId, caseId);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },
@@ -53,7 +54,7 @@ module.exports = {
   },
 
   locateCase(caseId){
-    return locate(`//ccd-search-result/table//tr[//a[contains(@href,'${caseId}')]]`);
+    return `a[href$='${caseId}']`;
   },
 
   locateCaseProperty(caseId, columnNumber){
