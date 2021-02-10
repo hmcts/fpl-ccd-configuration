@@ -60,6 +60,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.NOTICE_OF_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
@@ -110,6 +111,10 @@ class ManageHearingsServiceTest {
     private static final Document DOCUMENT = testDocument();
 
     private static final LocalDateTime NOW = LocalDateTime.now();
+
+    public static final UUID RE_LISTED_HEARING_ID = randomUUID();
+    public static final UUID LINKED_CMO_ID = randomUUID();
+    public static final UUID HEARING_BUNDLE_ID = randomUUID();
 
     @Mock(lenient = true)
     private Time time;
@@ -822,9 +827,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldAdjournAndReListHearingWithoutDocumentReassignment() {
-            final UUID reListedHearingId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
@@ -832,7 +835,7 @@ class ManageHearingsServiceTest {
 
             Element<HearingBooking> hearingToBeAdjourned = element(randomHearing());
             Element<HearingBooking> otherHearing = element(randomHearing());
-            Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             Element<HearingBooking> expectedAdjournedHearing = element(hearingToBeAdjourned.getId(),
                 hearingToBeAdjourned.getValue().toBuilder()
                     .status(HearingStatus.ADJOURNED_AND_RE_LISTED)
@@ -853,9 +856,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldAdjournAndReListHearingWithDocumentReassignment() {
-            final UUID reListedHearingId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
@@ -863,7 +864,7 @@ class ManageHearingsServiceTest {
 
             final Element<HearingBooking> hearingToBeAdjourned = element(randomHearing());
             final Element<HearingBooking> otherHearing = element(randomHearing());
-            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             final Element<HearingBooking> adjournedHearing = element(hearingToBeAdjourned.getId(),
                 hearingToBeAdjourned.getValue().toBuilder()
                     .status(HearingStatus.ADJOURNED_AND_RE_LISTED)
@@ -872,7 +873,7 @@ class ManageHearingsServiceTest {
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeAdjourned);
 
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
                 documentBundle.getValue().toBuilder()
                     .hearingName(reListedHearing.getValue().toLabel())
                     .build());
@@ -925,26 +926,23 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldAdjournAndReListHearingAndUpdateDraftCaseManagementOrder() {
-            final UUID reListedHearingId = randomUUID();
-            final UUID linkedCMOId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
                 .build();
 
-            Element<HearingBooking> hearingToBeAdjourned = element(randomHearingWithCMO(linkedCMOId));
+            Element<HearingBooking> hearingToBeAdjourned = element(randomHearingWithCMO(LINKED_CMO_ID));
             final Element<HearingBooking> otherHearing = element(randomHearing());
-            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             final Element<HearingBooking> adjournedHearing = element(hearingToBeAdjourned.getId(),
                 hearingToBeAdjourned.getValue().toBuilder()
                     .status(HearingStatus.ADJOURNED_AND_RE_LISTED)
                     .cancellationReason(adjournmentReason.getReason())
-                    .caseManagementOrderId(linkedCMOId)
+                    .caseManagementOrderId(LINKED_CMO_ID)
                     .build());
 
-            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId,
+            final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID,
                 HearingOrder.builder().type(DRAFT_CMO).hearing(reListedHearing.getValue().toLabel()).build());
 
             final CaseData caseData = CaseData.builder()
@@ -958,7 +956,7 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
             assertThat(caseData.getDraftUploadedCMOs()).containsExactly(
-                element(linkedCMOId, HearingOrder.builder()
+                element(LINKED_CMO_ID, HearingOrder.builder()
                     .type(DRAFT_CMO)
                     .hearing(adjournedHearing.getValue().toLabel())
                     .build()));
@@ -966,32 +964,29 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldAdjournAndReListHearingAndUpdateHearingOrdersBundle() {
-            final UUID reListedHearingId = randomUUID();
-            final UUID linkedCMOId = randomUUID();
-            final UUID hearingBundleId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason adjournmentReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
                 .build();
 
-            final Element<HearingBooking> hearingToBeAdjourned = element(randomHearingWithCMO(linkedCMOId));
+            final Element<HearingBooking> hearingToBeAdjourned = element(randomHearingWithCMO(LINKED_CMO_ID));
             final Element<HearingBooking> otherHearing = element(randomHearing());
-            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             final Element<HearingBooking> adjournedHearing = element(hearingToBeAdjourned.getId(),
                 hearingToBeAdjourned.getValue().toBuilder()
                     .status(HearingStatus.ADJOURNED_AND_RE_LISTED)
                     .cancellationReason(adjournmentReason.getReason())
                     .build());
 
-            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId,
-                HearingOrder.builder().type(DRAFT_CMO).hearing(reListedHearing.getValue().toLabel()).build());
+            final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID,
+                HearingOrder.builder().type(DRAFT_CMO).status(DRAFT)
+                    .hearing(reListedHearing.getValue().toLabel()).build());
 
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeAdjourned, otherHearing))
                 .adjournmentReason(adjournmentReason)
-                .hearingOrdersBundlesDrafts(List.of(element(hearingBundleId,
+                .hearingOrdersBundlesDrafts(List.of(element(HEARING_BUNDLE_ID,
                     HearingOrdersBundle.builder()
                         .orders(newArrayList(linkedDraftCMO))
                         .build())))
@@ -1002,9 +997,11 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getHearingDetails()).containsExactly(otherHearing, reListedHearing);
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(adjournedHearing);
             assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
-                element(hearingBundleId, HearingOrdersBundle.builder()
+                element(HEARING_BUNDLE_ID, HearingOrdersBundle.builder()
                     .hearingName(adjournedHearing.getValue().toLabel())
-                    .orders(newArrayList(linkedDraftCMO))
+                    .orders(newArrayList(element(linkedDraftCMO.getId(),
+                        linkedDraftCMO.getValue().toBuilder()
+                            .hearing(adjournedHearing.getValue().toLabel()).build())))
                     .build()));
         }
     }
@@ -1070,9 +1067,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldVacateAndReListHearingWithoutDocumentReassignment() {
-            final UUID reListedHearingId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
@@ -1080,7 +1075,7 @@ class ManageHearingsServiceTest {
 
             Element<HearingBooking> hearingToBeVacated = element(randomHearing());
             Element<HearingBooking> otherHearing = element(randomHearing());
-            Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             Element<HearingBooking> expectedVacatedHearing = element(hearingToBeVacated.getId(),
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
@@ -1101,9 +1096,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldVacateAndReListHearingWithDocumentReassignment() {
-            final UUID reListedHearingId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
@@ -1111,7 +1104,7 @@ class ManageHearingsServiceTest {
 
             final Element<HearingBooking> hearingToBeVacated = element(randomHearing());
             final Element<HearingBooking> otherHearing = element(randomHearing());
-            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
@@ -1120,7 +1113,7 @@ class ManageHearingsServiceTest {
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
 
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
                 documentBundle.getValue().toBuilder()
                     .hearingName(reListedHearing.getValue().toLabel())
                     .build());
@@ -1140,21 +1133,18 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldVacateAndUpdateDraftCaseManagementOrder() {
-            final UUID reListedHearingId = randomUUID();
-            final UUID linkedCMOId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
                 .build();
 
             final Element<HearingBooking> hearingToBeVacated = element(randomHearing().toBuilder()
-                .caseManagementOrderId(linkedCMOId)
+                .caseManagementOrderId(LINKED_CMO_ID)
                 .build());
 
             final Element<HearingBooking> otherHearing = element(randomHearing());
-            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
@@ -1163,12 +1153,12 @@ class ManageHearingsServiceTest {
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
 
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
                 documentBundle.getValue().toBuilder()
                     .hearingName(reListedHearing.getValue().toLabel())
                     .build());
 
-            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId, HearingOrder.builder().build());
+            final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID, HearingOrder.builder().build());
 
             final CaseData caseData = CaseData.builder()
                 .hearingDetails(newArrayList(hearingToBeVacated, otherHearing))
@@ -1183,28 +1173,24 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getDraftUploadedCMOs()).containsExactly(
-                element(linkedCMOId, HearingOrder.builder().hearing(vacatedHearing.getValue().toLabel())
+                element(LINKED_CMO_ID, HearingOrder.builder().hearing(vacatedHearing.getValue().toLabel())
                     .build()));
         }
 
         @Test
         void shouldVacateAndUpdateHearingOrdersBundleDrafts() {
-            final UUID reListedHearingId = randomUUID();
-            final UUID linkedCMOId = randomUUID();
-            final UUID hearingOrderBundleId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
                 .reason("Reason 1")
                 .build();
 
             final Element<HearingBooking> hearingToBeVacated = element(randomHearing().toBuilder()
-                .caseManagementOrderId(linkedCMOId)
+                .caseManagementOrderId(LINKED_CMO_ID)
                 .build());
 
             final Element<HearingBooking> otherHearing = element(randomHearing());
-            final Element<HearingBooking> reListedHearing = element(reListedHearingId, randomHearing());
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
             final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
                 hearingToBeVacated.getValue().toBuilder()
                     .status(HearingStatus.VACATED_AND_RE_LISTED)
@@ -1213,13 +1199,13 @@ class ManageHearingsServiceTest {
 
             final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
 
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
                 documentBundle.getValue().toBuilder()
                     .hearingName(reListedHearing.getValue().toLabel())
                     .build());
 
-            final Element<HearingOrder> linkedDraftCMO = element(linkedCMOId, HearingOrder.builder()
-                .type(DRAFT_CMO)
+            final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID, HearingOrder.builder()
+                .type(DRAFT_CMO).status(DRAFT)
                 .build());
 
             final CaseData caseData = CaseData.builder()
@@ -1227,7 +1213,7 @@ class ManageHearingsServiceTest {
                 .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
                 .vacatedReason(vacatedReason)
                 .hearingOrdersBundlesDrafts(newArrayList(
-                    element(hearingOrderBundleId, HearingOrdersBundle.builder()
+                    element(HEARING_BUNDLE_ID, HearingOrdersBundle.builder()
                         .orders(newArrayList(linkedDraftCMO))
                         .build())
                 ))
@@ -1239,9 +1225,10 @@ class ManageHearingsServiceTest {
             assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
             assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
             assertThat(caseData.getHearingOrdersBundlesDrafts()).contains(
-                element(hearingOrderBundleId, HearingOrdersBundle.builder()
+                element(HEARING_BUNDLE_ID, HearingOrdersBundle.builder()
                     .hearingName(vacatedHearing.getValue().toLabel())
-                    .orders(newArrayList(linkedDraftCMO))
+                    .orders(newArrayList(element(linkedDraftCMO.getId(),
+                        linkedDraftCMO.getValue().toBuilder().hearing(vacatedHearing.getValue().toLabel()).build())))
                     .build()));
         }
 
@@ -1326,15 +1313,13 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldReassignDocumentFromCancelledToReListedHearing() {
-            final UUID reListedHearingId = randomUUID();
-
-            when(identityService.generateId()).thenReturn(reListedHearingId);
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 
             final Element<HearingBooking> adjournedHearing = element(randomHearing(ADJOURNED_TO_BE_RE_LISTED));
             final HearingBooking reListedHearing = randomHearing();
 
             final Element<HearingFurtherEvidenceBundle> adjournedHearingBundle = randomDocumentBundle(adjournedHearing);
-            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(reListedHearingId,
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
                 adjournedHearingBundle.getValue().toBuilder()
                     .hearingName(reListedHearing.toLabel())
                     .build());

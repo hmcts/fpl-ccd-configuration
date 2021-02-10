@@ -531,22 +531,18 @@ public class ManageHearingsService {
     private void updateHearingOrderBundles(CaseData caseData, Element<HearingBooking> hearing) {
         UUID linkedCmoId = hearing.getValue().getCaseManagementOrderId();
 
-        Optional<Element<HearingOrdersBundle>> hearingFurtherEvidenceBundleElement =
+        Optional<Element<HearingOrdersBundle>> hearingBundleWithLinkedCMO =
             caseData.getHearingOrderBundleThatContainsOrder(linkedCmoId);
 
-        if (hearingFurtherEvidenceBundleElement.isPresent()) {
-            List<Element<HearingOrdersBundle>> updatedHearingOrderBundle = caseData.getHearingOrdersBundlesDrafts()
-                .stream()
-                .map(hearingOrdersBundleElement -> {
-                    if (hearingFurtherEvidenceBundleElement.get().getId().equals(hearingOrdersBundleElement.getId())) {
-                        hearingOrdersBundleElement.getValue().setHearingName(hearing.getValue().toLabel());
+        hearingBundleWithLinkedCMO.ifPresent(hearingOrdersBundleElement -> caseData.getHearingOrdersBundlesDrafts()
+            .forEach(hearingBundleElement -> {
+                    if (hearingOrdersBundleElement.getId().equals(hearingBundleElement.getId())) {
+                        hearingBundleElement.getValue().setHearingName(hearing.getValue().toLabel());
+                        hearingBundleElement.getValue().getOrders().forEach(
+                            order -> order.getValue().setHearing(hearing.getValue().toLabel()));
                     }
-
-                    return hearingOrdersBundleElement;
-                }).collect(Collectors.toList());
-
-            caseData.toBuilder().hearingOrdersBundlesDrafts(updatedHearingOrderBundle).build();
-        }
+                }
+            ));
     }
 
     private void reassignDocumentsBundle(CaseData caseData,

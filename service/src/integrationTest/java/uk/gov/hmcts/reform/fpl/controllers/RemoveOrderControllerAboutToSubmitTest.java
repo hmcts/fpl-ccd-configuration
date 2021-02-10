@@ -274,7 +274,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .type(HearingOrderType.DRAFT_CMO)
             .build());
 
-        List<Element<HearingOrder>> caseManagementOrders = newArrayList(
+        List<Element<HearingOrder>> ordersToBeRemoved = newArrayList(
             caseManagementOrder1,
             element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
 
@@ -285,7 +285,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(newArrayList(
-                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
+                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(ordersToBeRemoved).build())
             ))
             .hearingDetails(hearingBookings)
             .removableOrderList(DynamicList.builder()
