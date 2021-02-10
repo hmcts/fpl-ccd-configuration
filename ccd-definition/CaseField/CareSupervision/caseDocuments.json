@@ -62,8 +62,7 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by HMCTS",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "TODO: perms"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -83,8 +82,7 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by local authority",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "TODO: perms"
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
