@@ -16,16 +16,8 @@
     "mochawesome": "^6.2.1",
     "node-fetch": "^2.6.1",
     "puppeteer": "7.0.4",
-<<<<<<< Updated upstream
-    "moment": "2.29.1"
-=======
-<<<<<<< HEAD
     "moment": "2.29.1",
     "html_codesniffer": "^2.5.1"
-=======
-    "moment": "2.29.1"
->>>>>>> 09c11f6d3e9c2d5a6d3fdacee44997e66684cca0
->>>>>>> Stashed changes
   },
   "scripts": {
     "lint": "eslint e2e",
@@ -33,10 +25,6 @@
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
     "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi"
-  },
-  "dependencies": {
-    "e2e": "^0.0.8",
-    "html_codesniffer": "^2.5.1"
   },
   "husky": {
     "hooks": {
