@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
@@ -44,6 +45,7 @@ public class HearingUrgencyChecker extends PropertiesChecker {
         if (hearing == null || anyEmpty(
             hearing.getTimeFrame(),
             hearing.getType(),
+            hearing.getTypeGiveReason(),
             hearing.getWithoutNotice(),
             hearing.getReducedNotice(),
             hearing.getRespondentsAware())) {
@@ -65,12 +67,8 @@ public class HearingUrgencyChecker extends PropertiesChecker {
             return false;
         }
 
-        if (YES.getValue().equals(hearing.getRespondentsAware())
-            && isEmpty(hearing.getRespondentsAwareReason())) {
-            return false;
-        }
-
-        return true;
+        return NO.getValue().equals(hearing.getRespondentsAware())
+            || !isEmpty(hearing.getRespondentsAwareReason());
     }
 
     @Override
