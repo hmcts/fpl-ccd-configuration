@@ -16,7 +16,16 @@
     "mochawesome": "^6.2.1",
     "node-fetch": "^2.6.1",
     "puppeteer": "7.0.4",
+<<<<<<< Updated upstream
     "moment": "2.29.1"
+=======
+<<<<<<< HEAD
+    "moment": "2.29.1",
+    "html_codesniffer": "^2.5.1"
+=======
+    "moment": "2.29.1"
+>>>>>>> 09c11f6d3e9c2d5a6d3fdacee44997e66684cca0
+>>>>>>> Stashed changes
   },
   "scripts": {
     "lint": "eslint e2e",
