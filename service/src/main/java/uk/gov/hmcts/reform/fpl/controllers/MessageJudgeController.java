@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.MessageJudgeService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -62,22 +64,15 @@ public class MessageJudgeController extends CallbackController {
 
         caseDetailsMap.put("nextHearingLabel", messageJudgeService.getNextHearingLabel(caseData));
 
-        return respond(caseDetailsMap);
-    }
+        JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
+        Optional<String> error = Optional.empty();
+        if (!isNull(judgeMetaData)) {
+            String email = judgeMetaData.getRecipient();
+            error = validateEmailService.validate(email);
+        }
 
-    @PostMapping("/validate-email/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidationMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
-
-        if (!caseData.getMessageJudgeEventData().isReplyingToAMessage()) {
-            String email = caseData.getMessageJudgeEventData().getJudicialMessageMetaData().getRecipient();
-            Optional<String> error = validateEmailService.validate(email);
-
-            if (!error.isEmpty()) {
-                return respond(caseDetailsMap, List.of(error.get()));
-            }
+        if (!error.isEmpty()) {
+            return respond(caseDetailsMap, List.of(error.get()));
         }
 
         return respond(caseDetailsMap);

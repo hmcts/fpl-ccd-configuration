@@ -172,7 +172,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "validate-email");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
         assertThat(response.getErrors()).isNull();
     }
@@ -189,7 +189,7 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "validate-email");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
         assertThat(response.getErrors()).contains(
             "Enter an email address in the correct format, for example name@example.com");
