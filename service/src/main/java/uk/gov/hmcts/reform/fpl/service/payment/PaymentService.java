@@ -10,12 +10,14 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 
 @Service
 @Slf4j
@@ -25,15 +27,19 @@ public class PaymentService {
     public static final String BLANK_PARAMETER_VALUE = "Not provided";
 
     private final FeeService feeService;
+    private final FeatureToggleService featureToggleService;
     private final PaymentClient paymentClient;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final String siteId;
 
     @Autowired
-    public PaymentService(FeeService feeService, PaymentClient paymentClient,
+    public PaymentService(FeeService feeService,
+                          FeatureToggleService featureToggleService,
+                          PaymentClient paymentClient,
                           LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                           @Value("${payment.site_id}") String siteId) {
         this.feeService = feeService;
+        this.featureToggleService = featureToggleService;
         this.paymentClient = paymentClient;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.siteId = siteId;
@@ -83,7 +89,7 @@ public class PaymentService {
                                                                        String customerReference,
                                                                        String localAuthorityName,
                                                                        FeesData feesData) {
-        return CreditAccountPaymentRequest.builder()
+        CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder builder = CreditAccountPaymentRequest.builder()
             .accountNumber(pbaNumber)
             .amount(feesData.getTotalAmount())
             .caseReference(caseReference)
@@ -93,8 +99,14 @@ public class PaymentService {
             .description(String.format(DESCRIPTION_TEMPLATE, caseId))
             .organisationName(localAuthorityName)
             .service(FPL)
-            .siteId(siteId)
-            .fees(feesData.getFees())
-            .build();
+            .fees(feesData.getFees());
+
+        if (featureToggleService.isFeeAndPayCaseTypeEnabled()) {
+            builder.caseType(CASE_TYPE);
+        } else {
+            builder.siteId(siteId);
+        }
+
+        return builder.build();
     }
 }

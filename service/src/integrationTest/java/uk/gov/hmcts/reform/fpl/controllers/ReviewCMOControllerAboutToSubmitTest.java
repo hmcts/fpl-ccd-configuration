@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.ReviewDecision;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
@@ -149,6 +150,7 @@ class ReviewCMOControllerAboutToSubmitTest extends AbstractControllerTest {
             .draftUploadedCMOs(List.of())
             // required due to the json unwrapping
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
+            .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
