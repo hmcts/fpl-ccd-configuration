@@ -11,13 +11,13 @@ const resultObj = {
   appName: 'FPL',
   passCount: 0,
   failCount: 0,
-  tests: []
+  tests: [],
 };
 
 async function runAccessibility(url, page) {
   //Add HMTL code sniffer script
   await page.addScriptTag({
-    path: 'node_modules/html_codesniffer/build/HTMLCS.js'
+    path: 'node_modules/html_codesniffer/build/HTMLCS.js',
   });
 
   const screenshotPath = testConfig.TestOutputDir + '/assets';
@@ -31,7 +31,7 @@ async function runAccessibility(url, page) {
         message: issue.msg,
         type: 'error',
         element: issue.element,
-        runner: 'htmlcs'
+        runner: 'htmlcs',
       };
     };
 
@@ -77,7 +77,7 @@ function updateResultObject(url, pageTitle, screenshotReportRef, accessibilityEr
     documentTitle: pageTitle,
     status: isPageAccessible,
     screenshot: screenshotReportRef,
-    a11yIssues: accessibilityErrorsOnThePage
+    a11yIssues: accessibilityErrorsOnThePage,
   });
 }
 
