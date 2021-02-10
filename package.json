@@ -34,6 +34,10 @@
     "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
     "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi"
   },
+  "dependencies": {
+    "e2e": "^0.0.8",
+    "html_codesniffer": "^2.5.1"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint"
