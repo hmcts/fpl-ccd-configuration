@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.EXCLUSION_REQUIREMENT;
+import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyEmpty;
@@ -50,7 +51,10 @@ public class OrdersSoughtChecker extends PropertiesChecker {
             if (isEmergencyProtectionOtherNotCompleted(orders)) {
                 return false;
             }
-            if (isEmergencyProtectionOrderDirectionNotCompleted(orders)) {
+            if (isEmergencyProtectionOrderOtherDirectionNotCompleted(orders)) {
+                return false;
+            }
+            if (isEmergencyProtectionOrderDirectionExclusionNotCompleted(orders)) {
                 return false;
             }
         }
@@ -60,24 +64,26 @@ public class OrdersSoughtChecker extends PropertiesChecker {
             return false;
         }
 
-        if (YES.getValue().equals(orders.getDirections())
-            && isEmpty(orders.getDirectionDetails())) {
-            return false;
-        }
-
-        return super.isCompleted(caseData);
+        return !YES.getValue().equals(orders.getDirections())
+            || !isEmpty(orders.getDirectionDetails());
     }
 
-    private boolean isEmergencyProtectionOrderDirectionNotCompleted(Orders orders) {
+    private boolean isEmergencyProtectionOrderDirectionExclusionNotCompleted(Orders orders) {
         return orders.getEmergencyProtectionOrderDirections() != null
             && orders.getEmergencyProtectionOrderDirections().contains(EXCLUSION_REQUIREMENT)
             && isEmpty(orders.getExcluded());
     }
 
+    private boolean isEmergencyProtectionOrderOtherDirectionNotCompleted(Orders orders) {
+        return orders.getEmergencyProtectionOrderDirections() != null
+            && orders.getEmergencyProtectionOrderDirections().contains(OTHER)
+            && isEmpty(orders.getEmergencyProtectionOrderDirectionDetails());
+    }
+
     private boolean isEmergencyProtectionOtherNotCompleted(Orders orders) {
         return orders.getEmergencyProtectionOrders() != null
             && orders.getEmergencyProtectionOrders().contains(EmergencyProtectionOrdersType.OTHER)
-            && isEmpty(orders.getEmergencyProtectionOrderDirectionDetails());
+            && isEmpty(orders.getEmergencyProtectionOrderDetails());
     }
 
     @Override
