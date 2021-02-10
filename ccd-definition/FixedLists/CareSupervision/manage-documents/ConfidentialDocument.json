@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ConfidentialDocument",
     "ListElementCode": "CONFIDENTIAL",
-    "ListElement": "Keep this document confidential",
+    "ListElement": "Yes - restrict to this group",
     "DisplayOrder": 1
   }
 ]

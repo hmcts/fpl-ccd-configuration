@@ -47,5 +47,22 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "confidentialLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "confidential",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ConfidentialDocument",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
   }
 ]
