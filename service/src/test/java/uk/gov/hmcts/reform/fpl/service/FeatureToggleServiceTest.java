@@ -186,6 +186,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForFeeAndPayCaseTypeEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isFeeAndPayCaseTypeEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("fee-and-pay-case-type"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
