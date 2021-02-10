@@ -34,15 +34,9 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2684".equals(migrationId)) {
+        if ("FPLA-2693".equals(migrationId)) {
             Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
-            run2684(caseDetails);
-            caseDetails.getData().put("hiddenOrders", hiddenOrders);
-        }
-
-        if ("FPLA-2687".equals(migrationId)) {
-            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
-            run2687(caseDetails);
+            run2693(caseDetails);
             caseDetails.getData().put("hiddenOrders", hiddenOrders);
         }
 
@@ -50,39 +44,20 @@ public class MigrateCaseController extends CallbackController {
         return respond(caseDetails);
     }
 
-    private void run2684(CaseDetails caseDetails) {
+    private void run2693(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("CF20C50070".equals(caseData.getFamilyManCaseNumber())) {
+        if ("SA20C50008".equals(caseData.getFamilyManCaseNumber())) {
             CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-            if (caseData.getOrderCollection().size() < 3) {
-                throw new IllegalArgumentException(format("Expected at least three orders but found %s",
+            if (caseData.getOrderCollection().size() < 9) {
+                throw new IllegalArgumentException(format("Expected at least ten orders but found %s",
                     caseData.getOrderCollection().size()));
             }
 
-            Element<GeneratedOrder> orderThree = caseData.getOrderCollection().get(2);
+            Element<GeneratedOrder> ordetTen = caseData.getOrderCollection().get(9);
 
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderThree.getId(), orderThree.getValue());
-
-            caseDetails.setData(caseDetailsMap);
-        }
-    }
-
-    private void run2687(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("SN20C50009".equals(caseData.getFamilyManCaseNumber())) {
-            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
-
-            if (caseData.getOrderCollection().size() < 3) {
-                throw new IllegalArgumentException(format("Expected at least three orders but found %s",
-                    caseData.getOrderCollection().size()));
-            }
-
-            Element<GeneratedOrder> orderThree = caseData.getOrderCollection().get(2);
-
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderThree.getId(), orderThree.getValue());
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, ordetTen.getId(), ordetTen.getValue());
 
             caseDetails.setData(caseDetailsMap);
         }
