@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
@@ -21,14 +22,19 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
@@ -41,7 +47,12 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 @OverrideAutoConfiguration(enabled = true)
 class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
+    @MockBean
+    private DocumentUploadHelper documentUploadHelper;
+
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
+
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
 
     @Test
     void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
@@ -87,11 +98,20 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
     @Test
     void shouldAddCMOToListWithSendToJudgeStatusAndMigrateDocs() {
-        List<Element<SupportingEvidenceBundle>> bundles = List.of(element(
+        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("Test LA");
+
+        UUID bundleId = UUID.randomUUID();
+        List<Element<SupportingEvidenceBundle>> cmoBundles = List.of(element(bundleId,
             SupportingEvidenceBundle.builder()
                 .name("case summary")
-                .build()
-        ));
+                .build()));
+
+        List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(bundleId,
+            SupportingEvidenceBundle.builder()
+                .name("case summary")
+                .uploadedBy("Test LA")
+                .dateTimeUploaded(time.now())
+                .build()));
 
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().minusDays(3));
 
@@ -100,7 +120,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             .pastHearingsForCMO(dynamicList(hearings))
             .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
             .cmoUploadType(CMOType.AGREED)
-            .cmoSupportingDocs(bundles)
+            .cmoSupportingDocs(cmoBundles)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -110,7 +130,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, bundles);
+        HearingOrder cmo = orderWithDocs(hearings.get(0).getValue(), AGREED_CMO, SEND_TO_JUDGE, cmoBundles);
 
         List<Element<HearingOrder>> unsealedCMOs = responseData.getDraftUploadedCMOs();
 
@@ -127,7 +147,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = List.of(
             element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
                 .hearingName(hearings.get(0).getValue().toLabel())
-                .supportingEvidenceBundle(bundles)
+                .supportingEvidenceBundle(hearingDocsBundles)
                 .build())
         );
 

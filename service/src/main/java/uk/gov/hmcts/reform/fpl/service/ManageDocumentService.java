@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -188,6 +190,7 @@ public class ManageDocumentService {
                         new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
 
                     updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+                    sortByDateUploaded(existingEvidence);
 
                     element.getValue().setSupportingEvidenceBundle(existingEvidence);
                 }
@@ -254,6 +257,7 @@ public class ManageDocumentService {
                     = new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
 
                 updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
+                sortByDateUploaded(existingEvidence);
 
                 element.getValue().setSupportingEvidenceBundle(existingEvidence);
             }
@@ -319,5 +323,13 @@ public class ManageDocumentService {
         existingEvidence.removeAll(userSpecificDocuments);
 
         existingEvidence.addAll(updatedEvidence);
+    }
+
+    private void sortByDateUploaded(List<Element<SupportingEvidenceBundle>> evidence) {
+        evidence.sort((ele1, ele2) -> {
+            LocalDateTime date1 = defaultIfNull(ele1.getValue().getDateTimeUploaded(), LocalDateTime.MAX);
+            LocalDateTime date2 = defaultIfNull(ele2.getValue().getDateTimeUploaded(), LocalDateTime.MAX);
+            return date1.compareTo(date2);
+        });
     }
 }

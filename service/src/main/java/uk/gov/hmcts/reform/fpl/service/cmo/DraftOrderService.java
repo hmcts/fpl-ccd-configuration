@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,6 +67,7 @@ public class DraftOrderService {
     private final FeatureToggleService featureToggleService;
     private final ObjectMapper mapper;
     private final Time time;
+    private final DocumentUploadHelper documentUploadHelper;
 
     public UploadDraftOrdersData getInitialData(CaseData caseData) {
         final UploadDraftOrdersData eventData = caseData.getUploadDraftOrdersEventData();
@@ -153,7 +155,6 @@ public class DraftOrderService {
 
         return nonCMODraftOrders;
     }
-
 
     public UUID updateCase(UploadDraftOrdersData eventData, List<Element<HearingBooking>> hearings,
                            List<Element<HearingOrder>> cmoDrafts,
@@ -271,7 +272,6 @@ public class DraftOrderService {
 
             CMOStatus status = cmo.getValue().getStatus();
 
-
             if (SEND_TO_JUDGE == status) {
                 return new AgreedCMOUploaded(caseData, hearing);
             } else if (DRAFT == status) {
@@ -286,23 +286,25 @@ public class DraftOrderService {
                                   HearingBooking hearing, List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
         Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, evidenceBundles);
 
+        List<Element<SupportingEvidenceBundle>> supportingDocs = buildSupportingEvidenceBundle(cmoSupportingDocs);
+
         if (bundle.isPresent()) {
             List<Element<SupportingEvidenceBundle>> hearingDocs = bundle.get().getValue().getSupportingEvidenceBundle();
 
-            cmoSupportingDocs.forEach(cmoSupportingDoc -> {
+            supportingDocs.forEach(supportingDoc -> {
                 int hearingDocIndex = Iterables.indexOf(hearingDocs,
-                    hearingDoc -> Objects.equals(hearingDoc.getId(), cmoSupportingDoc.getId()));
+                    hearingDoc -> Objects.equals(hearingDoc.getId(), supportingDoc.getId()));
                 if (hearingDocIndex < 0) {
-                    hearingDocs.add(cmoSupportingDoc);
+                    hearingDocs.add(supportingDoc);
                 } else {
                     hearingDocs.remove(hearingDocIndex);
-                    hearingDocs.add(hearingDocIndex, cmoSupportingDoc);
+                    hearingDocs.add(hearingDocIndex, supportingDoc);
                 }
             });
         } else {
             evidenceBundles.add(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
                 .hearingName(hearing.toLabel())
-                .supportingEvidenceBundle(cmoSupportingDocs)
+                .supportingEvidenceBundle(supportingDocs)
                 .build()));
         }
     }
@@ -468,6 +470,22 @@ public class DraftOrderService {
 
     private boolean includeHearing(Element<HearingOrder> cmo, HearingBooking hearing) {
         return SEND_TO_JUDGE == cmo.getValue().getStatus() && cmo.getId().equals(hearing.getCaseManagementOrderId());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+
+        List<Element<SupportingEvidenceBundle>> supportingDocs = new ArrayList<>();
+        cmoSupportingDocs.forEach(cmoSupportingDoc -> supportingDocs.add(
+            element(cmoSupportingDoc.getId(), SupportingEvidenceBundle.builder()
+                .document(cmoSupportingDoc.getValue().getDocument())
+                .name(cmoSupportingDoc.getValue().getName())
+                .notes(cmoSupportingDoc.getValue().getNotes())
+                .dateTimeUploaded(time.now())
+                .uploadedBy(uploadedBy).build())));
+
+        return supportingDocs;
     }
 
     private void sortHearings(List<Element<HearingBooking>> hearings) {
