@@ -22,19 +22,6 @@ public class HearingFurtherEvidenceBundle implements ConfidentialBundle {
     private String hearingName;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
 
-    /*
-    If want it the way listed in the docs
-    Add a json ignore to the getSupportingEvidenceBundle
-    add new getter that returns hmcts view (maybe as a new field):
-        all confidential
-    update getLABundle so that:
-        only confidential uploaded by la
-    update perms for all collections
-
-    have setters that merge everything, i.e. should just need to be the hmcts confidential docs view (all
-    confidential docs) and non confidential docs
-     */
-
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(this.supportingEvidenceBundle, new ArrayList<>());

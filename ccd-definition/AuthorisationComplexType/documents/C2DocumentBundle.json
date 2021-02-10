@@ -326,7 +326,6 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-magistrate",
           "[CAFCASSSOLICITOR]",
           "[SOLICITOR]"
         ],
@@ -345,8 +344,7 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "[BARRISTER]",
-          "caseworker-publiclaw-cafcass",
-          "[CAFCASSSOLICITOR]"
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U"
       }
