@@ -58,21 +58,20 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if ("CF21C50009".equals(caseData.getFamilyManCaseNumber())) {
-            removeC21OrderFromFirstDraftCMO(caseDetails);
+            removeC21OrderFromFirstHearingOrderBundle(caseDetails);
         }
     }
 
-    private void removeC21OrderFromFirstDraftCMO(CaseDetails caseDetails) {
+    private void removeC21OrderFromFirstHearingOrderBundle(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<HearingOrder>> hearingOrders = caseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders();
-        HearingOrder c21OrderToBeRemoved = hearingOrders.get(1).getValue();
         hearingOrders.remove(1);
 
-        List<Element<HearingOrdersBundle>> theBundle = caseData.getHearingOrdersBundlesDrafts();
-        theBundle.get(0).getValue().setOrders(hearingOrders);
+        List<Element<HearingOrdersBundle>> updatedBundle = caseData.getHearingOrdersBundlesDrafts();
+        updatedBundle.get(0).getValue().setOrders(hearingOrders);
 
-        caseDetails.getData().put("hearingOrdersBundlesDrafts", theBundle);
+        caseDetails.getData().put("hearingOrdersBundlesDrafts", updatedBundle);
     }
 
     private void run2693(CaseDetails caseDetails) {
