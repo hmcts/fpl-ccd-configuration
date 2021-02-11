@@ -1,5 +1,5 @@
 const fs = require('fs');
-const testConfig = require('e2e/config.js');
+const testConfig = require('../config.js');
 
 function generateAccessibilityReport(reportJson) {
   consoleReport(reportJson);

@@ -1,6 +1,6 @@
 const HTMLCS = require('html_codesniffer');
 const fs = require('fs');
-const testConfig = require('e2e/config.js');
+const testConfig = require('../config.js');
 
 const result = {
   PASSED: 'passed',
