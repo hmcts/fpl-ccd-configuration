@@ -36,7 +36,7 @@ module.exports = {
     if(legalRepresentative.telephone) {
       I.fillField(this.fields(elementIndex).legalRepresentative.telephone, legalRepresentative.telephone);
     }
-    I.runAccessibilityTest();
+    await I.runAccessibilityTest();
   },
 
   async setRolePreferences(rolePreferences) {
