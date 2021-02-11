@@ -76,7 +76,6 @@ public class MigrateCaseController extends CallbackController {
                 List<Element<HearingOrdersBundle>> migratedBundles =
                     draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
                 caseDetails.getData().put("hearingOrdersBundlesDrafts", migratedBundles);
-                caseDetails.getData().put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
 
                 log.info(
                     "Completed migration to Hearing orders draft bundles. case reference {} Number of bundles {}",
