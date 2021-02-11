@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static java.lang.String.format;
 
 @Api
@@ -53,14 +52,19 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void run2716(CaseDetails caseDetails) {
-        removeSecondDraftCaseManagementOrder(caseDetails);
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("CF21C50009".equals(caseData.getFamilyManCaseNumber())) {
+            removeSecondDraftCaseManagementOrder(caseDetails);
+        }
     }
 
     private void removeSecondDraftCaseManagementOrder(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (isEmpty(caseData.getDraftUploadedCMOs())) {
-            throw new IllegalArgumentException("No draft case management orders in the case");
+        if (caseData.getDraftUploadedCMOs().size() < 2) {
+            throw new IllegalArgumentException(format("Expected at least 2 draft cmo's on this case but found %s",
+                caseData.getDraftUploadedCMOs().size()));
         }
 
         Element<HearingOrder> secondDraftCmo = caseData.getDraftUploadedCMOs().get(1);
@@ -74,14 +78,14 @@ public class MigrateCaseController extends CallbackController {
         if ("SA20C50008".equals(caseData.getFamilyManCaseNumber())) {
             CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-            if (caseData.getOrderCollection().size() < 9) {
+            if (caseData.getOrderCollection().size() < 10) {
                 throw new IllegalArgumentException(format("Expected at least ten orders but found %s",
                     caseData.getOrderCollection().size()));
             }
 
-            Element<GeneratedOrder> ordetTen = caseData.getOrderCollection().get(9);
+            Element<GeneratedOrder> orderTen = caseData.getOrderCollection().get(9);
 
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, ordetTen.getId(), ordetTen.getValue());
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderTen.getId(), orderTen.getValue());
 
             caseDetails.setData(caseDetailsMap);
         }
