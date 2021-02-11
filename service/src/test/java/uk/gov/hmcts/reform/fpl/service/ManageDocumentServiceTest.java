@@ -1,13 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -19,18 +14,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,9 +32,8 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -56,43 +46,25 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class,
-    ManageDocumentService.class,
-    DocumentUploadHelper.class
-})
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
-    private static final String USER_ID = "1";
 
-    @Autowired
-    private Time time;
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
+    private final UserService userService = mock(UserService.class);
+    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+    private final LocalDateTime futureDate = time.now().plusDays(1);
 
-    @Autowired
     private ManageDocumentService manageDocumentService;
-
-    @MockBean
-    private DocumentUploadHelper documentUploadHelper;
-
-    @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
-    private RequestData requestData;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    private LocalDateTime futureDate;
 
     @BeforeEach
     void before() {
-        futureDate = time.now().plusDays(1);
+        manageDocumentService = new ManageDocumentService(
+            new ObjectMapper(), time, documentUploadHelper, userService, featureToggleService
+        );
+
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(userService.isHmctsUser()).willReturn(true);
     }
 
     @Test
@@ -773,7 +745,7 @@ class ManageDocumentServiceTest {
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
-            .uploadedBy("HMCTS")
+            .uploadedBy(USER)
             .build());
     }
 
@@ -812,16 +784,6 @@ class ManageDocumentServiceTest {
             .value(DynamicListElement.builder()
                 .code(selectedId)
                 .build())
-            .build();
-    }
-
-    private UserDetails createUserDetailsWithHmctsRole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Hudson")
-            .forename("Steve")
-            .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }
