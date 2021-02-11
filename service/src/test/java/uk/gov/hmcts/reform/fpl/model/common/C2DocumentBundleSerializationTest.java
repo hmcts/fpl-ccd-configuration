@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,24 +10,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static java.util.Map.entry;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CaseConverter.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class C2DocumentBundleSerializationTest {
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private CaseConverter caseConverter;
 
     @Test
     void testRoundTrip() {
@@ -45,9 +43,9 @@ class C2DocumentBundleSerializationTest {
                 .build())
             .description("description")
             .uploadedDateTime("uploadedDatetime")
-            .supportingEvidenceBundle(List.of(Element.<SupportingEvidenceBundle>builder()
-                .id(UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6384"))
-                .value(SupportingEvidenceBundle.builder()
+            .supportingEvidenceBundle(List.of(element(
+                UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6384"),
+                SupportingEvidenceBundle.builder()
                     .name("BundleName")
                     .dateTimeReceived(LocalDateTime.of(2012, 10, 10, 3, 4))
                     .dateTimeUploaded(LocalDateTime.of(2013, 9, 10, 3, 4))
@@ -56,46 +54,53 @@ class C2DocumentBundleSerializationTest {
                         .filename("filename")
                         .url("url")
                         .build())
-                    .confidential(List.of("confidential"))
+                    .confidential(List.of("CONFIDENTIAL"))
                     .uploadedBy("uploadedBy")
-                    .build())
-                .build()))
+                    .build())))
             .build();
 
-        List<Map<String, Object>> expectedBundles = List.of(Map.of("id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
-            "value", Map.of("confidential", List.of("confidential"),
+        List<Map<String, Object>> expectedBundles = List.of(Map.of(
+            "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6384",
+            "value", Map.of(
+                "confidential", List.of("CONFIDENTIAL"),
                 "name", "BundleName",
                 "uploadedBy", "uploadedBy",
                 "confidentialTabLabel", "Confidential",
                 "dateTimeReceived", "2012-10-10T03:04:00",
                 "dateTimeUploaded", "2013-09-10T03:04:00",
-                "document", Map.of("document_binary_url", "binaryUrl",
-                    "document_filename", "filename", "document_url", "url")
-            )));
+                "document", Map.of(
+                    "document_binary_url", "binaryUrl",
+                    "document_filename", "filename", "document_url", "url"
+                )
+            )
+        ));
 
-        Map<String, Object> expectedBundle = new HashMap<>();
-        expectedBundle.put("usePbaPayment", "usePbaPayment");
-        expectedBundle.put("pbaNumber", "pbaNumber");
-        expectedBundle.put("type", "WITH_NOTICE");
-        expectedBundle.put("nameOfRepresentative", "nameOfRepresentative");
-        expectedBundle.put("clientCode", "clientCode");
-        expectedBundle.put("fileReference", "fileReference");
-        expectedBundle.put("document", Map.of("document_binary_url", "binaryUrl",
-            "document_filename", "filename", "document_url", "url"));
-        expectedBundle.put("description", "description");
-        expectedBundle.put("uploadedDateTime", "uploadedDatetime");
-        expectedBundle.put("author", "Author");
-        expectedBundle.put("supportingEvidenceBundle", expectedBundles);
-        expectedBundle.put("supportingEvidenceLA", expectedBundles);
-        expectedBundle.put("supportingEvidenceNC", expectedBundles);
 
-        Map<String, Object> serialised = caseConverter.toMap(initial);
+        Map<String, Object> expectedBundle = Map.ofEntries(
+            entry("usePbaPayment", "usePbaPayment"),
+            entry("pbaNumber", "pbaNumber"),
+            entry("type", "WITH_NOTICE"),
+            entry("nameOfRepresentative", "nameOfRepresentative"),
+            entry("clientCode", "clientCode"),
+            entry("fileReference", "fileReference"),
+            entry("document", Map.of(
+                "document_binary_url", "binaryUrl",
+                "document_filename", "filename",
+                "document_url", "url"
+                )
+            ),
+            entry("description", "description"),
+            entry("uploadedDateTime", "uploadedDatetime"),
+            entry("author", "Author"),
+            entry("supportingEvidenceBundle", expectedBundles),
+            entry("supportingEvidenceLA", expectedBundles),
+            entry("supportingEvidenceNC", List.of())
+        );
+
+        Map<String, Object> serialised = objectMapper.convertValue(initial, new TypeReference<>() {});
+        C2DocumentBundle deserialised = objectMapper.convertValue(serialised, C2DocumentBundle.class);
 
         assertThat(serialised).isEqualTo(expectedBundle);
-
-        C2DocumentBundle deserialised = objectMapper.convertValue(serialised,
-            C2DocumentBundle.class);
-
         assertThat(deserialised).isEqualTo(initial);
     }
 }
