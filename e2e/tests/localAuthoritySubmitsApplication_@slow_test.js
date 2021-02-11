@@ -19,7 +19,7 @@ Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthori
 Scenario('local authority sees task list', async ({caseViewPage}) => {
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
 
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.changeCaseName);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.changeCaseName);
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.enterHearingNeeded);
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.enterGrounds);
@@ -48,7 +48,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   caseViewPage.seeInCaseTitle(caseId);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.changeCaseName);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.changeCaseName);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -95,7 +95,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   I.seeInTab(['Orders and directions needed', 'Give details'], 'Test');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -114,12 +114,12 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
   I.seeInTab(['Hearing needed', 'When do you need a hearing?'], 'Same day');
   I.seeInTab(['Hearing needed', 'Give reason'], 'test reason');
   I.seeInTab(['Hearing needed', 'What type of hearing do you need?'], 'Contested interim care order');
-  I.seeInTab(['Hearing needed', 'Do you need a without notice hearing?'], 'Yes');
+  I.seeInTab(['Hearing needed', 'Do you need a without notice hearing?'], 'No');
   I.seeInTab(['Hearing needed', 'Do you need a hearing with reduced notice?'], 'No');
-  I.seeInTab(['Hearing needed', 'Are respondents aware of proceedings?'], 'Yes');
+  I.seeInTab(['Hearing needed', 'Are respondents aware of proceedings?'], 'No');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.enterHearingNeeded);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -373,7 +373,7 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   I.seeInTab(['How are there grounds for an emergency protection order?', ''], [enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired]);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.enterGrounds);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -396,7 +396,7 @@ Scenario('local authority enters risk and harm to children', async ({I, caseView
   I.seeInTab(['Risks and harm to children', 'Select all that apply'], ['Past harm', 'Future risk of harm']);
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsInProgress(config.applicationActions.enterRiskAndHarmToChildren);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterRiskAndHarmToChildren);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRiskAndHarmToChildren);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -418,7 +418,7 @@ Scenario('local authority enters factors affecting parenting', async ({I, caseVi
   I.seeInTab(['Factors affecting parenting', 'Give details'], 'mock reason');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsInProgress(config.applicationActions.enterFactorsAffectingParenting);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterFactorsAffectingParenting);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterFactorsAffectingParenting);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -441,7 +441,7 @@ Scenario('local authority enters international element', async ({I, caseViewPage
   I.seeInTab(['International element', 'Give reason'], 'International involvement reason');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsInProgress(config.applicationActions.enterInternationalElement);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterInternationalElement);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterInternationalElement);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -477,7 +477,7 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
   I.seeInTab(['Additional proceedings 1', 'Is the same guardian needed?'], 'Yes');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsInProgress(config.applicationActions.enterOtherProceedings);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterOtherProceedings);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOtherProceedings);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
@@ -490,7 +490,7 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsCompleted(config.applicationActions.enterAllocationProposal);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterAllocationProposal);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
 });
 
@@ -518,7 +518,7 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
   I.seeInTab(['Attending the hearing', 'Give details'], 'I need this for this person');
 
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsInProgress(config.applicationActions.enterAttendingHearing);
+  caseViewPage.checkTaskIsFinished(config.applicationActions.enterAttendingHearing);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
 });
 
