@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
@@ -45,6 +47,17 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
 
     private static final String USER = "HMCTS";
     private static final String[] USER_ROLES = {"caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"};
+    private static final SupportingEvidenceBundle NON_CONFIDENTIAL_BUNDLE = SupportingEvidenceBundle.builder()
+        .dateTimeUploaded(LocalDateTime.now())
+        .uploadedBy(USER)
+        .name("test")
+        .build();
+    private static final SupportingEvidenceBundle CONFIDENTIAL_BUNDLE = SupportingEvidenceBundle.builder()
+        .dateTimeUploaded(LocalDateTime.now())
+        .uploadedBy(USER)
+        .name("confidential test")
+        .confidential(List.of("CONFIDENTIAL"))
+        .build();
 
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
@@ -145,6 +158,48 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         assertThat(extractedCaseData.getC2DocumentBundle()).first()
             .isEqualTo(c2DocumentBundleList.get(0));
         assertExpectedFieldsAreRemoved(extractedCaseData);
+    }
+
+    @Test
+    void shouldDuplicateNonConfidentialCorrespondenceDocsInAnotherList() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
+            CONFIDENTIAL_BUNDLE, NON_CONFIDENTIAL_BUNDLE
+        );
+
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
+            .manageDocument(buildManagementDocument(CORRESPONDENCE))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData extractedCaseData = extractCaseData(response);
+
+        List<Element<SupportingEvidenceBundle>> correspondenceDocumentsNC =
+            mapper.convertValue(response.getData().get("correspondenceDocumentsNC"), new TypeReference<>() {});
+
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        assertThat(correspondenceDocumentsNC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
+    }
+
+    @Test
+    void shouldDuplicateNonConfidentialFurtherEvidenceDocsInAnotherList() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = wrapElements(
+            CONFIDENTIAL_BUNDLE, NON_CONFIDENTIAL_BUNDLE
+        );
+
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData extractedCaseData = extractCaseData(response);
+
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsNC =
+            mapper.convertValue(response.getData().get("furtherEvidenceDocumentsNC"), new TypeReference<>() {});
+
+        assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        assertThat(furtherEvidenceDocumentsNC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
     }
 
     private HearingBooking buildFinalHearingBooking() {
