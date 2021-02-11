@@ -14,10 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static java.lang.String.format;
 
 @Api
@@ -28,6 +31,7 @@ import static java.lang.String.format;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
+    private final CMORemovalAction cmoRemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -40,8 +44,28 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("hiddenOrders", hiddenOrders);
         }
 
+        if("FPLA-2716".equals(migrationId)) {
+            run2716(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2716(CaseDetails caseDetails) {
+        removeSecondDraftCaseManagementOrder(caseDetails);
+    }
+
+    private void removeSecondDraftCaseManagementOrder(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getDraftUploadedCMOs())) {
+            throw new IllegalArgumentException("No draft case management orders in the case");
+        }
+
+        Element<HearingOrder> secondDraftCmo = caseData.getDraftUploadedCMOs().get(1);
+
+        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, secondDraftCmo);
     }
 
     private void run2693(CaseDetails caseDetails) {
