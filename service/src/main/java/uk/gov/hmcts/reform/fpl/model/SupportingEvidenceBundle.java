@@ -38,6 +38,6 @@ public class SupportingEvidenceBundle {
 
     @JsonGetter("confidentialTabLabel")
     public String generateConfidentialTabLabel() {
-        return "Confidential";
+        return isConfidentialDocument() ? "Confidential" : null;
     }
 }
