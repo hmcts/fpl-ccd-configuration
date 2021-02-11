@@ -23,7 +23,7 @@
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
+    "test:functional": "TESTS_FOR_ACCESSIBILITY='true' MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
     "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi"
   },
   "husky": {
