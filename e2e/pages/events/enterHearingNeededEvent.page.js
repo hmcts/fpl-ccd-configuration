@@ -12,10 +12,11 @@ module.exports = {
     hearingType: {
       radioGroup: '#hearing_type',
       contestedICO: '#hearing_type-Contested\\ interim\\ care\\ order',
+      reason: '#hearing_type_GiveReason',
     },
 
     noticeWithoutHearing: {
-      yes: '#hearing_withoutNotice-Yes',
+      no: '#hearing_withoutNotice-No',
     },
 
     reducedNoticeHearing: {
@@ -23,7 +24,7 @@ module.exports = {
     },
 
     respondentsAware: {
-      yes: '#hearing_respondentsAware-Yes',
+      no: '#hearing_respondentsAware-No',
     },
   },
 
@@ -32,12 +33,13 @@ module.exports = {
     I.fillField(this.fields.timeFrame.reason, reason);
   },
 
-  enterHearingType() {
+  enterHearingType(reason = 'test reason') {
     I.click(this.fields.hearingType.contestedICO);
+    I.fillField(this.fields.hearingType.reason, reason);
   },
 
   enterWithoutNoticeHearing() {
-    I.click(this.fields.noticeWithoutHearing.yes);
+    I.click(this.fields.noticeWithoutHearing.no);
   },
 
   enterReducedHearing() {
@@ -45,6 +47,6 @@ module.exports = {
   },
 
   enterRespondentsAware() {
-    I.click(this.fields.respondentsAware.yes);
+    I.click(this.fields.respondentsAware.no);
   },
 };

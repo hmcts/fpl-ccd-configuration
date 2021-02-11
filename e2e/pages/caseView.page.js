@@ -75,6 +75,10 @@ module.exports = {
     }
   },
 
+  checkTaskIsFinished(task) {
+    this.checkTaskStatus(task, 'Finished');
+  },
+
   checkTaskIsCompleted(task) {
     this.checkTaskStatus(task, 'Information added');
   },
