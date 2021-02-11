@@ -57,8 +57,6 @@ public class MigrateCaseController extends CallbackController {
         1600924712703100L, 1602695126592366L, 1610448987787679L, 1604057238263139L, 1607650998329954L,
         1602072210447867L, 1607089490115787L, 1605252849637867L);
 
-    //private static final List<Long> casesWithUploadDraftCMOs = List.of(1608290046655065L, 1611179532256592L);
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();

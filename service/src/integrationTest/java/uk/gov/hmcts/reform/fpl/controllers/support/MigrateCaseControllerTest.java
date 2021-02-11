@@ -51,16 +51,16 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
     @Nested
     class Fpla2710 {
-        String migrationId = "FPLA-2710";
+        final String migrationId = "FPLA-2710";
 
-        Long caseId1 = 1597234670803750L;
-        Long caseId2 = 1611831571219051L;
-        Long caseId3 = 1611831571219051L;
+        final Long caseId1 = 1597234670803750L;
+        final Long caseId2 = 1611831571219051L;
+        final Long caseId3 = 1611831571219051L;
 
-        UUID cmoId1 = randomUUID();
-        UUID cmoId2 = randomUUID();
+        final UUID cmoId1 = randomUUID();
+        final UUID cmoId2 = randomUUID();
 
-        DocumentReference order1 = testDocumentReference();
+        final DocumentReference order = testDocumentReference();
 
         @Test
         void shouldAddUploadDraftCMOsToAnExistingHearingOrderBundlesWhenOrdersBundleExistForHearing() {
@@ -251,7 +251,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                 .hearing(hearing)
                 .title(hearing)
                 .type(SEND_TO_JUDGE.equals(status) ? AGREED_CMO : DRAFT_CMO)
-                .order(order1)
+                .order(order)
                 .status(status)
                 .judgeTitleAndName("Her Honour Judge Judy").build());
         }
