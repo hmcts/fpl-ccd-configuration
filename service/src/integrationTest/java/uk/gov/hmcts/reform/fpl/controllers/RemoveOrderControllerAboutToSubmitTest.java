@@ -269,13 +269,13 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         UUID additionalOrderId = UUID.randomUUID();
         UUID hearingOrderBundleId = UUID.randomUUID();
 
-        Element<HearingOrder> caseManagementOrder1 = element(removedOrderId, HearingOrder.builder()
+        Element<HearingOrder> orderToBeRemoved = element(removedOrderId, HearingOrder.builder()
             .status(DRAFT)
             .type(HearingOrderType.DRAFT_CMO)
             .build());
 
-        List<Element<HearingOrder>> ordersToBeRemoved = newArrayList(
-            caseManagementOrder1,
+        List<Element<HearingOrder>> caseManagementOrders = newArrayList(
+            orderToBeRemoved,
             element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build()));
 
         List<Element<HearingBooking>> hearingBookings = List.of(
@@ -285,7 +285,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(newArrayList(
-                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(ordersToBeRemoved).build())
+                element(hearingOrderBundleId, HearingOrdersBundle.builder().orders(caseManagementOrders).build())
             ))
             .hearingDetails(hearingBookings)
             .removableOrderList(DynamicList.builder()
