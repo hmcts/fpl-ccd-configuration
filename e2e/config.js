@@ -75,7 +75,7 @@ module.exports = {
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
-  TestOutputDir: process.env.E2E_OUTPUT_DIR || './functional-output',
+  TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
   TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
   definition: {
     jurisdiction: 'PUBLICLAW',
