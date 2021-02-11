@@ -83,7 +83,7 @@ module.exports = class PuppeteerHelpers extends Helper {
 
   async runAccessibilityTest() {
 
-    const testConfig = require('e2e/config.js');
+    const testConfig = require('../config.js');
     const {runAccessibility} = require('./accessibility/runner');
 
     if (!testConfig.TestForAccessibility) {
