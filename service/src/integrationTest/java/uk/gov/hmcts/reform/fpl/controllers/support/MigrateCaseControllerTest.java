@@ -28,7 +28,6 @@ import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayLi
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
@@ -63,45 +62,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         final DocumentReference order = testDocumentReference();
 
         @Test
-        void shouldAddUploadDraftCMOsToAnExistingHearingOrderBundlesWhenOrdersBundleExistForHearing() {
-            Element<HearingBooking> hearing1 = element(buildHearing(now().plusDays(2), cmoId1));
-            Element<HearingBooking> hearing2 = element(buildHearing(now().plusDays(3), cmoId2));
-            Element<HearingBooking> hearing3 = element(buildHearing(now().plusDays(5)));
-
-            Element<HearingOrder> cmoInBundle = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
-            Element<HearingOrder> cmoToMigrate = buildCMO(cmoId2, hearing2.getValue().toLabel(), SEND_TO_JUDGE);
-            Element<HearingOrder> draftCmoInBundle = buildCMO(randomUUID(), hearing2.getValue().toLabel(), DRAFT);
-
-            Element<HearingOrdersBundle> hearingBundle1 =
-                buildDraftOrdersBundle(randomUUID(), newArrayList(cmoInBundle), hearing1);
-            Element<HearingOrdersBundle> hearingBundle2 =
-                buildDraftOrdersBundle(randomUUID(), newArrayList(draftCmoInBundle), hearing2);
-
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .hearingDetails(newArrayList(hearing1, hearing2, hearing3))
-                .draftUploadedCMOs(newArrayList(cmoToMigrate))
-                .hearingOrdersBundlesDrafts(newArrayList(hearingBundle1, hearingBundle2))
-                .id(caseId1)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            List<Element<HearingOrdersBundle>> migratedHearingBundles =
-                extractedCaseData.getHearingOrdersBundlesDrafts();
-
-            assertThat(unwrapElements(migratedHearingBundles))
-                .containsExactlyInAnyOrder(
-                    hearingBundle1.getValue(),
-                    buildDraftOrdersBundle(
-                        hearingBundle2.getId(), newArrayList(draftCmoInBundle, cmoToMigrate), hearing2).getValue());
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEmpty();
-        }
-
-        @Test
-        void shouldCreateANewHearingBundleWhenNoHearingBundleExist() {
+        void shouldCreateANewHearingBundleWhenHearingExistsForDraftCMO() {
             Element<HearingBooking> hearing1 = element(buildHearing(now().plusDays(1), cmoId1));
             Element<HearingOrder> cmoToMigrate = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
 
@@ -118,45 +79,10 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             List<Element<HearingOrdersBundle>> migratedHearingBundles =
                 extractedCaseData.getHearingOrdersBundlesDrafts();
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEmpty();
-
             assertThat(unwrapElements(migratedHearingBundles))
                 .containsExactlyInAnyOrder(
                     buildDraftOrdersBundle(
                         randomUUID(), newArrayList(cmoToMigrate), hearing1, "").getValue());
-        }
-
-        @Test
-        void shouldCreateANewHearingBundleForUploadDraftCMOsWhenOrdersBundleDoesNotExistForHearing() {
-            Element<HearingBooking> hearing1 = element(buildHearing(now().plusDays(2), cmoId1));
-            Element<HearingBooking> hearing2 = element(buildHearing(now().plusDays(3), cmoId2));
-
-            Element<HearingOrder> cmoInBundle = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
-            Element<HearingOrder> cmoToMigrate = buildCMO(cmoId2, hearing2.getValue().toLabel(), SEND_TO_JUDGE);
-
-            Element<HearingOrdersBundle> hearingBundle1 =
-                buildDraftOrdersBundle(randomUUID(), newArrayList(cmoInBundle), hearing1);
-
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .hearingDetails(newArrayList(hearing1, hearing2))
-                .draftUploadedCMOs(newArrayList(cmoToMigrate))
-                .hearingOrdersBundlesDrafts(newArrayList(hearingBundle1))
-                .id(caseId3)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            List<Element<HearingOrdersBundle>> migratedHearingBundles =
-                extractedCaseData.getHearingOrdersBundlesDrafts();
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEmpty();
-            assertThat(unwrapElements(migratedHearingBundles))
-                .containsExactlyInAnyOrder(
-                    hearingBundle1.getValue(),
-                    buildDraftOrdersBundle(
-                        randomUUID(), newArrayList(cmoToMigrate), hearing2, "").getValue());
         }
 
         @Test
@@ -167,12 +93,8 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             Element<HearingOrder> cmoLinkedToHearing = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
             Element<HearingOrder> cmoWithoutHearing = buildCMO(cmoId2, hearing2.getValue().toLabel(), SEND_TO_JUDGE);
 
-            Element<HearingOrdersBundle> hearingBundle1 =
-                buildDraftOrdersBundle(randomUUID(), newArrayList(cmoLinkedToHearing), hearing1);
-
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
                 .hearingDetails(newArrayList(hearing1))
-                .hearingOrdersBundlesDrafts(newArrayList(hearingBundle1))
                 .draftUploadedCMOs(newArrayList(cmoLinkedToHearing, cmoWithoutHearing))
                 .id(caseId2)
                 .build());
@@ -184,12 +106,38 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             List<Element<HearingOrdersBundle>> migratedHearingBundles =
                 extractedCaseData.getHearingOrdersBundlesDrafts();
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).containsOnly(cmoWithoutHearing);
+            assertThat(extractedCaseData.getDraftUploadedCMOs())
+                .containsExactlyInAnyOrder(cmoLinkedToHearing, cmoWithoutHearing);
 
             assertThat(unwrapElements(migratedHearingBundles))
                 .containsExactlyInAnyOrder(
                     buildDraftOrdersBundle(
-                        randomUUID(), newArrayList(cmoLinkedToHearing), hearing1).getValue());
+                        randomUUID(), newArrayList(cmoLinkedToHearing), hearing1, "").getValue());
+        }
+
+        @Test
+        void shouldNotMigrateDraftCMOsWhenHearingOrdersDraftsBundlesDataExist() {
+            Element<HearingBooking> hearing1 = element(buildHearing(now().plusDays(1), cmoId1));
+
+            Element<HearingOrder> agreedCMO = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
+            Element<HearingOrder> agreedCMO1 = buildCMO(cmoId2, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
+
+            List<Element<HearingOrdersBundle>> hearingBundles =
+                List.of(element(HearingOrdersBundle.builder()
+                    .hearingId(hearing1.getId()).orders(newArrayList(agreedCMO1)).build()));
+
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .hearingDetails(newArrayList(hearing1))
+                .hearingOrdersBundlesDrafts(hearingBundles)
+                .draftUploadedCMOs(newArrayList(agreedCMO))
+                .id(caseId3)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getDraftUploadedCMOs()).containsOnly(agreedCMO);
         }
 
         @Test

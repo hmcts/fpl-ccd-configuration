@@ -13,29 +13,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -45,6 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
+
+    private final DraftOrderService draftOrderService;
 
     private static final List<Long> casesWithUploadDraftCMOs = List.of(
         1609255930041507L, 1606987766244887L, 1604311638012517L, 1610617556504448L, 1611053637858331L,
@@ -76,12 +67,14 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2710".equals(migrationId)) {
             CaseData caseData = getCaseData(caseDetails);
-            if (casesWithUploadDraftCMOs.contains(caseData.getId()) && isNotEmpty(caseData.getDraftUploadedCMOs())) {
+            if (casesWithUploadDraftCMOs.contains(caseData.getId()) && isNotEmpty(caseData.getDraftUploadedCMOs())
+                && isEmpty(caseData.getHearingOrdersBundlesDrafts())) {
                 log.info(
                     "Migrating draft CMOs to Hearing orders draft bundles - case reference {} Number of Draft CMOs {}",
                     caseData.getId(), caseData.getDraftUploadedCMOs().size());
 
-                List<Element<HearingOrdersBundle>> migratedBundles = migrateDraftCMOsToHearingBundles(caseData);
+                List<Element<HearingOrdersBundle>> migratedBundles =
+                    draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
                 caseDetails.getData().put("hearingOrdersBundlesDrafts", migratedBundles);
                 caseDetails.getData().put("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
 
@@ -93,63 +86,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private List<Element<HearingOrdersBundle>> migrateDraftCMOsToHearingBundles(CaseData caseData) {
-
-        List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
-
-        List<Element<HearingOrdersBundle>> hearingOrdersBundles = defaultIfNull(
-            caseData.getHearingOrdersBundlesDrafts(), new ArrayList<>());
-
-        List<UUID> removedDraftCMOs = new ArrayList<>();
-
-        removeDraftCMOsFromHearingBundles(hearingOrdersBundles, draftUploadedCMOs);
-
-        draftUploadedCMOs.forEach(draftElement -> {
-            Optional<Element<HearingBooking>> hearingOptional = caseData.getHearingLinkedToCMO(draftElement.getId());
-
-            // if hearing exists linked with draft CMO
-            hearingOptional.ifPresent(hearingElement -> {
-                String title = draftElement.getValue().getType() == AGREED_CMO ? "Agreed CMO discussed at hearing"
-                    : "Draft CMO from advocates' meeting";
-
-                draftElement.getValue().toBuilder()
-                    .title(defaultIfNull(draftElement.getValue().getTitle(), title))
-                    .build();
-
-                // check if hearing orders bundle exists
-                Optional<Element<HearingOrdersBundle>> bundle = hearingOrdersBundles.stream()
-                    .filter(b -> Objects.equals(b.getValue().getHearingId(), hearingElement.getId()))
-                    .findFirst();
-
-                if (bundle.isEmpty()) {
-                    // create new hearing orders bundle
-                    hearingOrdersBundles.add(element(HearingOrdersBundle.builder()
-                        .build()
-                        .updateHearing(hearingElement.getId(), hearingElement.getValue())
-                        .updateOrders(List.of(draftElement),
-                            draftElement.getValue().getStatus() == DRAFT ? DRAFT_CMO : AGREED_CMO)));
-                } else {
-                    // add to existing hearing orders bundle
-                    bundle.get().getValue().getOrders().add(draftElement);
-                }
-                removedDraftCMOs.add(draftElement.getId());
-            });
-        });
-
-        caseData.getDraftUploadedCMOs().removeIf(cmo -> removedDraftCMOs.contains(cmo.getId()));
-        hearingOrdersBundles.removeIf(bundle -> isEmpty(bundle.getValue().getOrders()));
-        return hearingOrdersBundles;
-    }
-
-    private void removeDraftCMOsFromHearingBundles(List<Element<HearingOrdersBundle>> hearingOrdersBundles,
-                                                   List<Element<HearingOrder>> draftUploadedCMOs) {
-        List<UUID> cmoDraftsIds = draftUploadedCMOs.stream().map(Element::getId)
-            .collect(Collectors.toUnmodifiableList());
-
-        hearingOrdersBundles.forEach(bundle -> bundle.getValue().getOrders()
-            .removeIf(draft -> cmoDraftsIds.contains(draft.getId())));
     }
 
     private void run2684(CaseDetails caseDetails) {
