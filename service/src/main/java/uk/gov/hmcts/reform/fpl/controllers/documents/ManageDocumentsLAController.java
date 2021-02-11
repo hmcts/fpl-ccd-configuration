@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 
@@ -50,6 +51,7 @@ public class ManageDocumentsLAController extends CallbackController {
     private final ManageDocumentLAService manageDocumentLAService;
     private final ManageDocumentService manageDocumentService;
     private final ApplicationDocumentsService applicationDocumentsService;
+    private final ConfidentialDocumentsSplitter splitter;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -110,7 +112,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        Map<String, Object> documentsToAdd = new HashMap<>();
+        Map<String, Object> confidentialAndNonConfidentialDocuments = new HashMap<>();
         ManageDocumentLA manageDocumentLA = caseData.getManageDocumentLA();
         switch (manageDocumentLA.getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -124,14 +126,16 @@ public class ManageDocumentsLAController extends CallbackController {
                     List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
-                    documentsToAdd.put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle);
+                    confidentialAndNonConfidentialDocuments.put(
+                        HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
+                    );
 
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
                     );
 
-                    documentsToAdd = manageDocumentService.splitIntoAllAndNonConfidential(
+                    confidentialAndNonConfidentialDocuments = splitter.splitIntoAllAndNonConfidential(
                         currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
                     );
                 }
@@ -142,7 +146,7 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA()
                     );
 
-                documentsToAdd = manageDocumentService.splitIntoAllAndNonConfidential(
+                confidentialAndNonConfidentialDocuments = splitter.splitIntoAllAndNonConfidential(
                     updatedCorrespondenceDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
                 );
                 break;
@@ -150,19 +154,21 @@ public class ManageDocumentsLAController extends CallbackController {
                 List<Element<C2DocumentBundle>> updatedC2Documents =
                     manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-                documentsToAdd.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+                confidentialAndNonConfidentialDocuments.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
             case COURT_BUNDLE:
-                documentsToAdd.put(COURT_BUNDLE_LIST_KEY, manageDocumentLAService.buildCourtBundleList(caseData));
+                confidentialAndNonConfidentialDocuments.put(
+                    COURT_BUNDLE_LIST_KEY, manageDocumentLAService.buildCourtBundleList(caseData)
+                );
                 break;
             case APPLICATION:
-                documentsToAdd = applicationDocumentsService.updateApplicationDocuments(
+                confidentialAndNonConfidentialDocuments = applicationDocumentsService.updateApplicationDocuments(
                     caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
                 );
                 break;
         }
 
-        caseDetails.getData().putAll(documentsToAdd);
+        caseDetails.getData().putAll(confidentialAndNonConfidentialDocuments);
 
         removeTemporaryFields(caseDetails, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,

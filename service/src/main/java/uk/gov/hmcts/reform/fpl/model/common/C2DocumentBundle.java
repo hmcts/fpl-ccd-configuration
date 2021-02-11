@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -20,12 +20,13 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class C2DocumentBundle implements ConfidentialBundle {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class C2DocumentBundle extends ConfidentialBundle {
     private final C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
@@ -45,22 +46,6 @@ public class C2DocumentBundle implements ConfidentialBundle {
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
-    }
-
-    @JsonGetter(value = "supportingEvidenceLA")
-    @Override
-    public List<Element<SupportingEvidenceBundle>> getLABundle() {
-        return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
-    }
-
-    @JsonGetter(value = "supportingEvidenceNC")
-    @Override
-    public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
-        return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
     }
 
     @JsonIgnore

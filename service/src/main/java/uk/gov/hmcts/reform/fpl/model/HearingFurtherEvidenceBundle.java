@@ -1,45 +1,29 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HearingFurtherEvidenceBundle implements ConfidentialBundle {
+public class HearingFurtherEvidenceBundle extends ConfidentialBundle {
     private String hearingName;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
-        return defaultIfNull(this.supportingEvidenceBundle, new ArrayList<>());
-    }
-
-    @JsonGetter(value = "supportingEvidenceLA")
-    @Override
-    public List<Element<SupportingEvidenceBundle>> getLABundle() {
-        return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
-    }
-
-    @JsonGetter(value = "supportingEvidenceNC")
-    @Override
-    public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
-        return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
+        return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 }
