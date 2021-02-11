@@ -15,10 +15,13 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+
+import java.util.List;
 
 import static java.lang.String.format;
 
@@ -55,21 +58,21 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if ("CF21C50009".equals(caseData.getFamilyManCaseNumber())) {
-            removeSecondDraftCaseManagementOrder(caseDetails);
+            removeC21OrderFromFirstDraftCMO(caseDetails);
         }
     }
 
-    private void removeSecondDraftCaseManagementOrder(CaseDetails caseDetails) {
+    private void removeC21OrderFromFirstDraftCMO(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getDraftUploadedCMOs().size() < 2) {
-            throw new IllegalArgumentException(format("Expected at least 2 draft cmo's on this case but found %s",
-                caseData.getDraftUploadedCMOs().size()));
-        }
+        List<Element<HearingOrder>> hearingOrders = caseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders();
+        HearingOrder c21OrderToBeRemoved = hearingOrders.get(1).getValue();
+        hearingOrders.remove(1);
 
-        Element<HearingOrder> secondDraftCmo = caseData.getDraftUploadedCMOs().get(1);
+        List<Element<HearingOrdersBundle>> theBundle = caseData.getHearingOrdersBundlesDrafts();
+        theBundle.get(0).getValue().setOrders(hearingOrders);
 
-        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, secondDraftCmo);
+        caseDetails.getData().put("hearingOrdersBundlesDrafts", theBundle);
     }
 
     private void run2693(CaseDetails caseDetails) {
