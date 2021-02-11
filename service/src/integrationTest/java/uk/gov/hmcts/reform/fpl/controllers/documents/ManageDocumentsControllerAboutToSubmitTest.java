@@ -2,14 +2,10 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
@@ -21,17 +17,14 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,8 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -53,13 +44,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private static final String USER = "HMCTS";
+    private static final String[] USER_ROLES = {"caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"};
 
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
     }
-
-    @Autowired
-    private Time time;
 
     @MockBean
     private IdamClient idamClient;
@@ -75,106 +64,87 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
         UUID hearingId = UUID.randomUUID();
         HearingBooking hearingBooking = buildFinalHearingBooking();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "hearingDetails", List.of(element(hearingId, hearingBooking)),
-            "manageDocumentsHearingList", DynamicList.builder()
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingList(DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(hearingId)
                     .build())
-                .build(),
-            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
+                .build())
+            .hearingDetails(List.of(element(hearingId, hearingBooking)))
+            .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
-        assertThat(caseData.getHearingFurtherEvidenceDocuments().get(0).getValue()
-            .getSupportingEvidenceBundle()).isEqualTo(furtherEvidenceBundle);
+        assertThat(extractedCaseData.getHearingFurtherEvidenceDocuments()).first()
+            .extracting(evidence -> evidence.getValue().getSupportingEvidenceBundle())
+            .isEqualTo(furtherEvidenceBundle);
 
-        assertExpectedFieldsAreRemoved(caseData);
+        assertExpectedFieldsAreRemoved(extractedCaseData);
     }
 
     @Test
     void shouldPopulateFurtherDocumentsCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue())));
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
-        assertThat(caseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
-        assertExpectedFieldsAreRemoved(caseData);
+        assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        assertExpectedFieldsAreRemoved(extractedCaseData);
     }
 
     @Test
     void shouldPopulateCorrespondenceEvidenceCollection() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, furtherEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(CORRESPONDENCE)));
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
+            .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
-        assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
-        assertExpectedFieldsAreRemoved(caseData);
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
+        assertExpectedFieldsAreRemoved(extractedCaseData);
     }
 
     @Test
     void shouldPopulateC2DocumentBundleCollection() {
         UUID selectedC2DocumentId = UUID.randomUUID();
-        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(time.now().plusDays(2));
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle
-            = buildSupportingEvidenceBundle(time.now().plusDays(3));
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(now().plusDays(2));
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle(
+            now().plusDays(3)
+        );
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
-            element(buildC2DocumentBundle(time.now().plusDays(2))),
+            element(buildC2DocumentBundle(now().plusDays(2))),
             element(selectedC2DocumentId, selectedC2DocumentBundle),
-            element(buildC2DocumentBundle(time.now().plusDays(2))));
+            element(buildC2DocumentBundle(now().plusDays(2)))
+        );
 
-        AtomicInteger i = new AtomicInteger(1);
-        DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundleList, selectedC2DocumentId,
-            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+        IncrementalInteger i = new IncrementalInteger(1);
+        DynamicList expectedC2DocumentsDynamicList = asDynamicList(
+            c2DocumentBundleList, selectedC2DocumentId, documentBundle -> documentBundle.toLabel(i.getAndIncrement())
+        );
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundleList,
-            "manageDocumentsSupportingC2List", expectedC2DocumentsDynamicList,
-            "c2SupportingDocuments", supportingEvidenceBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(C2)));
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetailsBefore(buildCaseDetails(Map.of()))
-            .caseDetails(buildCaseDetails(data))
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundleList)
+            .manageDocumentsSupportingC2List(expectedC2DocumentsDynamicList)
+            .c2SupportingDocuments(supportingEvidenceBundle)
+            .manageDocument(buildManagementDocument(C2))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
-        assertThat(caseData.getC2DocumentBundle().get(0)).isEqualTo(c2DocumentBundleList.get(0));
-        assertExpectedFieldsAreRemoved(caseData);
-    }
-
-    private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
-        return CaseDetails.builder().data(caseData).build();
+        assertThat(extractedCaseData.getC2DocumentBundle()).first()
+            .isEqualTo(c2DocumentBundleList.get(0));
+        assertExpectedFieldsAreRemoved(extractedCaseData);
     }
 
     private HearingBooking buildFinalHearingBooking() {
@@ -226,7 +196,7 @@ public class ManageDocumentsControllerAboutToSubmitTest extends AbstractControll
             .surname("Hudson")
             .forename("Steve")
             .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .roles(Arrays.asList(USER_ROLES))
             .build();
     }
 }

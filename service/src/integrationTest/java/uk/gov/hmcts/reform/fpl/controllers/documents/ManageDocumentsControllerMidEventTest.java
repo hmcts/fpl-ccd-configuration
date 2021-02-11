@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -18,33 +15,21 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -52,26 +37,17 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsControllerMidEventTest extends AbstractControllerTest {
+
+    private static final String USER_ROLES = "caseworker-publiclaw-courtadmin";
+
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
-    }
-
-    @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
-    private RequestData requestData;
-
-    @BeforeEach
-    void before() {
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
     @Test
     void shouldInitialiseFurtherEvidenceCollection() {
         UUID selectHearingId = randomUUID();
-        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime today = now();
         HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
@@ -79,54 +55,52 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
             element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
             element(createHearingBooking(today.plusDays(2), today.plusDays(3))),
             element(createHearingBooking(today, today.plusDays(1))),
-            Element.<HearingBooking>builder().id(selectHearingId).value(selectedHearingBooking).build());
+            element(selectHearingId, selectedHearingBooking)
+        );
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            MANAGE_DOCUMENTS_HEARING_LIST_KEY, selectHearingId,
-            "hearingDetails", hearingBookings,
-            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, List.of(
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(selectHearingId)
+            .hearingFurtherEvidenceDocuments(List.of(
                 element(selectHearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
-                    .build())),
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue())));
+                    .build())
+            ))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            caseData, "initialise-manage-document-collections", USER_ROLES
+        );
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "initialise-manage-document-collections");
+        CaseData extractedCaseData = extractCaseData(response);
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        DynamicList expectedDynamicList = asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
 
-        DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
-
-        DynamicList hearingList
-            = mapper.convertValue(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY),
-            DynamicList.class);
+        DynamicList hearingList = mapper.convertValue(
+            response.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY), DynamicList.class
+        );
 
         assertThat(hearingList).isEqualTo(expectedDynamicList);
 
-        assertThat(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
+        assertThat(response.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
             .isEqualTo(selectedHearingBooking.toLabel());
 
-        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
     void shouldInitialiseCorrespondenceCollection() {
         List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildSupportingEvidenceBundle();
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            CORRESPONDING_DOCUMENTS_COLLECTION_KEY, correspondenceDocuments,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(CORRESPONDENCE)));
+        CaseData caseData = CaseData.builder()
+            .correspondenceDocuments(correspondenceDocuments)
+            .manageDocument(buildManagementDocument(CORRESPONDENCE))
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
+        CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "initialise-manage-document-collections");
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(caseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
     }
 
     @Test
@@ -141,18 +115,17 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
             element(selectedC2DocumentId, buildC2DocumentBundle(c2EvidenceDocuments)),
             element(buildC2DocumentBundle(today.plusDays(2))));
 
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "c2DocumentBundle", c2DocumentBundle,
-            MANAGE_DOCUMENT_KEY, buildManagementDocument(C2),
-            SUPPORTING_C2_LIST_KEY, selectedC2DocumentId));
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .manageDocument(buildManagementDocument(C2))
+            .manageDocumentsSupportingC2List(selectedC2DocumentId)
+            .build();
 
-        CaseDetails caseDetails = buildCaseDetails(data);
+        CaseData extractedCaseData = extractCaseData(postMidEvent(
+            caseData, "initialise-manage-document-collections", USER_ROLES
+        ));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "initialise-manage-document-collections");
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
     }
 
     @Test
@@ -168,31 +141,30 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     @Test
     void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
-        CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, futureDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-supporting-evidence");
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(List.of(
+                element(SupportingEvidenceBundle.builder().dateTimeReceived(futureDate).build())
+            ))
+            .build();
 
-        assertThat(callbackResponse.getErrors()).isNotEmpty();
-        assertThat(callbackResponse.getErrors()).containsExactly("Date received cannot be in the future");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "validate-supporting-evidence");
+
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors()).containsExactly("Date received cannot be in the future");
     }
 
     @Test
     void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInThePast() {
         LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
-        CaseDetails caseDetails = buildCaseDetails(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, pastDate);
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails,
-            "validate-supporting-evidence");
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(List.of(
+                element(SupportingEvidenceBundle.builder().dateTimeReceived(pastDate).build())
+            ))
+            .build();
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "validate-supporting-evidence");
 
-    private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
-        return CaseDetails.builder().data(caseData).build();
-    }
-
-    private CaseDetails buildCaseDetails(String key, LocalDateTime dateTimeReceived) {
-        return buildCaseDetails(Map.of(key, List.of(
-            element(SupportingEvidenceBundle.builder().dateTimeReceived(dateTimeReceived).build()))));
+        assertThat(response.getErrors()).isEmpty();
     }
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {
@@ -217,16 +189,6 @@ public class ManageDocumentsControllerMidEventTest extends AbstractControllerTes
     private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
         return buildC2DocumentBundle(now()).toBuilder()
             .supportingEvidenceBundle(supportingEvidenceBundle)
-            .build();
-    }
-
-    private UserDetails createUserDetailsWithHmctsRole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Hudson")
-            .forename("Steve")
-            .email("steve.hudson@gov.uk")
-            .roles(List.of("caseworker-publiclaw-courtadmin"))
             .build();
     }
 }
