@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -26,12 +27,17 @@ public class SupportingEvidenceBundle {
     private List<String> confidential;
 
     @JsonIgnore
-    public boolean isConfidential() {
+    public boolean isConfidentialDocument() {
         return confidential != null  && confidential.contains("CONFIDENTIAL");
     }
 
     @JsonIgnore
     public boolean isUploadedByHMCTS() {
         return "HMCTS".equals(uploadedBy);
+    }
+
+    @JsonGetter("confidentialTabLabel")
+    public String generateConfidentialTabLabel() {
+        return "Confidential";
     }
 }

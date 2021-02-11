@@ -51,7 +51,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
     @Override
     public List<Element<SupportingEvidenceBundle>> getLABundle() {
         return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidential()))
+            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
             .collect(Collectors.toList());
     }
 
@@ -59,7 +59,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
     @Override
     public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
         return getSupportingEvidenceBundle().stream()
-            .filter(doc -> !doc.getValue().isConfidential())
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
     }
 

@@ -273,7 +273,7 @@ public class ManageDocumentService {
         List<Element<SupportingEvidenceBundle>> documents) {
 
         return documents.stream()
-            .filter(doc -> !doc.getValue().isConfidential())
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
     }
 
