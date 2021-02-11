@@ -250,7 +250,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         UUID ID_TWO = UUID.randomUUID();
 
         @Test
-        void shouldRemoveC21FromFirstHearingBundle() {
+        void shouldRemoveC21FromFirstHearingOrderBundle() {
             HearingOrder cmoOrder = HearingOrder.builder()
                 .type(HearingOrderType.DRAFT_CMO)
                 .status(CMOStatus.DRAFT)
@@ -263,22 +263,26 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                 .order(testDocumentReference())
                 .build();
 
-
-            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
+            Element<HearingOrdersBundle> firstHearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
                 .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
                     element(ID_TWO, orderToBeRemoved))).build());
 
-            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+            Element<HearingOrdersBundle> secondHearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
+                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
+                    element(ID_TWO, orderToBeRemoved))).build());
+
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(firstHearingBundle, secondHearingBundle);
 
             CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, familyManNumber, hearingOrdersBundlesDrafts);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders()).isEqualTo(Lists.newArrayList(element(ID_ONE, cmoOrder)));
+            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts().get(1)).isEqualTo(secondHearingBundle);
         }
 
         @Test
-        void shouldThrowAnExceptionIfFirstHearingBundleDoesNotContainTwoOrders() {
+        void shouldThrowAnExceptionIfFirstHearingOrderBundleDoesNotContainTwoOrders() {
             HearingOrder cmoOrder = HearingOrder.builder()
                 .type(HearingOrderType.DRAFT_CMO)
                 .status(CMOStatus.DRAFT)
