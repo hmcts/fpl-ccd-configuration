@@ -478,10 +478,7 @@ public class DraftOrderService {
 
         List<Element<SupportingEvidenceBundle>> supportingDocs = new ArrayList<>();
         cmoSupportingDocs.forEach(cmoSupportingDoc -> supportingDocs.add(
-            element(cmoSupportingDoc.getId(), SupportingEvidenceBundle.builder()
-                .document(cmoSupportingDoc.getValue().getDocument())
-                .name(cmoSupportingDoc.getValue().getName())
-                .notes(cmoSupportingDoc.getValue().getNotes())
+            element(cmoSupportingDoc.getId(), cmoSupportingDoc.getValue().toBuilder()
                 .dateTimeUploaded(time.now())
                 .uploadedBy(uploadedBy).build())));
 
