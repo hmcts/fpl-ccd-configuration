@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -65,14 +65,13 @@ public class MessageJudgeController extends CallbackController {
         caseDetailsMap.put("nextHearingLabel", messageJudgeService.getNextHearingLabel(caseData));
 
         JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
-        Optional<String> error = Optional.empty();
-        if (!isNull(judgeMetaData)) {
+        if (nonNull(judgeMetaData)) {
             String email = judgeMetaData.getRecipient();
-            error = validateEmailService.validate(email);
-        }
+            Optional<String> emailError = validateEmailService.validate(email);
 
-        if (!error.isEmpty()) {
-            return respond(caseDetailsMap, List.of(error.get()));
+            if (!emailError.isEmpty()) {
+                return respond(caseDetailsMap, List.of(emailError.get()));
+            }
         }
 
         return respond(caseDetailsMap);
