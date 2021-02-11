@@ -1,4 +1,5 @@
 *.min.js
 e2e/tests/reporter/customReporter.js
 e2e/helpers/JSWait.js
+node_modules/*
 
