@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 public class TaskListService {
 
     private final EventsChecker eventsChecker;
+    private final FeatureToggleService featureToggleService;
 
     public List<Task> getTasksForOpenCase(CaseData caseData) {
         return eventsInState(OPEN).stream()
@@ -36,7 +37,10 @@ public class TaskListService {
 
     private TaskState getTaskState(CaseData caseData, Event event) {
         if (eventsChecker.isCompleted(event, caseData)) {
-            return COMPLETED;
+            if (!featureToggleService.isFinishedTagEnabled()) {
+                return COMPLETED;
+            }
+            return eventsChecker.completedState(event);
         }
 
         if (eventsChecker.isInProgress(event, caseData)) {
