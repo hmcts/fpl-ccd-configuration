@@ -246,18 +246,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     class Fpla2716 {
         String migrationId = "FPLA-2716";
         String familyManNumber = "CF21C50009";
-        private final UUID orderOneId = UUID.randomUUID();
-        private final UUID orderToBeRemovedId = UUID.randomUUID();
-        private final HearingOrder draftCmo = HearingOrder.builder()
-            .type(HearingOrderType.DRAFT_CMO)
-            .title("Draft CMO from advocates' meeting")
-            .status(CMOStatus.DRAFT)
-            .build();
-        private final UUID HEARING_ID_1 = UUID.randomUUID();
-        private final UUID HEARING_ID_2 = UUID.randomUUID();
+        UUID ID_ONE = UUID.randomUUID();
+        UUID ID_TWO = UUID.randomUUID();
 
         @Test
-        void shouldRemoveC21DraftOrder() {
+        void shouldRemoveC21FromFirstHearingBundle() {
             HearingOrder cmoOrder = HearingOrder.builder()
                 .type(HearingOrderType.DRAFT_CMO)
                 .status(CMOStatus.DRAFT)
@@ -272,83 +265,95 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
 
             Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                .orders(Lists.newArrayList(element(UUID.randomUUID(), cmoOrder),
-                    element(UUID.randomUUID(), orderToBeRemoved))).build());
+                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
+                    element(ID_TWO, orderToBeRemoved))).build());
 
-            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, familyManNumber, hearingBundle);
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+
+            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, familyManNumber, hearingOrdersBundlesDrafts);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-           // assertThat(extractedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders()).isEqualTo(new arr(orderOne));
-//            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(element(HEARING_ID_1, hearing(orderOneId)),
-//            element(HEARING_ID_2, hearing(null))));
+            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders()).isEqualTo(Lists.newArrayList(element(ID_ONE, cmoOrder)));
         }
 
-//        @Test
-//        void shouldThrowAnExceptionIfCaseDoesNotContainAtLeastTwoDraftCaseManagementOrders() {
-//            Element<HearingOrder> orderOne = element(orderOneId, draftCmo);
-//            Element<HearingBooking> hearing = element(HEARING_ID_1, hearing(orderOneId));
-//
-//            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-//                orderOne);
-//
-//            List<Element<HearingBooking>> hearingBookings = newArrayList(hearing);
-//
-//            CaseDetails caseDetails = caseDetailsWithDraftCMO(migrationId, familyManNumber, draftCaseManagementOrders,
-//                hearingBookings);
-//
-//            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-//                .getRootCause()
-//                .hasMessage("Expected at least 2 draft cmo's on this case but found 1");
-//        }
-//
-//        @Test
-//        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-//            String incorrectMigrationId = "FPLA-2997";
-//
-//            Element<HearingOrder> orderOne = element(orderOneId, draftCmo);
-//            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, draftCmo);
-//            Element<HearingBooking> hearing = element(HEARING_ID_1, hearing(orderOneId));
-//            Element<HearingBooking> hearingToBeRemoved = element(HEARING_ID_2, hearing(orderToBeRemovedId));
-//
-//            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-//                orderOne,
-//                orderToBeRemoved);
-//
-//            List<Element<HearingBooking>> hearingBookings = newArrayList(hearing, hearingToBeRemoved);
-//
-//            CaseDetails caseDetails = caseDetailsWithDraftCMO(incorrectMigrationId, familyManNumber, draftCaseManagementOrders,
-//                hearingBookings);
-//
-//            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-//
-//            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-//            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-//        }
-//
-//        @Test
-//        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
-//            String incorrectFamilyManNumber = "CF20C50071";
-//
-//            Element<HearingOrder> orderOne = element(orderOneId, draftCmo);
-//            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, draftCmo);
-//            Element<HearingBooking> hearing = element(HEARING_ID_1, hearing(orderOneId));
-//            Element<HearingBooking> hearingToBeRemoved = element(HEARING_ID_2, hearing(orderToBeRemovedId));
-//
-//            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-//                orderOne,
-//                orderToBeRemoved);
-//
-//            List<Element<HearingBooking>> hearingBookings = newArrayList(hearing, hearingToBeRemoved);
-//
-//            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, incorrectFamilyManNumber, draftCaseManagementOrders,
-//                hearingBookings);
-//
-//            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-//
-//            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-//            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-//        }
+        @Test
+        void shouldThrowAnExceptionIfFirstHearingBundleDoesNotContainTwoOrders() {
+            HearingOrder cmoOrder = HearingOrder.builder()
+                .type(HearingOrderType.DRAFT_CMO)
+                .status(CMOStatus.DRAFT)
+                .order(testDocumentReference())
+                .build();
+
+            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
+                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder))).build());
+
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+
+            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, familyManNumber, hearingOrdersBundlesDrafts);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected at least 2 orders in hearing order bundle but found 1");
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            String incorrectMigrationId = "FPLA-2997";
+
+            HearingOrder cmoOrder = HearingOrder.builder()
+                .type(HearingOrderType.DRAFT_CMO)
+                .status(CMOStatus.DRAFT)
+                .order(testDocumentReference())
+                .build();
+
+            HearingOrder orderToBeRemoved = HearingOrder.builder()
+                .type(HearingOrderType.C21)
+                .status(CMOStatus.SEND_TO_JUDGE)
+                .order(testDocumentReference())
+                .build();
+
+            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
+                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
+                    element(ID_TWO, orderToBeRemoved))).build());
+
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+
+            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(incorrectMigrationId, familyManNumber, hearingOrdersBundlesDrafts);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
+            String incorrectFamilyManNumber = "CF20C50071";
+
+            HearingOrder cmoOrder = HearingOrder.builder()
+                .type(HearingOrderType.DRAFT_CMO)
+                .status(CMOStatus.DRAFT)
+                .order(testDocumentReference())
+                .build();
+
+            HearingOrder orderToBeRemoved = HearingOrder.builder()
+                .type(HearingOrderType.C21)
+                .status(CMOStatus.SEND_TO_JUDGE)
+                .order(testDocumentReference())
+                .build();
+
+            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
+                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
+                    element(ID_TWO, orderToBeRemoved))).build());
+
+            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+
+            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, incorrectFamilyManNumber, hearingOrdersBundlesDrafts);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
+        }
     }
 
     private CaseDetails caseDetails(String migrationId,
@@ -366,9 +371,9 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     }
 
     private CaseDetails caseDetailsWithHearingOrdersBundle(String migrationId,
-                                    String familyManNumber, Element<HearingOrdersBundle> hearingBundle) {
+                                    String familyManNumber, List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts) {
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-            .hearingOrdersBundlesDrafts(List.of(hearingBundle))
+            .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
             .familyManCaseNumber(familyManNumber)
             .build());
 

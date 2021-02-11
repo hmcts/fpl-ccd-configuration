@@ -65,11 +65,17 @@ public class MigrateCaseController extends CallbackController {
     private void removeC21OrderFromFirstHearingOrderBundle(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<HearingOrder>> hearingOrders = caseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders();
-        hearingOrders.remove(1);
+        List<Element<HearingOrder>> orders = caseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders();
+
+        if(orders.size() < 2) {
+            throw new IllegalArgumentException(format("Expected at least 2 orders in hearing order bundle but found %s",
+                orders.size()));
+        }
+
+        orders.remove(1);
 
         List<Element<HearingOrdersBundle>> updatedBundle = caseData.getHearingOrdersBundlesDrafts();
-        updatedBundle.get(0).getValue().setOrders(hearingOrders);
+        updatedBundle.get(0).getValue().setOrders(orders);
 
         caseDetails.getData().put("hearingOrdersBundlesDrafts", updatedBundle);
     }
