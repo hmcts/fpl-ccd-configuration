@@ -477,17 +477,12 @@ public class CaseData {
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
-    // TODO: 08/02/2021 need a non conf version (HMCTS can view conf, rest cannot)
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
-    // TODO: 08/02/2021 need a non conf version ([LA[SOL/BAR]] + HMCTS can view conf, rest cannot)
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
-    // TODO: 08/02/2021 confidentiality handled internally
     private final List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments;
-    // TODO: 08/02/2021 need a non conf version (HMCTS can view conf, rest cannot)
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
-    // TODO: 08/02/2021 need a non conf version ([LA[SOL/BAR]] + HMCTS can view conf, rest cannot)
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
-    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments; // ignore me
+    private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
     private final Object courtBundleHearingList;

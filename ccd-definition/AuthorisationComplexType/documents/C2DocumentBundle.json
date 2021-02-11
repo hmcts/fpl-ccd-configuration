@@ -340,11 +340,16 @@
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
-          "[BARRISTER]",
-          "caseworker-publiclaw-cafcass"
+          "[BARRISTER]"
         ],
         "CRUD": "U"
       }
@@ -381,8 +386,7 @@
       },
       {
         "UserRoles": [
-          "[BARRISTER]",
-          "caseworker-publiclaw-cafcass"
+          "[BARRISTER]"
         ],
         "CRUD": "R"
       }

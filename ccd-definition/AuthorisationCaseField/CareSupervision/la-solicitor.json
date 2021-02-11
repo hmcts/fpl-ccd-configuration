@@ -1204,7 +1204,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocuments",
+    "CaseFieldID": "correspondenceDocumentsNC",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
   },
@@ -1392,8 +1392,33 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsLA",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]"
+        ],
+        "CRUD": "CRU"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocumentsLANC",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]"
+        ],
+        "CRUD": "CU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "R"
+      }
+    ]
   },
   {
     "LiveFrom": "01/01/2017",

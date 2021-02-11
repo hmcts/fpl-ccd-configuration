@@ -85,10 +85,15 @@
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
+      },
+      {
+        "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[SOLICITOR]",
-          "caseworker-publiclaw-cafcass"
+          "[SOLICITOR]"
         ],
         "CRUD": "U",
         "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
@@ -115,10 +120,16 @@
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[SOLICITOR]",
-          "caseworker-publiclaw-cafcass"
+          "[SOLICITOR]"
         ],
         "CRUD": "R"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "U",
+        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
       }
     ]
   }

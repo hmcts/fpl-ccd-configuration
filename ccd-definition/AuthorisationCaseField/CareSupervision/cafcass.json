@@ -360,23 +360,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceDocumentsNC",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "RU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocuments",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -395,7 +381,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceDocumentsLANC",
+    "CaseFieldID": "furtherEvidenceDocumentsNC",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "correspondenceDocumentsNC",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
