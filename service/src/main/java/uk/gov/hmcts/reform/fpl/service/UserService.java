@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.Set;
+
 // TODO: 03/02/2021 Add tests
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -20,11 +22,15 @@ public class UserService {
     }
 
     public boolean hasUserRole(UserRole userRole) {
-        return requestData.userRoles().contains(userRole.getRoleName());
+        return getIdamRoles().contains(userRole.getRoleName());
     }
 
     public boolean isHmctsUser() {
-        return requestData.userRoles().stream().anyMatch(UserRole::isHmctsUser);
+        return getIdamRoles().stream().anyMatch(UserRole::isHmctsUser);
+    }
+
+    private Set<String> getIdamRoles() {
+        return requestData.userRoles();
     }
 
     private UserDetails getUserDetails() {

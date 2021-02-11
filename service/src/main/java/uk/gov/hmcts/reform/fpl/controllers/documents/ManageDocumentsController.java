@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -125,9 +126,10 @@ public class ManageDocumentsController extends CallbackController {
                         caseData, caseDataBefore
                     );
 
-                    documentsToAdd.put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
-                        manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle)
-                    );
+                    List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
+                        manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
+
+                    documentsToAdd.put(HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle);
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocuments()
@@ -143,7 +145,9 @@ public class ManageDocumentsController extends CallbackController {
                     caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocuments()
                 );
 
-                documentsToAdd.put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                documentsToAdd = manageDocumentService.splitIntoAllAndNonConfidential(
+                    currentBundle, CORRESPONDING_DOCUMENTS_COLLECTION_KEY
+                );
                 break;
             case C2:
                 List<Element<C2DocumentBundle>> updatedC2Documents =
