@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -20,13 +19,12 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-@SuperBuilder(toBuilder = true)
+@Builder(toBuilder = true)
 @Jacksonized
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class C2DocumentBundle extends ConfidentialBundle {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class C2DocumentBundle implements ConfidentialBundle {
     private final C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
@@ -46,6 +44,20 @@ public class C2DocumentBundle extends ConfidentialBundle {
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
+    }
+
+    @Override
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
+        return getSupportingEvidenceBundle().stream()
+            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
+        return getSupportingEvidenceBundle().stream()
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
     }
 
     @JsonIgnore
