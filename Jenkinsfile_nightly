@@ -91,5 +91,6 @@ withNightlyPipeline(type, product, component) {
   after('fullFunctionalTest') {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
