@@ -22,6 +22,7 @@ module.exports = {
   changeStateFilter(desiredState) {
     this.setInitialSearchFields(desiredState);
     I.click(this.fields.search);
+    I.runAccessibility;
   },
 
   searchForCasesWithHandledEvidences(caseId, state = 'Any') {
