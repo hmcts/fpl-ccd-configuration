@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.EnumMap;
@@ -29,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 @Service
 public class EventsChecker {
@@ -127,6 +129,12 @@ public class EventsChecker {
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.isCompleted(caseData))
                 .orElse(false);
+    }
+
+    public TaskState completedState(Event event) {
+        return ofNullable(eventCheckers.get(event))
+            .map(EventChecker::completedState)
+            .orElse(NOT_AVAILABLE);
     }
 
     public boolean isInProgress(Event event, CaseData caseData) {
