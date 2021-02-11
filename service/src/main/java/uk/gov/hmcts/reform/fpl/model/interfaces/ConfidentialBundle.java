@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ConfidentialBundle {
     List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle();
-    List<Element<SupportingEvidenceBundle>> getLABundle();
-    List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle();
+
+    List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA();
+
+    List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC();
 }

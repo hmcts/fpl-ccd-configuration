@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -47,17 +46,15 @@ public class C2DocumentBundle implements ConfidentialBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
-    @JsonGetter(value = "supportingEvidenceLA")
     @Override
-    public List<Element<SupportingEvidenceBundle>> getLABundle() {
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
             .collect(Collectors.toList());
     }
 
-    @JsonGetter(value = "supportingEvidenceNC")
     @Override
-    public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());

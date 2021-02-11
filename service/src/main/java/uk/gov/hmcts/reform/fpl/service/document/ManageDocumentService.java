@@ -261,23 +261,6 @@ public class ManageDocumentService {
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
-    public Map<String, Object> splitIntoAllAndNonConfidential(List<Element<SupportingEvidenceBundle>> documents,
-                                                              String keyPrefix) {
-        return Map.of(
-            keyPrefix, documents, // HMCTS can see this (occasionally LA SOLICITOR)
-            keyPrefix + "NC", buildNonConfidentialCopy(documents)
-        );
-    }
-
-    private List<Element<SupportingEvidenceBundle>> buildNonConfidentialCopy(
-        List<Element<SupportingEvidenceBundle>> documents) {
-
-        return documents.stream()
-            .filter(doc -> !doc.getValue().isConfidentialDocument())
-            .collect(Collectors.toList());
-    }
-
-
     // Separate collection based on idam role (only show users their own documents)
     private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
         List<Element<SupportingEvidenceBundle>> bundles) {

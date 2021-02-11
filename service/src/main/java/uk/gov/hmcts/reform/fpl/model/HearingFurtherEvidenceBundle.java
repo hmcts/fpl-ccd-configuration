@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
@@ -27,17 +26,15 @@ public class HearingFurtherEvidenceBundle implements ConfidentialBundle {
         return defaultIfNull(this.supportingEvidenceBundle, new ArrayList<>());
     }
 
-    @JsonGetter(value = "supportingEvidenceLA")
     @Override
-    public List<Element<SupportingEvidenceBundle>> getLABundle() {
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
             .collect(Collectors.toList());
     }
 
-    @JsonGetter(value = "supportingEvidenceNC")
     @Override
-    public List<Element<SupportingEvidenceBundle>> getNonConfidentialBundle() {
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
