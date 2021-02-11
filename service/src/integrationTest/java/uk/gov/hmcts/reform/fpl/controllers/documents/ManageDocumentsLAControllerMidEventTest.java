@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
@@ -18,10 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +24,6 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.COURT_BUNDLE;
@@ -45,20 +38,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerTest {
+
+    private static final String USER_ROLES = "caseworker-publiclaw-solicitor";
+
     ManageDocumentsLAControllerMidEventTest() {
         super("manage-documents-la");
-    }
-
-    @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
-    private RequestData requestData;
-
-    @BeforeEach
-    void before() {
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithLARole());
-        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
     @Test
@@ -84,7 +68,7 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-            "initialise-manage-document-collections");
+            "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = extractCaseData(callbackResponse);
 
@@ -110,7 +94,7 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
             .manageDocumentLA(buildManagementDocument(CORRESPONDENCE)).build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-            "initialise-manage-document-collections");
+            "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getCorrespondenceDocumentsLA()).isEqualTo(correspondenceDocuments);
@@ -141,7 +125,7 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-            "initialise-manage-document-collections");
+            "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
@@ -166,7 +150,7 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
-            "initialise-manage-document-collections");
+            "initialise-manage-document-collections", USER_ROLES);
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
@@ -198,16 +182,6 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
     private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
         return buildC2DocumentBundle(now()).toBuilder()
             .supportingEvidenceBundle(supportingEvidenceBundle)
-            .build();
-    }
-
-    private UserDetails createUserDetailsWithLARole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Swansea")
-            .forename("Kurt")
-            .email("kurt.swansea@gov.uk")
-            .roles(List.of("caseworker-publiclaw-solicitor"))
             .build();
     }
 }
