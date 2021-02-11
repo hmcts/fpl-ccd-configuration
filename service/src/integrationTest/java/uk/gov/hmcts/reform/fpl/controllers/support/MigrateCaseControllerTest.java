@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -247,6 +248,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         private final HearingOrder draftCmo = HearingOrder.builder()
             .type(HearingOrderType.DRAFT_CMO)
             .title("Draft CMO from advocates' meeting")
+            .status(CMOStatus.DRAFT)
             .build();
         private final UUID HEARING_ID_1 = UUID.randomUUID();
         private final UUID HEARING_ID_2 = UUID.randomUUID();
@@ -270,8 +272,26 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(orderOne));
-//            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(element(HEARING_ID_1, hearing(orderOneId)),
-//            element(HEARING_ID_2, hearing(null))));
+            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(element(HEARING_ID_1, hearing(orderOneId)),
+            element(HEARING_ID_2, hearing(null))));
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainAtLeastTwoDraftCaseManagementOrders() {
+            Element<HearingOrder> orderOne = element(orderOneId, draftCmo);
+            Element<HearingBooking> hearing = element(HEARING_ID_1, hearing(orderOneId));
+
+            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
+                orderOne);
+
+            List<Element<HearingBooking>> hearingBookings = newArrayList(hearing);
+
+            CaseDetails caseDetails = caseDetailsWithDraftCMO(migrationId, familyManNumber, draftCaseManagementOrders,
+                hearingBookings);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected at least 2 draft cmo's on this case but found 1");
         }
 
         @Test
@@ -370,4 +390,5 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             .caseManagementOrderId(cmoId)
             .build();
     }
+
 }
