@@ -29,6 +29,7 @@ module.exports = {
 
   async selectChild(childName){
     await I.selectOption(this.fields().childList, childName);
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 

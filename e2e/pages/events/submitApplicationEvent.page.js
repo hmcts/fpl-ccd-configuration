@@ -10,6 +10,7 @@ module.exports = {
 
   giveConsent() {
     I.checkOption(this.fields.consentCheckbox);
+    I.runAccessibilityTest();
   },
 
   seeDraftApplicationFile() {

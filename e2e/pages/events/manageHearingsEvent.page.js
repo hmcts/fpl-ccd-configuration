@@ -39,6 +39,7 @@ module.exports = {
 
   selectAddNewHearing() {
     I.click(this.fields.hearingOptions.addNewHearing);
+    I.runAccessibilityTest();
   },
 
   selectEditHearing(hearing) {

@@ -10,6 +10,7 @@ module.exports = {
   selectAllocationProposal(proposal) {
     I.waitForElement(this.fields.allocationProposalRadioGroup);
     I.click(proposal);
+    I.runAccessibilityTest();
   },
 
   enterProposalReason(reason) {

@@ -35,6 +35,7 @@ module.exports = {
   selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
+    I.runAccessibilityTest();
   },
 
   selectHearing(hearingDate) {

@@ -38,5 +38,6 @@ module.exports = {
     I.fillField(this.fields.proceedings.textField, 'test');
     I.click(this.fields.internationalAuthorityInvolvement.yes);
     I.fillField(this.fields.internationalAuthorityInvolvement.textField, 'International involvement reason');
+    I.runAccessibilityTest();
   },
 };

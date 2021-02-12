@@ -26,5 +26,6 @@ module.exports = {
     await I.fillDateAndTime(scannedDocument.scannedDate, this.fields.scannedDoc.scannedDate);
     await I.fillDateAndTime(scannedDocument.deliveryDate, this.fields.scannedDoc.deliveryDate);
     I.fillField(this.fields.scannedDoc.exceptionRecordReference, scannedDocument.exceptionRecordReference);
+    await I.runAccessibilityTest();
   },
 };

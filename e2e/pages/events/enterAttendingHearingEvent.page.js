@@ -26,6 +26,7 @@ module.exports = {
   enterInterpreter(details = 'French translator') {
     I.click(this.fields.interpreter.yes);
     I.fillField(this.fields.interpreter.details, details);
+    I.runAccessibilityTest();
   },
 
   enterIntermediary() {

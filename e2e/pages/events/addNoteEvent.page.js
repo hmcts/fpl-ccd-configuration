@@ -7,5 +7,6 @@ module.exports = {
 
   addNote(note) {
     I.fillField(this.fields.note, note);
+    I.runAccessibilityTest();
   },
 };

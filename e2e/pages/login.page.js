@@ -14,6 +14,7 @@ module.exports = {
     }
     I.fillField(this.fields.username, user.email);
     I.fillField(this.fields.password, user.password);
+    await I.runAccessibilityTest();
     I.click(this.submitButton);
   },
 };

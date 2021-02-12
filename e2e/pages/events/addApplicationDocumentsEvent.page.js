@@ -24,6 +24,7 @@ module.exports = {
     if (description) {
       this.enterWhatIsIncludedInSWET(description, index);
     }
+    await I.runAccessibilityTest();
   },
 
   selectDocumentType(option, index) {

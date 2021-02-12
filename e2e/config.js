@@ -1,5 +1,3 @@
-/*global process*/
-
 const defaultPassword = 'Password12';
 
 module.exports = {

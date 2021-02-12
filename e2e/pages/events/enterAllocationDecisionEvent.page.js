@@ -7,6 +7,7 @@ module.exports = {
 
   selectAllocationDecision(proposal) {
     I.click(proposal);
+    I.runAccessibilityTest();
   },
 
   enterProposalReason(reason) {

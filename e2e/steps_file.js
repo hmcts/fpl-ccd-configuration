@@ -1,4 +1,3 @@
-/* global process */
 const output = require('codeceptjs').output;
 const lodash = require('lodash');
 const config = require('./config');

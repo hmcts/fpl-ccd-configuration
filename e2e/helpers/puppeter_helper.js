@@ -1,3 +1,6 @@
+const testConfig = require('../config.js');
+const {runAccessibility} = require('./accessibility/runner');
+
 module.exports = class PuppeteerHelpers extends Helper {
   clickBrowserBack() {
     const page = this.helpers['Puppeteer'].page;
@@ -82,9 +85,6 @@ module.exports = class PuppeteerHelpers extends Helper {
   }
 
   async runAccessibilityTest() {
-
-    const testConfig = require('../config.js');
-    const {runAccessibility} = require('./accessibility/runner');
 
     if (!testConfig.TestForAccessibility) {
       return;
