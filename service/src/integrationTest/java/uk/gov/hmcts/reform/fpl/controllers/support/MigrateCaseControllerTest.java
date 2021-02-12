@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
-import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -8,29 +7,26 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
 import java.util.UUID;
 
 import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MigrateCaseController.class)
@@ -240,120 +236,97 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     }
 
     @Nested
-    class Fpla2716 {
-        String migrationId = "FPLA-2716";
-        String familyManNumber = "CF21C50009";
-        UUID ID_ONE = UUID.randomUUID();
-        UUID ID_TWO = UUID.randomUUID();
+    class Fpla2702 {
+        String migrationId = "FPLA-2702";
+        String familyManNumber = "CF21C50013";
+        UUID orderToBeRemovedId = UUID.randomUUID();
+        UUID childrenId = UUID.randomUUID();
 
         @Test
-        void shouldRemoveC21FromFirstHearingOrderBundle() {
-            HearingOrder cmoOrder = HearingOrder.builder()
-                .type(HearingOrderType.DRAFT_CMO)
-                .status(CMOStatus.DRAFT)
-                .order(testDocumentReference())
-                .build();
+        void shouldRemoveFirstGeneratedOrderAndNotModifyChildren() {
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssuedType("Yes")
+                .finalOrderIssued("Yes")
+                .build());
 
-            HearingOrder orderToBeRemoved = HearingOrder.builder()
-                .type(HearingOrderType.C21)
-                .status(CMOStatus.SEND_TO_JUDGE)
-                .order(testDocumentReference())
-                .build();
+            List<Element<Child>> children = newArrayList(childElement);
 
-            Element<HearingOrdersBundle> firstHearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
-                    element(ID_TWO, orderToBeRemoved))).build());
+            Element<GeneratedOrder> orderOne = element(orderToBeRemovedId, generateOrder(UPLOAD));
 
-            Element<HearingOrdersBundle> secondHearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
-                    element(ID_TWO, orderToBeRemoved))).build());
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(orderOne);
 
-            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(firstHearingBundle, secondHearingBundle);
-
-            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, familyManNumber, hearingOrdersBundlesDrafts);
-
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, orderCollection, children);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders()).isEqualTo(Lists.newArrayList(element(ID_ONE, cmoOrder)));
-            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts().get(1)).isEqualTo(secondHearingBundle);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfFirstHearingOrderBundleDoesNotContainTwoOrders() {
-            HearingOrder cmoOrder = HearingOrder.builder()
-                .type(HearingOrderType.DRAFT_CMO)
-                .status(CMOStatus.DRAFT)
-                .order(testDocumentReference())
-                .build();
-
-            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder))).build());
-
-            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
-
-            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, familyManNumber, hearingOrdersBundlesDrafts);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Expected at least 2 orders in hearing order bundle but found 1");
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(emptyList());
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(children);
+            assertThat(extractedCaseData.getHiddenOrders()).isEmpty();
         }
 
         @Test
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-2997";
+            String incorrectMigrationId = "FPLA-1111";
 
-            HearingOrder cmoOrder = HearingOrder.builder()
-                .type(HearingOrderType.DRAFT_CMO)
-                .status(CMOStatus.DRAFT)
-                .order(testDocumentReference())
-                .build();
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssued("Test")
+                .build());
 
-            HearingOrder orderToBeRemoved = HearingOrder.builder()
-                .type(HearingOrderType.C21)
-                .status(CMOStatus.SEND_TO_JUDGE)
-                .order(testDocumentReference())
-                .build();
+            List<Element<Child>> children = newArrayList(childElement);
 
-            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
-                    element(ID_TWO, orderToBeRemoved))).build());
+            Element<GeneratedOrder> orderOne = element(orderToBeRemovedId,
+                generateOrder(EMERGENCY_PROTECTION_ORDER, children));
 
-            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(orderOne);
 
-            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(incorrectMigrationId, familyManNumber, hearingOrdersBundlesDrafts);
-
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, orderCollection, children);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orderCollection);
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(children);
         }
 
         @Test
         void shouldNotChangeCaseIfNotExpectedCaseNumber() {
             String incorrectFamilyManNumber = "CF20C50071";
 
-            HearingOrder cmoOrder = HearingOrder.builder()
-                .type(HearingOrderType.DRAFT_CMO)
-                .status(CMOStatus.DRAFT)
-                .order(testDocumentReference())
-                .build();
+            Element<Child> childElement = element(childrenId, Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .build())
+                .finalOrderIssued("Test")
+                .build());
 
-            HearingOrder orderToBeRemoved = HearingOrder.builder()
-                .type(HearingOrderType.C21)
-                .status(CMOStatus.SEND_TO_JUDGE)
-                .order(testDocumentReference())
-                .build();
+            List<Element<Child>> children = newArrayList(childElement);
 
-            Element<HearingOrdersBundle> hearingBundle = element(UUID.randomUUID(), HearingOrdersBundle.builder()
-                .orders(Lists.newArrayList(element(ID_ONE, cmoOrder),
-                    element(ID_TWO, orderToBeRemoved))).build());
+            Element<GeneratedOrder> orderOne = element(orderToBeRemovedId,
+                generateOrder(EMERGENCY_PROTECTION_ORDER, children));
 
-            List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(hearingBundle);
+            List<Element<GeneratedOrder>> orderCollection = newArrayList(orderOne);
 
-            CaseDetails caseDetails = caseDetailsWithHearingOrdersBundle(migrationId, incorrectFamilyManNumber, hearingOrdersBundlesDrafts);
-
+            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, orderCollection, children);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getHearingOrdersBundlesDrafts()).isEqualTo(hearingOrdersBundlesDrafts);
+            assertThat(extractedCaseData.getOrderCollection()).isEqualTo(orderCollection);
+            assertThat(extractedCaseData.getChildren1()).isEqualTo(children);
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainGeneratedOrders() {
+            List<Element<Child>> children = newArrayList(newArrayList());
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null, children);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected at least one order but found 0");
         }
     }
 
@@ -371,17 +344,6 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         return caseDetails;
     }
 
-    private CaseDetails caseDetailsWithHearingOrdersBundle(String migrationId,
-                                    String familyManNumber, List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts) {
-        CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-            .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
-            .familyManCaseNumber(familyManNumber)
-            .build());
-
-        caseDetails.getData().put("migrationId", migrationId);
-        return caseDetails;
-    }
-
     private GeneratedOrder generateOrder(GeneratedOrderType type, List<Element<Child>> linkedChildren) {
         return generateOrder(type).toBuilder()
             .children(linkedChildren)
@@ -390,7 +352,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
     private GeneratedOrder generateOrder(GeneratedOrderType type) {
         return GeneratedOrder.builder()
-            .type(getFullOrderType(type))
+            .type(type == UPLOAD ? "Upload title" : getFullOrderType(type))
             .build();
     }
 }

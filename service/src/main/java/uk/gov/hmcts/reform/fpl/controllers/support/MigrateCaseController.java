@@ -14,14 +14,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
-
-import java.util.List;
 
 import static java.lang.String.format;
 
@@ -46,38 +42,33 @@ public class MigrateCaseController extends CallbackController {
             caseDetails.getData().put("hiddenOrders", hiddenOrders);
         }
 
-        if("FPLA-2716".equals(migrationId)) {
-            run2716(caseDetails);
+        if ("FPLA-2702".equals(migrationId)) {
+            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
+            run2702(caseDetails);
+            caseDetails.getData().put("hiddenOrders", hiddenOrders);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2716(CaseDetails caseDetails) {
+    private void run2702(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("CF21C50009".equals(caseData.getFamilyManCaseNumber())) {
-            removeC21OrderFromFirstHearingOrderBundle(caseDetails);
+        if ("CF21C50013".equals(caseData.getFamilyManCaseNumber())) {
+            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+            if (caseData.getOrderCollection().size() < 1) {
+                throw new IllegalArgumentException(format("Expected at least one order but found %s",
+                    caseData.getOrderCollection().size()));
+            }
+
+            Element<GeneratedOrder> orderOne = caseData.getOrderCollection().get(0);
+
+            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, orderOne.getId(), orderOne.getValue());
+
+            caseDetails.setData(caseDetailsMap);
         }
-    }
-
-    private void removeC21OrderFromFirstHearingOrderBundle(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        List<Element<HearingOrder>> orders = caseData.getHearingOrdersBundlesDrafts().get(0).getValue().getOrders();
-
-        if(orders.size() < 2) {
-            throw new IllegalArgumentException(format("Expected at least 2 orders in hearing order bundle but found %s",
-                orders.size()));
-        }
-
-        orders.remove(1);
-
-        List<Element<HearingOrdersBundle>> updatedBundle = caseData.getHearingOrdersBundlesDrafts();
-        updatedBundle.get(0).getValue().setOrders(orders);
-
-        caseDetails.getData().put("hearingOrdersBundlesDrafts", updatedBundle);
     }
 
     private void run2693(CaseDetails caseDetails) {
