@@ -55,7 +55,7 @@
     "ListElementCode": "confidential",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
-    "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
+    "EventElementLabel": "Tick to restrict to HMCTS staff",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
   },
   {

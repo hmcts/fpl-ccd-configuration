@@ -69,7 +69,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "CaseFieldID": "furtherEvidenceDocumentsNC",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -79,8 +79,28 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
+    "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 9,
+    "CaseFieldID": "furtherEvidenceDocumentsLANC",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabBulkScanHeading",
-    "TabFieldDisplayOrder": 8,
+    "TabFieldDisplayOrder": 10,
     "FieldShowCondition": "scannedDocuments=\"*\""
   },
   {
@@ -91,7 +111,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "scannedDocuments",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
@@ -101,7 +121,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "manageDocumentsLALink",
-    "TabFieldDisplayOrder": 10
+    "TabFieldDisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",
@@ -111,7 +131,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabApplicationHeading",
-    "TabFieldDisplayOrder": 11
+    "TabFieldDisplayOrder": 13
   },
   {
     "LiveFrom": "01/01/2017",
@@ -122,7 +142,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocuments",
     "FieldShowCondition": "applicationDocuments!=\"\"",
-    "TabFieldDisplayOrder": 12
+    "TabFieldDisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
@@ -133,7 +153,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\"",
-    "TabFieldDisplayOrder": 13
+    "TabFieldDisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
