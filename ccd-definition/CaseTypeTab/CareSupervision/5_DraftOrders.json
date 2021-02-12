@@ -8,7 +8,7 @@
     "TabDisplayOrder": 5,
     "CaseFieldID": "draftSDOLabel",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,7 +30,7 @@
     "TabDisplayOrder": 5,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"DRAFT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -83,7 +83,7 @@
     "CaseFieldID": "draftUploadedCMOs",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "hearingOrdersBundlesDrafts!=\"*\"",
-    "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
+    "TabShowCondition": "hearingOrdersBundlesDrafts!=\"\" OR standardDirectionOrder.orderStatus=\"DRAFT\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\" OR draftUploadedCMOs!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
