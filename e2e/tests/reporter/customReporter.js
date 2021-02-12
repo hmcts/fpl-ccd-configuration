@@ -1,3 +1,4 @@
+import __dirname from '__dirname';
 const fs = require('fs');
 const testConfig = require('../config.js');
 
