@@ -8,6 +8,6 @@ module.exports = {
 
   enterCaseID(caseId) {
     I.fillField(this.fields.caseId, caseId);
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
   },
 };

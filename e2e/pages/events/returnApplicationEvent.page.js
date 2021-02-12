@@ -12,7 +12,7 @@ module.exports = {
 
   selectApplicationIncorrect() {
     I.checkOption(this.fields.rejectionReasons.incorrect);
-    I.runAccessibilityTest();
+    // I.runAccessibilityTest();
   },
 
   enterRejectionNote(note = 'PBA number is incorrect') {

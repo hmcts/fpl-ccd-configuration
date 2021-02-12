@@ -9,7 +9,7 @@ module.exports = {
   selectOrderToRemove(option) {
     I.waitForElement(this.fields.list);
     I.selectOption(this.fields.list, option);
-    I.runAccessibilityTest();
+    // I.runAccessibilityTest();
   },
 
   addRemoveOrderReason(reason) {

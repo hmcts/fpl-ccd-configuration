@@ -40,7 +40,7 @@ module.exports = {
 
   checkCareOrder() {
     I.checkOption(this.fields.orderType.careOrder);
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
   },
 
   checkSupervisionOrder() {

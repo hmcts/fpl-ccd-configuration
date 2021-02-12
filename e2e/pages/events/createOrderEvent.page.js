@@ -254,6 +254,6 @@ module.exports = {
 
   selectWhoIsExcluded() {
     I.fillField(this.fields.epo.epoWhoIsExcluded, 'John Doe');
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
   },
 };
