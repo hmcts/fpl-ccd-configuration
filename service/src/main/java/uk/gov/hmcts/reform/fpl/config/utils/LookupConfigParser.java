@@ -31,7 +31,7 @@ public class LookupConfigParser {
      * @return lookup table
      */
     public static Map<String, String> parseStringValue(String config) {
-        return parse(config, value -> value);
+        return parse(config, StringUtils::trim);
     }
 
     /**
