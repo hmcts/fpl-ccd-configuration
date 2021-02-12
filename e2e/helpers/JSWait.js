@@ -12,3 +12,4 @@ class JSWait extends codecept_helper {
   }
 
 }
+module.exports = JSWait;
