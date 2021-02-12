@@ -90,7 +90,8 @@ public class RemoveOrderController extends CallbackController {
             "orderDateToBeRemoved",
             "hearingToUnlink",
             "showRemoveCMOFieldsFlag",
-            "showRemoveSDOWarningFlag"
+            "showRemoveSDOWarningFlag",
+            "showReasonFieldFlag"
         );
 
         return respond(caseDetailsMap);
