@@ -6,8 +6,14 @@ module.exports = {
         "browser": true,
         "commonjs": true,
         "es6": true,
-        "codeceptjs/codeceptjs": true
+        "codeceptjs/codeceptjs": true,
+       // "node": true,
     },
+
+    "globals": {
+        "__dirname": true
+    },
+
     "extends": "eslint:recommended",
     "parser": "babel-eslint",
     "parserOptions": {
