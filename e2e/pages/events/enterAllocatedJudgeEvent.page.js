@@ -13,5 +13,6 @@ module.exports = {
     I.click(this.fields.allocatedJudge.judgeTitle);
     I.fillField(this.fields.allocatedJudge.judgeLastName, judgeLastName);
     I.fillField(this.fields.allocatedJudge.judgeEmailAddress, judgeEmailAddress);
+    I.runAccessibilityTest();
   },
 };

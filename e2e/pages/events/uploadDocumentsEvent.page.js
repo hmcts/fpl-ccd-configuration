@@ -33,6 +33,7 @@ module.exports = {
       I.click(locate('label').withText('To follow'));
     });
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
+    I.runAccessibilityTest();
   },
 
   selectSocialWorkStatementIncludedInSWET() {

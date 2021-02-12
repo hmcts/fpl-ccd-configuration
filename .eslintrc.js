@@ -7,7 +7,7 @@ module.exports = {
         "commonjs": true,
         "es6": true,
         "codeceptjs/codeceptjs": true,
-        //"node": true,
+        "node": true,
     },
     "extends": "eslint:recommended",
     "parser": "babel-eslint",

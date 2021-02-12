@@ -15,6 +15,7 @@ module.exports = {
 
   checkC6A() {
     I.checkOption(this.fields.proceedingType.c6a);
+    I.runAccessibilityTest();
   },
 
   selectJudgeTitle() {

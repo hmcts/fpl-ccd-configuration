@@ -39,4 +39,5 @@ const addDetails = (details) => {
 
 const addDate = async (date) => {
   await I.fillDate(date, fields.date);
+  await I.runAccessibilityTest();
 };

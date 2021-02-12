@@ -54,6 +54,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).children, otherProceedingData.children);
     I.fillField(this.fields(elementIndex).guardian, otherProceedingData.guardian);
     I.click(this.fields(elementIndex).sameGuardianNeeded.yes);
+    await I.runAccessibilityTest();
   },
 
   async getActiveElementIndex() {

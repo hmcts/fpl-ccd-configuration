@@ -8,5 +8,6 @@ module.exports = {
 
   tickDeletionConsent() {
     I.checkOption(this.fields.deleteCheckbox);
+    I.runAccessibilityTest();
   },
 };
