@@ -14,12 +14,17 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
+import java.util.List;
+
 import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -46,6 +51,24 @@ public class MigrateCaseController extends CallbackController {
             Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
             run2702(caseDetails);
             caseDetails.getData().put("hiddenOrders", hiddenOrders);
+        }
+
+        if ("FPLA-2710".equals(migrationId)) {
+            CaseData caseData = getCaseData(caseDetails);
+            if (casesWithUploadDraftCMOs.contains(caseData.getId()) && isNotEmpty(caseData.getDraftUploadedCMOs())
+                && isEmpty(caseData.getHearingOrdersBundlesDrafts())) {
+                log.info(
+                    "Migrating draft CMOs to Hearing orders draft bundles - case reference {} Number of Draft CMOs {}",
+                    caseData.getId(), caseData.getDraftUploadedCMOs().size());
+
+                List<Element<HearingOrdersBundle>> migratedBundles =
+                    draftOrderService.migrateCmoDraftToOrdersBundles(caseData);
+                caseDetails.getData().put("hearingOrdersBundlesDrafts", migratedBundles);
+
+                log.info(
+                    "Completed migration to Hearing orders draft bundles. case reference {} Number of bundles {}",
+                    caseData.getId(), migratedBundles.size());
+            }
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
