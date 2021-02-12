@@ -238,7 +238,7 @@ xScenario('HMCTS admin creates notice of proceedings documents with allocated ju
 
 Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, caseViewPage, handleSupplementaryEvidenceEventPage}) => {
   I.navigateToCaseList();
-  await caseListPage.searchForCasesWithHandledEvidences(submittedAt);
+  await caseListPage.searchForCasesWithHandledEvidences(caseId);
   I.dontSeeCaseInSearchResult(caseId);
 
   await I.navigateToCaseDetails(caseId);
@@ -248,7 +248,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
   I.navigateToCaseList();
-  await I.retryUntilExists(async () => await caseListPage.searchForCasesWithHandledEvidences(submittedAt), caseListPage.locateCase(caseId));
+  await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(caseId), caseListPage.locateCase(caseId), false);
   I.seeCaseInSearchResult(caseId);
 }).retry(1); //Async case update in prev test
 

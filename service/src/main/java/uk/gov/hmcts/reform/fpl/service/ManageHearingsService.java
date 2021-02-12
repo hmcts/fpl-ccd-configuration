@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -480,6 +482,13 @@ public class ManageHearingsService {
 
         updateDocumentsBundleName(caseData, cancelledHearing);
 
+        if (caseData.getHearingOrdersBundlesDrafts() != null) {
+            updateHearingOrderBundles(caseData, cancelledHearing);
+        }
+        if (caseData.getDraftUploadedCMOs() != null) {
+            updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
+        }
+
         return cancelledHearing;
     }
 
@@ -487,7 +496,7 @@ public class ManageHearingsService {
         if (caseData.getVacatedReason() != null
             && VACATED.equals(hearingStatus) || VACATED_AND_RE_LISTED.equals(hearingStatus)
             || VACATED_TO_BE_RE_LISTED.equals(hearingStatus)) {
-            return caseData.getVacatedReason().getReason();
+            return caseData.getVacatedReason() != null ? caseData.getVacatedReason().getReason() : null;
         } else if (ADJOURNED.equals(hearingStatus) || ADJOURNED_AND_RE_LISTED.equals(hearingStatus)
             || ADJOURNED_TO_BE_RE_LISTED.equals(hearingStatus)) {
             return caseData.getAdjournmentReason().getReason();
@@ -500,6 +509,40 @@ public class ManageHearingsService {
         findElement(hearing.getId(), caseData.getHearingFurtherEvidenceDocuments())
             .map(Element::getValue)
             .ifPresent(bundle -> bundle.setHearingName(hearing.getValue().toLabel()));
+    }
+
+    private void updateDraftUploadedCaseManagementOrders(CaseData caseData, Element<HearingBooking> hearing) {
+        UUID linkedCmoId = hearing.getValue().getCaseManagementOrderId();
+        Optional<Element<HearingOrder>> draftUploadedOrderElement = caseData.getDraftUploadedCMOWithId(linkedCmoId);
+
+        if (draftUploadedOrderElement.isPresent()) {
+            List<Element<HearingOrder>> updatedDraftOrders = caseData.getDraftUploadedCMOs().stream()
+                .map(hearingOrderElement -> {
+                    if (hearingOrderElement.getId().equals(draftUploadedOrderElement.get().getId())) {
+                        hearingOrderElement.getValue().setHearing(hearing.getValue().toLabel());
+                    }
+                    return hearingOrderElement;
+                }).collect(toList());
+
+            caseData.toBuilder().draftUploadedCMOs(updatedDraftOrders).build();
+        }
+    }
+
+    private void updateHearingOrderBundles(CaseData caseData, Element<HearingBooking> hearing) {
+        UUID linkedCmoId = hearing.getValue().getCaseManagementOrderId();
+
+        Optional<Element<HearingOrdersBundle>> hearingBundleWithLinkedCMO =
+            caseData.getHearingOrderBundleThatContainsOrder(linkedCmoId);
+
+        hearingBundleWithLinkedCMO.ifPresent(hearingOrdersBundleElement -> caseData.getHearingOrdersBundlesDrafts()
+            .forEach(hearingBundleElement -> {
+                    if (hearingOrdersBundleElement.getId().equals(hearingBundleElement.getId())) {
+                        hearingBundleElement.getValue().setHearingName(hearing.getValue().toLabel());
+                        hearingBundleElement.getValue().getOrders().forEach(
+                            order -> order.getValue().setHearing(hearing.getValue().toLabel()));
+                    }
+                }
+            ));
     }
 
     private void reassignDocumentsBundle(CaseData caseData,
