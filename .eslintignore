@@ -1,4 +1,3 @@
 *.min.js
-e2e/tests/reporter/customReporter.js
 node_modules/*
 
