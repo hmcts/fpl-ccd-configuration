@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
@@ -20,6 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class HearingOrdersBundleTest {
 
@@ -192,10 +192,49 @@ class HearingOrdersBundleTest {
         }
 
         private Element<HearingOrder> hearingOrder(HearingOrderType hearingOrderType) {
-            return ElementUtils.element(HearingOrder.builder()
+            return element(HearingOrder.builder()
                 .type(hearingOrderType)
                 .order(TestDataHelper.testDocumentReference())
                 .build());
+        }
+    }
+
+    @Nested
+    class GetCaseManagementOrders {
+        @Test
+        void shouldReturnAListOfAllCaseManagementOrdersWhenHearingOrdersBundlesContainCMOs() {
+            Element<HearingOrder> draftCaseManagementOrderOne
+                = element(UUID.randomUUID(), HearingOrder.builder().type(AGREED_CMO).build());
+
+            Element<HearingOrder> draftCaseManagementOrderTwo
+                = element(UUID.randomUUID(), HearingOrder.builder().type(AGREED_CMO).build());
+
+            HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder()
+                .orders(List.of(
+                    draftCaseManagementOrderOne, draftCaseManagementOrderTwo,
+                    element(HearingOrder.builder().type(C21).build())))
+                .build();
+
+            hearingOrdersBundle.getCaseManagementOrders();
+
+            assertThat(hearingOrdersBundle.getCaseManagementOrders()).isEqualTo(List.of(
+                draftCaseManagementOrderOne, draftCaseManagementOrderTwo));
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfCaseManagementOrdersAreNotPresent() {
+            HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder()
+                .orders(List.of(element(HearingOrder.builder().type(C21).build())))
+                .build();
+
+            assertThat(hearingOrdersBundle.getCaseManagementOrders()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfOrdersAreNotPresent() {
+            HearingOrdersBundle hearingOrdersBundle = HearingOrdersBundle.builder().build();
+
+            assertThat(hearingOrdersBundle.getCaseManagementOrders()).isEmpty();
         }
     }
 }
