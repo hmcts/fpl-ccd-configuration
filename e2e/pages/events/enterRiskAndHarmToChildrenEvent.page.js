@@ -18,7 +18,7 @@ module.exports = {
 
   completePhysicalHarm() {
     I.click(this.fields.physicalHarm.yes);
-    I.runAccessibilityTest();
+    // I.runAccessibilityTest();
     I.checkOption(this.fields.physicalHarm.pastHarm);
   },
 

@@ -20,7 +20,7 @@ module.exports = {
 
   completeAlcoholOrDrugAbuse() {
     I.click(this.fields.alcoholOrDrugAbuse.yes);
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
     I.fillField(this.fields.alcoholOrDrugAbuse.reason, 'mock reason');
   },
 

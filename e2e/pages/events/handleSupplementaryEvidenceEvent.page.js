@@ -8,6 +8,6 @@ module.exports = {
 
   handleSupplementaryEvidence() {
     I.click(this.fields.evidenceHandled);
-    I.runAccessibilityTest();
+    // I.runAccessibilityTest();
   },
 };

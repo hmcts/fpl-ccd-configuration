@@ -30,7 +30,7 @@ module.exports = {
     I.fillField(this.fields.caseId, caseId);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
   },
 
   searchForCasesWithUnhandledEvidences() {

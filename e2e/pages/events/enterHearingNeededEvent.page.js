@@ -29,7 +29,7 @@ module.exports = {
 
   enterTimeFrame(reason = 'test reason') {
     I.click(this.fields.timeFrame.sameDay);
-    I.runAccessibilityTest();
+    // I.runAccessibilityTest();
     I.fillField(this.fields.timeFrame.reason, reason);
   },
 

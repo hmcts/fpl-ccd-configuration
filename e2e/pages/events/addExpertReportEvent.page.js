@@ -26,6 +26,6 @@ module.exports = {
     I.fillField(this.fields.reportApprovalDate.day, expertReportLog.reportApprovalDate.day);
     I.fillField(this.fields.reportApprovalDate.month, expertReportLog.reportApprovalDate.month);
     I.fillField(this.fields.reportApprovalDate.year, expertReportLog.reportApprovalDate.year);
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
   },
 };

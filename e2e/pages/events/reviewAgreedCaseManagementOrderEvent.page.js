@@ -37,6 +37,6 @@ module.exports = {
 
   uploadAmendedCmo(file) {
     I.attachFile('#reviewCMODecision_judgeAmendedDocument', file);
-    I.runAccessibilityTest();
+    // I.runAccessibilityTest();
   },
 };

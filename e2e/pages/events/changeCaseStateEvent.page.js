@@ -22,7 +22,7 @@ module.exports = {
 
   changeState() {
     I.click(this.fields.confirmChangeState.options.yes);
-    I.runAccessibilityTest();
+    //I.runAccessibilityTest();
   },
 
   selectCaseManagement() {
