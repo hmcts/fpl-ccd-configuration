@@ -1345,58 +1345,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceDocumentsLA",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[LASOLICITOR]"
-        ],
-        "CRUD": "CRU"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceDocumentsLANC",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[LASOLICITOR]"
-        ],
-        "CRUD": "CU"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsLA",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[LASOLICITOR]"
-        ],
-        "CRUD": "CRU"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "correspondenceDocumentsLANC",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[LASOLICITOR]"
-        ],
-        "CRUD": "CU"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleList",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
