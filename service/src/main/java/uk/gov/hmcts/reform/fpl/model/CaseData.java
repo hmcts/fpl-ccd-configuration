@@ -607,6 +607,33 @@ public class CaseData {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
     }
 
+    public Optional<Element<HearingOrder>> getDraftUploadedCMOWithId(UUID orderId) {
+        return getDraftUploadedCMOs().stream()
+            .filter(draftCmoElement -> orderId.equals(draftCmoElement.getId()))
+            .findFirst();
+    }
+
+    @JsonIgnore
+    public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
+        if (hearingOrdersBundlesDrafts != null) {
+            return hearingOrdersBundlesDrafts.stream()
+                .map(Element::getValue)
+                .flatMap((HearingOrdersBundle hearingOrdersBundle)
+                    -> hearingOrdersBundle.getCaseManagementOrders().stream())
+                .collect(toList());
+        }
+
+        return new ArrayList<>();
+    }
+
+    public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
+        return hearingOrdersBundlesDrafts.stream()
+            .filter(hearingOrdersBundleElement
+                -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
+                .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
+            .findFirst();
+    }
+
     @JsonIgnore
     public List<Element<HearingBooking>> getAllHearings() {
         return Stream.of(defaultIfNull(hearingDetails, new ArrayList<Element<HearingBooking>>()),

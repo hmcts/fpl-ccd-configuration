@@ -14,11 +14,13 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 
 @ExtendWith(MockitoExtension.class)
 class OrderRemovalActionsTest {
     @Mock
-    private CMORemovalAction cmoOrderRemovalAction;
+    private SealedCMORemovalAction sealedCMORemovalAction;
 
     @Mock
     private GeneratedOrderRemovalAction generatedOrderRemovalAction;
@@ -26,19 +28,31 @@ class OrderRemovalActionsTest {
     @Mock
     private SDORemovalAction sdoRemovalAction;
 
+    @Mock
+    private DraftCMORemovalAction draftCMORemovalAction;
+
     @InjectMocks
     private OrderRemovalActions orderRemovalActions;
 
-    private static final HearingOrder CASE_MANAGEMENT_ORDER = HearingOrder.builder().build();
+    private static final HearingOrder SEALED_CASE_MANAGEMENT_ORDER = HearingOrder.builder().status(APPROVED).build();
+    private static final HearingOrder DRAFT_CASE_MANAGEMENT_ORDER = HearingOrder.builder().status(DRAFT).build();
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
     private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
 
     @Test
-    void shouldReturnGeneratedOrderActionWhenGettingActionForGeneratedOrder() {
-        when(cmoOrderRemovalAction.isAccepted(CASE_MANAGEMENT_ORDER)).thenReturn(true);
+    void shouldReturnSealedOrderActionWhenGettingActionForGeneratedOrder() {
+        when(sealedCMORemovalAction.isAccepted(SEALED_CASE_MANAGEMENT_ORDER)).thenReturn(true);
 
-        assertThat(orderRemovalActions.getAction(CASE_MANAGEMENT_ORDER))
-            .isEqualTo(cmoOrderRemovalAction);
+        assertThat(orderRemovalActions.getAction(SEALED_CASE_MANAGEMENT_ORDER))
+            .isEqualTo(sealedCMORemovalAction);
+    }
+
+    @Test
+    void shouldReturnDraftOrderActionWhenGettingActionForGeneratedOrder() {
+        when(draftCMORemovalAction.isAccepted(DRAFT_CASE_MANAGEMENT_ORDER)).thenReturn(true);
+
+        assertThat(orderRemovalActions.getAction(DRAFT_CASE_MANAGEMENT_ORDER))
+            .isEqualTo(draftCMORemovalAction);
     }
 
     @Test
@@ -59,7 +73,7 @@ class OrderRemovalActionsTest {
 
     @Test
     void shouldThrowAnExceptionWhenActionTypeFailsToMatchToRemovableOrder() {
-        when(cmoOrderRemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(false);
+        when(sealedCMORemovalAction.isAccepted(GENERATED_ORDER)).thenReturn(false);
 
         assertThatThrownBy(() -> orderRemovalActions.getAction(GENERATED_ORDER))
             .isInstanceOf(RemovableOrderActionNotFoundException.class)
