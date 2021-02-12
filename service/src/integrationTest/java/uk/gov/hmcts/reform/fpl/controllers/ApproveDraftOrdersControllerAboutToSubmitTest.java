@@ -179,6 +179,7 @@ class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTe
         CaseData caseData = CaseData.builder()
             .draftUploadedCMOs(draftCMOs)
             .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .lastHearingOrderDraftsHearingId(hearingOrdersBundle.getValue().getHearingId())
             // required due to the json unwrapping
             .uploadDraftOrdersEventData(UploadDraftOrdersData.builder().build())
             .reviewDraftOrdersData(ReviewDraftOrdersData.builder().build())

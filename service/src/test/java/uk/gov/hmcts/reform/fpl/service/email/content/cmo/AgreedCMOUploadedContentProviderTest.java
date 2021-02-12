@@ -63,7 +63,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
-        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(template).isEqualTo(expected);
     }
 
     @Test
@@ -98,7 +98,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
-        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(template).isEqualTo(expected);
     }
 
     @Test
@@ -132,6 +132,6 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
-        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(template).isEqualTo(expected);
     }
 }

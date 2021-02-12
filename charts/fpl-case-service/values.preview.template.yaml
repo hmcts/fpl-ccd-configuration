@@ -29,6 +29,7 @@ java:
         - local-authority-user-mapping
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
+        - local-authority-code-to-org-id-mapping
         - local-authority-code-to-shared-inbox-mapping
         - eps-to-local-authorities-mapping
         - mla-to-local-authorities-mapping

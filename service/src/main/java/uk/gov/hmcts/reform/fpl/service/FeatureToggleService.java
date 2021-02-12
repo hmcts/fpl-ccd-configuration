@@ -67,6 +67,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
     }
 
+    public boolean isFinishedTagEnabled() {
+        return ldClient.boolVariation("finished-tag", createLDUser(), false);
+    }
+
     public boolean isDraftOrdersEnabled() {
         return ldClient.boolVariation("draft-orders", createLDUser(), false);
     }
@@ -77,6 +81,10 @@ public class FeatureToggleService {
 
     public boolean isSummaryTabFirstCronRunEnabled() {
         return ldClient.boolVariation("summary-tab-first-run", createLDUser(), false);
+    }
+
+    public boolean isFeeAndPayCaseTypeEnabled() {
+        return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

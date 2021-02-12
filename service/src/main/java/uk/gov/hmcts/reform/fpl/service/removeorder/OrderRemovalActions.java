@@ -11,9 +11,10 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderRemovalActions {
-    private final CMORemovalAction cmoRemovalAction;
+    private final SealedCMORemovalAction sealedCMORemovalAction;
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private final SDORemovalAction sdoRemovalAction;
+    private final DraftCMORemovalAction draftCMORemovalAction;
 
     public OrderRemovalAction getAction(RemovableOrder removableOrder) {
         return getActions()
@@ -25,9 +26,10 @@ public class OrderRemovalActions {
 
     private Stream<OrderRemovalAction> getActions() {
         return Stream.of(
-            cmoRemovalAction,
+            sealedCMORemovalAction,
             generatedOrderRemovalAction,
-            sdoRemovalAction
+            sdoRemovalAction,
+            draftCMORemovalAction
         );
     }
 }

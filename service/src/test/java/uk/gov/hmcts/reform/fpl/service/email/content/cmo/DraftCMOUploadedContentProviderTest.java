@@ -63,6 +63,40 @@ class DraftCMOUploadedContentProviderTest extends AbstractEmailContentProviderTe
             .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
             .build();
 
-        assertThat(template).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(template).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldCreateExpectedTemplateWhenHearingJudgeIsMagistrate() {
+        List<Element<Respondent>> respondents = wrapElements(
+            Respondent.builder()
+                .party(RespondentParty.builder()
+                    .lastName("Vlad")
+                    .build())
+                .build());
+
+        JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
+            .build();
+
+        HearingBooking hearing = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
+            .judgeAndLegalAdvisor(judge)
+            .build();
+
+        DraftCMOUploadedTemplate template = contentProvider.buildTemplate(
+            hearing, CASE_NUMBER, judge, respondents, "123456"
+        );
+
+        DraftCMOUploadedTemplate expected = DraftCMOUploadedTemplate.builder()
+            .judgeName("")
+            .judgeTitle("Justice of the Peace")
+            .respondentLastName("Vlad")
+            .subjectLineWithHearingDate("Vlad, 123456, case management hearing, 20 February 2020")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), DRAFT_ORDERS))
+            .build();
+
+        assertThat(template).isEqualTo(expected);
     }
 }

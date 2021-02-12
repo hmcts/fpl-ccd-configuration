@@ -97,6 +97,7 @@ public class RemoveOrderService {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
+        orders.addAll(caseData.getHearingOrderDraftCMOs());
 
         if (!FINAL_HEARING.equals(caseData.getState()) && caseData.getStandardDirectionOrder() != null) {
             StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();

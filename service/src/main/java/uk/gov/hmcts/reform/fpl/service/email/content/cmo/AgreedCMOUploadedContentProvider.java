@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -22,18 +21,11 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
     public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, Long caseId,
                                                 AbstractJudge judge, List<Element<Respondent>> respondents,
                                                 String familyManCaseNumber) {
-        String judgeTitle = judge.getJudgeOrMagistrateTitle();
-        String judgeName = judge.getJudgeName();
-
-        if (MAGISTRATES.equals(judge.getJudgeTitle())) {
-            judgeTitle = getMagistrateJudgeTitle(judge);
-            judgeName = getMagistrateJudgeName(judge);
-        }
 
         return CMOReadyToSealTemplate.builder()
             .caseUrl(getCaseUrl(caseId, DRAFT_ORDERS))
-            .judgeName(judgeName)
-            .judgeTitle(judgeTitle)
+            .judgeName(getJudgeName((judge)))
+            .judgeTitle(getJudgeTitle((judge)))
             .respondentLastName(getFirstRespondentLastName(respondents))
             .subjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber))
             .build();
@@ -43,23 +35,5 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
                                String familyManCaseNumber) {
         return String.format("%s, %s", buildSubjectLine(familyManCaseNumber, respondents),
             uncapitalize(hearing.toLabel()));
-    }
-
-    private String getMagistrateJudgeName(AbstractJudge judge) {
-        if (hasJudgeName(judge)) {
-            return String.format("%s (JP)", judge.getJudgeName());
-        }
-        return "";
-    }
-
-    private String getMagistrateJudgeTitle(AbstractJudge judge) {
-        if (hasJudgeName(judge)) {
-            return "";
-        }
-        return "Justice of the Peace";
-    }
-
-    private boolean hasJudgeName(AbstractJudge judge) {
-        return judge.getJudgeName() != null;
     }
 }
