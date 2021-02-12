@@ -286,7 +286,7 @@ public class DraftOrderService {
                                   HearingBooking hearing, List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
         Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, evidenceBundles);
 
-        List<Element<SupportingEvidenceBundle>> supportingDocs = buildSupportingEvidenceBundle(cmoSupportingDocs);
+        List<Element<SupportingEvidenceBundle>> supportingDocs = addAuditData(cmoSupportingDocs);
 
         if (bundle.isPresent()) {
             List<Element<SupportingEvidenceBundle>> hearingDocs = bundle.get().getValue().getSupportingEvidenceBundle();
@@ -472,16 +472,13 @@ public class DraftOrderService {
         return SEND_TO_JUDGE == cmo.getValue().getStatus() && cmo.getId().equals(hearing.getCaseManagementOrderId());
     }
 
-    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(
+    private List<Element<SupportingEvidenceBundle>> addAuditData(
         List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<Element<SupportingEvidenceBundle>> supportingDocs = new ArrayList<>();
         cmoSupportingDocs.forEach(cmoSupportingDoc -> supportingDocs.add(
-            element(cmoSupportingDoc.getId(), SupportingEvidenceBundle.builder()
-                .document(cmoSupportingDoc.getValue().getDocument())
-                .name(cmoSupportingDoc.getValue().getName())
-                .notes(cmoSupportingDoc.getValue().getNotes())
+            element(cmoSupportingDoc.getId(), cmoSupportingDoc.getValue().toBuilder()
                 .dateTimeUploaded(time.now())
                 .uploadedBy(uploadedBy).build())));
 

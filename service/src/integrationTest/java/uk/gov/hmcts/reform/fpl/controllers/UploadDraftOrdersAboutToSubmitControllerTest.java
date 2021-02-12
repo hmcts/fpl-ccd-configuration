@@ -22,10 +22,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +33,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -48,11 +48,9 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
     @MockBean
-    private DocumentUploadHelper documentUploadHelper;
+    private IdamClient idamClient;
 
     private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
-
-    private final Time time = new FixedTimeConfiguration().stoppedTime();
 
     @Test
     void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
@@ -98,7 +96,10 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
 
     @Test
     void shouldAddCMOToListWithSendToJudgeStatusAndMigrateDocs() {
-        given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("Test LA");
+        given(idamClient.getUserDetails(anyString())).willReturn(UserDetails.builder()
+            .email("Test LA")
+            .roles(List.of("caseworker-publiclaw-solicitor"))
+            .build());
 
         UUID bundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> cmoBundles = List.of(element(bundleId,
@@ -110,7 +111,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
             SupportingEvidenceBundle.builder()
                 .name("case summary")
                 .uploadedBy("Test LA")
-                .dateTimeUploaded(time.now())
+                .dateTimeUploaded(now())
                 .build()));
 
         List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(now().minusDays(3));

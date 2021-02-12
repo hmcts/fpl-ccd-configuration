@@ -16,14 +16,18 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrderController.CMO_ERROR_MESSAGE;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -31,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
+class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private Element<GeneratedOrder> selectedOrder;
 
@@ -64,7 +68,7 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldExtractSelectedCaseManagementOrderFields() {
+    void shouldExtractSelectedSealedCaseManagementOrderFields() {
         UUID removedOrderId = UUID.randomUUID();
         DocumentReference documentReference = DocumentReference.builder().build();
 
@@ -75,8 +79,10 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
             .build();
 
         HearingOrder caseManagementOrder = HearingOrder.builder()
-            .type(HearingOrderType.DRAFT_CMO)
+            .type(HearingOrderType.AGREED_CMO)
+            .status(APPROVED)
             .order(documentReference)
+            .dateIssued(now().toLocalDate())
             .build();
 
         DynamicList dynamicList = DynamicList.builder()
@@ -99,7 +105,55 @@ public class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
         Map<String, Object> extractedFields = Map.of(
             "orderToBeRemoved", mapper.convertValue(caseManagementOrder.getOrder(),
                 new TypeReference<Map<String, Object>>() {}),
-            "orderTitleToBeRemoved", "Case management order",
+            "orderTitleToBeRemoved", "Sealed case management order",
+            "hearingToUnlink", hearingBooking.toLabel()
+        );
+
+        assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldExtractDraftSealedCaseManagementOrderFields() {
+        UUID removedOrderId = UUID.randomUUID();
+        DocumentReference documentReference = DocumentReference.builder().build();
+
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(now())
+            .caseManagementOrderId(removedOrderId)
+            .build();
+
+        HearingOrder caseManagementOrder = HearingOrder.builder()
+            .type(HearingOrderType.DRAFT_CMO)
+            .status(DRAFT)
+            .order(documentReference)
+            .dateSent(now().toLocalDate())
+            .build();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(removedOrderId)
+                .label("Case management order - 12 March 1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(newArrayList(
+                element(HearingOrdersBundle.builder()
+                    .orders(newArrayList(element(removedOrderId, caseManagementOrder)))
+                    .build())))
+            .hearingDetails(List.of(element(hearingBooking)))
+            .removableOrderList(dynamicList)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        Map<String, Object> responseData = response.getData();
+
+        Map<String, Object> extractedFields = Map.of(
+            "orderToBeRemoved", mapper.convertValue(caseManagementOrder.getOrder(),
+                new TypeReference<Map<String, Object>>() {}),
+            "orderTitleToBeRemoved", "Draft case management order",
             "hearingToUnlink", hearingBooking.toLabel()
         );
 
