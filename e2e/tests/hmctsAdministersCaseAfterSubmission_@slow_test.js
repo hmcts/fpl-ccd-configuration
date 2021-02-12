@@ -13,7 +13,6 @@ const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
 const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
-const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
 
 let caseId;
 let submittedAt;
@@ -58,30 +57,6 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings, summaryText, descriptionText, () => enterOtherProceedingsEventPage.selectNoForProceeding());
 
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
-});
-
-Scenario('HMCTS admin uploads correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  manageDocumentsEventPage.selectCorrespondence();
-  await I.goToNextPage();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
-  await I.addAnotherElementToCollection();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
-  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.correspondence);
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeTextInTab(['Correspondence uploaded by HMCTS 1', 'Uploaded by']);
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'File'], 'mockFile.txt');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeTextInTab(['Correspondence uploaded by HMCTS 2', 'Uploaded by']);
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
