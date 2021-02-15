@@ -79,6 +79,8 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], supportingDoc.name);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], supportingDoc.notes);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDoc.fileName);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded', dateFormat(today, 'd mmm yyyy')]);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by', 'kurt@swansea.gov.uk']);
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {

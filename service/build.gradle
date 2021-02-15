@@ -183,7 +183,7 @@ def versions = [
   springfoxSwagger: '2.9.2',
   log4j           : '2.13.2',
   pdfbox          : '2.0.20',
-  mockito         : '3.4.4',
+  mockito         : '3.7.7',
   serenity        : '2.3.4'
 ]
 
@@ -204,7 +204,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.6.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j

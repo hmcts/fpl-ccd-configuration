@@ -30,6 +30,9 @@ public class OrderIssuedNotificationTestHelper {
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
+    private static final String cmoCallout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().minusDays(3)
+        .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
+
     public static Map<String, Object> getExpectedParametersMap(String orderType, boolean withCallout) {
         String fileContent = new String(Base64.encodeBase64(PDF), ISO_8859_1);
         JSONObject jsonFileObject = new JSONObject()
@@ -49,6 +52,17 @@ public class OrderIssuedNotificationTestHelper {
         return OrderIssuedNotifyData.builder()
             .orderType(orderType.toLowerCase())
             .callout(withCallout ? callout : "")
+            .courtName(EXAMPLE_COURT)
+            .documentLink("http://fake-url/testUrl")
+            .caseUrl("http://fake-url/cases/case-details/12345#Orders")
+            .respondentLastName("Jones")
+            .build();
+    }
+
+    public static OrderIssuedNotifyData getExpectedCMOParameters(String orderType) {
+        return OrderIssuedNotifyData.builder()
+            .orderType(orderType.toLowerCase())
+            .callout(cmoCallout)
             .courtName(EXAMPLE_COURT)
             .documentLink("http://fake-url/testUrl")
             .caseUrl("http://fake-url/cases/case-details/12345#Orders")

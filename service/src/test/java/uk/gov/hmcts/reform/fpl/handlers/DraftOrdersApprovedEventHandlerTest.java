@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,22 +17,29 @@ import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -64,6 +72,9 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @Mock
     private ReviewDraftOrdersEmailContentProvider reviewDraftOrdersEmailContentProvider;
+
+    @Mock
+    private CoreCaseDataService coreCaseDataService;
 
     @InjectMocks
     private DraftOrdersApprovedEventHandler draftOrdersApprovedEventHandler;
@@ -127,7 +138,7 @@ class DraftOrdersApprovedEventHandlerTest {
             .lastHearingOrderDraftsHearingId(hearingId)
             .build();
 
-        List<HearingOrder> orders = List.of();
+        List<HearingOrder> orders = List.of(hearingOrder());
         ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder().build();
 
         CafcassLookupConfiguration.Cafcass cafcass =
@@ -165,5 +176,62 @@ class DraftOrdersApprovedEventHandlerTest {
             caseData.getId().toString());
 
         verifyNoMoreInteractions(notificationService, representativeNotificationService);
+    }
+
+    @Test
+    void shouldNotNotifyRepresentativesWhenNotPresent() {
+        final CaseData caseData = CaseData.builder()
+            .id(12345L)
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .representatives(emptyList())
+            .build();
+
+        final List<HearingOrder> orders = List.of(hearingOrder());
+
+        final CafcassLookupConfiguration.Cafcass cafcass =
+            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
+
+        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
+
+        draftOrdersApprovedEventHandler
+            .sendNotificationToCafcassAndRepresentatives(new DraftOrdersApproved(caseData, orders));
+
+        verifyNoInteractions(representativeNotificationService);
+    }
+
+    @Test
+    void shouldSendOrderDocumentToRepresentatives() {
+        final HearingOrder hearingOrder1 = hearingOrder();
+        final HearingOrder hearingOrder2 = hearingOrder();
+
+        final List<HearingOrder> orders = List.of(hearingOrder1, hearingOrder2);
+
+        final CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .build();
+
+        draftOrdersApprovedEventHandler.sendDocumentToPostRepresentatives(new DraftOrdersApproved(caseData, orders));
+
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            caseData.getId(),
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", hearingOrder1.getOrder()));
+
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION,
+            CASE_TYPE,
+            caseData.getId(),
+            "internal-change-SEND_DOCUMENT",
+            Map.of("documentToBeSent", hearingOrder2.getOrder()));
+
+        verifyNoMoreInteractions(coreCaseDataService);
+    }
+
+    private HearingOrder hearingOrder() {
+        return HearingOrder.builder()
+            .order(TestDataHelper.testDocumentReference())
+            .build();
     }
 }
