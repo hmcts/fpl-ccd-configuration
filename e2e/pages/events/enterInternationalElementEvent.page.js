@@ -29,7 +29,7 @@ module.exports = {
   },
 
   async fillForm() {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.click(this.fields.possibleCarer.yes);
     I.fillField(this.fields.possibleCarer.textField, 'test');
     I.click(this.fields.significantEvents.yes);

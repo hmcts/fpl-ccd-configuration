@@ -9,7 +9,7 @@ module.exports = {
 
   async selectAllocationProposal(proposal) {
     I.waitForElement(this.fields.allocationProposalRadioGroup);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.click(proposal);
   },
 

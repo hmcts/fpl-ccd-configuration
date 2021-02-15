@@ -28,7 +28,7 @@ module.exports = {
   async enterApplicantDetails(applicant, applicantIndex = 0) {
     await I.runAccessibilityTest();
     I.fillField(this.fields.applicant(applicantIndex).name, applicant.name);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     this.enterPbaNumber(applicant.pbaNumber, applicantIndex);
     I.fillField(this.fields.applicant(applicantIndex).clientCode, applicant.clientCode);
     I.fillField(this.fields.applicant(applicantIndex).customerReference, applicant.customerReference);

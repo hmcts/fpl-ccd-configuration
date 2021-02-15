@@ -6,7 +6,7 @@ module.exports = {
   },
 
   async addNote(note) {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.fillField(this.fields.note, note);
   },
 };

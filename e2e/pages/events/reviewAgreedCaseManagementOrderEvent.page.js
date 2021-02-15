@@ -38,6 +38,6 @@ module.exports = {
 
   async uploadAmendedCmo(file) {
     I.attachFile('#reviewCMODecision_judgeAmendedDocument', file);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
   },
 };

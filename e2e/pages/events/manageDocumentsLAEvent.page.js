@@ -112,7 +112,7 @@ module.exports = {
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
     await this.uploadDocument(supportingEvidenceDocument.document);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
   },
 
   async getActiveElementIndex() {

@@ -51,7 +51,7 @@ module.exports = {
   },
 
   async addOrderOrNotice(index, type, file, description) {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     await I.addAnotherElementToCollection('Upload placement order and notices');
     await I.selectOption(this.fields(index).placement.noticeAndOrders.type, type);
     await I.attachFile(this.fields(index).placement.noticeAndOrders.file, file);

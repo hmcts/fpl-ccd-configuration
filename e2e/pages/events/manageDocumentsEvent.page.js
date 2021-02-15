@@ -29,7 +29,7 @@ module.exports = {
   },
 
   async selectC2SupportingDocuments() {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.click(this.fields.documentType.c2);
   },
 

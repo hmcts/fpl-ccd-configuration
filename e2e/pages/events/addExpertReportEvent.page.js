@@ -18,7 +18,7 @@ module.exports = {
 
   async addExpertReportLog(expertReportLog) {
     I.click('Add new');
-    await I.runAccessibilityTest();
+    // await I.runAccessibilityTest();
     I.selectOption(this.fields.reportList, expertReportLog.reportList.value);
     I.fillField(this.fields.reportRequestDate.day, expertReportLog.reportRequestDate.day);
     I.fillField(this.fields.reportRequestDate.month, expertReportLog.reportRequestDate.month);
