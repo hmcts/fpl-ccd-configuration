@@ -11,8 +11,8 @@ module.exports = {
   },
 
   async selectApplicationIncorrect() {
+    await I.runAccessibilityTest();
     I.checkOption(this.fields.rejectionReasons.incorrect);
-    //await I.runAccessibilityTest();
   },
 
   enterRejectionNote(note = 'PBA number is incorrect') {

@@ -32,7 +32,7 @@ module.exports = {
     within(this.fields.socialWorkChronologyStatus, () => {
       I.click(locate('label').withText('To follow'));
     });
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
   },
 

@@ -16,6 +16,7 @@ module.exports = {
 
   async populateForm(caseName) {
     // wait until the dropdown is populated
+    await I.runAccessibilityTest();
     I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.waitForElement(`${this.fields.caseType} > option[value="${config.definition.caseType}"]`, 30);
@@ -24,7 +25,6 @@ module.exports = {
     I.selectOption(this.fields.event, 'Start application');
     await I.retryUntilExists(() => I.goToNextPage(this.startButton), this.enterCaseNamePage.caseName);
     this.enterCaseName(caseName);
-    //await I.runAccessibilityTest();
   },
 
   enterCaseName(caseName = 'Barnet Council v Smith') {
