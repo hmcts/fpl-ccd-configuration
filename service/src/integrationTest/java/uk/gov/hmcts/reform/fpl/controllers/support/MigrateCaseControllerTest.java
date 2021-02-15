@@ -515,7 +515,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage("Expected at least one order but found 0");
+                .hasMessage("Case CF21C50013 does not contain generated orders");
         }
     }
 

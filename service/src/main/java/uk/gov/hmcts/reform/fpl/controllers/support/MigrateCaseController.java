@@ -93,9 +93,8 @@ public class MigrateCaseController extends CallbackController {
         if ("CF21C50013".equals(caseData.getFamilyManCaseNumber())) {
             CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-            if (caseData.getOrderCollection().size() < 1) {
-                throw new IllegalArgumentException(format("Expected at least one order but found %s",
-                    caseData.getOrderCollection().size()));
+            if (isEmpty(caseData.getOrderCollection())) {
+                throw new IllegalArgumentException("Case CF21C50013 does not contain generated orders");
             }
 
             Element<GeneratedOrder> orderOne = caseData.getOrderCollection().get(0);
