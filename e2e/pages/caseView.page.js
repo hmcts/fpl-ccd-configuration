@@ -46,7 +46,7 @@ module.exports = {
         }
       }
     }, 'ccd-case-event-trigger');
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
   },
 
   async checkActionsAreAvailable(actions) {
