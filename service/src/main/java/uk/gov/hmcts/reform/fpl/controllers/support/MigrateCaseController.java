@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
-import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -35,7 +34,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
-    private final CMORemovalAction cmoRemovalAction;
 
     private final DraftOrderService draftOrderService;
 
