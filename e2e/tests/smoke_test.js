@@ -1,4 +1,3 @@
-/* global process */
 const config = require('../config');
 const moment = require('moment');
 

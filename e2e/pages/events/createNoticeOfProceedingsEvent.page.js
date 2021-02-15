@@ -37,7 +37,8 @@ module.exports = {
     judgeAndLegalAdvisor.useAllocatedJudge('noticeOfProceedings_');
   },
 
-  useAlternateJudge() {
+  async useAlternateJudge() {
+    await I.runAccessibilityTest();
     judgeAndLegalAdvisor.useAlternateJudge('noticeOfProceedings_');
   },
 };

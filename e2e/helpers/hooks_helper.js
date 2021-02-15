@@ -1,4 +1,3 @@
-/* global process */
 const recorder = require('codeceptjs').recorder;
 const lodash = require('lodash');
 const retryableErrors = [

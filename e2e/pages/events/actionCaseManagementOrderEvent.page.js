@@ -82,6 +82,7 @@ module.exports = {
   },
 
   async enterDateOfIssue(date) {
+    await I.runAccessibilityTest();
     await I.fillDate(date);
     await I.goToNextPage();
   },

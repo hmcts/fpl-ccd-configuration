@@ -45,7 +45,8 @@ module.exports = {
     },);
   },
 
-  giveDeclaration() {
+  async giveDeclaration() {
+    await I.runAccessibilityTest();
     I.checkOption('I agree with this statement');
   },
 

@@ -8,12 +8,13 @@ const buildPaymentLocator = amount => config.mockedPayment ? `${paymentsLocator}
 const buildPbaLocator = pba => `//tr[.//td[text()="PBA number"] and .//td[text()="${pba}"]]`;
 
 module.exports = {
-  checkPayment(amount, pba) {
+  async checkPayment(amount, pba) {
     const paymentLocator = buildPaymentLocator(amount);
     const pbaLocator = buildPbaLocator(pba);
 
     I.seeElement(paymentsLocator);
     I.seeElement(paymentLocator);
+    await I.runAccessibilityTest();
     I.click(`${paymentLocator}/td/a`);
     I.seeElement(pbaLocator);
   },
