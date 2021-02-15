@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -74,6 +75,7 @@ public class GeneratedOrderController extends CallbackController {
     private final ChildrenService childrenService;
     private final DischargeCareOrderService dischargeCareOrder;
     private final Time time;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -182,8 +184,18 @@ public class GeneratedOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
+
+        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
+
+        if (!orderTypeAndDocument.isUploaded() && caseData.hasSelectedTemporaryJudge(tempJudge)) {
+            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+
+            if (!error.isEmpty()) {
+                return respond(caseDetails, List.of(error.get()));
+            }
+        }
+
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
         List<Element<Child>> children;
 

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -469,6 +470,64 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
         void resetInvocations() {
             reset(docmosisDocumentGeneratorService);
             reset(uploadDocumentService);
+        }
+
+        @Test
+        void shouldReturnAValidationErrorWhenJudgeEmailIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(CARE_ORDER).build())
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeEmailAddress("<John Doe> johndoe@email.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), callbackType);
+
+            assertThat(callbackResponse.getErrors()).contains(
+                "Enter an email address in the correct format, for example name@example.com");
+        }
+
+        @Test
+        void shouldNotReturnAValidationErrorWhenJudgeEmailIsValid() {
+            CaseData caseData = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(CARE_ORDER).build())
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), callbackType);
+
+            assertThat(callbackResponse.getErrors()).isNull();
+        }
+
+        @Test
+        void shouldNotReturnValidationErrorsWhenOrderTypeIsUpload() {
+            List<Element<Child>> children = testChildren();
+            String familyManCaseNumber = "famNum";
+            DocumentReference uploadedOrder = testDocumentReference();
+
+            CaseData caseData = CaseData.builder()
+                .dateOfIssue(dateNow())
+                .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                    .type(UPLOAD)
+                    .uploadedOrderType(UploadedOrderType.C27)
+                    .build())
+                .uploadedOrder(uploadedOrder)
+                .children1(children)
+                .orderAppliesToAllChildren("Yes")
+                .familyManCaseNumber(familyManCaseNumber)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeEmailAddress("<John Doe> johndoe@email.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), callbackType);
+
+            assertThat(callbackResponse.getErrors()).isNull();
         }
 
         private Stream<Arguments> generateDocumentMidEventArgumentSource() {
