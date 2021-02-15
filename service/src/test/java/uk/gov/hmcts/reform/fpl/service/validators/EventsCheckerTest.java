@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {EventsChecker.class, LocalValidatorFactoryBean.class})
 @TestInstance(PER_CLASS)
-class EventCheckerTest {
+class EventsCheckerTest {
 
     @MockBean
     private CaseNameChecker caseNameChecker;
