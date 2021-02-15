@@ -184,14 +184,15 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
     private CaseDetails buildCaseDetailsForApprovedCMO(HearingOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
-
+        UUID hearingId = UUID.randomUUID();
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
             .sealedCMOs(wrapElements(caseManagementOrders))
             .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
-            .hearingDetails(List.of(element(hearing(cmoId))))
+            .lastHearingOrderDraftsHearingId(hearingId)
+            .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
             .build());
 
         caseDetails.setId(CASE_ID);
