@@ -146,7 +146,7 @@ Scenario('Local authority makes changes requested by the judge', async ({I, case
   I.dontSee(linkLabel);
 });
 
-Scenario('Judge seals and sends draft orders to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge seals and sends draft orders for no hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
@@ -157,7 +157,21 @@ Scenario('Judge seals and sends draft orders to parties', async ({I, caseViewPag
 
   await I.completeEvent('Save and continue');
 
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  assertSealedC21(I, 1, draftOrder3);
+
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.dontSee(noHearing);
+
+  caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
+  assertDocumentSentToParties(I);
+});
+
+Scenario('Judge seals and sends draft orders for hearing to parties', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
+
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
+
   reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(2);
@@ -168,7 +182,6 @@ Scenario('Judge seals and sends draft orders to parties', async ({I, caseViewPag
 
   assertSealedCMO(I, 1, hearing2);
   assertSealedCMO(I, 2, hearing1);
-  assertSealedC21(I, 1, draftOrder3);
   assertSealedC21(I, 2, draftOrder2);
   assertSealedC21(I, 3, draftOrder1Updated);
 
@@ -177,18 +190,17 @@ Scenario('Judge seals and sends draft orders to parties', async ({I, caseViewPag
   I.dontSee(hearing1);
   I.dontSee(hearing2);
   I.see(hearing3);
-  I.dontSee(noHearing);
 
   caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
   assertDocumentSentToParties(I);
-});
+}).retry(1); // Async case update in prev test
 
 const assertDraftOrders = function (I, collectionId, hearingName, orders, title, status, supportingDocs) {
   const hearing = `Hearing ${collectionId}`;
 
   I.seeInTab([hearing, 'Hearing'], hearingName);
 
-  if(hearingName !== noHearing) {
+  if (hearingName !== noHearing) {
     I.seeInTab([hearing, 'Judge'], 'Her Honour Judge Reed');
   }
 
