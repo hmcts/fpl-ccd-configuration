@@ -25,7 +25,8 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "HMCTS further evidence documents",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Non confidential version of furtherEvidenceDocuments (non hmcts field)"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -43,7 +44,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Local authority further evidence documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "Non confidential version of furtherEvidenceDocumentsLA (non hmcts/cafcass/la field)"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -62,7 +64,8 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by HMCTS",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Non confidential version of correspondenceDocuments (non hmcts field)"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,7 +85,8 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by local authority",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Non confidential version of correspondenceDocumentsLA (non hmcts/cafcass/la field)"
   },
   {
     "LiveFrom": "01/01/2017",
