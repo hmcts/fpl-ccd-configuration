@@ -36,6 +36,7 @@ module.exports = {
   },
 
   async enterRequestedChange(reason) {
+    await I.runAccessibilityTest();
     await I.fillField(this.fields.orderAction.requestChange, reason);
   },
 

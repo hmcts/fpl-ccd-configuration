@@ -40,7 +40,7 @@ module.exports = {
 
   async checkCareOrder() {
     I.checkOption(this.fields.orderType.careOrder);
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
   },
 
   checkSupervisionOrder() {

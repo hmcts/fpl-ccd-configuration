@@ -33,7 +33,6 @@ module.exports = {
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
     this.enterRecipientsAddress(elementIndex, recipients);
-    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
     I.fillField(this.fields(elementIndex).recipients.date.day, recipients.date.day);
     I.fillField(this.fields(elementIndex).recipients.date.month, recipients.date.month);
@@ -41,6 +40,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).recipients.timeSent, recipients.timeSent);
     I.click(this.fields(elementIndex).recipients.sentBy.email);
     I.waitForText('Recipient\'s email address');
+    await I.runAccessibilityTest();
     within(this.fields(elementIndex).recipients.sentBy.email, () => {
       I.fillField(this.fields(elementIndex).recipients.emailAddress, 'email@email.com');
     },);
