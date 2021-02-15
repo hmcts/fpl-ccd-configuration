@@ -46,7 +46,7 @@ module.exports = {
   },
 
   async giveDeclaration() {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.checkOption('I agree with this statement');
   },
 

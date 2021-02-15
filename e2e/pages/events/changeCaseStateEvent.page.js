@@ -22,7 +22,7 @@ module.exports = {
 
   async changeState() {
     I.click(this.fields.confirmChangeState.options.yes);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
   },
 
   selectCaseManagement() {

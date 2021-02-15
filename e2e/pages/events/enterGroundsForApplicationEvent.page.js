@@ -16,7 +16,7 @@ module.exports = {
   },
 
   async enterThresholdCriteriaDetails() {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.checkOption(this.fields.thresholdReason.notReceivingCare);
     I.fillField(this.fields.thresholdDetails, 'mock threshold details');
   },

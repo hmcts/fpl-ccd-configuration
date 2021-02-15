@@ -9,7 +9,7 @@ module.exports = {
   },
 
   async giveConsent() {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.checkOption(this.fields.consentCheckbox);
   },
 

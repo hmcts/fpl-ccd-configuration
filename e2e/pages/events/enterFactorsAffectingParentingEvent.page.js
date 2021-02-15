@@ -19,7 +19,7 @@ module.exports = {
   },
 
   async completeAlcoholOrDrugAbuse() {
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
     I.click(this.fields.alcoholOrDrugAbuse.yes);
     I.fillField(this.fields.alcoholOrDrugAbuse.reason, 'mock reason');
   },

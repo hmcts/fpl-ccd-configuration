@@ -8,6 +8,6 @@ module.exports = {
 
   async tickDeletionConsent() {
     I.checkOption(this.fields.deleteCheckbox);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
   },
 };
