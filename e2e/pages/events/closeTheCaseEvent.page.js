@@ -18,6 +18,7 @@ const fields = {
 module.exports = {
   fields,
   async closeCase(date, reasonOption, details, fullReason = true) {
+    await I.runAccessibilityTest();
     await addDate(date);
     selectReason(reasonOption, fullReason);
     if (details) {
@@ -39,5 +40,4 @@ const addDetails = (details) => {
 
 const addDate = async (date) => {
   await I.fillDate(date, fields.date);
-  await I.runAccessibilityTest();
 };

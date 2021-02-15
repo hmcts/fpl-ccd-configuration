@@ -28,14 +28,14 @@ module.exports = {
     I.click(this.fields.documentType.correspondence);
   },
 
-  selectC2SupportingDocuments() {
+  async selectC2SupportingDocuments() {
+    await I.runAccessibilityTest();
     I.click(this.fields.documentType.c2);
   },
 
   selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
-    // I.runAccessibilityTest();
   },
 
   selectHearing(hearingDate) {

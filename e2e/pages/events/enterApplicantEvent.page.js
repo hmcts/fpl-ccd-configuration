@@ -27,6 +27,7 @@ module.exports = {
 
   async enterApplicantDetails(applicant, applicantIndex = 0) {
     I.fillField(this.fields.applicant(applicantIndex).name, applicant.name);
+    await I.runAccessibilityTest();
     this.enterPbaNumber(applicant.pbaNumber, applicantIndex);
     I.fillField(this.fields.applicant(applicantIndex).clientCode, applicant.clientCode);
     I.fillField(this.fields.applicant(applicantIndex).customerReference, applicant.customerReference);
@@ -39,7 +40,6 @@ module.exports = {
     I.fillField(this.fields.applicant(applicantIndex).mobileNumber, applicant.mobileNumber);
     I.fillField(this.fields.applicant(applicantIndex).jobTitle, applicant.jobTitle);
     I.fillField(this.fields.applicant(applicantIndex).email, applicant.email);
-    await I.runAccessibilityTest();
   },
 
   enterSolicitorDetails(solicitor) {

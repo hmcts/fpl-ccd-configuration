@@ -5,9 +5,9 @@ const judgeLevelRadio = '#allocationDecision_judgeLevelRadio-';
 
 module.exports = {
 
-  selectAllocationDecision(proposal) {
+  async selectAllocationDecision(proposal) {
+    await I.runAccessibilityTest();
     I.click(proposal);
-    //I.runAccessibilityTest();
   },
 
   enterProposalReason(reason) {

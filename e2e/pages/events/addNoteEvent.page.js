@@ -5,8 +5,8 @@ module.exports = {
     note: '#caseNote',
   },
 
-  addNote(note) {
+  async addNote(note) {
+    await I.runAccessibilityTest();
     I.fillField(this.fields.note, note);
-    //I.runAccessibilityTest();
   },
 };

@@ -23,10 +23,10 @@ module.exports = {
     },
   },
 
-  enterInterpreter(details = 'French translator') {
+  async enterInterpreter(details = 'French translator') {
     I.click(this.fields.interpreter.yes);
+    await I.runAccessibilityTest();
     I.fillField(this.fields.interpreter.details, details);
-    //I.runAccessibilityTest();
   },
 
   enterIntermediary() {

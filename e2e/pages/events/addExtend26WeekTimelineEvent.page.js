@@ -29,10 +29,10 @@ module.exports = {
     I.click(this.fields.caseExtensionTimeConfirmation);
   },
 
-  addCaseExtensionDate(){
+  async addCaseExtensionDate(){
+    await I.runAccessibilityTest();
     I.fillField(this.fields.caseExtensionDate.day, '10');
     I.fillField(this.fields.caseExtensionDate.month, '10');
     I.fillField(this.fields.caseExtensionDate.year, '2030');
-    //I.runAccessibilityTest();
   },
 };

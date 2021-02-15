@@ -6,8 +6,8 @@ module.exports = {
     caseName: '#caseName',
   },
 
-  changeCaseName(caseName = 'Craigavon council v Smith') {
+  async changeCaseName(caseName = 'Craigavon council v Smith') {
+    await I.runAccessibilityTest();
     I.fillField(this.fields.caseName, caseName);
-    //I.runAccessibilityTest();
   },
 };

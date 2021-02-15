@@ -17,6 +17,7 @@ module.exports = {
 
   async enterScannedDocument(scannedDocument, file) {
     I.click('Add new');
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.scannedDoc.type, scannedDocument.type);
     I.attachFile(this.fields.scannedDoc.url, file);
     I.wait(1); //TODO investigate, without this next instruction does not type entire text and goes to next line (flaky)
@@ -26,6 +27,5 @@ module.exports = {
     await I.fillDateAndTime(scannedDocument.scannedDate, this.fields.scannedDoc.scannedDate);
     await I.fillDateAndTime(scannedDocument.deliveryDate, this.fields.scannedDoc.deliveryDate);
     I.fillField(this.fields.scannedDoc.exceptionRecordReference, scannedDocument.exceptionRecordReference);
-    await I.runAccessibilityTest();
   },
 };
