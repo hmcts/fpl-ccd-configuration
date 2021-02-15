@@ -6,8 +6,8 @@ module.exports = {
     evidenceHandled: '#evidenceHandled-Yes',
   },
 
-  handleSupplementaryEvidence() {
+  async handleSupplementaryEvidence() {
+    await I.runAccessibilityTest();
     I.click(this.fields.evidenceHandled);
-    // I.runAccessibilityTest();
   },
 };

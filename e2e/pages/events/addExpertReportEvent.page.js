@@ -16,8 +16,9 @@ module.exports = {
     reportApproval: '#expertReport_0_reportApproval-Yes',
   },
 
-  addExpertReportLog(expertReportLog) {
+  async addExpertReportLog(expertReportLog) {
     I.click('Add new');
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.reportList, expertReportLog.reportList.value);
     I.fillField(this.fields.reportRequestDate.day, expertReportLog.reportRequestDate.day);
     I.fillField(this.fields.reportRequestDate.month, expertReportLog.reportRequestDate.month);
@@ -26,6 +27,5 @@ module.exports = {
     I.fillField(this.fields.reportApprovalDate.day, expertReportLog.reportApprovalDate.day);
     I.fillField(this.fields.reportApprovalDate.month, expertReportLog.reportApprovalDate.month);
     I.fillField(this.fields.reportApprovalDate.year, expertReportLog.reportApprovalDate.year);
-    //I.runAccessibilityTest();
   },
 };

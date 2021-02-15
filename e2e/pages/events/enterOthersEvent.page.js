@@ -34,6 +34,7 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).name, other.name);
+    await I.runAccessibilityTest();
     I.click(this.fields(elementIndex).DOB.day);
     I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
     I.fillField(this.fields(elementIndex).DOB.month, other.DOB.month);
@@ -44,7 +45,6 @@ module.exports = {
       postcodeLookup.enterAddressManually(other.address);
     });
     I.fillField(this.fields(elementIndex).telephoneNumber, other.telephoneNumber);
-    await I.runAccessibilityTest();
   },
 
   async enterRelationshipToChild(childInformation) {

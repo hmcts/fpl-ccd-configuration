@@ -54,8 +54,8 @@ module.exports = {
     I.fillField(this.fields(elementIndex).child.dateOfBirth.day, day);
     I.fillField(this.fields(elementIndex).child.dateOfBirth.month, month);
     I.fillField(this.fields(elementIndex).child.dateOfBirth.year, year);
-    I.selectOption(this.fields(elementIndex).child.gender, gender);
     await I.runAccessibilityTest();
+    I.selectOption(this.fields(elementIndex).child.gender, gender);
   },
 
   async defineChildSituation(day, month, year) {

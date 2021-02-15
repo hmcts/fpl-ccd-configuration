@@ -15,7 +15,6 @@ module.exports = {
 
   checkC6A() {
     I.checkOption(this.fields.proceedingType.c6a);
-    I.runAccessibilityTest();
   },
 
   selectJudgeTitle() {
@@ -38,7 +37,8 @@ module.exports = {
     judgeAndLegalAdvisor.useAllocatedJudge('noticeOfProceedings_');
   },
 
-  useAlternateJudge() {
+  async useAlternateJudge() {
+    await I.runAccessibilityTest();
     judgeAndLegalAdvisor.useAlternateJudge('noticeOfProceedings_');
   },
 };

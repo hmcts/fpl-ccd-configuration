@@ -29,7 +29,6 @@ module.exports = {
 
   async selectChild(childName){
     await I.selectOption(this.fields().childList, childName);
-    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
@@ -52,6 +51,7 @@ module.exports = {
   },
 
   async addOrderOrNotice(index, type, file, description) {
+    await I.runAccessibilityTest();
     await I.addAnotherElementToCollection('Upload placement order and notices');
     await I.selectOption(this.fields(index).placement.noticeAndOrders.type, type);
     await I.attachFile(this.fields(index).placement.noticeAndOrders.file, file);
