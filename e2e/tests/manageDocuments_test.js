@@ -177,11 +177,15 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Email to say evidence will be late');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Evidence will be late');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', ''], 'Confidential');
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', 'Uploaded by']);
 
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Notes'], 'Case evidence included');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 2', 'Uploaded by']);
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
@@ -190,6 +194,9 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Case evidence included');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', 'Uploaded by']);
+
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -207,11 +214,16 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Correspondence document');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Test notes');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', ''], 'Confidential');
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', 'Uploaded by']);
 
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Document name'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Notes'], 'Supports the C2 application');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 2', 'Uploaded by']);
+
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
@@ -220,8 +232,13 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Test notes');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', ''], 'Confidential');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', 'Uploaded by']);
+
 
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Document name'], 'C2 supporting document');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Notes'], 'Supports the C2 application');
   I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 2', 'Uploaded by']);
 });
