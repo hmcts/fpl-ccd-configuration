@@ -12,7 +12,7 @@ module.exports = {
     I.fillField(this.fields.description, description);
   },
 
-  async submit(button, locator = '.alert-success') {
+  async submit(button, locator = '.hmcts-banner--success') {
     await I.retryUntilExists(() => I.click(button), locator);
   },
 };
