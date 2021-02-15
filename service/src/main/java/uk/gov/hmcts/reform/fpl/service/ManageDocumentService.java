@@ -250,8 +250,8 @@ public class ManageDocumentService {
             setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
                 c2DocumentBundle.getSupportingEvidenceBundle());
 
-        List<Element<C2DocumentBundle>> updatedC2Bundles = caseData.getC2DocumentBundle();
-        for (Element<C2DocumentBundle> element : updatedC2Bundles) {
+        List<Element<C2DocumentBundle>> c2Bundles = caseData.getC2DocumentBundle();
+        for (Element<C2DocumentBundle> element : c2Bundles) {
             if (selected.equals(element.getId())) {
                 List<Element<SupportingEvidenceBundle>> existingEvidence
                     = new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
@@ -262,7 +262,7 @@ public class ManageDocumentService {
                 element.getValue().setSupportingEvidenceBundle(existingEvidence);
             }
         }
-        return updatedC2Bundles;
+        return c2Bundles;
     }
 
     public List<Element<SupportingEvidenceBundle>> setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
