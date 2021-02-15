@@ -33,6 +33,7 @@ module.exports = {
 
   async selectMessageNotRelatedToC2() {
     I.click(this.fields.messageRegardingC2.no);
+    await I.runAccessibilityTest();
   },
 
   async selectC2() {

@@ -20,9 +20,9 @@ module.exports = {
     endButton: 'Save and return',
   },
 
-  changeState() {
+  async changeState() {
     I.click(this.fields.confirmChangeState.options.yes);
-
+    await I.runAccessibilityTest();
   },
 
   selectCaseManagement() {
@@ -33,8 +33,7 @@ module.exports = {
     I.click(this.fields.closedCaseOptions.options.finalHearing);
   },
 
-  async seeAsCurrentState(currentState) {
-    await I.runAccessibilityTest();
+  seeAsCurrentState(currentState) {
     I.seeElement(locate(this.fields.currentStateLabel).withText(`Current state: ${currentState}`));
   },
 };

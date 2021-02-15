@@ -36,7 +36,8 @@ module.exports = {
     I.fillField('#reviewCMODecision_changesRequestedByJudge', note);
   },
 
-  uploadAmendedCmo(file) {
+  async uploadAmendedCmo(file) {
     I.attachFile('#reviewCMODecision_judgeAmendedDocument', file);
+    await I.runAccessibilityTest();
   },
 };

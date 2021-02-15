@@ -43,6 +43,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.day, respondent.dob.day);
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');

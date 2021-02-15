@@ -11,7 +11,7 @@ module.exports = {
 
   async enterAllocatedJudge(judgeLastName, judgeEmailAddress) {
     I.click(this.fields.allocatedJudge.judgeTitle);
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     I.fillField(this.fields.allocatedJudge.judgeLastName, judgeLastName);
     I.fillField(this.fields.allocatedJudge.judgeEmailAddress, judgeEmailAddress);
   },

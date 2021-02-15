@@ -37,10 +37,11 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithName(caseName, state='Any') {
+  async searchForCasesWithName(caseName, state='Any') {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
+    await I.runAccessibilityTest();
     I.fillField(this.fields.caseName, caseName);
     //await I.runAccessibilityTest();
     I.click(this.fields.search);
