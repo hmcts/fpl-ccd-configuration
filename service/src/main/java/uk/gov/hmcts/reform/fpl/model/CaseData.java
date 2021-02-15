@@ -263,7 +263,6 @@ public class CaseData {
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
-    // TODO: 08/02/2021 confidentiality handled internally
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
     @JsonIgnore

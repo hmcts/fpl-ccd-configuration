@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_SUPERUSER;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
-// TODO: 03/02/2021 Add tests
 class UserServiceTest {
 
     private static final String USER_AUTHORISATION = "USER_AUTH";

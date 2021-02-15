@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Set;
 
-// TODO: 03/02/2021 Add tests
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService {
