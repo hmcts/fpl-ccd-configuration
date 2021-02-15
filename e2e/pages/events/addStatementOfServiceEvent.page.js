@@ -33,6 +33,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
     this.enterRecipientsAddress(elementIndex, recipients);
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
     I.fillField(this.fields(elementIndex).recipients.date.day, recipients.date.day);
     I.fillField(this.fields(elementIndex).recipients.date.month, recipients.date.month);
@@ -46,7 +47,6 @@ module.exports = {
   },
 
   async giveDeclaration() {
-    //await I.runAccessibilityTest();
     I.checkOption('I agree with this statement');
   },
 
