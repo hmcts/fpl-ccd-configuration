@@ -261,12 +261,14 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
     private CaseDetails buildCaseDetails(HearingOrder... caseManagementOrders) {
         UUID cmoId = UUID.randomUUID();
+        UUID hearingId = UUID.randomUUID();
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .ordersToBeSent(wrapElements(caseManagementOrders))
-            .hearingDetails(List.of(element(hearing(cmoId))))
+            .lastHearingOrderDraftsHearingId(hearingId)
+            .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
             .build());
 
         caseDetails.setId(CASE_ID);

@@ -6,7 +6,7 @@
     "babel-eslint": "^10.1.0",
     "codeceptjs": "3.0.5",
     "dateformat": "^4.5.1",
-    "eslint": "7.19.0",
+    "eslint": "7.20.0",
     "eslint-plugin-codeceptjs": "^1.3.0",
     "glob": "^7.1.6",
     "husky": "^4.3.8",
@@ -15,7 +15,7 @@
     "mocha-multi": "^1.1.3",
     "mochawesome": "^6.2.1",
     "node-fetch": "^2.6.1",
-    "puppeteer": "7.0.4",
+    "puppeteer": "7.1.0",
     "moment": "2.29.1"
   },
   "scripts": {

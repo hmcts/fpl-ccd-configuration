@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -83,9 +84,12 @@ class DraftOrderServiceTest {
 
     private DraftOrderService service;
 
+    @Mock
+    private DocumentUploadHelper documentUploadHelper;
+
     @BeforeEach
     void init() {
-        service = new DraftOrderService(featureToggleService, new ObjectMapper(), time);
+        service = new DraftOrderService(featureToggleService, new ObjectMapper(), time, documentUploadHelper);
     }
 
     @Nested
@@ -201,7 +205,6 @@ class DraftOrderServiceTest {
                 .status(DRAFT)
                 .order(testDocumentReference())
                 .supportingDocs(bundle).build());
-
 
             List<Element<HearingBooking>> hearings = hearings();
 
@@ -343,7 +346,6 @@ class DraftOrderServiceTest {
             assertThat(reviewData).isEqualTo(expectedData);
         }
 
-
         @Test
         void shouldProvideEmptyDraftOrdersIfOrdersNotPresentForSelectedHearing() {
             List<Element<HearingBooking>> hearings = hearings();
@@ -432,10 +434,8 @@ class DraftOrderServiceTest {
         }
     }
 
-
     @Nested
     class UpdateCase {
-
 
         @Test
         void shouldAddNewCMOToListAndUpdateHearingIfCMOWasNotAlreadyInList() {
@@ -484,11 +484,12 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldMigrateBundleWhenUploadedCMOIsAgreed() {
+            when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("Test LA");
+
             List<Element<HearingBooking>> hearings = hearings();
 
             List<Element<SupportingEvidenceBundle>> bundle = List.of(
-                element(SupportingEvidenceBundle.builder().name("name").build())
-            );
+                buildSupportingEvidenceBundleElement("name"));
 
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
@@ -516,15 +517,18 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldUpdateExistingBundleWhenUploadedCMOIsAgreed() {
+            when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("Test LA");
+
             List<Element<HearingBooking>> hearings = hearings();
 
-            Element<SupportingEvidenceBundle> doc1 = element(SupportingEvidenceBundle.builder().name("1").build());
-            Element<SupportingEvidenceBundle> doc2 = element(SupportingEvidenceBundle.builder().name("2").build());
-            Element<SupportingEvidenceBundle> doc3 = element(SupportingEvidenceBundle.builder().name("3").build());
+            Element<SupportingEvidenceBundle> doc1 = buildSupportingEvidenceBundleElement("1");
+            Element<SupportingEvidenceBundle> doc2 = buildSupportingEvidenceBundleElement("2");
+            Element<SupportingEvidenceBundle> doc3 = buildSupportingEvidenceBundleElement("3");
 
             Element<SupportingEvidenceBundle> updatedDoc2 = element(doc2.getId(), doc2.getValue().toBuilder()
-                .name("2 updated").build());
-            Element<SupportingEvidenceBundle> newDoc = element(SupportingEvidenceBundle.builder().name("3").build());
+                .name("2 updated")
+                .build());
+            Element<SupportingEvidenceBundle> newDoc = buildSupportingEvidenceBundleElement("3");
 
             Element<HearingFurtherEvidenceBundle> existingHearingBundle = element(
                 hearings.get(0).getId(),
@@ -609,11 +613,11 @@ class DraftOrderServiceTest {
 
         @Test
         void shouldUpdateExistingDocumentBundleWithDocsWhenPresent() {
+            when(documentUploadHelper.getUploadedDocumentUserDetails()).thenReturn("Test LA");
+
             List<Element<HearingBooking>> hearings = hearings();
 
-            Element<SupportingEvidenceBundle> newEvidenceBundle = element(SupportingEvidenceBundle.builder()
-                .name("new")
-                .build());
+            Element<SupportingEvidenceBundle> newEvidenceBundle = buildSupportingEvidenceBundleElement("new");
 
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
@@ -642,7 +646,6 @@ class DraftOrderServiceTest {
                 .extracting(bundle -> bundle.getValue().getSupportingEvidenceBundle())
                 .isEqualTo(List.of(currentEvidenceBundles.get(0), newEvidenceBundle));
         }
-
 
         @Test
         void shouldCreateOrderBundleIfDoesNotExists() {
@@ -750,6 +753,13 @@ class DraftOrderServiceTest {
                 () -> service.updateCase(eventData, hearings, newArrayList(), newArrayList(), newArrayList()));
 
             assertThat(exception).isInstanceOf(HearingNotFoundException.class);
+        }
+
+        private Element<SupportingEvidenceBundle> buildSupportingEvidenceBundleElement(String name) {
+            return element(SupportingEvidenceBundle.builder().name(name)
+                .uploadedBy("Test LA")
+                .dateTimeUploaded(time.now())
+                .build());
         }
     }
 
@@ -953,7 +963,6 @@ class DraftOrderServiceTest {
                 .build();
             hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
 
-
             CaseData caseData = CaseData.builder()
                 .hearingDetails(hearingsAfter)
                 .draftUploadedCMOs(unsealedOrders)
@@ -1050,7 +1059,6 @@ class DraftOrderServiceTest {
             assertThat(event).isEqualTo(new DraftOrdersUploaded(caseData));
         }
     }
-
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings, DynamicListElement... additional) {
         return dynamicList(null, hearings, additional);

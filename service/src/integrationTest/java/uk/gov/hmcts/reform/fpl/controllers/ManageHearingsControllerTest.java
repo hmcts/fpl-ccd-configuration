@@ -46,6 +46,10 @@ abstract class ManageHearingsControllerTest extends AbstractControllerTest {
         return testHearing(startDate, "96");
     }
 
+    HearingBooking testHearing(LocalDateTime startDate, UUID cmoId) {
+        return testHearing(startDate, "96", null, cmoId);
+    }
+
     HearingBooking testHearing(HearingStatus status) {
         return testHearing(now().minusDays(2), "96", status);
     }
@@ -55,6 +59,10 @@ abstract class ManageHearingsControllerTest extends AbstractControllerTest {
     }
 
     HearingBooking testHearing(LocalDateTime startDate, String venue, HearingStatus status) {
+        return testHearing(startDate, venue, status, null);
+    }
+
+    HearingBooking testHearing(LocalDateTime startDate, String venue, HearingStatus status, UUID cmoId) {
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .status(status)
@@ -67,6 +75,7 @@ abstract class ManageHearingsControllerTest extends AbstractControllerTest {
                 .judgeLastName("Judy")
                 .build())
             .venueCustomAddress(Address.builder().build())
+            .caseManagementOrderId(cmoId)
             .venue(venue)
             .build();
     }

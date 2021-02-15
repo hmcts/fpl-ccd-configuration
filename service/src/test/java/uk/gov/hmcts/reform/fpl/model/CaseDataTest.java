@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -32,6 +33,7 @@ import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -1206,6 +1208,132 @@ class CaseDataTest {
                 element(digitalRepOne),
                 element(digitalRepTwo));
         }
+    }
+
+    @Nested
+    class GetHearingOrderDraftCMOs {
+        @Test
+        void shouldReturnAListOfDraftCaseManagementOrdersWhenExistingWithinHearingOrderBundleDrafts() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftCMOTwo = element(randomUUID(), buildHearingOrder(AGREED_CMO));
+            Element<HearingOrder> draftCMOThree = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        draftCMOThree,
+                        element(buildHearingOrder(C21))
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEqualTo(List.of(draftCMOOne, draftCMOTwo, draftCMOThree));
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenHearingOrderBundlesWithDraftCMOsDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(buildHearingOrder(C21)))).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(buildHearingOrder(C21))
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfHearingOrderBundlesDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetDraftUploadedCMOWithId {
+        @Test
+        void shouldReturnDraftCMOWhenDraftUploadedCMOsContainTheExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(draftCMOOne, element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            Optional<Element<HearingOrder>> matchingHearingOrder =
+                caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrder).isPresent().contains(draftCMOOne);
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenDraftUploadedCMOsDoNotContainExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            Optional<Element<HearingOrder>> matchingHearingOrder =
+                caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrder).isNotPresent();
+        }
+    }
+
+    @Nested
+    class GetHearingOrderBundleThatContainsOrder {
+        @Test
+        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    draftCMOOne,
+                    element(buildHearingOrder(C21))))
+                .build());
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    element(buildHearingOrder(DRAFT_CMO)),
+                    element(buildHearingOrder(C21))))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleOne, hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrderBundle).isPresent().contains(hearingOrdersBundleOne);
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenExpectedOrderIsNotContainedWithinHearingOrderBundle() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    element(HearingOrder.builder().type(DRAFT_CMO).build()),
+                    element(HearingOrder.builder().type(C21).build())))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrderBundle).isEmpty();
+        }
+    }
+
+    private HearingOrder buildHearingOrder(HearingOrderType type) {
+        return HearingOrder.builder().type(type).build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
