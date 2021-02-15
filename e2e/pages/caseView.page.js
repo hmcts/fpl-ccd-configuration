@@ -46,6 +46,7 @@ module.exports = {
         }
       }
     }, 'ccd-case-event-trigger');
+    await I.runAccessibilityTest();
   },
 
   async checkActionsAreAvailable(actions) {
@@ -110,7 +111,6 @@ module.exports = {
     await I.retryUntilExists(() => {
       I.click(task);
     }, 'ccd-case-event-trigger');
-    await I.runAccessibilityTest();
   },
 
   getTabSelector(tab){
