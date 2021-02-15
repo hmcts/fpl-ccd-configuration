@@ -10,9 +10,9 @@ module.exports = {
     note: '#returnApplication_note',
   },
 
-  async selectApplicationIncorrect() {
-    await I.runAccessibilityTest();
+  selectApplicationIncorrect() {
     I.checkOption(this.fields.rejectionReasons.incorrect);
+    //await I.runAccessibilityTest();
   },
 
   enterRejectionNote(note = 'PBA number is incorrect') {
