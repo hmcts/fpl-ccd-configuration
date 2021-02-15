@@ -183,7 +183,7 @@ def versions = [
   springfoxSwagger: '2.9.2',
   log4j           : '2.13.2',
   pdfbox          : '2.0.20',
-  mockito         : '3.4.4',
+  mockito         : '3.7.7',
   serenity        : '2.3.4'
 ]
 
@@ -297,7 +297,7 @@ integration {
 }
 
 pitest {
-  pitestVersion.set('1.4.11')
+  pitestVersion.set('1.6.2')
   junit5PluginVersion.set('0.12')
   targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
   excludedClasses.set([
