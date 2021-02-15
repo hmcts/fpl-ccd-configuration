@@ -65,6 +65,8 @@ public class ManageHearingsController extends CallbackController {
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
     private static final String HAS_SESSION_KEY = "hasSession";
+    private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
+    private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
 
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
@@ -314,6 +316,8 @@ public class ManageHearingsController extends CallbackController {
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
         data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
+        data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
+        data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
