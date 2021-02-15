@@ -442,6 +442,7 @@
     "PageID": "JudgeInformation",
     "PageDisplayOrder": 7,
     "ShowSummaryChangeOption": "Y",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-hearings/validate-judge-email/mid-event",
     "PageShowCondition": "hasSession=\"Yes\" OR hearingOption=\"NEW_HEARING\" OR hearingOption=\"EDIT_HEARING\" OR hearingOption=\"RE_LIST_HEARING\" OR hearingReListOption=\"RE_LIST_NOW\""
   },
   {
