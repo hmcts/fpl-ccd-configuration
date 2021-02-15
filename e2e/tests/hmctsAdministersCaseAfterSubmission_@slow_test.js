@@ -15,13 +15,11 @@ const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 
 let caseId;
-let submittedAt;
 
 Feature('Case administration after submission');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
-  submittedAt = new Date();
 });
 
 Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
