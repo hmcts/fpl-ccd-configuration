@@ -8,7 +8,7 @@ module.exports = {
 
   async selectOrderToRemove(option) {
     I.waitForElement(this.fields.list);
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.list, option);
   },
 

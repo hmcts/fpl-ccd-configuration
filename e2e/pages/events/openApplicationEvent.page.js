@@ -25,7 +25,6 @@ module.exports = {
     I.selectOption(this.fields.event, 'Start application');
     await I.retryUntilExists(() => I.goToNextPage(this.startButton), this.enterCaseNamePage.caseName);
     this.enterCaseName(caseName);
-    //await I.runAccessibilityTest();
   },
 
   enterCaseName(caseName = 'Barnet Council v Smith') {

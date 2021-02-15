@@ -27,7 +27,6 @@ module.exports = {
   },
 
   async selectYesForProceeding() {
-    await I.runAccessibilityTest();
     I.click(this.fields(undefined).onGoingProceeding.yes);
   },
 

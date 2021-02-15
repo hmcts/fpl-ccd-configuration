@@ -7,7 +7,7 @@ module.exports = {
   },
 
   async handleSupplementaryEvidence() {
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     I.click(this.fields.evidenceHandled);
   },
 };
