@@ -39,7 +39,7 @@ module.exports = {
   },
 
   async useAlternateJudge() {
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     judgeAndLegalAdvisor.useAlternateJudge('noticeOfProceedings_');
   },
 };

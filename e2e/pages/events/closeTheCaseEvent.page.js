@@ -18,7 +18,7 @@ const fields = {
 module.exports = {
   fields,
   async closeCase(date, reasonOption, details, fullReason = true) {
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     await addDate(date);
     selectReason(reasonOption, fullReason);
     if (details) {
