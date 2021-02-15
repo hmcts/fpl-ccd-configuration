@@ -263,9 +263,9 @@
               "value": {
                 "type": "DRAFT_CMO",
                 "order": {
-                  "document_url": "http://dm-store:8080/documents/f0e33938-b353-437c-af7f-1b974e36192e",
+                  "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
                   "document_filename": "mockFile.docx",
-                  "document_binary_url": "http://dm-store:8080/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+                  "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
                 },
                 "title": "Draft CMO from advocates' meeting",
                 "status": "DRAFT",
@@ -280,9 +280,9 @@
                       "name": "case summary",
                       "notes": "this is the case summary",
                       "document": {
-                        "document_url": "http://dm-store:8080/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df",
+                        "document_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df",
                         "document_filename": "mockFile.txt",
-                        "document_binary_url": "http://dm-store:8080/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df/binary"
+                        "document_binary_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df/binary"
                       }
                     }
                   }
