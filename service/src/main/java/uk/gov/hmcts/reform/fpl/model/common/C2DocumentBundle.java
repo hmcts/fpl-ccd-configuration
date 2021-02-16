@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
@@ -33,6 +34,10 @@ public class C2DocumentBundle {
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
+    }
+
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
+        return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
     @JsonIgnore

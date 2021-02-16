@@ -40,6 +40,7 @@ public class RepresentativeService {
     private final CaseService caseService;
     private final OrganisationService organisationService;
     private final RepresentativeCaseRoleService representativeCaseRoleService;
+    private final ValidateEmailService validateEmailService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -106,8 +107,17 @@ public class RepresentativeService {
             validationErrors.add(format("Select how %s wants to get case information", representativeLabel));
         }
 
-        if (EMAIL.equals(servingPreferences) && isEmpty(representative.getEmail())) {
-            validationErrors.add(format("Enter an email address for %s", representativeLabel));
+        if (EMAIL.equals(servingPreferences)) {
+            if (isEmpty(representative.getEmail())) {
+                validationErrors.add(format("Enter an email address for %s", representativeLabel));
+            } else if (!validateEmailService.isValid(representative.getEmail())) {
+                Optional<String> error = validateEmailService.validate(representative.getEmail());
+
+                if (error.isPresent()) {
+                    validationErrors.add(String.format("%s for %s",
+                        error.get(), representativeLabel));
+                }
+            }
         }
     }
 
@@ -137,6 +147,13 @@ public class RepresentativeService {
                                                   Representative representative, String representativeLabel) {
         if (isEmpty(representative.getEmail())) {
             validationErrors.add(format("Enter an email address for %s", representativeLabel));
+        } else if (!validateEmailService.isValid(representative.getEmail())) {
+            Optional<String> error = validateEmailService.validate(representative.getEmail());
+
+            if (error.isPresent()) {
+                validationErrors.add(String.format("%s for %s",
+                    error.get(), representativeLabel));
+            }
         } else {
             Optional<String> userId = organisationService.findUserByEmail(representative.getEmail());
 
