@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
@@ -18,8 +21,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
+@Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class C2DocumentBundle {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class C2DocumentBundle implements ConfidentialBundle {
     private final C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
@@ -36,8 +41,23 @@ public class C2DocumentBundle {
         return format("Application %d: %s", index, uploadedDateTime);
     }
 
+    @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
+    }
+
+    @Override
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
+        return getSupportingEvidenceBundle().stream()
+            .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
+        return getSupportingEvidenceBundle().stream()
+            .filter(doc -> !doc.getValue().isConfidentialDocument())
+            .collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -67,27 +87,19 @@ public class C2DocumentBundle {
 
     @JsonIgnore
     private String getSupportingEvidenceFileNames() {
-        if (supportingEvidenceBundle != null) {
-            return supportingEvidenceBundle.stream()
-                .map(Element::getValue)
-                .map(SupportingEvidenceBundle::getDocument)
-                .map(DocumentReference::getFilename)
-                .collect(Collectors.joining("\n"));
-        }
-
-        return "";
+        return getSupportingEvidenceBundle().stream()
+            .map(Element::getValue)
+            .map(SupportingEvidenceBundle::getDocument)
+            .map(DocumentReference::getFilename)
+            .collect(Collectors.joining("\n"));
     }
 
     @JsonIgnore
     private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        if (supportingEvidenceBundle != null) {
-            return supportingEvidenceBundle.stream()
-                .map(Element::getValue)
-                .map(SupportingEvidenceBundle::getDocument)
-                .map(ElementUtils::element)
-                .collect(Collectors.toList());
-        }
-
-        return List.of();
+        return getSupportingEvidenceBundle().stream()
+            .map(Element::getValue)
+            .map(SupportingEvidenceBundle::getDocument)
+            .map(ElementUtils::element)
+            .collect(Collectors.toList());
     }
 }
