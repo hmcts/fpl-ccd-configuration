@@ -42,7 +42,8 @@ public interface CaseAccessDataStoreApi {
     CaseAssignedUserRolesResource getUserRoles(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestParam("case_ids") List<String> caseIds
+        @RequestParam("case_ids") List<String> caseIds,
+        @RequestParam("user_ids") List<String> userIds
     );
 
     @DeleteMapping(
