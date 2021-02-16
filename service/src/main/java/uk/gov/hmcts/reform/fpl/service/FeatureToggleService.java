@@ -63,6 +63,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
 
+    public boolean isFurtherEvidenceEventEnabled() {
+        return ldClient.boolVariation("further-evidence-event", createLDUser(), false);
+    }
+
     public boolean isEpoOrderTypeAndExclusionEnabled() {
         return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
     }

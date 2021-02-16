@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -52,6 +53,7 @@ public class ManageDocumentsLAController extends CallbackController {
     private final ManageDocumentService manageDocumentService;
     private final ApplicationDocumentsService applicationDocumentsService;
     private final ConfidentialDocumentsSplitter splitter;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -176,5 +178,21 @@ public class ManageDocumentsLAController extends CallbackController {
             COURT_BUNDLE_KEY);
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
+        if(this.featureToggleService.isFurtherEvidenceEventEnabled()) {
+            CaseDetails caseDetails = request.getCaseDetails();
+            CaseData caseData = getCaseData(caseDetails);
+
+            ManageDocumentLA manageDocumentLA = caseData.getManageDocumentLA();
+
+
+            switch (manageDocumentLA.getType()) {
+                case FURTHER_EVIDENCE_DOCUMENTS:
+                    break;
+            }
+        }
     }
 }
