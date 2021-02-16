@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.controllers;
+package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -6,9 +6,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -23,24 +24,24 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ManageDocumentsController.class)
+@WebMvcTest(ManageDocumentsLAController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageDocumentsControllerAboutToStartTest extends AbstractControllerTest {
-    ManageDocumentsControllerAboutToStartTest() {
-        super("manage-documents");
+public class ManageDocumentsLAControllerAboutToStartTest extends AbstractControllerTest {
+    ManageDocumentsLAControllerAboutToStartTest() {
+        super("manage-documents-la");
     }
 
     @Test
     void shouldBuildManageDocumentsHearingListAndSupportingC2DocumentsList() {
         List<Element<HearingBooking>> hearingBookings = List.of(
-            element(hearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
-            element(hearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
+            element(buildHearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
+            element(buildHearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
             element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2))),
@@ -70,10 +71,10 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         DynamicList c2DocumentDynamicList =
             mapper.convertValue(response.getData().get(SUPPORTING_C2_LIST_KEY), DynamicList.class);
 
-        ManageDocument actualManageDocument =
-            mapper.convertValue(response.getData().get(MANAGE_DOCUMENT_KEY), ManageDocument.class);
+        ManageDocumentLA actualManageDocument =
+            mapper.convertValue(response.getData().get(MANAGE_DOCUMENT_LA_KEY), ManageDocumentLA.class);
 
-        ManageDocument expectedManageDocument = ManageDocument.builder()
+        ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
             .build();
@@ -81,10 +82,9 @@ public class ManageDocumentsControllerAboutToStartTest extends AbstractControlle
         assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
-        assertThat(response.getData().get("furtherEvidenceDocumentsTEMP")).isNull();
     }
 
-    private HearingBooking hearing(LocalDateTime startDate) {
+    private HearingBooking buildHearing(LocalDateTime startDate) {
         return HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(startDate)
