@@ -37,7 +37,7 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  async searchForCasesWithName(caseName, state='Any') {
+  searchForCasesWithName(caseName, state='Any') {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
