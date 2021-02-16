@@ -70,8 +70,8 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
   I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
   I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
   I.seeInTab(['Message 1', 'Urgency'], 'High');
-  I.seeInTab(['Message 1', 'Message history'], history);
   I.seeInTab(['Message 1', 'Status'], 'Closed');
+  I.seeInTab(['Message 1', 'Message history'], history);
 });
 
 Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {

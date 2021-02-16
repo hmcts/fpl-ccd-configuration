@@ -4,6 +4,15 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
+    "ListElementCode": "sender",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageMetaData",
     "ListElementCode": "recipient",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
