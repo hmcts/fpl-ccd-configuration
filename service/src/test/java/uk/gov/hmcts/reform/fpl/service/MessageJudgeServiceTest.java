@@ -5,6 +5,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -674,14 +677,18 @@ class MessageJudgeServiceTest {
         assertThat(messageJudgeService.validateJudgeReplyMessage(caseData)).isEmpty();
     }
 
-    @Test
-    void shouldNotValidateWhenJudgeClosesAMessage() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotValidateWhenSenderEmailAddressesIsEmpty(String senderEmail) {
         String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
-                .isReplying(NO.getValue())
+                .isReplying(YES.getValue())
+                .replyFrom(senderEmail)
+                .replyTo(MESSAGE_RECIPIENT)
+                .latestMessage("reply")
                 .build())
             .build();
 
@@ -693,18 +700,17 @@ class MessageJudgeServiceTest {
         assertThat(messageJudgeService.validateJudgeReplyMessage(caseData)).isEmpty();
     }
 
-    @Test
-    void shouldNotValidateWhenJudgeInitiatesANewMessage() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"No"})
+    void shouldNotValidateWhenJudgeIsNotReplyingToMessage(String replyingToMessage) {
         String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
             .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
             .judicialMessageReply(JudicialMessage.builder()
-                .isReplying(null)
-                .replyFrom(MESSAGE_SENDER)
-                .replyTo(MESSAGE_SENDER)
+                .isReplying(replyingToMessage)
                 .build())
-            .judicialMessageNote("judge message1")
             .build();
 
         CaseData caseData = CaseData.builder()
