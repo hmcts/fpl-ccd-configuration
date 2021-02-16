@@ -101,10 +101,22 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
+  async selectConfidential() {
+    const elementIndex = await this.getActiveElementIndex();
+    I.click(this.fields.supportingDocuments(elementIndex).confidential);
+  },
+
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.uploadDocument(supportingEvidenceDocument.document);
+  },
+
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument) {
+    await this.enterDocumentName(supportingEvidenceDocument.name);
+    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
+    await this.uploadDocument(supportingEvidenceDocument.document);
+    await this.selectConfidential();
   },
 
   async uploadCorrespondenceDocuments(supportingEvidenceDocument) {
