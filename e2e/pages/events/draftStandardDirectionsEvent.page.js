@@ -27,7 +27,7 @@ module.exports = {
 
   async createSDOThroughService() {
     I.click(this.fields.routingRadioGroup.service);
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
