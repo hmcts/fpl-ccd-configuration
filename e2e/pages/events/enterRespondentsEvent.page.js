@@ -37,12 +37,12 @@ module.exports = {
   async enterRespondent(respondent) {
     const elementIndex = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.day, respondent.dob.day);
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
-    await I.runAccessibilityTest();
     I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');

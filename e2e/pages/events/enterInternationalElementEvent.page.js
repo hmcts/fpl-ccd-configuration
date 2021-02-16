@@ -29,7 +29,6 @@ module.exports = {
   },
 
   async fillForm() {
-    await I.runAccessibilityTest();
     I.click(this.fields.possibleCarer.yes);
     I.fillField(this.fields.possibleCarer.textField, 'test');
     I.click(this.fields.significantEvents.yes);
@@ -39,5 +38,6 @@ module.exports = {
     I.fillField(this.fields.proceedings.textField, 'test');
     I.click(this.fields.internationalAuthorityInvolvement.yes);
     I.fillField(this.fields.internationalAuthorityInvolvement.textField, 'International involvement reason');
+    await I.runAccessibilityTest();
   },
 };

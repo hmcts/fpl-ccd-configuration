@@ -2,8 +2,9 @@ const { I } = inject();
 
 module.exports = {
 
-  selectCMOToReview(hearing) {
+  async selectCMOToReview(hearing) {
     I.waitForElement('#cmoToReviewList');
+    await I.runAccessibilityTest();
     I.selectOption('#cmoToReviewList', hearing);
   },
 
@@ -35,8 +36,7 @@ module.exports = {
     I.fillField('#reviewCMODecision_changesRequestedByJudge', note);
   },
 
-  async uploadAmendedCmo(file) {
+  uploadAmendedCmo(file) {
     I.attachFile('#reviewCMODecision_judgeAmendedDocument', file);
-    await I.runAccessibilityTest();
   },
 };

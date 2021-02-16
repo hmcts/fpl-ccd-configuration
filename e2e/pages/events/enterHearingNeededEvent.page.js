@@ -29,8 +29,8 @@ module.exports = {
   },
 
   async enterTimeFrame(reason = 'test reason') {
-    await I.runAccessibilityTest();
     I.click(this.fields.timeFrame.sameDay);
+    await I.runAccessibilityTest();
     I.fillField(this.fields.timeFrame.reason, reason);
   },
 
