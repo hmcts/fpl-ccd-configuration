@@ -12,10 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.LegalRepresentativesUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.validators.ManageLegalRepresentativesValidator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -26,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class ManageLegalRepresentativesController extends CallbackController {
     private final LegalRepresentativeService legalRepresentativeService;
     private final ManageLegalRepresentativesValidator manageLegalRepresentativesValidator;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -43,10 +48,23 @@ public class ManageLegalRepresentativesController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        final List<String> validationErrors =
+        List<String> emails = caseData.getLegalRepresentatives().stream()
+            .map(Element::getValue)
+            .map(LegalRepresentative::getEmail)
+            .collect(Collectors.toList());
+
+        List<String> errors = validateEmailService.validate(emails, "LA Legal Representative");
+
+        final List<String> emailNotRegisteredErrors =
             manageLegalRepresentativesValidator.validate(caseData.getLegalRepresentatives());
 
-        return respond(caseDetails, validationErrors);
+        errors.addAll(emailNotRegisteredErrors);
+
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+
+        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")

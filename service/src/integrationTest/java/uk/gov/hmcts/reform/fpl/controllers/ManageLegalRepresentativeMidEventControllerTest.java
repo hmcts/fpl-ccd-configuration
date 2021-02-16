@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.LegalRepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
@@ -25,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
@@ -43,6 +45,7 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
         .build();
     private static final Long CASE_ID = 12345L;
     private static final String USER_ID = RandomStringUtils.randomAlphanumeric(10);
+    private static final String USER_ID_2 = RandomStringUtils.randomAlphanumeric(10);
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
@@ -89,7 +92,45 @@ class ManageLegalRepresentativeMidEventControllerTest extends AbstractController
 
         AboutToStartOrSubmitCallbackResponse actual = postMidEvent(callbackRequest);
 
-        assertThat(actual.getErrors()).isEmpty();
+        assertThat(actual.getErrors()).isNull();
+    }
+
+    @Test
+    void shouldReturnErrorsWhenLALegalRepresentativeEmailsAreInvalid() {
+        CaseData caseData = CaseData.builder()
+            .legalRepresentatives(wrapElements(LegalRepresentative.builder()
+                    .email("Test user <Test.User@HMCTS.NET>")
+                    .build(), LegalRepresentative.builder()
+                .email("test@test.com")
+                    .build(),
+                LegalRepresentative.builder()
+                    .email("Test user <Test.User@HMCTS.NET>")
+                    .build())).build();
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, "Test user <Test.User@HMCTS.NET>"))
+            .willReturn(new OrganisationUser(USER_ID));
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, "test@test.com"))
+            .willReturn(new OrganisationUser(USER_ID));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(callbackResponse.getErrors()).contains(
+            "LA Legal Representative 1: Enter an email address in the correct format, for example name@example.com",
+            "LA Legal Representative 3: Enter an email address in the correct format, for example name@example.com");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenLALegalRepresentativeEmailIsValid() {
+        CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
+            .willReturn(new OrganisationUser(USER_ID));
+
+        AboutToStartOrSubmitCallbackResponse actual = postMidEvent(caseDetails);
+
+        assertThat(actual.getErrors()).isNull();
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
