@@ -789,4 +789,8 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
+
+    public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
+        return judge.getJudgeTitle() != null;
+    }
 }

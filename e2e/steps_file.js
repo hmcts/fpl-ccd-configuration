@@ -85,7 +85,7 @@ module.exports = function () {
       return caseId;
     },
 
-    async completeEvent(button, changeDetails, confirmationPage = false, selector = '.alert-success') {
+    async completeEvent(button, changeDetails, confirmationPage = false, selector = '.hmcts-banner--success') {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
@@ -104,7 +104,7 @@ module.exports = function () {
         await eventSummaryPage.submit(button, selector);
       } else {
         await eventSummaryPage.submit(button, '#confirmation-body');
-        await this.retryUntilExists(() => this.click('Close and Return to case details'), '.alert-success');
+        await this.retryUntilExists(() => this.click('Close and Return to case details'), '.hmcts-banner--success');
       }
     },
 

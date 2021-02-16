@@ -486,7 +486,7 @@ class ManageDocumentServiceTest {
 
         Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
         Element<SupportingEvidenceBundle> supportingEvidenceBundleElement
-            = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(0);
+            = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(1);
 
         assertThat(hearingFurtherEvidenceBundle.size()).isEqualTo(2);
         assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
@@ -767,6 +767,42 @@ class ManageDocumentServiceTest {
         assertThat(updatedEvidenceBundle.size()).isEqualTo(2);
         assertThat(firstSupportingEvidenceBundle).isEqualTo(previousSupportingEvidenceList.get(0).getValue());
         assertThat(secondSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
+    }
+
+    @Test
+    void shouldSortSupportingEvidenceByDateUploadedInChronologicalOrder() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        Element<SupportingEvidenceBundle> supportingEvidencePast = element(SupportingEvidenceBundle.builder()
+            .name("past")
+            .dateTimeUploaded(futureDate.minusDays(2))
+            .uploadedBy(USER)
+            .build());
+
+        Element<SupportingEvidenceBundle> supportingEvidenceFuture = element(SupportingEvidenceBundle.builder()
+            .name("future")
+            .dateTimeUploaded(futureDate.plusDays(2))
+            .uploadedBy(USER)
+            .build());
+
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate);
+
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
+            element(selectedC2DocumentId, selectedC2DocumentBundle)
+        );
+
+        DynamicList c2DynamicList = buildDynamicList(selectedC2DocumentId);
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsSupportingC2List(c2DynamicList)
+            .c2DocumentBundle(c2DocumentBundleList)
+            .supportingEvidenceDocumentsTemp(List.of(supportingEvidenceFuture, supportingEvidencePast))
+            .build();
+
+        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
+            manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+
+        assertThat(updatedC2DocumentBundle.get(0).getValue().getSupportingEvidenceBundle())
+            .isEqualTo(List.of(supportingEvidencePast, supportingEvidenceFuture));
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
