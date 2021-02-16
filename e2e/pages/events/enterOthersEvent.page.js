@@ -34,7 +34,7 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     I.fillField(this.fields(elementIndex).name, other.name);
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     I.click(this.fields(elementIndex).DOB.day);
     I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
     I.fillField(this.fields(elementIndex).DOB.month, other.DOB.month);

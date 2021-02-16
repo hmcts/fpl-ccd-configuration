@@ -134,7 +134,7 @@ module.exports = {
   },
 
   async enterCorrectedHearingDate(hearingDetails) {
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },
