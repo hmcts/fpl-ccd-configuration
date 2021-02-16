@@ -13,9 +13,10 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_EMAIL;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_PRIVATE_ORG_ID;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
+import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_ORG_ID;
 
 @Configuration
 public class LookupTestConfig {
@@ -23,7 +24,7 @@ public class LookupTestConfig {
     @ConditionalOnMissingBean
     @Bean
     public HmctsCourtLookupConfiguration courtLookupConfiguration() {
-        return new HmctsCourtLookupConfiguration(format("%s=>%s:admin@family-court.com:11", DEFAULT_LA_CODE,
+        return new HmctsCourtLookupConfiguration(format("%s=>%s:admin@family-court.com:11", LOCAL_AUTHORITY_1_CODE,
             DEFAULT_LA_COURT));
     }
 
@@ -36,25 +37,27 @@ public class LookupTestConfig {
     @Bean
     @ConditionalOnMissingBean
     public CafcassLookupConfiguration cafcassLookupConfiguration() {
-        return new CafcassLookupConfiguration(format("%s=>%s:%s", DEFAULT_LA_CODE, DEFAULT_CAFCASS_COURT,
+        return new CafcassLookupConfiguration(format("%s=>%s:%s", LOCAL_AUTHORITY_1_CODE, DEFAULT_CAFCASS_COURT,
             DEFAULT_CAFCASS_EMAIL));
     }
 
     @ConditionalOnMissingBean
     @Bean
     public LocalAuthorityNameLookupConfiguration nameLookupConfiguration() {
-        return new LocalAuthorityNameLookupConfiguration(format("%s=>Example Local Authority", DEFAULT_LA_CODE));
+        return new LocalAuthorityNameLookupConfiguration(format("%s=>%s", LOCAL_AUTHORITY_1_CODE,
+            LOCAL_AUTHORITY_1_NAME));
     }
 
     @Bean
     @ConditionalOnMissingBean
     public LocalAuthorityEmailLookupConfiguration emailLookupConfiguration() {
-        return new LocalAuthorityEmailLookupConfiguration(format("%s=>FamilyPublicLaw+sa@gmail.com", DEFAULT_LA_CODE));
+        return new LocalAuthorityEmailLookupConfiguration(format("%s=>FamilyPublicLaw+sa@gmail.com",
+            LOCAL_AUTHORITY_1_CODE));
     }
 
     @Bean
     @ConditionalOnMissingBean
     public EpsLookupConfiguration epsLookupConfiguration() {
-        return new EpsLookupConfiguration(format("%s=>%s", DEFAULT_PRIVATE_ORG_ID, DEFAULT_LA_CODE));
+        return new EpsLookupConfiguration(format("%s=>%s", PRIVATE_ORG_ID, LOCAL_AUTHORITY_1_CODE));
     }
 }

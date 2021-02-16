@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
@@ -149,7 +150,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     private CaseData.CaseDataBuilder prepareCaseData() {
         return CaseData.builder()
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("123")
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(CARE_ORDER)).build())

@@ -8,6 +8,7 @@
         "UserRoles": [
           "[LASOLICITOR]",
           "[EPSMANAGING]",
+          "[LAMANAGING]",
           "caseworker-publiclaw-courtadmin"
         ],
         "CRUD": "CR"

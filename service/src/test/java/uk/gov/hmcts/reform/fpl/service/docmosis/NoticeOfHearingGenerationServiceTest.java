@@ -29,6 +29,8 @@ import java.time.format.FormatStyle;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
@@ -136,7 +138,7 @@ class NoticeOfHearingGenerationServiceTest {
         LocalDate dateOfBirth) {
         return DocmosisNoticeOfHearing.builder()
             .familyManCaseNumber("12345")
-            .courtName("Family Court")
+            .courtName(DEFAULT_LA_COURT)
             .children(getExpectedDocmosisChildren(dateOfBirth))
             .hearingBooking(getDocmosisHearingBookingBuilder().build())
             .judgeAndLegalAdvisor(getExpectedDocmosisJudgeAndLegalAdvisor())
@@ -191,7 +193,7 @@ class NoticeOfHearingGenerationServiceTest {
     private CaseData buildCaseData(LocalDate dateOfBirth) {
         return CaseData.builder()
             .familyManCaseNumber("12345")
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .children1(wrapElements(
                 Child.builder()
                     .party(ChildParty.builder()

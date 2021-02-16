@@ -37,6 +37,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
@@ -61,8 +63,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
     private static final long CASE_ID = 12345L;
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final DocumentReference order = testDocumentReference();
@@ -115,7 +115,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(NOTIFICATION_REFERENCE)
             );
@@ -174,7 +174,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
@@ -187,7 +187,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         UUID hearingId = UUID.randomUUID();
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(SEND_TO_JUDGE))))
             .sealedCMOs(wrapElements(caseManagementOrders))
             .reviewCMODecision(buildReviewDecision(SEND_TO_ALL_PARTIES))
@@ -205,7 +205,7 @@ class ReviewCMOControllerSubmittedTest extends AbstractControllerTest {
         UUID cmoId = UUID.randomUUID();
 
         return asCaseDetails(CaseData.builder()
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .draftUploadedCMOs(List.of(element(cmoId, buildCMO(RETURNED))))
             .reviewCMODecision(buildReviewDecision(JUDGE_REQUESTED_CHANGES))
             .build());
