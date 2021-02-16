@@ -215,7 +215,6 @@ ld:
 Your key will be added on first `FeatureToggleService` call and will be available on LaunchDarkly panel in Users tab.
 You will be able to set your own flag values there without affecting other environments.
 
-
 ### Scheduler
 
 In order to enable quartz scheduler

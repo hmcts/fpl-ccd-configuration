@@ -7,9 +7,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -189,6 +191,29 @@ class CaseDataTest {
     void shouldGetOrderAppliesToAllChildrenWithCustomValueWhenMultipleChildrenOnCase() {
         CaseData caseData = CaseData.builder().children1(testChildren()).orderAppliesToAllChildren("No").build();
         assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("No");
+    }
+
+    @Test
+    void shouldReturnTrueWhenUsingTemporaryJudge() {
+        CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("test@test.com")
+            .build()).build();
+
+        assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUsingAllocatedJudge() {
+        CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+            .build())
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("test@test.com")
+                .build())
+            .build();
+
+        assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isFalse();
     }
 
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
