@@ -7,6 +7,7 @@ module.exports = {
       notes: `#${document}_${index}_notes`,
       dateAndTime: `#${document}_${index}_dateTimeReceived`,
       document: `#${document}_${index}_document`,
+      confidential: `#${document}_${index}_confidential-CONFIDENTIAL`,
     };
   },
 };

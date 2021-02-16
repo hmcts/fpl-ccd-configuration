@@ -6,18 +6,33 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService {
-    private final IdamClient idamClient;
+    private final IdamClient idam;
     private final RequestData requestData;
 
     public String getUserEmail() {
-        return idamClient.getUserDetails(requestData.authorisation()).getEmail();
+        return getUserDetails().getEmail();
     }
 
     public boolean hasUserRole(UserRole userRole) {
-        return requestData.userRoles().contains(userRole.getRoleName());
+        return getIdamRoles().contains(userRole.getRoleName());
+    }
+
+    public boolean isHmctsUser() {
+        return getIdamRoles().stream().anyMatch(UserRole::isHmctsUser);
+    }
+
+    private Set<String> getIdamRoles() {
+        return requestData.userRoles();
+    }
+
+    private UserDetails getUserDetails() {
+        return idam.getUserDetails(requestData.authorisation());
     }
 }
