@@ -64,7 +64,7 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
-  const history = config.hmctsAdminUser.email + ' - ' +  message + '\n \n' + config.judicaryUser.email + ' - ' + reply;
+  const history = config.ctscEmail + ' - ' +  message + '\n \n' + config.judicaryUser.email + ' - ' + reply;
   I.see('Closed messages');
   I.seeInTab(['Message 1', 'From'], config.judicaryUser);
   I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
