@@ -245,7 +245,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyMapWhenC2DocumentsDoNotExist() {
+    void shouldPopulateOnlyEmailAddressesWhenC2DocumentsDoNotExist() {
         assertThat(messageJudgeService.initialiseCaseFields(CaseData.builder().build()))
             .containsExactly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
