@@ -40,50 +40,19 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   caseViewPage.selectTab(caseViewPage.tabs.documents);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
-  I.seeInTab(['HMCTS further evidence documents 1', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['HMCTS further evidence documents 1', 'Notes'], 'Case evidence included');
-  I.seeInTab(['HMCTS further evidence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['HMCTS further evidence documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['HMCTS further evidence documents 1', 'Uploaded by']);
+  assertFurtherEvidence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
 
-  I.seeInTab(['Local authority further evidence documents 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['Local authority further evidence documents 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Local authority further evidence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Local authority further evidence documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Local authority further evidence documents 1', 'Uploaded by']);
-  I.seeTextInTab(['Local authority further evidence documents 1', ''], 'Confidential');
-  I.seeInTab(['Local authority further evidence documents 2', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['Local authority further evidence documents 2', 'Notes'], 'Supports the C2 application');
-  I.seeInTab(['Local authority further evidence documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Local authority further evidence documents 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Local authority further evidence documents 2', 'Uploaded by']);
+  assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
+  assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
 
-  I.seeInTab(['HMCTS further evidence documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['HMCTS further evidence documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['HMCTS further evidence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['HMCTS further evidence documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['HMCTS further evidence documents 1', 'Uploaded by']);
-  I.seeTextInTab(['HMCTS further evidence documents 1', ''], 'Confidential');
-  I.seeInTab(['HMCTS further evidence documents 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['HMCTS further evidence documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['HMCTS further evidence documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['HMCTS further evidence documents 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['HMCTS further evidence documents 2', 'Uploaded by']);
+  assertConfidentialFurtherEvidence(I, 'HMCTS', 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertFurtherEvidence(I, 'HMCTS', 2, 'Email with evidence attached', 'Case evidence included');
 
-  I.seeInTab(['Local authority further evidence documents 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['Local authority further evidence documents 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Local authority further evidence documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Local authority further evidence documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Local authority further evidence documents 1', 'Uploaded by']);
-  I.seeTextInTab(['Local authority further evidence documents 1', ''], 'Confidential');
-  I.seeInTab(['Local authority further evidence documents 2', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['Local authority further evidence documents 2', 'Notes'], 'Supports the C2 application');
-  I.seeInTab(['Local authority further evidence documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Local authority further evidence documents 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Local authority further evidence documents 2', 'Uploaded by']);
+  assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
+  assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -112,50 +81,19 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by HMCTS 1', 'Uploaded by']);
+  assertCorrespondence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
 
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by local authority 1', 'Uploaded by']);
-  I.seeTextInTab(['Correspondence uploaded by local authority 1', ''], 'Confidential');
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'Notes'], 'Supports the C2 application');
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by local authority 2', 'Uploaded by']);
+  assertConfidentialCorrespondence(I, 'local authority', 1, 'Correspondence document', 'Test notes');
+  assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.correspondence);
 
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by HMCTS 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by HMCTS 1', 'Uploaded by']);
-  I.seeTextInTab(['Correspondence uploaded by HMCTS 1', ''], 'Confidential');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by HMCTS 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by HMCTS 2', 'Uploaded by']);
+  assertConfidentialCorrespondence(I, 'HMCTS', 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertCorrespondence(I, 'HMCTS', 2, 'Email with evidence attached', 'Case evidence included');
 
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Notes'], 'Test notes');
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by local authority 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by local authority 1', 'Uploaded by']);
-  I.seeTextInTab(['Correspondence uploaded by local authority 1', ''], 'Confidential');
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'Notes'], 'Supports the C2 application');
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Correspondence uploaded by local authority 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Correspondence uploaded by local authority 2', 'Uploaded by']);
+  assertConfidentialCorrespondence(I, 'local authority', 1, 'Correspondence document', 'Test notes');
+  assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
 Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
@@ -174,22 +112,15 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
 
   caseViewPage.selectTab(caseViewPage.tabs.c2);
 
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', ''], 'Confidential');
-
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'File'], 'mockFile.txt');
+  assertConfidentialC2SupportingDocuments(I, 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertC2SupportingDocuments(I, 2, 'Email with evidence attached', 'Case evidence included');
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Case evidence included');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
+  assertC2SupportingDocuments(I, 1, 'Email with evidence attached', 'Case evidence included');
+
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -204,24 +135,61 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
 
   caseViewPage.selectTab(caseViewPage.tabs.c2);
 
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Test notes');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', ''], 'Confidential');
-
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Notes'], 'Supports the C2 application');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'File'], 'mockFile.txt');
+  assertC2SupportingDocuments(I, 1, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 2, 'Correspondence document', 'Test notes');
+  assertC2SupportingDocuments(I, 3, 'C2 supporting document', 'Supports the C2 application');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
 
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Document name'], 'Correspondence document');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'Notes'], 'Test notes');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['C2 Application 1', 'C2 supporting documents 1', ''], 'Confidential');
-
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'Notes'], 'Supports the C2 application');
-  I.seeInTab(['C2 Application 1', 'C2 supporting documents 2', 'File'], 'mockFile.txt');
+  assertConfidentialC2SupportingDocuments(I, 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertC2SupportingDocuments(I, 2, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 3, 'Correspondence document', 'Test notes');
+  assertC2SupportingDocuments(I, 4, 'C2 supporting document', 'Supports the C2 application');
 });
+
+const assertConfidentialFurtherEvidence = (I, prefix, index, docName, notes) => {
+  assertSupportingEvidence(I, `${prefix} further evidence documents ${index}`, docName, notes, true);
+};
+
+const assertFurtherEvidence = (I, prefix, index, docName, notes) => {
+  assertSupportingEvidence(I, `${prefix} further evidence documents ${index}`, docName, notes, false);
+};
+
+const assertConfidentialCorrespondence = (I, suffix, index, docName, notes) => {
+  assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, true);
+};
+
+const assertCorrespondence = (I, suffix, index, docName, notes) => {
+  assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, false);
+};
+
+const assertSupportingEvidence = (I, supportingEvidenceName, docName, notes, confidential) => {
+  I.seeInTab([supportingEvidenceName, 'Document name'], docName);
+  I.seeInTab([supportingEvidenceName, 'Notes'], notes);
+  I.seeInTab([supportingEvidenceName, 'File'], 'mockFile.txt');
+  I.seeInTab([supportingEvidenceName, 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+
+  if (confidential) {
+    I.seeInTab([supportingEvidenceName, ''], 'Confidential');
+  }
+
+  I.seeTextInTab([supportingEvidenceName, 'Uploaded by']);
+};
+
+const assertConfidentialC2SupportingDocuments = (I, index, docName, notes) => {
+  assertC2SupportingDocuments(I, index, docName, notes, true);
+};
+
+const assertC2SupportingDocuments = (I, index, docName, notes, confidential = false) => {
+  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Document name'], docName);
+  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Notes'], notes);
+  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+
+  if (confidential) {
+    I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, ''], 'Confidential');
+  }
+
+  I.seeTextInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Uploaded by']);
+};
