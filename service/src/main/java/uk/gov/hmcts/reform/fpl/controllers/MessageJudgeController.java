@@ -78,7 +78,7 @@ public class MessageJudgeController extends CallbackController {
     }
 
     @PostMapping("/validate/mid-event")
-    public AboutToStartOrSubmitCallbackResponse validateReviewDecision(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse validateReplyMessage(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 

@@ -89,9 +89,7 @@ public class MessageJudgeService {
         MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
         JudicialMessage judicialMessageReply = messageJudgeEventData.getJudicialMessageReply();
 
-        if (judicialMessageReply != null && YES.getValue().equals(judicialMessageReply.getIsReplying())
-            && isNotEmpty(judicialMessageReply.getReplyFrom())
-            && judicialMessageReply.getReplyFrom().equals(judicialMessageReply.getReplyTo())) {
+        if (isReplyingToMessage(judicialMessageReply) && hasMatchingReplyEmaiAddress(judicialMessageReply)) {
             errors.add("The sender's and recipient's email address cannot be the same");
         }
 
@@ -232,8 +230,6 @@ public class MessageJudgeService {
                         .recipient(judicialMessageReply.getReplyTo())
                         .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage, sender))
                         .latestMessage(judicialMessageReply.getLatestMessage())
-                        .replyFrom(null)
-                        .replyTo(null)
                         .build();
 
                     return element(judicialMessageElement.getId(), updatedMessage);
@@ -280,6 +276,15 @@ public class MessageJudgeService {
 
     private boolean hasJudicialMessages(CaseData caseData) {
         return !caseData.getJudicialMessages().isEmpty();
+    }
+
+    private boolean hasMatchingReplyEmaiAddress(JudicialMessage judicialMessageReply) {
+        return isNotEmpty(judicialMessageReply.getReplyFrom())
+            && judicialMessageReply.getReplyFrom().equals(judicialMessageReply.getReplyTo());
+    }
+
+    private boolean isReplyingToMessage(JudicialMessage judicialMessageReply) {
+        return judicialMessageReply != null && YES.getValue().equals(judicialMessageReply.getIsReplying());
     }
 
     private Map<String, Object> prePopulateSenderAndRecipient() {

@@ -205,7 +205,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldInitialiseJudicialMessagesWithOpenStatusWhenC2DocumentsDoNotExist() {
+    void shouldInitialiseJudicialMessagesWithEmailAddressesWhenC2DocumentsDoNotExist() {
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
                 .latestMessage("some note")
