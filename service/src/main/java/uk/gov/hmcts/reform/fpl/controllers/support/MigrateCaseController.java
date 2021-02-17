@@ -15,12 +15,9 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.SealedCMORemovalAction;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
