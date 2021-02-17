@@ -42,8 +42,8 @@ module.exports = {
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
-    //await I.runAccessibilityTest();
     I.click(this.fields.search);
+    await I.runAccessibilityTest();
   },
 
   setInitialSearchFields(state='Any') {
