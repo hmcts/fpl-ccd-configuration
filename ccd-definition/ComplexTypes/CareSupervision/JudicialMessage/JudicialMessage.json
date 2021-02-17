@@ -55,7 +55,7 @@
     "ID": "JudicialMessage",
     "ListElementCode": "replyFrom",
     "FieldType": "Email",
-    "ElementLabel": "From",
+    "ElementLabel": "Sender's email address",
     "SecurityClassification": "Public"
   },
   {
@@ -63,7 +63,7 @@
     "ID": "JudicialMessage",
     "ListElementCode": "replyTo",
     "FieldType": "Email",
-    "ElementLabel": "To",
+    "ElementLabel": "Recipient's email address",
     "SecurityClassification": "Public"
   },
   {
