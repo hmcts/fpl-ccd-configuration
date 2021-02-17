@@ -81,7 +81,7 @@
     "ListElementCode": "replyTo",
     "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "Recipient's email address ",
+    "EventElementLabel": "Recipient's email address",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
   },
   {

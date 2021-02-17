@@ -12,7 +12,7 @@
     "ID": "JudicialMessageMetaData",
     "ListElementCode": "recipient",
     "FieldType": "Email",
-    "ElementLabel": "Recipient's email address ",
+    "ElementLabel": "Recipient's email address",
     "SecurityClassification": "Public"
   },
   {
