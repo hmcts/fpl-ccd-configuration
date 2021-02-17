@@ -4,7 +4,7 @@
     "ID": "JudicialMessageMetaData",
     "ListElementCode": "sender",
     "FieldType": "Email",
-    "ElementLabel": "From email address",
+    "ElementLabel": "Sender's email address",
     "SecurityClassification": "Public"
   },
   {
@@ -12,7 +12,7 @@
     "ID": "JudicialMessageMetaData",
     "ListElementCode": "recipient",
     "FieldType": "Email",
-    "ElementLabel": "To email address",
+    "ElementLabel": "Recipient's email address ",
     "SecurityClassification": "Public"
   },
   {

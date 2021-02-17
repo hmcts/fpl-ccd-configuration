@@ -70,7 +70,7 @@
     "ListElementCode": "replyFrom",
     "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "From",
+    "EventElementLabel": "Sender's email address",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
   },
   {
@@ -81,7 +81,7 @@
     "ListElementCode": "replyTo",
     "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
-    "EventElementLabel": "To",
+    "EventElementLabel": "Recipient's email address ",
     "FieldShowCondition": "judicialMessageReply.isReplying=\"Yes\""
   },
   {

@@ -25,7 +25,8 @@
     "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "MANDATORY",
+    "Comment": "Used for subject"
   },
   {
     "LiveFrom": "01/01/2017",
