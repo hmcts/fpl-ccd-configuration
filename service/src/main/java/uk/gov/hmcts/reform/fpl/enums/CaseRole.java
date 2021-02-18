@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.enums;
 public enum CaseRole {
     CREATOR,
     LASOLICITOR,
+    EPSMANAGING,
     SOLICITOR,
     LABARRISTER,
     BARRISTER,
