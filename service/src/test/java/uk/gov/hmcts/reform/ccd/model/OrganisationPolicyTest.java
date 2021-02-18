@@ -11,12 +11,12 @@ class OrganisationPolicyTest {
     void shouldCreateOrganisationPolicy() {
         final OrganisationPolicy actualOrgPolicy
             = OrganisationPolicy.organisationPolicy("ORG1", "Private solicitor", CREATOR);
+
         final OrganisationPolicy expectedOrgPolicy = OrganisationPolicy.builder()
             .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                 .organisationID("ORG1")
                 .organisationName("Private solicitor")
                 .build())
-            .orgPolicyCaseAssignedRole("[CREATOR]")
             .build();
 
         assertThat(actualOrgPolicy).isEqualTo(expectedOrgPolicy);

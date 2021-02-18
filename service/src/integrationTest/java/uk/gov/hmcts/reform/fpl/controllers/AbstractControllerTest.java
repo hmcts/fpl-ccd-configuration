@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
@@ -27,9 +28,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 public abstract class AbstractControllerTest {
 
-    static final String USER_AUTH_TOKEN = "Bearer token";
-    static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-    static final String USER_ID = "1";
+    protected static final String USER_AUTH_TOKEN = "Bearer token";
+    protected static final String SERVICE_AUTH_TOKEN = "Bearer service token";
+    protected static final String USER_ID = "1";
 
     @Autowired
     MockMvc mockMvc;
@@ -121,85 +122,96 @@ public abstract class AbstractControllerTest {
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus,
-                                                                String additionalPath) {
-        return postEvent(String.format("/callback/%s/%s/mid-event", eventName, additionalPath), data, expectedStatus);
+                                                                String additionalPath, String... userRoles) {
+        return postEvent(
+            String.format("/callback/%s/%s/mid-event", eventName, additionalPath), data, expectedStatus, userRoles
+        );
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, String additionalPath) {
-        return postMidEvent(data, SC_OK, additionalPath);
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, String additionalPath,
+                                                                String... userRoles) {
+        return postMidEvent(data, SC_OK, additionalPath, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, int expectedStatus,
-                                                                String additionalPath) {
-        return postMidEvent(toBytes(callbackRequest), expectedStatus, additionalPath);
+                                                                String additionalPath, String... userRoles) {
+        return postMidEvent(toBytes(callbackRequest), expectedStatus, additionalPath, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest,
-                                                                String additionalPath) {
-        return postMidEvent(callbackRequest, SC_OK, additionalPath);
+                                                                String additionalPath, String... userRoles) {
+        return postMidEvent(callbackRequest, SC_OK, additionalPath, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, int expectedStatus,
-                                                                String additionalPath) {
-        return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath);
+                                                                String additionalPath, String... userRoles) {
+        return postMidEvent(toCallbackRequest(caseDetails), expectedStatus, additionalPath, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData) {
         return postMidEvent(asCaseDetails(caseData), SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData, String additionalPath) {
-        return postMidEvent(asCaseDetails(caseData), SC_OK, additionalPath);
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData, String additionalPath,
+                                                                String... userRoles) {
+        return postMidEvent(asCaseDetails(caseData), SC_OK, additionalPath, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, String additionalPath) {
-        return postMidEvent(caseDetails, SC_OK, additionalPath);
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, String additionalPath,
+                                                                String... userRoles) {
+        return postMidEvent(caseDetails, SC_OK, additionalPath, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, int expectedStatus,
-                                                                String additionalPath) {
-        return postMidEvent(readBytes(filename), expectedStatus, additionalPath);
+                                                                String additionalPath, String... userRoles) {
+        return postMidEvent(readBytes(filename), expectedStatus, additionalPath, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, String additionalPath) {
-        return postMidEvent(filename, SC_OK, additionalPath);
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(String filename, String additionalPath,
+                                                                String... userRoles) {
+        return postMidEvent(filename, SC_OK, additionalPath, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(byte[] data, int expectedStatus) {
-        return postEvent(String.format("/callback/%s/about-to-submit", eventName), data, expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(byte[] data, int expectedStatus,
+                                                                          String... userRoles) {
+        return postEvent(String.format("/callback/%s/about-to-submit", eventName), data, expectedStatus, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(byte[] data) {
-        return postAboutToSubmitEvent(data, SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(byte[] data, String... userRoles) {
+        return postAboutToSubmitEvent(data, SC_OK, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CallbackRequest callbackRequest,
-                                                                          int expectedStatus) {
-        return postAboutToSubmitEvent(toBytes(callbackRequest), expectedStatus);
+                                                                          int expectedStatus, String... userRoles) {
+        return postAboutToSubmitEvent(toBytes(callbackRequest), expectedStatus, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CallbackRequest callbackRequest) {
-        return postAboutToSubmitEvent(callbackRequest, SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CallbackRequest callbackRequest,
+                                                                          String... userRoles) {
+        return postAboutToSubmitEvent(callbackRequest, SC_OK, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails, int expectedStatus) {
-        return postAboutToSubmitEvent(toCallbackRequest(caseDetails), expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails, int expectedStatus,
+                                                                          String... userRoles) {
+        return postAboutToSubmitEvent(toCallbackRequest(caseDetails), expectedStatus, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseData caseData) {
-        return postAboutToSubmitEvent(asCaseDetails(caseData), SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseData caseData, String... userRoles) {
+        return postAboutToSubmitEvent(asCaseDetails(caseData), SC_OK, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails) {
-        return postAboutToSubmitEvent(caseDetails, SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails,
+                                                                          String... userRoles) {
+        return postAboutToSubmitEvent(caseDetails, SC_OK, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(String filename, int expectedStatus) {
-        return postAboutToSubmitEvent(readBytes(filename), expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(String filename, int expectedStatus,
+                                                                          String... userRoles) {
+        return postAboutToSubmitEvent(readBytes(filename), expectedStatus, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(String filename) {
-        return postAboutToSubmitEvent(readBytes(filename), SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(String filename, String... userRoles) {
+        return postAboutToSubmitEvent(readBytes(filename), SC_OK, userRoles);
     }
 
     protected SubmittedCallbackResponse postSubmittedEvent(byte[] data, int expectedStatus) {
@@ -306,6 +318,7 @@ public abstract class AbstractControllerTest {
     private CallbackRequest toCallbackRequest(CaseDetails caseDetails) {
         return CallbackRequest.builder()
             .caseDetails(caseDetails)
+            .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
             .build();
     }
 }

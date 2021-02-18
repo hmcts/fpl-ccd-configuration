@@ -68,16 +68,12 @@ public class CaseInitiationService {
 
     public CaseData updateOrganisationsDetails(CaseData caseData) {
         Optional<Organisation> organisation = organisationService.findOrganisation();
-
         String currentUserOrganisationId = organisation.map(Organisation::getOrganisationIdentifier).orElse(null);
         String currentUserOrganisationName = organisation.map(Organisation::getName).orElse(null);
-
         final Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
-
         if (outsourcingLA.isPresent()) {
             String outsourcingOrgId = localAuthorityService.getLocalAuthorityId(outsourcingLA.get());
             String outsourcingOrgName = localAuthorityService.getLocalAuthorityName(outsourcingLA.get());
-
             return caseData.toBuilder()
                 .outsourcingPolicy(
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, EPSMANAGING))

@@ -47,5 +47,37 @@
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "confidentialWarningLabel",
+    "FieldType": "Label",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "Comment": "Presentational only - used to display a warning label in the event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "confidential",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ConfidentialDocument",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N",
+    "FieldShowCondition": "confidentialWarningLabel=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "confidentialTabLabel",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential CONTAINS \"CONFIDENTIAL\"",
+    "Searchable": "N",
+    "Comment": "Used to identify documents as confidential in tab view only. Does not display in event."
   }
 ]

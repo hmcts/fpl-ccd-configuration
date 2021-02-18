@@ -89,6 +89,26 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "supportingEvidenceLA",
+    "ElementLabel": "C2 supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "supportingEvidenceNC",
+    "ElementLabel": "C2 supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
 
