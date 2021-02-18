@@ -76,11 +76,12 @@ public class CaseInitiationService {
 
         if (outsourcingLA.isPresent()) {
             String outsourcingOrgId = localAuthorityService.getLocalAuthorityId(outsourcingLA.get());
+            String outsourcingOrgName = localAuthorityService.getLocalAuthorityName(outsourcingLA.get());
 
             return caseData.toBuilder()
                 .outsourcingPolicy(
                     organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, EPSMANAGING))
-                .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, currentUserOrganisationName, LASOLICITOR))
+                .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLA.get())
                 .caseLocalAuthorityName(localAuthorityService.getLocalAuthorityName(outsourcingLA.get()))
                 .build();

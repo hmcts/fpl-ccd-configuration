@@ -127,7 +127,8 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
             .id(nextLong())
             .state(State.OPEN)
             .caseLocalAuthority(DEFAULT_LA_CODE)
-            .outsourcingPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), EPSMANAGING))
+            .outsourcingPolicy(
+                organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), EPSMANAGING))
             .build();
 
         postSubmittedEvent(caseData);

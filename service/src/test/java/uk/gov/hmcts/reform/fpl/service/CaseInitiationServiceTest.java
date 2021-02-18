@@ -39,6 +39,7 @@ class CaseInitiationServiceTest {
     private static final Long CASE_ID = 1000L;
     private static final String USER_ID = "USER1";
     private static final String EXTERNAL_ORG_ID = "EXT001";
+    private static final String EXTERNAL_ORG_NAME = "Private solicitor";
     private static final String LOCAL_AUTHORITY_ORG_ID = "SA002";
     private static final String LOCAL_AUTHORITY_CODE = "SA";
     private static final String LOCAL_AUTHORITY_NAME = "Swansea City Council";
@@ -129,14 +130,21 @@ class CaseInitiationServiceTest {
                 .isEqualTo(LOCAL_AUTHORITY_NAME);
 
             assertThat(updatedCaseData.getLocalAuthorityPolicy())
-                .isEqualTo(organisationPolicy(LOCAL_AUTHORITY_ORG_ID, "[LASOLICITOR]"));
+                .isEqualTo(organisationPolicy(LOCAL_AUTHORITY_ORG_ID, null, "[LASOLICITOR]"));
 
             assertThat(updatedCaseData.getOutsourcingPolicy()).isNull();
         }
 
         @Test
         void shouldUpdateCaseDataWhenOutsourcedUserCreatesCase() {
-            givenUserFromOrganisation(EXTERNAL_ORG_ID);
+            Optional<Organisation> localOrganisation = Optional.ofNullable(LOCAL_AUTHORITY_ORG_ID)
+                .map(orgId -> Organisation.builder().organisationIdentifier(orgId).name(LOCAL_AUTHORITY_NAME).build());
+            given(organisationService.findOrganisation()).willReturn(localOrganisation);
+
+            Optional<Organisation> outsourcedOrganisation = Optional.ofNullable(EXTERNAL_ORG_ID)
+                .map(orgId -> Organisation.builder().organisationIdentifier(orgId).name(EXTERNAL_ORG_NAME).build());
+            given(organisationService.findOrganisation()).willReturn(outsourcedOrganisation);
+
             given(localAuthorityService.getLocalAuthorityId(LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_ORG_ID);
             given(localAuthorityService.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_NAME);
 
@@ -153,10 +161,10 @@ class CaseInitiationServiceTest {
                 .isEqualTo(LOCAL_AUTHORITY_NAME);
 
             assertThat(updatedCaseData.getLocalAuthorityPolicy())
-                .isEqualTo(organisationPolicy(LOCAL_AUTHORITY_ORG_ID, "[LASOLICITOR]"));
+                .isEqualTo(organisationPolicy(LOCAL_AUTHORITY_ORG_ID, LOCAL_AUTHORITY_NAME,"[LASOLICITOR]"));
 
             assertThat(updatedCaseData.getOutsourcingPolicy())
-                .isEqualTo(organisationPolicy(EXTERNAL_ORG_ID, "[EPSMANAGING]"));
+                .isEqualTo(organisationPolicy(EXTERNAL_ORG_ID, EXTERNAL_ORG_NAME,"[EPSMANAGING]"));
         }
     }
 
@@ -183,7 +191,7 @@ class CaseInitiationServiceTest {
             CaseData caseData = CaseData.builder()
                 .id(CASE_ID)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-                .outsourcingPolicy(organisationPolicy(EXTERNAL_ORG_ID, "[EPSMANAGING]"))
+                .outsourcingPolicy(organisationPolicy(EXTERNAL_ORG_ID, EXTERNAL_ORG_NAME,"[EPSMANAGING]"))
                 .build();
 
             underTest.grantCaseAccess(caseData);
@@ -291,10 +299,11 @@ class CaseInitiationServiceTest {
         given(organisationService.findOrganisation()).willReturn(organisation);
     }
 
-    private OrganisationPolicy organisationPolicy(String organisationId, String caseRole) {
+    private OrganisationPolicy organisationPolicy(String organisationId, String organisationName, String caseRole) {
         return OrganisationPolicy.builder()
             .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                 .organisationID(organisationId)
+                .organisationName(organisationName)
                 .build())
             .orgPolicyCaseAssignedRole(caseRole)
             .build();
