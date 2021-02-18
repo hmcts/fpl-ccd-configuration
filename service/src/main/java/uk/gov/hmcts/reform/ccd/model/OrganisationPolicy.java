@@ -20,6 +20,9 @@ public class OrganisationPolicy {
     @JsonProperty("OrgPolicyCaseAssignedRole")
     private String orgPolicyCaseAssignedRole;
 
+    @JsonProperty("name")
+    private String name;
+
     public static OrganisationPolicy organisationPolicy(String organisationId, CaseRole caseRole) {
 
         if (organisationId == null) {
