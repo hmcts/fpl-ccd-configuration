@@ -184,7 +184,6 @@ withPipeline(type, product, component) {
   after('functionalTest:aat') {
     archiveCoreCaseDataDefinitions('prod')
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
   after('functionalTest:preview') {

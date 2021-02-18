@@ -68,7 +68,19 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(integrationTestSecrets)
 
   enableSecurityScan()
+  enableMutationTest()
   enableFullFunctionalTest(120)
+
+  before('mutationTest') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  after('mutationTest') {
+    withSonarQubeEnv('SonarQube') {
+      sh './gradlew --info sonarqube'
+    }
+    teardownSecretsForIntegrationTests()
+  }
 
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
