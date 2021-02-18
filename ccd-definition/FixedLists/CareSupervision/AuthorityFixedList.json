@@ -352,9 +352,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "PET",
+    "ListElement": "Peterborough City Council",
+    "DisplayOrder": 61
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "PCC",
     "ListElement": "Portsmouth City Council",
-    "DisplayOrder": 61
+    "DisplayOrder": 62
   },
   {
     "LiveFrom": "01/01/2017",
