@@ -79,13 +79,13 @@ public class MigrateCaseController extends CallbackController {
             caseData.getFurtherEvidenceDocuments(), FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY
         ));
         caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getFurtherEvidenceDocuments(), FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
+            caseData.getFurtherEvidenceDocumentsLA(), FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
         ));
         caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getFurtherEvidenceDocuments(), CORRESPONDING_DOCUMENTS_COLLECTION_KEY
+            caseData.getCorrespondenceDocuments(), CORRESPONDING_DOCUMENTS_COLLECTION_KEY
         ));
         caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getFurtherEvidenceDocuments(), CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
+            caseData.getCorrespondenceDocumentsLA(), CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
         ));
     }
 

@@ -392,7 +392,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
     }
 
     @Nested
-    class Fpla2417 {
+    class Fpla2722 {
         private static final String MIGRATION_ID = "FPLA-2722";
 
         private final List<Element<SupportingEvidenceBundle>> supportingDocs = wrapElements(
@@ -418,21 +418,58 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
         @Test
         void shouldUpdateSupportingDocs() {
+            List<Element<SupportingEvidenceBundle>> furtherEvidenceDocs = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("furtherEvidenceDocs")
+                    .build()
+            );
+            List<Element<SupportingEvidenceBundle>> furtherEvidenceDocsLA = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("furtherEvidenceDocsLA")
+                    .build()
+            );
+            List<Element<SupportingEvidenceBundle>> correspondenceDocs = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("correspondenceDocs")
+                    .build()
+            );
+            List<Element<SupportingEvidenceBundle>> correspondenceDocsLA = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("correspondenceDocsLA")
+                    .build()
+            );
+
             CaseData caseData = CaseData.builder()
-                .furtherEvidenceDocuments(supportingDocs)
-                .correspondenceDocuments(supportingDocs)
-                .furtherEvidenceDocumentsLA(supportingDocs)
-                .correspondenceDocumentsLA(supportingDocs)
+                .furtherEvidenceDocuments(furtherEvidenceDocs)
+                .furtherEvidenceDocumentsLA(furtherEvidenceDocsLA)
+                .correspondenceDocuments(correspondenceDocs)
+                .correspondenceDocumentsLA(correspondenceDocsLA)
                 .build();
 
             AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails(caseData, MIGRATION_ID));
 
+            List<Map<String, Object>> furtherEvidenceNCData = mapper.convertValue(
+                furtherEvidenceDocs, new TypeReference<>() {}
+            );
+            List<Map<String, Object>> furtherEvidenceLANCData = mapper.convertValue(
+                furtherEvidenceDocsLA, new TypeReference<>() {}
+            );
+            List<Map<String, Object>> correspondenceNCData = mapper.convertValue(
+                correspondenceDocs, new TypeReference<>() {}
+            );
+            List<Map<String, Object>> correspondenceLANCData = mapper.convertValue(
+                correspondenceDocsLA, new TypeReference<>() {}
+            );
+
             assertThat(response.getData())
-                .extracting(
-                    "furtherEvidenceDocumentsNC", "furtherEvidenceDocumentsLANC",
-                    "correspondenceDocumentsNC", "correspondenceDocumentsLANC"
-                )
-                .containsOnly(supportingDocsData);
+                .containsAllEntriesOf(
+                    Map.of(
+                        "furtherEvidenceDocumentsNC", furtherEvidenceNCData,
+                        "furtherEvidenceDocumentsLANC", furtherEvidenceLANCData,
+                        "correspondenceDocumentsNC", correspondenceNCData,
+                        "correspondenceDocumentsLANC", correspondenceLANCData
+                    )
+                );
         }
 
         @Test
