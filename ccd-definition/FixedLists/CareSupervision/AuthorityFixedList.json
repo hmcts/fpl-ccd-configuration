@@ -408,9 +408,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SGC",
+    "ListElement": "South Gloucestershire Council",
+    "DisplayOrder": 75
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
-    "DisplayOrder": 75
+    "DisplayOrder": 76
   },
   {
     "LiveFrom": "01/01/2017",

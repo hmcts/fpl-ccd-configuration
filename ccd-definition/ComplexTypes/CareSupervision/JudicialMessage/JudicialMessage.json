@@ -53,6 +53,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
+    "ListElementCode": "replyFrom",
+    "FieldType": "Email",
+    "ElementLabel": "Sender's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "replyTo",
+    "FieldType": "Email",
+    "ElementLabel": "Recipient's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
     "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
     "ElementLabel": "Message",
