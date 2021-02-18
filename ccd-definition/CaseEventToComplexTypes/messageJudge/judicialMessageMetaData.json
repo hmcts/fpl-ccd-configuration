@@ -4,8 +4,17 @@
     "ID": "JudicialMessageMetaData",
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
-    "ListElementCode": "recipient",
+    "ListElementCode": "sender",
     "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
+    "CaseEventID": "messageJudgeOrLegalAdviser",
+    "CaseFieldID": "judicialMessageMetaData",
+    "ListElementCode": "recipient",
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -15,8 +24,9 @@
     "CaseFieldID": "judicialMessageMetaData",
     "ListElementCode": "requestedBy",
     "SecurityClassification": "Public",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "Comment": "Used for subject"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,7 +34,7 @@
     "CaseEventID": "messageJudgeOrLegalAdviser",
     "CaseFieldID": "judicialMessageMetaData",
     "ListElementCode": "urgency",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   }
 ]

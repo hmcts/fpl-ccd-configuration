@@ -94,7 +94,8 @@
     "DisplayContext": "READONLY",
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
-    "PageDisplayOrder": 3
+    "PageDisplayOrder": 3,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/validate/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
