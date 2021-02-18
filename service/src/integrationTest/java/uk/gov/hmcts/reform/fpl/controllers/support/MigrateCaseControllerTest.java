@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -22,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
@@ -38,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -68,13 +73,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             Element<HearingBooking> hearing1 = element(buildHearing(now().plusDays(1), cmoId1));
             Element<HearingOrder> cmoToMigrate = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
 
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+            CaseDetails caseDetails = caseDetails(CaseData.builder()
                 .hearingDetails(newArrayList(hearing1))
                 .draftUploadedCMOs(newArrayList(cmoToMigrate))
                 .id(caseId2)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
+                .build(), migrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
@@ -95,13 +98,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             Element<HearingOrder> cmoLinkedToHearing = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
             Element<HearingOrder> cmoWithoutHearing = buildCMO(cmoId2, hearing2.getValue().toLabel(), SEND_TO_JUDGE);
 
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+            CaseDetails caseDetails = caseDetails(CaseData.builder()
                 .hearingDetails(newArrayList(hearing1))
                 .draftUploadedCMOs(newArrayList(cmoLinkedToHearing, cmoWithoutHearing))
                 .id(caseId2)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
+                .build(), migrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
@@ -128,14 +129,12 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                 List.of(element(HearingOrdersBundle.builder()
                     .hearingId(hearing1.getId()).orders(newArrayList(agreedCMO1)).build()));
 
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+            CaseDetails caseDetails = caseDetails(CaseData.builder()
                 .hearingDetails(newArrayList(hearing1))
                 .hearingOrdersBundlesDrafts(hearingBundles)
                 .draftUploadedCMOs(newArrayList(agreedCMO))
                 .id(caseId3)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
+                .build(), migrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
@@ -148,13 +147,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
             Element<HearingOrder> agreedCMO = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
 
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+            CaseDetails caseDetails = caseDetails(CaseData.builder()
                 .hearingDetails(newArrayList(hearing1))
                 .draftUploadedCMOs(newArrayList(agreedCMO))
                 .id(12345678901234566L)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
+                .build(), migrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
@@ -169,13 +166,11 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
             Element<HearingOrder> agreedCMO1 = buildCMO(cmoId1, hearing1.getValue().toLabel(), SEND_TO_JUDGE);
 
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+            CaseDetails caseDetails = caseDetails(CaseData.builder()
                 .hearingDetails(newArrayList(hearing1))
                 .draftUploadedCMOs(newArrayList(agreedCMO1))
                 .id(caseId1)
-                .build());
-
-            caseDetails.getData().put("migrationId", "FPLA-2000");
+                .build(), "FPLA-2000");
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
@@ -519,18 +514,134 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Nested
+    class Fpla2417 {
+        private static final String MIGRATION_ID = "FPLA-2722";
+
+        private final List<Element<SupportingEvidenceBundle>> supportingDocs = wrapElements(
+            SupportingEvidenceBundle.builder()
+                .name("non confidential docs")
+                .build()
+        );
+
+        private final List<Map<String, Object>> supportingDocsData = mapper.convertValue(
+            supportingDocs, new TypeReference<>() {}
+        );
+
+        @Test
+        void shouldNotUpdateCaseIfIncorrectMigrationId() {
+            CaseData caseData = CaseData.builder()
+                .furtherEvidenceDocuments(supportingDocs)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails(caseData, "some id"));
+
+            assertThat(response.getData()).doesNotContainKeys("furtherEvidenceDocsNC");
+        }
+
+        @Test
+        void shouldUpdateSupportingDocs() {
+            CaseData caseData = CaseData.builder()
+                .furtherEvidenceDocuments(supportingDocs)
+                .correspondenceDocuments(supportingDocs)
+                .furtherEvidenceDocumentsLA(supportingDocs)
+                .correspondenceDocumentsLA(supportingDocs)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails(caseData, MIGRATION_ID));
+
+            assertThat(response.getData())
+                .extracting(
+                    "furtherEvidenceDocumentsNC", "furtherEvidenceDocumentsLANC",
+                    "correspondenceDocumentsNC", "correspondenceDocumentsLANC"
+                )
+                .containsOnly(supportingDocsData);
+        }
+
+        @Test
+        void shouldUpdateFurtherHearingEvidence() {
+            UUID uuid = randomUUID();
+
+            Map<String, Object> data = Map.of(
+                "hearingFurtherEvidenceDocuments", List.of(
+                    Map.of("id", uuid,
+                        "value", Map.of(
+                            "hearingName", "hearing name",
+                            "supportingEvidenceBundle", supportingDocs
+                        ))),
+                "migrationId", MIGRATION_ID
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(data)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            List<Map<String, Object>> expectedData = List.of(
+                Map.of("id", uuid.toString(),
+                    "value", Map.of(
+                        "hearingName", "hearing name",
+                        "supportingEvidenceBundle", supportingDocsData,
+                        "supportingEvidenceLA", supportingDocsData,
+                        "supportingEvidenceNC", supportingDocsData
+                    ))
+            );
+
+            assertThat(response.getData())
+                .extracting("hearingFurtherEvidenceDocuments")
+                .isEqualTo(expectedData);
+        }
+
+        @Test
+        void shouldUpdateC2DocumentBundle() {
+            UUID uuid = randomUUID();
+
+            Map<String, Object> data = Map.of(
+                "c2DocumentBundle", List.of(
+                    Map.of("id", uuid,
+                        "value", Map.of(
+                            "supportingEvidenceBundle", supportingDocs
+                        ))),
+                "migrationId", MIGRATION_ID
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(data)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            List<Map<String, Object>> expectedData = List.of(
+                Map.of("id", uuid.toString(),
+                    "value", Map.of(
+                        "supportingEvidenceBundle", supportingDocsData,
+                        "supportingEvidenceLA", supportingDocsData,
+                        "supportingEvidenceNC", supportingDocsData
+                    ))
+            );
+
+            assertThat(response.getData())
+                .extracting("c2DocumentBundle")
+                .isEqualTo(expectedData);
+        }
+    }
+
+    private CaseDetails caseDetails(CaseData caseData, String migrationId) {
+        CaseDetails caseDetails = asCaseDetails(caseData);
+        caseDetails.getData().put("migrationId", migrationId);
+        return caseDetails;
+    }
+
     private CaseDetails caseDetails(String migrationId,
                                     String familyManNumber,
                                     List<Element<GeneratedOrder>> orders,
                                     List<Element<Child>> children) {
-        CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+        return caseDetails(CaseData.builder()
             .familyManCaseNumber(familyManNumber)
             .orderCollection(orders)
             .children1(children)
-            .build());
-
-        caseDetails.getData().put("migrationId", migrationId);
-        return caseDetails;
+            .build(), migrationId);
     }
 
     private GeneratedOrder generateOrder(GeneratedOrderType type, List<Element<Child>> linkedChildren) {
