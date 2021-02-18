@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
@@ -28,5 +29,12 @@ public class SendToGatekeeperController extends CallbackController {
         caseDetails.getData().putAll(standardDirectionsService.populateStandardDirections(caseData));
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = getCaseData(callbackRequest);
+
+        publishEvent(new NotifyGatekeepersEvent(caseData));
     }
 }
