@@ -5,7 +5,7 @@
     "CaseEventID": "uploadCMO",
     "CaseFieldID": "hearingOrderDraftKind",
     "PageID": "OrderDraftKindSelection",
-    "PageFieldDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
     "PageColumnNumber": 1,
     "PageDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
