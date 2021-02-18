@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -51,6 +53,16 @@ public class TestDataHelper {
     public static final byte[] DOCUMENT_CONTENT = {1, 2, 3, 4, 5};
 
     private TestDataHelper() {
+    }
+
+    public static Organisation testOrganisation() {
+        return testOrganisation(RandomStringUtils.randomAlphanumeric(5));
+    }
+
+    public static Organisation testOrganisation(String organisationCode) {
+        return Organisation.builder()
+            .organisationIdentifier(organisationCode)
+            .build();
     }
 
     public static DocumentReference testDocumentReference() {
