@@ -4,21 +4,26 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
@@ -30,6 +35,9 @@ class MessageJudgeControllerAboutToStartTest extends AbstractControllerTest {
 
     @SpyBean
     private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
+
+    @MockBean
+    private UserService userService;
 
     MessageJudgeControllerAboutToStartTest() {
         super("message-judge");
@@ -96,7 +104,7 @@ class MessageJudgeControllerAboutToStartTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotInitialiseCaseFieldsWhenJudicialMessagesAndC2DocumentsDoNotExist() {
+    void shouldInitialiseOnlySenderAndRecipientEmailAddressesWhenJudicialMessagesAndC2DocumentsDoNotExist() {
         CaseData caseData = CaseData.builder().id(1111L).build();
         Map<String, Object> caseDetails = postAboutToStartEvent(caseData).getData();
 
@@ -104,15 +112,21 @@ class MessageJudgeControllerAboutToStartTest extends AbstractControllerTest {
         assertThat(caseDetails.get("judicialMessageDynamicList")).isNull();
         assertThat(caseDetails.get("hasC2Applications")).isNull();
         assertThat(caseDetails.get("hasJudicialMessages")).isNull();
-        assertThat(caseDetails.get("judicialMessageMetaData")).isNull();
+        assertThat(caseDetails.get("judicialMessageMetaData"))
+            .extracting("sender", "recipient")
+            .containsExactly(ctscEmailLookupConfiguration.getEmail(), EMPTY);
     }
 
     @Test
     void shouldPrePopulateRecipientIfCaseInitiatedByJudge() {
         CaseData caseData = CaseData.builder().build();
-        Map<String, Object> caseDetails = postAboutToStartEvent(caseData, "caseworker-publiclaw-judiciary").getData();
 
-        assertThat(caseDetails.get("judicialMessageMetaData")).extracting("recipient")
-            .isEqualTo(ctscEmailLookupConfiguration.getEmail());
+        when(userService.getUserEmail()).thenReturn("sender@mail.com");
+        when(userService.hasUserRole(UserRole.JUDICIARY)).thenReturn(true);
+
+        Map<String, Object> caseDetails = postAboutToStartEvent(caseData, UserRole.JUDICIARY.getRoleName()).getData();
+
+        assertThat(caseDetails.get("judicialMessageMetaData")).extracting("sender", "recipient")
+            .containsExactly("sender@mail.com", ctscEmailLookupConfiguration.getEmail());
     }
 }
