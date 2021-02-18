@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class CaseRoleService {
+public class CaseAccessService {
 
     private final IdamClient idam;
     private final CaseAccessDataStoreApi caseAccessDataStoreApi;
@@ -34,13 +34,33 @@ public class CaseRoleService {
     private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
 
-    public void grantCaseAssignmentToLocalAuthority(String caseId, String localAuthority, Set<CaseRole> roles) {
-        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, Collections.emptySet(), roles);
-        grantCaseAssignmentAccess(caseId, localAuthorityUsers, roles);
-        log.info("Users {} granted {} to case {}", localAuthorityUsers, roles, caseId);
+    public void grantCaseRoleToUser(Long caseId, String userId, CaseRole caseRole) {
+        grantCaseAccess(caseId, Set.of(userId), caseRole);
+        log.info("User {} granted {} to case {}", userId, caseRole, caseId);
     }
 
-    private void grantCaseAssignmentAccess(String caseId, Set<String> users, Set<CaseRole> roles) {
+    public void grantCaseRoleToLocalAuthority(Long caseId, String localAuthority, CaseRole caseRole) {
+        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, Collections.emptySet(), caseRole);
+        grantCaseAccess(caseId, localAuthorityUsers, caseRole);
+        log.info("Users {} granted {} to case {}", localAuthorityUsers, caseRole, caseId);
+    }
+
+    public void revokeCaseRoleFromUser(Long caseId, String userId, CaseRole caseRole) {
+        final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+        final String serviceToken = authTokenGenerator.generate();
+
+        CaseAssignedUserRolesRequest caseAssignedUserRolesRequest = CaseAssignedUserRolesRequest.builder()
+            .caseAssignedUserRoles(List.of(CaseAssignedUserRoleWithOrganisation.builder()
+                .userId(userId)
+                .caseRole(caseRole.formattedName())
+                .caseDataId(caseId.toString())
+                .build()))
+            .build();
+
+        caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
+    }
+
+    private void grantCaseAccess(Long caseId, Set<String> users, CaseRole caseRole) {
         try {
             final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
@@ -51,10 +71,10 @@ public class CaseRoleService {
 
             List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = users.stream()
                 .map(user -> CaseAssignedUserRoleWithOrganisation.builder()
-                    .caseDataId(caseId)
+                    .caseDataId(caseId.toString())
                     .organisationId(organisationId)
                     .userId(user)
-                    .caseRole(CaseRole.LASOLICITOR.formattedName())
+                    .caseRole(caseRole.formattedName())
                     .build())
                 .collect(Collectors.toList());
 
@@ -63,23 +83,20 @@ public class CaseRoleService {
                     .caseAssignedUserRoles(caseAssignedRoles)
                     .build();
 
-            AddCaseAssignedUserRolesResponse response =
-                caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
-            log.info("Case Assignment Status {}", response.getStatus());
-
+            caseAccessDataStoreApi.addCaseUserRoles(userToken, serviceToken, addCaseAssignedUserRolesRequest);
         } catch (FeignException ex) {
             log.error("Could not assign the users to the case", ex);
-            throw new GrantCaseAccessException(caseId, users, roles);
+            throw new GrantCaseAccessException(caseId, users, caseRole);
         }
     }
 
-    private Set<String> getUsers(String caseId, String localAuthority, Set<String> excludedUsers, Set<CaseRole> roles) {
+    private Set<String> getUsers(Long caseId, String localAuthority, Set<String> excludedUsers, CaseRole caseRole) {
         try {
             return organisationService.findUserIdsInSameOrganisation(localAuthority).stream()
                 .filter(userId -> !excludedUsers.contains(userId))
                 .collect(toSet());
         } catch (Exception e) {
-            throw new GrantCaseAccessException(caseId, localAuthority, roles, e);
+            throw new GrantCaseAccessException(caseId, localAuthority, caseRole, e);
         }
     }
 }

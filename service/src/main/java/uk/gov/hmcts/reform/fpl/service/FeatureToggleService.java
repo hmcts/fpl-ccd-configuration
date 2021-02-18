@@ -40,9 +40,9 @@ public class FeatureToggleService {
             createLDUser(Map.of("report", LDValue.of(true))), false);
     }
 
-    public boolean isAllowCaseCreationForUsersNotOnboardedToMOEnabled(String localAuthorityName) {
+    public boolean isCaseCreationForNotOnboardedUsersEnabled(String localAuthorityCode) {
         return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
     }
 
     public boolean isRestrictedFromCaseSubmission(String localAuthorityName) {

@@ -140,6 +140,6 @@ public class ReviewCMOService {
         if (dynamicList instanceof String) {
             return UUID.fromString(dynamicList.toString());
         }
-        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
+        return mapper.convertValue(dynamicList, DynamicList.class).getValueCodeAsUUID();
     }
 }
