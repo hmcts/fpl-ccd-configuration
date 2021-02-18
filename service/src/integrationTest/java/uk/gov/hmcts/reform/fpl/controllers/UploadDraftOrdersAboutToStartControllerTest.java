@@ -64,9 +64,10 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
 
         UploadDraftOrdersData expectedEventData = UploadDraftOrdersData.builder()
             .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
-            .pastHearingsForCMO(dynamicList(hearing2Option))
-            .futureHearingsForCMO(dynamicList(hearing3Option))
-            .hearingsForHearingOrderDrafts(dynamicList(noHearingOption, hearing1Option, hearing2Option, hearing3Option))
+            .pastHearingsForCMO(dynamicLists.asMap(hearing2Option))
+            .futureHearingsForCMO(dynamicLists.asMap(hearing3Option))
+            .hearingsForHearingOrderDrafts(dynamicLists.asMap(
+                noHearingOption, hearing1Option, hearing2Option, hearing3Option))
             .showCMOsSentToJudge(YesNo.YES)
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
@@ -86,9 +87,10 @@ class UploadDraftOrdersAboutToStartControllerTest extends AbstractUploadDraftOrd
         CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
 
         UploadDraftOrdersData expectedEventData = UploadDraftOrdersData.builder()
-            .pastHearingsForCMO(dynamicList(hearing2Option))
-            .futureHearingsForCMO(dynamicList(hearing3Option))
-            .hearingsForHearingOrderDrafts(dynamicList(noHearingOption, hearing1Option, hearing2Option, hearing3Option))
+            .pastHearingsForCMO(dynamicLists.asMap(hearing2Option))
+            .futureHearingsForCMO(dynamicLists.asMap(hearing3Option))
+            .hearingsForHearingOrderDrafts(dynamicLists.asMap(
+                noHearingOption, hearing1Option, hearing2Option, hearing3Option))
             .showCMOsSentToJudge(YesNo.YES)
             .cmosSentToJudge("Case management hearing, 2 March 2020")
             .build();
