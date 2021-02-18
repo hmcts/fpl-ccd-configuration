@@ -19,16 +19,8 @@ public class ThirdPartyApplicationContentProvider extends SharedNotifyContentPro
             caseData.getHearing(),
             caseData.getRespondents1());
 
-        template.setThirdParty(getThirdPartyOrgPolicy(caseData).getOrganisation().getOrganisationName());
+        template.setThirdParty(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationName());
 
         return template;
-    }
-
-    private OrganisationPolicy getThirdPartyOrgPolicy(CaseData caseData) {
-        if (caseData.getOutsourcingPolicy() != null) {
-            return caseData.getOutsourcingPolicy();
-        } else {
-            return caseData.getLocalAuthorityPolicy();
-        }
     }
 }

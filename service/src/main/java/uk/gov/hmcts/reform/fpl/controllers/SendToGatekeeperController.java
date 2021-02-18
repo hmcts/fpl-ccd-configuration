@@ -44,6 +44,6 @@ public class SendToGatekeeperController extends CallbackController {
     }
 
     private boolean thirdPartyCreatedCase(CaseData caseData) {
-        return (caseData.getOutsourcingPolicy() != null || caseData.getLocalAuthorityPolicy() != null);
+        return (caseData.getOutsourcingPolicy() != null);
     }
 }
