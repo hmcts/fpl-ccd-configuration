@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,19 +16,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
-import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
 import uk.gov.hmcts.reform.fpl.service.removeorder.SealedCMORemovalAction;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
@@ -44,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEA
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private final ConfidentialDocumentsSplitter splitter;
     private final SealedCMORemovalAction sealedCMORemovalAction;
 
@@ -99,7 +91,7 @@ public class MigrateCaseController extends CallbackController {
 
     private Map<String, Object> updateSupportingDocs(List<Element<SupportingEvidenceBundle>> supportingDocs,
                                                      String key) {
-        if (ObjectUtils.isEmpty(supportingDocs)) {
+        if (isEmpty(supportingDocs)) {
             return Map.of();
         }
 
