@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.CaseSentToGatekeepingOnBehalfOfLAEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
+import uk.gov.hmcts.reform.fpl.events.NotifyManagedLAEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 
@@ -36,14 +36,14 @@ public class SendToGatekeeperController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
-        if (ifCaseCreatedOnBehalfOfLA(caseData)) {
-            publishEvent(new CaseSentToGatekeepingOnBehalfOfLAEvent(caseData));
+        if (thirdPartyCreatedCase(caseData)) {
+            publishEvent(new NotifyManagedLAEvent(caseData));
         }
 
         publishEvent(new NotifyGatekeepersEvent(caseData));
     }
 
-    private boolean ifCaseCreatedOnBehalfOfLA(CaseData caseData) {
-        return caseData.getOutsourcingPolicy() != null;
+    private boolean thirdPartyCreatedCase(CaseData caseData) {
+        return (caseData.getOutsourcingPolicy() != null || caseData.getLocalAuthorityPolicy() != null);
     }
 }
