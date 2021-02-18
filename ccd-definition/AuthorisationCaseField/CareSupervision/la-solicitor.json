@@ -1211,6 +1211,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "outsourcingPolicy",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadCMOLink",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
@@ -1438,6 +1445,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "lastHearingOrderDraftsHearingId",
     "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "outsourcingLAs",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "outsourcingAvailable",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   }
 ]

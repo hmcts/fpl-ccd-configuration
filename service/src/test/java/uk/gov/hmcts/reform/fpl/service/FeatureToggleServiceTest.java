@@ -95,7 +95,7 @@ class FeatureToggleServiceTest {
     void shouldMakeCorrectCallForIsAllowCaseCreationForUsersNotOnboardedToMOEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
+        assertThat(service.isCaseCreationForNotOnboardedUsersEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("allow-case-creation-for-users-not-onboarded-to-mo"),
             argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -118,6 +119,11 @@ public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
     private final String caseLocalAuthority;
+    private final String caseLocalAuthorityName;
+    private OrganisationPolicy localAuthorityPolicy;
+    private OrganisationPolicy outsourcingPolicy;
+    private Object outsourcingLAs;
+
     private final Risks risks;
     @NotNull(message = "Add the orders and directions sought")
     @Valid
