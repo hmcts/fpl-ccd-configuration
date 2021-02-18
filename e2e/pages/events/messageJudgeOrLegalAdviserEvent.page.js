@@ -12,6 +12,7 @@ module.exports = {
     },
     c2List: '#c2DynamicList',
     existingMessagesList: '#judicialMessageDynamicList',
+    senderEmail: '#judicialMessageMetaData_sender',
     recipientEmail: '#judicialMessageMetaData_recipient',
     replyingToMessage: {
       id: '#judicialMessageReply_isReplying',
@@ -25,6 +26,8 @@ module.exports = {
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',
     replyMessage: '#judicialMessageReply_latestMessage',
+    replyFrom: '#judicialMessageReply_replyFrom',
+    replyTo: '#judicialMessageReply_replyTo',
   },
 
   selectMessageRelatedToC2() {

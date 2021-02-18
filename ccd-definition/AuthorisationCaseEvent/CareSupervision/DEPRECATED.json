@@ -17,7 +17,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addStatementOfServiceGatekeeping",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -94,7 +97,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addStatementOfService-PREPARE_FOR_HEARING",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -108,7 +114,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2Gatekeeping",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -185,7 +194,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -255,7 +267,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftCMO",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -290,7 +305,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
-    "UserRole": "[LASOLICITOR]",
+    "UserRoles": [
+      "[LASOLICITOR]",
+      "[EPSMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -325,6 +343,7 @@
     "CaseEventID": "uploadDocumentsAfterGatekeeping",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[EPSMANAGING]",
       "caseworker-publiclaw-solicitor"
     ],
     "CRUD": "R"
@@ -335,6 +354,7 @@
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "UserRoles": [
       "[LASOLICITOR]",
+      "[EPSMANAGING]",
       "caseworker-publiclaw-solicitor"
     ],
     "CRUD": "R"

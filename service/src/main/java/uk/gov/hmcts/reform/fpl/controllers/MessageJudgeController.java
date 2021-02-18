@@ -77,6 +77,17 @@ public class MessageJudgeController extends CallbackController {
         return respond(caseDetailsMap);
     }
 
+    @PostMapping("/validate/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateReplyMessage(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = messageJudgeService.validateJudgeReplyMessage(caseData);
+
+        return respond(caseDetails, errors);
+    }
+
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();

@@ -45,6 +45,7 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Local authority further evidence documents",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Non confidential version of furtherEvidenceDocumentsLA (non hmcts/cafcass/la field)"
   },
   {

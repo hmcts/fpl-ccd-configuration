@@ -40,7 +40,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
     void shouldExtractHearingInfo() {
         List<Element<HearingBooking>> hearings = hearings();
 
-        DynamicList pastHearingList = dynamicListWithFirstSelected(
+        DynamicList pastHearingList = dynamicLists.from(0,
             option("Case management hearing, 15 March 2020", hearings.get(0).getId()),
             option("Case management hearing, 16 March 2020", hearings.get(1).getId())
         );
@@ -81,13 +81,12 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
                 .order(DOCUMENT)
                 .status(CMOStatus.DRAFT)
                 .supportingDocs(supportingDocs)
-                .build())
-        );
+                .build()));
 
         List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
         hearings.add(hearingWithCMOId(LocalDateTime.of(2020, 3, 17, 11, 11), unsealedCMOs.get(0).getId()));
 
-        DynamicList pastHearingList = dynamicListWithSelected(
+        DynamicList pastHearingList = dynamicLists.from(
             2,
             Pair.of("Case management hearing, 15 March 2020", hearings.get(0).getId()),
             Pair.of("Case management hearing, 16 March 2020", hearings.get(1).getId()),

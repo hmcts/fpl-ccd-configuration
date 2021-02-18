@@ -67,7 +67,16 @@ module.exports = {
     email: process.env.HMCTS_USER_USERNAME,
     password: process.env.HMCTS_USER_PASSWORD,
   },
+  privateSolicitorOne: {
+    email: 'solicitor1@solicitors.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+  },
+  privateSolicitorTwo: {
+    email: 'solicitor2@solicitors.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+  },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  baseUrl: process.env.URL || 'http://localhost:3333',
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
