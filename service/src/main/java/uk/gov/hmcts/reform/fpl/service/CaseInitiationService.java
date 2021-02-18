@@ -67,9 +67,10 @@ public class CaseInitiationService {
     }
 
     public CaseData updateOrganisationsDetails(CaseData caseData) {
-        final String currentUserOrganisationId = organisationService.findOrganisation()
-            .map(Organisation::getOrganisationIdentifier)
-            .orElse(null);
+        Optional<Organisation> organisation = organisationService.findOrganisation();
+
+        String currentUserOrganisationId = organisation.map(Organisation::getOrganisationIdentifier).orElse(null);
+        String currentUserOrganisationName = organisation.map(Organisation::getName).orElse(null);
 
         final Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
 
@@ -77,14 +78,16 @@ public class CaseInitiationService {
             String outsourcingOrgId = localAuthorityService.getLocalAuthorityId(outsourcingLA.get());
 
             return caseData.toBuilder()
-                .outsourcingPolicy(organisationPolicy(currentUserOrganisationId, EPSMANAGING))
-                .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, LASOLICITOR))
+                .outsourcingPolicy(
+                    organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, EPSMANAGING))
+                .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLA.get())
                 .caseLocalAuthorityName(localAuthorityService.getLocalAuthorityName(outsourcingLA.get()))
                 .build();
         } else {
             return caseData.toBuilder()
-                .localAuthorityPolicy(organisationPolicy(currentUserOrganisationId, LASOLICITOR))
+                .localAuthorityPolicy(organisationPolicy(
+                    currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(localAuthorityService.getLocalAuthorityCode())
                 .caseLocalAuthorityName(localAuthorityService
                     .getLocalAuthorityName(localAuthorityService.getLocalAuthorityCode()))

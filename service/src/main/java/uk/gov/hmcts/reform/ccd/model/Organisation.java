@@ -11,4 +11,6 @@ import lombok.extern.jackson.Jacksonized;
 public class Organisation {
     @JsonProperty("OrganisationID")
     private String organisationID;
+    @JsonProperty("OrganisationName")
+    private String organisationName;
 }
