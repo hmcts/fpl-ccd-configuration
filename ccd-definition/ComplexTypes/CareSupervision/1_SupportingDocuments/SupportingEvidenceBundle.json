@@ -55,6 +55,7 @@
     "FieldType": "Label",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Presentational only - used to display a warning label in the event."
   },
   {
@@ -65,6 +66,7 @@
     "FieldTypeParameter": "ConfidentialDocument",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "FieldShowCondition": "confidentialWarningLabel=\"DO_NOT_SHOW\""
   },
   {
@@ -75,6 +77,7 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "confidential CONTAINS \"CONFIDENTIAL\"",
+    "Searchable": "N",
     "Comment": "Used to identify documents as confidential in tab view only. Does not display in event."
   }
 ]
