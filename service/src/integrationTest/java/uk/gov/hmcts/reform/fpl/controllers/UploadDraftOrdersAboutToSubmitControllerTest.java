@@ -213,7 +213,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     }
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings) {
-        return dynamicListWithFirstSelected(
+        return dynamicLists.from(0,
             Pair.of(hearings.get(0).getValue().toLabel(), hearings.get(0).getId()),
             Pair.of(hearings.get(1).getValue().toLabel(), hearings.get(1).getId())
         );

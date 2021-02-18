@@ -44,7 +44,6 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -1117,7 +1116,8 @@ class DraftOrderServiceTest {
         listItems.addAll(0, Arrays.asList(additionalItems));
 
         DynamicListElement selectedItem = listItems.stream()
-            .filter(item -> Objects.equals(item.getCode(), selected)).findFirst()
+            .filter(item -> item.hasCode(selected))
+            .findFirst()
             .orElse(DynamicListElement.EMPTY);
 
         return DynamicList.builder()

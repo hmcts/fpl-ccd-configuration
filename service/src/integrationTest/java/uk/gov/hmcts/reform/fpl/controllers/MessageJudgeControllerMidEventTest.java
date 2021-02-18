@@ -4,8 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -32,6 +34,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 @OverrideAutoConfiguration(enabled = true)
 class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
     private static final UUID DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
+
+    @SpyBean
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     MessageJudgeControllerMidEventTest() {
         super("message-judge");
@@ -137,6 +142,8 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
+            .replyFrom(ctscEmailLookupConfiguration.getEmail())
+            .replyTo("sender@gmail.com")
             .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")

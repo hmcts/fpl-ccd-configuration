@@ -164,7 +164,7 @@ public class PlacementController extends CallbackController {
         if (childrenList instanceof String) {
             return UUID.fromString(childrenList.toString());
         }
-        return mapper.convertValue(childrenList, DynamicList.class).getValueCode();
+        return mapper.convertValue(childrenList, DynamicList.class).getValueCodeAsUUID();
     }
 
     private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {

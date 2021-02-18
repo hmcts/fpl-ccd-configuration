@@ -13,7 +13,7 @@
     "lodash": "^4.17.20",
     "mocha-junit-reporter": "^2.0.0",
     "mocha-multi": "^1.1.3",
-    "mochawesome": "^6.2.1",
+    "mochawesome": "^6.2.2",
     "node-fetch": "^2.6.1",
     "puppeteer": "7.1.0",
     "moment": "2.29.1"

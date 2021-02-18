@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
@@ -87,6 +88,20 @@ class CaseDetailsMapTest {
             .putIfNotEmpty(updateMap);
 
         assertThat(caseDetailsMap).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldRemoveEntries() {
+        final Map<String, Object> initialMap = new HashMap<>();
+        initialMap.put("K0", "V0");
+        initialMap.put("K1", "V1");
+        initialMap.put("K2", "V2");
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(initialMap).build());
+
+        caseDetailsMap.removeAll("K1", "K2");
+
+        assertThat(caseDetailsMap).containsExactly(entry("K0", "V0"));
     }
 
 }

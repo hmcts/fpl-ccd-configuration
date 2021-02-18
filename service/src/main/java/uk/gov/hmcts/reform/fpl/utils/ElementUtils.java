@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -102,7 +103,7 @@ public class ElementUtils {
         items.addAll(0, additionalItems);
 
         DynamicListElement selectedItem = items.stream()
-            .filter(element -> element.getCode().equals(selectedId))
+            .filter(element -> element.hasCode(selectedId))
             .findFirst()
             .orElse(DynamicListElement.EMPTY);
 
@@ -126,8 +127,8 @@ public class ElementUtils {
             return UUID.fromString((String) dynamicList);
         }
 
-        return Optional.ofNullable(mapper.convertValue(dynamicList, DynamicList.class))
-            .map(DynamicList::getValueCode)
+        return ofNullable(mapper.convertValue(dynamicList, DynamicList.class))
+            .map(DynamicList::getValueCodeAsUUID)
             .orElse(null);
     }
 

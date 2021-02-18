@@ -82,6 +82,10 @@ fpl:
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
+  local_authority_code_to_org_id:
+    mapping: 'example=>ORG-LA'
+  eps_to_local_authorities:
+    mapping: 'ORG-EXT=>example'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
