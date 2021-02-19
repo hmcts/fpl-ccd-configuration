@@ -2,24 +2,25 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 abstract class AbstractUploadDraftOrdersControllerTest extends AbstractControllerTest {
+
+    @Autowired
+    DynamicListHelper dynamicLists;
 
     static final String JUDGE_EMAIL = "judge@hmcts.gov.uk";
 
@@ -38,45 +39,6 @@ abstract class AbstractUploadDraftOrdersControllerTest extends AbstractControlle
     Map<String, Object> convert(Object o) {
         return mapper.convertValue(o, new TypeReference<>() {
         });
-    }
-
-    @SafeVarargs
-    final Map<String, Object> dynamicList(Pair<String, UUID>... options) {
-        return mapper.convertValue(dynamicListWithoutSelected(options), new TypeReference<>() {
-        });
-    }
-
-    @SafeVarargs
-    final DynamicList dynamicListWithFirstSelected(Pair<String, UUID>... pairs) {
-        return dynamicListWithSelected(0, pairs);
-    }
-
-    @SafeVarargs
-    final DynamicList dynamicListWithSelected(int index, Pair<String, UUID>... pairs) {
-        return dynamicListWithSelected(pairs[index].getLeft(), pairs[index].getRight(), pairs);
-    }
-
-    @SafeVarargs
-    final DynamicList dynamicListWithSelected(String label, UUID code, Pair<String, UUID>... pairs) {
-        return DynamicList.builder()
-            .value(DynamicListElement.builder().label(label).code(code).build())
-            .listItems(listItems(pairs))
-            .build();
-    }
-
-    @SafeVarargs
-    private DynamicList dynamicListWithoutSelected(Pair<String, UUID>... items) {
-        return DynamicList.builder()
-            .value(DynamicListElement.EMPTY)
-            .listItems(listItems(items))
-            .build();
-    }
-
-    @SafeVarargs
-    private List<DynamicListElement> listItems(Pair<String, UUID>... pairs) {
-        return Arrays.stream(pairs)
-            .map(pair -> DynamicListElement.builder().label(pair.getLeft()).code(pair.getRight()).build())
-            .collect(Collectors.toList());
     }
 
     List<Element<HearingBooking>> hearings() {

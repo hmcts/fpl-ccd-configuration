@@ -7,7 +7,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
@@ -27,7 +26,6 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
@@ -72,16 +70,6 @@ public class OrganisationService {
             log.error("User not registered in MO", ex);
             return Optional.empty();
         }
-    }
-
-    public Optional<OrganisationPolicy> findOrganisationPolicy() {
-        return findOrganisation()
-            .map(org -> OrganisationPolicy.builder()
-                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
-                    .organisationID(org.getOrganisationIdentifier())
-                    .build())
-                .orgPolicyCaseAssignedRole(LASOLICITOR.formattedName())
-                .build());
     }
 
     private Set<String> useLocalMapping(String localAuthorityCode) {

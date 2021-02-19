@@ -27,7 +27,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -158,7 +158,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private ImmutableMap.Builder<String, Object> getCommonCaseData() {
         Map<String, Object> caseData = Map.of(
             "orderCollection", createOrders(testDocument),
-            "caseLocalAuthority", DEFAULT_LA,
+            "caseLocalAuthority", DEFAULT_LA_CODE,
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4))

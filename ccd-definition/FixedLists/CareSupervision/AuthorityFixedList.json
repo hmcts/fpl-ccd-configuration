@@ -352,9 +352,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "PET",
+    "ListElement": "Peterborough City Council",
+    "DisplayOrder": 61
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "PCC",
     "ListElement": "Portsmouth City Council",
-    "DisplayOrder": 61
+    "DisplayOrder": 62
   },
   {
     "LiveFrom": "01/01/2017",
@@ -401,9 +408,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SGL",
+    "ListElement": "South Gloucestershire Council",
+    "DisplayOrder": 75
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
-    "DisplayOrder": 75
+    "DisplayOrder": 76
   },
   {
     "LiveFrom": "01/01/2017",

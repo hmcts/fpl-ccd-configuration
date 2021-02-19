@@ -44,7 +44,6 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -741,6 +740,45 @@ class DraftOrderServiceTest {
         }
 
         @Test
+        void shouldRemoveDraftCMOIfExistingWhenUploadingAgreedCMOForTheSameHearing() {
+            List<Element<HearingBooking>> hearings = hearings();
+
+            Element<HearingBooking> selectedHearing = hearings.get(0);
+
+            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+                .cmoUploadType(CMOType.AGREED)
+                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .pastHearingsForCMO(dynamicList(selectedHearing.getId(), hearings))
+                .uploadedCaseManagementOrder(testDocumentReference())
+                .build();
+
+            Element<HearingOrder> previousDraftCmoOrder = hearingOrder(DRAFT_CMO);
+            Element<HearingOrder> previousC21Order = hearingOrder(C21);
+            HearingOrdersBundle ordersBundle = ordersBundle(
+                selectedHearing.getId(), previousDraftCmoOrder, previousC21Order);
+            List<Element<HearingOrdersBundle>> ordersBundles = wrapElements(ordersBundle);
+            List<Element<HearingOrder>> unsealedOrders = newArrayList();
+
+            service.updateCase(eventData, hearings, unsealedOrders, List.of(), ordersBundles);
+
+            HearingOrder expectedOrder = HearingOrder.builder()
+                .title("Agreed CMO discussed at hearing")
+                .type(AGREED_CMO)
+                .status(SEND_TO_JUDGE)
+                .dateSent(time.now().toLocalDate())
+                .order(eventData.getUploadedCaseManagementOrder())
+                .hearing("Case management hearing, 2 March 2020")
+                .judgeTitleAndName("His Honour Judge Dredd")
+                .supportingDocs(List.of())
+                .build();
+
+            assertThat(ordersBundles).hasSize(1);
+            assertThat(ordersBundles.get(0).getValue().getOrders().size()).isEqualTo(2);
+            assertThat(ordersBundles.get(0).getValue().getOrders()).extracting(Element::getValue)
+                .containsExactly(expectedOrder, previousC21Order.getValue());
+        }
+
+        @Test
         void shouldThrowsExceptionWhenHearingNotFoundForCMO() {
             List<Element<HearingBooking>> hearings = hearings();
 
@@ -1078,7 +1116,8 @@ class DraftOrderServiceTest {
         listItems.addAll(0, Arrays.asList(additionalItems));
 
         DynamicListElement selectedItem = listItems.stream()
-            .filter(item -> Objects.equals(item.getCode(), selected)).findFirst()
+            .filter(item -> item.hasCode(selected))
+            .findFirst()
             .orElse(DynamicListElement.EMPTY);
 
         return DynamicList.builder()

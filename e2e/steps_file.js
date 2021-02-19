@@ -74,10 +74,10 @@ module.exports = function () {
       }
     },
 
-    async logInAndCreateCase(user, caseName) {
+    async logInAndCreateCase(user, caseName, outsourcingLA) {
       await this.signIn(user);
       await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
-      await openApplicationEventPage.populateForm(caseName);
+      await openApplicationEventPage.populateForm(caseName, outsourcingLA);
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));

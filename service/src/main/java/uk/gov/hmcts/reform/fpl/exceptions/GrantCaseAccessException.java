@@ -8,24 +8,24 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = false)
 public class GrantCaseAccessException extends RuntimeException {
 
-    private final String caseId;
+    private final Long caseId;
     private final String localAuthority;
     private final Set<String> userIds;
-    private final Set<CaseRole> caseRoles;
+    private final CaseRole caseRole;
 
-    public GrantCaseAccessException(String caseId, Set<String> userIds, Set<CaseRole> caseRoles) {
-        super(String.format("User(s) %s not granted %s to case %s", userIds, caseRoles, caseId));
+    public GrantCaseAccessException(Long caseId, Set<String> userIds, CaseRole caseRole) {
+        super(String.format("User(s) %s not granted %s to case %s", userIds, caseRole, caseId));
         this.caseId = caseId;
         this.userIds = userIds;
-        this.caseRoles = caseRoles;
+        this.caseRole = caseRole;
         this.localAuthority = null;
     }
 
-    public GrantCaseAccessException(String caseId, String localAuthority, Set<CaseRole> caseRoles, Exception e) {
-        super(String.format("Users from %s not granted %s to case %s", localAuthority, caseRoles, caseId), e);
+    public GrantCaseAccessException(Long caseId, String localAuthority, CaseRole caseRole, Exception e) {
+        super(String.format("Users from %s not granted %s to case %s", localAuthority, caseRole, caseId), e);
         this.caseId = caseId;
         this.localAuthority = localAuthority;
-        this.caseRoles = caseRoles;
+        this.caseRole = caseRole;
         this.userIds = null;
     }
 }
