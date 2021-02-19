@@ -57,6 +57,10 @@ public class MigrateCaseController extends CallbackController {
             run2706(caseDetails);
         }
 
+        if ("FPLA-2715".equals(migrationId)) {
+            run2715(caseDetails);
+        }
+
         if ("FPLA-2722".equals(migrationId)) {
             log.info("Performing migration ({}) for case {}", migrationId, caseDetails.getId());
             run2417(caseDetails);
@@ -64,6 +68,14 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2715(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
     }
 
     private void run2417(CaseDetails caseDetails) {
