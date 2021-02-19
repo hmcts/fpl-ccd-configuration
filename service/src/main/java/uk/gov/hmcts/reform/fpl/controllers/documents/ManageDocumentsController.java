@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
@@ -52,6 +53,7 @@ public class ManageDocumentsController extends CallbackController {
     private final ConfidentialDocumentsSplitter splitter;
     private final IdamClient idamClient;
     private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -177,7 +179,9 @@ public class ManageDocumentsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
-            "HMCTS_USER", idamClient.getUserDetails(requestData.authorisation())));
+        if(this.featureToggleService.isFurtherEvidenceEventEnabled()) {
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
+                "HMCTS_USER", idamClient.getUserDetails(requestData.authorisation())));
+        }
     }
 }
