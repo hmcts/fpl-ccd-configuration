@@ -55,7 +55,7 @@ class OutsourcedCaseSentToGatekeepingContentProviderTest extends AbstractEmailCo
         NotifyLAOnOutsourcedCaseTemplate actualTemplate = outsourcedCaseSentToGatekeepingContentProvider
             .buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
-        assertThat(actualTemplate).usingRecursiveComparison().isEqualTo(getExpectedTemplate());
+        assertThat(actualTemplate).isEqualTo(getExpectedTemplate());
     }
 
     private NotifyLAOnOutsourcedCaseTemplate getExpectedTemplate() {

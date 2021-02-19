@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
@@ -43,14 +42,15 @@ class SendToGatekeeperControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldNotifyManagingLAWhenCaseCreatedOnBehalfOfLA() throws Exception {
-        CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+        CaseData caseData = CaseData.builder()
             .outsourcingPolicy(OrganisationPolicy.builder()
                 .organisation(Organisation.builder().organisationName("Third party").build())
                 .build())
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .build()).toBuilder().id(12345L).build();
+            .id(12345L)
+            .build();
 
-        postSubmittedEvent(caseDetails);
+        postSubmittedEvent(caseData);
 
         verify(notificationClient).sendEmail(
             eq(OUTSOURCED_CASE_SENT_TO_GATEKEEPING_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -63,9 +63,10 @@ class SendToGatekeeperControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldNotNotifyManagingLAWhenCaseCreatedByLA() {
-        postSubmittedEvent(asCaseDetails(CaseData.builder()
+        postSubmittedEvent(CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-            .build()).toBuilder().id(12345L).build());
+            .id(12345L)
+            .build());
 
         verifyNoInteractions(notificationClient);
     }
