@@ -4,15 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.ManagedLATemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyLAOnOutsourcedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class ThirdPartyApplicationContentProvider extends SharedNotifyContentProvider {
+public class OutsourcedCaseSentToGatekeepingContentProvider extends SharedNotifyContentProvider {
 
-    public ManagedLATemplate buildManagedLANotification(CaseData caseData) {
-        ManagedLATemplate template = super.buildNotifyTemplate(ManagedLATemplate.builder().build(),
+    public NotifyLAOnOutsourcedCaseTemplate buildNotifyLAOnOutsourcedCaseTemplate(CaseData caseData) {
+        NotifyLAOnOutsourcedCaseTemplate template = super.buildNotifyTemplate(
+            NotifyLAOnOutsourcedCaseTemplate.builder().build(),
             caseData.getId(),
             caseData.getOrders(),
             caseData.getHearing(),

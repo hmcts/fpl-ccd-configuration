@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.ManagedLATemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyLAOnOutsourcedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
@@ -21,16 +21,16 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
-@ContextConfiguration(classes = {ThirdPartyApplicationContentProvider.class})
-class ThirdPartyApplicationContentProviderTest extends AbstractEmailContentProviderTest {
+@ContextConfiguration(classes = {OutsourcedCaseSentToGatekeepingContentProvider.class})
+class OutsourcedCaseSentToGatekeepingContentProviderTest extends AbstractEmailContentProviderTest {
     private static final String THIRD_PARTY_ORG_NAME = "External org";
     private static final Long CASE_ID = 12345L;
 
     @Autowired
-    ThirdPartyApplicationContentProvider thirdPartyApplicationContentProvider;
+    OutsourcedCaseSentToGatekeepingContentProvider outsourcedCaseSentToGatekeepingContentProvider;
 
     @Test
-    void shouldBuildManagedLATemplateWithOutsourcedOrganisation() {
+    void shouldBuildNotifyLAOnOutsourcedCaseTemplateWithOutsourcedOrganisation() {
         CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .respondents1(List.of(ElementUtils.element(Respondent.builder()
@@ -52,12 +52,14 @@ class ThirdPartyApplicationContentProviderTest extends AbstractEmailContentProvi
                 .build())
             .build();
 
-        ManagedLATemplate actualTemplate = thirdPartyApplicationContentProvider.buildManagedLANotification(caseData);
+        NotifyLAOnOutsourcedCaseTemplate actualTemplate = outsourcedCaseSentToGatekeepingContentProvider
+            .buildNotifyLAOnOutsourcedCaseTemplate(caseData);
+
         assertThat(actualTemplate).usingRecursiveComparison().isEqualTo(getExpectedTemplate());
     }
 
-    private ManagedLATemplate getExpectedTemplate() {
-        return ManagedLATemplate.builder()
+    private NotifyLAOnOutsourcedCaseTemplate getExpectedTemplate() {
+        return NotifyLAOnOutsourcedCaseTemplate.builder()
             .caseUrl("http://fake-url/cases/case-details/12345")
             .firstRespondentName("Watson")
             .reference(String.valueOf(CASE_ID))

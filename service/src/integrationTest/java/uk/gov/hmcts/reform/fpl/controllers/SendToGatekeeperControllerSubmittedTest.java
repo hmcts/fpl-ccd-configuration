@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
-import uk.gov.hmcts.reform.fpl.events.NotifyManagedLAEvent;
+import uk.gov.hmcts.reform.fpl.events.OutsourcedCaseSentToGatekeepingEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.service.notify.NotificationClient;
@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.THIRD_PARTY_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_SENT_TO_GATEKEEPING_TEMPLATE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(SendDocumentController.class)
@@ -42,7 +42,7 @@ class SendToGatekeeperControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() throws Exception {
+    void shouldNotifyManagingLAWhenCaseCreatedOnBehalfOfLA() throws Exception {
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .outsourcingPolicy(OrganisationPolicy.builder()
                 .organisation(Organisation.builder().organisationName("Third party").build())
@@ -53,16 +53,16 @@ class SendToGatekeeperControllerSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(caseDetails);
 
         verify(notificationClient).sendEmail(
-            eq(THIRD_PARTY_SUBMISSION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(OUTSOURCED_CASE_SENT_TO_GATEKEEPING_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             anyMap(), eq(NOTIFICATION_REFERENCE));
 
-        verify(eventPublisher).publishEvent(any(NotifyManagedLAEvent.class));
+        verify(eventPublisher).publishEvent(any(OutsourcedCaseSentToGatekeepingEvent.class));
         verify(eventPublisher).publishEvent(any(NotifyGatekeepersEvent.class));
         verifyNoMoreInteractions(eventPublisher);
     }
 
     @Test
-    void shouldNotNotifyManagedLAWhenCaseCreatedByLA() {
+    void shouldNotNotifyManagingLAWhenCaseCreatedByLA() {
         postSubmittedEvent(asCaseDetails(CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build()).toBuilder().id(12345L).build());

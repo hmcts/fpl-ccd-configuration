@@ -137,13 +137,12 @@ class CaseInitiationServiceTest {
 
         @Test
         void shouldUpdateCaseDataWhenOutsourcedUserCreatesCase() {
-            Optional<Organisation> localOrganisation = Optional.ofNullable(LOCAL_AUTHORITY_ORG_ID)
-                .map(orgId -> Organisation.builder().organisationIdentifier(orgId).name(LOCAL_AUTHORITY_NAME).build());
-            given(organisationService.findOrganisation()).willReturn(localOrganisation);
+            Organisation outsourcedOrganisation = Organisation.builder()
+                .organisationIdentifier(EXTERNAL_ORG_ID)
+                .name(EXTERNAL_ORG_NAME)
+                .build();
 
-            Optional<Organisation> outsourcedOrganisation = Optional.ofNullable(EXTERNAL_ORG_ID)
-                .map(orgId -> Organisation.builder().organisationIdentifier(orgId).name(EXTERNAL_ORG_NAME).build());
-            given(organisationService.findOrganisation()).willReturn(outsourcedOrganisation);
+            given(organisationService.findOrganisation()).willReturn(Optional.of(outsourcedOrganisation));
 
             given(localAuthorityService.getLocalAuthorityId(LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_ORG_ID);
             given(localAuthorityService.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).willReturn(LOCAL_AUTHORITY_NAME);

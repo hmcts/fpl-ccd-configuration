@@ -8,6 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
-public final class ManagedLATemplate extends SharedNotifyTemplate {
+public final class NotifyLAOnOutsourcedCaseTemplate extends SharedNotifyTemplate {
     private String thirdParty;
 }
