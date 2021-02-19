@@ -8,4 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 @Builder
 public class FurtherEvidenceDocumentUploadedData implements NotifyData {
     private String caseUrl;
+    private String respondentLastName;
+    private String userName;
+    private String callout;
 }

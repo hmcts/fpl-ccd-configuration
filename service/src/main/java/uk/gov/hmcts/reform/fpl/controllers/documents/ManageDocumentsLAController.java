@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_KEY;
@@ -186,12 +185,7 @@ public class ManageDocumentsLAController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        CaseData caseData = getCaseData(request);
-
-        ManageDocumentLA manageDocumentLA = caseData.getManageDocumentLA();
-        if( manageDocumentLA.isDocumentRelatedToHearing() && manageDocumentLA.getType() == FURTHER_EVIDENCE_DOCUMENTS) {
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                "LA_SOLICITOR", idamClient.getUserDetails(requestData.authorisation())));
-        }
+        publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
+            "LA_SOLICITOR", idamClient.getUserDetails(requestData.authorisation())));
     }
 }

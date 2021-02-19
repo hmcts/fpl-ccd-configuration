@@ -8,21 +8,21 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmailContentProvider;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
 @Component
@@ -31,20 +31,22 @@ public class FurtherEvidenceUploadedEventHandler {
     private final FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
     private final NotificationService notificationService;
     private final InboxLookupService inboxLookupService;
+    private final RepresentativeService representativeService;
 
     @EventListener
-    public void notifyRepresentatives(final FurtherEvidenceUploadedEvent event) {
+    public void handleDocumentUploadedEvent(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
+        final CaseData caseDataBefore = event.getCaseDataBefore();
         final String excludedEmail = event.getInitiatedBy().getEmail();
 
         switch(event.getUploadedBy()) {
             case "LA_SOLICITOR":
-                notifySolicitors(caseData, excludedEmail);
+                notifySolicitors(caseData, caseDataBefore, excludedEmail);
                 break;
             case "SOLICITOR":
             case "HMCTS_USER":
-                notifyLASolicitors(caseData, excludedEmail);
-                notifySolicitors(caseData, excludedEmail);
+                notifyLASolicitors(caseData, caseDataBefore, excludedEmail);
+                notifySolicitors(caseData, caseDataBefore, excludedEmail);
                 break;
             default:
                 log.error("Further evidence uploaded by unknown user type {}", event.getUploadedBy());
@@ -52,7 +54,7 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    private void notifyLASolicitors(final CaseData caseData, final String excludeEmail) {
+    private void notifyLASolicitors(final CaseData caseData, final CaseData caseDataBefore, final String excludeEmail) {
         Set<String> recipients = inboxLookupService.getRecipients(LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
         if(!StringUtils.isEmpty(excludeEmail))
         {
@@ -63,29 +65,31 @@ public class FurtherEvidenceUploadedEventHandler {
             furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData), caseData.getId().toString());
     }
 
-    private void notifySolicitors(final CaseData caseData, final String  excludeEmail) {
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = caseData.getFurtherEvidenceDocuments();
+    private void notifySolicitors(final CaseData caseData, final CaseData caseDataBefore, final String  excludeEmail) {
+        if(hasNewNonConfidentialDocumentsByLA(caseData, caseDataBefore)) {
+            Set<String> recipients = caseData.getRepresentativesByServedPreference(EMAIL).stream()
+                .map(Representative::getEmail)
+                .collect(Collectors.toSet());
 
-        List<Element<SupportingEvidenceBundle>> nonConfidentialDocuments = furtherEvidenceDocuments.stream().filter(doc -> !doc.getValue().isConfidentialDocument()).collect(Collectors.toList());
-
-        if(!nonConfidentialDocuments.isEmpty()) {
-
-            caseData.getAllRespondents().forEach( r -> r.getValue().getParty().getPartyId());
-            Set<String> recipients =
-                caseData.getAllRespondents().stream().filter(Objects::nonNull).map(this::getRespondentEmail).collect(Collectors.toSet());
+            recipients.add(caseData.getSolicitor().getEmail());
 
             if(!StringUtils.isEmpty(excludeEmail))
             {
-                recipients = recipients.stream().filter( r -> r.equals(excludeEmail)).collect(Collectors.toSet());
+                recipients = recipients.stream().filter(r -> !r.equals(excludeEmail)).collect(Collectors.toSet());
             }
 
-            notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
-                furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData), caseData.getId().toString());
+            if(!recipients.isEmpty()) {
+                notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
+                    furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData), caseData.getId().toString());
+            }
         }
     }
 
-    private String getRespondentEmail(Element<Respondent> respondent) {
-        //TODO: Get rid of this helper and find a more reusable or inline implementation
-        return respondent.getValue().getParty().getEmail().getEmail();
+    private boolean hasNewNonConfidentialDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
+        List<SupportingEvidenceBundle> furtherEvidenceDocumentsLA = unwrapElements( caseData.getFurtherEvidenceDocumentsLA());
+        List<SupportingEvidenceBundle> oldFurtherEvidenceDocumentsLA = unwrapElements(caseDataBefore.getFurtherEvidenceDocumentsLA());
+
+        return furtherEvidenceDocumentsLA.stream().anyMatch(d -> oldFurtherEvidenceDocumentsLA.stream().noneMatch(old -> old.getName().equals(d.getName())) &&
+            !d.isConfidentialDocument() && !d.isUploadedByHMCTS());
     }
 }

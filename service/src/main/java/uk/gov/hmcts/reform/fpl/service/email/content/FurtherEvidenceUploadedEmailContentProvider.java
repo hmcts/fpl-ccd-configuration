@@ -8,11 +8,18 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceUploadedEmailContentProvider extends AbstractEmailContentProvider {
     public FurtherEvidenceDocumentUploadedData buildParameters(CaseData caseData) {
-        return FurtherEvidenceDocumentUploadedData.builder().caseUrl(getCaseUrl(caseData.getId())).build();
+        return FurtherEvidenceDocumentUploadedData.builder()
+            .caseUrl(getCaseUrl(caseData.getId()))
+            .callout(buildCallout(caseData))
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .build();
     }
 }

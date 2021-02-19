@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class FurtherEvidenceUploadedEvent {
     private final CaseData caseData;
+    private final CaseData caseDataBefore;
     // TODO: Replace with a suitable enum or logic. Something like LA_SOLICITOR, SOLICITOR, HMCTS_USER?
     private final String uploadedBy;
     private final UserDetails initiatedBy;
