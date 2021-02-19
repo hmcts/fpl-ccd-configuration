@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -12,12 +14,15 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -386,6 +391,149 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                 .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
                 .caseManagementOrderId(cmoId)
                 .build();
+        }
+    }
+
+    @Nested
+    class Fpla2740 {
+        String familyManNumber = "ZW21C50002";
+        String migrationId = "FPLA-2740";
+
+        @Test
+        void shouldRemoveFirstCaseNote() {
+            Element<CaseNote> caseNoteToRemove = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
+
+            Element<CaseNote> caseNote2 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note2").createdBy("Test").build());
+
+            Element<CaseNote> caseNote3 = element(CaseNote.builder()
+                .date(LocalDate.now().minusDays(1)).note("note3").createdBy("Test").build());
+
+            Element<CaseNote> caseNote4 = element(CaseNote.builder()
+                .date(LocalDate.now().minusDays(2)).note("note4").createdBy("Test").build());
+
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
+                newArrayList(caseNoteToRemove, caseNote2, caseNote3, caseNote4));
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getCaseNotes()).isEqualTo(List.of(caseNote2, caseNote3, caseNote4));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldThrowExceptionWhenCaseDataDoesNotHaveCaseNotes(List<Element<CaseNote>> caseNotes) {
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, caseNotes);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected at least 4 case notes but found empty");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseHaveLessThanExpectedCaseNotes() {
+            Element<CaseNote> caseNote1 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
+
+            Element<CaseNote> caseNote2 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note2").createdBy("Test").build());
+
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
+                newArrayList(caseNote1, caseNote2));
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected at least 4 case notes but found 2");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCaseHaveMoreThanExpectedCaseNotes() {
+            Element<CaseNote> caseNote1 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
+
+            Element<CaseNote> caseNote2 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note2").createdBy("Test").build());
+
+            Element<CaseNote> caseNote3 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note3").createdBy("Test").build());
+
+            Element<CaseNote> caseNote4 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note4").createdBy("Test").build());
+
+            Element<CaseNote> caseNote5 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note5").createdBy("Test").build());
+
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
+                newArrayList(caseNote1, caseNote2, caseNote3, caseNote4, caseNote5));
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected at least 4 case notes but found 5");
+        }
+
+        @Test
+        void shouldNotRemoveCaseNotesForTheIncorrectMigrationId() {
+            String incorrectMigrationId = "FPLA-2015";
+
+            Element<CaseNote> caseNote1 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
+
+            Element<CaseNote> caseNote2 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note2").createdBy("Test").build());
+
+            Element<CaseNote> caseNote3 = element(CaseNote.builder()
+                .date(LocalDate.now().minusDays(1)).note("note3").createdBy("Test").build());
+
+            Element<CaseNote> caseNote4 = element(CaseNote.builder()
+                .date(LocalDate.now().minusDays(2)).note("note4").createdBy("Test").build());
+
+            ArrayList<Element<CaseNote>> caseNotesList
+                = newArrayList(caseNote1, caseNote2, caseNote3, caseNote4);
+
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, caseNotesList);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getCaseNotes()).isEqualTo(caseNotesList);
+        }
+
+        @Test
+        void shouldNotRemoveCaseNotesForTheIncorrectCaseReference() {
+            String incorrectFamilyManNumber = "ABC2150003";
+
+            Element<CaseNote> caseNote1 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
+
+            Element<CaseNote> caseNote2 = element(CaseNote.builder()
+                .date(LocalDate.now()).note("note2").createdBy("Test").build());
+
+            Element<CaseNote> caseNote3 = element(CaseNote.builder()
+                .date(LocalDate.now().minusDays(1)).note("note3").createdBy("Test").build());
+
+            Element<CaseNote> caseNote4 = element(CaseNote.builder()
+                .date(LocalDate.now().minusDays(2)).note("note4").createdBy("Test").build());
+
+            ArrayList<Element<CaseNote>> caseNotesList
+                = newArrayList(caseNote1, caseNote2, caseNote3, caseNote4);
+
+            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, caseNotesList);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getCaseNotes()).isEqualTo(caseNotesList);
+        }
+
+        private CaseDetails caseDetails(String migrationId,
+                                        String familyManNumber,
+                                        List<Element<CaseNote>> caseNotes) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManNumber)
+                .caseNotes(caseNotes)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
         }
     }
 
