@@ -127,5 +127,13 @@
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-draft-orders/about-to-start_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/upload-draft-orders/populate-drafts-info/mid-event_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/send-to-gatekeeper/about-to-submit_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-note/about-to-submit_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-case-number/about-to-submit_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-case-number/submitted_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/_GET": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/allocation-decision/about-to-submit_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/allocated-judge/mid-event_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/allocation-decision/about-to-start_POST": "ignore",
   "10062_PII Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-start_POST": "ignore"
 }
