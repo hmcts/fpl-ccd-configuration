@@ -37,7 +37,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(pastHearing1, pastHearing2, futureHearing))
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData));
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getPreviousHearingVenue()).isEqualTo(PreviousHearingVenue.builder()
             .previousVenue("Aberdeen Tribunal Hearing Centre, 48 Huntly Street, AB1, Aberdeen, AB10 1SH")
@@ -59,7 +59,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData));
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getHearingDateList()).isEqualTo(dynamicList(hearing2.getId(), hearing1, hearing2));
         assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
@@ -77,7 +77,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(hearing1, hearing2))
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData));
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getHearingDateList()).isEqualTo(dynamicList(hearing1.getId(), hearing1, hearing2));
         assertThat(updatedCaseData.getFirstHearingFlag()).isEqualTo("Yes");
@@ -97,7 +97,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .pastAndTodayHearingDateList(pastHearing1.getId())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData));
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getPastAndTodayHearingDateList())
             .isEqualTo(dynamicList(pastHearing1.getId(), pastHearing1, pastHearing2));
@@ -114,7 +114,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .cancelledHearingDetails(List.of(cancelledHearing))
             .build();
 
-        CaseData currentCaseData = extractCaseData(postMidEvent(initialCaseData));
+        CaseData currentCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertCurrentHearingReListedFrom(currentCaseData, cancelledHearing.getValue());
     }
@@ -132,7 +132,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .futureAndTodayHearingDateList(futureHearing1.getId())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postMidEvent(initialCaseData));
+        CaseData updatedCaseData = extractCaseData(postEditHearingMidEvent(initialCaseData));
 
         assertThat(updatedCaseData.getFutureAndTodayHearingDateList())
             .isEqualTo(dynamicList(futureHearing1.getId(), futureHearing1, futureHearing2));
@@ -148,7 +148,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(pastHearing1, pastHearing2))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData);
+        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
 
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -163,7 +163,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(futureHearing1, futureHearing2))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData);
+        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
 
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -178,7 +178,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(pastHearing1, pastHearing2))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData);
+        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
 
         assertThat(response.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -193,7 +193,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
             .hearingDetails(List.of(pastHearing1, pastHearing2))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(initialCaseData);
+        AboutToStartOrSubmitCallbackResponse response = postEditHearingMidEvent(initialCaseData);
 
         assertThat(response.getErrors()).contains("There are no adjourned or vacated hearings to re-list");
     }
@@ -206,7 +206,7 @@ class ManageHearingsControllerEditHearingMidEventTest extends ManageHearingsCont
         assertThat(caseData.getPreviousHearingVenue()).isEqualTo(hearingBooking.getPreviousHearingVenue());
     }
 
-    private AboutToStartOrSubmitCallbackResponse postMidEvent(CaseData caseData) {
+    AboutToStartOrSubmitCallbackResponse postEditHearingMidEvent(CaseData caseData) {
         return postMidEvent(caseData, "edit-hearing");
     }
 }
