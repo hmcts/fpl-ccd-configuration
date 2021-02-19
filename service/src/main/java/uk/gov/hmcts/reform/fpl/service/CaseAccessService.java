@@ -19,9 +19,10 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toCollection;
 
 @Slf4j
 @Service
@@ -94,7 +95,7 @@ public class CaseAccessService {
         try {
             return organisationService.findUserIdsInSameOrganisation(localAuthority).stream()
                 .filter(userId -> !excludedUsers.contains(userId))
-                .collect(toSet());
+                .collect(toCollection(TreeSet::new));
         } catch (Exception e) {
             throw new GrantCaseAccessException(caseId, localAuthority, caseRole, e);
         }
