@@ -88,7 +88,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(caseDetails.get("caseLocalAuthority")).isEqualTo(DEFAULT_LA_CODE);
         assertThat(caseDetails.get("caseLocalAuthorityName")).isEqualTo(DEFAULT_LA_NAME);
         assertThat(caseDetails.get("localAuthorityPolicy"))
-            .isEqualTo(orgPolicy(DEFAULT_LA_ORG_ID, "[LASOLICITOR]"));
+            .isEqualTo(orgPolicy(DEFAULT_LA_ORG_ID, "Example Local Authority", "[LASOLICITOR]"));
         assertThat(caseDetails.get("outsourcingPolicy"))
             .isEqualTo(orgPolicy(DEFAULT_PRIVATE_ORG_ID, "[EPSMANAGING]"));
     }
@@ -123,6 +123,13 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractControllerTest {
 
     private Map<String, Object> orgPolicy(String id, String role) {
         return Map.of("Organisation", Map.of("OrganisationID", id), "OrgPolicyCaseAssignedRole", role);
+    }
+
+    private Map<String, Object> orgPolicy(String id, String orgName, String role) {
+        return Map.of("Organisation", Map.of(
+            "OrganisationID", id,
+            "OrganisationName", orgName
+        ), "OrgPolicyCaseAssignedRole", role);
     }
 
 }
