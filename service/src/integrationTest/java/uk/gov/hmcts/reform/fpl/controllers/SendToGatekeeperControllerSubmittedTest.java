@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.THIRD_PARTY_SUBMISSION_TEMPLATE;
 
@@ -41,8 +42,7 @@ class SendToGatekeeperControllerSubmittedTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotifyManagedLA() throws Exception {
-
+    void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() throws Exception {
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .outsourcingPolicy(OrganisationPolicy.builder()
                 .organisation(Organisation.builder().organisationName("Third party").build())
@@ -59,5 +59,14 @@ class SendToGatekeeperControllerSubmittedTest extends AbstractControllerTest {
         verify(eventPublisher).publishEvent(any(NotifyManagedLAEvent.class));
         verify(eventPublisher).publishEvent(any(NotifyGatekeepersEvent.class));
         verifyNoMoreInteractions(eventPublisher);
+    }
+
+    @Test
+    void shouldNotNotifyManagedLAWhenCaseCreatedByLA() {
+        postSubmittedEvent(asCaseDetails(CaseData.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .build()).toBuilder().id(12345L).build());
+
+        verifyNoInteractions(notificationClient);
     }
 }
