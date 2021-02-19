@@ -316,13 +316,19 @@ public class DraftOrderService {
         UUID hearingId = Optional.ofNullable(hearing).map(Element::getId).orElse(null);
         HearingBooking hearingBooking = Optional.ofNullable(hearing).map(Element::getValue).orElse(null);
 
-        bundles.stream()
+        HearingOrdersBundle hearingOrdersBundle = bundles.stream()
             .filter(bundle -> Objects.equals(bundle.getValue().getHearingId(), hearingId))
             .map(Element::getValue)
             .findFirst()
-            .orElseGet(() -> addNewDraftBundle(bundles))
+            .orElseGet(() -> addNewDraftBundle(bundles));
+
+        hearingOrdersBundle
             .updateHearing(hearingId, hearingBooking)
             .updateOrders(orders, type);
+
+        if (AGREED_CMO.equals(type)) {
+            hearingOrdersBundle.getOrders().removeIf(order -> Objects.equals(order.getValue().getType(), DRAFT_CMO));
+        }
     }
 
     private HearingOrdersBundle addNewDraftBundle(List<Element<HearingOrdersBundle>> bundles) {
@@ -386,7 +392,6 @@ public class DraftOrderService {
     private DocumentReference getCMO(UploadDraftOrdersData currentEventData,
                                      HearingBooking selectedHearing,
                                      List<Element<HearingOrder>> unsealedCMOs) {
-
         DocumentReference uploadedCMO = currentEventData.getUploadedCaseManagementOrder();
 
         if (uploadedCMO == null && (uploadedCMO = currentEventData.getReplacementCMO()) == null) {

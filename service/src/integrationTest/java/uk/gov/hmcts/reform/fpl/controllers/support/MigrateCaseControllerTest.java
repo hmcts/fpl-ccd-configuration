@@ -1,28 +1,34 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(MigrateCaseController.class)
@@ -361,6 +367,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
                 .hasMessage("No draft case management orders in the case");
         }
 
+
         private CaseDetails caseDetails(String migrationId,
                                         String familyManNumber,
                                         List<Element<HearingOrder>> draftCaseManagementOrders,
@@ -384,4 +391,159 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Nested
+    class Fpla2722 {
+        private static final String MIGRATION_ID = "FPLA-2722";
+
+        private final List<Element<SupportingEvidenceBundle>> supportingDocs = wrapElements(
+            SupportingEvidenceBundle.builder()
+                .name("non confidential docs")
+                .build()
+        );
+
+        private final List<Map<String, Object>> supportingDocsData = mapper.convertValue(
+            supportingDocs, new TypeReference<>() {}
+        );
+
+        @Test
+        void shouldNotUpdateCaseIfIncorrectMigrationId() {
+            CaseData caseData = CaseData.builder()
+                .furtherEvidenceDocuments(supportingDocs)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails(caseData, "some id"));
+
+            assertThat(response.getData()).doesNotContainKeys("furtherEvidenceDocsNC");
+        }
+
+        @Test
+        void shouldUpdateSupportingDocs() {
+            List<Element<SupportingEvidenceBundle>> furtherEvidenceDocs = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("furtherEvidenceDocs")
+                    .build()
+            );
+            List<Element<SupportingEvidenceBundle>> furtherEvidenceDocsLA = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("furtherEvidenceDocsLA")
+                    .build()
+            );
+            List<Element<SupportingEvidenceBundle>> correspondenceDocs = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("correspondenceDocs")
+                    .build()
+            );
+            List<Element<SupportingEvidenceBundle>> correspondenceDocsLA = wrapElements(
+                SupportingEvidenceBundle.builder()
+                    .name("correspondenceDocsLA")
+                    .build()
+            );
+
+            CaseData caseData = CaseData.builder()
+                .furtherEvidenceDocuments(furtherEvidenceDocs)
+                .furtherEvidenceDocumentsLA(furtherEvidenceDocsLA)
+                .correspondenceDocuments(correspondenceDocs)
+                .correspondenceDocumentsLA(correspondenceDocsLA)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails(caseData, MIGRATION_ID));
+
+            List<Map<String, Object>> furtherEvidenceNCData = mapper.convertValue(
+                furtherEvidenceDocs, new TypeReference<>() {}
+            );
+            List<Map<String, Object>> furtherEvidenceLANCData = mapper.convertValue(
+                furtherEvidenceDocsLA, new TypeReference<>() {}
+            );
+            List<Map<String, Object>> correspondenceNCData = mapper.convertValue(
+                correspondenceDocs, new TypeReference<>() {}
+            );
+            List<Map<String, Object>> correspondenceLANCData = mapper.convertValue(
+                correspondenceDocsLA, new TypeReference<>() {}
+            );
+
+            assertThat(response.getData())
+                .containsAllEntriesOf(
+                    Map.of(
+                        "furtherEvidenceDocumentsNC", furtherEvidenceNCData,
+                        "furtherEvidenceDocumentsLANC", furtherEvidenceLANCData,
+                        "correspondenceDocumentsNC", correspondenceNCData,
+                        "correspondenceDocumentsLANC", correspondenceLANCData
+                    )
+                );
+        }
+
+        @Test
+        void shouldUpdateFurtherHearingEvidence() {
+            UUID uuid = randomUUID();
+
+            Map<String, Object> data = Map.of(
+                "hearingFurtherEvidenceDocuments", List.of(
+                    Map.of("id", uuid,
+                        "value", Map.of(
+                            "hearingName", "hearing name",
+                            "supportingEvidenceBundle", supportingDocs
+                        ))),
+                "migrationId", MIGRATION_ID
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(data)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            List<Map<String, Object>> expectedData = List.of(
+                Map.of("id", uuid.toString(),
+                    "value", Map.of(
+                        "hearingName", "hearing name",
+                        "supportingEvidenceBundle", supportingDocsData,
+                        "supportingEvidenceLA", supportingDocsData,
+                        "supportingEvidenceNC", supportingDocsData
+                    ))
+            );
+
+            assertThat(response.getData())
+                .extracting("hearingFurtherEvidenceDocuments")
+                .isEqualTo(expectedData);
+        }
+
+        @Test
+        void shouldUpdateC2DocumentBundle() {
+            UUID uuid = randomUUID();
+
+            Map<String, Object> data = Map.of(
+                "c2DocumentBundle", List.of(
+                    Map.of("id", uuid,
+                        "value", Map.of(
+                            "supportingEvidenceBundle", supportingDocs
+                        ))),
+                "migrationId", MIGRATION_ID
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(data)
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+
+            List<Map<String, Object>> expectedData = List.of(
+                Map.of("id", uuid.toString(),
+                    "value", Map.of(
+                        "supportingEvidenceBundle", supportingDocsData,
+                        "supportingEvidenceLA", supportingDocsData,
+                        "supportingEvidenceNC", supportingDocsData
+                    ))
+            );
+
+            assertThat(response.getData())
+                .extracting("c2DocumentBundle")
+                .isEqualTo(expectedData);
+        }
+    }
+
+    private CaseDetails caseDetails(CaseData caseData, String migrationId) {
+        CaseDetails caseDetails = asCaseDetails(caseData);
+        caseDetails.getData().put("migrationId", migrationId);
+        return caseDetails;
+    }
 }
