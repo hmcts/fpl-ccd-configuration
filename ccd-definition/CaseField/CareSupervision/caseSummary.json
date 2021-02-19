@@ -5,17 +5,16 @@
     "ID": "caseSummaryOrdersRequested",
     "Label": "Orders requested",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
-
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryDateOfIssue",
     "Label": "Date of issue",
     "FieldType": "Date",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -24,7 +23,7 @@
     "ID": "deadline26week",
     "Label": "26-week timeline date",
     "FieldType": "Date",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -33,7 +32,7 @@
     "ID": "caseSummaryAllocatedJudgeName",
     "Label": "Allocated judge or magistrate",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -42,31 +41,25 @@
     "ID": "caseSummaryAllocatedJudgeEmail",
     "Label": "Email address",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
-
-
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryHasUnresolvedMessages",
     "Label": "There are some unresolved messages",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
-
-
-
-
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryHasNextHearing",
     "Label": "There is a next hearing",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -75,7 +68,7 @@
     "ID": "caseSummaryNextHearingType",
     "Label": "Type",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -84,8 +77,7 @@
     "ID": "caseSummaryNextHearingDate",
     "Label": "Date",
     "FieldType": "Date",
-    "SecurityClassification": "PUBLIC",
-    "Searchable": "Y"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -93,7 +85,7 @@
     "ID": "caseSummaryNextHearingJudge",
     "Label": "Judge",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -102,7 +94,7 @@
     "ID": "caseSummaryNextHearingEmailAddress",
     "Label": "Email address",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -111,21 +103,16 @@
     "ID": "caseSummaryNextHearingCMO",
     "Label": "Draft CMO",
     "FieldType": "Document",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
-
-
-
-
-
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryHasPreviousHearing",
     "Label": "There is a next hearing",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -134,7 +121,7 @@
     "ID": "caseSummaryPreviousHearingType",
     "Label": "Type",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -143,7 +130,7 @@
     "ID": "caseSummaryPreviousHearingDate",
     "Label": "Date",
     "FieldType": "Date",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -152,26 +139,16 @@
     "ID": "caseSummaryPreviousHearingCMO",
     "Label": "CMO",
     "FieldType": "Document",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
-
-
-
-
-
-
-
-
-
-
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseSummaryHasFinalHearing",
     "Label": "There is a next hearing",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -180,7 +157,7 @@
     "ID": "caseSummaryFinalHearingDate",
     "Label": "Date",
     "FieldType": "Date",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
 
@@ -190,7 +167,7 @@
     "ID": "caseSummaryNumberOfChildren",
     "Label": "Number of children",
     "FieldType": "Number",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -199,7 +176,7 @@
     "ID": "caseSummaryLASolicitorName",
     "Label": "LA solicitor",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -208,7 +185,7 @@
     "ID": "caseSummaryLASolicitorEmail",
     "Label": "Email address",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -217,7 +194,7 @@
     "ID": "caseSummaryFirstRespondentLastName",
     "Label": "First respondent's last name",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -226,7 +203,7 @@
     "ID": "caseSummaryFirstRespondentLegalRep",
     "Label": "First respondent's legal representative",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
@@ -235,10 +212,7 @@
     "ID": "caseSummaryCafcassGuardian",
     "Label": "Cafcass guardian",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC",
+    "SecurityClassification": "Public",
     "Searchable": "N"
   }
-
-
-
 ]

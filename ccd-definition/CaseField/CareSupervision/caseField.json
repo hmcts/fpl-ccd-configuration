@@ -5,7 +5,8 @@
     "ID": "taskList",
     "Label": "Case name",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -13,7 +14,8 @@
     "ID": "taskListLabel",
     "Label": "${taskList}",
     "FieldType": "Label",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ID": "caseHistory",
     "Label": " ",
     "FieldType": "CaseHistoryViewer",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,6 +51,7 @@
     "Label": "Local Authority :",
     "FieldType": "Text",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Workaround for unassigned-cases page in Manage Org as it does not use fixed list to display #caseLocalAuthority"
   },
   {
@@ -57,7 +61,8 @@
     "Label": "EPO Reason show or hide",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ShowHide",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -65,7 +70,8 @@
     "ID": "groundsForEPO",
     "Label": "How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -73,7 +79,8 @@
     "ID": "grounds",
     "Label": "How does this case meet the threshold criteria?",
     "FieldType": "Grounds",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -81,7 +88,8 @@
     "ID": "hearing",
     "Label": "Hearing needed",
     "FieldType": "Hearing",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -89,7 +97,8 @@
     "ID": "internationalElement",
     "Label": "International element",
     "FieldType": "InternationalElement",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -97,7 +106,8 @@
     "ID": "factorsParenting",
     "Label": "Factors affecting parenting",
     "FieldType": "FactorsParenting",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -105,7 +115,8 @@
     "ID": "uploadDocuments_paragraph_1",
     "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don't have a document yet.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -113,7 +124,8 @@
     "ID": "documents_socialWorkChronology_document",
     "Label": "1. Social work chronology",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -121,7 +133,8 @@
     "ID": "documents_socialWorkStatement_document",
     "Label": "2. Social work statement and genogram",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -129,7 +142,8 @@
     "ID": "documents_socialWorkAssessment_document",
     "Label": "3. Social work assessment",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -137,7 +151,8 @@
     "ID": "documents_socialWorkCarePlan_document",
     "Label": "4. Care plan",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -145,7 +160,8 @@
     "ID": "documents_socialWorkEvidenceTemplate_document",
     "Label": "5. Social work evidence template (SWET)",
     "FieldType": "UploadSwetDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -153,7 +169,8 @@
     "ID": "documents_threshold_document",
     "Label": "6. Threshold document",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -161,7 +178,8 @@
     "ID": "documents_checklist_document",
     "Label": "7. Checklist document",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -169,7 +187,8 @@
     "ID": "documents_socialWorkOther_border_top",
     "Label": "-------------------------------------------------------------------------------------------------------------",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -178,7 +197,8 @@
     "Label": "Additional documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "OtherDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -186,7 +206,8 @@
     "ID": "documents_socialWorkOther_border_bottom",
     "Label": "-------------------------------------------------------------------------------------------------------------",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -194,7 +215,8 @@
     "ID": "courtBundle",
     "Label": "8. Court bundle",
     "FieldType": "CourtBundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -203,7 +225,8 @@
     "Label": "Child",
     "FieldType": "Collection",
     "FieldTypeParameter": "ChildrenNew",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -212,7 +235,8 @@
     "Label": "Applicants",
     "FieldType": "Collection",
     "FieldTypeParameter": "Applicants",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -220,7 +244,8 @@
     "ID": "solicitor",
     "Label": "Solicitor",
     "FieldType": "Solicitor",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -228,7 +253,8 @@
     "ID": "risks",
     "Label": "Risks and harm to children",
     "FieldType": "RiskAndHarm",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -236,7 +262,8 @@
     "ID": "proceeding",
     "Label": "Other proceedings",
     "FieldType": "Proceeding",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -244,7 +271,8 @@
     "ID": "hearingPreferences",
     "Label": "Attending the hearing",
     "FieldType": "HearingPreferences",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -252,7 +280,8 @@
     "ID": "allocationProposal_label",
     "Label": "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -260,7 +289,8 @@
     "ID": "allocationProposal",
     "Label": "Allocation proposal",
     "FieldType": "AllocationProposal",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -269,6 +299,7 @@
     "Label": "Allocation decision",
     "FieldType": "AllocationDecision",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "ShowSummaryContentOption": "Y"
   },
   {
@@ -277,7 +308,8 @@
     "ID": "others",
     "Label": "Others to be given notice",
     "FieldType": "Person",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -286,7 +318,8 @@
     "Label": "Respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -294,7 +327,8 @@
     "ID": "orders",
     "Label": "Orders and directions needed",
     "FieldType": "Orders",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -302,7 +336,8 @@
     "ID": "submittedForm",
     "Label": "C110a Application",
     "FieldType": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -318,7 +353,8 @@
     "ID": "standardDirectionsLabel",
     "Label": "Upload standard directions and other relevant documents, for example the C6 Notice of Proceedings or C9 statement of service.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -326,7 +362,8 @@
     "ID": "standardDirectionsTitle",
     "Label": "## 1. Standard directions",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -334,7 +371,8 @@
     "ID": "standardDirectionsDocument",
     "Label": "Upload a file",
     "FieldType": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -343,7 +381,8 @@
     "Label": "Other documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "CourtAdminDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -351,7 +390,8 @@
     "ID": "submissionConsentLabel",
     "Label": "Declaration",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -359,7 +399,8 @@
     "ID": "downloadApplicationForReviewHintLabel",
     "Label": "**Download application** <br>Use this link to download and check the application before <br>sending:",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -367,7 +408,8 @@
     "ID": "draftApplicationDocument",
     "FieldType": "Document",
     "Label": " ",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -376,7 +418,8 @@
     "Label": " ",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "Consent",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -384,7 +427,8 @@
     "ID": "gateKeeperLabel",
     "Label": "### Let the gatekeeper know there's a new case",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -392,7 +436,8 @@
     "ID": "gatekeeperHintLabel",
     "Label": "You must add at least 1 gatekeeper",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -401,7 +446,8 @@
     "Label": "Gatekeeper's email address",
     "FieldType": "Email",
     "HintText": "For example, joe.bloggs@la.gov.uk",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -410,7 +456,8 @@
     "Label": "Gatekeeper",
     "FieldType": "Collection",
     "FieldTypeParameter": "GatekeeperEmail",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -418,7 +465,8 @@
     "ID": "dateAndTimeSubmitted",
     "Label": "Date submitted",
     "FieldType": "DateTime",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -435,7 +483,8 @@
     "Label": " ",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DeletionConsent",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -443,7 +492,8 @@
     "ID": "proceedingLabel",
     "FieldType": "Text",
     "Label": " ",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -451,7 +501,8 @@
     "ID": "noticeOfProceedings",
     "Label": " ",
     "FieldType": "NoticeOfProceedings",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -459,7 +510,8 @@
     "ID": "judgeAndLegalAdvisor",
     "Label": "Judge and Justices' Legal Adviser",
     "FieldType": "JudgeAndLegalAdvisor",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -467,7 +519,8 @@
     "ID": "allocatedJudge",
     "Label": "Allocated Judge",
     "FieldType": "JudgeAndLegalAdvisor",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -475,7 +528,8 @@
     "ID": "allocatedJudgeLabel",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -484,7 +538,8 @@
     "Label": "Hearing",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingBooking",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -493,7 +548,8 @@
     "Label": " ",
     "FieldType": "Collection",
     "FieldTypeParameter": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -501,7 +557,8 @@
     "ID": "allPartiesHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -509,7 +566,8 @@
     "ID": "localAuthorityDirectionsHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -517,7 +575,8 @@
     "ID": "respondentDirectionsHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -525,7 +584,8 @@
     "ID": "cafcassDirectionsHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -533,7 +593,8 @@
     "ID": "otherPartiesDirectionsHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -541,7 +602,8 @@
     "ID": "courtDirectionsHearingDate",
     "Label": "Hearing date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -550,7 +612,8 @@
     "Label": "Notice of proceedings",
     "FieldType": "Collection",
     "FieldTypeParameter": "NoticeOfProceedingsBundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -558,7 +621,8 @@
     "ID": "c9Declaration",
     "Label": "If you send documents to a party's solicitor or a children's guardian, give their details",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -567,7 +631,8 @@
     "Label": "Recipients",
     "FieldType": "Collection",
     "FieldTypeParameter": "Recipients",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -575,7 +640,8 @@
     "ID": "serviceDeclarationLabel",
     "Label": "Declaration",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -584,7 +650,8 @@
     "Label": " ",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "Consent",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -593,7 +660,8 @@
     "Label": "C2 Application",
     "FieldType": "Collection",
     "FieldTypeParameter": "C2DocumentBundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -601,7 +669,8 @@
     "ID": "temporaryC2Document",
     "Label": "Upload C2",
     "FieldType": "C2DocumentBundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -609,7 +678,8 @@
     "ID": "c2ApplicationType",
     "Label": "Upload C2",
     "FieldType": "C2ApplicationTypeSelection",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -618,6 +688,7 @@
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Displays a list of names for respondents"
   },
   {
@@ -627,6 +698,7 @@
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Displays a list of names for others"
   },
   {
@@ -636,7 +708,8 @@
     "Label": "Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "GeneratedOrder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -645,7 +718,8 @@
     "Label": "Representatives",
     "FieldType": "Collection",
     "FieldTypeParameter": "Representative",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -654,7 +728,8 @@
     "Label": "LA Legal representatives",
     "FieldType": "Collection",
     "FieldTypeParameter": "LegalRepresentative",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -662,7 +737,8 @@
     "ID": "manageLegalRepresentativesLabel",
     "Label": "Legal representatives must be registered to use the service before you can add them to a case.<br/><br/>After they're registered, they'll only have access to cases you add them to. They will not be able to see all your organisation's cases.<br/><br/>They will be able to upload:<ul><li>case documents</li><li>c2 applications and associated documents</li><li>pre- and post-hearing CMOs</li></ul>They can register at [https://manage-org.platform.hmcts.net/register-org/register](https://manage-org.platform.hmcts.net/register-org/register)",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -671,7 +747,8 @@
     "Label": "Child",
     "FieldType": "Collection",
     "FieldTypeParameter": "ChildrenNew",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -680,7 +757,8 @@
     "Label": "Respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -688,7 +766,8 @@
     "ID": "documentToBeSent",
     "Label": "Document to be sent",
     "FieldType": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -697,7 +776,8 @@
     "Label": "Party",
     "FieldType": "Collection",
     "FieldTypeParameter": "DocumentsSentToParty",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -706,7 +786,8 @@
     "Label": "Others",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -714,7 +795,8 @@
     "ID": "pageShow",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -722,7 +804,8 @@
     "ID": "newHearing_label",
     "Label": "New hearing added",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -730,7 +813,8 @@
     "ID": "newHearingSelector",
     "Label": "Send notice of hearing",
     "FieldType": "HearingSelector",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -738,7 +822,8 @@
     "ID": "childrenList",
     "Label": "Which child?",
     "FieldType": "DynamicList",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -746,7 +831,8 @@
     "ID": "singleChild",
     "Label": "Single child",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -754,7 +840,8 @@
     "ID": "placementChildName",
     "Label": "Child name",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -762,7 +849,8 @@
     "ID": "placementLabel",
     "Label": "# ${placementChildName}",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -770,7 +858,8 @@
     "ID": "placement",
     "Label": "Placement application",
     "FieldType": "Placement",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -779,7 +868,8 @@
     "Label": "Child",
     "FieldType": "Collection",
     "FieldTypeParameter": "Placement",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -788,7 +878,8 @@
     "Label": "Child",
     "FieldType": "Collection",
     "FieldTypeParameter": "Placement",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -797,7 +888,8 @@
     "Label": "Child",
     "FieldType": "Collection",
     "FieldTypeParameter": "Placement",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -814,6 +906,7 @@
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Used to record whether a case has been sent to CTSC. Move to CTSC set for 30th March 2020."
   },
   {
@@ -822,7 +915,8 @@
     "ID": "amountToPay",
     "Label": "Application fee to pay",
     "FieldType": "MoneyGBP",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -831,6 +925,7 @@
     "Label": " ",
     "FieldType": "Text",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Used to hide the amountToPay field, mainly in the event of an error with the Fee Register"
   },
   {
@@ -840,7 +935,8 @@
     "Label": "Scanned Documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "ScannedDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -849,7 +945,8 @@
     "Label": "Report",
     "FieldType": "Collection",
     "FieldTypeParameter": "ExpertReport",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -857,7 +954,8 @@
     "ID": "dateOfIssue_label",
     "Label": "## Date of issue",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -865,7 +963,8 @@
     "ID": "dateOfIssue",
     "Label": "Enter the date that the order was issued",
     "FieldType": "Date",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -873,7 +972,8 @@
     "ID": "dateAndTimeOfIssue",
     "Label": "Enter the date and time that the order was issued",
     "FieldType": "DateTime",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -881,7 +981,8 @@
     "ID": "paymentHistory",
     "Label": "A history of payments associated with a the case",
     "FieldType": "CasePaymentHistoryViewer",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -891,6 +992,7 @@
     "HintText": "Add note detail, including relevant dates and people involved",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "The note field to be displayed in an event"
   },
   {
@@ -901,6 +1003,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "CaseNote",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "The note fields to be displayed in the tab"
   },
   {
@@ -909,7 +1012,8 @@
     "ID": "extensionComments",
     "Label": "Add comments",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -917,7 +1021,8 @@
     "ID": "extensionDateEightWeeks",
     "Label": "Case extension date",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -925,7 +1030,8 @@
     "ID": "shouldBeCompletedByConfirmationLabel",
     "Label": "You've select to extend the case by 8 weeks. The case should now be completed by ${extensionDateEightWeeks}.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -933,7 +1039,8 @@
     "ID": "caseFurtherExtensionLabel",
     "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -942,7 +1049,8 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CaseExtensionTimeConfirmationList",
     "Label": "Do you still want to extend the date by 8 weeks?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -951,7 +1059,8 @@
     "FieldType": "Date",
     "Label": "New end date",
     "HintText": "For example, 31 3 1980",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -959,7 +1068,8 @@
     "ID": "shouldBeCompletedByDate",
     "Label": "Date case should be completed by",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -967,7 +1077,8 @@
     "ID": "shouldBeCompletedByLabel",
     "FieldType": "Label",
     "Label": "This case should be completed by ${shouldBeCompletedByDate}.",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -975,7 +1086,8 @@
     "ID": "extendByEightWeeksOrOtherLabel",
     "FieldType": "Label",
     "Label": "You can either extend this date by 8 weeks, or enter a different end date.",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -984,7 +1096,8 @@
     "FieldType": "Date",
     "Label": "New end date",
     "HintText": "For example, 31 3 1980",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -993,7 +1106,8 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CaseExtensionTimeList",
     "Label": "You can extend this date again, but you will not be able to revert back to the original date.",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1002,7 +1116,8 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CaseExtensionReasonList",
     "Label": "Why is this case being extended?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1010,7 +1125,8 @@
     "ID": "caseCompletionDate",
     "FieldType": "Date",
     "Label": "Extended timeline date",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1019,6 +1135,7 @@
     "FieldType": "TextArea",
     "Label": " ",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Design preferred this over the style the CCD label provided"
   },
   {
@@ -1027,7 +1144,8 @@
     "ID": "closeCase",
     "FieldType": "CloseCase",
     "Label": " ",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1036,6 +1154,7 @@
     "FieldType": "CloseCase",
     "Label": "Close the case",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Couldn't work out how to show the label of the field for the tab view yet hide it in the event, could do it with the elements of the complex type but not the actual case field"
   },
   {
@@ -1044,7 +1163,8 @@
     "ID": "deprivationOfLiberty",
     "FieldType": "YesOrNo",
     "Label": "Flag for whether a case was closed due to deprivation of liberty",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1052,7 +1172,8 @@
     "ID": "closeCaseFromOrder",
     "FieldType": "YesOrNo",
     "Label": "Do you want to close the case?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1061,6 +1182,7 @@
     "FieldType": "Text",
     "Label": " ",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Field to contain condition for hiding the close case page in the create order flow"
   },
   {
@@ -1070,6 +1192,7 @@
     "FieldType": "Text",
     "Label": "End State",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Field required for changing state in a controller"
   },
   {
@@ -1078,7 +1201,8 @@
     "ID": "returnApplication",
     "Label": "Return details",
     "FieldType": "ReturnApplication",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1086,7 +1210,8 @@
     "ID": "applicationDetailsHeadingLabel",
     "FieldType": "Label",
     "Label": "## Application details",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1094,7 +1219,8 @@
     "ID": "groundsForTheApplicationHeadingLabel",
     "FieldType": "Label",
     "Label": "## Grounds for the application",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1102,7 +1228,8 @@
     "ID": "supportingDocumentsHeadingLabel",
     "FieldType": "Label",
     "Label": "## Application documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1110,7 +1237,8 @@
     "ID": "informationAboutThePartiesHeadingLabel",
     "FieldType": "Label",
     "Label": "## Information about the parties",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1118,7 +1246,8 @@
     "ID": "courtRequirementsHeadingLabel",
     "FieldType": "Label",
     "Label": "## Court requirements",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1126,7 +1255,8 @@
     "ID": "ordersAndDirectionsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Orders and directions sought",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1134,7 +1264,8 @@
     "ID": "hearingUrgencySubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Hearing urgency",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1142,7 +1273,8 @@
     "ID": "thresholdCriteriaSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Threshold criteria",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1150,7 +1282,8 @@
     "ID": "riskAndHarmToTheChildrenSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Risk and harm to the children",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1158,7 +1291,8 @@
     "ID": "factorsAffectingParentingSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Factors Affecting parenting",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1166,7 +1300,8 @@
     "ID": "additionalInformationGroundsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Additional information",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1174,7 +1309,8 @@
     "ID": "additionalInformationPartiesSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Additional information",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1182,7 +1318,8 @@
     "ID": "additionalInformationCourtRequirementsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Additional information",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1190,7 +1327,8 @@
     "ID": "otherProceedingsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Other proceedings",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1198,7 +1336,8 @@
     "ID": "internationalElementSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### International element",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1206,7 +1345,8 @@
     "ID": "organisationDetailsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Your organisation details",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1214,7 +1354,8 @@
     "ID": "childDetailsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### The child's details",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1222,7 +1363,8 @@
     "ID": "respondentsSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Respondents' details",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1230,7 +1372,8 @@
     "ID": "othersSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Other people in the case",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1238,7 +1381,8 @@
     "ID": "allocationProposalSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Allocation proposal",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1246,7 +1390,8 @@
     "ID": "facilitiesOrServiceNeededSubHeadingLabel",
     "FieldType": "Label",
     "Label": "#### Court services needed",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1254,7 +1399,8 @@
     "ID": "showManageOrgWarning",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1262,7 +1408,8 @@
     "ID": "localAuthorityPolicy",
     "Label": "Organisation policy",
     "FieldType": "OrganisationPolicy",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1270,7 +1417,8 @@
     "ID": "outsourcingPolicy",
     "Label": "Outsourcing policy",
     "FieldType": "OrganisationPolicy",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1278,7 +1426,8 @@
     "ID": "orderTabHeading",
     "Label": "## Orders",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1286,7 +1435,8 @@
     "ID": "documentTabFurtherEvidenceHeading",
     "Label": "## Further evidence documents",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1294,7 +1444,8 @@
     "ID": "documentTabBulkScanHeading",
     "Label": "## Bulk scan documents",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1302,7 +1453,8 @@
     "ID": "documentTabApplicationHeading",
     "Label": "## Application documents",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
