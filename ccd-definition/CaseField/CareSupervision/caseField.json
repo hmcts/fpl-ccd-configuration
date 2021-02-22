@@ -51,7 +51,6 @@
     "Label": "Local Authority :",
     "FieldType": "Text",
     "SecurityClassification": "Public",
-    "Searchable": "N",
     "Comment": "Workaround for unassigned-cases page in Manage Org as it does not use fixed list to display #caseLocalAuthority"
   },
   {
@@ -465,8 +464,7 @@
     "ID": "dateAndTimeSubmitted",
     "Label": "Date submitted",
     "FieldType": "DateTime",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -1407,8 +1405,7 @@
     "ID": "localAuthorityPolicy",
     "Label": "Organisation policy",
     "FieldType": "OrganisationPolicy",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1416,8 +1413,7 @@
     "ID": "outsourcingPolicy",
     "Label": "Outsourcing policy",
     "FieldType": "OrganisationPolicy",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2018",
