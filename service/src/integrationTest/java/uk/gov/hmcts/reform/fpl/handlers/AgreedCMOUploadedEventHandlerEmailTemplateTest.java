@@ -1,4 +1,5 @@
-/*package uk.gov.hmcts.reform.fpl.handlers;
+/*
+package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -6,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersUploadedEventHandler;
+import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
+import uk.gov.hmcts.reform.fpl.handlers.cmo.AgreedCMOUploadedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
@@ -18,11 +20,16 @@ import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
 import java.time.LocalDateTime;
 
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
+import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 
 @SpringBootTest(classes = {
+    AgreedCMOUploadedEventHandler.class,
     AgreedCMOUploadedContentProvider.class,
     NotificationService.class,
     ObjectMapper.class,
@@ -40,9 +47,10 @@ public class AgreedCMOUploadedEventHandlerEmailTemplateTest extends EmailTemplat
     private JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private static final String ALLOCATED_JUDGE_EMAIL = "allocatedjudge@hmcts.gov.uk";
     private static final String TEMP_JUDGE_EMAIL = "tempjudge@hmcts.gov.uk";
+    private AgreedCMOUploaded agreedCMOUploaded;
 
     @Autowired
-    private DraftOrdersUploadedEventHandler underTest;
+    private AgreedCMOUploadedEventHandler underTest;
 
     @BeforeAll
     void createJudges() {
