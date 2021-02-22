@@ -189,7 +189,7 @@ public class ManageDocumentsLAController extends CallbackController {
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         if(this.featureToggleService.isFurtherEvidenceEventEnabled()) {
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
-                "LA_SOLICITOR", idamClient.getUserDetails(requestData.authorisation())));
+                true, idamClient.getUserDetails(requestData.authorisation())));
         }
     }
 }

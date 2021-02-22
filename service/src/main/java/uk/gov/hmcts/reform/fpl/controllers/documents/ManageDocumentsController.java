@@ -180,8 +180,8 @@ public class ManageDocumentsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
         if(this.featureToggleService.isFurtherEvidenceEventEnabled()) {
-            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
-                "HMCTS_USER", idamClient.getUserDetails(requestData.authorisation())));
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+                getCaseDataBefore(request), false, idamClient.getUserDetails(requestData.authorisation())));
         }
     }
 }

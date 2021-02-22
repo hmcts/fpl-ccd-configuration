@@ -8,8 +8,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -20,7 +22,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -37,22 +38,15 @@ public class FurtherEvidenceUploadedEventHandler {
         final CaseData caseDataBefore = event.getCaseDataBefore();
         final String excludedEmail = event.getInitiatedBy().getEmail();
 
-        switch (event.getUploadedBy()) {
-            case "LA_SOLICITOR":
-                if (hasNewNonConfidentialDocumentsByLA(caseData, caseDataBefore)) {
-                    notifySolicitors(caseData, excludedEmail);
-                }
-                break;
-            case "SOLICITOR":
-            case "HMCTS_USER":
-                if (haseNewNonConfidentialDocuments(caseData, caseDataBefore)) {
-                    notifyLASolicitors(caseData, excludedEmail);
-                    notifySolicitors(caseData, excludedEmail);
-                }
-                break;
-            default:
-                log.error("Further evidence uploaded by unknown user type {}", event.getUploadedBy());
-                break;
+        if (event.isUploadedByLA()) {
+            if (hasNewNonConfidentialDocumentsByLA(caseData, caseDataBefore)) {
+                notifyRespondents(caseData, excludedEmail);
+            }
+        } else {
+            if (haseNewNonConfidentialDocuments(caseData, caseDataBefore)) {
+                notifyLASolicitors(caseData, excludedEmail);
+                notifyRespondents(caseData, excludedEmail);
+            }
         }
     }
 
@@ -71,12 +65,12 @@ public class FurtherEvidenceUploadedEventHandler {
         }
     }
 
-    private void notifySolicitors(final CaseData caseData, final String excludeEmail) {
-        Set<String> recipients = caseData.getRepresentativesByServedPreference(EMAIL).stream()
-            .map(Representative::getEmail)
+    private void notifyRespondents(final CaseData caseData, final String excludeEmail) {
+        Set<String> recipients =  unwrapElements(caseData.getRespondents1()).stream()
+            .map(Respondent::toParty)
+            .map(Party::getEmail)
+            .map(EmailAddress::getEmail)
             .collect(Collectors.toSet());
-
-        recipients.add(caseData.getSolicitor().getEmail());
 
         if (!StringUtils.isEmpty(excludeEmail)) {
             recipients = recipients.stream().filter(r -> !r.equals(excludeEmail)).collect(Collectors.toSet());
