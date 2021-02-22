@@ -87,6 +87,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
+    public boolean isRetrieveManagedOrganisation() {
+        return ldClient.boolVariation("retrieve-managed-organisation", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

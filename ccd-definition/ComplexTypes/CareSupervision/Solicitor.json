@@ -13,7 +13,7 @@
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Solicitor's full name",
-    "HintText": "Local authority or authorised person",
+    "HintText": "If you're applying for a local authority, add details of the legal representative in your organisation who'll manage this case",
     "SecurityClassification": "Public"
   },
   {
