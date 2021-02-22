@@ -49,7 +49,7 @@ module.exports = {
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
-    await I.runAccessibilityTest();
+    //await I.runAccessibilityTest();
   },
 
   setInitialSearchFields(state='Any') {
