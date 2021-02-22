@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
@@ -41,18 +42,6 @@ public class UploadDraftOrdersController extends CallbackController {
     private static final int MAX_ORDERS = 10;
     private final DraftOrderService service;
     private final CaseConverter caseConverter;
-
-    //TO-DO remove
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
-        CaseDetails caseDetails = request.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
-
-        caseDetailsMap.putIfNotEmpty(caseConverter.toMap(service.getInitialData(caseData)));
-
-        return respond(caseDetailsMap);
-    }
 
     @PostMapping("/populate-initial-data/mid-event")
     public CallbackResponse handlePopulateInitialData(@RequestBody CallbackRequest request) {
@@ -112,7 +101,7 @@ public class UploadDraftOrdersController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseData caseData = getCaseData(request);
 
-        publishEvent(service.buildEventToPublish(caseData, caseDataBefore));
+        publishEvent(new DraftOrdersUploaded(caseData));
         publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
     }
 }
