@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
@@ -39,13 +40,21 @@ public class ApplicantController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final OrganisationService organisationService;
     private final ValidateEmailService validateEmailService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
+        @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        Organisation organisation;
 
-        Organisation organisation = organisationService.findOrganisation().orElse(Organisation.builder().build());
+        if (featureToggleService.isRetrieveManagedOrganisation()
+            && ("[EPSMANAGING]").equals(caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole())) {
+            organisation = organisationService.findManagedOrganisation().orElse(Organisation.builder().build());
+        } else {
+            organisation = organisationService.findOrganisation().orElse(Organisation.builder().build());
+        }
 
         caseDetails.getData()
             .put(APPLICANTS_PROPERTY, applicantService.expandApplicantCollection(caseData, organisation));
