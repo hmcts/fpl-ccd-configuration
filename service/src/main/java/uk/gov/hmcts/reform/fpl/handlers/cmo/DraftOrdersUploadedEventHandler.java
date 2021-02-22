@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -60,14 +59,7 @@ public class DraftOrdersUploadedEventHandler {
             return;
         }
 
-        AbstractJudge judge = null;
-
-        if (hearing != null && hearing.getJudgeAndLegalAdvisor() != null
-            && isNotEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
-            judge = hearing.getJudgeAndLegalAdvisor();
-        } else if (caseData.hasAllocatedJudgeEmail()) {
-            judge = caseData.getAllocatedJudge();
-        }
+        AbstractJudge judge = getAbstractJudge(caseData, hearing);
 
         if (judge == null || isEmpty(judge.getJudgeEmailAddress())) {
             return;
@@ -86,7 +78,7 @@ public class DraftOrdersUploadedEventHandler {
 
     @Async
     @EventListener
-    public void sendNotificationForAdmin(final AgreedCMOUploaded event) {
+    public void sendNotificationToAdmin(final DraftOrdersUploaded event) {
         CaseData caseData = event.getCaseData();
 
         final List<HearingOrder> orders = getOrders(caseData);
@@ -95,26 +87,44 @@ public class DraftOrdersUploadedEventHandler {
             return;
         }
 
-        JudgeAndLegalAdvisor judgeAttendingHearing = event.getHearing().getJudgeAndLegalAdvisor();
+        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
 
-        if (judgeAttendingHearing.getJudgeEmailAddress() != null || caseData.hasAllocatedJudgeEmail()) {
-            AbstractJudge judge = getJudgeToNotify(judgeAttendingHearing, caseData.getAllocatedJudge());
+        AbstractJudge judge = getAbstractJudge(caseData, hearing);
 
-            CMOReadyToSealTemplate template = agreedCMOContentProvider.buildTemplate(
-                event.getHearing(),
-                caseData.getId(),
-                judge,
-                caseData.getAllRespondents(),
-                caseData.getFamilyManCaseNumber()
-            );
-
-            String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
-
-            notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-                email,
-                template,
-                caseData.getId().toString());
+        if (judge == null || isEmpty(judge.getJudgeEmailAddress())) {
+            return;
         }
+
+        CMOReadyToSealTemplate template = agreedCMOContentProvider.buildTemplate(
+            hearing,
+            caseData.getId(),
+            judge,
+            caseData.getAllRespondents(),
+            caseData.getFamilyManCaseNumber()
+        );
+
+        String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
+
+        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+            email,
+            template,
+            caseData.getId().toString());
+
+    }
+
+    private AbstractJudge getAbstractJudge(CaseData caseData, HearingBooking hearing) {
+        AbstractJudge judge = null;
+
+        if (hearing != null && hearing.getJudgeAndLegalAdvisor() != null
+            && isNotEmpty(hearing.getJudgeAndLegalAdvisor().getJudgeEmailAddress())) {
+            judge = hearing.getJudgeAndLegalAdvisor();
+        } else if (caseData.hasAllocatedJudgeEmail()) {
+            judge = caseData.getAllocatedJudge();
+        }
+        return judge;
     }
 
     private List<HearingOrder> getOrders(CaseData caseData) {
@@ -125,9 +135,5 @@ public class DraftOrdersUploadedEventHandler {
             .map(HearingOrdersBundle::getOrders)
             .map(ElementUtils::unwrapElements)
             .orElse(emptyList());
-    }
-
-    private AbstractJudge getJudgeToNotify(JudgeAndLegalAdvisor judgeAttendingHearing, Judge allocatedJudge) {
-        return judgeAttendingHearing.getJudgeEmailAddress() != null ? judgeAttendingHearing : allocatedJudge;
     }
 }

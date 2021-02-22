@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -187,11 +186,10 @@ class DraftsOrdersUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendNotificationForAdminWhenNoOrdersPresent() {
-        HearingBooking hearing = HearingBooking.builder().build();
         CaseData caseData = CaseData.builder().build();
 
-        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing);
-        eventHandler.sendNotificationForAdmin(event);
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
         verifyNoInteractions(notificationService);
         verifyNoInteractions(agreedCMOContentProvider);
     }
@@ -206,8 +204,8 @@ class DraftsOrdersUploadedEventHandlerTest {
             .hearingOrdersBundlesDrafts(wrapElements(bundle))
             .build();
 
-        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing.getValue());
-        eventHandler.sendNotificationForAdmin(event);
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
         verifyNoInteractions(notificationService);
         verifyNoInteractions(agreedCMOContentProvider);
     }
@@ -232,8 +230,8 @@ class DraftsOrdersUploadedEventHandlerTest {
         when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
         when(agreedCMOContentProvider.buildTemplate(any(), any(), any(), any(), any())).thenReturn(template);
 
-        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing.getValue());
-        eventHandler.sendNotificationForAdmin(event);
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
@@ -270,8 +268,8 @@ class DraftsOrdersUploadedEventHandlerTest {
         when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
         when(agreedCMOContentProvider.buildTemplate(any(), any(), any(), any(), any())).thenReturn(template);
 
-        AgreedCMOUploaded event = new AgreedCMOUploaded(caseData, hearing.getValue());
-        eventHandler.sendNotificationForAdmin(event);
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
 
         verify(notificationService).sendEmail(
             CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
