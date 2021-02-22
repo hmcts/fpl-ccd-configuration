@@ -20,6 +20,6 @@ Scenario('local authority deletes application', async ({I, caseViewPage, deleteA
   // As such a manual completion of the event is required here
   await I.goToNextPage();
   await I.retryUntilExists(() => I.click('Delete application'), '.search-block');
-  await caseListPage.searchForCasesWithName(caseName);
+  caseListPage.searchForCasesWithName(caseName);
   I.see('No cases found.');
 });
