@@ -71,6 +71,17 @@ withNightlyPipeline(type, product, component) {
   //enableMutationTest()
   enableFullFunctionalTest(120)
 
+  before('mutationTest') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  after('mutationTest') {
+    withSonarQubeEnv('SonarQube') {
+      sh './gradlew --info sonarqube'
+    }
+    teardownSecretsForIntegrationTests()
+  }
+
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
@@ -79,6 +90,7 @@ withNightlyPipeline(type, product, component) {
   }
 
   after('fullFunctionalTest') {
+    env.SKIP_FOR_ACCESSIBILITY = true
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
