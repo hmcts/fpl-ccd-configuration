@@ -83,7 +83,7 @@ module.exports = {
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
   TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
-  TestForAccessibility: process.env.SKIP_FOR_ACCESSIBILITY === 'true',
+  TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
   definition: {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',

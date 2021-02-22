@@ -85,14 +85,14 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.SKIP_FOR_ACCESSIBILITY = false
+    env.TESTS_FOR_ACCESSIBILITY = true
     env.ENV = 'aat'
   }
 
   after('fullFunctionalTest') {
-    env.SKIP_FOR_ACCESSIBILITY = true
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    env.TESTS_FOR_ACCESSIBILITY = false
   }
 }
