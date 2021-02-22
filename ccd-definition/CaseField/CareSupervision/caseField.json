@@ -542,7 +542,8 @@
     "Label": "Hearing",
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingBooking",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
