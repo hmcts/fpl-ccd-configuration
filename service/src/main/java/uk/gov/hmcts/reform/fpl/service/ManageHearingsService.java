@@ -60,6 +60,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
@@ -482,10 +483,8 @@ public class ManageHearingsService {
 
         updateDocumentsBundleName(caseData, cancelledHearing);
 
-        if (caseData.getHearingOrdersBundlesDrafts() != null) {
+        if (isNotEmpty(cancelledHearing.getValue().getCaseManagementOrderId())) {
             updateHearingOrderBundles(caseData, cancelledHearing);
-        }
-        if (caseData.getDraftUploadedCMOs() != null) {
             updateDraftUploadedCaseManagementOrders(caseData, cancelledHearing);
         }
 
@@ -534,15 +533,16 @@ public class ManageHearingsService {
         Optional<Element<HearingOrdersBundle>> hearingBundleWithLinkedCMO =
             caseData.getHearingOrderBundleThatContainsOrder(linkedCmoId);
 
-        hearingBundleWithLinkedCMO.ifPresent(hearingOrdersBundleElement -> caseData.getHearingOrdersBundlesDrafts()
-            .forEach(hearingBundleElement -> {
-                    if (hearingOrdersBundleElement.getId().equals(hearingBundleElement.getId())) {
-                        hearingBundleElement.getValue().setHearingName(hearing.getValue().toLabel());
-                        hearingBundleElement.getValue().getOrders().forEach(
-                            order -> order.getValue().setHearing(hearing.getValue().toLabel()));
+        hearingBundleWithLinkedCMO.ifPresent(hearingOrdersBundleElement ->
+            nullSafeList(caseData.getHearingOrdersBundlesDrafts())
+                .forEach(hearingBundleElement -> {
+                        if (hearingOrdersBundleElement.getId().equals(hearingBundleElement.getId())) {
+                            hearingBundleElement.getValue().setHearingName(hearing.getValue().toLabel());
+                            hearingBundleElement.getValue().getOrders().forEach(
+                                order -> order.getValue().setHearing(hearing.getValue().toLabel()));
+                        }
                     }
-                }
-            ));
+                ));
     }
 
     private void reassignDocumentsBundle(CaseData caseData,
