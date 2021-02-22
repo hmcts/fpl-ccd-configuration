@@ -63,8 +63,8 @@ public class FeatureToggleService {
         return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
 
-    public boolean isFurtherEvidenceEventEnabled() {
-        return ldClient.boolVariation("further-evidence-event", createLDUser(), true);
+    public boolean isFurtherEvidenceUploadNotificationEnabled() {
+        return ldClient.boolVariation("further-evidence-upload-notification", createLDUser(), false);
     }
 
     public boolean isEpoOrderTypeAndExclusionEnabled() {
