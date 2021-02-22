@@ -46,7 +46,7 @@ module.exports = {
     },);
   },
 
-  async giveDeclaration() {
+  giveDeclaration() {
     I.checkOption('I agree with this statement');
   },
 

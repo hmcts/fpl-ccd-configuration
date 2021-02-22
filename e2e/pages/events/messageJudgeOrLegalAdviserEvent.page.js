@@ -34,7 +34,7 @@ module.exports = {
     I.click(this.fields.messageRegardingC2.yes);
   },
 
-  async selectMessageNotRelatedToC2() {
+  selectMessageNotRelatedToC2() {
     I.click(this.fields.messageRegardingC2.no);
   },
 

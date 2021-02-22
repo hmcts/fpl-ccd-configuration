@@ -64,8 +64,8 @@ exports.config = {
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
-    JSWait: {
-      require: './e2e/helpers/JSWait.js'
+    GenerateReportHelper: {
+      require: './e2e/helpers/generate_report_helper.js'
     },
   },
   include: {

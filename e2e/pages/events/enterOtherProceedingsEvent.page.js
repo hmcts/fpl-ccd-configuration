@@ -26,7 +26,7 @@ module.exports = {
     };
   },
 
-  async selectYesForProceeding() {
+  selectYesForProceeding() {
     I.click(this.fields(undefined).onGoingProceeding.yes);
   },
 

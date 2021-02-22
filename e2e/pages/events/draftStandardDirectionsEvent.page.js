@@ -84,7 +84,7 @@ module.exports = {
     await I.goToNextPage();
   },
 
-  checkC6() {
+  async checkC6() {
     I.checkOption(this.fields.noticeOfProceedings.c6);
   },
 

@@ -1,8 +1,8 @@
 const {getAccessibilityTestResult} = require('./accessibility/runner');
-const {generateAccessibilityReport} = require('../tests/reporter/customReporter');
+const {generateAccessibilityReport} = require('../reporters/accessibility-reporter/customReporter');
 const testConfig = require('../config.js');
 
-class JSWait extends Helper {
+class Generate_report_helper extends Helper {
 
   _finishTest() {
     if (!testConfig.TestForAccessibility) {
@@ -12,4 +12,4 @@ class JSWait extends Helper {
   }
 
 }
-module.exports = JSWait;
+module.exports = Generate_report_helper;

@@ -70,7 +70,6 @@ withNightlyPipeline(type, product, component) {
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
-  enableCrossBrowserTest()
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -86,7 +85,7 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.TESTS_FOR_ACCESSIBILITY = true
+    env.SKIP_FOR_ACCESSIBILITY = false
     env.ENV = 'aat'
   }
 
@@ -94,10 +93,4 @@ withNightlyPipeline(type, product, component) {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-    env.TESTS_FOR_ACCESSIBILITY = false
   }
-
-  after('crossBrowserTest') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-}
