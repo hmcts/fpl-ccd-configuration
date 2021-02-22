@@ -6,19 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftCMOUploaded;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
-import uk.gov.hmcts.reform.fpl.events.cmo.UploadCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -43,7 +36,6 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -52,7 +44,6 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
@@ -151,24 +142,6 @@ class DraftOrderServiceTest {
             assertThat(eventData.getPastHearingsForCMO()).isEqualTo(pastHearingList);
             assertThat(eventData.getFutureHearingsForCMO()).isEqualTo(futureHearingList);
             assertThat(eventData.getHearingsForHearingOrderDrafts()).isEqualTo(allHearings);
-        }
-
-        @Test
-        void shouldSetCmoAsDefaultHearingOrderKind() {
-            when(featureToggleService.isDraftOrdersEnabled()).thenReturn(false);
-
-            UploadDraftOrdersData eventData = service.getInitialData(CaseData.builder().build());
-
-            assertThat(eventData.getHearingOrderDraftKind()).containsExactly(HearingOrderKind.CMO);
-        }
-
-        @Test
-        void shouldNotSetDefaultHearingOrderKind() {
-            when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
-            UploadDraftOrdersData eventData = service.getInitialData(CaseData.builder().build());
-
-            assertThat(eventData.getHearingOrderDraftKind()).isEmpty();
         }
     }
 
@@ -979,124 +952,6 @@ class DraftOrderServiceTest {
                 .updateHearing(hearing.getId(), hearing.getValue());
         }
 
-    }
-
-    @Nested
-    class EventToPublish {
-        @Test
-        void shouldBuildAgreedEventWhenNewCMOIsAgreed() {
-            List<Element<HearingOrder>> unsealedOrders = List.of(
-                element(HearingOrder.builder().status(SEND_TO_JUDGE).build())
-            );
-
-            List<Element<HearingBooking>> hearingsBefore = hearings();
-
-            CaseData caseDataBefore = CaseData.builder()
-                .hearingDetails(hearingsBefore)
-                .build();
-
-            List<Element<HearingBooking>> hearingsAfter = newArrayList(hearingsBefore);
-
-            HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
-                .caseManagementOrderId(unsealedOrders.get(0).getId())
-                .build();
-            hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingsAfter)
-                .draftUploadedCMOs(unsealedOrders)
-                .build();
-
-            UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
-
-            assertThat(event).isEqualTo(new AgreedCMOUploaded(caseData, updatedHearing));
-        }
-
-        @Test
-        void shouldBuildDraftEventWhenNewCMOIsDraft() {
-            Element<HearingOrder> unsealedOrders = element(HearingOrder.builder().status(DRAFT).build());
-
-            List<Element<HearingBooking>> hearingsBefore = hearings();
-
-            CaseData caseDataBefore = CaseData.builder()
-                .hearingDetails(hearingsBefore)
-                .build();
-
-            List<Element<HearingBooking>> hearingsAfter = newArrayList(hearingsBefore);
-
-            HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
-                .caseManagementOrderId(unsealedOrders.getId())
-                .build();
-            hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingsAfter)
-                .draftUploadedCMOs(List.of(unsealedOrders))
-                .build();
-
-            UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
-
-            assertThat(event).isEqualTo(new DraftCMOUploaded(caseData, updatedHearing));
-        }
-
-        @ParameterizedTest
-        @EnumSource(value = CMOStatus.class, names = {"SEND_TO_JUDGE", "DRAFT"}, mode = EnumSource.Mode.EXCLUDE)
-        void shouldThrowExceptionWhenCMOHasWrongState(CMOStatus status) {
-            Element<HearingOrder> invalidOrder = element(HearingOrder.builder().status(status).build());
-
-            List<Element<HearingBooking>> hearingsBefore = hearings();
-
-            CaseData caseDataBefore = CaseData.builder()
-                .hearingDetails(hearingsBefore)
-                .build();
-
-            List<Element<HearingBooking>> hearingsAfter = newArrayList(hearingsBefore);
-
-            HearingBooking updatedHearing = hearingsAfter.get(0).getValue().toBuilder()
-                .caseManagementOrderId(invalidOrder.getId())
-                .build();
-            hearingsAfter.set(0, element(hearingsAfter.get(0).getId(), updatedHearing));
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearingsAfter)
-                .draftUploadedCMOs(List.of(invalidOrder))
-                .build();
-
-            assertThatThrownBy(() -> service.buildEventToPublish(caseData, caseDataBefore))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Unexpected cmo status: " + status);
-        }
-
-        @Test
-        void shouldThrowExceptionWhenHearingHasNoCMOAssociated() {
-            List<Element<HearingBooking>> hearings = hearings();
-
-            CaseData caseDataBefore = CaseData.builder()
-                .hearingDetails(hearings)
-                .build();
-
-            CaseData caseData = CaseData.builder()
-                .hearingDetails(hearings)
-                .draftUploadedCMOs(List.of(
-                    element(HearingOrder.builder().status(DRAFT).build())
-                ))
-                .build();
-
-            assertThatThrownBy(() -> service.buildEventToPublish(caseData, caseDataBefore))
-                .isInstanceOf(NoSuchElementException.class);
-        }
-
-        @Test
-        void shouldBuildDraftOrdersUploaded() {
-            when(featureToggleService.isDraftOrdersEnabled()).thenReturn(true);
-
-            CaseData caseData = CaseData.builder().build();
-            CaseData caseDataBefore = CaseData.builder().build();
-
-            UploadCMOEvent event = service.buildEventToPublish(caseData, caseDataBefore);
-
-            assertThat(event).isEqualTo(new DraftOrdersUploaded(caseData));
-        }
     }
 
     private DynamicList dynamicList(List<Element<HearingBooking>> hearings, DynamicListElement... additional) {

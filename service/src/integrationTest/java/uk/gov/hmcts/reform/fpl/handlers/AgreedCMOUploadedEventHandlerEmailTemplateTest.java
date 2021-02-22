@@ -1,3 +1,4 @@
+/*
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
     CaseUrlService.class
 })
 
+//TODO: Use DraftOrdersUploadedEventHandler (FPLA-2731)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AgreedCMOUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private final String respondentLastName = "Smith";
@@ -164,3 +166,4 @@ public class AgreedCMOUploadedEventHandlerEmailTemplateTest extends EmailTemplat
     }
 
 }
+*/
