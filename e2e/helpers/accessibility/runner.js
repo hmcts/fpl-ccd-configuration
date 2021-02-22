@@ -41,7 +41,9 @@ async function runAccessibility(url, page) {
     HTMLCS.process(STANDARD, window.document, function () {
       messages = HTMLCS
         .getMessages()
-        .filter(message => message.type === HTMLCS.ERROR)
+        .filter(function (m) {
+          return m.type === HTMLCS.ERROR;
+        })
         .map(processIssue);
     });
     return messages;
