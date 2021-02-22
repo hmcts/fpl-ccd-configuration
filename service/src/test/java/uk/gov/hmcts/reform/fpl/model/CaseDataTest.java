@@ -35,7 +35,6 @@ import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
@@ -1279,6 +1278,17 @@ class CaseDataTest {
 
     @Nested
     class GetDraftUploadedCMOWithId {
+
+        @Test
+        void shouldReturnEmptyWhenCaseDataDoesNotHaveDraftUploadedCMOs() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(draftCMOOne, element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            assertThat(caseData.getDraftUploadedCMOWithId(null)).isEmpty();
+        }
+
         @Test
         void shouldReturnDraftCMOWhenDraftUploadedCMOsContainTheExpectedOrder() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
@@ -1334,6 +1344,16 @@ class CaseDataTest {
                 caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
 
             assertThat(matchingHearingOrderBundle).isPresent().contains(hearingOrdersBundleOne);
+        }
+
+        @Test
+        void shouldReturnEmptyWhenHearingOrdersBundlesDraftsIsNull() {
+            CaseData caseData = CaseData.builder().build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(randomUUID());
+
+            assertThat(matchingHearingOrderBundle).isEmpty();
         }
 
         @Test
