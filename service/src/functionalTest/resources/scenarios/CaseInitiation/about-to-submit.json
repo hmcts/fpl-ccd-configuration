@@ -23,7 +23,8 @@
         "caseLocalAuthorityName": "Swansea City Council",
         "localAuthorityPolicy": {
           "Organisation": {
-            "OrganisationID": "${OrganisationID:-62LYJRF}"
+            "OrganisationID": "${OrganisationID:-62LYJRF}",
+            "OrganisationName": "Swansea City Council"
           },
           "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
         }
