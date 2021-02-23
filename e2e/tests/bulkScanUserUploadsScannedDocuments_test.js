@@ -14,7 +14,7 @@ Scenario('HMCTS admin uploads documents to be scanned', async ({I, caseViewPage,
   await caseViewPage.goToNewActions(config.administrationActions.bulkScan);
   await attachScannedDocsEventPage.enterScannedDocument(scannedDocument, config.testFile);
   await I.goToNextPage();
-  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
+  await handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Submit');
 });
 
