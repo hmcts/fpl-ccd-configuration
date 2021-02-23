@@ -38,8 +38,9 @@ module.exports = {
     directionsDetails: '#orders_directionDetails',
   },
 
-  checkCareOrder() {
+  async checkCareOrder() {
     I.checkOption(this.fields.orderType.careOrder);
+    await I.runAccessibilityTest();
   },
 
   checkSupervisionOrder() {

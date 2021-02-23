@@ -13,32 +13,4 @@
     <gav regex="true">^org\.springframework\.security:.*$</gav>
     <cve>CVE-2018-1258</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[
-            CVE is a json vulnerability for Node projects. False positive reported at https://github.com/jeremylong/DependencyCheck/issues/2794
-        ]]></notes>
-    <cve>CVE-2020-10663</cve>
-    <cve>CVE-2020-7712</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: tomcat-embed-core-9.0.39.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
-    <cve>CVE-2020-17527</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: tomcat-embed-websocket-9.0.39.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
-    <cve>CVE-2020-17527</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: launchdarkly-java-server-sdk-5.2.1.jar (shaded: com.google.guava:guava:28.2-jre)
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-    <cve>CVE-2020-8908</cve>
-  </suppress>
 </suppressions>

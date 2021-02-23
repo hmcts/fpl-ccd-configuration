@@ -76,7 +76,7 @@ const createEmergencyProtectionOrder = async (I, createOrderEventPage, order, ha
   createOrderEventPage.enterRemovalAddress(order.removalAddress);
   createOrderEventPage.selectExclusionRequirement();
   createOrderEventPage.selectExclusionRequirementStartDate();
-  createOrderEventPage.selectWhoIsExcluded();
+  await createOrderEventPage.selectWhoIsExcluded();
   await I.goToNextPage();
   createOrderEventPage.includePhrase(order.includePhrase);
   await I.goToNextPage();
