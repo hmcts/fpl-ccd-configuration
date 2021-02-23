@@ -45,19 +45,14 @@ public class DraftOrdersUploadedEventHandler {
     @EventListener
     public void sendNotificationToJudge(final DraftOrdersUploaded event) {
         final CaseData caseData = event.getCaseData();
-
-        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-            caseData.getHearingDetails())
-            .map(Element::getValue)
-            .orElse(null);
-
+        final HearingBooking hearing = getHearingBooking(caseData);
         final List<HearingOrder> orders = getOrders(caseData);
 
         if (isEmpty(orders)) {
             return;
         }
 
-        AbstractJudge judge = getAbstractJudge(caseData, hearing);
+        AbstractJudge judge = getJudge(caseData, hearing);
 
         if (judge == null || isEmpty(judge.getJudgeEmailAddress())) {
             return;
@@ -78,21 +73,16 @@ public class DraftOrdersUploadedEventHandler {
     @EventListener
     public void sendNotificationToAdmin(final DraftOrdersUploaded event) {
         CaseData caseData = event.getCaseData();
-
         final List<HearingOrder> orders = getOrders(caseData);
 
         if (isEmpty(orders) || !orders.get(0).getType().equals(AGREED_CMO)) {
             return;
         }
 
-        final HearingBooking hearing = findElement(caseData.getLastHearingOrderDraftsHearingId(),
-            caseData.getHearingDetails())
-            .map(Element::getValue)
-            .orElse(null);
+        final HearingBooking hearing = getHearingBooking(caseData);
+        AbstractJudge judge = getJudge(caseData, hearing);
 
-        AbstractJudge judge = getAbstractJudge(caseData, hearing);
-
-        if (judge == null || isEmpty(judge.getJudgeEmailAddress())) {
+        if (judge == null) {
             return;
         }
 
@@ -113,7 +103,14 @@ public class DraftOrdersUploadedEventHandler {
 
     }
 
-    private AbstractJudge getAbstractJudge(CaseData caseData, HearingBooking hearing) {
+    private HearingBooking getHearingBooking(CaseData caseData) {
+        return findElement(caseData.getLastHearingOrderDraftsHearingId(),
+            caseData.getHearingDetails())
+            .map(Element::getValue)
+            .orElse(null);
+    }
+
+    private AbstractJudge getJudge(CaseData caseData, HearingBooking hearing) {
         AbstractJudge judge = null;
 
         if (hearing != null && hearing.getJudgeAndLegalAdvisor() != null
