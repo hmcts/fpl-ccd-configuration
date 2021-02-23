@@ -1,3 +1,6 @@
+const testConfig = require('../config.js');
+const {runAccessibility} = require('./accessibility/runner');
+
 module.exports = class PuppeteerHelpers extends Helper {
   clickBrowserBack() {
     const page = this.helpers['Puppeteer'].page;
@@ -79,5 +82,16 @@ module.exports = class PuppeteerHelpers extends Helper {
     } else {
       return undefined;
     }
+  }
+
+  async runAccessibilityTest() {
+
+    if (!testConfig.TestForAccessibility) {
+      return;
+    }
+    const url = await this.helpers['Puppeteer'].grabCurrentUrl();
+    const {page} = await this.helpers['Puppeteer'];
+
+    runAccessibility(url, page);
   }
 };

@@ -44,6 +44,7 @@ module.exports = {
     if (representative.role) {
       I.selectOption(this.fields(elementIndex).representative.role, representative.role);
     }
+    await I.runAccessibilityTest();
   },
 
   async setServingPreferences(servingPreferences) {

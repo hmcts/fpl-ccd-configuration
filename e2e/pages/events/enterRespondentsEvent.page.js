@@ -52,6 +52,7 @@ module.exports = {
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
+    await I.runAccessibilityTest();
   },
 
   async enterRelationshipToChild(relationship) {
