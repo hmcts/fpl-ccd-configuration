@@ -48,7 +48,7 @@ module.exports = {
 
   async enterChildDetails(firstName, lastName, day, month, year, gender = 'Boy') {
     const elementIndex = await this.getActiveElementIndex();
-
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
     I.fillField(this.fields(elementIndex).child.dateOfBirth.day, day);
@@ -63,6 +63,7 @@ module.exports = {
     await within(this.fields(elementIndex).child.situation.radioGroup, () => {
       I.click(locate('label').withText('Living with respondents'));
     });
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.day, day);
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.month, month);
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.year, year);
