@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
-import uk.gov.hmcts.reform.fpl.service.removeorder.SealedCMORemovalAction;
+import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEA
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private final ConfidentialDocumentsSplitter splitter;
-    private final SealedCMORemovalAction sealedCMORemovalAction;
+    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -131,6 +131,6 @@ public class MigrateCaseController extends CallbackController {
 
         Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
 
-        sealedCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }
 }
