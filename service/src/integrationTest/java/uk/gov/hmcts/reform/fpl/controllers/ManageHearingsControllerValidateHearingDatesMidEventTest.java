@@ -61,7 +61,7 @@ class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractC
     }
 
     @Test
-    void shouldNotThrowErrorsWhenPastHearingDateEnteredOnFirstHearingA() {
+    void shouldNotThrowErrorsWhenPastHearingDateEnteredOnFirstHearing() {
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .hearingStartDate(pastDate)
