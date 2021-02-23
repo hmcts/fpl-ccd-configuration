@@ -27,9 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
@@ -119,7 +117,6 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
 
-        Map<String, Object> confidentialAndNonConfidentialDocuments = new HashMap<>();
         ManageDocumentLA manageDocumentLA = caseData.getManageDocumentLA();
         switch (manageDocumentLA.getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -133,7 +130,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
-                    confidentialAndNonConfidentialDocuments.put(
+                    caseDetails.getData().put(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
                     );
 
@@ -142,9 +139,10 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
                     );
 
-                    confidentialAndNonConfidentialDocuments = splitter.splitIntoAllAndNonConfidential(
-                        currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
+                    splitter.updateConfidentialDocsInCaseDetails(
+                        caseDetails, currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
                     );
+                    caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY, currentBundle);
                 }
                 break;
             case CORRESPONDENCE:
@@ -153,29 +151,28 @@ public class ManageDocumentsLAController extends CallbackController {
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getCorrespondenceDocumentsLA()
                     );
 
-                confidentialAndNonConfidentialDocuments = splitter.splitIntoAllAndNonConfidential(
-                    updatedCorrespondenceDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
+                splitter.updateConfidentialDocsInCaseDetails(
+                    caseDetails, updatedCorrespondenceDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
                 );
+                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, updatedCorrespondenceDocuments);
                 break;
             case C2:
                 List<Element<C2DocumentBundle>> updatedC2Documents =
                     manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-                confidentialAndNonConfidentialDocuments.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+                caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
             case COURT_BUNDLE:
-                confidentialAndNonConfidentialDocuments.put(
+                caseDetails.getData().put(
                     COURT_BUNDLE_LIST_KEY, manageDocumentLAService.buildCourtBundleList(caseData)
                 );
                 break;
             case APPLICATION:
-                confidentialAndNonConfidentialDocuments = applicationDocumentsService.updateApplicationDocuments(
+                caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
                     caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
-                );
+                ));
                 break;
         }
-
-        caseDetails.getData().putAll(confidentialAndNonConfidentialDocuments);
 
         removeTemporaryFields(caseDetails, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
