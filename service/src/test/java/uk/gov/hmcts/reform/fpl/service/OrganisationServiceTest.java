@@ -11,9 +11,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -34,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,6 +44,12 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 
 @ExtendWith(MockitoExtension.class)
 class OrganisationServiceTest {
+
+    @Mock
+    private SystemUpdateUserConfiguration userConfig;
+
+    @Mock
+    private IdamClient idamClient;
 
     @Mock
     private OrganisationApi organisationApi;
@@ -67,7 +76,7 @@ class OrganisationServiceTest {
     @BeforeEach
     void setup() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
-        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+        lenient().when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
     }
 
     @Nested
@@ -187,6 +196,43 @@ class OrganisationServiceTest {
             when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN)).thenThrow(expectedException);
 
             Exception actualException = assertThrows(Exception.class, organisationService::findOrganisation);
+
+            assertThat(actualException).isEqualTo(expectedException);
+        }
+    }
+
+    @Nested
+    class FindManagedOrganisation {
+
+        @Test
+        void shouldFindOrganisationWhenUserRegisteredInOrganisation() {
+            when(organisationApi.findManagedUserOrganisation(null, SERVICE_AUTH_TOKEN,"ORGSA"))
+                .thenReturn(POPULATED_ORGANISATION);
+
+            Optional<Organisation> actualOrganisation = organisationService.findManagedOrganisation("ORGSA");
+
+            assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
+        }
+
+        @Test
+        void shouldReturnEmptyOrganisationWhenUserNotRegisteredInOrganisation() {
+            when(organisationApi.findManagedUserOrganisation(null, SERVICE_AUTH_TOKEN,"ORGSA"))
+                .thenThrow(feignException(SC_FORBIDDEN));
+
+            Optional<Organisation> organisation = organisationService.findManagedOrganisation("ORGSA");
+
+            assertThat(organisation).isEmpty();
+        }
+
+        @Test
+        void shouldRethrowUnexpectedExceptions() {
+            Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
+
+            when(organisationApi.findManagedUserOrganisation(null, SERVICE_AUTH_TOKEN,"ORGSA"))
+                .thenThrow(expectedException);
+
+            Exception actualException = assertThrows(Exception.class, () ->
+                organisationService.findManagedOrganisation("ORGSA"));
 
             assertThat(actualException).isEqualTo(expectedException);
         }

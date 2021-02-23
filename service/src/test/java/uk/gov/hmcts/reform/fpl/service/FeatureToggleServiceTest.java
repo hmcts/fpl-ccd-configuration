@@ -198,6 +198,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForRetrieveManagedOrganisation(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRetrieveManagedOrganisation()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("retrieve-managed-organisation"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

@@ -8,12 +8,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -23,6 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
 @ActiveProfiles("integration-test")
@@ -32,6 +35,11 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
+    private SystemUpdateUserConfiguration userConfig =
+        new SystemUpdateUserConfiguration("fpl-system-update@mailnesia.com", "Password12");
+
+    @MockBean
+    private IdamClient idamClient;
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -48,6 +56,8 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
+        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
+            .willReturn(AUTH_TOKEN);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -93,14 +103,20 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     void shouldAddManagedOrganisationDetailsToApplicantWhenEps() {
         when(featureToggleService.isRetrieveManagedOrganisation()).thenReturn(true);
 
-        given(organisationApi.findManagedUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN))
+        given(organisationApi.findManagedUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
             .willReturn(POPULATED_ORGANISATION);
 
         OrganisationPolicy organisationPolicy =
             OrganisationPolicy.builder().orgPolicyCaseAssignedRole("[EPSMANAGING]").build();
 
+        OrganisationPolicy localAuthorityPolicy =
+            OrganisationPolicy.builder().organisation(
+                uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("ORGSA")
+                    .build()).build();
+
         CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(
-            CaseData.builder().outsourcingPolicy(organisationPolicy).build()));
+            CaseData.builder().localAuthorityPolicy(localAuthorityPolicy)
+                .outsourcingPolicy(organisationPolicy).build()));
 
         ContactInformation organisationContact =
             POPULATED_ORGANISATION.getContactInformation().get(0);

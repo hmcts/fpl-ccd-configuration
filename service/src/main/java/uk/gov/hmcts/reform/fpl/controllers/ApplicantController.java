@@ -51,9 +51,12 @@ public class ApplicantController extends CallbackController {
 
         if (featureToggleService.isRetrieveManagedOrganisation()
             && ("[EPSMANAGING]").equals(caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole())) {
-            organisation = organisationService.findManagedOrganisation().orElse(Organisation.builder().build());
+            organisation = organisationService.findManagedOrganisation(
+                caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())
+                .orElse(Organisation.builder().build());
         } else {
-            organisation = organisationService.findOrganisation().orElse(Organisation.builder().build());
+            organisation =
+                organisationService.findOrganisation().orElse(Organisation.builder().build());
         }
 
         caseDetails.getData()

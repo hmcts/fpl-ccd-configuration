@@ -43,6 +43,7 @@ public interface OrganisationApi {
     @GetMapping("/refdata/internal/v1/organisations")
     Organisation findManagedUserOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization
-    );
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @RequestParam(value = "id") String organisationId
+        );
 }

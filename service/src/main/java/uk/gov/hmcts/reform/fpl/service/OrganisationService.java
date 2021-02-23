@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
@@ -36,6 +38,8 @@ public class OrganisationService {
     private final OrganisationApi organisationApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
+    private final IdamClient idamClient;
+    private final SystemUpdateUserConfiguration userConfig;
 
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
         try {
@@ -65,18 +69,17 @@ public class OrganisationService {
         try {
             return ofNullable(organisationApi.findUserOrganisation(requestData.authorisation(),
                 authTokenGenerator.generate()));
-
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
             log.error("User not registered in MO", ex);
             return Optional.empty();
         }
     }
 
-    public Optional<Organisation> findManagedOrganisation() {
+    public Optional<Organisation> findManagedOrganisation(String organisationId) {
         try {
-            return ofNullable(organisationApi.findManagedUserOrganisation(requestData.authorisation(),
-                authTokenGenerator.generate()));
-
+            String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+            return ofNullable(organisationApi.findManagedUserOrganisation(userToken,
+                authTokenGenerator.generate(), organisationId));
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
             log.error("User not registered in MO", ex);
             return Optional.empty();
