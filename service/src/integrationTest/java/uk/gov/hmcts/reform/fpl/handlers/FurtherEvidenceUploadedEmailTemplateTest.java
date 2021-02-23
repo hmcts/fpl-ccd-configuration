@@ -6,7 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
@@ -40,7 +45,8 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
     private static final String LA_EMAIL = "la@example.com";
     private static final String REP_EMAIL = "resp@example.com";
-    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
+    private static final LocalDateTime HEARING_DATE =
+        LocalDateTime.of(2021, 2, 22, 0,0,0).plusMonths(3);
 
     @Autowired
     FurtherEvidenceUploadedEventHandler underTest;
@@ -79,7 +85,8 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
             .build();
 
         underTest.handleDocumentUploadedEvent(
-            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, true, UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()));
+            new FurtherEvidenceUploadedEvent(caseData, caseDataBefore, true,
+                UserDetails.builder().email(LA_EMAIL).forename("The").surname("Sender").build()));
 
         assertThat(response())
             .hasSubject("New documents uploaded, Smith")
@@ -94,7 +101,8 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                .end("Do not reply to this email."
+                    + " If you need to contact us, call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
     }
 }
