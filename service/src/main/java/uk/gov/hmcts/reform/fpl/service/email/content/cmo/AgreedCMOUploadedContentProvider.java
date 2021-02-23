@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
@@ -34,7 +35,7 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
     private String subject(HearingBooking hearing, List<Element<Respondent>> respondents, String familyManCaseNumber) {
         String subject = buildSubjectLine(familyManCaseNumber, respondents);
         if (hearing == null) {
-            return subject;
+            throw new NoHearingBookingException();
         }
         return String.format("%s, %s", subject, uncapitalize(hearing.toLabel()));
     }

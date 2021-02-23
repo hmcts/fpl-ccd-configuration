@@ -75,7 +75,7 @@ public class DraftOrdersUploadedEventHandler {
         CaseData caseData = event.getCaseData();
         final List<HearingOrder> orders = getOrders(caseData);
 
-        if (isEmpty(orders) || !orders.get(0).getType().equals(AGREED_CMO)) {
+        if (orders.stream().map(HearingOrder::getType).anyMatch(AGREED_CMO::equals)) {
             return;
         }
 
