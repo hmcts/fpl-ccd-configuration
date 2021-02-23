@@ -35,7 +35,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 notifyRespondents(caseData, excludedEmail, sender);
             }
         } else {
-            if (haseNewNonConfidentialDocuments(caseData, caseDataBefore)) {
+            if (hasNewNonConfidentialDocuments(caseData, caseDataBefore)) {
                 notifyLASolicitors(caseData, excludedEmail, sender);
                 notifyRespondents(caseData, excludedEmail, sender);
             }
@@ -63,7 +63,7 @@ public class FurtherEvidenceUploadedEventHandler {
                 !d.isConfidentialDocument());
     }
 
-    private boolean haseNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore) {
+    private boolean hasNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore) {
         List<SupportingEvidenceBundle> furtherEvidenceDocuments = unwrapElements(caseData.getFurtherEvidenceDocuments());
         List<SupportingEvidenceBundle> oldFurtherEvidenceDocuments = unwrapElements(caseDataBefore.getFurtherEvidenceDocuments());
 
