@@ -86,6 +86,17 @@ public class OrganisationService {
         }
     }
 
+    public Optional<Organisation> findManagedOrganisation() {
+        try {
+            return ofNullable(organisationApi.findManagedUserOrganisation(requestData.authorisation(),
+                authTokenGenerator.generate()));
+
+        } catch (FeignException.NotFound | FeignException.Forbidden ex) {
+            log.error("User not registered in MO", ex);
+            return Optional.empty();
+        }
+    }
+
     private Set<String> useLocalMapping(String localAuthorityCode) {
         try {
             return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
