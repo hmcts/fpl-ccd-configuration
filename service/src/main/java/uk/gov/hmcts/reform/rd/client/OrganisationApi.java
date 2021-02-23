@@ -45,5 +45,5 @@ public interface OrganisationApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "id") String organisationId
-        );
+    );
 }
