@@ -102,6 +102,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -617,7 +618,7 @@ public class CaseData {
 
     public Optional<Element<HearingOrder>> getDraftUploadedCMOWithId(UUID orderId) {
         return getDraftUploadedCMOs().stream()
-            .filter(draftCmoElement -> orderId.equals(draftCmoElement.getId()))
+            .filter(draftCmoElement -> draftCmoElement.getId().equals(orderId))
             .findFirst();
     }
 
@@ -635,7 +636,7 @@ public class CaseData {
     }
 
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
-        return hearingOrdersBundlesDrafts.stream()
+        return nullSafeList(hearingOrdersBundlesDrafts).stream()
             .filter(hearingOrdersBundleElement
                 -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
