@@ -101,7 +101,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
-  manageDocumentsEventPage.selectC2SupportingDocuments();
+  await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.selectC2FromDropdown();
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
