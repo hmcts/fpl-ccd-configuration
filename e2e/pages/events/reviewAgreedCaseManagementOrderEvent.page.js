@@ -4,8 +4,8 @@ module.exports = {
 
   async selectCMOToReview(hearing) {
     I.waitForElement('#cmoToReviewList');
-    //await I.runAccessibilityTest();
     I.selectOption('#cmoToReviewList', hearing);
+    await I.runAccessibilityTest();
   },
 
   selectSealCmo() {

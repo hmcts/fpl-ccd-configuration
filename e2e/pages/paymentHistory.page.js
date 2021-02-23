@@ -16,6 +16,6 @@ module.exports = {
     I.seeElement(paymentLocator);
     I.click(`${paymentLocator}/td/a`);
     I.seeElement(pbaLocator);
-    // await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
   },
 };
