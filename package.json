@@ -16,7 +16,8 @@
     "mochawesome": "^6.2.2",
     "node-fetch": "^2.6.1",
     "puppeteer": "7.1.0",
-    "moment": "2.29.1"
+    "moment": "2.29.1",
+    "html_codesniffer": "^2.5.1"
   },
   "scripts": {
     "lint": "eslint e2e",

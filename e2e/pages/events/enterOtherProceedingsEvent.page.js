@@ -44,7 +44,7 @@ module.exports = {
 
   async enterProceedingInformation(otherProceedingData) {
     const elementIndex = await this.getActiveElementIndex();
-
+    await I.runAccessibilityTest();
     this.selectOngoingProceedingStatus(otherProceedingData.proceedingStatus, elementIndex);
     I.fillField(this.fields(elementIndex).caseNumber, otherProceedingData.caseNumber);
     I.fillField(this.fields(elementIndex).started, otherProceedingData.started);

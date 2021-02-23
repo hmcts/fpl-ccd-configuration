@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <!-- <meta http-equiv="Content-Security-Policy"
+      content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'
+       https://cdnjs.cloudflare.com https://ajax.googleapis.com http://www.google.com"> -->
+  <script src="resources/angular.min.js"></script>
+
+  <title>EXUI Web Accesibility Test Report</title>
+  <meta name="title" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="resources/css/all.css">
+  <style>
+    pre {
+      white-space: pre-wrap;       /* css-3 */
+      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+      white-space: -pre-wrap;      /* Opera 4-6 */
+      white-space: -o-pre-wrap;    /* Opera 7 */
+      word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    }
+    body {
+      background-color: lightgray;
+    }
+    i{
+      margin:10px
+    }
+    .stats{
+      font-size: 24px;
+    }
+
+    .header{
+      background-color: darkslategrey ;
+      border-bottom-style: solid;
+      border-bottom-width: 5px;
+      border-color: #ff0000;
+      margin-bottom: 5px;
+      color: white;
+    }
+
+    #reportHeaderTitle{
+      font-size: 24px;
+    }
+    #reportHeaderAppName{
+      font-size: 16px;
+
+    }
+    .header .titleText {
+      display: inline-block;
+      width: 60%;
+      text-align: center;
+    }
+
+    .header .titleText>div {
+      display: inline-block;
+      /* width: 40%; */
+      text-align: center;
+    }
+
+    .header .stats {
+      display: inline-block;
+      width: 30%;
+    }
+
+    .testResult{
+      border-top-style: groove;
+      border-top-width:5px ;
+      background-color: white;
+      margin: 0% 15%;
+    }
+
+
+    .testTitle{
+      font-size: 24px;
+      font-weight: bold;
+      padding: 5px;
+    }
+    .testTitle.pass{
+      color: green;
+    }
+    .testTitle.fail{
+      color: red;
+    }
+
+    .a11yResult.show{
+      display: block;
+    }
+
+    .resultTable,.a11yResult h4{
+      margin-left: 2%;
+    }
+
+    .issuesTable{
+      margin-left: 4%;
+      border-top-width: 5px;
+      border-top-color: red;
+      border-top-style: solid;
+      margin-bottom: 2px;
+
+    }
+
+    .a11yResult.hide{
+      display: none;
+    }
+
+    table{
+      border-collapse: collapse;
+      margin: 2px;
+    }
+    .a11yResult table tr th,.a11yResult table tr td{
+      padding: 2px;
+      text-align: left;
+      border-style:groove
+    }
+    .a11yResult table tr th{
+      background-color: lightgray;
+    }
+
+
+
+  </style>
+</head>
+<body>
+<div ng-app="myApp" ng-controller="myCtrl">
+  <div class="header">
+    <div class="titleText">
+      <div>
+        <i class="fas fa-universal-access" style="font-size:60px;color:white;"> </i>
+      </div>
+
+      <div>
+        <div id="reportHeaderTitle">Accessibility Test Report for Expert UI</div>
+        <div id="reportHeaderAppName">{{data.appName}}</div>
+      </div>
+
+    </div>
+
+    <div class="stats">
+      <i class="fas fa-check-circle" style="font-size:40px;color:lightgreen;"></i>{{data.passCount}}
+      <i class="fas fa-times-circle" style="font-size:40px;color:red;"></i>{{data.failCount}}
+    </div>
+
+  </div>
+
+
+  <div class="testResult" ng-repeat="test in data.tests">
+    <div class="testTitle" ng-class="{pass : test.status == 'passed', fail: test.status == 'failed'}"  ng-click="showDetails(test)">{{ test.name }}</div>
+    <div ng-if="test.status == 'failed'">
+            <pre>
+               <code>{{test.error}}</code>
+            </pre>
+    </div>
+
+    <div class="a11yResult" ng-class="{show: test.show, hide:!test.show}">
+      <!-- {{test.a11yResult}} -->
+      <table class="resultTable">
+        <tr>
+          <th>Document title:</th>
+          <td>{{test.documentTitle}}</td>
+        </tr>
+        <tr>
+          <th>Page URL:</th>
+          <td>{{test.pageUrl}}</td>
+        </tr>
+        <tr>
+          <th>Total issues:</th>
+          <td>{{test.a11yIssues.length}}</td>
+        </tr>
+      </table>
+
+      <h4>Issues:</h4>
+      <div ng-repeat="issue in test.a11yIssues">
+        <table class="issuesTable">
+          <tr> <th>Issue code</th><td>{{issue.code}}</td></tr>
+          <tr> <th>Issue type</th><td>{{issue.type}}</td></tr>
+          <tr>
+            <th>Runner</th>
+            <td>{{issue.runner}}</td>
+          </tr>
+          <tr><th>Message</th> <td>{{issue.message}}</td></tr>
+
+        </table>
+
+      </div>
+      <img ng-src="{{test.screenshot}}" alt="a11y test page" width="500" height="500">
+
+    </div>
+  </div>
+
+
+</div>
+<script src="./a11y_output.js" ></script>
+
+<script>
+  var data = replacejsoncontent;
+
+  var app = angular.module('myApp', []);
+  app.controller('myCtrl', function ($scope) {;
+    $scope.data = data;
+    $scope.showDetails = function(test){
+      console.log("test "+test);
+      test.show = !test.show;
+    }
+  });
+</script>
+</body>
+</html>
