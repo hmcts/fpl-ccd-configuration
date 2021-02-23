@@ -57,6 +57,14 @@ public class MigrateCaseController extends CallbackController {
             run2706(caseDetails);
         }
 
+        if ("FPLA-2715".equals(migrationId)) {
+            run2715(caseDetails);
+        }
+
+        if ("FPLA-2740".equals(migrationId)) {
+            run2740(caseDetails);
+        }
+
         if ("FPLA-2722".equals(migrationId)) {
             log.info("Performing migration ({}) for case {}", migrationId, caseDetails.getId());
             run2417(caseDetails);
@@ -64,6 +72,22 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2715(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2740(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstCaseNotes(caseDetails);
+        }
     }
 
     private void run2417(CaseDetails caseDetails) {
@@ -132,5 +156,17 @@ public class MigrateCaseController extends CallbackController {
         Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
 
         sealedCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+    }
+
+    private void removeFirstCaseNotes(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
+            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
+                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+        }
+
+        caseData.getCaseNotes().remove(0);
+        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
     }
 }
