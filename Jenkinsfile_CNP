@@ -118,6 +118,7 @@ withPipeline(type, product, component) {
 
   after('checkout') {
     sh """ git submodule update --init """
+    sh("/usr/bin/yarn install")
   }
 
   before('test') {
