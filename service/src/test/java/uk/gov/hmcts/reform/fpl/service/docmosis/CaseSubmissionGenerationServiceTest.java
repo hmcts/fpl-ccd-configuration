@@ -29,9 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
@@ -43,7 +40,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -88,9 +84,6 @@ class CaseSubmissionGenerationServiceTest {
     private IdamClient idamClient;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     @MockBean
@@ -114,7 +107,12 @@ class CaseSubmissionGenerationServiceTest {
     @Test
     void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() {
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
-        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(expectedDocmosisCaseSubmission());
+
+        DocmosisCaseSubmission updatedCaseSubmission = expectedDocmosisCaseSubmission().toBuilder()
+            .annexDocuments(null)
+            .build();
+
+        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(updatedCaseSubmission);
     }
 
     @Test
@@ -1038,108 +1036,11 @@ class CaseSubmissionGenerationServiceTest {
 
     @Test
     void shouldReturnDocmosisAnnexToggledOn() {
-        when(featureToggleService.isApplicationDocumentsEventEnabled()).thenReturn(true);
         when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
 
         DocmosisCaseSubmission actual = templateDataGenerationService.getTemplateData(givenCaseData);
 
         assertThat(actual.getAnnexDocuments()).isEqualTo(DOCMOSIS_ANNEX_DOCUMENTS);
-    }
-
-    @Nested
-    @Deprecated
-    class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
-
-        @BeforeEach
-        void setUp() {
-            when(featureToggleService.isApplicationDocumentsEventEnabled()).thenReturn(false);
-        }
-
-        @Test
-        void shouldReturnEmptyWhenDocumentIsNotAvailable() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(null)
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("-");
-        }
-
-        @Test
-        void shouldReturnEmptyWhenDocumentStatusIsEmpty() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(Document.builder()
-                    .documentStatus("")
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("-");
-        }
-
-        @Test
-        void shouldReturnStatusWhenDocumentStatusIsAvailable() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(Document.builder()
-                    .documentStatus("Attached")
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("Attached");
-        }
-
-        @Test
-        void shouldReturnStatusAndReasonWhenDocumentStatusIsOtherThanAttached() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(Document.builder()
-                    .documentStatus("To follow")
-                    .statusReason("Documents not uploaded")
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology())
-                .isEqualTo("To follow\nDocuments not uploaded");
-        }
-
-        @Test
-        void shouldReturnDocumentTitleOrDefaultValueForAdditionalAnnexDocuments() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
-                        .documentTitle("Additional Doc 1")
-                        .typeOfDocument(DocumentReference.builder()
-                            .url("/test.doc")
-                            .build())
-                        .build(),
-                    DocumentSocialWorkOther.builder()
-                        .documentTitle("Additional Doc 2")
-                        .typeOfDocument(DocumentReference.builder()
-                            .url("/test.doc")
-                            .build())
-                        .build(),
-                    DocumentSocialWorkOther.builder()
-                        .documentTitle("")
-                        .typeOfDocument(DocumentReference.builder()
-                            .url("/test.doc")
-                            .build())
-                        .build()
-                ))
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getOthers()).hasSize(3);
-            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(0).getDocumentTitle())
-                .isEqualTo("Additional Doc 1");
-            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(1).getDocumentTitle())
-                .isEqualTo("Additional Doc 2");
-            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(2).getDocumentTitle()).isEqualTo("-");
-        }
     }
 
     @Nested

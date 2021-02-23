@@ -8,10 +8,7 @@ import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
-import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
@@ -35,12 +32,9 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
-
 class TaskListRendererTest {
-    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
 
     private final TaskListRenderer taskListRenderer = new TaskListRenderer(
-        featureToggleService,
         new TaskListRenderElements(
             "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
         ));
@@ -67,20 +61,8 @@ class TaskListRendererTest {
 
     @Test
     void shouldRenderTaskListWhenApplicationDocumentsIsToggledOff() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
-
         final String expectedTaskList = readString("task-list/expected-task-list.md").trim();
 
         assertThat(taskListRenderer.render(getTasks(DOCUMENTS))).isEqualTo(expectedTaskList);
-    }
-
-    @Test
-    void shouldRenderTaskListWhenApplicationDocumentsIsToggledOn() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
-
-        final String expectedTaskList = readString("task-list/expected-task-list-when-application-documents-enabled.md")
-            .trim();
-
-        assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(expectedTaskList);
     }
 }

@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 
@@ -21,9 +19,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 
 @Service
 public class CaseSubmissionChecker extends CompoundEventChecker {
-
-    @Autowired
-    private FeatureToggleService featureToggleService;
 
     private static final List<Event> REQUIRED_EVENTS = List.of(
             CASE_NAME,
@@ -50,10 +45,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
-        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
-            return super.validate(caseData, REQUIRED_EVENTS_AFTER_APPLICATION_DOCUMENTS_ENABLED);
-        }
-        return super.validate(caseData, REQUIRED_EVENTS);
+        return super.validate(caseData, REQUIRED_EVENTS_AFTER_APPLICATION_DOCUMENTS_ENABLED);
     }
 
     @Override
