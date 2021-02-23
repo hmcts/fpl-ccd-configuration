@@ -179,9 +179,10 @@ public class ManageDocumentsController extends CallbackController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest request) {
-        if(this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
+        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
             publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
-                getCaseDataBefore(request), false, idamClient.getUserDetails(requestData.authorisation())));
+                getCaseDataBefore(request), false,
+                idamClient.getUserDetails(requestData.authorisation())));
         }
     }
 }

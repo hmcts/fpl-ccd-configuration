@@ -46,7 +46,9 @@ class FurtherEvidenceNotificationServiceTest {
     void shouldReturnLASolicitors() {
         CaseData caseData = caseData();
 
-        when(inboxLookupService.getRecipients(LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
+        when(inboxLookupService.getRecipients(LocalAuthorityInboxRecipientsRequest.builder()
+            .caseData(caseData)
+            .build()))
             .thenReturn(LOCAL_AUTHORITY_EMAILS);
 
         Set<String> actual = furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData);
@@ -72,9 +74,12 @@ class FurtherEvidenceNotificationServiceTest {
         FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
             FurtherEvidenceDocumentUploadedData.builder().build();
 
-        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender")).thenReturn(furtherEvidenceDocumentUploadedData);
+        when(furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, "Sender")).thenReturn(
+            furtherEvidenceDocumentUploadedData);
 
-        furtherEvidenceNotificationService.sendFurtherEvidenceDocumentsUploadedNotification(caseData, recipients, "Sender");
+        furtherEvidenceNotificationService.sendFurtherEvidenceDocumentsUploadedNotification(caseData,
+            recipients,
+            "Sender");
 
         verify(notificationService).sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());

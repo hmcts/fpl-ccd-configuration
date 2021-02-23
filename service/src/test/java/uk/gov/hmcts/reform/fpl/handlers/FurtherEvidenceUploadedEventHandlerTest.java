@@ -19,7 +19,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +47,9 @@ class FurtherEvidenceUploadedEventHandlerTest {
     @InjectMocks
     FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
-    private final Set<String> representativeSolicitors = Set.of("rep_solicitor1@example.com", "rep_solicitor2@example.com", REP_SOLICITOR_USER_EMAIL);
+    private final Set<String> representativeSolicitors = Set.of("rep_solicitor1@example.com",
+        "rep_solicitor2@example.com",
+        REP_SOLICITOR_USER_EMAIL);
     private final Set<String> laSolicitors = Set.of(LA_USER_EMAIL);
 
     @Test
@@ -58,7 +63,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 userDetailsLA()
             );
 
-        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(representativeSolicitors);
+        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(
+            representativeSolicitors);
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
@@ -95,7 +101,8 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 userDetailsHMCTS()
             );
 
-        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(representativeSolicitors);
+        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(
+            representativeSolicitors);
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData)).thenReturn(laSolicitors);
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
@@ -136,13 +143,18 @@ class FurtherEvidenceUploadedEventHandlerTest {
                 userDetailsRespondentSolicitor()
             );
 
-        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(representativeSolicitors);
+        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(
+            representativeSolicitors);
         when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData)).thenReturn(laSolicitors);
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
         verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
-            caseData, representativeSolicitors.stream().filter(r -> !r.equals(REP_SOLICITOR_USER_EMAIL)).collect(Collectors.toSet()), SENDER);
+            caseData,
+            representativeSolicitors.stream()
+                .filter(r -> !r.equals(REP_SOLICITOR_USER_EMAIL))
+                .collect(Collectors.toSet()),
+            SENDER);
         verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
             caseData, laSolicitors, SENDER);
     }
@@ -244,6 +256,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     private UserDetails userDetailsRespondentSolicitor() {
-        return UserDetails.builder().email(REP_SOLICITOR_USER_EMAIL).forename(SENDER_FORENAME).surname(SENDER_SURNAME).build();
+        return UserDetails.builder()
+            .email(REP_SOLICITOR_USER_EMAIL)
+            .forename(SENDER_FORENAME)
+            .surname(SENDER_SURNAME)
+            .build();
     }
 }

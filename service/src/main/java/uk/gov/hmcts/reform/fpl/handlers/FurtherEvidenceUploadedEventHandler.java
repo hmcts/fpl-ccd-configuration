@@ -55,21 +55,25 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private boolean hasNewNonConfidentialDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> furtherEvidenceDocumentsLA = unwrapElements(caseData.getFurtherEvidenceDocumentsLA());
-        List<SupportingEvidenceBundle> oldFurtherEvidenceDocumentsLA = unwrapElements(caseDataBefore.getFurtherEvidenceDocumentsLA());
+        List<SupportingEvidenceBundle> furtherEvidenceDocumentsLA =
+            unwrapElements(caseData.getFurtherEvidenceDocumentsLA());
+        List<SupportingEvidenceBundle> oldFurtherEvidenceDocumentsLA =
+            unwrapElements(caseDataBefore.getFurtherEvidenceDocumentsLA());
 
         return furtherEvidenceDocumentsLA.stream()
-            .anyMatch(d -> oldFurtherEvidenceDocumentsLA.stream().noneMatch(old -> old.getName().equals(d.getName())) &&
-                !d.isConfidentialDocument());
+            .anyMatch(d -> oldFurtherEvidenceDocumentsLA.stream().noneMatch(old -> old.getName().equals(d.getName()))
+                && !d.isConfidentialDocument());
     }
 
     private boolean hasNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> furtherEvidenceDocuments = unwrapElements(caseData.getFurtherEvidenceDocuments());
-        List<SupportingEvidenceBundle> oldFurtherEvidenceDocuments = unwrapElements(caseDataBefore.getFurtherEvidenceDocuments());
+        List<SupportingEvidenceBundle> furtherEvidenceDocuments =
+            unwrapElements(caseData.getFurtherEvidenceDocuments());
+        List<SupportingEvidenceBundle> oldFurtherEvidenceDocuments =
+            unwrapElements(caseDataBefore.getFurtherEvidenceDocuments());
 
         return furtherEvidenceDocuments.stream()
-            .anyMatch(d -> oldFurtherEvidenceDocuments.stream().noneMatch(old -> old.getName().equals(d.getName())) &&
-                !d.isConfidentialDocument());
+            .anyMatch(d -> oldFurtherEvidenceDocuments.stream().noneMatch(old -> old.getName().equals(d.getName()))
+                && !d.isConfidentialDocument());
     }
 
     private Set<String> filterRecipients(final Set<String> recipients, final String excludeEmail) {

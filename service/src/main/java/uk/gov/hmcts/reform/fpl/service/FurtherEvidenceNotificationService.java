@@ -41,10 +41,13 @@ public class FurtherEvidenceNotificationService {
             .collect(Collectors.toSet());
     }
 
-    public void sendFurtherEvidenceDocumentsUploadedNotification(CaseData caseData, Set<String> recipients, String sender) {
+    public void sendFurtherEvidenceDocumentsUploadedNotification(CaseData caseData, Set<String> recipients,
+                                                                 String sender) {
         if (!recipients.isEmpty()) {
-            notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE, recipients,
-                furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender), caseData.getId().toString());
+            notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
+                recipients,
+                furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender),
+                caseData.getId().toString());
         }
     }
 }
