@@ -140,6 +140,18 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("further-evidence-upload-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
