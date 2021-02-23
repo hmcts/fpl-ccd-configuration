@@ -70,6 +70,7 @@ withNightlyPipeline(type, product, component) {
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
+  enableCrossBrowserTest()
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)

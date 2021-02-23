@@ -55,10 +55,7 @@ const setupConfig = {
             capabilities: {}
         },
         SauceLabsReportingHelper: {
-            require: './helpers/SauceLabsReportingHelper.js'
-        },
-        WebDriverHelper: {
-            require: './helpers/WebDriverHelper.js'
+            require: './e2e/helpers/SauceLabsReportingHelper.js'
         },
         HooksHelper: {
             require: './e2e/helpers/hooks_helper.js',
