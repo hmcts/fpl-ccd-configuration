@@ -2,9 +2,10 @@ const { I } = inject();
 
 module.exports = {
 
-  selectCMOToReview(hearing) {
+  async selectCMOToReview(hearing) {
     I.waitForElement('#cmoToReviewList');
     I.selectOption('#cmoToReviewList', hearing);
+    await I.runAccessibilityTest();
   },
 
   selectSealCmo() {
