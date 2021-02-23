@@ -7,7 +7,8 @@ module.exports = {
     description: '#field-trigger-description',
   },
 
-  provideSummary(summary, description) {
+  async provideSummary(summary, description) {
+    await I.runAccessibilityTest();
     I.fillField(this.fields.summary, summary);
     I.fillField(this.fields.description, description);
   },

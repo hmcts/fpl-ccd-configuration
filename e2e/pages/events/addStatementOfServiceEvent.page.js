@@ -40,6 +40,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).recipients.timeSent, recipients.timeSent);
     I.click(this.fields(elementIndex).recipients.sentBy.email);
     I.waitForText('Recipient\'s email address');
+    await I.runAccessibilityTest();
     within(this.fields(elementIndex).recipients.sentBy.email, () => {
       I.fillField(this.fields(elementIndex).recipients.emailAddress, 'email@email.com');
     },);

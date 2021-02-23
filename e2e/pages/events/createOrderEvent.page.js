@@ -252,7 +252,8 @@ module.exports = {
     I.fillField(this.fields.epo.exclusionStartDate.year, '2021');
   },
 
-  selectWhoIsExcluded() {
+  async selectWhoIsExcluded() {
     I.fillField(this.fields.epo.epoWhoIsExcluded, 'John Doe');
+    await I.runAccessibilityTest();
   },
 };
