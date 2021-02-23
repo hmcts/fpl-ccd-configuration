@@ -288,7 +288,7 @@ Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, ad
   addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
   await I.goToNextPage();
   addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
-  await addExtend26WeekTimelineEventPage.addCaseExtensionDate();
+  addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
   caseViewPage.selectTab(caseViewPage.tabs.summary);
