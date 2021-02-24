@@ -73,6 +73,63 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldSendNotificationWhenDocIsMadeNonConfidentialByLA() {
+        CaseData caseDataBefore = buildCaseDataWithConfidentialLADocuments();
+
+        // buildCaseDataWithConfidentialLADocuments() has a "confidential-doc-1" marked as confidential
+        // so we are creating a new list with "confidential-doc-1" not marked as confidential
+        CaseData caseData = commonCaseBuilder().furtherEvidenceDocumentsLA(
+            wrapElements(createDummyEvidenceBundle("confidential-doc-1", LA_USER, false))
+        ).build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                true,
+                userDetailsLA()
+            );
+
+        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(
+            representativeSolicitors);
+
+        furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
+
+        verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
+            caseData, representativeSolicitors, SENDER);
+    }
+
+    @Test
+    void shouldSendNotificationWhenDocIsMadeNonConfidentialByHMCTS() {
+        CaseData caseDataBefore = buildCaseDataWithConfidentialDocuments(HMCTS_USER);
+
+        // buildCaseDataWithConfidentialLADocuments() has a "confidential-doc-1" marked as confidential
+        // so we are creating a new list with "confidential-doc-1" not marked as confidential
+        CaseData caseData = commonCaseBuilder().furtherEvidenceDocuments(
+            wrapElements(createDummyEvidenceBundle("confidential-doc-1", HMCTS_USER, false))
+        ).build();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseDataBefore,
+                false,
+                userDetailsHMCTS()
+            );
+
+        when(furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData)).thenReturn(
+            representativeSolicitors);
+        when(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData)).thenReturn(laSolicitors);
+
+        furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
+
+        verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
+            caseData, representativeSolicitors, SENDER);
+        verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
+            caseData, laSolicitors, SENDER);
+    }
+
+    @Test
     void shouldNotSendNotificationWhenConfidentialDocIsUploadedByLA() {
         CaseData caseData = buildCaseDataWithConfidentialLADocuments();
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
@@ -88,7 +145,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
         verify(furtherEvidenceNotificationService, never()).sendFurtherEvidenceDocumentsUploadedNotification(
             any(), any(), any());
     }
-
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByHMCTS() {
@@ -161,6 +217,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
     @Test
     void shouldNotSendNotificationWhenConfidentialDocIsUploadedByRespSolicitor() {
+        // This test is here even though the UI does not allow this scenario but code has a path to make it possible
         CaseData caseData = buildCaseDataWithConfidentialDocuments(REP_USER);
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
             new FurtherEvidenceUploadedEvent(
@@ -206,38 +263,36 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .build();
     }
 
-    private List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
-        return wrapElements(SupportingEvidenceBundle.builder()
-                .name("Confidential Evidence Document 1")
-                .uploadedBy(uploadedBy)
-                .dateTimeUploaded(LocalDateTime.now())
-                .confidential(List.of(CONFIDENTIAL_MARKER))
-                .document(DocumentReference.builder().build())
-                .build(),
-            SupportingEvidenceBundle.builder()
-                .name("Confidential Evidence Document 2")
-                .uploadedBy(uploadedBy)
-                .dateTimeUploaded(LocalDateTime.now())
-                .confidential(List.of(CONFIDENTIAL_MARKER))
-                .document(DocumentReference.builder().build())
-                .build()
-        );
+    private static List<Element<SupportingEvidenceBundle>> buildConfidentialDocumentList(final String uploadedBy) {
+        return wrapElements(
+            createDummyEvidenceBundle("confidential-1", uploadedBy, true),
+            createDummyEvidenceBundle("confidential-2", uploadedBy, true));
+    }
+
+    private static SupportingEvidenceBundle createDummyEvidenceBundle(final String name, final String uploadedBy,
+                                                                      boolean confidential) {
+        SupportingEvidenceBundle.SupportingEvidenceBundleBuilder document
+            = SupportingEvidenceBundle.builder()
+            .name(name)
+            .uploadedBy(uploadedBy)
+            .dateTimeUploaded(LocalDateTime.now())
+            .document(DocumentReference.builder()
+                .filename(name + ".pdf")
+                .url("http://fake/" + name)
+                .binaryUrl("http://fake/" + name + "/binary")
+                .build());
+
+        if (confidential) {
+            document.confidential(List.of(CONFIDENTIAL_MARKER));
+        }
+
+        return document.build();
     }
 
     private List<Element<SupportingEvidenceBundle>> buildNonConfidentialDocumentList(final String uploadedBy) {
-        return wrapElements(SupportingEvidenceBundle.builder()
-                .name("Non-Confidential Evidence Document 1")
-                .uploadedBy(uploadedBy)
-                .dateTimeUploaded(LocalDateTime.now())
-                .document(DocumentReference.builder().build())
-                .build(),
-            SupportingEvidenceBundle.builder()
-                .name("Non-Confidential Evidence Document 2")
-                .uploadedBy(uploadedBy)
-                .dateTimeUploaded(LocalDateTime.now())
-                .document(DocumentReference.builder().build())
-                .build()
-        );
+        return wrapElements(
+            createDummyEvidenceBundle("non-confidential-1", uploadedBy, false),
+            createDummyEvidenceBundle("non-confidential-2", uploadedBy, false));
     }
 
     private CaseData.CaseDataBuilder commonCaseBuilder() {

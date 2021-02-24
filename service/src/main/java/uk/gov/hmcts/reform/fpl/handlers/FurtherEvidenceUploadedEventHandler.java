@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
 
 import java.util.List;
@@ -31,11 +32,13 @@ public class FurtherEvidenceUploadedEventHandler {
         final String sender = event.getInitiatedBy().getFullName();
 
         if (event.isUploadedByLA()) {
-            if (hasNewNonConfidentialDocumentsByLA(caseData, caseDataBefore)) {
+            if (hasNewNonConfidentialDocuments(caseData.getFurtherEvidenceDocumentsLA(),
+                caseDataBefore.getFurtherEvidenceDocumentsLA())) {
                 notifyRespondents(caseData, excludedEmail, sender);
             }
         } else {
-            if (hasNewNonConfidentialDocuments(caseData, caseDataBefore)) {
+            if (hasNewNonConfidentialDocuments(caseData.getFurtherEvidenceDocuments(),
+                caseDataBefore.getFurtherEvidenceDocuments())) {
                 notifyLASolicitors(caseData, excludedEmail, sender);
                 notifyRespondents(caseData, excludedEmail, sender);
             }
@@ -54,29 +57,16 @@ public class FurtherEvidenceUploadedEventHandler {
             caseData, filterRecipients(recipients, excludeEmail), sender);
     }
 
-    private boolean hasNewNonConfidentialDocumentsByLA(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> furtherEvidenceDocumentsLA =
-            unwrapElements(caseData.getFurtherEvidenceDocumentsLA());
-        List<SupportingEvidenceBundle> oldFurtherEvidenceDocumentsLA =
-            unwrapElements(caseDataBefore.getFurtherEvidenceDocumentsLA());
-
-        return furtherEvidenceDocumentsLA.stream()
-            .anyMatch(d -> oldFurtherEvidenceDocumentsLA.stream().noneMatch(old -> old.getName().equals(d.getName()))
+    private static boolean hasNewNonConfidentialDocuments(List<Element<SupportingEvidenceBundle>> newEvidenceBundle,
+                                                          List<Element<SupportingEvidenceBundle>> oldEvidenceBundle) {
+        List<SupportingEvidenceBundle> oldEvidenceBundleUnwrapped = unwrapElements(oldEvidenceBundle);
+        return unwrapElements(newEvidenceBundle).stream()
+            .anyMatch(d -> oldEvidenceBundleUnwrapped.stream()
+                .noneMatch(old -> old.getDocument().equals(d.getDocument()))
                 && !d.isConfidentialDocument());
     }
 
-    private boolean hasNewNonConfidentialDocuments(CaseData caseData, CaseData caseDataBefore) {
-        List<SupportingEvidenceBundle> furtherEvidenceDocuments =
-            unwrapElements(caseData.getFurtherEvidenceDocuments());
-        List<SupportingEvidenceBundle> oldFurtherEvidenceDocuments =
-            unwrapElements(caseDataBefore.getFurtherEvidenceDocuments());
-
-        return furtherEvidenceDocuments.stream()
-            .anyMatch(d -> oldFurtherEvidenceDocuments.stream().noneMatch(old -> old.getName().equals(d.getName()))
-                && !d.isConfidentialDocument());
-    }
-
-    private Set<String> filterRecipients(final Set<String> recipients, final String excludeEmail) {
+    private static Set<String> filterRecipients(final Set<String> recipients, final String excludeEmail) {
         return StringUtils.isEmpty(excludeEmail) ? recipients :
             recipients.stream().filter(r -> !r.equals(excludeEmail)).collect(Collectors.toSet());
     }

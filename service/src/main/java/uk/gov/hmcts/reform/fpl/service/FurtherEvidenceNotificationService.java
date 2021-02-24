@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -32,8 +34,12 @@ public class FurtherEvidenceNotificationService {
     }
 
     public Set<String> getRespondentRepresentativeEmails(CaseData caseData) {
-        List<Element<Representative>> representatives = nullSafeList(caseData.getRepresentatives());
-        List<Respondent> respondents = unwrapElements(caseData.getRespondents1());
+        List<Element<Representative>> representatives = nullSafeList(caseData.getRepresentatives()).stream().filter(
+            rep -> rep.getValue().getRole().getType().equals(RepresentativeRole.Type.RESPONDENT)
+                && rep.getValue().getServingPreferences().equals(RepresentativeServingPreferences.DIGITAL_SERVICE)
+        ).collect(Collectors.toList());
+
+        List<Respondent> respondents = unwrapElements(nullSafeList(caseData.getRespondents1()));
 
         return representatives.stream().filter(r -> respondents.stream().anyMatch(
             respondent -> unwrapElements(respondent.getRepresentedBy()).stream().anyMatch(rep -> rep == r.getId())))

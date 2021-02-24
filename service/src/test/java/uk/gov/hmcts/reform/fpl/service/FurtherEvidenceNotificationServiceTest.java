@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -18,6 +20,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
@@ -85,24 +90,54 @@ class FurtherEvidenceNotificationServiceTest {
             furtherEvidenceDocumentUploadedData, CASE_ID.toString());
     }
 
+    @Test
+    void shouldNotSendNotificationWhenNoRecipientsAreProvided() {
+        CaseData caseData = caseData();
+
+        Set<String> recipients = Set.of();
+
+        FurtherEvidenceDocumentUploadedData furtherEvidenceDocumentUploadedData =
+            FurtherEvidenceDocumentUploadedData.builder().build();
+
+        furtherEvidenceNotificationService.sendFurtherEvidenceDocumentsUploadedNotification(caseData,
+            recipients,
+            "Sender");
+
+        verify(notificationService, never()).sendEmail(any(), eq(recipients), any(), any());
+    }
+
     CaseData caseData() {
         UUID representativeUUID = UUID.randomUUID();
+        UUID unrealtedRepresentativeUUID = UUID.randomUUID();
 
         Representative representative = Representative
             .builder()
             .email(REP_EMAIL)
+            .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
+            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
             .build();
 
+        Representative unrelatedRepresentative = Representative
+            .builder()
+            .email("ignore@example.com")
+            .role(RepresentativeRole.REPRESENTING_PERSON_1)
+            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
+            .build();
 
         Respondent respondent = Respondent.builder()
             .representedBy(wrapElements(List.of(representativeUUID)))
             .build();
 
+        Respondent respondent2 = Respondent.builder()
+            .representedBy(wrapElements(List.of(unrealtedRepresentativeUUID)))
+            .build();
+
         return CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY)
-            .representatives(List.of(element(representativeUUID, representative)))
-            .respondents1(wrapElements(respondent))
+            .representatives(List.of(element(representativeUUID, representative),
+                element(unrealtedRepresentativeUUID, unrelatedRepresentative)))
+            .respondents1(wrapElements(respondent, respondent2))
             .build();
     }
 }
