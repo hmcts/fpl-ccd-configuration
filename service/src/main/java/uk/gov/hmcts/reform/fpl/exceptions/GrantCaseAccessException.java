@@ -3,17 +3,17 @@ package uk.gov.hmcts.reform.fpl.exceptions;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 
-import java.util.Set;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = false)
 public class GrantCaseAccessException extends RuntimeException {
 
     private final Long caseId;
     private final String localAuthority;
-    private final Set<String> userIds;
+    private final List<String> userIds;
     private final CaseRole caseRole;
 
-    public GrantCaseAccessException(Long caseId, Set<String> userIds, CaseRole caseRole) {
+    public GrantCaseAccessException(Long caseId, List<String> userIds, CaseRole caseRole) {
         super(String.format("User(s) %s not granted %s to case %s", userIds, caseRole, caseId));
         this.caseId = caseId;
         this.userIds = userIds;

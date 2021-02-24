@@ -24,8 +24,6 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -83,9 +81,7 @@ class CaseAccessServiceTest {
         void shouldGrantAccessToAllUsersWithOrganisationId() {
             final CaseRole caseRole = LASOLICITOR;
 
-            final Set<String> localAuthorityUsers = new TreeSet<>();
-            localAuthorityUsers.add(USER_1_ID);
-            localAuthorityUsers.add(USER_2_ID);
+            final List<String> localAuthorityUsers = List.of(USER_1_ID, USER_2_ID);
 
             final Organisation organisation = Organisation.builder()
                 .organisationIdentifier(randomAlphanumeric(5))
@@ -108,9 +104,7 @@ class CaseAccessServiceTest {
         void shouldGrantAccessToAllUsersWithoutOrganisationId() {
             final CaseRole caseRole = LASOLICITOR;
 
-            final Set<String> localAuthorityUsers = new TreeSet<>();
-            localAuthorityUsers.add(USER_1_ID);
-            localAuthorityUsers.add(USER_2_ID);
+            final List<String> localAuthorityUsers = List.of(USER_1_ID, USER_2_ID);
 
             when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
             when(organisationService.findOrganisation()).thenReturn(Optional.empty());
@@ -152,7 +146,7 @@ class CaseAccessServiceTest {
                 .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
 
             final AddCaseAssignedUserRolesRequest assignmentRequest =
-                buildAssignmentRequest(CASE_ID, Set.of(USER_1_ID), null, caseRole);
+                buildAssignmentRequest(CASE_ID, List.of(USER_1_ID), null, caseRole);
 
             caseRoleService.grantCaseRoleToUser(CASE_ID, USER_1_ID, caseRole);
 
@@ -176,7 +170,7 @@ class CaseAccessServiceTest {
         }
     }
 
-    private AddCaseAssignedUserRolesRequest buildAssignmentRequest(Long caseId, Set<String> userIds, String orgId,
+    private AddCaseAssignedUserRolesRequest buildAssignmentRequest(Long caseId, List<String> userIds, String orgId,
                                                                    CaseRole caseRole) {
         final List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()
             .map(userId -> CaseAssignedUserRoleWithOrganisation.builder()

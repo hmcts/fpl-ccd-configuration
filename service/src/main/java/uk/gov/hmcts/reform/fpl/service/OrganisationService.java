@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
@@ -37,9 +36,9 @@ public class OrganisationService {
     private final AuthTokenGenerator authTokenGenerator;
     private final RequestData requestData;
 
-    public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
+    public List<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
         try {
-            return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
+            return getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation());
         } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {
             log.warn("User {} from {} not registered in MO. {}", requestData.userId(), localAuthorityCode,
                 ExceptionUtils.getStackTrace(unregisteredException));
@@ -72,9 +71,9 @@ public class OrganisationService {
         }
     }
 
-    private Set<String> useLocalMapping(String localAuthorityCode) {
+    private List<String> useLocalMapping(String localAuthorityCode) {
         try {
-            return Set.copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
+            return getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode);
         } catch (UnknownLocalAuthorityCodeException exception) {
             throw new UserOrganisationLookupException(
                 format("Can't find users for %s local authority", localAuthorityCode), exception

@@ -16,13 +16,8 @@ import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toCollection;
 
 @Slf4j
 @Service
@@ -36,12 +31,12 @@ public class CaseAccessService {
     private final OrganisationService organisationService;
 
     public void grantCaseRoleToUser(Long caseId, String userId, CaseRole caseRole) {
-        grantCaseAccess(caseId, Set.of(userId), caseRole);
+        grantCaseAccess(caseId, List.of(userId), caseRole);
         log.info("User {} granted {} to case {}", userId, caseRole, caseId);
     }
 
     public void grantCaseRoleToLocalAuthority(Long caseId, String localAuthority, CaseRole caseRole) {
-        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, Collections.emptySet(), caseRole);
+        List<String> localAuthorityUsers = getUsers(caseId, localAuthority, caseRole);
         grantCaseAccess(caseId, localAuthorityUsers, caseRole);
         log.info("Users {} granted {} to case {}", localAuthorityUsers, caseRole, caseId);
     }
@@ -61,7 +56,7 @@ public class CaseAccessService {
         caseAccessDataStoreApi.removeCaseUserRoles(userToken, serviceToken, caseAssignedUserRolesRequest);
     }
 
-    private void grantCaseAccess(Long caseId, Set<String> users, CaseRole caseRole) {
+    private void grantCaseAccess(Long caseId, List<String> users, CaseRole caseRole) {
         try {
             final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
             final String serviceToken = authTokenGenerator.generate();
@@ -91,11 +86,9 @@ public class CaseAccessService {
         }
     }
 
-    private Set<String> getUsers(Long caseId, String localAuthority, Set<String> excludedUsers, CaseRole caseRole) {
+    private List<String> getUsers(Long caseId, String localAuthority, CaseRole caseRole) {
         try {
-            return organisationService.findUserIdsInSameOrganisation(localAuthority).stream()
-                .filter(userId -> !excludedUsers.contains(userId))
-                .collect(toCollection(TreeSet::new));
+            return organisationService.findUserIdsInSameOrganisation(localAuthority);
         } catch (Exception e) {
             throw new GrantCaseAccessException(caseId, localAuthority, caseRole, e);
         }

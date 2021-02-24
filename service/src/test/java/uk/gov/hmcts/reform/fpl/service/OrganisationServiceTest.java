@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.http.HttpStatus.SC_FORBIDDEN;
@@ -78,7 +77,7 @@ class OrganisationServiceTest {
             when(organisationApi.findUsersInOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
                 .thenThrow(feignException(SC_NOT_FOUND));
 
-            Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
+            List<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
             assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
         }
@@ -88,7 +87,7 @@ class OrganisationServiceTest {
             when(organisationApi.findUsersInOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
                 .thenThrow(feignException(SC_INTERNAL_SERVER_ERROR));
 
-            Set<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
+            List<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation("SA");
 
             assertThat(usersIdsWithinSaLa).containsExactlyInAnyOrder("1", "2", "3");
         }
@@ -99,9 +98,9 @@ class OrganisationServiceTest {
             when(organisationApi.findUsersInOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, false))
                 .thenReturn(usersInAnOrganisation);
 
-            Set<String> userIds = organisationService.findUserIdsInSameOrganisation("AN");
+            List<String> userIds = organisationService.findUserIdsInSameOrganisation("AN");
 
-            assertThat(userIds).containsExactlyInAnyOrder("40", "41");
+            assertThat(userIds).containsExactly("40", "41");
             verify(lookupSpy, never()).getUserIds(any());
         }
 
