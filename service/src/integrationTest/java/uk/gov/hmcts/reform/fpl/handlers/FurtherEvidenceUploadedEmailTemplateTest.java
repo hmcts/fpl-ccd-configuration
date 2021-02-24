@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -46,7 +48,7 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
     private static final String LA_EMAIL = "la@example.com";
     private static final String REP_EMAIL = "resp@example.com";
     private static final LocalDateTime HEARING_DATE =
-        LocalDateTime.of(2021, 2, 22, 0,0,0).plusMonths(3);
+        LocalDateTime.of(2021, 2, 22, 0, 0, 0).plusMonths(3);
 
     @Autowired
     FurtherEvidenceUploadedEventHandler underTest;
@@ -58,6 +60,8 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
         Representative representative = Representative
             .builder()
             .email(REP_EMAIL)
+            .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
+            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
             .build();
 
         Respondent respondent = Respondent.builder()
