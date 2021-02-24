@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -71,7 +70,6 @@ public class ManageHearingsController extends CallbackController {
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
-    private final FeatureToggleService featureToggleService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
     private final ValidateEmailService validateEmailService;
 
@@ -193,7 +191,7 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors;
 
-        if (featureToggleService.isAddHearingsInPastEnabled() && isAddingNewHearing(caseData)) {
+        if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
                 caseData.getHearingEndDate());
         } else {
@@ -203,10 +201,8 @@ public class ManageHearingsController extends CallbackController {
             }
         }
 
-        if (featureToggleService.isAddHearingsInPastEnabled()) {
-            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(
-                caseData.getHearingStartDate(), caseData.getHearingEndDate()));
-        }
+        caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(
+            caseData.getHearingStartDate(), caseData.getHearingEndDate()));
 
         caseDetails.getData().put(HAS_SESSION_KEY, YES.getValue());
 
