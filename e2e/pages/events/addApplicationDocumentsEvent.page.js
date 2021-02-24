@@ -11,8 +11,10 @@ module.exports = {
   },
 
   async addApplicationDocument(option, file, name, description) {
-    await I.addAnotherElementToCollection('Documents');
     await I.runAccessibilityTest();
+    console.log('add app documents page 1');
+
+    await I.addAnotherElementToCollection('Documents');
     const index = await I.getActiveElementIndex();
 
     this.selectDocumentType(option, index);
@@ -25,6 +27,8 @@ module.exports = {
     if (description) {
       this.enterWhatIsIncludedInSWET(description, index);
     }
+    await I.runAccessibilityTest();
+    console.log('add app documents page 2');
   },
 
   selectDocumentType(option, index) {

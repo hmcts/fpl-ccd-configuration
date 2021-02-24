@@ -194,6 +194,8 @@ module.exports = {
   },
 
   async enterEpoEndDate(date) {
+    await I.runAccessibilityTest();
+    console.log('create order 1');
     await I.fillDateAndTime(date, this.fields.epo.endDate.id);
   },
 
@@ -255,5 +257,6 @@ module.exports = {
   async selectWhoIsExcluded() {
     I.fillField(this.fields.epo.epoWhoIsExcluded, 'John Doe');
     await I.runAccessibilityTest();
+    console.log('create order 2');
   },
 };

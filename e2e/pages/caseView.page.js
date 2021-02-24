@@ -46,7 +46,8 @@ module.exports = {
         }
       }
     }, 'ccd-case-event-trigger');
-    //await I.runAccessibilityTest();
+    await I.runAccessibilityTest();
+    console.log('case view');
   },
 
   async checkActionsAreAvailable(actions) {
@@ -111,6 +112,8 @@ module.exports = {
     await I.retryUntilExists(() => {
       I.click(task);
     }, 'ccd-case-event-trigger');
+    await I.runAccessibilityTest();
+    console.log('case view 2');
   },
 
   getTabSelector(tab){

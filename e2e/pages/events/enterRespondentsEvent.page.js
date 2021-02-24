@@ -37,6 +37,9 @@ module.exports = {
   async enterRespondent(respondent) {
     const elementIndex = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
+    console.log('enter respondent 1');
+
     I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
     I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
     I.fillField(this.fields(elementIndex).respondent.dateOfBirth.day, respondent.dob.day);
@@ -52,7 +55,6 @@ module.exports = {
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
-    await I.runAccessibilityTest();
   },
 
   async enterRelationshipToChild(relationship) {
@@ -72,6 +74,9 @@ module.exports = {
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
     const elementIndex = await I.getActiveElementIndex();
+
+    await I.runAccessibilityTest();
+    console.log('enter respondent 2');
 
     litigationIssue = litigationIssue.toLowerCase();
     switch (litigationIssue) {

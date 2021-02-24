@@ -16,8 +16,11 @@ module.exports = {
   },
 
   async enterScannedDocument(scannedDocument, file) {
+    await I.runAccessibilityTest();
+    console.log('attach scanned docs 1');
     I.click('Add new');
     await I.runAccessibilityTest();
+    console.log('attach scanned docs 2');
     I.selectOption(this.fields.scannedDoc.type, scannedDocument.type);
     I.attachFile(this.fields.scannedDoc.url, file);
     I.wait(1); //TODO investigate, without this next instruction does not type entire text and goes to next line (flaky)

@@ -37,6 +37,7 @@ module.exports = {
 
   async enterRequestedChange(reason) {
     await I.runAccessibilityTest();
+    console.log('action case management 1');
     await I.fillField(this.fields.orderAction.requestChange, reason);
   },
 
@@ -50,6 +51,8 @@ module.exports = {
     within(this.staticFields.statusRadioGroup.groupName, async () => {
       await I.click(locate('label').withText(this.staticFields.statusRadioGroup.options.judgeRequestedChanges));
     });
+    await I.runAccessibilityTest();
+    console.log('action case management 2');
     await this.enterRequestedChange('Mock reason');
   },
 

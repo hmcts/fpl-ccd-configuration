@@ -24,8 +24,9 @@ module.exports = {
   },
 
   async enterInterpreter(details = 'French translator') {
-    I.click(this.fields.interpreter.yes);
     await I.runAccessibilityTest();
+    console.log('enter attending hearing 1');
+    I.click(this.fields.interpreter.yes);
     I.fillField(this.fields.interpreter.details, details);
   },
 

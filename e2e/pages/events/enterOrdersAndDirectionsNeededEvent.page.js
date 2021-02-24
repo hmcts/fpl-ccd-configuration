@@ -39,8 +39,9 @@ module.exports = {
   },
 
   async checkCareOrder() {
-    I.checkOption(this.fields.orderType.careOrder);
     await I.runAccessibilityTest();
+    console.log('enter orders and directions needed 1');
+    I.checkOption(this.fields.orderType.careOrder);
   },
 
   checkSupervisionOrder() {
@@ -128,6 +129,8 @@ module.exports = {
   },
 
   async enterAddress(address) {
+    await I.runAccessibilityTest();
+    console.log('enter orders and directions needed 2');
     await within(this.fields.removalAddress, () => {
       postcodeLookup.enterAddressManually(address);
     });

@@ -135,6 +135,7 @@ module.exports = {
 
   async enterCorrectedHearingDate(hearingDetails) {
     await I.runAccessibilityTest();
+    console.log('manage hearing event');
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.correctedStartDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.correctedEndDate);
   },

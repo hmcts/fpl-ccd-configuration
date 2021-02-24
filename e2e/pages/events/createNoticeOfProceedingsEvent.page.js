@@ -12,6 +12,7 @@ module.exports = {
   async checkC6() {
     I.checkOption(this.fields.proceedingType.c6);
     await I.runAccessibilityTest();
+    console.log('create notice of proceeding 1');
   },
 
   checkC6A() {

@@ -76,6 +76,8 @@ module.exports = {
   async attachSupportingDocs({name, notes, file}) {
     await I.addAnotherElementToCollection('Case summary or supporting documents');
     const fields = this.fields.supportingDocuments.fields(await I.getActiveElementIndex());
+    await I.runAccessibilityTest();
+    console.log('upload case management order 1');
     I.fillField(fields.name, name);
     I.fillField(fields.notes, notes);
     I.attachFile(fields.document, file);
@@ -92,5 +94,6 @@ module.exports = {
     I.fillField(fields.name, name);
     I.attachFile(fields.document, file);
     await I.runAccessibilityTest();
+    console.log('upload case management order 2');
   },
 };

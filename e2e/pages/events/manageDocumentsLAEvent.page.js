@@ -78,6 +78,8 @@ module.exports = {
   async selectC2FromDropdown() {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields.c2DocumentsList);
+    await I.runAccessibilityTest();
+    console.log('manage documents LA 1');
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
 
@@ -125,6 +127,7 @@ module.exports = {
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
     await this.uploadDocument(supportingEvidenceDocument.document);
     await I.runAccessibilityTest();
+    console.log('manage documents LA 2');
   },
 
   async getActiveElementIndex() {

@@ -10,8 +10,9 @@ module.exports = {
   },
 
   async enterAllocatedJudge(judgeLastName, judgeEmailAddress) {
-    I.click(this.fields.allocatedJudge.judgeTitle);
     await I.runAccessibilityTest();
+    console.log('enter allocated judge');
+    I.click(this.fields.allocatedJudge.judgeTitle);
     I.fillField(this.fields.allocatedJudge.judgeLastName, judgeLastName);
     I.fillField(this.fields.allocatedJudge.judgeEmailAddress, judgeEmailAddress);
   },

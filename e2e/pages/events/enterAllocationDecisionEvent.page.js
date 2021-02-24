@@ -7,10 +7,13 @@ module.exports = {
 
   async selectAllocationDecision(proposal) {
     await I.runAccessibilityTest();
+    console.log('enter allocation decision 1');
     I.click(proposal);
   },
 
-  enterProposalReason(reason) {
+  async enterProposalReason(reason) {
+    await I.runAccessibilityTest();
+    console.log('enter allocation decision 1');
     I.fillField(proposalReason, reason);
   },
 

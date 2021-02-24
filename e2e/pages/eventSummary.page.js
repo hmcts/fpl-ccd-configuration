@@ -9,6 +9,7 @@ module.exports = {
 
   async provideSummary(summary, description) {
     await I.runAccessibilityTest();
+    console.log('event Summary');
     I.fillField(this.fields.summary, summary);
     I.fillField(this.fields.description, description);
   },

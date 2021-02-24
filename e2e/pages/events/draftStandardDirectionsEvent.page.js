@@ -28,11 +28,14 @@ module.exports = {
   async createSDOThroughService() {
     I.click(this.fields.routingRadioGroup.service);
     await I.runAccessibilityTest();
+    console.log('draft standard directions event 1');
     await I.goToNextPage();
   },
 
   async createSDOThroughUpload() {
     I.click(this.fields.routingRadioGroup.upload);
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event 2');
     await I.goToNextPage();
   },
 
@@ -47,6 +50,8 @@ module.exports = {
   },
 
   async skipDateOfIssue(){
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event 3');
     await I.goToNextPage();
   },
 
@@ -61,6 +66,8 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event 4');
     await directions.enterDate('allParties', direction.dueDate);
     await I.goToNextPage();
     await directions.enterDate('localAuthorityDirections', direction.dueDate);

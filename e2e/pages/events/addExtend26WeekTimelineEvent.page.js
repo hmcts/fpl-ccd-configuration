@@ -31,8 +31,11 @@ module.exports = {
 
   async addCaseExtensionDate(){
     await I.runAccessibilityTest();
+    console.log('extend 26 week 1');
     I.fillField(this.fields.caseExtensionDate.day, '10');
     I.fillField(this.fields.caseExtensionDate.month, '10');
     I.fillField(this.fields.caseExtensionDate.year, '2030');
+    await I.runAccessibilityTest();
+    console.log('extend 26 week 2');
   },
 };

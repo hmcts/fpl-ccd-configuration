@@ -21,6 +21,9 @@ module.exports = {
   async enterRepresentative(representative) {
     const elementIndex = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
+    console.log('enter representatives 1');
+
     if (representative.fullName) {
       I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
     }
@@ -44,11 +47,13 @@ module.exports = {
     if (representative.role) {
       I.selectOption(this.fields(elementIndex).representative.role, representative.role);
     }
-    await I.runAccessibilityTest();
   },
 
   async setServingPreferences(servingPreferences) {
     const elementIndex = await I.getActiveElementIndex();
+
+    await I.runAccessibilityTest();
+    console.log('enter representatives 2');
 
     switch (servingPreferences) {
       case 'email':

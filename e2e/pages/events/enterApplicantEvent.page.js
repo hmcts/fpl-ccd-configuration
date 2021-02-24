@@ -26,6 +26,8 @@ module.exports = {
   },
 
   async enterApplicantDetails(applicant, applicantIndex = 0) {
+    await I.runAccessibilityTest();
+    console.log('enter applicant event 1');
     I.fillField(this.fields.applicant(applicantIndex).name, applicant.name);
     this.enterPbaNumber(applicant.pbaNumber, applicantIndex);
     I.fillField(this.fields.applicant(applicantIndex).clientCode, applicant.clientCode);
@@ -39,10 +41,11 @@ module.exports = {
     I.fillField(this.fields.applicant(applicantIndex).mobileNumber, applicant.mobileNumber);
     I.fillField(this.fields.applicant(applicantIndex).jobTitle, applicant.jobTitle);
     I.fillField(this.fields.applicant(applicantIndex).email, applicant.email);
-    await I.runAccessibilityTest();
   },
 
-  enterSolicitorDetails(solicitor) {
+  async enterSolicitorDetails(solicitor) {
+    await I.runAccessibilityTest();
+    console.log('enter applicant event 2');
     if(solicitor.name) {
       I.fillField(this.fields.solicitor.name, solicitor.name);
     }

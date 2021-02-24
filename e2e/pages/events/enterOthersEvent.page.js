@@ -33,8 +33,9 @@ module.exports = {
   async enterOtherDetails(other) {
     const elementIndex = await this.getActiveElementIndex();
 
-    I.fillField(this.fields(elementIndex).name, other.name);
     await I.runAccessibilityTest();
+    console.log('enter other event 1');
+    I.fillField(this.fields(elementIndex).name, other.name);
     I.click(this.fields(elementIndex).DOB.day);
     I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
     I.fillField(this.fields(elementIndex).DOB.month, other.DOB.month);
@@ -49,7 +50,8 @@ module.exports = {
 
   async enterRelationshipToChild(childInformation) {
     const elementIndex = await this.getActiveElementIndex();
-
+    await I.runAccessibilityTest();
+    console.log('enter other event 2');
     I.fillField(this.fields(elementIndex).relationshipToChild, childInformation);
   },
 
