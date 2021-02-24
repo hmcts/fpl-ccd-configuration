@@ -200,7 +200,7 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForRetrieveManagedOrganisation(Boolean toggleState) {
+    void shouldMakeCorrectCallForRetrievingOrganisation(Boolean toggleState) {
         givenToggle(toggleState);
 
         assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
