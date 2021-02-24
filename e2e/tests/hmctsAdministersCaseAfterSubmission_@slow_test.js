@@ -283,11 +283,11 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
 
 Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
-  addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
+  await addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
   addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
   addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
   await I.goToNextPage();
-  addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
+  await addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
   await addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
