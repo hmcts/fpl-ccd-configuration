@@ -152,18 +152,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForDraftOrders(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isDraftOrdersEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("draft-orders"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForFeeAndPayCaseTypeEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
