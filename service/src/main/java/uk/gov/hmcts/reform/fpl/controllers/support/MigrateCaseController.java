@@ -112,9 +112,9 @@ public class MigrateCaseController extends CallbackController {
     private void removeFirstCaseNotes(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
+        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() < 4) {
             throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
-                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+                isEmpty(caseData.getCaseNotes()) ? "none" : caseData.getCaseNotes().size()));
         }
 
         caseData.getCaseNotes().remove(0);

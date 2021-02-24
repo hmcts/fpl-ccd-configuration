@@ -422,7 +422,7 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage("Expected at least 4 case notes but found empty");
+                .hasMessage("Expected at least 4 case notes but found none");
         }
 
         @Test
@@ -439,31 +439,6 @@ class MigrateCaseControllerTest extends AbstractControllerTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage("Expected at least 4 case notes but found 2");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenCaseHaveMoreThanExpectedCaseNotes() {
-            Element<CaseNote> caseNote1 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
-
-            Element<CaseNote> caseNote2 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note2").createdBy("Test").build());
-
-            Element<CaseNote> caseNote3 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note3").createdBy("Test").build());
-
-            Element<CaseNote> caseNote4 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note4").createdBy("Test").build());
-
-            Element<CaseNote> caseNote5 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note5").createdBy("Test").build());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
-                newArrayList(caseNote1, caseNote2, caseNote3, caseNote4, caseNote5));
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Expected at least 4 case notes but found 5");
         }
 
         @Test
