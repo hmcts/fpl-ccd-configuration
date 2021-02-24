@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static net.logstash.logback.encoder.org.apache.commons.lang.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -56,11 +57,10 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                                    UUID removableOrderId,
                                    RemovableOrder removableOrder) {
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
-        String orderTitle = generatedRemovableOrder.getTitle() != null
-            ? generatedRemovableOrder.getTitle() : generatedRemovableOrder.getType();
 
         data.put("orderToBeRemoved", generatedRemovableOrder.getDocument());
-        data.put("orderTitleToBeRemoved", orderTitle);
+        data.put("orderTitleToBeRemoved", defaultIfNull(generatedRemovableOrder.getTitle(),
+            generatedRemovableOrder.getType()));
         data.put("orderIssuedDateToBeRemoved", generatedRemovableOrder.getDateOfIssue());
         data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
     }
