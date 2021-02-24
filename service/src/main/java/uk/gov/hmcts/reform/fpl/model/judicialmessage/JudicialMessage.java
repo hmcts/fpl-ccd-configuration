@@ -33,6 +33,8 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final String isReplying;
     private final String latestMessage;
     private final String messageHistory;
+    private final String replyFrom;
+    private final String replyTo;
 
     public String toLabel() {
         List<String> labels = new ArrayList<>();

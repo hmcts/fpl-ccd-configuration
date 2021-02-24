@@ -91,5 +91,6 @@ module.exports = {
     const fields = this.fields.c21Documents.fields(orderNumber - 1);
     I.fillField(fields.name, name);
     I.attachFile(fields.document, file);
+    await I.runAccessibilityTest();
   },
 };

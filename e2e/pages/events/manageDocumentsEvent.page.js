@@ -28,7 +28,8 @@ module.exports = {
     I.click(this.fields.documentType.correspondence);
   },
 
-  selectC2SupportingDocuments() {
+  async selectC2SupportingDocuments() {
+    await I.runAccessibilityTest();
     I.click(this.fields.documentType.c2);
   },
 

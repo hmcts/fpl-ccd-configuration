@@ -12,6 +12,7 @@ module.exports = {
     },
     c2List: '#c2DynamicList',
     existingMessagesList: '#judicialMessageDynamicList',
+    senderEmail: '#judicialMessageMetaData_sender',
     recipientEmail: '#judicialMessageMetaData_recipient',
     replyingToMessage: {
       id: '#judicialMessageReply_isReplying',
@@ -25,6 +26,8 @@ module.exports = {
     urgency: '#judicialMessageMetaData_urgency',
     latestMessage: '#judicialMessageNote',
     replyMessage: '#judicialMessageReply_latestMessage',
+    replyFrom: '#judicialMessageReply_replyFrom',
+    replyTo: '#judicialMessageReply_replyTo',
   },
 
   selectMessageRelatedToC2() {
@@ -38,6 +41,7 @@ module.exports = {
   async selectC2() {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2List} option:nth-child(2)`);
     I.waitForElement(this.fields.c2List);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.c2List, dropdownLabel);
   },
 
