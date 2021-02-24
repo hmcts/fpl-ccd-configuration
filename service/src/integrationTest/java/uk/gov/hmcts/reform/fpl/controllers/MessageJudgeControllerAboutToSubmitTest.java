@@ -64,6 +64,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .urgency("High urgency")
                 .recipient(MESSAGE_RECIPIENT)
+                .sender(SENDER)
                 .build())
             .build();
 
@@ -102,6 +103,8 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .judicialMessageReply(JudicialMessage.builder()
                 .isReplying(YesNo.YES.getValue())
                 .latestMessage(REPLY)
+                .replyFrom(MESSAGE_RECIPIENT)
+                .replyTo(SENDER)
                 .build())
             .messageJudgeOption(MessageJudgeOptions.REPLY)
             .build();

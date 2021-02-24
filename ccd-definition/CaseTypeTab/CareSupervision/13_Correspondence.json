@@ -8,7 +8,7 @@
     "TabDisplayOrder": 13,
     "CaseFieldID": "correspondenceTabHeading",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "correspondenceDocuments!=\"\" OR correspondenceDocumentsLA!=\"\" OR correspondenceDocumentsLANC!=\"\""
+    "TabShowCondition": "correspondenceDocuments!=\"\" OR correspondenceDocumentsNC!=\"\" OR correspondenceDocumentsLA!=\"\" OR correspondenceDocumentsLANC!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",

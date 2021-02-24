@@ -1,4 +1,3 @@
-/* global process */
 const output = require('codeceptjs').output;
 const lodash = require('lodash');
 const config = require('./config');
@@ -88,7 +87,7 @@ module.exports = function () {
     async completeEvent(button, changeDetails, confirmationPage = false, selector = '.hmcts-banner--success') {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
-        eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
+        await eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
       await this.submitEvent(button, confirmationPage, selector);
     },

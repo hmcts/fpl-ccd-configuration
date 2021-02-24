@@ -72,7 +72,7 @@ Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseView
 
 const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
-  removeOrderEventPage.selectOrderToRemove(labelToSelect);
+  await removeOrderEventPage.selectOrderToRemove(labelToSelect);
   await I.goToNextPage();
   removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
   await I.completeEvent('Submit');
