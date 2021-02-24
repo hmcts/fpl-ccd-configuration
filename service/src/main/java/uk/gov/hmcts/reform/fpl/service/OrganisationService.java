@@ -75,13 +75,13 @@ public class OrganisationService {
         }
     }
 
-    public Optional<Organisation> findManagedOrganisation(String organisationId) {
+    public Optional<Organisation> findOrganisation(String organisationId) {
         try {
             String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-            return ofNullable(organisationApi.findManagedUserOrganisation(userToken,
+            return ofNullable(organisationApi.findOrganisation(userToken,
                 authTokenGenerator.generate(), organisationId));
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
-            log.error("User not registered in MO", ex);
+            log.error("Organisation {} not registered", organisationId);
             return Optional.empty();
         }
     }

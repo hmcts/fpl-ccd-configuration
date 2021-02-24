@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,7 +56,7 @@ class OrganisationServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
+    @Mock(lenient = true)
     private RequestData requestData;
 
     @Spy
@@ -76,7 +75,7 @@ class OrganisationServiceTest {
     @BeforeEach
     void setup() {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN);
-        lenient().when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
     }
 
     @Nested
@@ -206,20 +205,20 @@ class OrganisationServiceTest {
 
         @Test
         void shouldFindOrganisationWhenUserRegisteredInOrganisation() {
-            when(organisationApi.findManagedUserOrganisation(null, SERVICE_AUTH_TOKEN,"ORGSA"))
+            when(organisationApi.findOrganisation(null, SERVICE_AUTH_TOKEN, "ORGSA"))
                 .thenReturn(POPULATED_ORGANISATION);
 
-            Optional<Organisation> actualOrganisation = organisationService.findManagedOrganisation("ORGSA");
+            Optional<Organisation> actualOrganisation = organisationService.findOrganisation("ORGSA");
 
             assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
         }
 
         @Test
         void shouldReturnEmptyOrganisationWhenUserNotRegisteredInOrganisation() {
-            when(organisationApi.findManagedUserOrganisation(null, SERVICE_AUTH_TOKEN,"ORGSA"))
+            when(organisationApi.findOrganisation(null, SERVICE_AUTH_TOKEN, "ORGSA"))
                 .thenThrow(feignException(SC_FORBIDDEN));
 
-            Optional<Organisation> organisation = organisationService.findManagedOrganisation("ORGSA");
+            Optional<Organisation> organisation = organisationService.findOrganisation("ORGSA");
 
             assertThat(organisation).isEmpty();
         }
@@ -228,11 +227,11 @@ class OrganisationServiceTest {
         void shouldRethrowUnexpectedExceptions() {
             Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 
-            when(organisationApi.findManagedUserOrganisation(null, SERVICE_AUTH_TOKEN,"ORGSA"))
+            when(organisationApi.findOrganisation(null, SERVICE_AUTH_TOKEN, "ORGSA"))
                 .thenThrow(expectedException);
 
             Exception actualException = assertThrows(Exception.class, () ->
-                organisationService.findManagedOrganisation("ORGSA"));
+                organisationService.findOrganisation("ORGSA"));
 
             assertThat(actualException).isEqualTo(expectedException);
         }

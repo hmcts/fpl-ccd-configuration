@@ -101,9 +101,9 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldAddManagedOrganisationDetailsToApplicantWhenEps() {
-        when(featureToggleService.isRetrieveManagedOrganisation()).thenReturn(true);
+        when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(true);
 
-        given(organisationApi.findManagedUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
+        given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
             .willReturn(POPULATED_ORGANISATION);
 
         OrganisationPolicy organisationPolicy =

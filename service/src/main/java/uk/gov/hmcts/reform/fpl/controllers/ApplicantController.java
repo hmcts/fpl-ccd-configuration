@@ -47,17 +47,8 @@ public class ApplicantController extends CallbackController {
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        Organisation organisation;
 
-        if (featureToggleService.isRetrieveManagedOrganisation()
-            && ("[EPSMANAGING]").equals(caseData.getOutsourcingPolicy().getOrgPolicyCaseAssignedRole())) {
-            organisation = organisationService.findManagedOrganisation(
-                caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID())
-                .orElse(Organisation.builder().build());
-        } else {
-            organisation =
-                organisationService.findOrganisation().orElse(Organisation.builder().build());
-        }
+        Organisation organisation = getOrganisation(caseData).orElse(Organisation.builder().build());
 
         caseDetails.getData()
             .put(APPLICANTS_PROPERTY, applicantService.expandApplicantCollection(caseData, organisation));
@@ -107,6 +98,15 @@ public class ApplicantController extends CallbackController {
         publishEvent(
             new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest), getCaseDataBefore(callbackRequest))
         );
+    }
+
+    private Optional<Organisation> getOrganisation(CaseData caseData) {
+        if (featureToggleService.isRetrievingOrganisationEnabled()) {
+            String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
+            return organisationService.findOrganisation(organisationId);
+        } else {
+            return organisationService.findOrganisation();
+        }
     }
 
     private List<String> getApplicantEmails(List<Element<Applicant>> applicants) {
