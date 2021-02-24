@@ -55,10 +55,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isAddHearingsInPastEnabled() {
-        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
-    }
-
     public boolean isEpoOrderTypeAndExclusionEnabled() {
         return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
     }

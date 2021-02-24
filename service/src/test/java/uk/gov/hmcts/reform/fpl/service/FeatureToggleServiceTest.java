@@ -116,18 +116,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsAddHearingsInPastEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAddHearingsInPastEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("add-hearings-in-past"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
