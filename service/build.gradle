@@ -120,15 +120,15 @@ task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
 }
 
-task crossbrowser(description: 'Runs crossbrowser tests.') {
-  dependsOn(inStrictOrder(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
-}
-
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
   onlyIf {
     return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
   }
   commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+}
+
+task crossbrowser(description: 'Runs crossbrowser tests.') {
+  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
 }
 
 checkstyle {
