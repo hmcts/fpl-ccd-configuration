@@ -56,10 +56,11 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                                    UUID removableOrderId,
                                    RemovableOrder removableOrder) {
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
-
+        String orderTitle = generatedRemovableOrder.getTitle() != null
+            ? generatedRemovableOrder.getTitle() : generatedRemovableOrder.getType();
 
         data.put("orderToBeRemoved", generatedRemovableOrder.getDocument());
-        data.put("orderTitleToBeRemoved", generatedRemovableOrder.getTitle());
+        data.put("orderTitleToBeRemoved", orderTitle);
         data.put("orderIssuedDateToBeRemoved", generatedRemovableOrder.getDateOfIssue());
         data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
     }

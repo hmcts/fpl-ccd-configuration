@@ -96,6 +96,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 28 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 29 August 2021"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022"),
+                buildListElement(generatedOrders.get(4).getId(), "order 5 - 12 September 2018"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     String.format("Sealed case management order issued on %s",
                     formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
