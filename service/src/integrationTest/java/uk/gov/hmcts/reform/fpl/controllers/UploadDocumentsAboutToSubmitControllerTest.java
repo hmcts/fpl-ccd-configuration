@@ -49,7 +49,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractControllerTest 
     }
 
     @Test
-    void shouldUpdateDocumentsIfDocumentModifiedWhenToggledOn() {
+    void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore() {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 

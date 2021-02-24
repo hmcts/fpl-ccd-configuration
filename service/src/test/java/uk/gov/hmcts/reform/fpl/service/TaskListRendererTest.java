@@ -9,10 +9,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -60,9 +60,10 @@ class TaskListRendererTest {
     }
 
     @Test
-    void shouldRenderTaskListWhenApplicationDocumentsIsToggledOff() {
-        final String expectedTaskList = readString("task-list/expected-task-list.md").trim();
+    void shouldRenderTaskListWhenApplicationDocumentsIsToggledOn() {
+        final String expectedTaskList = readString("task-list/expected-task-list.md")
+            .trim();
 
-        assertThat(taskListRenderer.render(getTasks(DOCUMENTS))).isEqualTo(expectedTaskList);
+        assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(expectedTaskList);
     }
 }

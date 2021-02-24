@@ -1035,7 +1035,7 @@ class CaseSubmissionGenerationServiceTest {
     }
 
     @Test
-    void shouldReturnDocmosisAnnexToggledOn() {
+    void shouldBuildExpectedDocmosisAnnexDocumentsWhenApplicationDocumentsIncludeAnnexDocumentTypes() {
         when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
 
         DocmosisCaseSubmission actual = templateDataGenerationService.getTemplateData(givenCaseData);

@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -44,7 +46,8 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 @ContextConfiguration(classes = {EventsChecker.class, LocalValidatorFactoryBean.class})
 @TestInstance(PER_CLASS)
 class EventsCheckerTest {
-
+    @MockBean
+    private DocumentsChecker documentsChecker;
     @MockBean
     private CaseNameChecker caseNameChecker;
     @MockBean
@@ -120,7 +123,7 @@ class EventsCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getEventsValidators")
-    void shouldCheckEventIsAvailable(Event event, EventChecker validator) {
+    void shouldCheckEventIsAvailableAndShouldNotValidateAgainstDocumentsChecker(Event event, EventChecker validator) {
         final boolean isAvailable = RandomUtils.nextBoolean();
 
         when(validator.isAvailable(caseData)).thenReturn(isAvailable);
@@ -128,6 +131,7 @@ class EventsCheckerTest {
         assertThat(eventsChecker.isAvailable(event, caseData)).isEqualTo(isAvailable);
 
         verify(validator).isAvailable(caseData);
+        verify(documentsChecker, never()).validate(any());
     }
 
     @AfterEach

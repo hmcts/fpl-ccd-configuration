@@ -30,7 +30,6 @@ public class DocmosisAnnexDocuments {
     @Deprecated
     private final List<DocmosisSocialWorkOther> others;
 
-    private final boolean featureToggleOn;
     private final List<DocmosisAnnexDocument> documents;
     private final String toFollowReason;
 }
