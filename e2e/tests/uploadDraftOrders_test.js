@@ -87,7 +87,7 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
-  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
+  await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
   await I.goToNextPage();
   I.see('mockFile.docx');
   reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
@@ -107,7 +107,7 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
-  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
+  await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
   await I.goToNextPage();
   I.see('mockFile.docx');
 
@@ -151,7 +151,7 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
 
-  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
+  await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
 

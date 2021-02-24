@@ -36,6 +36,7 @@ module.exports = {
   },
 
   async enterRequestedChange(reason) {
+    await I.runAccessibilityTest();
     await I.fillField(this.fields.orderAction.requestChange, reason);
   },
 
@@ -82,6 +83,7 @@ module.exports = {
   },
 
   async enterDateOfIssue(date) {
+    await I.runAccessibilityTest();
     await I.fillDate(date);
     await I.goToNextPage();
   },
