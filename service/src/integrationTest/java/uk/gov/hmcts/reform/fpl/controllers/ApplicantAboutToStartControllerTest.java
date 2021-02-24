@@ -35,7 +35,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
-    private SystemUpdateUserConfiguration userConfig =
+    private final SystemUpdateUserConfiguration userConfig =
         new SystemUpdateUserConfiguration("fpl-system-update@mailnesia.com", "Password12");
 
     @MockBean
@@ -92,7 +92,9 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         ContactInformation organisationContact =
             POPULATED_ORGANISATION.getContactInformation().get(0);
 
-        Applicant expectedApplicant = buildApplicant(returnedCaseData, organisationContact);
+        Applicant expectedApplicant = buildApplicant(returnedCaseData,
+            organisationContact,
+            POPULATED_ORGANISATION.getName());
 
         assertThat(returnedCaseData.getApplicants())
             .extracting(Element::getValue)
@@ -100,7 +102,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddManagedOrganisationDetailsToApplicantWhenCaseIsOutsourced() {
+    void shouldAddManagedOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOn() {
         when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(true);
 
         given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
@@ -120,18 +122,49 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
         ContactInformation organisationContact =
             POPULATED_ORGANISATION.getContactInformation().get(0);
 
-        Applicant expectedApplicant = buildApplicant(returnedCaseData, organisationContact);
+        Applicant expectedApplicant = buildApplicant(returnedCaseData,
+            organisationContact,
+            POPULATED_ORGANISATION.getName());
 
         assertThat(returnedCaseData.getApplicants())
             .extracting(Element::getValue)
             .containsExactly(expectedApplicant);
     }
 
-    private static Applicant buildApplicant(CaseData returnedCaseData, ContactInformation organisationContact) {
+    @Test
+    void shouldNotAddOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOff() {
+        when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(false);
+
+        given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
+            .willReturn(POPULATED_ORGANISATION);
+
+        OrganisationPolicy organisationPolicy = OrganisationPolicy.builder().build();
+
+        OrganisationPolicy localAuthorityPolicy =
+            OrganisationPolicy.builder().organisation(
+                uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("ORGSA")
+                    .build()).build();
+
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(
+            CaseData.builder().localAuthorityPolicy(localAuthorityPolicy)
+                .outsourcingPolicy(organisationPolicy).build()));
+
+        Applicant expectedApplicant = buildApplicant(returnedCaseData,
+            ContactInformation.builder().build(),
+            EMPTY_ORGANISATION.getName());
+
+
+        assertThat(returnedCaseData.getApplicants())
+            .extracting(Element::getValue)
+            .containsExactly(expectedApplicant);
+    }
+
+    private static Applicant buildApplicant(CaseData returnedCaseData, ContactInformation organisationContact,
+                                            String organisationName) {
         return Applicant.builder()
             .party(ApplicantParty.builder()
                 .partyId(returnedCaseData.getApplicants().get(0).getValue().getParty().getPartyId())
-                .organisationName(POPULATED_ORGANISATION.getName())
+                .organisationName(organisationName)
                 .address(Address.builder()
                     .addressLine1(organisationContact.getAddressLine1())
                     .addressLine2(organisationContact.getAddressLine2())
