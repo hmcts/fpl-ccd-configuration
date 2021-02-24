@@ -206,6 +206,7 @@ class OrganisationServiceTest {
         private static final String USER = "user";
         private static final String PASSWORD = "password";
         private static final String TOKEN = "token";
+        private static final String ORGANISATION_ID = "ORGSA";
 
         @BeforeEach
         void init() {
@@ -216,20 +217,20 @@ class OrganisationServiceTest {
 
         @Test
         void shouldFindOrganisationWhenExists() {
-            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
                 .thenReturn(POPULATED_ORGANISATION);
 
-            Optional<Organisation> actualOrganisation = organisationService.findOrganisation("ORGSA");
+            Optional<Organisation> actualOrganisation = organisationService.findOrganisation(ORGANISATION_ID);
 
             assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
         }
 
         @Test
         void shouldReturnEmptyOrganisationWhenOrganisationDoesNotExists() {
-            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
                 .thenThrow(feignException(SC_FORBIDDEN));
 
-            Optional<Organisation> organisation = organisationService.findOrganisation("ORGSA");
+            Optional<Organisation> organisation = organisationService.findOrganisation(ORGANISATION_ID);
 
             assertThat(organisation).isEmpty();
         }
@@ -238,11 +239,11 @@ class OrganisationServiceTest {
         void shouldRethrowUnexpectedExceptions() {
             Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 
-            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
                 .thenThrow(expectedException);
 
             Exception actualException = assertThrows(Exception.class, () ->
-                organisationService.findOrganisation("ORGSA"));
+                organisationService.findOrganisation(ORGANISATION_ID));
 
             assertThat(actualException).isEqualTo(expectedException);
         }

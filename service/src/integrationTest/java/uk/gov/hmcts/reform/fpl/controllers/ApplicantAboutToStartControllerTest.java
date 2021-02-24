@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -35,8 +37,10 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
-    private final SystemUpdateUserConfiguration userConfig =
-        new SystemUpdateUserConfiguration("fpl-system-update@mailnesia.com", "Password12");
+    private static final String ORGANISATION_ID = "ORGSA";
+
+    @Autowired
+    private SystemUpdateUserConfiguration userConfig;
 
     @MockBean
     private IdamClient idamClient;
@@ -105,19 +109,19 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     void shouldAddManagedOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOn() {
         when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(true);
 
-        given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
+        given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
             .willReturn(POPULATED_ORGANISATION);
 
-        OrganisationPolicy organisationPolicy = OrganisationPolicy.builder().build();
+        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
 
-        OrganisationPolicy localAuthorityPolicy =
-            OrganisationPolicy.builder().organisation(
-                uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("ORGSA")
-                    .build()).build();
+        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID,
+            CaseRole.LASOLICITOR);
 
-        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(
-            CaseData.builder().localAuthorityPolicy(localAuthorityPolicy)
-                .outsourcingPolicy(organisationPolicy).build()));
+        CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(localAuthorityPolicy)
+            .outsourcingPolicy(outsourcingPolicy).build();
+
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
         ContactInformation organisationContact =
             POPULATED_ORGANISATION.getContactInformation().get(0);
@@ -135,24 +139,20 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     void shouldNotAddOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOff() {
         when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(false);
 
-        given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
-            .willReturn(POPULATED_ORGANISATION);
+        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
 
-        OrganisationPolicy organisationPolicy = OrganisationPolicy.builder().build();
+        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID,
+            CaseRole.LASOLICITOR);
 
-        OrganisationPolicy localAuthorityPolicy =
-            OrganisationPolicy.builder().organisation(
-                uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("ORGSA")
-                    .build()).build();
+        CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(localAuthorityPolicy)
+            .outsourcingPolicy(outsourcingPolicy).build();
 
-        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(
-            CaseData.builder().localAuthorityPolicy(localAuthorityPolicy)
-                .outsourcingPolicy(organisationPolicy).build()));
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
         Applicant expectedApplicant = buildApplicant(returnedCaseData,
             ContactInformation.builder().build(),
             EMPTY_ORGANISATION.getName());
-
 
         assertThat(returnedCaseData.getApplicants())
             .extracting(Element::getValue)
