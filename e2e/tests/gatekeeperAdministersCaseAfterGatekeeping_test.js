@@ -23,7 +23,7 @@ Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async
 
 Scenario('Gatekeeper adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
@@ -42,7 +42,7 @@ Scenario('Gatekeeper make allocation decision based on proposal', async ({I, cas
 Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
-  enterAllocationDecisionEventPage.selectAllocationDecision('Magistrate');
+  await enterAllocationDecisionEventPage.selectAllocationDecision('Magistrate');
   enterAllocationDecisionEventPage.enterProposalReason('new information was acquired');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
@@ -72,7 +72,7 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
-  draftStandardDirectionsEventPage.checkC6();
+  await draftStandardDirectionsEventPage.checkC6();
   draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);

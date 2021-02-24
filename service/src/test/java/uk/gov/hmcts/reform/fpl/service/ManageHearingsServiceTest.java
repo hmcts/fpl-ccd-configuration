@@ -1178,6 +1178,49 @@ class ManageHearingsServiceTest {
         }
 
         @Test
+        void shouldVacateHearingWhenTheHearingDoesNotHaveACaseManagementOrderId() {
+            when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
+
+            HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
+                .reason("Reason 1")
+                .build();
+
+            final Element<HearingBooking> hearingToBeVacated = element(randomHearing().toBuilder()
+                .caseManagementOrderId(null)
+                .build());
+
+            final Element<HearingBooking> reListedHearing = element(RE_LISTED_HEARING_ID, randomHearing());
+            final Element<HearingBooking> vacatedHearing = element(hearingToBeVacated.getId(),
+                hearingToBeVacated.getValue().toBuilder()
+                    .status(HearingStatus.VACATED_AND_RE_LISTED)
+                    .cancellationReason(vacatedReason.getReason())
+                    .build());
+
+            final Element<HearingFurtherEvidenceBundle> documentBundle = randomDocumentBundle(hearingToBeVacated);
+
+            final Element<HearingFurtherEvidenceBundle> reListedHearingBundle = element(RE_LISTED_HEARING_ID,
+                documentBundle.getValue().toBuilder()
+                    .hearingName(reListedHearing.getValue().toLabel())
+                    .build());
+
+            final Element<HearingOrder> linkedDraftCMO = element(LINKED_CMO_ID, HearingOrder.builder().build());
+
+            final CaseData caseData = CaseData.builder()
+                .hearingDetails(newArrayList(hearingToBeVacated))
+                .hearingFurtherEvidenceDocuments(newArrayList(documentBundle))
+                .vacatedReason(vacatedReason)
+                .draftUploadedCMOs(List.of(linkedDraftCMO))
+                .build();
+
+            service.vacateAndReListHearing(caseData, hearingToBeVacated.getId(), reListedHearing.getValue());
+
+            assertThat(caseData.getHearingDetails()).containsExactly(reListedHearing);
+            assertThat(caseData.getCancelledHearingDetails()).containsExactly(vacatedHearing);
+            assertThat(caseData.getHearingFurtherEvidenceDocuments()).containsExactly(reListedHearingBundle);
+            assertThat(caseData.getDraftUploadedCMOs()).containsExactly(linkedDraftCMO);
+        }
+
+        @Test
         void shouldVacateAndUpdateHearingOrdersBundleDrafts() {
             when(identityService.generateId()).thenReturn(RE_LISTED_HEARING_ID);
 

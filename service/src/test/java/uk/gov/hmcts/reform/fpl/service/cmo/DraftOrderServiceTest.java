@@ -143,6 +143,13 @@ class DraftOrderServiceTest {
             assertThat(eventData.getFutureHearingsForCMO()).isEqualTo(futureHearingList);
             assertThat(eventData.getHearingsForHearingOrderDrafts()).isEqualTo(allHearings);
         }
+
+        @Test
+        void shouldNotSetDefaultHearingOrderKind() {
+            UploadDraftOrdersData eventData = service.getInitialData(CaseData.builder().build());
+
+            assertThat(eventData.getHearingOrderDraftKind()).isEmpty();
+        }
     }
 
     @Nested
