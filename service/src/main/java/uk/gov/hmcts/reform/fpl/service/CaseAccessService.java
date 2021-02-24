@@ -16,13 +16,9 @@ import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toCollection;
 
 @Slf4j
 @Service
@@ -41,7 +37,7 @@ public class CaseAccessService {
     }
 
     public void grantCaseRoleToLocalAuthority(Long caseId, String localAuthority, CaseRole caseRole) {
-        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, Collections.emptySet(), caseRole);
+        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, caseRole);
         grantCaseAccess(caseId, localAuthorityUsers, caseRole);
         log.info("Users {} granted {} to case {}", localAuthorityUsers, caseRole, caseId);
     }
@@ -91,11 +87,9 @@ public class CaseAccessService {
         }
     }
 
-    private Set<String> getUsers(Long caseId, String localAuthority, Set<String> excludedUsers, CaseRole caseRole) {
+    private Set<String> getUsers(Long caseId, String localAuthority, CaseRole caseRole) {
         try {
-            return organisationService.findUserIdsInSameOrganisation(localAuthority).stream()
-                .filter(userId -> !excludedUsers.contains(userId))
-                .collect(toCollection(TreeSet::new));
+            return organisationService.findUserIdsInSameOrganisation(localAuthority);
         } catch (Exception e) {
             throw new GrantCaseAccessException(caseId, localAuthority, caseRole, e);
         }
