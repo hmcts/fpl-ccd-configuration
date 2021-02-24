@@ -101,12 +101,18 @@ public class ApplicantController extends CallbackController {
     }
 
     private Optional<Organisation> getOrganisation(CaseData caseData) {
-        if (featureToggleService.isRetrievingOrganisationEnabled()) {
-            String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
-            return organisationService.findOrganisation(organisationId);
-        } else {
-            return organisationService.findOrganisation();
+        boolean isCaseOutsourced = caseData.getOutsourcingPolicy() != null;
+
+        if (isCaseOutsourced) {
+            if (featureToggleService.isRetrievingOrganisationEnabled()) {
+                String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
+                return organisationService.findOrganisation(organisationId);
+            } else {
+                return Optional.empty();
+            }
         }
+
+        return organisationService.findOrganisation();
     }
 
     private List<String> getApplicantEmails(List<Element<Applicant>> applicants) {

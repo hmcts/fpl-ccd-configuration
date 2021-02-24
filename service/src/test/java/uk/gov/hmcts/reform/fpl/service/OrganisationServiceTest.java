@@ -166,7 +166,7 @@ class OrganisationServiceTest {
     }
 
     @Nested
-    class FindOrganisation {
+    class FindUserOrganisation {
 
         @Test
         void shouldFindOrganisationWhenUserRegisteredInOrganisation() {
@@ -201,11 +201,22 @@ class OrganisationServiceTest {
     }
 
     @Nested
-    class FindManagedOrganisation {
+    class FindOrganisation {
+
+        private static final String USER = "user";
+        private static final String PASSWORD = "password";
+        private static final String TOKEN = "token";
+
+        @BeforeEach
+        void init() {
+            when(userConfig.getUserName()).thenReturn(USER);
+            when(userConfig.getPassword()).thenReturn(PASSWORD);
+            when(idamClient.getAccessToken(USER, PASSWORD)).thenReturn(TOKEN);
+        }
 
         @Test
-        void shouldFindOrganisationWhenUserRegisteredInOrganisation() {
-            when(organisationApi.findOrganisation(null, SERVICE_AUTH_TOKEN, "ORGSA"))
+        void shouldFindOrganisationWhenExists() {
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
                 .thenReturn(POPULATED_ORGANISATION);
 
             Optional<Organisation> actualOrganisation = organisationService.findOrganisation("ORGSA");
@@ -214,8 +225,8 @@ class OrganisationServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyOrganisationWhenUserNotRegisteredInOrganisation() {
-            when(organisationApi.findOrganisation(null, SERVICE_AUTH_TOKEN, "ORGSA"))
+        void shouldReturnEmptyOrganisationWhenOrganisationDoesNotExists() {
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
                 .thenThrow(feignException(SC_FORBIDDEN));
 
             Optional<Organisation> organisation = organisationService.findOrganisation("ORGSA");
@@ -227,7 +238,7 @@ class OrganisationServiceTest {
         void shouldRethrowUnexpectedExceptions() {
             Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
 
-            when(organisationApi.findOrganisation(null, SERVICE_AUTH_TOKEN, "ORGSA"))
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
                 .thenThrow(expectedException);
 
             Exception actualException = assertThrows(Exception.class, () ->

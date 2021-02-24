@@ -100,14 +100,13 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldAddManagedOrganisationDetailsToApplicantWhenEps() {
+    void shouldAddManagedOrganisationDetailsToApplicantWhenCaseIsOutsourced() {
         when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(true);
 
         given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, "ORGSA"))
             .willReturn(POPULATED_ORGANISATION);
 
-        OrganisationPolicy organisationPolicy =
-            OrganisationPolicy.builder().orgPolicyCaseAssignedRole("[EPSMANAGING]").build();
+        OrganisationPolicy organisationPolicy = OrganisationPolicy.builder().build();
 
         OrganisationPolicy localAuthorityPolicy =
             OrganisationPolicy.builder().organisation(
