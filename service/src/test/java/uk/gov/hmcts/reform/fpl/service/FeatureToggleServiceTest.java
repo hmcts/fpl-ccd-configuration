@@ -193,7 +193,7 @@ class FeatureToggleServiceTest {
 
         assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("retrieve-managed-organisation"),
+            eq("retrieve-organisation"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
