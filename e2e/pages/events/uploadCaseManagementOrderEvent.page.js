@@ -86,9 +86,6 @@ module.exports = {
   async attachC21({name, file, orderNumber=1}) {
     const numberOfElements = await I.grabNumberOfVisibleElements('.collection-title');
 
-    await I.runAccessibilityTest();
-    console.log('upload case management order NEW');
-
     for (let i = 0; i < orderNumber - numberOfElements; i++) {
       await I.addAnotherElementToCollection();
     }

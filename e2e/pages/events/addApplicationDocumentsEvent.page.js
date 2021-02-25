@@ -11,16 +11,11 @@ module.exports = {
   },
 
   async addApplicationDocument(option, file, name, description) {
-    //await I.runAccessibilityTest();
-    //console.log('add app documents page 1');
 
     await I.addAnotherElementToCollection('Documents');
     const index = await I.getActiveElementIndex();
 
-    await I.runAccessibilityTest();
-    console.log('add app documents page NEW');
-
-    this.selectDocumentType(option, index);
+    await this.selectDocumentType(option, index);
     this.uploadFile(file, index);
 
     if (name) {
@@ -30,11 +25,11 @@ module.exports = {
     if (description) {
       this.enterWhatIsIncludedInSWET(description, index);
     }
-    //await I.runAccessibilityTest();
-    //console.log('add app documents page 2');
   },
 
-  selectDocumentType(option, index) {
+  async selectDocumentType(option, index) {
+    await I.runAccessibilityTest();
+    console.log('add app documents page NEW 1');
     I.selectOption(this.fields(index).documentType, option);
   },
 

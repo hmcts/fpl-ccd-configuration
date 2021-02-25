@@ -55,24 +55,29 @@ module.exports = {
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, respondent.relationshipToChild);
+    await I.runAccessibilityTest();
+    console.log('enter respondent NEW1');
   },
 
   async enterRelationshipToChild(relationship) {
     const elementIndex = await I.getActiveElementIndex();
 
-    await I.runAccessibilityTest();
-    console.log('enter respondent NEW');
-
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, relationship);
+    await I.runAccessibilityTest();
+    console.log('enter respondent NEW2');
   },
 
   async enterContactDetailsHidden(option, reason = '') {
     const elementIndex = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
+    console.log('enter respondent NEW3');
     I.click(this.fields(elementIndex).contactDetailsHidden(option).option);
     if (option === 'Yes') {
       I.fillField(this.fields(elementIndex).contactDetailsHidden(option).reason, reason);
     }
+    await I.runAccessibilityTest();
+    console.log('enter respondent NEW4');
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
@@ -96,5 +101,7 @@ module.exports = {
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).respondent.litigationIssuesDetails, litigationIssueDetail);
     }
+    await I.runAccessibilityTest();
+    console.log('enter respondent NEW5');
   },
 };

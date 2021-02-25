@@ -26,8 +26,8 @@ module.exports = {
   },
 
   async enterApplicantDetails(applicant, applicantIndex = 0) {
-    //await I.runAccessibilityTest();
-    //console.log('enter applicant event 1');
+    await I.runAccessibilityTest();
+    console.log('enter applicant event 1');
     I.fillField(this.fields.applicant(applicantIndex).name, applicant.name);
     this.enterPbaNumber(applicant.pbaNumber, applicantIndex);
     I.fillField(this.fields.applicant(applicantIndex).clientCode, applicant.clientCode);
@@ -36,8 +36,8 @@ module.exports = {
       await postcodeLookup.enterAddressIfNotPresent(applicant.address);
     });
 
-    await I.runAccessibilityTest();
-    console.log('enter applicant event NEW');
+    //await I.runAccessibilityTest();
+    //console.log('enter applicant event NEW');
 
     I.fillField(this.fields.applicant(applicantIndex).telephone, applicant.telephoneNumber);
     I.fillField(this.fields.applicant(applicantIndex).nameOfPersonToContact, applicant.nameOfPersonToContact);
