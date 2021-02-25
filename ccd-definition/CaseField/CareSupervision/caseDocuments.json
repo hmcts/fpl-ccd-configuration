@@ -6,7 +6,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingFurtherEvidenceBundle",
     "Label": "Further evidence documents for hearings",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -15,7 +16,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "HMCTS further evidence documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -35,7 +37,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Local authority further evidence documents",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -55,7 +58,8 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "Label": "Correspondence uploaded by HMCTS",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -96,6 +100,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "CourtBundleV2",
     "Label": "Court bundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
