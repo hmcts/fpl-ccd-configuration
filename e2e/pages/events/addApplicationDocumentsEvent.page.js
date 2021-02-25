@@ -17,6 +17,9 @@ module.exports = {
     await I.addAnotherElementToCollection('Documents');
     const index = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
+    console.log('add app documents page NEW');
+
     this.selectDocumentType(option, index);
     this.uploadFile(file, index);
 

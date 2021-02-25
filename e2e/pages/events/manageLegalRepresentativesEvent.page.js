@@ -37,7 +37,6 @@ module.exports = {
       I.fillField(this.fields(elementIndex).legalRepresentative.telephone, legalRepresentative.telephone);
     }
     await I.runAccessibilityTest();
-    console.log('manage legal representative 1');
   },
 
   async setRolePreferences(rolePreferences) {
@@ -53,8 +52,6 @@ module.exports = {
       default:
         throw new Error(`Unsupported representative serving preferences ${rolePreferences}`);
     }
-    await I.runAccessibilityTest();
-    console.log('manage legal representative 2');
   },
 
   async getActiveElementIndex() {

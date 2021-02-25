@@ -40,11 +40,15 @@ module.exports = {
   },
 
   async uploadPreparedSDO(file) {
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event NEW 2');
     I.attachFile(this.fields.file.preparedSDO, file);
     await I.goToNextPage();
   },
 
   async uploadReplacementSDO(file) {
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event NEW 1');
     I.attachFile(this.fields.file.replacementSDO, file);
     await I.goToNextPage();
   },
@@ -56,6 +60,8 @@ module.exports = {
   },
 
   async enterDateOfIssue(date){
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event NEW 3');
     await I.fillDate(date);
     await I.goToNextPage();
   },
@@ -66,8 +72,6 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    //await I.runAccessibilityTest();
-    //console.log('draft standard directions event 4');
     await directions.enterDate('allParties', direction.dueDate);
     await I.goToNextPage();
     await directions.enterDate('localAuthorityDirections', direction.dueDate);
@@ -87,6 +91,8 @@ module.exports = {
   },
 
   async markAsFinal() {
+    await I.runAccessibilityTest();
+    console.log('draft standard directions event NEW 4');
     I.click(this.fields.statusRadioGroup.sealed);
     await I.goToNextPage();
   },

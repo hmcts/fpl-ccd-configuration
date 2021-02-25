@@ -48,7 +48,6 @@ module.exports = {
 
   async enterChildDetails(firstName, lastName, day, month, year, gender = 'Boy') {
     const elementIndex = await this.getActiveElementIndex();
-    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
     I.fillField(this.fields(elementIndex).child.dateOfBirth.day, day);
@@ -82,8 +81,6 @@ module.exports = {
   async enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
     const elementIndex = await this.getActiveElementIndex();
 
-    await I.runAccessibilityTest();
-    console.log('enter children event 2');
     I.fillField(this.fields(elementIndex).child.keyDates, keyDates);
   },
 
@@ -102,8 +99,6 @@ module.exports = {
   async enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
     const elementIndex = await this.getActiveElementIndex();
 
-    await I.runAccessibilityTest();
-    console.log('enter children event 3');
     I.fillField(this.fields(elementIndex).child.mothersName, motherName);
     I.fillField(this.fields(elementIndex).child.fathersName, fatherName);
     I.selectOption(this.fields(elementIndex).child.fatherResponsible, fatherResponsible);

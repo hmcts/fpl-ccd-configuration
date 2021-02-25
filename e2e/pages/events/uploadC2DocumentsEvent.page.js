@@ -36,6 +36,8 @@ module.exports = {
     I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
     I.fillDateAndTime(c2SupportingDocuments.date, this.fields.supportingDocuments.dateAndTime);
     I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
+    await I.runAccessibilityTest();
+    console.log('upload c2 doc NEW');
   },
 
   usePbaPayment(usePbaPayment=true) {

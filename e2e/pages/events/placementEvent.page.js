@@ -28,6 +28,8 @@ module.exports = {
   },
 
   async selectChild(childName){
+    await I.runAccessibilityTest();
+    console.log('placement event NEW');
     await I.selectOption(this.fields().childList, childName);
     await I.goToNextPage();
   },
@@ -38,7 +40,6 @@ module.exports = {
 
   async addSupportingDocument(index, type, file, description = '') {
     await I.runAccessibilityTest();
-    console.log('placement event 1');
     await I.addAnotherElementToCollection('Upload supporting documents');
     await I.selectOption(this.fields(index).placement.supportingDocuments.type, type);
     await I.attachFile(this.fields(index).placement.supportingDocuments.file, file);
@@ -46,8 +47,6 @@ module.exports = {
   },
 
   async addConfidentialDocument(index, type, file, description = '') {
-    //await I.runAccessibilityTest();
-    //console.log('placement event 2'); // this one
     await I.addAnotherElementToCollection('Upload confidential documents');
     await I.selectOption(this.fields(index).placement.confidentialDocuments.type, type);
     await I.attachFile(this.fields(index).placement.confidentialDocuments.file, file);
@@ -55,8 +54,6 @@ module.exports = {
   },
 
   async addOrderOrNotice(index, type, file, description) {
-    //await I.runAccessibilityTest();
-    //console.log('placement event 3'); // this one
     await I.addAnotherElementToCollection('Upload placement order and notices');
     await I.selectOption(this.fields(index).placement.noticeAndOrders.type, type);
     await I.attachFile(this.fields(index).placement.noticeAndOrders.file, file);

@@ -60,6 +60,9 @@ module.exports = {
   async enterRelationshipToChild(relationship) {
     const elementIndex = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
+    console.log('enter respondent NEW');
+
     I.fillField(this.fields(elementIndex).respondent.relationshipToChild, relationship);
   },
 

@@ -36,6 +36,9 @@ module.exports = {
       await postcodeLookup.enterAddressIfNotPresent(applicant.address);
     });
 
+    await I.runAccessibilityTest();
+    console.log('enter applicant event NEW');
+
     I.fillField(this.fields.applicant(applicantIndex).telephone, applicant.telephoneNumber);
     I.fillField(this.fields.applicant(applicantIndex).nameOfPersonToContact, applicant.nameOfPersonToContact);
     I.fillField(this.fields.applicant(applicantIndex).mobileNumber, applicant.mobileNumber);

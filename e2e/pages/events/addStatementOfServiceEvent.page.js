@@ -31,7 +31,6 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     await I.runAccessibilityTest();
-    console.log('add statement of service 1');
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
     this.enterRecipientsAddress(elementIndex, recipients);
@@ -45,8 +44,6 @@ module.exports = {
     within(this.fields(elementIndex).recipients.sentBy.email, () => {
       I.fillField(this.fields(elementIndex).recipients.emailAddress, 'email@email.com');
     },);
-    await I.runAccessibilityTest();
-    console.log('add statement of service 2');
   },
 
   giveDeclaration() {

@@ -18,15 +18,10 @@ module.exports = {
   async enterThresholdCriteriaDetails() {
     I.checkOption(this.fields.thresholdReason.notReceivingCare);
     await I.runAccessibilityTest();
-    console.log('enter grounds for application event 1');
     I.fillField(this.fields.thresholdDetails, 'mock threshold details');
   },
 
   async enterGroundsForEmergencyProtectionOrder() {
-
-    await I.runAccessibilityTest();
-    console.log('enter grounds for application event 2');
-
     I.checkOption(this.fields.groundsForApplication.harmIfNotMoved);
     I.checkOption(this.fields.groundsForApplication.harmIfMoved);
     I.checkOption(this.fields.groundsForApplication.urgentAccessRequired);

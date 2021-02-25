@@ -15,7 +15,6 @@ module.exports = {
   },
 
   async enterProposalReason(reason) {
-    await I.runAccessibilityTest();
     console.log('enter allocation proposal 2');
     I.fillField(this.fields.proposalReason, reason);
   },

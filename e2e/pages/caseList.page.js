@@ -49,8 +49,10 @@ module.exports = {
     await I.waitForVisible(this.fields.caseName, 30);
     //await I.runAccessibilityTest();
     //console.log('case list');
-    I.fillField(this.fields.caseName, caseName);
-    I.click(this.fields.search);
+    await I.fillField(this.fields.caseName, caseName);
+    await I.click(this.fields.search);
+    await I.runAccessibilityTest();
+    console.log('case list NEW');
   },
 
   setInitialSearchFields(state='Any') {

@@ -10,7 +10,6 @@ module.exports = {
 
   async giveConsent() {
     await I.runAccessibilityTest();
-    console.log('submit app event');
     I.checkOption(this.fields.consentCheckbox);
   },
 
