@@ -5,7 +5,7 @@
     "ListElementCode": "email",
     "FieldType": "Text",
     "ElementLabel": "Email",
-    "HintText": "Case notifications will go to this email address",
+    "HintText": "For example, joe.bloggs@la.gov.uk",
     "SecurityClassification": "Public"
   }
 ]

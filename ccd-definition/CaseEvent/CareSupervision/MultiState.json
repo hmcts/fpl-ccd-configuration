@@ -253,7 +253,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterApplicant",
-    "Name": "Applicant's details",
+    "Name": "Your organisation's details",
     "Description": "Entering the applicant for the case",
     "DisplayOrder": 6,
     "PreConditionState(s)": "*",
