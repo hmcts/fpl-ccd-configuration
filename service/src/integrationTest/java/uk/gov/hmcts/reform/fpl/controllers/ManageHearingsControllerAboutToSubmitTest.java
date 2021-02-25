@@ -34,6 +34,7 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
@@ -78,7 +79,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .noticeOfHearingNotes(newHearing.getAdditionalNotes())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
         assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
@@ -97,7 +98,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
             .children1(createPopulatedChildren(now().toLocalDate()))
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sendNoticeOfHearing("Yes")
             .hearingType(newHearing.getType())
             .hearingVenue(newHearing.getVenue())
@@ -108,7 +109,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .noticeOfHearingNotes(newHearing.getAdditionalNotes())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
         HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
             DocumentReference.buildFromDocument(document)).build();

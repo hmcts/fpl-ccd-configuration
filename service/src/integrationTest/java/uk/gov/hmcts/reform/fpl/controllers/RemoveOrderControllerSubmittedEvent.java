@@ -42,6 +42,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
@@ -55,8 +57,6 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String CASE_ID = "12345";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
@@ -207,7 +207,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(CMO_REMOVAL_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             eq(expectedOrderRemovalTemplateParameters()),
             eq(NOTIFICATION_REFERENCE));
     }
@@ -234,7 +234,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(CMO_REMOVAL_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             eq(expectedOrderRemovalTemplateParameters()),
             eq(NOTIFICATION_REFERENCE));
 
@@ -278,7 +278,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .hiddenStandardDirectionOrders(hiddenSDOs)
             .hiddenCaseManagementOrders(hiddenCMOs)
             .respondents1(singletonList(element(RESPONDENT)))
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .gatekeeperEmails(
                 singletonList(element(EmailAddress.builder().email(GATEKEEPER_EMAIL_ADDRESS).build()))
             ).build();

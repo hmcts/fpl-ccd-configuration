@@ -20,7 +20,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
 @ActiveProfiles("integration-test")
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 class CaseInitiationControllerMidEventTest extends AbstractControllerTest {
 
     @MockBean
-    private IdamClient client;
+    private IdamClient idam;
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
@@ -48,14 +49,14 @@ class CaseInitiationControllerMidEventTest extends AbstractControllerTest {
     void setup() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(client.getUserInfo(USER_AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("user@example.gov.uk").build());
+        given(idam.getUserInfo(USER_AUTH_TOKEN))
+            .willReturn(UserInfo.builder().sub(LOCAL_AUTHORITY_1_USER_EMAIL).build());
     }
 
     @Test
     void shouldNotPopulateErrorsWhenToggleIsEnabled() {
         CaseData caseData = CaseData.builder()
-            .caseLocalAuthority(DEFAULT_LA_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
 
         given(featureToggleService.isCaseCreationForNotOnboardedUsersEnabled(anyString())).willReturn(true);
@@ -81,7 +82,7 @@ class CaseInitiationControllerMidEventTest extends AbstractControllerTest {
     @Test
     void shouldPopulateErrorsWhenToggleIsDisabledAndUserHasNotBeenOnboarded() {
         CaseData caseData = CaseData.builder()
-            .caseLocalAuthority(DEFAULT_LA_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
 
         given(featureToggleService.isCaseCreationForNotOnboardedUsersEnabled(anyString())).willReturn(false);

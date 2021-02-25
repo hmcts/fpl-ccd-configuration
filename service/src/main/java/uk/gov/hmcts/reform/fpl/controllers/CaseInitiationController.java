@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseInitiationService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 
 @Api
@@ -30,10 +29,12 @@ public class CaseInitiationController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         final CaseDetailsMap caseData = caseDetailsMap(callbackrequest.getCaseDetails());
 
-        caseInitiationService.getOutsourcingLocalAuthoritiesDynamicList().ifPresent(outsourcingLAs -> {
-            caseData.putIfNotEmpty("outsourcingLAs", outsourcingLAs);
-            caseData.putIfNotEmpty("outsourcingAvailable", YES);
-        });
+        caseInitiationService.getUserOrganisationId().ifPresent(organisationId ->
+            caseInitiationService.getOutsourcingType(organisationId).ifPresent(outsourcingType -> {
+                caseData.putIfNotEmpty("outsourcingType", outsourcingType);
+                caseData.putIfNotEmpty("outsourcingLAs", caseInitiationService
+                    .getOutsourcingLocalAuthorities(organisationId, outsourcingType));
+            }));
 
         return respond(caseData);
     }
@@ -58,7 +59,7 @@ public class CaseInitiationController extends CallbackController {
         caseDetails.putIfNotEmpty("localAuthorityPolicy", updatedCaseData.getLocalAuthorityPolicy());
         caseDetails.putIfNotEmpty("outsourcingPolicy", updatedCaseData.getOutsourcingPolicy());
 
-        caseDetails.removeAll("outsourcingLAs", "outsourcingAvailable");
+        caseDetails.removeAll("outsourcingType", "outsourcingLAs");
 
         return respond(caseDetails);
     }
