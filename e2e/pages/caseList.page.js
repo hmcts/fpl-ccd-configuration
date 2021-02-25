@@ -46,9 +46,9 @@ module.exports = {
   async searchForCasesWithName(caseName, state='Any') {
     this.setInitialSearchFields(state);
     // wait for our filters to load
-    I.waitForVisible(this.fields.caseName, 30);
-    await I.runAccessibilityTest();
-    console.log('case list');
+    await I.waitForVisible(this.fields.caseName, 30);
+    //await I.runAccessibilityTest();
+    //console.log('case list');
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
   },

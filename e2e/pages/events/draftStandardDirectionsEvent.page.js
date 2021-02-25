@@ -66,8 +66,8 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    await I.runAccessibilityTest();
-    console.log('draft standard directions event 4');
+    //await I.runAccessibilityTest();
+    //console.log('draft standard directions event 4');
     await directions.enterDate('allParties', direction.dueDate);
     await I.goToNextPage();
     await directions.enterDate('localAuthorityDirections', direction.dueDate);

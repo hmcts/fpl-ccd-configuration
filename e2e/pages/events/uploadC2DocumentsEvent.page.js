@@ -30,8 +30,8 @@ module.exports = {
   async uploadC2SupportingDocument() {
 
     await I.addAnotherElementToCollection();
-    await I.runAccessibilityTest();
-    console.log('upload c2 doc 1');
+    //await I.runAccessibilityTest();
+    //console.log('upload c2 doc 1');
     I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
     I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
     I.fillDateAndTime(c2SupportingDocuments.date, this.fields.supportingDocuments.dateAndTime);
