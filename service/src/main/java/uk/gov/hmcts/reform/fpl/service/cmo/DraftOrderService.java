@@ -115,9 +115,11 @@ public class DraftOrderService {
                     .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
 
                 newEventDataBuilder.previousCMO(cmo.getOrder())
-                    .cmoSupportingDocs(cmo.getSupportingDocs());
-
+                    .cmoSupportingDocs(
+                        eventData.getCmoSupportingDocs() == null ? cmo.getSupportingDocs()
+                            : eventData.getCmoSupportingDocs());
             }
+
             newEventDataBuilder
                 .cmoUploadType(eventData.getCmoUploadType())
                 .cmoJudgeInfo(formatJudgeTitleAndName(hearing.getJudgeAndLegalAdvisor()))
