@@ -94,6 +94,6 @@ module.exports = class PuppeteerHelpers extends Helper {
 
     console.log('ran accessibility');
 
-    runAccessibility(url, page);
+    await runAccessibility(url, page);
   }
 };

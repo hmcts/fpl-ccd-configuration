@@ -56,6 +56,9 @@ async function runAccessibility(url, page) {
     await page.screenshot({path: screenshotPath + '/' + screenshotName, fullPage: true});
   }
 
+  console.log('accessibilityErrorsOnThePage...', accessibilityErrorsOnThePage);
+  console.log('screenshotName...', screenshotName);
+
   updateResultObject(url, await page.title(), screenshotReportRef, accessibilityErrorsOnThePage);
 }
 
