@@ -21,13 +21,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
-@ContextConfiguration(classes = {OutsourcedCaseSentToGatekeepingContentProvider.class})
+@ContextConfiguration(classes = {OutsourcedCaseContentProvider.class})
 class OutsourcedCaseSentToGatekeepingContentProviderTest extends AbstractEmailContentProviderTest {
     private static final String THIRD_PARTY_ORG_NAME = "External org";
     private static final Long CASE_ID = 12345L;
 
     @Autowired
-    OutsourcedCaseSentToGatekeepingContentProvider outsourcedCaseSentToGatekeepingContentProvider;
+    OutsourcedCaseContentProvider outsourcedCaseContentProvider;
 
     @Test
     void shouldBuildNotifyLAOnOutsourcedCaseTemplateWithOutsourcedOrganisation() {
@@ -52,7 +52,7 @@ class OutsourcedCaseSentToGatekeepingContentProviderTest extends AbstractEmailCo
                 .build())
             .build();
 
-        NotifyLAOnOutsourcedCaseTemplate actualTemplate = outsourcedCaseSentToGatekeepingContentProvider
+        NotifyLAOnOutsourcedCaseTemplate actualTemplate = outsourcedCaseContentProvider
             .buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
         assertThat(actualTemplate).isEqualTo(getExpectedTemplate());

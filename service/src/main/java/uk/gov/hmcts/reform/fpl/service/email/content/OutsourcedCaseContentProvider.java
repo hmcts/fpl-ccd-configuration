@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentPro
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class OutsourcedCaseSentToGatekeepingContentProvider extends SharedNotifyContentProvider {
+public class OutsourcedCaseContentProvider extends SharedNotifyContentProvider {
 
     public NotifyLAOnOutsourcedCaseTemplate buildNotifyLAOnOutsourcedCaseTemplate(CaseData caseData) {
         NotifyLAOnOutsourcedCaseTemplate template = super.buildNotifyTemplate(
