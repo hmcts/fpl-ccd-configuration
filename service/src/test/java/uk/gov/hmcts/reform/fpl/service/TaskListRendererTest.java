@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
@@ -39,15 +38,14 @@ class TaskListRendererTest {
             "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
         ));
 
-    private List<Task> getTasks(Event event) {
-        return List.of(
+    private static List<Task> TASKS = List.of(
             task(CASE_NAME, COMPLETED_FINISHED),
             task(ORDERS_SOUGHT, IN_PROGRESS),
             task(HEARING_URGENCY, COMPLETED_FINISHED),
             task(GROUNDS, COMPLETED),
             task(RISK_AND_HARM, IN_PROGRESS),
             task(FACTORS_AFFECTING_PARENTING, COMPLETED_FINISHED),
-            task(event, COMPLETED),
+            task(APPLICATION_DOCUMENTS, COMPLETED),
             task(ORGANISATION_DETAILS, COMPLETED),
             task(CHILDREN, COMPLETED),
             task(RESPONDENTS, IN_PROGRESS),
@@ -57,11 +55,10 @@ class TaskListRendererTest {
             task(OTHERS, NOT_STARTED),
             task(COURT_SERVICES, IN_PROGRESS),
             task(SUBMIT_APPLICATION, NOT_AVAILABLE));
-    }
 
     @Test
-    void shouldRenderTaskListWhenApplicationDocumentsIsToggledOn() {
-        assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(
+    void shouldRenderTaskListWithApplicationDocuments() {
+        assertThat(taskListRenderer.render(TASKS)).isEqualTo(
             readString("task-list/expected-task-list.md"));
     }
 }
