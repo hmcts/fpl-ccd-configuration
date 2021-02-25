@@ -55,10 +55,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isAddHearingsInPastEnabled() {
-        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
-    }
-
     public boolean isApplicationDocumentsEventEnabled() {
         return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
@@ -69,10 +65,6 @@ public class FeatureToggleService {
 
     public boolean isFinishedTagEnabled() {
         return ldClient.boolVariation("finished-tag", createLDUser(), false);
-    }
-
-    public boolean isDraftOrdersEnabled() {
-        return ldClient.boolVariation("draft-orders", createLDUser(), false);
     }
 
     public boolean isSummaryTabEnabled() {

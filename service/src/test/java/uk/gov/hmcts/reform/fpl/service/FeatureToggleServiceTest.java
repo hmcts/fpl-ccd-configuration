@@ -116,18 +116,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsAddHearingsInPastEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isAddHearingsInPastEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("add-hearings-in-past"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -170,18 +158,6 @@ class FeatureToggleServiceTest {
         assertThat(service.isSummaryTabFirstCronRunEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("summary-tab-first-run"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForDraftOrders(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isDraftOrdersEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("draft-orders"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
