@@ -27,6 +27,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -124,7 +125,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
             .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
             .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()))
             .put("dateOfIssue", dateNow())
-            .put("caseLocalAuthority", "example")
+            .put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE)
             .put("dateSubmitted", dateNow())
             .put("applicants", getApplicant());
     }
