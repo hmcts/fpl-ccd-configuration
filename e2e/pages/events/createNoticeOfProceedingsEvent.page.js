@@ -9,8 +9,9 @@ module.exports = {
     },
   },
 
-  checkC6() {
+  async checkC6() {
     I.checkOption(this.fields.proceedingType.c6);
+    await I.runAccessibilityTest();
   },
 
   checkC6A() {

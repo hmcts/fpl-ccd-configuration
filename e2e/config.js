@@ -1,5 +1,3 @@
-/*global process*/
-
 const defaultPassword = 'Password12';
 
 module.exports = {
@@ -25,6 +23,18 @@ module.exports = {
     email: 'siva@hillingdon.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'siva@hillingdon.gov.uk',
+    surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserOne: {
+    email: 'raghu@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'raghu@wiltshire.gov.uk',
+    surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserTwo: {
+    email: 'sam@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'sam@wiltshire.gov.uk',
     surname: '(local-authority)',
   },
   localAuthorityBarristerUserOne: {
@@ -84,6 +94,8 @@ module.exports = {
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
+  TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
+  TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
   definition: {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',

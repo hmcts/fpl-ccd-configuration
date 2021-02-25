@@ -27,6 +27,7 @@ module.exports = {
 
   async createSDOThroughService() {
     I.click(this.fields.routingRadioGroup.service);
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
@@ -83,7 +84,7 @@ module.exports = {
     await I.goToNextPage();
   },
 
-  checkC6() {
+  async checkC6() {
     I.checkOption(this.fields.noticeOfProceedings.c6);
   },
 

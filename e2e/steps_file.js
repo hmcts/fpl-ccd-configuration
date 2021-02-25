@@ -1,4 +1,3 @@
-/* global process */
 const output = require('codeceptjs').output;
 const lodash = require('lodash');
 const config = require('./config');
@@ -13,7 +12,7 @@ const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissi
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
-const baseUrl = process.env.URL || 'http://localhost:3333';
+const baseUrl = config.baseUrl;
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
 const maxRetries = 5;
@@ -88,7 +87,7 @@ module.exports = function () {
     async completeEvent(button, changeDetails, confirmationPage = false, selector = '.hmcts-banner--success') {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
-        eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
+        await eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
       await this.submitEvent(button, confirmationPage, selector);
     },

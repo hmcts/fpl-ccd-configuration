@@ -1519,11 +1519,11 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "outsourcingAvailable",
-    "Label": "Is outsourcing available",
-    "FieldType": "YesOrNo",
+    "ID": "outsourcingType",
+    "Label": "Outsourcing type",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CaseOutsourcingType",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "Comment": "Temporary hidden field"
+    "Searchable": "N"
   }
 ]

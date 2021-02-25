@@ -35,7 +35,7 @@ Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage
   I.see('mockFile.docx');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
   await draftStandardDirectionsEventPage.markAsFinal();
-  draftStandardDirectionsEventPage.checkC6();
+  await draftStandardDirectionsEventPage.checkC6();
   draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
 

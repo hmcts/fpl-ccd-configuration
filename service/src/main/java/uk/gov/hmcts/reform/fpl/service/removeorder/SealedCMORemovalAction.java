@@ -3,14 +3,12 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -27,7 +24,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class SealedCMORemovalAction implements OrderRemovalAction {
 
-    private final DraftOrderService draftOrderService;
     private final UpdateCMOHearing updateCmoHearing;
 
     @Override
@@ -59,24 +55,6 @@ public class SealedCMORemovalAction implements OrderRemovalAction {
         data.put("hiddenCaseManagementOrders", hiddenCMOs);
         data.putIfNotEmpty("sealedCMOs", sealedCMOs);
         data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
-    }
-
-    public void removeDraftCaseManagementOrder(CaseData caseData, CaseDetails data,
-                                               Element<HearingOrder> cmoElement) {
-        List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
-
-        if (!draftUploadedCMOs.remove(cmoElement)) {
-            throw new CMONotFoundException("Failed to find draft case management order");
-        }
-
-        if (isEmpty(draftUploadedCMOs)) {
-            data.getData().remove("draftUploadedCMOs");
-        } else {
-            data.getData().put("draftUploadedCMOs", draftUploadedCMOs);
-        }
-
-        data.getData().put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
-        data.getData().put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
     }
 
     @Override
