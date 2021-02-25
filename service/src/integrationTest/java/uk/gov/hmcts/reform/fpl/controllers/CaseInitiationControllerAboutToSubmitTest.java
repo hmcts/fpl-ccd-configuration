@@ -96,7 +96,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractControllerTest {
         assertThat(caseDetails.get("caseLocalAuthority")).isEqualTo(LOCAL_AUTHORITY_1_CODE);
         assertThat(caseDetails.get("caseLocalAuthorityName")).isEqualTo(LOCAL_AUTHORITY_1_NAME);
         assertThat(caseDetails.get("localAuthorityPolicy"))
-            .isEqualTo(orgPolicy(LOCAL_AUTHORITY_1_ID, "Example Local Authority", "[LASOLICITOR]"));
+            .isEqualTo(orgPolicy(LOCAL_AUTHORITY_1_ID, "Test 1 Local Authority", "[LASOLICITOR]"));
         assertThat(caseDetails.get("outsourcingPolicy"))
             .isEqualTo(orgPolicy(userOrganisationId, "[EPSMANAGING]"));
     }
