@@ -59,6 +59,6 @@ class TaskListRendererTest {
     @Test
     void shouldRenderTaskListWithApplicationDocuments() {
         assertThat(taskListRenderer.render(TASKS)).isEqualTo(
-            readString("task-list/expected-task-list.md"));
+            readString("task-list/expected-task-list.md").trim());
     }
 }
