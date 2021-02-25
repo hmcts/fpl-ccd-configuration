@@ -26,7 +26,7 @@
           }
         }
       ],
-      "caseLocalAuthority": "${localAuthority:-example}",
+      "caseLocalAuthority": "${localAuthority:-test1}",
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
