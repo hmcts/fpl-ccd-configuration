@@ -61,9 +61,7 @@ class TaskListRendererTest {
 
     @Test
     void shouldRenderTaskListWhenApplicationDocumentsIsToggledOn() {
-        final String expectedTaskList = readString("task-list/expected-task-list.md")
-            .trim();
-
-        assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(expectedTaskList);
+        assertThat(taskListRenderer.render(getTasks(APPLICATION_DOCUMENTS))).isEqualTo(
+            readString("task-list/expected-task-list.md"));
     }
 }
