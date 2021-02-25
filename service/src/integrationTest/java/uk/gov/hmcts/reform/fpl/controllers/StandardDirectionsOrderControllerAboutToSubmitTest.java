@@ -56,6 +56,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -353,7 +354,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
                 .orderStatus(SEALED)
                 .orderDoc(DocumentReference.builder().build())
                 .build(),
-            "caseLocalAuthority", "example");
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
 
         return CaseDetails.builder()
             .id(1L)

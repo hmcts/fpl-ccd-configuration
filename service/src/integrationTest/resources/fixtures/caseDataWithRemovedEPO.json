@@ -2,7 +2,7 @@
   "case_details": {
     "id": "2313",
     "case_data": {
-      "caseLocalAuthority": "example",
+      "caseLocalAuthority": "test1",
       "EPO_REASONING_SHOW": "SHOW_FIELD",
       "orders": {
         "orderType": []

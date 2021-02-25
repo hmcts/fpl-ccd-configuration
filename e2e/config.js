@@ -25,6 +25,18 @@ module.exports = {
     forename: 'siva@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
+  wiltshireLocalAuthorityUserOne: {
+    email: 'raghu@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'raghu@wiltshire.gov.uk',
+    surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserTwo: {
+    email: 'sam@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'sam@wiltshire.gov.uk',
+    surname: '(local-authority)',
+  },
   localAuthorityBarristerUserOne: {
     email: 'la-barrister@mailnesia.com',
     password: process.env.LA_BARRISTER_USER_PASSWORD || defaultPassword,

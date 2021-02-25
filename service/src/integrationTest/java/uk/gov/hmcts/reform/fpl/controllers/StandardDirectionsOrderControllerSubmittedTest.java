@@ -35,6 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
@@ -149,7 +150,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractControllerT
                         )
                     ),
                     "standardDirectionOrder", order,
-                    "caseLocalAuthority", "example"))
+                    "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE))
                 .build())
             .build();
     }

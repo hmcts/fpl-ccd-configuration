@@ -6,7 +6,8 @@
     "ListElementCode": "judgeTitle",
     "UserRoles":[
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -17,7 +18,8 @@
     "ListElementCode": "otherTitle",
     "UserRoles":[
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -28,7 +30,8 @@
     "ListElementCode": "judgeLastName",
     "UserRoles":[
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -39,7 +42,8 @@
     "ListElementCode": "judgeFullName",
     "UserRoles":[
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },

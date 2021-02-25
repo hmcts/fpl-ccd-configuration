@@ -53,8 +53,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -418,7 +418,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 .map(party -> Child.builder().party(party).build())
                 .map(ElementUtils::element)
                 .collect(toList()))
-            .caseLocalAuthority(DEFAULT_LA_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateOfIssue(dateNow());
     }
 

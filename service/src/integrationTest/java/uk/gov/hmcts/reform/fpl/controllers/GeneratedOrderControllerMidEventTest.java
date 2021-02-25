@@ -60,7 +60,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
@@ -636,7 +636,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
         }
 
         private CaseData.CaseDataBuilder generateDefaultValues(CaseData.CaseDataBuilder builder) {
-            builder.caseLocalAuthority(DEFAULT_LA_CODE);
+            builder.caseLocalAuthority(LOCAL_AUTHORITY_1_CODE);
             builder.familyManCaseNumber("SACCCCCCCC5676576567");
             return builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
         }

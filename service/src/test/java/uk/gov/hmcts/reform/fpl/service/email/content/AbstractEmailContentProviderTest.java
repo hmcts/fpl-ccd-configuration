@@ -12,12 +12,15 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
+
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseUrlService.class})
 @TestPropertySource(properties = "manage-case.ui.base.url:http://fake-url")
 public abstract class AbstractEmailContentProviderTest {
-    static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
-    static final String LOCAL_AUTHORITY_CODE = "example";
+    static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
+    static final String LOCAL_AUTHORITY_CODE = LOCAL_AUTHORITY_1_CODE;
     static final String CAFCASS_NAME = "cafcass";
     static final String CASE_REFERENCE = "12345";
     static final String UI_URL = "http://fake-url";

@@ -13,22 +13,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.removeorder.SealedCMORemovalAction;
 
-import java.util.List;
-import java.util.Map;
-
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 
 @Api
 @RestController
@@ -37,7 +26,6 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEA
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final ConfidentialDocumentsSplitter splitter;
     private final SealedCMORemovalAction sealedCMORemovalAction;
 
     @PostMapping("/about-to-submit")
@@ -57,45 +45,32 @@ public class MigrateCaseController extends CallbackController {
             run2706(caseDetails);
         }
 
-        if ("FPLA-2722".equals(migrationId)) {
-            log.info("Performing migration ({}) for case {}", migrationId, caseDetails.getId());
-            run2417(caseDetails);
+        if ("FPLA-2715".equals(migrationId)) {
+            run2715(caseDetails);
+        }
+
+        if ("FPLA-2740".equals(migrationId)) {
+            run2740(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2417(CaseDetails caseDetails) {
+    private void run2715(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(
-            HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, caseData.getHearingFurtherEvidenceDocuments()
-        );
-        caseDetails.getData().put(
-            C2_DOCUMENTS_COLLECTION_KEY, caseData.getC2DocumentBundle()
-        );
-        caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getFurtherEvidenceDocuments(), FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY
-        ));
-        caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getFurtherEvidenceDocumentsLA(), FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
-        ));
-        caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getCorrespondenceDocuments(), CORRESPONDING_DOCUMENTS_COLLECTION_KEY
-        ));
-        caseDetails.getData().putAll(updateSupportingDocs(
-            caseData.getCorrespondenceDocumentsLA(), CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
-        ));
+        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
     }
 
-    private Map<String, Object> updateSupportingDocs(List<Element<SupportingEvidenceBundle>> supportingDocs,
-                                                     String key) {
-        if (isEmpty(supportingDocs)) {
-            return Map.of();
-        }
+    private void run2740(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
 
-        return splitter.splitIntoAllAndNonConfidential(supportingDocs, key);
+        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstCaseNotes(caseDetails);
+        }
     }
 
     private void run2706(CaseDetails caseDetails) {
@@ -132,5 +107,17 @@ public class MigrateCaseController extends CallbackController {
         Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
 
         sealedCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+    }
+
+    private void removeFirstCaseNotes(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
+            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
+                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+        }
+
+        caseData.getCaseNotes().remove(0);
+        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
     }
 }
