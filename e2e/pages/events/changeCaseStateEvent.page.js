@@ -21,8 +21,6 @@ module.exports = {
   },
 
   async changeState() {
-    await I.runAccessibilityTest();
-    console.log('change case state 1');
     I.click(this.fields.confirmChangeState.options.yes);
 
   },
@@ -37,7 +35,6 @@ module.exports = {
 
   async seeAsCurrentState(currentState) {
     await I.runAccessibilityTest();
-    console.log('change case state 2');
     I.seeElement(locate(this.fields.currentStateLabel).withText(`Current state: ${currentState}`));
   },
 };

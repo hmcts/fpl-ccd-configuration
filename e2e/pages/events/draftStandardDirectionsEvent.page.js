@@ -28,40 +28,34 @@ module.exports = {
   async createSDOThroughService() {
     I.click(this.fields.routingRadioGroup.service);
     await I.runAccessibilityTest();
-    console.log('draft standard directions event 1');
     await I.goToNextPage();
   },
 
   async createSDOThroughUpload() {
     I.click(this.fields.routingRadioGroup.upload);
     await I.runAccessibilityTest();
-    console.log('draft standard directions event 2');
     await I.goToNextPage();
   },
 
   async uploadPreparedSDO(file) {
     await I.runAccessibilityTest();
-    console.log('draft standard directions event NEW 2');
     I.attachFile(this.fields.file.preparedSDO, file);
     await I.goToNextPage();
   },
 
   async uploadReplacementSDO(file) {
     await I.runAccessibilityTest();
-    console.log('draft standard directions event NEW 1');
     I.attachFile(this.fields.file.replacementSDO, file);
     await I.goToNextPage();
   },
 
   async skipDateOfIssue(){
     await I.runAccessibilityTest();
-    console.log('draft standard directions event 3');
     await I.goToNextPage();
   },
 
   async enterDateOfIssue(date){
     await I.runAccessibilityTest();
-    console.log('draft standard directions event NEW 3');
     await I.fillDate(date);
     await I.goToNextPage();
   },
@@ -92,7 +86,6 @@ module.exports = {
 
   async markAsFinal() {
     await I.runAccessibilityTest();
-    console.log('draft standard directions event NEW 4');
     I.click(this.fields.statusRadioGroup.sealed);
     await I.goToNextPage();
   },

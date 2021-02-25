@@ -8,7 +8,6 @@ module.exports = {
 
   async handleSupplementaryEvidence() {
     await I.runAccessibilityTest();
-    console.log('handle supplementary evidence');
     I.click(this.fields.evidenceHandled);
   },
 };

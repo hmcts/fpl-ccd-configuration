@@ -29,7 +29,6 @@ module.exports = {
 
   async selectChild(childName){
     await I.runAccessibilityTest();
-    console.log('placement event NEW');
     await I.selectOption(this.fields().childList, childName);
     await I.goToNextPage();
   },

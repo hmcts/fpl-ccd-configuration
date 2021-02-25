@@ -22,7 +22,6 @@ module.exports = {
     const elementIndex = await I.getActiveElementIndex();
 
     await I.runAccessibilityTest();
-    console.log('enter representatives 1');
 
     if (representative.fullName) {
       I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
@@ -51,9 +50,6 @@ module.exports = {
 
   async setServingPreferences(servingPreferences) {
     const elementIndex = await I.getActiveElementIndex();
-
-    await I.runAccessibilityTest();
-    console.log('enter representatives 2');
 
     switch (servingPreferences) {
       case 'email':

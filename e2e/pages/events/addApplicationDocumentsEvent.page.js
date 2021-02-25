@@ -28,8 +28,6 @@ module.exports = {
   },
 
   async selectDocumentType(option, index) {
-    await I.runAccessibilityTest();
-    console.log('add app documents page NEW 1');
     I.selectOption(this.fields(index).documentType, option);
   },
 

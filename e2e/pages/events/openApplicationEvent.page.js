@@ -18,7 +18,6 @@ module.exports = {
   async populateForm(caseName, outsourcingLA) {
     // wait until the dropdown is populated
     await I.runAccessibilityTest();
-    console.log('open app event page');
     I.waitForElement(`${this.fields.jurisdiction} > option[value="${config.definition.jurisdiction}"]`, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.waitForElement(`${this.fields.caseType} > option[value="${config.definition.caseType}"]`, 30);

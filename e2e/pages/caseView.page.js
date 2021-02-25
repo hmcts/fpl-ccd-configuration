@@ -50,7 +50,6 @@ module.exports = {
 
   async checkActionsAreAvailable(actions) {
     await I.waitForElement(this.actionsDropdown, 10);
-    await I.runAccessibilityTest();
     await within(this.actionsDropdown, () => {
       for (const action of actions) {
         I.seeElementInDOM(`//option[text()="${action}"]`);
@@ -112,7 +111,6 @@ module.exports = {
       I.click(task);
     }, 'ccd-case-event-trigger');
     await I.runAccessibilityTest();
-    console.log('case view 2');
   },
 
   getTabSelector(tab){

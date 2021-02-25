@@ -30,14 +30,10 @@ module.exports = {
   async uploadC2SupportingDocument() {
 
     await I.addAnotherElementToCollection();
-    //await I.runAccessibilityTest();
-    //console.log('upload c2 doc 1');
     I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
     I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
     I.fillDateAndTime(c2SupportingDocuments.date, this.fields.supportingDocuments.dateAndTime);
     I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
-    await I.runAccessibilityTest();
-    console.log('upload c2 doc NEW');
   },
 
   usePbaPayment(usePbaPayment=true) {
@@ -56,7 +52,6 @@ module.exports = {
 
   async getFeeToPay(){
     await I.runAccessibilityTest();
-    console.log('upload c2 doc 2');
     return money.parse(await I.grabTextFrom('ccd-read-money-gbp-field'));
   },
 };

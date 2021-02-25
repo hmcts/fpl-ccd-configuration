@@ -8,7 +8,6 @@ module.exports = {
 
   async enterCaseID(caseId) {
     await I.runAccessibilityTest();
-    console.log('enter family man case number');
     I.fillField(this.fields.caseId, caseId);
   },
 };

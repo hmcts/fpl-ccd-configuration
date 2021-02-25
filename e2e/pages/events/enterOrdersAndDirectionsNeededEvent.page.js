@@ -40,7 +40,6 @@ module.exports = {
 
   async checkCareOrder() {
     await I.runAccessibilityTest();
-    console.log('enter orders and directions needed 1');
     I.checkOption(this.fields.orderType.careOrder);
   },
 
@@ -129,8 +128,6 @@ module.exports = {
   },
 
   async enterAddress(address) {
-    await I.runAccessibilityTest();
-    console.log('enter orders and directions needed 2');
     await within(this.fields.removalAddress, () => {
       postcodeLookup.enterAddressManually(address);
     });

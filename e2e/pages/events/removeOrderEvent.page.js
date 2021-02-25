@@ -9,7 +9,6 @@ module.exports = {
   async selectOrderToRemove(option) {
     I.waitForElement(this.fields.list);
     await I.runAccessibilityTest();
-    console.log('remove order event');
     I.selectOption(this.fields.list, option);
   },
 

@@ -11,11 +11,9 @@ module.exports = {
     I.waitForElement(this.fields.allocationProposalRadioGroup);
     I.click(proposal);
     await I.runAccessibilityTest();
-    console.log('enter allocation proposal 1');
   },
 
   async enterProposalReason(reason) {
-    console.log('enter allocation proposal 2');
     I.fillField(this.fields.proposalReason, reason);
   },
 };
