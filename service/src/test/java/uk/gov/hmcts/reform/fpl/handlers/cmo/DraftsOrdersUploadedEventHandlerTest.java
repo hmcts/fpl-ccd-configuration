@@ -11,15 +11,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
+import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.notify.cmo.CMOReadyToSealTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -36,12 +39,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -49,14 +54,22 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(MockitoExtension.class)
 class DraftsOrdersUploadedEventHandlerTest {
 
+    private static final String HMCTS_ADMIN_EMAIL = "admin@hmcts.gov.uk";
+
     @Mock
     private NotificationService notificationService;
 
     @Mock
-    private DraftOrdersUploadedContentProvider contentProvider;
+    private DraftOrdersUploadedContentProvider draftOrdersContentProvider;
+
+    @Mock
+    private AgreedCMOUploadedContentProvider agreedCMOContentProvider;
 
     @InjectMocks
     private DraftOrdersUploadedEventHandler eventHandler;
+
+    @Mock
+    private HmctsAdminNotificationHandler adminNotificationHandler;
 
     @Test
     void shouldSendNotificationToHearingJudge() {
@@ -77,7 +90,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final DraftOrdersUploadedTemplate emailCustomization = emailCustomization();
 
-        when(contentProvider.buildContent(any(), any(), any(), any())).thenReturn(emailCustomization);
+        when(draftOrdersContentProvider.buildContent(any(), any(), any(), any())).thenReturn(emailCustomization);
 
         eventHandler.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
@@ -90,7 +103,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         verifyNoMoreInteractions(notificationService);
 
-        verify(contentProvider).buildContent(
+        verify(draftOrdersContentProvider).buildContent(
             caseData,
             selectedHearing.getValue(),
             selectedHearing.getValue().getJudgeAndLegalAdvisor(),
@@ -117,7 +130,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         final DraftOrdersUploadedTemplate emailCustomization = emailCustomization();
 
-        when(contentProvider.buildContent(any(), any(), any(), any())).thenReturn(emailCustomization);
+        when(draftOrdersContentProvider.buildContent(any(), any(), any(), any())).thenReturn(emailCustomization);
 
         eventHandler.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
@@ -130,7 +143,7 @@ class DraftsOrdersUploadedEventHandlerTest {
 
         verifyNoMoreInteractions(notificationService);
 
-        verify(contentProvider).buildContent(
+        verify(draftOrdersContentProvider).buildContent(
             caseData,
             selectedHearing.getValue(),
             caseData.getAllocatedJudge(),
@@ -169,6 +182,108 @@ class DraftsOrdersUploadedEventHandlerTest {
         eventHandler.sendNotificationToJudge(new DraftOrdersUploaded(caseData));
 
         verifyNoInteractions(notificationService);
+    }
+
+    @Test
+    void shouldNotSendNotificationForAdminWhenNoOrdersPresent() {
+        CaseData caseData = CaseData.builder().build();
+
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
+        verifyNoInteractions(notificationService);
+        verifyNoInteractions(agreedCMOContentProvider);
+    }
+
+    @Test
+    void shouldNotSendNotificationForAdminWhenNoAgreedCMOPresent() {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), DRAFT_CMO, C21);
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(hearing))
+            .hearingOrdersBundlesDrafts(wrapElements(bundle))
+            .build();
+
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
+        verifyNoInteractions(notificationService);
+        verifyNoInteractions(agreedCMOContentProvider);
+    }
+
+    @Test
+    void shouldSendNotificationForAdminWhenTemporaryHearingJudgeAssigned() {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail("judge1@test.com");
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO);
+
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing))
+            .lastHearingOrderDraftsHearingId(hearing.getId())
+            .hearingOrdersBundlesDrafts(wrapElements(bundle))
+            .respondents1(createRespondents())
+            .familyManCaseNumber("12345")
+            .build();
+
+        final CMOReadyToSealTemplate template = CMOReadyToSealTemplate.builder().build();
+
+        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
+        when(agreedCMOContentProvider.buildTemplate(any(), any(), any(), any(), any())).thenReturn(template);
+
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
+
+        verify(notificationService).sendEmail(
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+            HMCTS_ADMIN_EMAIL,
+            template,
+            caseData.getId().toString()
+        );
+
+        verify(agreedCMOContentProvider).buildTemplate(
+            hearing.getValue(),
+            caseData.getId(),
+            hearing.getValue().getJudgeAndLegalAdvisor(),
+            caseData.getRespondents1(),
+            caseData.getFamilyManCaseNumber());
+    }
+
+    @Test
+    void shouldSendNotificationForAdminWhenNoTemporaryHearingJudgeAssigned() {
+        final Element<HearingBooking> hearing = hearingWithJudgeEmail(null);
+        final HearingOrdersBundle bundle = ordersBundle(hearing.getId(), AGREED_CMO);
+
+        CaseData caseData = CaseData.builder()
+            .id(RandomUtils.nextLong())
+            .allocatedJudge(allocatedJudge())
+            .hearingDetails(List.of(hearing))
+            .lastHearingOrderDraftsHearingId(hearing.getId())
+            .hearingOrdersBundlesDrafts(wrapElements(bundle))
+            .respondents1(createRespondents())
+            .familyManCaseNumber("12345")
+            .build();
+
+        final CMOReadyToSealTemplate template = CMOReadyToSealTemplate.builder().build();
+
+        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(HMCTS_ADMIN_EMAIL);
+        when(agreedCMOContentProvider.buildTemplate(any(), any(), any(), any(), any())).thenReturn(template);
+
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+        eventHandler.sendNotificationToAdmin(event);
+
+        verify(notificationService).sendEmail(
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
+            HMCTS_ADMIN_EMAIL,
+            template,
+            caseData.getId().toString()
+        );
+
+        verify(agreedCMOContentProvider).buildTemplate(
+            hearing.getValue(),
+            caseData.getId(),
+            caseData.getAllocatedJudge(),
+            caseData.getRespondents1(),
+            caseData.getFamilyManCaseNumber());
     }
 
     private static Element<HearingBooking> hearingWithJudgeEmail(String email) {
