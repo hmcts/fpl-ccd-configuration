@@ -76,7 +76,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         updateHearingOrderBundlesDrafts(data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
 
         data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
-        data.putIfNotEmpty("draftUploadedCMOs", caseData.getDraftUploadedCMOs());
+        data.putIfNotEmpty(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
     }
 
     public void removeDraftCaseManagementOrder(CaseData caseData, CaseDetails data,
@@ -88,7 +88,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         }
 
         if (isEmpty(draftUploadedCMOs)) {
-            data.getData().remove("draftUploadedCMOs");
+            data.getData().remove(DRAFT_UPLOADED_CMOS);
         } else {
             data.getData().put(DRAFT_UPLOADED_CMOS, draftUploadedCMOs);
         }
