@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftCMORemovalAction implements OrderRemovalAction {
 
+    public static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
     private final DraftOrderService draftOrderService;
     private final UpdateCMOHearing updateCmoHearing;
 
@@ -89,7 +90,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         if (isEmpty(draftUploadedCMOs)) {
             data.getData().remove("draftUploadedCMOs");
         } else {
-            data.getData().put("draftUploadedCMOs", draftUploadedCMOs);
+            data.getData().put(DRAFT_UPLOADED_CMOS, draftUploadedCMOs);
         }
 
         data.getData().put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
