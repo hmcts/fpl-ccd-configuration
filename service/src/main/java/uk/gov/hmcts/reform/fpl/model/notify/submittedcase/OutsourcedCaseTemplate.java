@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper;
+package uk.gov.hmcts.reform.fpl.model.notify.submittedcase;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 @Data
 @SuperBuilder
 @ToString(callSuper = true)
-public final class NotifyLAOnOutsourcedCaseTemplate extends SharedNotifyTemplate {
+public final class OutsourcedCaseTemplate extends SharedNotifyTemplate {
     private String thirdParty;
 }

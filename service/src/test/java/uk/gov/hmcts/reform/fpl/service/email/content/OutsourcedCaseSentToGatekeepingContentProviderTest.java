@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyLAOnOutsourcedCaseTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.OutsourcedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
@@ -52,14 +52,14 @@ class OutsourcedCaseSentToGatekeepingContentProviderTest extends AbstractEmailCo
                 .build())
             .build();
 
-        NotifyLAOnOutsourcedCaseTemplate actualTemplate = outsourcedCaseContentProvider
+        OutsourcedCaseTemplate actualTemplate = outsourcedCaseContentProvider
             .buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
         assertThat(actualTemplate).isEqualTo(getExpectedTemplate());
     }
 
-    private NotifyLAOnOutsourcedCaseTemplate getExpectedTemplate() {
-        return NotifyLAOnOutsourcedCaseTemplate.builder()
+    private OutsourcedCaseTemplate getExpectedTemplate() {
+        return OutsourcedCaseTemplate.builder()
             .caseUrl("http://fake-url/cases/case-details/12345")
             .firstRespondentName("Watson")
             .reference(String.valueOf(CASE_ID))

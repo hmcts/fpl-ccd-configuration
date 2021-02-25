@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyLAOnOutsourcedCaseTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.OutsourcedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -81,7 +81,7 @@ public class SubmittedCaseEventHandler {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        NotifyLAOnOutsourcedCaseTemplate templateData
+        OutsourcedCaseTemplate templateData
             = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
         notificationService.sendEmail(OUTSOURCED_CASE_TEMPLATE, emails, templateData, caseData.getId().toString());
