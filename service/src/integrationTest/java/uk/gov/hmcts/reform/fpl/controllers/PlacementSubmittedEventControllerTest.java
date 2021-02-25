@@ -39,6 +39,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -205,7 +207,6 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
         private final Element<Placement> childPlacement = element(testPlacement(childElement, testDocumentReference()));
         private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
         private static final String CTSC_EMAIL_ADDRESS = "FamilyPublicLaw+ctsc@gmail.com";
-        private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
         private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
         private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
 
@@ -223,7 +224,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             verify(notificationClient).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(LOCAL_AUTHORITY_1_INBOX),
                 eqJson(expectedParameters()),
                 eq(NOTIFICATION_REFERENCE));
 
@@ -296,7 +297,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
             verify(notificationClient, never()).sendEmail(
                 eq(NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(LOCAL_AUTHORITY_1_INBOX),
                 any(),
                 any());
 
@@ -360,7 +361,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
             return CaseDetails.builder()
                 .id(parseLong(CASE_ID))
                 .data(Map.of(
-                    "caseLocalAuthority", "example",
+                    "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                     "confidentialPlacements", List.of(element(Placement.builder()
                         .childId(childElement.getId())
                         .application(childPlacement.getValue().getApplication())
@@ -464,7 +465,7 @@ class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> buildNotificationData() {
         return Map.of(
-            "caseLocalAuthority", "example",
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "respondents1", List.of(
                 Map.of("value", Respondent.builder()
                     .party(RespondentParty.builder()
