@@ -47,8 +47,6 @@ module.exports = {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     await I.waitForVisible(this.fields.caseName, 30);
-    //await I.runAccessibilityTest();
-    //console.log('case list');
     await I.fillField(this.fields.caseName, caseName);
     await I.click(this.fields.search);
     await I.runAccessibilityTest();

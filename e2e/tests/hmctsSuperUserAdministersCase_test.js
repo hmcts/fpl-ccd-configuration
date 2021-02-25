@@ -28,7 +28,7 @@ Scenario('HMCTS super user changes state from case management to final hearing',
 
   await caseViewPage.goToNewActions(config.superUserActions.changeCaseState);
   await changeCaseStateEventPage.seeAsCurrentState('Case management');
-  await changeCaseStateEventPage.changeState();
+  changeCaseStateEventPage.changeState();
   await I.completeEvent(changeCaseStateEventPage.fields.endButton, {summary: 'change state', description: 'change state to final hearing'});
   I.seeEventSubmissionConfirmation(config.superUserActions.changeCaseState);
 

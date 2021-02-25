@@ -20,9 +20,8 @@ module.exports = {
     endButton: 'Save and return',
   },
 
-  async changeState() {
+  changeState() {
     I.click(this.fields.confirmChangeState.options.yes);
-
   },
 
   selectCaseManagement() {
