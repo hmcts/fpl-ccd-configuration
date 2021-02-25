@@ -4,6 +4,7 @@ public enum CaseRole {
     CREATOR,
     LASOLICITOR,
     EPSMANAGING,
+    LAMANAGING,
     SOLICITOR,
     LABARRISTER,
     BARRISTER,
@@ -17,5 +18,9 @@ public enum CaseRole {
 
     public String formattedName() {
         return formattedName;
+    }
+
+    public static CaseRole from(String name) {
+        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", ""));
     }
 }

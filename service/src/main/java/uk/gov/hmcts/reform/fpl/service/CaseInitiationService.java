@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
+import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,13 +20,12 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.nonNull;
-import static java.util.Optional.empty;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
+import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 
 @Service
 @Slf4j
@@ -36,34 +37,100 @@ public class CaseInitiationService {
     private final CaseAccessService caseAccessService;
     private final OrganisationService organisationService;
     private final FeatureToggleService featureToggleService;
-    private final LocalAuthorityService localAuthorityService;
+    private final LocalAuthorityService localAuthorities;
 
-    public Optional<DynamicList> getOutsourcingLocalAuthoritiesDynamicList() {
-        final List<LocalAuthority> outsourcingLAs = getOutsourcingLocalAuthorities()
+    public Optional<String> getUserOrganisationId() {
+        return organisationService.findOrganisation().map(Organisation::getOrganisationIdentifier);
+    }
+
+    public Optional<OutsourcingType> getOutsourcingType(String organisationId) {
+
+        List<LocalAuthority> eps = localAuthorities.getOutsourcingLocalAuthorities(organisationId, EPS);
+        List<LocalAuthority> mla = localAuthorities.getOutsourcingLocalAuthorities(organisationId, MLA);
+
+        if (isNotEmpty(eps) && isNotEmpty(mla)) {
+            throw new IllegalStateException(
+                String.format("Organisation %s is configured as both EPS and MLA", organisationId));
+        }
+
+        if (isNotEmpty(mla)) {
+            return Optional.of(MLA);
+        }
+
+        if (isNotEmpty(eps)) {
+            return Optional.of(EPS);
+        }
+        return Optional.empty();
+    }
+
+    public DynamicList getOutsourcingLocalAuthorities(String orgId, OutsourcingType outsourcingType) {
+        List<LocalAuthority> outsourcingLAs = localAuthorities.getOutsourcingLocalAuthorities(orgId, outsourcingType)
             .stream()
             .sorted(comparing(LocalAuthority::getName))
             .collect(Collectors.toList());
 
-        if (isEmpty(outsourcingLAs)) {
-            return empty();
+        Optional<LocalAuthority> userLocalAuthority = localAuthorities.getUserLocalAuthority();
+
+        if (userLocalAuthority.isPresent()) {
+            outsourcingLAs.add(0, userLocalAuthority.get());
+            return dynamicLists.asDynamicList(
+                outsourcingLAs,
+                userLocalAuthority.get().getCode(),
+                LocalAuthority::getCode,
+                LocalAuthority::getName);
+        } else {
+            return dynamicLists.asDynamicList(
+                outsourcingLAs,
+                LocalAuthority::getCode,
+                LocalAuthority::getName);
         }
-        return ofNullable(dynamicLists.asDynamicList(outsourcingLAs, LocalAuthority::getCode, LocalAuthority::getName));
     }
 
     public List<String> checkUserAllowedToCreateCase(CaseData caseData) {
-        final List<String> errors = new ArrayList<>();
 
-        final String localAuthorityCode = getLocalAuthorityCode(caseData);
+        Optional<Organisation> userOrg = organisationService.findOrganisation();
+        Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
+        Optional<String> userLA = localAuthorities.getLocalAuthorityCode();
+        Optional<String> caseLA = outsourcingLA.isPresent() ? outsourcingLA : userLA;
 
-        if (!featureToggleService.isCaseCreationForNotOnboardedUsersEnabled(localAuthorityCode)
-            && organisationService.findOrganisation().isEmpty()) {
-            errors.add("Register for an account.");
-            errors.add("You cannot start an online application until you’re fully registered.");
-            errors.add("Ask your local authority’s public law administrator, or email MyHMCTSsupport@justice.gov.uk, "
-                + "for help with registration.");
+        boolean userInMO = userOrg.isPresent();
+        boolean userInLA = userLA.isPresent();
+        boolean caseOutsourced = outsourcingLA.isPresent() && !outsourcingLA.equals(userLA);
+
+        if (userInMO && !userInLA && !caseOutsourced) {
+            return List.of(
+                "Email not recognised.",
+                "Your email is not associated with a local authority or authorised legal firm.",
+                "Email MyHMCTSsupport@justice.gov.uk for further guidance.");
         }
 
-        return errors;
+        if (!userInMO) {
+            if (!userInLA && !caseOutsourced) {
+                return List.of(
+                    "Register for an account.",
+                    "You cannot start an online application until you’re fully registered"
+                        + " and have permission to start a case for a local authority.",
+                    "Email MyHMCTSsupport@justice.gov.uk for further guidance."
+                );
+            }
+
+            if (!featureToggleService.isCaseCreationForNotOnboardedUsersEnabled(caseLA.get())) {
+                if (userInLA) {
+                    return List.of(
+                        "Register for an account.",
+                        "You cannot start an online application until you’re fully registered.",
+                        "Ask your local authority’s public law administrator, "
+                            + "or email MyHMCTSsupport@justice.gov.uk, for help with registration.");
+                }
+
+                return List.of(
+                    "Register for an account.",
+                    "You cannot start an online application until you’re fully registered.",
+                    "Email MyHMCTSsupport@justice.gov.uk for help with registration.");
+            }
+        }
+
+        return emptyList();
     }
 
     public CaseData updateOrganisationsDetails(CaseData caseData) {
@@ -71,48 +138,50 @@ public class CaseInitiationService {
             .map(Organisation::getOrganisationIdentifier)
             .orElse(null);
 
-        final Optional<String> outsourcingLA = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
+        final Optional<String> userLocalAuthority = localAuthorities.getLocalAuthorityCode();
+        final Optional<String> outsourcingLocalAuthority = dynamicLists.getSelectedValue(caseData.getOutsourcingLAs());
 
-        if (outsourcingLA.isPresent()) {
-            String outsourcingOrgId = localAuthorityService.getLocalAuthorityId(outsourcingLA.get());
+        boolean isCaseOutsourced = outsourcingLocalAuthority.isPresent()
+            && !userLocalAuthority.equals(outsourcingLocalAuthority);
+
+        if (isCaseOutsourced) {
+            String outsourcingOrgId = localAuthorities.getLocalAuthorityId(outsourcingLocalAuthority.get());
+            CaseRole outsourcedOrganisationCaseRole = caseData.getOutsourcingType().getCaseRole();
 
             return caseData.toBuilder()
-                .outsourcingPolicy(organisationPolicy(currentUserOrganisationId, EPSMANAGING))
+                .outsourcingPolicy(organisationPolicy(currentUserOrganisationId, outsourcedOrganisationCaseRole))
                 .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, LASOLICITOR))
-                .caseLocalAuthority(outsourcingLA.get())
-                .caseLocalAuthorityName(localAuthorityService.getLocalAuthorityName(outsourcingLA.get()))
-                .build();
-        } else {
-            return caseData.toBuilder()
-                .localAuthorityPolicy(organisationPolicy(currentUserOrganisationId, LASOLICITOR))
-                .caseLocalAuthority(localAuthorityService.getLocalAuthorityCode())
-                .caseLocalAuthorityName(localAuthorityService
-                    .getLocalAuthorityName(localAuthorityService.getLocalAuthorityCode()))
+                .caseLocalAuthority(outsourcingLocalAuthority.get())
+                .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
                 .build();
         }
+
+        if (userLocalAuthority.isPresent()) {
+            return caseData.toBuilder()
+                .localAuthorityPolicy(organisationPolicy(currentUserOrganisationId, LASOLICITOR))
+                .caseLocalAuthority(userLocalAuthority.get())
+                .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
+                .build();
+        }
+
+        throw new IllegalStateException("Cannot determine local authority for a case");
     }
 
     public void grantCaseAccess(CaseData caseData) {
         final Long caseId = caseData.getId();
 
+        caseAccessService.revokeCaseRoleFromUser(caseId, requestData.userId(), CREATOR);
+
         if (nonNull(caseData.getOutsourcingPolicy())) {
-            caseAccessService.revokeCaseRoleFromUser(caseId, requestData.userId(), CREATOR);
-            caseAccessService.grantCaseRoleToUser(caseId, requestData.userId(), EPSMANAGING);
+            final CaseRole caseRole = getCaseRole(caseData.getOutsourcingPolicy());
+            caseAccessService.grantCaseRoleToUser(caseId, requestData.userId(), caseRole);
         } else {
-            caseAccessService.grantCaseRoleToLocalAuthority(caseId, caseData.getCaseLocalAuthority(), LASOLICITOR);
+            final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
+            caseAccessService.grantCaseRoleToLocalAuthority(caseId, caseData.getCaseLocalAuthority(), caseRole);
         }
     }
 
-    private String getLocalAuthorityCode(CaseData caseData) {
-        return dynamicLists.getSelectedValue(caseData.getOutsourcingLAs())
-            .orElseGet(localAuthorityService::getLocalAuthorityCode);
+    private CaseRole getCaseRole(OrganisationPolicy organisationPolicy) {
+        return CaseRole.from(organisationPolicy.getOrgPolicyCaseAssignedRole());
     }
-
-    private List<LocalAuthority> getOutsourcingLocalAuthorities() {
-        return organisationService.findOrganisation()
-            .map(Organisation::getOrganisationIdentifier)
-            .map(localAuthorityService::getOutsourcingLocalAuthorities)
-            .orElse(emptyList());
-    }
-
 }

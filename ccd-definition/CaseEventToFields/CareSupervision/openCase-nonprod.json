@@ -3,7 +3,7 @@
     "LiveFrom": "12/02/2021",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
-    "CaseFieldID": "outsourcingAvailable",
+    "CaseFieldID": "outsourcingType",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "selectOutsourcingLA",
@@ -21,7 +21,7 @@
     "PageID": "selectOutsourcingLA",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "outsourcingAvailable != \"\""
+    "PageShowCondition": "outsourcingType != \"\""
   },
   {
     "LiveFrom": "01/01/2017",

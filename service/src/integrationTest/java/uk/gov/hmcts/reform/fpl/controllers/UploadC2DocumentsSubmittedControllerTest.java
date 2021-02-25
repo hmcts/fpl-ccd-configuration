@@ -36,6 +36,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -52,7 +54,6 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     private static final UserInfo USER_INFO_CAFCASS = UserInfo.builder().roles(UserRole.CAFCASS.getRoleNames()).build();
     private static final String RESPONDENT_SURNAME = "Watson";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final Long CASE_ID = 12345L;
     private static DocumentReference applicationDocument;
     private static DocumentReference latestC2Document;
@@ -223,7 +224,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-            "local-authority@local-authority.com",
+            LOCAL_AUTHORITY_1_INBOX,
             Map.of("applicationType", "C2"),
             NOTIFICATION_REFERENCE);
 
@@ -246,7 +247,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-            "local-authority@local-authority.com",
+            LOCAL_AUTHORITY_1_INBOX,
             Map.of("applicationType", "C2"),
             NOTIFICATION_REFERENCE);
 
@@ -289,7 +290,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     private Map<String, Object> buildCommonNotificationParameters() {
         return Map.of(
-            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "familyManCaseNumber", String.valueOf(CASE_ID),
             "submittedForm",
             Map.of("document_url", "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
