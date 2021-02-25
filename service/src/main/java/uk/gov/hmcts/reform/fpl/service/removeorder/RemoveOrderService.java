@@ -97,7 +97,7 @@ public class RemoveOrderService {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
-        orders.addAll(caseData.getHearingOrderDraftCMOs());
+        orders.addAll(getDraftCMOs(caseData));
 
         if (!FINAL_HEARING.equals(caseData.getState()) && caseData.getStandardDirectionOrder() != null) {
             StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
@@ -106,5 +106,18 @@ public class RemoveOrderService {
         }
 
         return orders;
+    }
+
+    private List<Element<HearingOrder>> getDraftCMOs(CaseData caseData) {
+        List<Element<HearingOrder>> hearingOrderDraftCMOs = caseData.getHearingOrderDraftCMOs();
+        caseData.getDraftUploadedCMOs().forEach(
+            draftCMO -> {
+                if (hearingOrderDraftCMOs.stream().noneMatch(cmo -> cmo.getId().equals(draftCMO.getId()))) {
+                    hearingOrderDraftCMOs.add(draftCMO);
+                }
+            }
+        );
+
+        return hearingOrderDraftCMOs;
     }
 }
