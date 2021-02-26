@@ -48,7 +48,6 @@ module.exports = {
 
   async enterChildDetails(firstName, lastName, day, month, year, gender = 'Boy') {
     const elementIndex = await this.getActiveElementIndex();
-    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).child.firstName, firstName);
     I.fillField(this.fields(elementIndex).child.lastName, lastName);
     I.fillField(this.fields(elementIndex).child.dateOfBirth.day, day);

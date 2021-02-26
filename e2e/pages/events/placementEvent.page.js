@@ -28,6 +28,7 @@ module.exports = {
   },
 
   async selectChild(childName){
+    await I.runAccessibilityTest();
     await I.selectOption(this.fields().childList, childName);
     await I.goToNextPage();
   },
@@ -37,6 +38,7 @@ module.exports = {
   },
 
   async addSupportingDocument(index, type, file, description = '') {
+    await I.runAccessibilityTest();
     await I.addAnotherElementToCollection('Upload supporting documents');
     await I.selectOption(this.fields(index).placement.supportingDocuments.type, type);
     await I.attachFile(this.fields(index).placement.supportingDocuments.file, file);
@@ -51,7 +53,6 @@ module.exports = {
   },
 
   async addOrderOrNotice(index, type, file, description) {
-    await I.runAccessibilityTest();
     await I.addAnotherElementToCollection('Upload placement order and notices');
     await I.selectOption(this.fields(index).placement.noticeAndOrders.type, type);
     await I.attachFile(this.fields(index).placement.noticeAndOrders.file, file);

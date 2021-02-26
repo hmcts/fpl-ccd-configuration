@@ -39,8 +39,8 @@ module.exports = {
   },
 
   async checkCareOrder() {
-    I.checkOption(this.fields.orderType.careOrder);
     await I.runAccessibilityTest();
+    I.checkOption(this.fields.orderType.careOrder);
   },
 
   checkSupervisionOrder() {
