@@ -177,6 +177,10 @@ public class ManageDocumentService {
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
             for (Element<HearingFurtherEvidenceBundle> element : hearingFurtherEvidenceBundle) {
                 if (element.getId().equals(selectedHearingCode)) {
+                    if(caseData.getSupportingEvidenceDocumentsTemp().size() == 0) {
+                        hearingFurtherEvidenceBundle.remove(element);
+                        return hearingFurtherEvidenceBundle;
+                    }
                     List<Element<SupportingEvidenceBundle>> existingEvidence =
                         new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
 
