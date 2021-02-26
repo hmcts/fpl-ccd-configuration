@@ -54,6 +54,9 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
@@ -269,7 +272,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_1_INBOX,
                 Map.of("applicationType", "C110a"),
                 NOTIFICATION_REFERENCE);
 
@@ -291,7 +294,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_1_INBOX,
                 Map.of("applicationType", "C110a"),
                 NOTIFICATION_REFERENCE);
 
@@ -314,7 +317,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_1_INBOX,
                 Map.of("applicationType", "C110a"),
                 NOTIFICATION_REFERENCE);
 
@@ -420,7 +423,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                     .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                     .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
                     .build(),
-                "caseLocalAuthority", "example",
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                 "sendToCtsc", enableCtsc.getValue(),
                 "dateSubmitted", LocalDate.of(2020, 1, 1)
             ))).build();
@@ -484,7 +487,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
-        template.setLocalAuthority("Example Local Authority");
+        template.setLocalAuthority(LOCAL_AUTHORITY_1_NAME);
         template.setReference(CASE_ID.toString());
         template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
         template.setDataPresent(YES.getValue());

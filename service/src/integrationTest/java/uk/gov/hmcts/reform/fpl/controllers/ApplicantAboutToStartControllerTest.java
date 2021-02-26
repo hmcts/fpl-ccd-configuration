@@ -2,16 +2,22 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -20,6 +26,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
 @ActiveProfiles("integration-test")
@@ -29,6 +37,13 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
+    private static final String ORGANISATION_ID = "ORGSA";
+
+    @Autowired
+    private SystemUpdateUserConfiguration userConfig;
+
+    @MockBean
+    private IdamClient idamClient;
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -36,12 +51,17 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     ApplicantAboutToStartControllerTest() {
         super("enter-applicant");
     }
 
     @BeforeEach
     void setup() {
+        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
+            .willReturn(AUTH_TOKEN);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -73,12 +93,78 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
         CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(emptyCaseDetails()));
 
-        ContactInformation organisationContact = POPULATED_ORGANISATION.getContactInformation().get(0);
+        ContactInformation organisationContact =
+            POPULATED_ORGANISATION.getContactInformation().get(0);
 
-        Applicant expectedApplicant = Applicant.builder()
+        Applicant expectedApplicant = buildApplicant(returnedCaseData,
+            organisationContact,
+            POPULATED_ORGANISATION.getName());
+
+        assertThat(returnedCaseData.getApplicants())
+            .extracting(Element::getValue)
+            .containsExactly(expectedApplicant);
+    }
+
+    @Test
+    void shouldAddManagedOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOn() {
+        when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(true);
+
+        given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
+            .willReturn(POPULATED_ORGANISATION);
+
+        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
+
+        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID,
+            CaseRole.LASOLICITOR);
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(localAuthorityPolicy)
+            .outsourcingPolicy(outsourcingPolicy).build();
+
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+
+        ContactInformation organisationContact =
+            POPULATED_ORGANISATION.getContactInformation().get(0);
+
+        Applicant expectedApplicant = buildApplicant(returnedCaseData,
+            organisationContact,
+            POPULATED_ORGANISATION.getName());
+
+        assertThat(returnedCaseData.getApplicants())
+            .extracting(Element::getValue)
+            .containsExactly(expectedApplicant);
+    }
+
+    @Test
+    void shouldNotAddOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOff() {
+        when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(false);
+
+        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
+
+        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID,
+            CaseRole.LASOLICITOR);
+
+        CaseData caseData = CaseData.builder()
+            .localAuthorityPolicy(localAuthorityPolicy)
+            .outsourcingPolicy(outsourcingPolicy).build();
+
+        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+
+        Applicant expectedApplicant = buildApplicant(returnedCaseData,
+            ContactInformation.builder().build(),
+            EMPTY_ORGANISATION.getName());
+
+        assertThat(returnedCaseData.getApplicants())
+            .extracting(Element::getValue)
+            .containsExactly(expectedApplicant);
+    }
+
+    private static Applicant buildApplicant(CaseData returnedCaseData, ContactInformation organisationContact,
+                                            String organisationName) {
+        return Applicant.builder()
             .party(ApplicantParty.builder()
                 .partyId(returnedCaseData.getApplicants().get(0).getValue().getParty().getPartyId())
-                .organisationName(POPULATED_ORGANISATION.getName())
+                .organisationName(organisationName)
                 .address(Address.builder()
                     .addressLine1(organisationContact.getAddressLine1())
                     .addressLine2(organisationContact.getAddressLine2())
@@ -90,10 +176,6 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
                     .build())
                 .build())
             .build();
-
-        assertThat(returnedCaseData.getApplicants())
-            .extracting(Element::getValue)
-            .containsExactly(expectedApplicant);
     }
 
     private static Organisation buildOrganisation() {
@@ -106,7 +188,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
     private static List<ContactInformation> buildOrganisationContactInformation() {
         return List.of(ContactInformation.builder()
             .addressLine1("Flat 12, Pinnacle Apartments")
-            .addressLine1("Saffron Central")
+            .addressLine2("Saffron Central")
             .county("London")
             .country("United Kingdom")
             .postCode("CR0 2GE")

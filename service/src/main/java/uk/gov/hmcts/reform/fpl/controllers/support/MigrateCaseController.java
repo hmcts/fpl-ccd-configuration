@@ -15,7 +15,8 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.removeorder.SealedCMORemovalAction;
+import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
+import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
@@ -26,7 +27,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final SealedCMORemovalAction sealedCMORemovalAction;
+    private final ConfidentialDocumentsSplitter splitter;
+    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -106,7 +108,7 @@ public class MigrateCaseController extends CallbackController {
 
         Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
 
-        sealedCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }
 
     private void removeFirstCaseNotes(CaseDetails caseDetails) {
