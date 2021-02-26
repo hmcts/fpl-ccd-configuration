@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.furtherevidence.FurtherEvidenceDocumentUploadedData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.FurtherEvidenceUploadedEmai
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +24,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class FurtherEvidenceNotificationServiceTest {
@@ -34,7 +31,8 @@ class FurtherEvidenceNotificationServiceTest {
     private static final Set<String> LOCAL_AUTHORITY_EMAILS = Set.of("la@example.com");
     private static final String REP_EMAIL = "rep@example.com";
     private static final String REP_2_EMAIL = "rep2@example.com";
-    private static final Set<String> REP_EMAILS = Set.of(REP_EMAIL, REP_2_EMAIL);
+    private static final String REP_3_EMAIL = "rep3@example.com";
+    private static final Set<String> REP_EMAILS = Set.of(REP_EMAIL, REP_2_EMAIL, REP_3_EMAIL);
     private static final Long CASE_ID = 12345L;
 
     @Mock
@@ -113,11 +111,6 @@ class FurtherEvidenceNotificationServiceTest {
     }
 
     CaseData caseData() {
-        UUID representativeUUID = UUID.randomUUID();
-        UUID representative2UUID = UUID.randomUUID();
-        UUID unrelatedRepresentativeUUID = UUID.randomUUID();
-        UUID emailRepresentativeUUID = UUID.randomUUID();
-
         Representative representative = Representative
             .builder()
             .email(REP_EMAIL)
@@ -128,6 +121,13 @@ class FurtherEvidenceNotificationServiceTest {
         Representative representative2 = Representative
             .builder()
             .email(REP_2_EMAIL)
+            .role(RepresentativeRole.REPRESENTING_RESPONDENT_2)
+            .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
+            .build();
+
+        Representative representative3 = Representative
+            .builder()
+            .email(REP_3_EMAIL)
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_2)
             .servingPreferences(RepresentativeServingPreferences.DIGITAL_SERVICE)
             .build();
@@ -146,23 +146,15 @@ class FurtherEvidenceNotificationServiceTest {
             .servingPreferences(RepresentativeServingPreferences.EMAIL)
             .build();
 
-        Respondent respondent = Respondent.builder()
-            .representedBy(wrapElements(List.of(representativeUUID)))
-            .build();
-
-        Respondent respondent2 = Respondent.builder()
-            .representedBy(wrapElements(List.of(representative2UUID)))
-            .build();
-
         return CaseData.builder()
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY)
             .representatives(List.of(
-                element(representativeUUID, representative),
-                element(representative2UUID, representative2),
-                element(unrelatedRepresentativeUUID, unrelatedRepresentative),
-                element(emailRepresentativeUUID, emailRepresentative)))
-            .respondents1(wrapElements(respondent, respondent2))
+                element(representative),
+                element(representative2),
+                element(representative3),
+                element(unrelatedRepresentative),
+                element(emailRepresentative)))
             .build();
     }
 }
