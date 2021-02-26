@@ -781,7 +781,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldRemoveHearingFurtherEvidenceBundleElementWhenNoDocumentsExist() {
+    void shouldRemoveHearingFurtherEvidenceBundleElementWhenAllDocumentsForThatHearingAreRemoved() {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
         UUID hearingId = UUID.randomUUID();
         UUID hearingIdTwo = UUID.randomUUID();
@@ -793,11 +793,11 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(emptyList())
             .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
-                    .hearingName("Case Management 1")
+                    .hearingName("Case Management hearing 1")
                     .supportingEvidenceBundle(Arrays.asList())
                     .build()),
                 element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
-                     .hearingName("Case Management 2")
+                     .hearingName("Case Management hearing 2")
                     .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                     .build()))))
             .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
@@ -807,7 +807,7 @@ class ManageDocumentServiceTest {
             manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
         assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(1);
-
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName().equals("Case Management Hearing 2"));
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
