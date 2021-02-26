@@ -102,18 +102,18 @@ const setupConfig = {
         }
     },
     multiple: {
-        microsoft: {
-            browsers: getBrowserConfig('microsoft')
-        },
+        // microsoft: {
+        //     browsers: getBrowserConfig('microsoft')
+        // },
         chrome: {
             browsers: getBrowserConfig('chrome')
         },
-        firefox: {
-            browsers: getBrowserConfig('firefox')
-        },
-        safari: {
-            browsers: getBrowserConfig('safari')
-        }
+        // firefox: {
+        //     browsers: getBrowserConfig('firefox')
+        // },
+        // safari: {
+        //     browsers: getBrowserConfig('safari')
+        // }
     },
     name: 'FPL FrontEnd Cross-Browser Tests'
 };
