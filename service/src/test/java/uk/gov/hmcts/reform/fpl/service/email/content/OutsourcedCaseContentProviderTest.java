@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ContextConfiguration(classes = {OutsourcedCaseContentProvider.class})
-class OutsourcedCaseSentToGatekeepingContentProviderTest extends AbstractEmailContentProviderTest {
+class OutsourcedCaseContentProviderTest extends AbstractEmailContentProviderTest {
     private static final String THIRD_PARTY_ORG_NAME = "External org";
     private static final Long CASE_ID = 12345L;
 
