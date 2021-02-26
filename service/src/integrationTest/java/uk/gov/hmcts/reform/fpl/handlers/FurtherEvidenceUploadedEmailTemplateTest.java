@@ -51,7 +51,7 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
         LocalDateTime.of(2021, 2, 22, 0, 0, 0).plusMonths(3);
 
     @Autowired
-    FurtherEvidenceUploadedEventHandler underTest;
+    private FurtherEvidenceUploadedEventHandler underTest;
 
     @Test
     void sendNotification() {
@@ -97,11 +97,11 @@ class FurtherEvidenceUploadedEmailTemplateTest extends EmailTemplateTest {
             .hasBody(emailContent()
                 .line("The Sender has uploaded evidence documents for:")
                 .line()
-                .line("^^Smith, 12345, hearing 22 May 2021")
+                .callout("Smith, 12345, hearing 22 May 2021")
                 .line()
                 .line("To view them, sign in to:")
                 .line()
-                .line("http://fake-url/cases/case-details/12345")
+                .line("http://fake-url/cases/case-details/12345#Documents")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()

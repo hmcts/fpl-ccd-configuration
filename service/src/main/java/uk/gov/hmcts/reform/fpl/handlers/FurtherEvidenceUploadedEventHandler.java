@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -67,7 +66,8 @@ public class FurtherEvidenceUploadedEventHandler {
     }
 
     private static Set<String> filterRecipients(final Set<String> recipients, final String excludeEmail) {
-        return StringUtils.isEmpty(excludeEmail) ? recipients :
-            recipients.stream().filter(r -> !r.equals(excludeEmail)).collect(Collectors.toSet());
+        return recipients.stream()
+            .filter(r -> !r.equals(excludeEmail))
+            .collect(Collectors.toSet());
     }
 }

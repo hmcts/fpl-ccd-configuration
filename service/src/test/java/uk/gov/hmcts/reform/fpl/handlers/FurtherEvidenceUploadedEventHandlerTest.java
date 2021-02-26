@@ -42,10 +42,10 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final String SENDER = SENDER_FORENAME + " " + SENDER_SURNAME;
 
     @Mock
-    FurtherEvidenceNotificationService furtherEvidenceNotificationService;
+    private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
     @InjectMocks
-    FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
+    private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
 
     private final Set<String> representativeSolicitors = Set.of("rep_solicitor1@example.com",
         "rep_solicitor2@example.com",
