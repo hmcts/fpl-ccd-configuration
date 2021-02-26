@@ -55,10 +55,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isEpoOrderTypeAndExclusionEnabled() {
-        return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
-    }
-
     public boolean isFinishedTagEnabled() {
         return ldClient.boolVariation("finished-tag", createLDUser(), false);
     }

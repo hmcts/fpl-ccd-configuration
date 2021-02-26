@@ -113,19 +113,7 @@ class FeatureToggleServiceTest {
             argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isEpoOrderTypeAndExclusionEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("epo-order-type-and-exclusion"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
+    
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
