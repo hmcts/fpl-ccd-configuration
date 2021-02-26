@@ -16,6 +16,7 @@ module.exports = {
     const index = await I.getActiveElementIndex();
 
     await this.selectDocumentType(option, index);
+    await I.runAccessibilityTest();
     this.uploadFile(file, index);
 
     if (name) {

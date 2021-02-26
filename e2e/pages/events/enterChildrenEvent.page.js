@@ -63,7 +63,6 @@ module.exports = {
       I.click(locate('label').withText('Living with respondents'));
     });
     await I.runAccessibilityTest();
-    console.log('enter children event 1');
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.day, day);
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.month, month);
     I.fillField(this.fields(elementIndex).child.situation.dateStartedStaying.year, year);
