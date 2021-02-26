@@ -43,5 +43,15 @@
     "Label": "Which hearing?",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "furtherEvidenceTypeListLA",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "FurtherEvidenceTypeLA",
+    "Label": "Choose a further evidence document type",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

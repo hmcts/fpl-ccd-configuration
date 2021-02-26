@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FurtherEvidenceTypeLA",
+    "ListElementCode": "APPLICATION_DOCUMENTS",
+    "ListElement": "Further application documents, for example the SWET or care plan",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FurtherEvidenceTypeLA",
+    "ListElementCode": "OTHER",
+    "ListElement": "Any other document",
+    "DisplayOrder": 2
+  }
+]
