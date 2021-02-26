@@ -11,11 +11,12 @@ module.exports = {
   },
 
   async addApplicationDocument(option, file, name, description) {
+
     await I.addAnotherElementToCollection('Documents');
-    await I.runAccessibilityTest();
     const index = await I.getActiveElementIndex();
 
     this.selectDocumentType(option, index);
+    await I.runAccessibilityTest();
     this.uploadFile(file, index);
 
     if (name) {

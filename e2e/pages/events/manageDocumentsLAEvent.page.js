@@ -78,6 +78,7 @@ module.exports = {
   async selectC2FromDropdown() {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields.c2DocumentsList);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
 

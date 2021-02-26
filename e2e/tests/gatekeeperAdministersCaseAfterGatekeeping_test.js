@@ -43,7 +43,7 @@ Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enter
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   await enterAllocationDecisionEventPage.selectAllocationDecision('Magistrate');
-  enterAllocationDecisionEventPage.enterProposalReason('new information was acquired');
+  await enterAllocationDecisionEventPage.enterProposalReason('new information was acquired');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
