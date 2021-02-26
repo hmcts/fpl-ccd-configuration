@@ -56,7 +56,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
     @MockBean
     private HmctsEmailContentProvider hmctsEmailContentProvider;
 
-    //tech-debt: add test for cafcass email - d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5
+    //tech-debt: add test for cafcass email - e5630e8b-3b25-4773-a41a-a42af123bebc
     @MockBean
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
