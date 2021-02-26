@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -18,6 +19,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -33,12 +35,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
     @Test
     void shouldCreateTemplateWithExpectedParameters() {
-        List<Element<Respondent>> respondents = wrapElements(
-            Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName("Vlad")
-                    .build())
-                .build());
+        List<Element<Respondent>> respondents = buildRespondents();
         String familyManCaseNumber = "123456";
 
         JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
@@ -46,11 +43,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .judgeLastName("Simmons")
             .build();
 
-        HearingBooking hearing = HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
-            .judgeAndLegalAdvisor(judge)
-            .build();
+        HearingBooking hearing = buildHearing(judge);
 
         CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, CASE_NUMBER, judge,
             respondents, familyManCaseNumber);
@@ -68,12 +61,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
     @Test
     void shouldSetJudgeNameCorrectlyWhenMagistrateJudgeIncludesFullName() {
-        List<Element<Respondent>> respondents = wrapElements(
-            Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName("Vlad")
-                    .build())
-                .build());
+        List<Element<Respondent>> respondents = buildRespondents();
         String familyManCaseNumber = "123456";
 
         JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
@@ -81,11 +69,7 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .build();
 
-        HearingBooking hearing = HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
-            .judgeAndLegalAdvisor(judge)
-            .build();
+        HearingBooking hearing = buildHearing(judge);
 
         CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, CASE_NUMBER, judge,
             respondents, familyManCaseNumber);
@@ -103,23 +87,14 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
 
     @Test
     void shouldSetJudgeTitleCorrectlyWhenMagistrateJudgeDoesNotIncludeName() {
-        List<Element<Respondent>> respondents = wrapElements(
-            Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName("Vlad")
-                    .build())
-                .build());
+        List<Element<Respondent>> respondents = buildRespondents();
         String familyManCaseNumber = "123456";
 
         JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .build();
 
-        HearingBooking hearing = HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
-            .judgeAndLegalAdvisor(judge)
-            .build();
+        HearingBooking hearing = buildHearing(judge);
 
         CMOReadyToSealTemplate template = contentProvider.buildTemplate(hearing, CASE_NUMBER, judge,
             respondents, familyManCaseNumber);
@@ -133,5 +108,36 @@ class AgreedCMOUploadedContentProviderTest extends AbstractEmailContentProviderT
             .build();
 
         assertThat(template).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldThrowNoHearingBookingExceptionWhenNoHearing() {
+        List<Element<Respondent>> respondents = buildRespondents();
+        String familyManCaseNumber = "123456";
+
+        JudgeAndLegalAdvisor judge = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
+            .build();
+
+        assertThatThrownBy(() -> contentProvider.buildTemplate(null, CASE_NUMBER, judge,
+            respondents, familyManCaseNumber))
+            .isInstanceOf(NoHearingBookingException.class);
+    }
+
+    private List<Element<Respondent>> buildRespondents() {
+        return wrapElements(
+            Respondent.builder()
+                .party(RespondentParty.builder()
+                    .lastName("Vlad")
+                    .build())
+                .build());
+    }
+
+    private HearingBooking buildHearing(JudgeAndLegalAdvisor judge) {
+        return HearingBooking.builder()
+            .type(CASE_MANAGEMENT)
+            .startDate(LocalDateTime.of(SOME_DATE, LocalTime.of(0, 0)))
+            .judgeAndLegalAdvisor(judge)
+            .build();
     }
 }
