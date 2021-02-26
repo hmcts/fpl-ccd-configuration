@@ -113,7 +113,7 @@ class FeatureToggleServiceTest {
             argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
-    
+
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
