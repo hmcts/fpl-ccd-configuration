@@ -9,15 +9,14 @@ import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
@@ -27,7 +26,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(MockitoExtension.class)
 class FurtherEvidenceUploadedEventHandlerTest {
-    private static final String CASE_REFERENCE = "12345";
     private static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
     private static final String LA_USER = "LA";
     private static final String HMCTS_USER = "HMCTS";
@@ -40,17 +38,19 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private static final String SENDER_FORENAME = "The";
     private static final String SENDER_SURNAME = "Sender";
     private static final String SENDER = SENDER_FORENAME + " " + SENDER_SURNAME;
+    private static final String REP_SOLICITOR_1_EMAIL = "rep_solicitor1@example.com";
+    private static final String REP_SOLICITOR_2_EMAIL = "rep_solicitor2@example.com";
+
+    private static final Set<String> representativeSolicitors = Set.of(
+        REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL, REP_SOLICITOR_USER_EMAIL);
+
+    private static final Set<String> laSolicitors = Set.of(LA_USER_EMAIL);
 
     @Mock
     private FurtherEvidenceNotificationService furtherEvidenceNotificationService;
 
     @InjectMocks
     private FurtherEvidenceUploadedEventHandler furtherEvidenceUploadedEventHandler;
-
-    private final Set<String> representativeSolicitors = Set.of("rep_solicitor1@example.com",
-        "rep_solicitor2@example.com",
-        REP_SOLICITOR_USER_EMAIL);
-    private final Set<String> laSolicitors = Set.of(LA_USER_EMAIL);
 
     @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByLA() {
@@ -184,8 +184,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         verify(furtherEvidenceNotificationService, never()).sendFurtherEvidenceDocumentsUploadedNotification(
             any(), any(), any());
-        verify(furtherEvidenceNotificationService, never()).sendFurtherEvidenceDocumentsUploadedNotification(
-            any(), any(), any());
     }
 
     @Test
@@ -207,9 +205,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
             caseData,
-            representativeSolicitors.stream()
-                .filter(r -> !r.equals(REP_SOLICITOR_USER_EMAIL))
-                .collect(Collectors.toSet()),
+            Set.of(REP_SOLICITOR_1_EMAIL, REP_SOLICITOR_2_EMAIL),
             SENDER);
         verify(furtherEvidenceNotificationService).sendFurtherEvidenceDocumentsUploadedNotification(
             caseData, laSolicitors, SENDER);
@@ -229,8 +225,6 @@ class FurtherEvidenceUploadedEventHandlerTest {
 
         furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
 
-        verify(furtherEvidenceNotificationService, never()).sendFurtherEvidenceDocumentsUploadedNotification(
-            any(), any(), any());
         verify(furtherEvidenceNotificationService, never()).sendFurtherEvidenceDocumentsUploadedNotification(
             any(), any(), any());
     }
@@ -276,11 +270,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
             .name(name)
             .uploadedBy(uploadedBy)
             .dateTimeUploaded(LocalDateTime.now())
-            .document(DocumentReference.builder()
-                .filename(name + ".pdf")
-                .url("http://fake/" + name)
-                .binaryUrl("http://fake/" + name + "/binary")
-                .build());
+            .document(TestDataHelper.testDocumentReference());
 
         if (confidential) {
             document.confidential(List.of(CONFIDENTIAL_MARKER));
@@ -298,7 +288,7 @@ class FurtherEvidenceUploadedEventHandlerTest {
     private CaseData.CaseDataBuilder commonCaseBuilder() {
         return CaseData.builder()
             .id(CASE_ID)
-            .familyManCaseNumber(CASE_REFERENCE)
+            .familyManCaseNumber(CASE_ID.toString())
             .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()));
     }
 
