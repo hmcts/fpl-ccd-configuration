@@ -29,6 +29,11 @@ public class DynamicListHelper {
     }
 
     @SafeVarargs
+    public final Map<String, Object> asMap(int selected, Pair<String, ?>... options) {
+        return mapper.convertValue(from(selected, options), MAP_TYPE);
+    }
+
+    @SafeVarargs
     public final DynamicList from(Pair<String, ?>... options) {
         return DynamicList.builder()
             .value(DynamicListElement.EMPTY)

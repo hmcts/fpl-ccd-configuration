@@ -11,9 +11,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -43,12 +45,18 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 class OrganisationServiceTest {
 
     @Mock
+    private SystemUpdateUserConfiguration userConfig;
+
+    @Mock
+    private IdamClient idamClient;
+
+    @Mock
     private OrganisationApi organisationApi;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
+    @Mock(lenient = true)
     private RequestData requestData;
 
     @Spy
@@ -158,7 +166,7 @@ class OrganisationServiceTest {
     }
 
     @Nested
-    class FindOrganisation {
+    class FindUserOrganisation {
 
         @Test
         void shouldFindOrganisationWhenUserRegisteredInOrganisation() {
@@ -187,6 +195,55 @@ class OrganisationServiceTest {
             when(organisationApi.findUserOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN)).thenThrow(expectedException);
 
             Exception actualException = assertThrows(Exception.class, organisationService::findOrganisation);
+
+            assertThat(actualException).isEqualTo(expectedException);
+        }
+    }
+
+    @Nested
+    class FindOrganisation {
+
+        private static final String USER = "user";
+        private static final String PASSWORD = "password";
+        private static final String TOKEN = "token";
+        private static final String ORGANISATION_ID = "ORGSA";
+
+        @BeforeEach
+        void init() {
+            when(userConfig.getUserName()).thenReturn(USER);
+            when(userConfig.getPassword()).thenReturn(PASSWORD);
+            when(idamClient.getAccessToken(USER, PASSWORD)).thenReturn(TOKEN);
+        }
+
+        @Test
+        void shouldFindOrganisationWhenExists() {
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
+                .thenReturn(POPULATED_ORGANISATION);
+
+            Optional<Organisation> actualOrganisation = organisationService.findOrganisation(ORGANISATION_ID);
+
+            assertThat(actualOrganisation).contains(POPULATED_ORGANISATION);
+        }
+
+        @Test
+        void shouldReturnEmptyOrganisationWhenOrganisationDoesNotExists() {
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
+                .thenThrow(feignException(SC_FORBIDDEN));
+
+            Optional<Organisation> organisation = organisationService.findOrganisation(ORGANISATION_ID);
+
+            assertThat(organisation).isEmpty();
+        }
+
+        @Test
+        void shouldRethrowUnexpectedExceptions() {
+            Exception expectedException = feignException(SC_GATEWAY_TIMEOUT);
+
+            when(organisationApi.findOrganisation(TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
+                .thenThrow(expectedException);
+
+            Exception actualException = assertThrows(Exception.class, () ->
+                organisationService.findOrganisation(ORGANISATION_ID));
 
             assertThat(actualException).isEqualTo(expectedException);
         }

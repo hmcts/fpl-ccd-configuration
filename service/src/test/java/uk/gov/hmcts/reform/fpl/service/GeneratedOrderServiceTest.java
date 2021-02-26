@@ -57,6 +57,8 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -377,7 +379,7 @@ class GeneratedOrderServiceTest {
         assertThat(builtOrder.getDateOfIssue()).isEqualTo(formatLocalDateToString(time.now().toLocalDate(), DATE));
         assertThat(builtOrder.getDate()).isEqualTo(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
         assertThat(builtOrder.getType()).isEqualTo("Final care order");
-        assertThat(builtOrder.getCourtName()).isEqualTo("Family Court");
+        assertThat(builtOrder.getCourtName()).isEqualTo(DEFAULT_LA_COURT);
         assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
         assertThat(builtOrder.getChildren()).isEqualTo(children);
     }
@@ -527,7 +529,7 @@ class GeneratedOrderServiceTest {
             .dateOfIssue(time.now().toLocalDate())
             .orderMonths(null)
             .interimEndDate(null)
-            .caseLocalAuthority("example");
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE);
     }
 
     private GeneratedOrder.GeneratedOrderBuilder order() {
