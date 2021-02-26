@@ -5,7 +5,8 @@
     "ID": "courtBundleTabHeading",
     "FieldType": "Label",
     "Label": "## Court bundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ID": "correspondenceTabHeading",
     "FieldType": "Label",
     "Label": "## Correspondence",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -21,7 +23,8 @@
     "ID": "judicialMessagesTabHeading",
     "Label": "## Judicial messages",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -29,7 +32,8 @@
     "ID": "closedJudicialMessagesTabHeading",
     "Label": "## Closed messages",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -37,7 +41,8 @@
     "ID": "caseSummaryTabHeading",
     "Label": "## Case information",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -45,7 +50,8 @@
     "ID": "caseSummaryUnresolvedMessagesHeading",
     "Label": "## Unresolved messages",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -53,7 +59,8 @@
     "ID": "caseSummaryUnresolvedMessagesLabel",
     "Label": "There are some unresolved messages",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -61,7 +68,8 @@
     "ID": "caseSummaryNextHearingHeading",
     "Label": "## Next hearing",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -69,7 +77,8 @@
     "ID": "caseSummaryPreviousHearingHeading",
     "Label": "## Previous hearing",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -77,7 +86,8 @@
     "ID": "caseSummaryNominatedFinalHearingHeading",
     "Label": "## Nominated final hearing",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -85,7 +95,7 @@
     "ID": "caseSummaryPeopleInTheCaseHeading",
     "Label": "## People in the case",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
-
 ]

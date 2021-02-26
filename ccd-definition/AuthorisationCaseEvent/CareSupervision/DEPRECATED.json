@@ -19,7 +19,8 @@
     "CaseEventID": "addStatementOfServiceGatekeeping",
     "UserRoles": [
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -99,7 +100,8 @@
     "CaseEventID": "addStatementOfService-PREPARE_FOR_HEARING",
     "UserRoles": [
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -116,7 +118,8 @@
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRoles": [
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -196,7 +199,8 @@
     "CaseEventID": "uploadC2-PREPARE_FOR_HEARING",
     "UserRoles": [
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -269,7 +273,8 @@
     "CaseEventID": "draftCMO",
     "UserRoles": [
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -307,7 +312,8 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "UserRoles": [
       "[LASOLICITOR]",
-      "[EPSMANAGING]"
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
     ],
     "CRUD": "R"
   },
@@ -344,6 +350,7 @@
     "UserRoles": [
       "[LASOLICITOR]",
       "[EPSMANAGING]",
+      "[LAMANAGING]",
       "caseworker-publiclaw-solicitor"
     ],
     "CRUD": "R"
@@ -355,6 +362,7 @@
     "UserRoles": [
       "[LASOLICITOR]",
       "[EPSMANAGING]",
+      "[LAMANAGING]",
       "caseworker-publiclaw-solicitor"
     ],
     "CRUD": "R"

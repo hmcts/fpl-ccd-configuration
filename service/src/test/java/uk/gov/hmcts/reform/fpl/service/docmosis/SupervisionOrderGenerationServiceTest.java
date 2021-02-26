@@ -119,8 +119,8 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
             orderBuilder
                 .orderTitle("Interim supervision order")
                 .childrenAct("Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                .orderDetails(format("It is ordered that Example Local Authority supervises"
-                    + " the child until 11:59pm on the %s.", detailsDate));
+                .orderDetails(format("It is ordered that %s supervises the child until 11:59pm on the %s.",
+                    LOCAL_AUTHORITY_NAME, detailsDate));
         } else if (subtype == FINAL) {
             LocalDateTime expiryDate = time.now().plusMonths(5);
             final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
@@ -129,8 +129,8 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
             orderBuilder
                 .orderTitle("Supervision order")
                 .childrenAct("Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
-                .orderDetails(format("It is ordered that Example Local Authority supervises the child for 5 months "
-                    + "from the date of this order until %s.", formattedDateTime));
+                .orderDetails(format("It is ordered that %s supervises the child for 5 months "
+                    + "from the date of this order until %s.", LOCAL_AUTHORITY_NAME, formattedDateTime));
         }
         return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder.build());
     }

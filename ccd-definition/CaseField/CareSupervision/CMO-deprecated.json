@@ -5,7 +5,8 @@
     "ID": "numHearingsWithoutCMO",
     "Label": "Number of past hearings without a cmo",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ID": "noHearingsForCMOs",
     "Label": "You cannot upload an agreed CMO.\n\nThis is because the judge is considering, or has sealed, the CMOs from all past hearings.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ID": "multiHearingsWithCMOs",
     "Label": "Hearings with CMOs already being reviewed",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +32,8 @@
     "ID": "singleHearingWithCMO",
     "Label": "Hearings with CMOs already being reviewed",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -37,7 +41,8 @@
     "ID": "showHearingsMultiTextArea",
     "Label": "Field to store conditional result for showing multiHearingsWithCMOs",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,6 +50,7 @@
     "ID": "showHearingsSingleTextArea",
     "Label": "Field to store conditional result for showing singleHearingWithCMO",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

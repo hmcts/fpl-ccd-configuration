@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
@@ -31,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 
 abstract class AbstractOrderGenerationServiceTest {
 
-    static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
+    static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
 
     @Autowired
     Time time;
@@ -48,7 +50,7 @@ abstract class AbstractOrderGenerationServiceTest {
 
         return caseDataBuilder
             .familyManCaseNumber("123")
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
