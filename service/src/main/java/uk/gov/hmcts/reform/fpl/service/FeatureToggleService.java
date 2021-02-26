@@ -60,11 +60,8 @@ public class FeatureToggleService {
     }
 
     public boolean isFurtherEvidenceUploadNotificationEnabled() {
-        return ldClient.boolVariation("further-evidence-upload-notification", createLDUser(), false);
-    }
-
-    public boolean isEpoOrderTypeAndExclusionEnabled() {
-        return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
+        return ldClient.boolVariation("further-evidence-upload-notification",
+            createLDUser(), false);
     }
 
     public boolean isFinishedTagEnabled() {
@@ -81,6 +78,10 @@ public class FeatureToggleService {
 
     public boolean isFeeAndPayCaseTypeEnabled() {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
+    }
+
+    public boolean isRetrievingOrganisationEnabled() {
+        return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -28,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -45,9 +42,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     @Autowired
     private EPOGenerationService service;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @Test
     void shouldGetTemplateDataWhenGivenPopulatedCaseData() {
@@ -72,8 +66,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldVerifyExclusionRequirementWhenTheStartDateIsSameAndToggledOn() {
-        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+    void shouldVerifyExclusionRequirementWhenTheStartDateIsSame() {
         CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_SAME_DATE,
             LocalDate.of(2021, 1, 13),
@@ -87,8 +80,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldVerifyExclusionRequirementWhenTheStartDateIsDifferentAndToggledOn() {
-        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+    void shouldVerifyExclusionRequirementWhenTheStartDateIsDifferent() {
         CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_DIFFERENT_DATE,
             LocalDate.of(2021, 1, 26),
@@ -104,8 +96,7 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldVerifyExclusionRequirementWhenNoToExclusionHasBeenSelectedAndToggledOn() {
-        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+    void shouldVerifyExclusionRequirementWhenNoToExclusionHasBeenSelected() {
         CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.NO_TO_EXCLUSION,
             LocalDate.of(2021, 1, 13),
@@ -117,25 +108,11 @@ class EPOGenerationServiceTest extends AbstractOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldVerifyExclusionRequirementWhenRemoveToAccommodationHasBeenSelectedAndToggledOn() {
-        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(true);
+    void shouldVerifyExclusionRequirementWhenRemoveToAccommodationHasBeenSelected() {
         CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
             EPOExclusionRequirementType.STARTING_ON_SAME_DATE,
             LocalDate.of(2021, 1, 13),
             "Temp User", REMOVE_TO_ACCOMMODATION);
-
-        DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
-
-        assertThat(templateData.getExclusionRequirement()).isNull();
-    }
-
-    @Test
-    void shouldVerifyExclusionRequirementIsNullWhenToggledOff() {
-        given(featureToggleService.isEpoOrderTypeAndExclusionEnabled()).willReturn(false);
-        CaseData caseData = getCaseWithEpoExclusionRequirement(DRAFT,
-            EPOExclusionRequirementType.STARTING_ON_DIFFERENT_DATE,
-            LocalDate.of(2021, 1, 13),
-            "Some User", PREVENT_REMOVAL);
 
         DocmosisGeneratedOrder templateData = service.populateCustomOrderFields(caseData);
 

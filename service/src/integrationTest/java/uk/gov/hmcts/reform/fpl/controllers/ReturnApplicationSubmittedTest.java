@@ -10,6 +10,7 @@ import uk.gov.service.notify.NotificationClient;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_RETURNED_TO_THE_LA;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
@@ -17,7 +18,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @WebMvcTest(ReturnApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ReturnApplicationSubmittedTest extends AbstractControllerTest {
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + 12345;
 
     @MockBean
@@ -32,7 +32,7 @@ class ReturnApplicationSubmittedTest extends AbstractControllerTest {
         postSubmittedEvent(populatedCaseDetails());
 
         verify(notificationClient).sendEmail(
-            eq(APPLICATION_RETURNED_TO_THE_LA), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(APPLICATION_RETURNED_TO_THE_LA), eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(), eq(NOTIFICATION_REFERENCE));
     }
 }

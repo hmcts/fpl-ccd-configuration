@@ -140,18 +140,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isEpoOrderTypeAndExclusionEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("epo-order-type-and-exclusion"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -182,6 +170,18 @@ class FeatureToggleServiceTest {
         assertThat(service.isFeeAndPayCaseTypeEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("fee-and-pay-case-type"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForRetrievingOrganisation(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("retrieve-organisation"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

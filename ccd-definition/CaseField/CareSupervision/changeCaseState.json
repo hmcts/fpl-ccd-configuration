@@ -5,7 +5,8 @@
     "ID": "confirmChangeState",
     "FieldType": "YesOrNo",
     "Label": "Change the state",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ID": "currentStateLabel",
     "FieldType": "Label",
     "Label": "<div class='panel panel-border-wide'>Current state: ${[STATE]}</div><br/>",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ID": "nextStateLabelContent",
     "Label": "Content to be displayed above confirmChangeState, text type so that it can be dynamic",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,6 +33,7 @@
     "Label": "Change status",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ChangeClosedStateList",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
