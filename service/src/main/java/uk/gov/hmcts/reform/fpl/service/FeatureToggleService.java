@@ -26,10 +26,6 @@ public class FeatureToggleService {
         this.environment = environment;
     }
 
-    public boolean isSummaryTabOnEventEnabled() {
-        return ldClient.boolVariation("summary-tab-on-event-update", createLDUser(), false);
-    }
-
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
