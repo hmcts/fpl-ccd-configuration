@@ -16,9 +16,9 @@ Feature('Hearing administration');
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
+
+Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();

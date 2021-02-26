@@ -27,7 +27,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
@@ -45,7 +46,6 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String DIGITAL_SERVED_REPRESENTATIVE_ADDRESS = "paul@example.com";
     private static final String EMAIL_SERVED_REPRESENTATIVE_ADDRESS = "bill@example.com";
     private static final String ADMIN_EMAIL_ADDRESS = "admin@family-court.com";
@@ -111,7 +111,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             eqJson(getExpectedParametersMap(BLANK_ORDER.getLabel(), true)),
             eq(NOTIFICATION_REFERENCE));
 
@@ -158,7 +158,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractControllerTest {
     private ImmutableMap.Builder<String, Object> getCommonCaseData() {
         Map<String, Object> caseData = Map.of(
             "orderCollection", createOrders(testDocument),
-            "caseLocalAuthority", DEFAULT_LA_CODE,
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4))
