@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 
 @Data
 @Builder(toBuilder = true)
@@ -49,7 +50,8 @@ public class GeneratedOrder implements RemovableOrder {
         return (descriptor.getType() == BLANK_ORDER)
             || (descriptor.getType() == EMERGENCY_PROTECTION_ORDER)
             || (descriptor.getType() == CARE_ORDER)
-            || (descriptor.getType() == SUPERVISION_ORDER);
+            || (descriptor.getType() == SUPERVISION_ORDER)
+            || (descriptor.getType() == UPLOAD);
     }
 
     @JsonIgnore
