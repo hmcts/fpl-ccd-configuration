@@ -13,7 +13,7 @@ module.exports = {
     await I.runAccessibilityTest();
   },
 
-  async enterProposalReason(reason) {
+  enterProposalReason(reason) {
     I.fillField(this.fields.proposalReason, reason);
   },
 };

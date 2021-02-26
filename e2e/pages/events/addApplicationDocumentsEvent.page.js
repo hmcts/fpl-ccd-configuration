@@ -28,7 +28,7 @@ module.exports = {
     }
   },
 
-  async selectDocumentType(option, index) {
+  selectDocumentType(option, index) {
     I.selectOption(this.fields(index).documentType, option);
   },
 

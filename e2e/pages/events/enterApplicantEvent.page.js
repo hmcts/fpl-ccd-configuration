@@ -41,7 +41,7 @@ module.exports = {
     I.fillField(this.fields.applicant(applicantIndex).email, applicant.email);
   },
 
-  async enterSolicitorDetails(solicitor) {
+  enterSolicitorDetails(solicitor) {
     if(solicitor.name) {
       I.fillField(this.fields.solicitor.name, solicitor.name);
     }

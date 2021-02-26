@@ -21,7 +21,7 @@ module.exports = {
     I.fillField(this.fields.thresholdDetails, 'mock threshold details');
   },
 
-  async enterGroundsForEmergencyProtectionOrder() {
+  enterGroundsForEmergencyProtectionOrder() {
     I.checkOption(this.fields.groundsForApplication.harmIfNotMoved);
     I.checkOption(this.fields.groundsForApplication.harmIfMoved);
     I.checkOption(this.fields.groundsForApplication.urgentAccessRequired);

@@ -49,7 +49,7 @@ module.exports = {
   },
 
   async checkActionsAreAvailable(actions) {
-    await I.waitForElement(this.actionsDropdown, 10);
+    I.waitForElement(this.actionsDropdown, 10);
     await within(this.actionsDropdown, () => {
       for (const action of actions) {
         I.seeElementInDOM(`//option[text()="${action}"]`);
