@@ -273,7 +273,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
 Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterApplicantEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
   await enterApplicantEventPage.enterApplicantDetails(applicant);
-  enterApplicantEventPage.enterSolicitorDetails(solicitor);
+  await enterApplicantEventPage.enterSolicitorDetails(solicitor);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
@@ -364,7 +364,7 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
 Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   await enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
-  enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
+  await enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
@@ -485,7 +485,7 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
 Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   await enterAllocationProposalEventPage.selectAllocationProposal('Magistrate');
-  enterAllocationProposalEventPage.enterProposalReason('test');
+  await enterAllocationProposalEventPage.enterProposalReason('test');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
