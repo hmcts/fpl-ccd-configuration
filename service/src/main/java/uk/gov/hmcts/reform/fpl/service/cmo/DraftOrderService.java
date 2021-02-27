@@ -114,10 +114,13 @@ public class DraftOrderService {
                     .map(Element::getValue)
                     .orElseThrow(() -> new CMONotFoundException("CMO for related hearing could not be found"));
 
-                newEventDataBuilder.previousCMO(cmo.getOrder())
-                    .cmoSupportingDocs(
-                        eventData.getCmoSupportingDocs() == null ? cmo.getSupportingDocs()
-                            : eventData.getCmoSupportingDocs());
+                newEventDataBuilder.previousCMO(cmo.getOrder());
+
+                if (eventData.getPreviousCMO() == null) {
+                    newEventDataBuilder.cmoSupportingDocs(cmo.getSupportingDocs());
+                } else {
+                    newEventDataBuilder.cmoSupportingDocs(eventData.getCmoSupportingDocs());
+                }
             }
 
             newEventDataBuilder
