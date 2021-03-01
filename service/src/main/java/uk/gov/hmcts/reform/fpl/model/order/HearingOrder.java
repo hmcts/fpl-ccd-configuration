@@ -64,17 +64,18 @@ public class HearingOrder implements RemovableOrder {
     }
 
     public String asLabel() {
+        String dateFormat = "d MMMM yyyy";
         if (APPROVED.equals(status)) {
             return format("Sealed case management order issued on %s",
-                formatLocalDateToString(dateIssued, "d MMMM yyyy"));
+                formatLocalDateToString(dateIssued, dateFormat));
         }
 
         if (SEND_TO_JUDGE.equals(status)) {
             return format("Agreed case management order sent on %s",
-                formatLocalDateToString(dateSent, "d MMMM yyyy"));
+                formatLocalDateToString(dateSent, dateFormat));
         }
 
         return format("Draft case management order sent on %s",
-            formatLocalDateToString(dateSent, "d MMMM yyyy"));
+            formatLocalDateToString(dateSent, dateFormat));
     }
 }
