@@ -20,10 +20,6 @@ public class ConfidentialDocumentsSplitter {
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
 
-        if (!nonConfidentialCopy.isEmpty()) {
-            caseDetailsMap.put(nonConfidentialPrefix, nonConfidentialCopy);
-        } else {
-            caseDetailsMap.remove(nonConfidentialPrefix);
-        }
+        caseDetailsMap.putIfNotEmpty(nonConfidentialPrefix, nonConfidentialCopy);
     }
 }
