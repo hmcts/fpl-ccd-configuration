@@ -293,6 +293,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .build())
+            .endDate(LocalDateTime.now())
             .caseManagementOrderId(cmoId)
             .build();
     }

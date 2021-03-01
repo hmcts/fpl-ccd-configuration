@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.Task.task;
-import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
@@ -51,9 +50,6 @@ class TaskListServiceTest {
 
     @Mock
     private EventsChecker eventsChecker;
-
-    @Mock
-    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private TaskListService taskListService;
@@ -73,32 +69,7 @@ class TaskListServiceTest {
     }
 
     @Test
-    void shouldReturnCompletedTasksToggleOff() {
-        when(featureToggleService.isFinishedTagEnabled()).thenReturn(false);
-        when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
-
-        final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
-
-        assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(COMPLETED));
-
-        verify(eventsChecker, never()).isAvailable(any(), any());
-        verify(eventsChecker, never()).isInProgress(any(), any());
-    }
-
-    @Test
-    void shouldReturnNotAvailableTasks() {
-        when(featureToggleService.isFinishedTagEnabled()).thenReturn(false);
-        when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
-        when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
-
-        final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
-
-        assertThat(tasks).containsExactlyInAnyOrderElementsOf(getTasks(NOT_AVAILABLE));
-    }
-
-    @Test
-    void shouldReturnCompletedTasksToggleOn() {
-        when(featureToggleService.isFinishedTagEnabled()).thenReturn(true);
+    void shouldReturnCompletedTasks() {
         when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(true);
         when(eventsChecker.completedState(any(Event.class))).thenReturn(COMPLETED_TASK_STATE);
 
@@ -111,8 +82,7 @@ class TaskListServiceTest {
     }
 
     @Test
-    void shouldReturnNotAvailableTasksToggleOn() {
-        when(featureToggleService.isFinishedTagEnabled()).thenReturn(false);
+    void shouldReturnNotAvailableTasks() {
         when(eventsChecker.isCompleted(any(Event.class), eq(caseData))).thenReturn(false);
         when(eventsChecker.isAvailable(any(Event.class), eq(caseData))).thenReturn(false);
 

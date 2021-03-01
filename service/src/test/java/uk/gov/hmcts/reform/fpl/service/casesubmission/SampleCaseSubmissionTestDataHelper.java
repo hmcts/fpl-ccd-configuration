@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import uk.gov.hmcts.reform.fpl.model.Allocation;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisSocialWorkOther;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -58,7 +56,6 @@ public class SampleCaseSubmissionTestDataHelper {
             .factorsParenting(expectedDocmosisFactorsParenting())
             .proceeding(expectedDocmosisProceeding())
             .relevantProceedings("Yes")
-            .annexDocuments(expectedDocmosisAnnexDocuments())
             .build();
     }
 
@@ -275,23 +272,5 @@ public class SampleCaseSubmissionTestDataHelper {
                 .guardian("John Watson")
                 .sameGuardianDetails("No\nSome guardian not needed")
                 .build());
-    }
-
-    private static DocmosisAnnexDocuments expectedDocmosisAnnexDocuments() {
-        return DocmosisAnnexDocuments.builder()
-            .socialWorkChronology("To follow\nSocial work chronology text")
-            .socialWorkStatement("To follow\nSocial work statement and genogram text")
-            .socialWorkAssessment("To follow\nSocial work assessment text")
-            .socialWorkCarePlan("To follow\nsome text")
-            .socialWorkEvidenceTemplate("Attached")
-            .thresholdDocument("Attached")
-            .checklistDocument("Attached")
-            .others(of(DocmosisSocialWorkOther.builder()
-                    .documentTitle("document_one")
-                    .build(),
-                DocmosisSocialWorkOther.builder()
-                    .documentTitle("document_two")
-                    .build()))
-            .build();
     }
 }

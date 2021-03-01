@@ -45,18 +45,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSummaryTabOnEventEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isSummaryTabOnEventEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("summary-tab-on-event-update"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -111,18 +99,6 @@ class FeatureToggleServiceTest {
         verify(ldClient).boolVariation(
             eq("restrict-case-submission"),
             argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("application-documents-event"),
-            argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
