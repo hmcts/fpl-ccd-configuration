@@ -13,7 +13,8 @@ module.exports = {
     },
   },
 
-  selectEightWeekExtensionTime() {
+  async selectEightWeekExtensionTime() {
+    await I.runAccessibilityTest();
     I.click(this.fields.eightWeekExtensionOption);
   },
 
@@ -25,7 +26,8 @@ module.exports = {
     I.fillField(this.fields.caseExtensionComment, comment);
   },
 
-  addCaseExtensionTimeConfirmation(){
+  async addCaseExtensionTimeConfirmation(){
+    await I.runAccessibilityTest();
     I.click(this.fields.caseExtensionTimeConfirmation);
   },
 

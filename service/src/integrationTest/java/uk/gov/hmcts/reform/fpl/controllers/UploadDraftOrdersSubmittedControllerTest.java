@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
@@ -29,7 +27,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE;
@@ -48,18 +45,10 @@ class UploadDraftOrdersSubmittedControllerTest extends AbstractUploadDraftOrders
     private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2020, Month.NOVEMBER, 3, 0, 0, 0);
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private NotificationClient notificationClient;
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @BeforeEach
-    void setUp() {
-        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
-    }
 
     @Test
     void shouldSendNotificationsIfNewAgreedCMOUploaded() {

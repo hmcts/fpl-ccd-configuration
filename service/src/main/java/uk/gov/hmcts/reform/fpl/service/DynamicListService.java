@@ -36,6 +36,14 @@ public class DynamicListService {
     public <T> DynamicList asDynamicList(List<T> elements,
                                          Function<T, String> codeProducer,
                                          Function<T, String> valueProducer) {
+        return asDynamicList(elements, null, codeProducer, valueProducer);
+    }
+
+    public <T> DynamicList asDynamicList(List<T> elements,
+                                         String selectedCode,
+                                         Function<T, String> codeProducer,
+                                         Function<T, String> valueProducer) {
+
         List<DynamicListElement> items = elements.stream()
             .filter(Objects::nonNull)
             .map(element -> DynamicListElement.builder()
@@ -44,10 +52,23 @@ public class DynamicListService {
                 .build())
             .collect(toList());
 
+        DynamicListElement selectedItem = items.stream()
+            .filter(item -> item.hasCode(selectedCode))
+            .findFirst()
+            .orElse(DynamicListElement.builder().build());
+
         return DynamicList.builder()
             .listItems(items)
-            .value(DynamicListElement.builder().build())
+            .value(selectedItem)
             .build();
+    }
+
+    public <T> DynamicList asDynamicList(List<T> elements,
+                                         int selected,
+                                         Function<T, String> codeProducer,
+                                         Function<T, String> valueProducer) {
+
+        return asDynamicList(elements, codeProducer.apply(elements.get(selected)), codeProducer, valueProducer);
     }
 
 }

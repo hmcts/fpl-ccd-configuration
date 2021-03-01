@@ -47,9 +47,9 @@ module.exports = {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
-    await I.runAccessibilityTest();
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
+    await I.runAccessibilityTest();
   },
 
   setInitialSearchFields(state='Any') {
@@ -70,7 +70,9 @@ module.exports = {
     return caseProperty.inside(caseRow);
   },
 
-  verifyCaseIsShareable(caseId){
+  async verifyCaseIsShareable(caseId){
+    I.navigateToCaseList();
+    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
     I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 

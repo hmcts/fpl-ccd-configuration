@@ -28,6 +28,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
@@ -69,16 +71,25 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
 
         Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
         Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOThree = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
 
         CaseData caseData = CaseData.builder()
             .state(state)
             .orderCollection(generatedOrders)
             .sealedCMOs(sealedCaseManagementOrders)
+            .draftUploadedCMOs(newArrayList(draftCMOOne, draftCMOThree))
             .hearingOrdersBundlesDrafts(newArrayList(
                 element(HearingOrdersBundle.builder()
                     .orders(newArrayList(
-                        draftCMOOne, draftCMOTwo,
+                        draftCMOOne,
                         element(buildPastHearingOrder(C21))))
+                    .build()),
+                element(HearingOrdersBundle.builder()
+                    .orders(newArrayList(draftCMOTwo))
+                    .build()),
+                element(HearingOrdersBundle.builder()
+                    .orders(newArrayList(agreedCMO))
                     .build())
             ))
             .build();
@@ -96,12 +107,15 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
                 buildListElement(generatedOrders.get(1).getId(), "order 2 - 28 July 2020"),
                 buildListElement(generatedOrders.get(2).getId(), "order 3 - 29 August 2021"),
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 12 August 2022"),
+                buildListElement(generatedOrders.get(4).getId(), "order 5 - 12 September 2018"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     String.format("Sealed case management order issued on %s",
-                    formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
+                        formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))
             )).build();
 
@@ -172,7 +186,9 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
     private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
+            .status(type == AGREED_CMO ? SEND_TO_JUDGE : DRAFT)
             .dateSent(dateNow().minusDays(1))
+            .dateIssued(dateNow())
             .build();
     }
 

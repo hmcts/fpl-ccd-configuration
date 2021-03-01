@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
 import java.time.LocalDateTime;
@@ -21,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
-    private final FeatureToggleService featureToggleService;
 
     @Override
     DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData) {
@@ -33,8 +31,7 @@ public class EPOGenerationService extends GeneratedOrderTemplateDataGeneration {
             .removalAddress(getFormattedRemovalAddress(caseData))
             .epoStartDateTime(formatEPODateTime(caseData.getDateAndTimeOfIssue()))
             .epoEndDateTime(formatEPODateTime(caseData.getEpoEndDate()))
-            .exclusionRequirement(featureToggleService.isEpoOrderTypeAndExclusionEnabled()
-                ? buildExclusionRequirement(caseData) : null)
+            .exclusionRequirement(buildExclusionRequirement(caseData))
             .build();
     }
 
