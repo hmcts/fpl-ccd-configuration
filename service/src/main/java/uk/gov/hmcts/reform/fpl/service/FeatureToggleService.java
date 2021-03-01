@@ -51,10 +51,6 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isFinishedTagEnabled() {
-        return ldClient.boolVariation("finished-tag", createLDUser(), false);
-    }
-
     public boolean isSummaryTabEnabled() {
         return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
     }
