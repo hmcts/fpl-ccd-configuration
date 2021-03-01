@@ -1,19 +1,35 @@
 const fs = require('fs');
 const testConfig = require('../../config.js');
 
-function generateAccessibilityReport(reportJson) {
-  consoleReport(reportJson);
-
-  const result = 'var replacejsoncontent = ' + JSON.stringify(reportJson);
+function generateAccessibilityReport(reportObj) {
+  consoleReport(reportObj);
 
   const sourceReport = __dirname + '/Report.html';
   const destReport = testConfig.TestOutputDir + '/a11y.html';
   const destJson = testConfig.TestOutputDir + '/a11y_output.js';
+  const previouschunkjson = testConfig.TestOutputDir + '/parallelexecution_a11y_result.json';
+
+  const updatedReportObj = appendPreviousParallelExecTestResults(reportObj);
+  const result = 'var replacejsoncontent = ' + JSON.stringify(updatedReportObj);
 
   fs.copyFileSync(sourceReport, destReport);
+  fs.writeFileSync(previouschunkjson, JSON.stringify(updatedReportObj));
   fs.writeFileSync(destJson, result);
   copyResources();
+}
 
+function appendPreviousParallelExecTestResults (reportObj) {
+  let previousObj;
+  try {
+    previousObj = fs.readFileSync(testConfig.TestOutputDir + '/parallelexecution_a11y_result.json');
+  } catch (error) {
+    return reportObj;
+  }
+  previousObj = JSON.parse(previousObj);
+  reportObj.passCount+=previousObj.passCount;
+  reportObj.failCount+=previousObj.failCount;
+  reportObj.tests=reportObj.tests.concat(previousObj.tests);
+  return reportObj;
 }
 
 function copyResources() {
@@ -38,27 +54,6 @@ function consoleReport(reportjson) {
   console.log('\t Total tests : ' + reportjson.tests.length);
   console.log('\t Passed tests : ' + reportjson.passCount);
   console.log('\t Failed tests : ' + reportjson.passCount);
-
-  for (let count = 0; count < reportjson.tests.length; count++) {
-    const test = reportjson.tests[count];
-    if (test.status === 'failed') {
-      const a11yIssues = test.a11yIssues;
-
-      console.log('\t \t Page title : ' + test.documentTitle);
-      console.log('\t \t Page url : ' + test.pageUrl);
-      console.log('\t \t Screenshot of the page : ' + test.screenshot);
-      console.log('\t \t Issues:');
-      if (a11yIssues.length > 0) {
-        for (let issueCounter = 0; issueCounter < a11yIssues.length; issueCounter++) {
-          console.log('\t \t \t ' + (issueCounter + 1) + '. ' + a11yIssues[issueCounter].code);
-          console.log('\t \t \t ' + a11yIssues[issueCounter].message);
-        }
-      } else {
-        console.log('\t \t \t Error executing test steps');
-      }
-    }
-    console.log('\t');
-  }
 }
 
 module.exports = {generateAccessibilityReport};

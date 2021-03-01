@@ -14,7 +14,6 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.Event.eventsInState;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
-import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.IN_PROGRESS;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
@@ -37,9 +36,6 @@ public class TaskListService {
 
     private TaskState getTaskState(CaseData caseData, Event event) {
         if (eventsChecker.isCompleted(event, caseData)) {
-            if (!featureToggleService.isFinishedTagEnabled()) {
-                return COMPLETED;
-            }
             return eventsChecker.completedState(event);
         }
 

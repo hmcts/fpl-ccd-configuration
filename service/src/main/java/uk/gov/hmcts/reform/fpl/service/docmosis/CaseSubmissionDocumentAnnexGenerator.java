@@ -24,7 +24,6 @@ public class CaseSubmissionDocumentAnnexGenerator {
         List<Element<ApplicationDocument>> documents = caseData.getApplicationDocuments();
 
         return DocmosisAnnexDocuments.builder()
-            .featureToggleOn(true)
             .documents(transformDocuments(documents))
             .toFollowReason(caseData.getApplicationDocumentsToFollowReason())
             .build();

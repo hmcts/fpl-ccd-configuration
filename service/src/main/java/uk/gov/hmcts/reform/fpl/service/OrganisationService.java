@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
 import uk.gov.hmcts.reform.rd.model.Status;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class OrganisationService {
 
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
         try {
-            return Set.copyOf(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
+            return new LinkedHashSet<>(getUsersFromSameOrganisationBasedOnReferenceData(requestData.authorisation()));
         } catch (FeignException.NotFound | FeignException.Forbidden unregisteredException) {
             log.warn("User {} from {} not registered in MO. {}", requestData.userId(), localAuthorityCode,
                 ExceptionUtils.getStackTrace(unregisteredException));

@@ -9,10 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderKind;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.events.cmo.AgreedCMOUploaded;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftCMOUploaded;
-import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersUploaded;
-import uk.gov.hmcts.reform.fpl.events.cmo.UploadCMOEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -254,34 +250,6 @@ public class DraftOrderService {
         return bundles;
     }
 
-    public UploadCMOEvent buildEventToPublish(CaseData caseData, CaseData caseDataBefore) {
-
-        if (featureToggleService.isDraftOrdersEnabled()) {
-            return new DraftOrdersUploaded(caseData);
-        } else {
-            List<Element<HearingOrder>> unsealedCMOs = new ArrayList<>(caseData.getDraftUploadedCMOs());
-            unsealedCMOs.removeAll(caseDataBefore.getDraftUploadedCMOs());
-
-            Element<HearingOrder> cmo = unsealedCMOs.get(0);
-
-            HearingBooking hearing = caseData.getHearingDetails().stream()
-                .filter(hearingElement -> cmo.getId().equals(hearingElement.getValue().getCaseManagementOrderId()))
-                .findFirst()
-                .orElseThrow()
-                .getValue();
-
-            CMOStatus status = cmo.getValue().getStatus();
-
-            if (SEND_TO_JUDGE == status) {
-                return new AgreedCMOUploaded(caseData, hearing);
-            } else if (DRAFT == status) {
-                return new DraftCMOUploaded(caseData, hearing);
-            }
-
-            throw new IllegalStateException("Unexpected cmo status: " + status);
-        }
-    }
-
     private void migrateDocuments(List<Element<HearingFurtherEvidenceBundle>> evidenceBundles, UUID selectedHearingId,
                                   HearingBooking hearing, List<Element<SupportingEvidenceBundle>> cmoSupportingDocs) {
         Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, evidenceBundles);
@@ -386,7 +354,7 @@ public class DraftOrderService {
     private List<HearingOrderKind> getHearingOrderKinds(UploadDraftOrdersData eventData) {
         return ofNullable(eventData)
             .map(UploadDraftOrdersData::getHearingOrderDraftKind)
-            .orElse(featureToggleService.isDraftOrdersEnabled() ? emptyList() : List.of(CMO));
+            .orElse(emptyList());
     }
 
     private DocumentReference getCMO(UploadDraftOrdersData currentEventData,

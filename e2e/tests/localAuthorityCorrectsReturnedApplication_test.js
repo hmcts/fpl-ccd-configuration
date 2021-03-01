@@ -16,7 +16,7 @@ Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnA
 
   await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
   await returnApplicationEventPage.selectApplicationIncorrect();
-  returnApplicationEventPage.enterRejectionNote();
+  await returnApplicationEventPage.enterRejectionNote();
   await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
 
   I.seeEventSubmissionConfirmation(config.administrationActions.returnApplication);

@@ -39,7 +39,6 @@ module.exports = {
     I.fillField(this.fields.applicant(applicantIndex).mobileNumber, applicant.mobileNumber);
     I.fillField(this.fields.applicant(applicantIndex).jobTitle, applicant.jobTitle);
     I.fillField(this.fields.applicant(applicantIndex).email, applicant.email);
-    await I.runAccessibilityTest();
   },
 
   enterSolicitorDetails(solicitor) {

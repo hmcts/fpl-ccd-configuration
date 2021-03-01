@@ -37,6 +37,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REJECTED_BY_JUDGE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
@@ -62,13 +64,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
     private static final long CASE_ID = 12345L;
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
-    private static final DocumentReference orderDocument = testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
+    private static final DocumentReference orderDocument = testDocumentReference();
 
     @MockBean
     private NotificationClient notificationClient;
@@ -112,7 +112,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(NOTIFICATION_REFERENCE)
             );
@@ -171,7 +171,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 eq(JUDGE_APPROVES_DRAFT_ORDERS),
-                eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(LOCAL_AUTHORITY_1_INBOX),
                 anyMap(),
                 eq(NOTIFICATION_REFERENCE)
             );
@@ -232,7 +232,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(CMO_REJECTED_BY_JUDGE_TEMPLATE),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
@@ -251,7 +251,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(JUDGE_REJECTS_DRAFT_ORDERS),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
@@ -265,7 +265,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
             .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
@@ -293,6 +293,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
                 .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .build())
+            .endDate(LocalDateTime.now())
             .caseManagementOrderId(cmoId)
             .build();
     }

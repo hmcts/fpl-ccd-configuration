@@ -12,7 +12,7 @@ const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissi
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
-const baseUrl = process.env.URL || 'http://localhost:3333';
+const baseUrl = config.baseUrl;
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
 const maxRetries = 5;
