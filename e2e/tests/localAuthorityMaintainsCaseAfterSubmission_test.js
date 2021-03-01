@@ -34,7 +34,7 @@ Scenario('local authority add an external barrister as a legal representative fo
 Scenario('local authority update solicitor', async ({I, caseViewPage, enterApplicantEventPage}) => {
   const solicitorEmail = 'solicitor@test.com';
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-  enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
+  await enterApplicantEventPage.enterSolicitorDetails({email: solicitorEmail});
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

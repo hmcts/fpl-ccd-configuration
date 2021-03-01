@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -57,9 +58,9 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
                                    RemovableOrder removableOrder) {
         GeneratedOrder generatedRemovableOrder = (GeneratedOrder) removableOrder;
 
-
         data.put("orderToBeRemoved", generatedRemovableOrder.getDocument());
-        data.put("orderTitleToBeRemoved", generatedRemovableOrder.getTitle());
+        data.put("orderTitleToBeRemoved", defaultIfNull(generatedRemovableOrder.getTitle(),
+            generatedRemovableOrder.getType()));
         data.put("orderIssuedDateToBeRemoved", generatedRemovableOrder.getDateOfIssue());
         data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
     }

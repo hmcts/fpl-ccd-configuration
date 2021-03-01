@@ -194,6 +194,7 @@ module.exports = {
   },
 
   async enterEpoEndDate(date) {
+    await I.runAccessibilityTest();
     await I.fillDateAndTime(date, this.fields.epo.endDate.id);
   },
 
