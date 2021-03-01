@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -60,7 +59,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJud
 public class DraftOrderService {
 
     private static final DynamicListElement NO_HEARING = DynamicListElement.defaultListItem("No hearing");
-    private final FeatureToggleService featureToggleService;
     private final ObjectMapper mapper;
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;

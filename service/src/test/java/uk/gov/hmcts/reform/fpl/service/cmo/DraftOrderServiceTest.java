@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -71,9 +70,6 @@ class DraftOrderServiceTest {
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
-    @Mock
-    private FeatureToggleService featureToggleService;
-
     private DraftOrderService service;
 
     @Mock
@@ -81,7 +77,7 @@ class DraftOrderServiceTest {
 
     @BeforeEach
     void init() {
-        service = new DraftOrderService(featureToggleService, new ObjectMapper(), time, documentUploadHelper);
+        service = new DraftOrderService(new ObjectMapper(), time, documentUploadHelper);
     }
 
     @Nested
