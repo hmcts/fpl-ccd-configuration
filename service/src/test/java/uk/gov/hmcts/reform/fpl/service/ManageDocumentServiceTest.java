@@ -780,8 +780,8 @@ class ManageDocumentServiceTest {
             manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
         assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(1);
-        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue()
-            .getHearingName().equals("Case Management Hearing 2"));
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
+            .isEqualTo("Case Management Hearing 2");
     }
 
     @Test
@@ -811,8 +811,8 @@ class ManageDocumentServiceTest {
             manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
         assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(2);
-        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue()
-            .getHearingName().equals("Case Management Hearing 1"));
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
+            .isEqualTo("Case Management Hearing 1");
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
