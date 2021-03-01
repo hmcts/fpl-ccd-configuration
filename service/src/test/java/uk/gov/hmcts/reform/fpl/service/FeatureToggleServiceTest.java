@@ -45,18 +45,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsSummaryTabOnEventEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isSummaryTabOnEventEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("summary-tab-on-event-update"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForCtsc(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -116,30 +104,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("application-documents-event"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("further-evidence-upload-notification"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -182,6 +146,18 @@ class FeatureToggleServiceTest {
         assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("retrieve-organisation"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("further-evidence-upload-notification"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

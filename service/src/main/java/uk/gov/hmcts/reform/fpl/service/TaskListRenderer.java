@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -41,7 +40,6 @@ public class TaskListRenderer {
     private static final String HORIZONTAL_LINE = "<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>";
     private static final String NEW_LINE = "<br/>";
 
-    private final FeatureToggleService featureToggleService;
     private final TaskListRenderElements taskListRenderElements;
 
     //TODO consider templating solution like mustache
@@ -74,16 +72,10 @@ public class TaskListRenderer {
                 .withHint("In emergency cases, you can send your application without this information")
         ));
 
-        final TaskSection documents;
-        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
-            documents = newSection("Add application documents",
-                of(tasks.get(APPLICATION_DOCUMENTS)))
-                .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
-                    + "you can send your application without this information ");
-        } else {
-            documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
-                .withHint("For example, SWET, social work chronology and care plan");
-        }
+        final TaskSection documents = newSection("Add application documents",
+            of(tasks.get(APPLICATION_DOCUMENTS)))
+            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
+                + "you can send your application without this information ");
 
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
