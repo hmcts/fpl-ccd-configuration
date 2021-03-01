@@ -49,3 +49,6 @@ docker/wiremock/mappings/user-by-email/*
 
 # report outputs
 functional-output/
+
+# terraform modules
+infrastructure/.terraform/
