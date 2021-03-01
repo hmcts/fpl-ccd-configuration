@@ -115,9 +115,11 @@ class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))
-            )).build();
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))))
+            .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
     }

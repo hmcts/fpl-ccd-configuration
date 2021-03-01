@@ -60,13 +60,18 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return !SEND_TO_JUDGE.equals(status);
+        return type.isCmo();
     }
 
     public String asLabel() {
         if (APPROVED.equals(status)) {
             return format("Sealed case management order issued on %s",
                 formatLocalDateToString(dateIssued, "d MMMM yyyy"));
+        }
+
+        if (SEND_TO_JUDGE.equals(status)) {
+            return format("Agreed case management order sent on %s",
+                formatLocalDateToString(dateSent, "d MMMM yyyy"));
         }
 
         return format("Draft case management order sent on %s",
