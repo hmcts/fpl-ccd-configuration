@@ -20,7 +20,7 @@ class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
     CaseSubmissionControllerMidEventTest() {
         super("case-submission");
     }
-    
+
     @Test
     void shouldNotReturnDocumentErrorsWhenCaseDataIsEmpty() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -36,8 +36,8 @@ class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
             "• Add the child's details",
             "In the respondents' details section:",
             "• Add the respondents' details",
-            "In the your organisation's details section:",
-            "• Add your organisation's details",
+            "In the applicant's details section:",
+            "• Add applicant's details",
             "• Add the applicant's solicitor's details",
             "In the grounds for the application section:",
             "• Add the grounds for the application",
