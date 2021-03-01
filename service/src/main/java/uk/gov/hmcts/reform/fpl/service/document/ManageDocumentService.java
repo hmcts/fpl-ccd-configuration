@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -44,7 +43,6 @@ public class ManageDocumentService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final UserService user;
-    private final FeatureToggleService featureToggleService;
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
@@ -74,7 +72,7 @@ public class ManageDocumentService {
         }
 
         //If toggle not on, replicate old behaviour (always show C2 list, even if empty)
-        if (caseData.hasC2DocumentBundle() || !featureToggleService.isApplicationDocumentsEventEnabled()) {
+        if (caseData.hasC2DocumentBundle()) {
             listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
             hasC2s = YES.getValue();
         } else {
