@@ -52,16 +52,13 @@ class ManageDocumentServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
     private final UserService userService = mock(UserService.class);
-    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
     private ManageDocumentService manageDocumentService;
 
     @BeforeEach
     void before() {
-        manageDocumentService = new ManageDocumentService(
-            new ObjectMapper(), time, documentUploadHelper, userService, featureToggleService
-        );
+        manageDocumentService = new ManageDocumentService(new ObjectMapper(), time, documentUploadHelper, userService);
 
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
         given(userService.isHmctsUser()).willReturn(true);
@@ -105,9 +102,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseDataAndToggleOn() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
-
+    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
         CaseData caseData = CaseData.builder().build();
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
@@ -120,29 +115,6 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
             .containsExactly(null, null, expectedManageDocument);
-    }
-
-    @Test
-    void shouldReturnEmptyC2DocumentListWhenC2DocumentsAreNotPresentOnCaseDataAndToggleOff() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
-
-        CaseData caseData = CaseData.builder().build();
-        ManageDocument expectedManageDocument = ManageDocument.builder()
-            .hasC2s(YES.getValue())
-            .hasHearings(NO.getValue())
-            .build();
-
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
-            caseData, MANAGE_DOCUMENT_KEY);
-
-        DynamicList expectedEmptyList = DynamicList.builder()
-            .value(DynamicListElement.builder().build())
-            .listItems(List.of())
-            .build();
-
-        assertThat(listAndLabel)
-            .extracting(SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
-            .containsExactly(expectedEmptyList, expectedManageDocument);
     }
 
     @Test

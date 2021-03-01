@@ -104,18 +104,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("application-documents-event"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
