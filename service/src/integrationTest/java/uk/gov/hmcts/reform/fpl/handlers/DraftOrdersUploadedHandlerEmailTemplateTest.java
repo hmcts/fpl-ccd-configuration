@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.content.cmo.AgreedCMOUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.DraftOrdersUploadedContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @SpringBootTest(classes = {
     DraftOrdersUploadedEventHandler.class,
     DraftOrdersUploadedContentProvider.class,
+    AgreedCMOUploadedContentProvider.class,
     NotificationService.class,
     ObjectMapper.class,
     CaseUrlService.class
@@ -48,7 +50,52 @@ class DraftOrdersUploadedHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Test
     void notifyJudge() {
+        CaseData caseData = getCaseData();
 
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+
+        underTest.sendNotificationToJudge(event);
+
+        assertThat(response())
+            .hasSubject("New draft orders received, Smith")
+            .hasBody(emailContent()
+                .line("Dear Her Honour Judge Smith,")
+                .line()
+                .line("Draft orders have been received for:")
+                .line()
+                .callout("Smith, case management hearing, 1 February 2020")
+                .line()
+                .line("The draft orders are:")
+                .line()
+                .callout("Agreed CMO discussed at hearing\nTest order")
+                .line()
+                .line("You should now check the orders by signing in to:")
+                .line()
+                .end("http://fake-url/cases/case-details/100#Draft%20orders")
+            );
+    }
+
+    @Test
+    void notifyAdmin() {
+        CaseData caseData = getCaseData();
+
+        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
+
+        underTest.sendNotificationToAdmin(event);
+
+        assertThat(response())
+            .hasSubject("CMO sent for approval, Smith")
+            .hasBody(emailContent()
+                .line("Her Honour Judge Smith has been notified to approve the CMO for:")
+                .line()
+                .callout("Smith, case management hearing, 1 February 2020")
+                .line()
+                .line("To view the order, sign in to:")
+                .end("http://fake-url/cases/case-details/100#Draft%20orders")
+            );
+    }
+
+    private CaseData getCaseData() {
         Element<HearingBooking> hearingBooking = element(HearingBooking.builder()
             .type(HearingType.CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2020, Month.FEBRUARY, 1, 11, 11, 11))
@@ -76,7 +123,7 @@ class DraftOrdersUploadedHandlerEmailTemplateTest extends EmailTemplateTest {
             .orders(ElementUtils.wrapElements(cmo, c21))
             .build();
 
-        CaseData caseData = CaseData.builder()
+        return CaseData.builder()
             .id(100L)
             .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder()
@@ -87,27 +134,5 @@ class DraftOrdersUploadedHandlerEmailTemplateTest extends EmailTemplateTest {
             .hearingDetails(List.of(hearingBooking))
             .lastHearingOrderDraftsHearingId(hearingBooking.getId())
             .build();
-
-        DraftOrdersUploaded event = new DraftOrdersUploaded(caseData);
-
-        underTest.sendNotificationToJudge(event);
-
-        assertThat(response())
-            .hasSubject("New draft orders received, Smith")
-            .hasBody(emailContent()
-                .line("Dear Her Honour Judge Smith,")
-                .line()
-                .line("Draft orders have been received for:")
-                .line()
-                .callout("Smith, case management hearing, 1 February 2020")
-                .line()
-                .line("The draft orders are:")
-                .line()
-                .callout("Agreed CMO discussed at hearing\nTest order")
-                .line()
-                .line("You should now check the orders by signing in to:")
-                .line()
-                .end("http://fake-url/cases/case-details/100#Draft%20orders")
-            );
     }
 }

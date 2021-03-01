@@ -16,6 +16,7 @@ module.exports = {
   },
 
   async enterScannedDocument(scannedDocument, file) {
+    await I.runAccessibilityTest();
     I.click('Add new');
     await I.runAccessibilityTest();
     I.selectOption(this.fields.scannedDoc.type, scannedDocument.type);

@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
@@ -108,7 +111,7 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldReturnCourtNameWhenValidLocalAuthority() {
-        assertThat(service.getCourtName("example")).isEqualTo("Family Court");
+        assertThat(service.getCourtName(LOCAL_AUTHORITY_1_CODE)).isEqualTo(DEFAULT_LA_COURT);
     }
 
     @Test
@@ -150,13 +153,12 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldReturnApplicantNameWhenListOfApplicants() {
-        String localAuthorityName = "Example Local Authority";
 
         List<Element<Applicant>> listApplicants = wrapElements(Applicant.builder()
-            .party(ApplicantParty.builder().organisationName(localAuthorityName).build())
+            .party(ApplicantParty.builder().organisationName(LOCAL_AUTHORITY_1_NAME).build())
             .build());
 
-        assertThat(service.getApplicantName(listApplicants)).isEqualTo(localAuthorityName);
+        assertThat(service.getApplicantName(listApplicants)).isEqualTo(LOCAL_AUTHORITY_1_NAME);
     }
 
     @Test

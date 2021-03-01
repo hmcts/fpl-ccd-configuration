@@ -26,10 +26,6 @@ public class FeatureToggleService {
         this.environment = environment;
     }
 
-    public boolean isSummaryTabOnEventEnabled() {
-        return ldClient.boolVariation("summary-tab-on-event-update", createLDUser(), false);
-    }
-
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -59,10 +55,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
 
-    public boolean isEpoOrderTypeAndExclusionEnabled() {
-        return ldClient.boolVariation("epo-order-type-and-exclusion", createLDUser(), false);
-    }
-
     public boolean isFinishedTagEnabled() {
         return ldClient.boolVariation("finished-tag", createLDUser(), false);
     }
@@ -77,6 +69,10 @@ public class FeatureToggleService {
 
     public boolean isFeeAndPayCaseTypeEnabled() {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
+    }
+
+    public boolean isRetrievingOrganisationEnabled() {
+        return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

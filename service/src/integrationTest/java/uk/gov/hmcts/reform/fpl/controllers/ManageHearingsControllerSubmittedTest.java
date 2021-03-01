@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.EventService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.lang.Long.parseLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,9 +40,10 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -68,14 +66,11 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 
 class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest {
 
-    private static final String CASE_ID = "12345";
-    private static final long CASE_REFERENCE = 12345L;
+    private static final long CASE_ID = 12345L;
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String JUDGE_EMAIL = "judge@judge.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + parseLong(CASE_ID);
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
@@ -99,19 +94,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @SpyBean
     private EventService eventPublisher;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private ObjectMapper objectMapper;
 
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");
-    }
-
-    @BeforeEach
-    void setUp() {
-        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
     }
 
     @Test
@@ -122,7 +109,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
             .state("Gatekeeping")
             .build();
@@ -133,7 +120,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
-            eq(CASE_REFERENCE),
+            eq(CASE_ID),
             eq("populateSDO"),
             anyMap());
 
@@ -141,7 +128,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
-            CASE_REFERENCE,
+            CASE_ID,
             "internal-update-case-summary",
             caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
 
@@ -150,40 +137,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     }
 
     @Test
-    void shouldTriggerPopulateDatesEventWhenEmptyDatesExistAndCaseInGatekeepingToggledOff() {
-        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
-
-        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
-            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
-            .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
-            .state("Gatekeeping")
-            .build();
-        CaseDetails caseDetailsBefore = CaseDetails.builder().data(Map.of()).build();
-
-        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
-
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(
-            eq(JURISDICTION),
-            eq(CASE_TYPE),
-            eq(CASE_REFERENCE),
-            eq("populateSDO"),
-            anyMap());
-
-        verifyNoInteractions(notificationClient);
-        verifyNoMoreInteractions(coreCaseDataService);
-    }
-
-    @Test
     void shouldNotTriggerPopulateDatesEventWhenCaseNotInGatekeeping() {
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
             .state("Submitted")
             .build();
@@ -193,7 +151,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -202,7 +160,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @Test
     void shouldDoNothingWhenNoHearingAddedOrUpdated() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .id(CASE_REFERENCE)
+            .id(CASE_ID)
             .data(buildData(List.of(hearingWithoutNotice), hearingWithoutNotice.getId()))
             .build();
 
@@ -211,7 +169,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         verifyNoInteractions(notificationClient);
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
-            CASE_REFERENCE,
+            CASE_ID,
             "internal-update-case-summary",
             caseSummary("Yes", "Case management", LocalDate.of(2050, 5, 20)));
         verifyNoMoreInteractions(coreCaseDataService);
@@ -239,7 +197,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(buildData(List.of(hearingWithNotice, existingHearing), hearingWithNotice.getId()))
             .state("Submitted")
             .build();
@@ -253,7 +211,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
@@ -271,11 +229,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(JURISDICTION,
             CASE_TYPE,
-            CASE_REFERENCE,
+            CASE_ID,
             "internal-change-SEND_DOCUMENT",
             Map.of("documentToBeSent", hearingWithNotice.getValue().getNoticeOfHearing()));
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -299,7 +257,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", NEW_HEARING,
@@ -316,7 +274,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -341,7 +299,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", hearingOption,
@@ -359,7 +317,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -380,7 +338,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", NEW_HEARING,
@@ -397,7 +355,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -421,7 +379,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         CaseDetails caseDetails = CaseDetails.builder()
             .jurisdiction(JURISDICTION)
             .caseTypeId(CASE_TYPE)
-            .id(parseLong(CASE_ID))
+            .id(CASE_ID)
             .data(Map.of(
                 "selectedHearingId", hearingWithNotice.getId(),
                 "hearingOption", hearingOption,
@@ -434,7 +392,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verifyNoInteractions(notificationClient);
 
-        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_REFERENCE),
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
 
         verifyNoMoreInteractions(coreCaseDataService);
@@ -443,7 +401,7 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     private Map<String, Object> buildData(List<Element<HearingBooking>> hearings, UUID selectedHearing) {
         return Map.of("hearingDetails", hearings,
             "selectedHearingId", selectedHearing,
-            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
             "representatives", createRepresentatives(RepresentativeServingPreferences.EMAIL),
             ALL_PARTIES.getValue(),
             wrapElements(

@@ -5,7 +5,8 @@
     "ID": "ordersAndDirectionsLink",
     "FieldType": "Label",
     "Label": "[Make changes to orders and directions sought](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/ordersNeeded)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ID": "hearingUrgencyLink",
     "FieldType": "Label",
     "Label": "[Make changes to hearing urgency](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/hearingNeeded)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ID": "thresholdCriteriaLink",
     "FieldType": "Label",
     "Label": "[Make changes to threshold criteria](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterGrounds)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +32,8 @@
     "ID": "riskAndHarmToChildrenLink",
     "FieldType": "Label",
     "Label": "[Make changes to risk and harm to children](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterRiskHarm)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -37,7 +41,8 @@
     "ID": "factorsAffectingParentingLink",
     "FieldType": "Label",
     "Label": "[Make changes to factors affecting parenting](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterParentingFactors)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -45,7 +50,8 @@
     "ID": "otherProceedingsLink",
     "FieldType": "Label",
     "Label": "[Make changes to other proceedings for the child](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/otherProceedings)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -53,7 +59,8 @@
     "ID": "internationalElementLink",
     "FieldType": "Label",
     "Label": "[Make changes to international element](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterInternationalElement)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -61,7 +68,8 @@
     "ID": "documentsLink",
     "FieldType": "Label",
     "Label": "[Make changes to documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadDocuments)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -69,7 +77,8 @@
     "ID": "organisationDetailsLink",
     "FieldType": "Label",
     "Label": "[Make changes to local authority details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterApplicant)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -77,7 +86,8 @@
     "ID": "childrenLink",
     "FieldType": "Label",
     "Label": "[Make changes to the child's details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterChildren)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -85,7 +95,8 @@
     "ID": "respondentsLink",
     "FieldType": "Label",
     "Label": "[Make changes to the respondents' details](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterRespondents)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -93,7 +104,8 @@
     "ID": "othersLink",
     "FieldType": "Label",
     "Label": "[Make changes to other people in the case](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/enterOthers)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -101,7 +113,8 @@
     "ID": "allocationProposalLink",
     "FieldType": "Label",
     "Label": "[Make changes to allocation proposal](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/otherProposal)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -109,7 +122,8 @@
     "ID": "facilitiesOrServicesNeededLink",
     "FieldType": "Label",
     "Label": "[Make changes to court services needed](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/attendingHearing)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,7 +131,8 @@
     "ID": "draftSDOLinkOrdersTab",
     "FieldType": "Label",
     "Label": "[Add the gatekeeping order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)\n\nThis is also known as the initial or standard directions order",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -125,7 +140,8 @@
     "ID": "draftSDOLinkDraftOrdersTab",
     "FieldType": "Label",
     "Label": "[Send or replace this order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/draftSDO)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -133,7 +149,8 @@
     "ID": "reviewCMOLink",
     "FieldType": "Label",
     "Label": "[Approve orders](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/reviewCMO)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -141,7 +158,8 @@
     "ID": "uploadC2Link",
     "FieldType": "Label",
     "Label": "[Upload a new C2 application](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadC2)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -149,7 +167,8 @@
     "ID": "createOrderLink",
     "FieldType": "Label",
     "Label": "[Create or upload an order](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/createOrder)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -157,7 +176,8 @@
     "ID": "uploadCMOLink",
     "FieldType": "Label",
     "Label": "[Upload CMO](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadCMO)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -165,7 +185,8 @@
     "ID": "manageLegalRepresentativesLink",
     "FieldType": "Label",
     "Label": "[Manage legal representatives](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageLegalRepresentatives)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -173,7 +194,8 @@
     "ID": "manageDocumentsLink",
     "FieldType": "Label",
     "Label": "[Manage documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageDocuments)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -181,7 +203,8 @@
     "ID": "manageDocumentsLALink",
     "FieldType": "Label",
     "Label": "[Manage documents](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/manageDocumentsLA)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -189,7 +212,8 @@
     "ID": "messageJudgeLegalAdviserLink",
     "FieldType": "Label",
     "Label": "[Send and reply to messages](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/messageJudgeOrLegalAdviser)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -197,8 +221,7 @@
     "ID": "extend26WeekTimelineLink",
     "FieldType": "Label",
     "Label": "[Extend 26-week timeline](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/extend26WeekTimeline)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
-
-
 ]
