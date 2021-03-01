@@ -13,13 +13,14 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerUploadRouteMidEventTest extends AbstractControllerTest {
 
-    private static final DocumentReference DOCUMENT = DocumentReference.builder().filename("prepared.pdf").build();
+    private static final DocumentReference DOCUMENT = testDocumentReference("prepared.pdf");
 
     StandardDirectionsOrderControllerUploadRouteMidEventTest() {
         super("draft-standard-directions");

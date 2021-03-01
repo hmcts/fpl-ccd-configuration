@@ -33,10 +33,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class ManageLegalRepresentativeSubmitControllerTest extends AbstractControllerTest {
 
-    public static final String REPRESENTATIVE_EMAIL = "test@test.com";
-    public static final String FAMILY_MAN_CASE_NO = "2313213132132";
-    public static final String REP_NAME = "John Smith";
-    public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+    private static final String REPRESENTATIVE_EMAIL = "test@test.com";
+    private static final String FAMILY_MAN_CASE_NO = "2313213132132";
+    private static final String REP_NAME = "John Smith";
+    private static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .fullName(REP_NAME)
         .role(LegalRepresentativeRole.EXTERNAL_LA_BARRISTER)
         .email(REPRESENTATIVE_EMAIL)
@@ -46,7 +46,7 @@ class ManageLegalRepresentativeSubmitControllerTest extends AbstractControllerTe
 
     private static final Long CASE_ID = 12345L;
     private static final String RESPONDENT_SURNAME = "Watson";
-    public static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
+    private static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
         .lastName(RESPONDENT_SURNAME).build())
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;

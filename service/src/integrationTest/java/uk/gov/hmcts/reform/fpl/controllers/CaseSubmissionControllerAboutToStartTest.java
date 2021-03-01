@@ -16,8 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,9 +41,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
     private FeeService feeService;
 
     @MockBean
@@ -62,7 +57,7 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractControllerTest {
 
     @BeforeEach
     void mocking() {
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
+        givenCurrentUserWithName("Emma Taylor");
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))

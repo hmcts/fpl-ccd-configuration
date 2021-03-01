@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHD
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChangeStateController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ChangeStateControllerAboutToSubmitTest extends AbstractControllerTest {
+class ChangeStateControllerAboutToSubmitTest extends AbstractControllerTest {
 
     ChangeStateControllerAboutToSubmitTest() {
         super("change-state");

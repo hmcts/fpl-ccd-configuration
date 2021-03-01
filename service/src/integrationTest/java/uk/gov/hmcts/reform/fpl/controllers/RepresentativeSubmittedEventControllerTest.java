@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest {
 
-    private static final String REPPRESENTATIVE_FULLNAME = "John Smith";
+    private static final String REPRESENTATIVE_FULLNAME = "John Smith";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -60,7 +60,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     private static final Long CASE_ID = 12345L;
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final SyntheticCaseSummary CASE_SUMMARY = SyntheticCaseSummary.builder()
-        .caseSummaryFirstRespondentLegalRep(REPPRESENTATIVE_FULLNAME)
+        .caseSummaryFirstRespondentLegalRep(REPRESENTATIVE_FULLNAME)
         .caseSummaryFirstRespondentLastName(RESPONDENT_SURNAME)
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -153,7 +153,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     private Representative buildRepresentative(RepresentativeServingPreferences servingPreference) {
         return Representative.builder()
-            .fullName(REPPRESENTATIVE_FULLNAME)
+            .fullName(REPRESENTATIVE_FULLNAME)
             .positionInACase("Position")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
             .servingPreferences(servingPreference)

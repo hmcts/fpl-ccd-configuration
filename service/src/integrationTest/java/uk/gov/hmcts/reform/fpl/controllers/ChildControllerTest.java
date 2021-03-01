@@ -5,16 +5,13 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -28,11 +25,8 @@ class ChildControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartShouldPrepopulateChildrenDataWhenNoChildExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("data", "some data"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
+        CaseData caseData = CaseData.builder().build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData);
 
         assertThat(callbackResponse.getData()).containsKey("children1");
     }
@@ -40,12 +34,12 @@ class ChildControllerTest extends AbstractControllerTest {
     @Test
     void aboutToSubmitShouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() {
         //first child in callbackRequest() has yes value for detailsHidden.
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
+        CaseData initialCaseData = caseData();
+
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
         assertThat(caseData.getConfidentialChildren())
-            .containsOnly(retainConfidentialDetails(initialData.getAllChildren().get(0)));
+            .containsOnly(retainConfidentialDetails(initialCaseData.getAllChildren().get(0)));
 
         assertThat(caseData.getChildren1().get(0).getValue().getParty().getAddress()).isNull();
         assertThat(caseData.getChildren1().get(1).getValue().getParty().getAddress()).isNotNull();

@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("integration-test")
 @WebMvcTest(CloseCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class CloseCaseControllerMidEventTest extends AbstractControllerTest {
+class CloseCaseControllerMidEventTest extends AbstractControllerTest {
 
     CloseCaseControllerMidEventTest() {
         super("close-case");

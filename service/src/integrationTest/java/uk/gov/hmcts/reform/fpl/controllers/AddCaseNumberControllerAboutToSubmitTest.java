@@ -1,55 +1,46 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class AddCaseNumberControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final String FAMILY_MAN_CASE_NUMBER_KEY = "familyManCaseNumber";
+class AddCaseNumberControllerAboutToSubmitTest extends AbstractControllerTest {
 
     AddCaseNumberControllerAboutToSubmitTest() {
         super("add-case-number");
     }
 
     @Test
-    void aboutToSubmitShouldReturnErrorWhenFamilymanCaseNumberNotAlphanumeric() {
-        CallbackRequest callbackRequest = buildCallbackRequest("NOT ALPHANUMERIC");
+    void aboutToSubmitShouldReturnErrorWhenFamilyManCaseNumberNotAlphanumeric() {
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber("NOT ALPHANUMERIC")
+            .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest.getCaseDetails(),
-            SC_OK);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).containsExactly("Enter a valid FamilyMan case number");
     }
 
     @Test
-    void aboutToSubmitShouldNotReturnErrorWhenFamilymanCaseNumberAlphanumeric() {
-        final String expectedFamilymanCaseNumber = "ALPHANUM3RIC";
-        CallbackRequest callbackRequest = buildCallbackRequest(expectedFamilymanCaseNumber);
+    void aboutToSubmitShouldNotReturnErrorWhenFamilyManCaseNumberAlphanumeric() {
+        final String expectedFamilyManCaseNumber = "ALPHANUM3RIC";
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest.getCaseDetails(),
-            SC_OK);
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber(expectedFamilyManCaseNumber)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
-        assertThat(callbackResponse.getData()).containsKey(FAMILY_MAN_CASE_NUMBER_KEY);
-        assertThat(callbackResponse.getData().get(FAMILY_MAN_CASE_NUMBER_KEY)).isEqualTo(expectedFamilymanCaseNumber);
+        assertThat(callbackResponse.getData().get("familyManCaseNumber")).isEqualTo(expectedFamilyManCaseNumber);
     }
 
-    private CallbackRequest buildCallbackRequest(final String familyManCaseNumber) {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(FAMILY_MAN_CASE_NUMBER_KEY, familyManCaseNumber))
-                .build())
-            .build();
-    }
 }

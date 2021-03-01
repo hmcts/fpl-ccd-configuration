@@ -42,8 +42,7 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
 
         assertThat(callbackResponse.getErrors()).isNull();
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
+        CaseData caseData = extractCaseData(callbackResponse);
 
         assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
     }

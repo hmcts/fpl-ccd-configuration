@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -43,13 +44,11 @@ public class CloseCaseControllerAboutToStartTest extends AbstractControllerTest 
 
     @Test
     void shouldSetShowFullReasonToNoWhenAllChildrenDoNotHaveFinalOrderMarked() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "children1", createChildren(false, "jim", "dave", "steve", "bob")
-            ))
+        CaseData caseData = CaseData.builder()
+            .children1(createChildren(false, "jim", "dave", "steve", "bob"))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
         // Due to how the field is deserialised we have to check the map as otherwise it will be ignored
         assertThat(response.getData()).extracting("closeCase").extracting("showFullReason").isEqualTo("NO");
@@ -57,13 +56,11 @@ public class CloseCaseControllerAboutToStartTest extends AbstractControllerTest 
 
     @Test
     void shouldSetShowFullReasonToYesWhenAllChildrenHaveFinalOrderMarked() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "children1", createChildren(true, "jim", "dave", "steve", "bob")
-            ))
+        CaseData caseData = CaseData.builder()
+            .children1(createChildren(true, "jim", "dave", "steve", "bob"))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
         assertThat(response.getData()).extracting("closeCase").extracting("showFullReason").isEqualTo("YES");
     }

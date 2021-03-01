@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -30,7 +29,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -45,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ActiveProfiles("integration-test")
@@ -57,14 +56,11 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static final Long CASE_ID = 12345L;
     private static DocumentReference applicationDocument;
     private static DocumentReference latestC2Document;
-    private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
+    private static final byte[] C2_BINARY = testDocumentBinaries();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @MockBean
     private NotificationClient notificationClient;
-
-    @MockBean
-    private IdamClient idamClient;
 
     @MockBean
     private PaymentService paymentService;
@@ -78,7 +74,7 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(idamClient.getUserInfo((USER_AUTH_TOKEN))).willReturn(USER_INFO_CAFCASS);
+        givenCurrentUser(USER_INFO_CAFCASS);
 
         applicationDocument = testDocumentReference();
         latestC2Document = testDocumentReference();

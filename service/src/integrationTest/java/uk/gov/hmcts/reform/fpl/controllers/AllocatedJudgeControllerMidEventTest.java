@@ -26,7 +26,7 @@ class AllocatedJudgeControllerMidEventTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat((callbackResponse.getErrors())).isNull();
     }
@@ -39,7 +39,7 @@ class AllocatedJudgeControllerMidEventTest extends AbstractControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).contains(
             "Enter an email address in the correct format, for example name@example.com");

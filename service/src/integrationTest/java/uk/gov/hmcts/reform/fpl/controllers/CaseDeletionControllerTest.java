@@ -20,7 +20,7 @@ class CaseDeletionControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldRemoveAllCaseDetailsWhenCalled() throws Exception {
+    void shouldRemoveAllCaseDetailsWhenCalled() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);

@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest {
+class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest {
 
     AddCaseNumberControllerSubmittedTest() {
         super("add-case-number");

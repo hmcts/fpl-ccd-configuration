@@ -6,10 +6,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
@@ -34,13 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 class CaseInitiationControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
-    private IdamClient idam;
-
-    @MockBean
     private OrganisationApi organisationApi;
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     CaseInitiationControllerAboutToSubmitTest() {
         super("case-initiation");
@@ -48,9 +39,8 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(idam.getUserInfo(USER_AUTH_TOKEN))
-            .willReturn(UserInfo.builder().sub(LOCAL_AUTHORITY_1_USER_EMAIL).build());
+        givenFplService();
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_1_USER_EMAIL);
     }
 
     @Test
@@ -77,8 +67,7 @@ class CaseInitiationControllerAboutToSubmitTest extends AbstractControllerTest {
     void shouldAddLocalAuthorityAndOutsourcingPoliciesWhenCaseIsOutsourced() {
         String userOrganisationId = PRIVATE_ORG_ID;
 
-        given(idam.getUserInfo(USER_AUTH_TOKEN))
-            .willReturn(UserInfo.builder().sub(LOCAL_AUTHORITY_2_USER_EMAIL).build());
+        givenCurrentUserWithEmail(LOCAL_AUTHORITY_2_USER_EMAIL);
 
         Organisation organisation = testOrganisation(userOrganisationId);
 

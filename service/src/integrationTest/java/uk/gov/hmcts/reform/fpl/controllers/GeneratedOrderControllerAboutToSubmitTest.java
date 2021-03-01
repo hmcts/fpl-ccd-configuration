@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -89,9 +88,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private IdamClient idamClient;
 
     GeneratedOrderControllerAboutToSubmitTest() {
         super("create-order");
@@ -233,11 +229,9 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddUploadedOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(
-            UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoleNames())
-                .build()
-        );
+        givenCurrentUser(UserDetails.builder()
+            .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+            .build());
 
         final CaseData caseData = commonCaseData(UploadedOrderType.C27)
             .orderAppliesToAllChildren("Yes")
@@ -359,11 +353,9 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSetFinalOrderIssuedForUploadedEducationSupervisionOrder() {
-        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(
-            UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoleNames())
-                .build()
-        );
+        givenCurrentUser(UserDetails.builder()
+            .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+            .build());
 
         CaseData caseData = commonCaseData(UploadedOrderType.C37)
             .orderAppliesToAllChildren("Yes")

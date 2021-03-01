@@ -3,17 +3,23 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,8 +27,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -33,16 +41,25 @@ public abstract class AbstractControllerTest {
     protected static final String USER_ID = "1";
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
+
+    @Autowired
+    private Time time;
 
     @Autowired
     protected ObjectMapper mapper;
 
     @Autowired
-    CaseConverter caseConverter;
+    protected CaseConverter caseConverter;
 
     @Autowired
-    private Time time;
+    private SystemUpdateUserConfiguration userConfig;
+
+    @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+
+    @MockBean
+    protected IdamClient idamClient;
 
     private final String eventName;
 
@@ -320,5 +337,29 @@ public abstract class AbstractControllerTest {
             .caseDetails(caseDetails)
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
             .build();
+    }
+
+    protected void givenCurrentUserWithName(String name) {
+        givenCurrentUser(UserInfo.builder().name(name).build());
+    }
+
+    protected void givenCurrentUserWithEmail(String email) {
+        givenCurrentUser(UserInfo.builder().sub(email).build());
+    }
+
+    protected void givenCurrentUser(UserInfo userInfo) {
+        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(userInfo);
+    }
+
+    protected void givenCurrentUser(UserDetails userDetails) {
+        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(userDetails);
+    }
+
+    protected void givenSystemUser() {
+        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
+    }
+
+    protected void givenFplService() {
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 }
