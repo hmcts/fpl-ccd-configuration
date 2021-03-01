@@ -34,7 +34,6 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
 
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(Collections.emptyList())
-            .featureToggleOn(true)
             .build());
     }
 
@@ -48,7 +47,6 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(Collections.emptyList())
             .toFollowReason(FOLLOW_REASON)
-            .featureToggleOn(true)
             .build());
     }
 
@@ -63,7 +61,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(List.of(
                 annexWith(DOCUMENT_TYPE.getLabel(), ATTACHED)
-            )).featureToggleOn(true)
+            ))
             .build());
     }
 
@@ -80,7 +78,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
             .documents(List.of(
                 annexWith(OTHER_DOC_TITLE_1, ATTACHED),
                 annexWith(OTHER_DOC_TITLE_2, ATTACHED)
-            )).featureToggleOn(true)
+            ))
             .build());
     }
 
@@ -97,7 +95,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
             .documents(List.of(
                 annexWith(DOCUMENT_TYPE.getLabel(), "Attached"),
                 annexWith(ANOTHER_DOCUMENT_TYPE.getLabel(), "Attached")
-            )).featureToggleOn(true)
+            ))
             .build());
     }
 
@@ -113,7 +111,7 @@ class CaseSubmissionDocumentAnnexGeneratorTest {
         assertThat(actual).isEqualTo(DocmosisAnnexDocuments.builder()
             .documents(List.of(
                 annexWith(DOCUMENT_TYPE.getLabel(), "2 attached")
-            )).featureToggleOn(true)
+            ))
             .build());
     }
 

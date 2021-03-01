@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -22,7 +21,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -32,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -49,7 +46,8 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 @ContextConfiguration(classes = {EventsChecker.class, LocalValidatorFactoryBean.class})
 @TestInstance(PER_CLASS)
 class EventsCheckerTest {
-
+    @MockBean
+    private DocumentsChecker documentsChecker;
     @MockBean
     private CaseNameChecker caseNameChecker;
     @MockBean
@@ -67,8 +65,6 @@ class EventsCheckerTest {
     @MockBean
     private AllocationProposalChecker allocationProposalChecker;
     @MockBean
-    private DocumentsChecker documentsChecker;
-    @MockBean
     private CaseSubmissionChecker caseSubmissionChecker;
     @MockBean
     private RiskAndHarmChecker riskAndHarmChecker;
@@ -84,8 +80,6 @@ class EventsCheckerTest {
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
     @MockBean
     private ApplicationDocumentChecker applicationDocumentChecker;
-    @MockBean
-    private FeatureToggleService featureToggleService;
     @Autowired
     private EventsChecker eventsChecker;
 
@@ -129,9 +123,7 @@ class EventsCheckerTest {
 
     @ParameterizedTest
     @MethodSource("getEventsValidators")
-    void shouldCheckEventIsAvailable(Event event, EventChecker validator) {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
-
+    void shouldCheckEventIsAvailableAndShouldNotValidateAgainstDocumentsChecker(Event event, EventChecker validator) {
         final boolean isAvailable = RandomUtils.nextBoolean();
 
         when(validator.isAvailable(caseData)).thenReturn(isAvailable);
@@ -139,20 +131,6 @@ class EventsCheckerTest {
         assertThat(eventsChecker.isAvailable(event, caseData)).isEqualTo(isAvailable);
 
         verify(validator).isAvailable(caseData);
-    }
-
-    @ParameterizedTest
-    @MethodSource("getEventsValidatorsWithApplicationDocumentsToggledOn")
-    void shouldNotValidateDocumentEventWhenApplicationEventToggledOn(Event event, EventChecker validator) {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
-
-        final List<String> expectedErrors = List.of("Case name error");
-
-        when(validator.validate(caseData)).thenReturn(expectedErrors);
-
-        assertThat(eventsChecker.validate(event, caseData)).isEqualTo(expectedErrors);
-
-        verify(validator).validate(caseData);
         verify(documentsChecker, never()).validate(any());
     }
 
@@ -167,7 +145,6 @@ class EventsCheckerTest {
                 groundsChecker,
                 organisationDetailsChecker,
                 allocationProposalChecker,
-                documentsChecker,
                 applicationDocumentChecker,
                 caseSubmissionChecker,
                 riskAndHarmChecker,
@@ -179,26 +156,6 @@ class EventsCheckerTest {
     }
 
     private Stream<Arguments> getEventsValidators() {
-        return Stream.of(
-                Arguments.of(CASE_NAME, caseNameChecker),
-                Arguments.of(CHILDREN, childrenChecker),
-                Arguments.of(RESPONDENTS, respondentsChecker),
-                Arguments.of(HEARING_URGENCY, hearingUrgencyChecker),
-                Arguments.of(ORDERS_SOUGHT, ordersSoughtChecker),
-                Arguments.of(GROUNDS, groundsChecker),
-                Arguments.of(ORGANISATION_DETAILS, organisationDetailsChecker),
-                Arguments.of(ALLOCATION_PROPOSAL, allocationProposalChecker),
-                Arguments.of(DOCUMENTS, documentsChecker),
-                Arguments.of(SUBMIT_APPLICATION, caseSubmissionChecker),
-                Arguments.of(RISK_AND_HARM, riskAndHarmChecker),
-                Arguments.of(OTHER_PROCEEDINGS, proceedingsChecker),
-                Arguments.of(INTERNATIONAL_ELEMENT, internationalElementChecker),
-                Arguments.of(OTHERS, othersChecker),
-                Arguments.of(COURT_SERVICES, courtServiceChecker),
-                Arguments.of(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker));
-    }
-
-    private Stream<Arguments> getEventsValidatorsWithApplicationDocumentsToggledOn() {
         return Stream.of(
             Arguments.of(CASE_NAME, caseNameChecker),
             Arguments.of(CHILDREN, childrenChecker),
