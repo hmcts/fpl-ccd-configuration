@@ -4,12 +4,14 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class ConfidentialDocumentsSplitterTest {
@@ -34,10 +36,11 @@ class ConfidentialDocumentsSplitterTest {
     void shouldNotAddEntryForNonConfidentialDocsWhenNoNonConfidentialDocsArePresent() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
         List<Element<SupportingEvidenceBundle>> bundles = wrapElements(CONFIDENTIAL_BUNDLE);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        underTest.updateConfidentialDocsInCaseDetails(caseDetails, bundles, KEY);
+        underTest.updateConfidentialDocsInCaseDetails(caseDetailsMap, bundles, KEY);
 
-        assertThat(caseDetails.getData()).isEmpty();
+        assertThat(caseDetailsMap).isEmpty();
     }
 
     @Test
@@ -48,22 +51,25 @@ class ConfidentialDocumentsSplitterTest {
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         List<Element<SupportingEvidenceBundle>> bundles = wrapElements(CONFIDENTIAL_BUNDLE);
 
-        underTest.updateConfidentialDocsInCaseDetails(caseDetails, bundles, KEY);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        assertThat(caseDetails.getData()).isEmpty();
+        underTest.updateConfidentialDocsInCaseDetails(caseDetailsMap, bundles, KEY);
+
+        assertThat(caseDetailsMap).isEmpty();
     }
 
     @Test
     void shouldAddNonConfidentialDocsToOwnListWhenNonConfidentialDocsArePresent() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
         List<Element<SupportingEvidenceBundle>> bundles = wrapElements(CONFIDENTIAL_BUNDLE, NON_CONFIDENTIAL_BUNDLE);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        underTest.updateConfidentialDocsInCaseDetails(caseDetails, bundles, KEY);
+        underTest.updateConfidentialDocsInCaseDetails(caseDetailsMap, bundles, KEY);
 
         Map<String, Object> expectedSplit = Map.of(
             NON_CONFIDENTIAL_KEY, wrapElements(NON_CONFIDENTIAL_BUNDLE)
         );
 
-        assertThat(caseDetails.getData()).isEqualTo(expectedSplit);
+        assertThat(caseDetailsMap).isEqualTo(expectedSplit);
     }
 }
