@@ -5,26 +5,27 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
-import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
-import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-
-import java.util.Map;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsLAController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageDocumentsLAControllerSubmittedTest extends AbstractControllerTest {
+public class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsControllerSubmittedBaseTest {
+    private static final String BUNDLE_NAME = "furtherEvidenceDocumentsLA";
+
     @MockBean
     private FeatureToggleService featureToggleService;
 
@@ -32,7 +33,7 @@ public class ManageDocumentsLAControllerSubmittedTest extends AbstractController
     private IdamClient idamClient;
 
     @MockBean
-    private EventService eventPublisher;
+    private NotificationClient notificationClient;
 
     ManageDocumentsLAControllerSubmittedTest() {
         super("manage-documents-la");
@@ -41,26 +42,28 @@ public class ManageDocumentsLAControllerSubmittedTest extends AbstractController
     @Test
     void shouldNotPublishEventWhenUploadNotificationFeatureIsDisabled() {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(false);
-        postSubmittedEvent(buildDummyCallbackRequest());
-        verify(eventPublisher, never()).publishEvent(any(FurtherEvidenceUploadedEvent.class));
+        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
+        verifyNoInteractions(notificationClient);
     }
 
     @Test
-    void shouldPublishEventWhenUploadNotificationFeatureIsEnabled() {
+    void shouldNotPublishEventWhenConfidentialDocumentsAreUploaded() {
         when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
-        postSubmittedEvent(buildDummyCallbackRequest());
-        verify(eventPublisher).publishEvent(any(FurtherEvidenceUploadedEvent.class));
+        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, true));
+        verifyNoInteractions(notificationClient);
     }
 
-    private static CallbackRequest buildDummyCallbackRequest() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("dummy", "some dummy data"))
-            .build();
+    @Test
+    void shouldPublishEventWhenUploadNotificationFeatureIsEnabled() throws NotificationClientException {
+        when(featureToggleService.isFurtherEvidenceUploadNotificationEnabled()).thenReturn(true);
+        when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
+        postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
 
-        return CallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetails)
-            .build();
+        verify(notificationClient, timeout(ASYNC_TIMEOUT)).sendEmail(
+            eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
+            eq(REP_1_EMAIL),
+            anyMap(),
+            eq(EMAIL_REFERENCE));
     }
 }

@@ -165,6 +165,24 @@ class FurtherEvidenceUploadedEventHandlerTest {
     }
 
     @Test
+    void shouldNotSendNotificationWhenDocumentsAreSame() {
+        CaseData caseData = buildCaseDataWithNonConfidentialLADocuments();
+
+        FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
+            new FurtherEvidenceUploadedEvent(
+                caseData,
+                caseData,
+                true,
+                userDetailsLA()
+            );
+
+        furtherEvidenceUploadedEventHandler.handleDocumentUploadedEvent(furtherEvidenceUploadedEvent);
+
+        verify(furtherEvidenceNotificationService, never()).sendFurtherEvidenceDocumentsUploadedNotification(
+            any(), any(), any());
+    }
+
+    @Test
     void shouldSendNotificationWhenNonConfidentialDocIsUploadedByHMCTS() {
         CaseData caseData = buildCaseDataWithNonConfidentialDocuments(HMCTS_USER);
         FurtherEvidenceUploadedEvent furtherEvidenceUploadedEvent =
