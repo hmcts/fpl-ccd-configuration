@@ -55,10 +55,6 @@ public class FeatureToggleService {
         return ldClient.boolVariation("application-documents-event", createLDUser(), false);
     }
 
-    public boolean isFinishedTagEnabled() {
-        return ldClient.boolVariation("finished-tag", createLDUser(), false);
-    }
-
     public boolean isSummaryTabEnabled() {
         return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
     }
