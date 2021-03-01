@@ -8,7 +8,8 @@ module.exports = {
     await I.runAccessibilityTest();
   },
 
-  selectSealCmo() {
+  async selectSealCmo() {
+    await I.runAccessibilityTest();
     I.click('#reviewCMODecision_decision-SEND_TO_ALL_PARTIES');
   },
 
@@ -16,7 +17,8 @@ module.exports = {
     I.click(`#reviewDecision${index}_decision-SEND_TO_ALL_PARTIES`);
   },
 
-  selectMakeChangesToCmo() {
+  async selectMakeChangesToCmo() {
+    await I.runAccessibilityTest();
     I.click('No, I need to make changes');
   },
 

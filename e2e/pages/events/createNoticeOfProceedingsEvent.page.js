@@ -11,10 +11,10 @@ module.exports = {
 
   async checkC6() {
     I.checkOption(this.fields.proceedingType.c6);
-    await I.runAccessibilityTest();
   },
 
-  checkC6A() {
+  async checkC6A() {
+    await I.runAccessibilityTest();
     I.checkOption(this.fields.proceedingType.c6a);
   },
 
