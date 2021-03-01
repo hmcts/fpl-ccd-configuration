@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -107,9 +106,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     CaseSubmissionControllerSubmittedTest() {
         super("case-submission");
     }
@@ -117,8 +113,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     @BeforeEach
     void init() {
         when(documentDownloadService.downloadDocument(any())).thenReturn(DOCUMENT_CONTENT);
-        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(true);
-
     }
 
     @Test
@@ -161,24 +155,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldUpdateTheCaseManagementSummary() {
-
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
-            eq("internal-update-case-summary"), anyMap());
-    }
-
-    @Test
-    void shouldUpdateTheCaseManagementSummaryToggledOff() {
-        when(featureToggleService.isSummaryTabOnEventEnabled()).thenReturn(false);
-
-        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
-
-        postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
-
-        verify(coreCaseDataService, never()).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
     }
 
