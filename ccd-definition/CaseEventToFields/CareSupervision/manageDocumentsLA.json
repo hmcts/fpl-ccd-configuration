@@ -85,9 +85,10 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "FurtherEvidenceType",
-    "PageDisplayOrder": 1,
+    "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y"
+    "ShowSummaryChangeOption": "Y",
+    "PageShowCondition": "manageDocumentLA.type=\"FURTHER_EVIDENCE_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -192,7 +193,7 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "PageShowCondition": "furtherEvidenceTypeListLA=\"APPLICATION\""
+    "PageShowCondition": "furtherEvidenceTypeListLA=\"APPLICATION_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",

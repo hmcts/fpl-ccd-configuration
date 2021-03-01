@@ -15,6 +15,10 @@ module.exports = {
       yes: '#manageDocumentLA_relatedToHearing-Yes',
       no: '#manageDocumentLA_relatedToHearing-No',
     },
+    furtherEvidenceType: {
+      applicationDocuments: '#furtherEvidenceTypeListLA-APPLICATION_DOCUMENTS',
+      otherDocuments: '#furtherEvidenceTypeListLA-OTHER',
+    },
     hearingList: '#manageDocumentsHearingList',
     courtBundleHearingList: '#courtBundleHearingList',
     courtBundleDocument: '#manageDocumentsCourtBundle_document',
@@ -28,6 +32,14 @@ module.exports = {
 
   async selectFurtherEvidence() {
     I.click(this.fields.documentType.furtherEvidence);
+  },
+
+  async selectFurtherApplicationDocuments() {
+    I.click(this.fields.furtherEvidenceType.applicationDocuments);
+  },
+
+  async selectAnyOtherDocument() {
+    I.click(this.fields.furtherEvidenceType.otherDocuments);
   },
 
   async selectCorrespondence() {

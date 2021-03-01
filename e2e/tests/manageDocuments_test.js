@@ -31,6 +31,8 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
 
   await manageDocumentsLAEventPage.selectFurtherEvidence();
   await I.goToNextPage();
+  await manageDocumentsEventPage.selectAnyOtherDocument();
+  await I.goToNextPage();
   await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
   await I.addAnotherElementToCollection();
   await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3]);
