@@ -133,12 +133,13 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
                 .name("new document")
                 .build()));
 
-        List<Element<HearingOrder>> unsealedCMOs = List.of(
-            element(HearingOrder.builder()
-                .order(DOCUMENT)
-                .status(CMOStatus.DRAFT)
-                .supportingDocs(supportingDocs)
-                .build()));
+        Element<HearingOrder> draftCMO = element(HearingOrder.builder()
+            .order(DOCUMENT)
+            .status(CMOStatus.DRAFT)
+            .supportingDocs(supportingDocs)
+            .build());
+
+        List<Element<HearingOrder>> unsealedCMOs = List.of(draftCMO);
 
         List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
         hearings.add(hearingWithCMOId(LocalDateTime.of(2021, 3, 17, 11, 11), unsealedCMOs.get(0).getId()));
@@ -157,6 +158,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
             .futureHearingsForCMO(hearingsList)
             .hearingOrderDraftKind(List.of(CMO))
             .cmoUploadType(CMOType.DRAFT)
+            .previousCMO(draftCMO.getValue().getOrder())
             .showCMOsSentToJudge(YesNo.NO)
             .cmoSupportingDocs(updatedSupportingDocs)
             .build();
