@@ -26,10 +26,6 @@ public class FeatureToggleService {
         this.environment = environment;
     }
 
-    public boolean isSummaryTabOnEventEnabled() {
-        return ldClient.boolVariation("summary-tab-on-event-update", createLDUser(), false);
-    }
-
     public boolean isCtscEnabled(String localAuthorityName) {
         return ldClient.boolVariation("CTSC",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
@@ -53,14 +49,6 @@ public class FeatureToggleService {
     public boolean isSendLAEmailsToSolicitorEnabled(String localAuthorityName) {
         return ldClient.boolVariation("send-la-emails-to-solicitor",
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
-    }
-
-    public boolean isApplicationDocumentsEventEnabled() {
-        return ldClient.boolVariation("application-documents-event", createLDUser(), false);
-    }
-
-    public boolean isFinishedTagEnabled() {
-        return ldClient.boolVariation("finished-tag", createLDUser(), false);
     }
 
     public boolean isSummaryTabEnabled() {
