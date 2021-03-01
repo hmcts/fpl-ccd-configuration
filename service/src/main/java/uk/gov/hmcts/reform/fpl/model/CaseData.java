@@ -135,9 +135,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotEmpty(message = "Add your organisation's details")
+    @NotEmpty(message = "Add the applicant's details")
     @Valid
-    private final List<@NotNull(message = "Add your organisation's details") Element<Applicant>> applicants;
+    private final List<@NotNull(message = "Add the applicant's details") Element<Applicant>> applicants;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
