@@ -177,7 +177,7 @@ public class ManageDocumentService {
         if (caseData.documentBundleContainsHearingId(selectedHearingCode)) {
             for (Element<HearingFurtherEvidenceBundle> element : hearingFurtherEvidenceBundle) {
                 if (element.getId().equals(selectedHearingCode)) {
-                    if(caseData.getSupportingEvidenceDocumentsTemp().size() == 0) {
+                    if (caseData.getSupportingEvidenceDocumentsTemp().size() == 0) {
                         hearingFurtherEvidenceBundle.remove(element);
                         return hearingFurtherEvidenceBundle;
                     }

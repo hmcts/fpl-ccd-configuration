@@ -446,6 +446,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(element(SupportingEvidenceBundle.builder().build())))
             .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
@@ -807,7 +808,39 @@ class ManageDocumentServiceTest {
             manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
 
         assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(1);
-        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName().equals("Case Management Hearing 2"));
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue()
+            .getHearingName().equals("Case Management Hearing 2"));
+    }
+
+    @Test
+    void shouldNotRemoveHearingFurtherEvidenceBundleElementWhenDocumentsForThatHearingExist() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        UUID hearingId = UUID.randomUUID();
+        UUID hearingIdTwo = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .supportingEvidenceDocumentsTemp(buildSupportingEvidenceBundle())
+            .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 1")
+                    .supportingEvidenceBundle(Arrays.asList())
+                    .build()),
+                element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 2")
+                    .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
+
+        assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(2);
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue()
+            .getHearingName().equals("Case Management Hearing 1"));
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
