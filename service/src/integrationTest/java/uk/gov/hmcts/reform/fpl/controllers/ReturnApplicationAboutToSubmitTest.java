@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -9,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,9 +23,6 @@ class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
     ReturnApplicationAboutToSubmitTest() {
         super("return-application");
     }
-
-    @Autowired
-    private Time time;
 
     @Test
     void shouldMigrateSubmittedDocumentToReturnedDocumentBundle() {
@@ -58,7 +53,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
     }
 
     private String getFormattedDate() {
-        return formatLocalDateToString(time.now().toLocalDate(), "d MMMM yyyy");
+        return formatLocalDateToString(dateNow(), "d MMMM yyyy");
     }
 
     private DocumentReference buildSubmittedForm(String filename) {
