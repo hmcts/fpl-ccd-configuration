@@ -20,18 +20,19 @@ public class OrganisationPolicy {
     @JsonProperty("OrgPolicyCaseAssignedRole")
     private String orgPolicyCaseAssignedRole;
 
-    public static OrganisationPolicy organisationPolicy(String organisationId, CaseRole caseRole) {
-
+    public static OrganisationPolicy organisationPolicy(String organisationId,
+                                                        String organisationName,
+                                                        CaseRole caseRole) {
         if (organisationId == null) {
             return null;
         }
 
         return OrganisationPolicy.builder()
-            .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
+            .organisation(Organisation.builder()
                 .organisationID(organisationId)
+                .organisationName(organisationName)
                 .build())
             .orgPolicyCaseAssignedRole(caseRole.formattedName())
             .build();
     }
-
 }

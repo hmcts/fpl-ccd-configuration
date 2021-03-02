@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,16 +54,13 @@ class ManageDocumentServiceTest {
     private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
     private final UserService userService = mock(UserService.class);
-    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
     private ManageDocumentService manageDocumentService;
 
     @BeforeEach
     void before() {
-        manageDocumentService = new ManageDocumentService(
-            new ObjectMapper(), time, documentUploadHelper, userService, featureToggleService
-        );
+        manageDocumentService = new ManageDocumentService(new ObjectMapper(), time, documentUploadHelper, userService);
 
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
         given(userService.isHmctsUser()).willReturn(true);
@@ -105,9 +104,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseDataAndToggleOn() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
-
+    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
         CaseData caseData = CaseData.builder().build();
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
@@ -120,29 +117,6 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
             .containsExactly(null, null, expectedManageDocument);
-    }
-
-    @Test
-    void shouldReturnEmptyC2DocumentListWhenC2DocumentsAreNotPresentOnCaseDataAndToggleOff() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
-
-        CaseData caseData = CaseData.builder().build();
-        ManageDocument expectedManageDocument = ManageDocument.builder()
-            .hasC2s(YES.getValue())
-            .hasHearings(NO.getValue())
-            .build();
-
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
-            caseData, MANAGE_DOCUMENT_KEY);
-
-        DynamicList expectedEmptyList = DynamicList.builder()
-            .value(DynamicListElement.builder().build())
-            .listItems(List.of())
-            .build();
-
-        assertThat(listAndLabel)
-            .extracting(SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
-            .containsExactly(expectedEmptyList, expectedManageDocument);
     }
 
     @Test
@@ -444,6 +418,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(element(SupportingEvidenceBundle.builder().build())))
             .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
@@ -776,6 +751,68 @@ class ManageDocumentServiceTest {
 
         assertThat(updatedC2DocumentBundle.get(0).getValue().getSupportingEvidenceBundle())
             .isEqualTo(List.of(supportingEvidencePast, supportingEvidenceFuture));
+    }
+
+    @Test
+    void shouldRemoveHearingFurtherEvidenceBundleElementWhenAllDocumentsForThatHearingAreRemoved() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        UUID hearingId = UUID.randomUUID();
+        UUID hearingIdTwo = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .supportingEvidenceDocumentsTemp(emptyList())
+            .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 1")
+                    .supportingEvidenceBundle(Arrays.asList())
+                    .build()),
+                element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
+                     .hearingName("Case Management hearing 2")
+                    .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
+
+        assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(1);
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
+            .isEqualTo("Case Management hearing 2");
+    }
+
+    @Test
+    void shouldNotRemoveHearingFurtherEvidenceBundleElementWhenDocumentsForThatHearingExist() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        UUID hearingId = UUID.randomUUID();
+        UUID hearingIdTwo = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .supportingEvidenceDocumentsTemp(buildSupportingEvidenceBundle())
+            .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 1")
+                    .supportingEvidenceBundle(Arrays.asList())
+                    .build()),
+                element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 2")
+                    .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
+
+        assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(2);
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
+            .isEqualTo("Case Management hearing 1");
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
