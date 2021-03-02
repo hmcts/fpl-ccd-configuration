@@ -7,9 +7,10 @@ module.exports = {
     proposalReason: '#allocationProposal_proposalReason',
   },
 
-  selectAllocationProposal(proposal) {
+  async selectAllocationProposal(proposal) {
     I.waitForElement(this.fields.allocationProposalRadioGroup);
     I.click(proposal);
+    await I.runAccessibilityTest();
   },
 
   enterProposalReason(reason) {

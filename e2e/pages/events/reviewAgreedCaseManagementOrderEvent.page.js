@@ -2,12 +2,14 @@ const { I } = inject();
 
 module.exports = {
 
-  selectCMOToReview(hearing) {
+  async selectCMOToReview(hearing) {
     I.waitForElement('#cmoToReviewList');
     I.selectOption('#cmoToReviewList', hearing);
+    await I.runAccessibilityTest();
   },
 
-  selectSealCmo() {
+  async selectSealCmo() {
+    await I.runAccessibilityTest();
     I.click('#reviewCMODecision_decision-SEND_TO_ALL_PARTIES');
   },
 
@@ -15,7 +17,8 @@ module.exports = {
     I.click(`#reviewDecision${index}_decision-SEND_TO_ALL_PARTIES`);
   },
 
-  selectMakeChangesToCmo() {
+  async selectMakeChangesToCmo() {
+    await I.runAccessibilityTest();
     I.click('No, I need to make changes');
   },
 

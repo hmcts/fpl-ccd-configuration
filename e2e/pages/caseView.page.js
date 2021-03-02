@@ -110,6 +110,7 @@ module.exports = {
     await I.retryUntilExists(() => {
       I.click(task);
     }, 'ccd-case-event-trigger');
+    await I.runAccessibilityTest();
   },
 
   getTabSelector(tab){

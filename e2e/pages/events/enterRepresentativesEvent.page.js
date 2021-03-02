@@ -21,6 +21,8 @@ module.exports = {
   async enterRepresentative(representative) {
     const elementIndex = await I.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
+
     if (representative.fullName) {
       I.fillField(this.fields(elementIndex).representative.fullName, representative.fullName);
     }

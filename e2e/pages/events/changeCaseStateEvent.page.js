@@ -32,7 +32,8 @@ module.exports = {
     I.click(this.fields.closedCaseOptions.options.finalHearing);
   },
 
-  seeAsCurrentState(currentState) {
+  async seeAsCurrentState(currentState) {
+    await I.runAccessibilityTest();
     I.seeElement(locate(this.fields.currentStateLabel).withText(`Current state: ${currentState}`));
   },
 };

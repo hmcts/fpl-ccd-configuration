@@ -41,6 +41,7 @@ module.exports = {
   async selectC2() {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2List} option:nth-child(2)`);
     I.waitForElement(this.fields.c2List);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.c2List, dropdownLabel);
   },
 
@@ -67,6 +68,7 @@ module.exports = {
   async selectJudicialMessage() {
     const messageLabel = await I.grabTextFrom(`${this.fields.existingMessagesList} option:nth-child(2)`);
     I.waitForElement(this.fields.existingMessagesList);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.existingMessagesList, messageLabel);
   },
 

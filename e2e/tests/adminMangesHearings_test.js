@@ -16,9 +16,9 @@ Feature('Hearing administration');
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
+
+Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();
@@ -67,7 +67,7 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
   I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[1].startDate));
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[1].endDate));
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
-});
+}).retry(1); // async send letters call in submitted of previous event
 
 Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);

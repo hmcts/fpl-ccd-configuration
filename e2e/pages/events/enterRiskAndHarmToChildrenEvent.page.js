@@ -16,7 +16,8 @@ module.exports = {
     },
   },
 
-  completePhysicalHarm() {
+  async completePhysicalHarm() {
+    await I.runAccessibilityTest();
     I.click(this.fields.physicalHarm.yes);
     I.checkOption(this.fields.physicalHarm.pastHarm);
   },

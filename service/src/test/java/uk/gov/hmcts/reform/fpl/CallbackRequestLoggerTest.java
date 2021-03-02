@@ -51,7 +51,11 @@ class CallbackRequestLoggerTest {
         when(httpHeaders.getOrEmpty("user-id"))
             .thenReturn(List.of("1"));
         when(httpHeaders.getOrEmpty("user-roles"))
-            .thenReturn(List.of("pui-case-manager", "caseworker-publiclaw-solicitor"));
+            .thenReturn(List.of(
+                "pui-case-manager",
+                "caseworker",
+                "caseworker-publiclaw",
+                "caseworker-publiclaw-solicitor"));
         when(httpInputMessage.getHeaders()).thenReturn(httpHeaders);
 
         try (TestLoggerAppender logsAppender = new TestLoggerAppender(CallbackRequestLogger.class)) {
@@ -68,7 +72,9 @@ class CallbackRequestLoggerTest {
 
             MethodParameter methodParameter = new MethodParameter(findMethod(this.getClass(), "ccdCallback"), -1);
 
-            callbackLogger.afterBodyRead(callbackRequest, httpInputMessage, methodParameter, null, null);
+            Object res = callbackLogger.afterBodyRead(callbackRequest, httpInputMessage, methodParameter, null, null);
+
+            assertThat(res).isEqualTo(callbackRequest);
 
             assertThat(logsAppender.getInfos()).containsExactly(
                 "Callback(event='Test event',type='/mid-event') "

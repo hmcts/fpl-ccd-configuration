@@ -87,10 +87,10 @@ Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage,
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
-  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
+  await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing2);
   await I.goToNextPage();
   I.see('mockFile.docx');
-  reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
+  await reviewAgreedCaseManagementOrderEventPage.selectMakeChangesToCmo();
   reviewAgreedCaseManagementOrderEventPage.uploadAmendedCmo(config.testWordFile);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.approveOrders);
@@ -107,7 +107,7 @@ Scenario('Judge sends draft orders to the local authority', async ({I, caseViewP
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   await I.startEventViaHyperlink(linkLabel);
-  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
+  await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview(hearing1);
   await I.goToNextPage();
   I.see('mockFile.docx');
 
@@ -151,7 +151,7 @@ Scenario('Judge seals and sends draft orders for no hearing to parties', async (
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
 
-  reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
+  await reviewAgreedCaseManagementOrderEventPage.selectCMOToReview('No hearing');
   await I.goToNextPage();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
 
@@ -172,7 +172,7 @@ Scenario('Judge seals and sends draft orders for hearing to parties', async ({I,
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
 
-  reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
+  await reviewAgreedCaseManagementOrderEventPage.selectSealCmo();
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(1);
   reviewAgreedCaseManagementOrderEventPage.selectSealC21(2);
 

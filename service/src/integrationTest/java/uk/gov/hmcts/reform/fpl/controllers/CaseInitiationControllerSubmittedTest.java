@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,7 +16,7 @@ import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
-import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.rd.model.OrganisationUsers;
 import uk.gov.hmcts.reform.rd.model.Status;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -45,10 +48,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.CREATOR;
-import static uk.gov.hmcts.reform.fpl.enums.CaseRole.EPSMANAGING;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
@@ -61,7 +64,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
     private static final String OTHER_USER_ID = randomUUID().toString();
 
     @MockBean
-    private IdamClient client;
+    private IdamClient idam;
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -84,7 +87,7 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(client.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(USER_AUTH_TOKEN);
+        given(idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(USER_AUTH_TOKEN);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
@@ -97,50 +100,52 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
 
         final CaseData caseData = CaseData.builder()
             .id(nextLong())
-            .state(State.OPEN)
-            .caseLocalAuthority(DEFAULT_LA_CODE)
+            .state(OPEN)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorityPolicy(
+                organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
             .build();
 
         postSubmittedEvent(caseData);
 
-        AddCaseAssignedUserRolesRequest expectedUserAssignment = AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(
-                assignment(caseData.getId(), organisation, LASOLICITOR, LOGGED_USER_ID),
-                assignment(caseData.getId(), organisation, LASOLICITOR, OTHER_USER_ID)))
-            .build();
+        CaseAssignedUserRolesRequest expectedUnAssignment = unAssignment(caseData, CREATOR, LOGGED_USER_ID);
 
-        verify(caseDataAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
+        AddCaseAssignedUserRolesRequest expectedAssignment = assignment(caseData, organisation, LASOLICITOR,
+            LOGGED_USER_ID, OTHER_USER_ID);
+
+        verify(caseDataAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedAssignment);
+        verify(caseDataAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
 
         verifyTaskListUpdated(caseData);
 
         verifyNoMoreInteractions(caseDataAccessApi);
     }
 
-    @Test
-    void shouldGrantCaseAccessToOutsourceUserOnly() {
+    @ParameterizedTest
+    @EnumSource(OutsourcingType.class)
+    void shouldGrantCaseAccessToOutsourcedUserOnly(OutsourcingType outsourcingType) {
         final Organisation organisation = testOrganisation();
+        final CaseRole outsourcedCaseRole = outsourcingType.getCaseRole();
 
         givenUserInOrganisation(organisation);
         givenUsersInSameOrganisation(LOGGED_USER_ID, OTHER_USER_ID);
 
         final CaseData caseData = CaseData.builder()
             .id(nextLong())
-            .state(State.OPEN)
-            .caseLocalAuthority(DEFAULT_LA_CODE)
-            .outsourcingPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), EPSMANAGING))
+            .state(OPEN)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .outsourcingPolicy(organisationPolicy(
+                organisation.getOrganisationIdentifier(), organisation.getName(), outsourcedCaseRole))
             .build();
 
         postSubmittedEvent(caseData);
 
-        final CaseAssignedUserRolesRequest expectedUserUnAssignment = CaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(assignment(caseData.getId(), CREATOR, LOGGED_USER_ID)))
-            .build();
+        CaseAssignedUserRolesRequest expectedUnAssignment = unAssignment(caseData, CREATOR, LOGGED_USER_ID);
 
-        final AddCaseAssignedUserRolesRequest expectedUserAssignment = AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(assignment(caseData.getId(), organisation, EPSMANAGING, LOGGED_USER_ID)))
-            .build();
+        AddCaseAssignedUserRolesRequest expectedUserAssignment = assignment(caseData, organisation, outsourcedCaseRole,
+            LOGGED_USER_ID);
 
-        verify(caseDataAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserUnAssignment);
+        verify(caseDataAccessApi).removeCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUnAssignment);
         verify(caseDataAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
 
         verifyNoMoreInteractions(caseDataAccessApi);
@@ -150,28 +155,22 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldThrowExceptionWhenAccessNotGranted() {
+        final Organisation organisation = testOrganisation();
+
         givenUsersInSameOrganisation(LOGGED_USER_ID, OTHER_USER_ID);
 
         doThrow(feignException(SC_BAD_REQUEST)).when(caseDataAccessApi).addCaseUserRoles(any(), any(), any());
 
         CaseData caseData = CaseData.builder()
             .id(nextLong())
-            .caseLocalAuthority(DEFAULT_LA_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .localAuthorityPolicy(
+                organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
             .build();
 
         assertThatThrownBy(() -> postSubmittedEvent(caseData))
             .getRootCause()
             .isEqualTo(new GrantCaseAccessException(caseData.getId(), of(LOGGED_USER_ID, OTHER_USER_ID), LASOLICITOR));
-
-        AddCaseAssignedUserRolesRequest expectedUserAssignment = AddCaseAssignedUserRolesRequest.builder()
-            .caseAssignedUserRoles(List.of(
-                assignment(caseData.getId(), LASOLICITOR, LOGGED_USER_ID),
-                assignment(caseData.getId(), LASOLICITOR, OTHER_USER_ID)))
-            .build();
-
-        verify(caseDataAccessApi).addCaseUserRoles(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, expectedUserAssignment);
-
-        verifyNoMoreInteractions(caseDataAccessApi);
     }
 
     private void givenUserInOrganisation(Organisation organisation) {
@@ -192,18 +191,32 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
             anyMap());
     }
 
-    private CaseAssignedUserRoleWithOrganisation assignment(Long caseId, Organisation organisation, CaseRole caseRole,
-                                                            String userId) {
-        return CaseAssignedUserRoleWithOrganisation.builder()
-            .organisationId(ofNullable(organisation).map(Organisation::getOrganisationIdentifier).orElse(null))
-            .caseRole(caseRole.formattedName())
-            .caseDataId(caseId.toString())
-            .userId(userId)
+    private AddCaseAssignedUserRolesRequest assignment(CaseData caseData, Organisation organisation,
+                                                       CaseRole caseRole, String... users) {
+
+        List<CaseAssignedUserRoleWithOrganisation> assignments = Stream.of(users)
+            .map(userId -> CaseAssignedUserRoleWithOrganisation.builder()
+                .organisationId(ofNullable(organisation).map(Organisation::getOrganisationIdentifier).orElse(null))
+                .caseRole(caseRole.formattedName())
+                .caseDataId(caseData.getId().toString())
+                .userId(userId)
+                .build())
+            .collect(Collectors.toList());
+
+        return AddCaseAssignedUserRolesRequest.builder()
+            .caseAssignedUserRoles(assignments)
             .build();
     }
 
-    private CaseAssignedUserRoleWithOrganisation assignment(Long caseId, CaseRole caseRole, String userId) {
-        return assignment(caseId, null, caseRole, userId);
+    private CaseAssignedUserRolesRequest unAssignment(CaseData caseData, CaseRole caseRole, String userId) {
+        return CaseAssignedUserRolesRequest.builder()
+            .caseAssignedUserRoles(List.of(
+                CaseAssignedUserRoleWithOrganisation.builder()
+                    .caseRole(caseRole.formattedName())
+                    .caseDataId(caseData.getId().toString())
+                    .userId(userId)
+                    .build()))
+            .build();
     }
 
     private static OrganisationUsers organisation(String... userIds) {
@@ -213,5 +226,4 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
 
         return OrganisationUsers.builder().users(users).build();
     }
-
 }

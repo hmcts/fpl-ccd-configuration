@@ -26,7 +26,7 @@ Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, cas
 
 Scenario('HMCTS admin enters FamilyMan reference number', async ({I, caseViewPage, enterFamilyManCaseNumberEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
+  await enterFamilyManCaseNumberEventPage.enterCaseID('mockCaseID');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
   I.seeFamilyManNumber('mockCaseID');
@@ -70,7 +70,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
 
   caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
+  await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
 
   caseViewPage.selectTab(caseViewPage.tabs.c2);
   I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
@@ -103,7 +103,7 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  manageDocumentsEventPage.selectC2SupportingDocuments();
+  await manageDocumentsEventPage.selectC2SupportingDocuments();
   await manageDocumentsEventPage.selectC2FromDropdown();
   await I.goToNextPage();
   manageDocumentsEventPage.enterDocumentName('Updated document name');
@@ -199,7 +199,7 @@ Scenario('HMCTS admin creates discharge of care order', async ({I, caseViewPage,
 // Disabled as part of FPLA-1754 - TBD if super user will have access to notice of proceedings event
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
-  createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
   createNoticeOfProceedingsEventPage.useAlternateJudge();
   createNoticeOfProceedingsEventPage.selectJudgeTitle();
@@ -241,7 +241,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
 
   await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.handleSupplementaryEvidence);
-  handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
+  await handleSupplementaryEvidenceEventPage.handleSupplementaryEvidence();
   await I.completeEvent('Save and continue');
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
@@ -262,18 +262,18 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
 Scenario('HMCTS admin adds a note to the case', async ({I, caseViewPage, addNoteEventPage}) => {
   const note = 'Example note';
   await caseViewPage.goToNewActions(config.administrationActions.addNote);
-  addNoteEventPage.addNote(note);
+  await addNoteEventPage.addNote(note);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
+  await I.seeEventSubmissionConfirmation(config.administrationActions.addNote);
   caseViewPage.selectTab(caseViewPage.tabs.notes);
   I.seeInTab(['Note 1', 'Note'], note);
 }).retry(1); // async processing in previous test
 
 Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExpertReportEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addExpertReportLog);
-  addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
+  await addExpertReportEventPage.addExpertReportLog(expertReportLog[0]);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addExpertReportLog);
+  await I.seeEventSubmissionConfirmation(config.administrationActions.addExpertReportLog);
   caseViewPage.selectTab(caseViewPage.tabs.expertReports);
   I.seeInTab(['Report 1', 'What type of report have you requested?'], 'Pediatric');
   I.seeInTab(['Report 1', 'Date requested'], '1 Mar 2020');
@@ -283,12 +283,12 @@ Scenario('HMCTS admin adds expert report log', async ({I, caseViewPage, addExper
 
 Scenario('HMCTS admin makes 26-week case extension', async ({I, caseViewPage, addExtend26WeekTimelineEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.extend26WeekTimeline);
-  addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
+  await addExtend26WeekTimelineEventPage.selectEightWeekExtensionTime();
   addExtend26WeekTimelineEventPage.selectTimetableForChildExtensionReason();
   addExtend26WeekTimelineEventPage.addExtensionComment('Comment');
   await I.goToNextPage();
-  addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
-  addExtend26WeekTimelineEventPage.addCaseExtensionDate();
+  await addExtend26WeekTimelineEventPage.addCaseExtensionTimeConfirmation();
+  await addExtend26WeekTimelineEventPage.addCaseExtensionDate();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.extend26WeekTimeline);
   caseViewPage.selectTab(caseViewPage.tabs.summary);

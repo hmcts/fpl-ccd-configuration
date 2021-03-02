@@ -9,6 +9,7 @@ module.exports = {
 
   async enterEmail(email = 'familypubliclaw+gatekeeper@gmail.com') {
     const elementIndex = await I.getActiveElementIndex();
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).email, email);
   },
 };
