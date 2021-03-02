@@ -66,3 +66,39 @@ module "fpl-health-failure-alert" {
   resourcegroup_name         = "${local.alert_resource_group_name}"
   enabled                    = "${var.enable_alerts}"
 }
+
+module "fpl-upcoming-hearings-job-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = "${var.appinsights_location}"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  alert_name                 = "${var.product}-upcoming-hearings-job-failure"
+  alert_desc                 = "Failed 'Upcoming hearings' scheduled job"
+  app_insights_query         = "traces | where message contains "Job 'Upcoming hearings' finished" | count"
+  custom_email_subject       = "Alert: Upcoming hearings job failure"
+  frequency_in_minutes       = 1440
+  time_window_in_minutes     = 1440
+  severity_level             = "3"
+  action_group_name          = "${var.product}-support"
+  trigger_threshold_operator = "Equal"
+  trigger_threshold          = 0
+  resourcegroup_name         = "${local.alert_resource_group_name}"
+  enabled                    = "${var.enable_alerts}"
+}
+
+module "fpl-summary-tab-job-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = "${var.appinsights_location}"
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  alert_name                 = "${var.product}-summary-tab-job-failure"
+  alert_desc                 = "Failed 'Summary tab' scheduled job"
+  app_insights_query         = "traces | where message contains "Job 'Summary tab' finished" | count"
+  custom_email_subject       = "Alert: 'Summary tab' job failure"
+  frequency_in_minutes       = 1440
+  time_window_in_minutes     = 1440
+  severity_level             = "3"
+  action_group_name          = "${var.product}-support"
+  trigger_threshold_operator = "Equal"
+  trigger_threshold          = 0
+  resourcegroup_name         = "${local.alert_resource_group_name}"
+  enabled                    = "${var.enable_alerts}"
+}
