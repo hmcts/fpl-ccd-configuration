@@ -99,6 +99,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   after('crossBrowserTest') {
-          steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }

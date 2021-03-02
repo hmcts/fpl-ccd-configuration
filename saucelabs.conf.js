@@ -2,7 +2,6 @@
 
 const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
 const testConfig = require('./e2e/config');
-const lodash = require('lodash');
 
 const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 45000;
 const smartWait = parseInt(process.env.SMART_WAIT) || 30000;
@@ -41,10 +40,10 @@ function getBrowserConfig(browserGroup) {
 
 const setupConfig = {
     tests: './e2e/tests/*_test.js',
-    output: process.cwd() + '/output',
+    output: `${process.cwd()}/${testConfig.TestOutputDir}`,
     helpers: {
         WebDriver: {
-            url: lodash.TestE2EFrontendUrl,
+            url: config.baseUrl,
             browser,
             smartWait,
             waitForTimeout,
@@ -70,7 +69,7 @@ const setupConfig = {
     plugins: {
         retryFailedStep: {
             enabled: true,
-            retries: testConfig.TestRetrySteps
+            retries: 2
         },
         autoDelay: {
             enabled: true,
@@ -102,18 +101,18 @@ const setupConfig = {
         }
     },
     multiple: {
-        // microsoft: {
-        //     browsers: getBrowserConfig('microsoft')
-        // },
+        microsoft: {
+            browsers: getBrowserConfig('microsoft')
+        },
         chrome: {
             browsers: getBrowserConfig('chrome')
         },
-        // firefox: {
-        //     browsers: getBrowserConfig('firefox')
-        // },
-        // safari: {
-        //     browsers: getBrowserConfig('safari')
-        // }
+        firefox: {
+            browsers: getBrowserConfig('firefox')
+        },
+        safari: {
+            browsers: getBrowserConfig('safari')
+        }
     },
     name: 'FPL FrontEnd Cross-Browser Tests'
 };
