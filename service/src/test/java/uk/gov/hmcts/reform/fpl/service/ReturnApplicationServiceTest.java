@@ -22,7 +22,7 @@ class ReturnApplicationServiceTest {
     void shouldUpdateReturnedApplicationPropertiesWithFormattedDates() {
         LocalDate now = time.now().toLocalDate();
         String expectedDate = formatLocalDateToString(now, "d MMMM YYYY");
-        DocumentReference applicationDocument = applicationDocument();
+        DocumentReference applicationDocument = buildApplicationDocument("mock_document.pdf");
 
         ReturnApplication returnApplication = service.updateReturnApplication(buildReturnedApplication(),
             applicationDocument, now);
@@ -40,9 +40,10 @@ class ReturnApplicationServiceTest {
 
     @Test
     void shouldAppendReturnedToDocumentFileNameExcludingExtension() {
-        DocumentReference file = applicationDocument();
+        DocumentReference file = buildApplicationDocument("mock_document.pdf");
         service.appendReturnedToFileName(file);
-        assertThat(file.getFilename()).isEqualTo("mock_document_returned.pdf");
+        DocumentReference expectedFile = buildApplicationDocument("mock_document_returned.pdf");
+        assertThat(file).isEqualTo(expectedFile);
     }
 
     private ReturnApplication buildReturnedApplication() {
@@ -52,9 +53,9 @@ class ReturnApplicationServiceTest {
             .build();
     }
 
-    private DocumentReference applicationDocument() {
+    private DocumentReference buildApplicationDocument(String filename) {
         return DocumentReference.builder()
-            .filename("mock_document.pdf")
+            .filename(filename)
             .build();
     }
 }

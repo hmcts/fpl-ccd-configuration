@@ -42,14 +42,14 @@ class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        returnApplication = returnApplication.toBuilder()
+        ReturnApplication expectedReturnApplication = returnApplication.toBuilder()
             .returnedDate(getFormattedDate())
             .submittedDate("19 May 2050")
             .document(buildSubmittedForm("mockSubmittedForm_returned.pdf"))
             .build();
 
         assertThat(extractedCaseData.getSubmittedForm()).isNull();
-        assertThat(extractedCaseData.getReturnApplication()).isEqualTo(returnApplication);
+        assertThat(extractedCaseData.getReturnApplication()).isEqualTo(expectedReturnApplication);
     }
 
     private String getFormattedDate() {
