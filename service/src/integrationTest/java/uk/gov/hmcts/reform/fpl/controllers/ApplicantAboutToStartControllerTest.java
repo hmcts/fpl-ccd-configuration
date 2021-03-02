@@ -114,7 +114,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
         OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
 
-        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID,
+        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID, null,
             CaseRole.LASOLICITOR);
 
         CaseData caseData = CaseData.builder()
@@ -141,7 +141,7 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
         OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
 
-        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID,
+        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID, null,
             CaseRole.LASOLICITOR);
 
         CaseData caseData = CaseData.builder()
