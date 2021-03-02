@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -53,9 +51,6 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     private static final Long CASE_ID = 12345L;
     private static final String RESPONDENT_SURNAME = "Watson";
@@ -196,7 +191,6 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     }
 
     private Map<String, Object> caseSummary() {
-        return objectMapper.convertValue(
-            CASE_SUMMARY, new TypeReference<>() {});
+        return mapper.convertValue(CASE_SUMMARY, MAP_TYPE);
     }
 }

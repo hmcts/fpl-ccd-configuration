@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -40,7 +39,6 @@ class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractContr
         .telephoneNumber("07500045455")
         .build();
     private static final Long CASE_ID = 12345L;
-    private static final String USER_ID = RandomStringUtils.randomAlphanumeric(10);
 
     @MockBean
     private OrganisationApi organisationApi;
