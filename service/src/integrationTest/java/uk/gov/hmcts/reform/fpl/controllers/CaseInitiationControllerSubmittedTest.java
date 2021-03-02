@@ -102,7 +102,8 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
             .id(nextLong())
             .state(OPEN)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .localAuthorityPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), LASOLICITOR))
+            .localAuthorityPolicy(
+                organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
             .build();
 
         postSubmittedEvent(caseData);
@@ -133,7 +134,8 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
             .id(nextLong())
             .state(OPEN)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .outsourcingPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), outsourcedCaseRole))
+            .outsourcingPolicy(organisationPolicy(
+                organisation.getOrganisationIdentifier(), organisation.getName(), outsourcedCaseRole))
             .build();
 
         postSubmittedEvent(caseData);
@@ -162,7 +164,8 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
         CaseData caseData = CaseData.builder()
             .id(nextLong())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .localAuthorityPolicy(organisationPolicy(organisation.getOrganisationIdentifier(), LASOLICITOR))
+            .localAuthorityPolicy(
+                organisationPolicy(organisation.getOrganisationIdentifier(), organisation.getName(), LASOLICITOR))
             .build();
 
         assertThatThrownBy(() -> postSubmittedEvent(caseData))
