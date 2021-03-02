@@ -18,8 +18,8 @@ public class ReturnApplicationService {
     private final Time time;
 
     public ReturnApplication updateReturnApplication(ReturnApplication returnApplication,
-                                                    DocumentReference documentReference,
-                                                    LocalDate dateSubmitted) {
+                                                     DocumentReference documentReference,
+                                                     LocalDate dateSubmitted) {
         return ReturnApplication.builder()
             .note(returnApplication.getNote())
             .reason(returnApplication.getReason())
@@ -29,7 +29,8 @@ public class ReturnApplicationService {
             .build();
     }
 
-    public String appendReturnedToFileName(String fileName) {
-        return new StringBuilder(fileName).insert(fileName.lastIndexOf('.'), "_returned").toString();
+    public void appendReturnedToFileName(DocumentReference file) {
+        String fileName = file.getFilename();
+        file.setFilename(new StringBuilder(fileName).insert(fileName.lastIndexOf('.'), "_returned").toString());
     }
 }
