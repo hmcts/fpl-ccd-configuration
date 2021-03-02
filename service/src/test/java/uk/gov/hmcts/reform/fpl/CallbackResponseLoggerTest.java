@@ -47,14 +47,13 @@ class CallbackResponseLoggerTest {
     }
 
     @Test
-    void shouldLogCallbackDetails() throws Exception {
+    void shouldLogCallbackDetailsWhenErrorPresents() throws Exception {
 
         when(httpRequest.getURI()).thenReturn(new URI("http://test.com/callback/test/mid-event"));
 
         try (TestLoggerAppender logsAppender = new TestLoggerAppender(CallbackResponseLogger.class)) {
 
             AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
-                .warnings(List.of("warning 1"))
                 .errors(List.of("error 1", "error 2"))
                 .build();
 
@@ -63,10 +62,47 @@ class CallbackResponseLoggerTest {
             assertThat(res).isEqualTo(response);
 
             assertThat(logsAppender.getInfos()).containsExactly(
-                "Callback(/callback/test/mid-event) ended with errors=[error 1, error 2] warnings=[warning 1]");
+                "Callback(/callback/test/mid-event) ended with errors=[error 1, error 2] warnings=[]");
 
             assertThat(logsAppender.getWarns()).isEmpty();
             assertThat(logsAppender.getErrors()).isEmpty();
+        }
+    }
+
+    @Test
+    void shouldLogCallbackDetailsWhenWarningsPresents() throws Exception {
+
+        when(httpRequest.getURI()).thenReturn(new URI("http://test.com/callback/test/mid-event"));
+
+        try (TestLoggerAppender logsAppender = new TestLoggerAppender(CallbackResponseLogger.class)) {
+
+            AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
+                .warnings(List.of("warning 1", "warning 2"))
+                .build();
+
+            Object res = callbackLogger.beforeBodyWrite(response, null, null, null, httpRequest, null);
+
+            assertThat(res).isEqualTo(response);
+
+            assertThat(logsAppender.getInfos()).containsExactly(
+                "Callback(/callback/test/mid-event) ended with errors=[] warnings=[warning 1, warning 2]");
+
+            assertThat(logsAppender.getWarns()).isEmpty();
+            assertThat(logsAppender.getErrors()).isEmpty();
+        }
+    }
+
+    @Test
+    void shouldNotLogCallbackDetailsWhenNoErrorsNorWarnings() {
+
+        try (TestLoggerAppender logsAppender = new TestLoggerAppender(CallbackResponseLogger.class)) {
+
+            AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
+                .build();
+
+            callbackLogger.beforeBodyWrite(response, null, null, null, httpRequest, null);
+
+            assertThat(logsAppender.get()).isEmpty();
         }
     }
 
