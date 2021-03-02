@@ -27,7 +27,7 @@ class CallbackResponseLoggerTest {
     private ServerHttpRequest httpRequest;
 
     @TestLogs
-    private TestLogger logs = new TestLogger(CallbackRequestLogger.class);
+    private TestLogger logs = new TestLogger(CallbackResponseLogger.class);
 
     private final CallbackResponseLogger callbackLogger = new CallbackResponseLogger();
 

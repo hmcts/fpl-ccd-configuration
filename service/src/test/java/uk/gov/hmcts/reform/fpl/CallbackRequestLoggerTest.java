@@ -84,13 +84,13 @@ class CallbackRequestLoggerTest {
             "Callback(event='Test event',type='/mid-event') "
                 + "User(id='1',roles='pui-case-manager,caseworker-publiclaw-solicitor') "
                 + "Case(id='10' state='OPEN' la='SA' case number='')");
+
         assertThat(logs.getWarns()).isEmpty();
         assertThat(logs.getErrors()).isEmpty();
     }
 
     @Test
     void shouldLogErrorWhenLogCannotBeCreated() {
-
         callbackLogger.afterBodyRead(null, null, null, null, null);
         assertThat(logs.getWarns()).containsExactly("Can not log case details");
     }
