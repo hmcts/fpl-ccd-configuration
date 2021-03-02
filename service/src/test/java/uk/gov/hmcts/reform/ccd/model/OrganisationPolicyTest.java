@@ -9,12 +9,15 @@ class OrganisationPolicyTest {
 
     @Test
     void shouldCreateOrganisationPolicy() {
-        final OrganisationPolicy actualOrgPolicy = OrganisationPolicy.organisationPolicy("ORG1", CREATOR);
+        final OrganisationPolicy actualOrgPolicy
+            = OrganisationPolicy.organisationPolicy("ORG1", "Private solicitor", CREATOR);
+
         final OrganisationPolicy expectedOrgPolicy = OrganisationPolicy.builder()
+            .orgPolicyCaseAssignedRole("[CREATOR]")
             .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder()
                 .organisationID("ORG1")
+                .organisationName("Private solicitor")
                 .build())
-            .orgPolicyCaseAssignedRole("[CREATOR]")
             .build();
 
         assertThat(actualOrgPolicy).isEqualTo(expectedOrgPolicy);
@@ -22,7 +25,8 @@ class OrganisationPolicyTest {
 
     @Test
     void shouldReturnNullIfOrganisationIdIsNull() {
-        final OrganisationPolicy actualOrgPolicy = OrganisationPolicy.organisationPolicy(null, CREATOR);
+        final OrganisationPolicy actualOrgPolicy
+            = OrganisationPolicy.organisationPolicy(null, null, CREATOR);
 
         assertThat(actualOrgPolicy).isNull();
     }
