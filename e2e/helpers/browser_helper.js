@@ -1,15 +1,19 @@
 const testConfig = require('../config.js');
 const {runAccessibility} = require('./accessibility/runner');
 
-module.exports = class PuppeteerHelpers extends Helper {
+module.exports = class BrowserHelpers extends Helper {
   clickBrowserBack() {
-    const page = this.helpers['Puppeteer'].page;
-    return page.goBack();
+    const puppeteer = this.helpers['Puppeteer'];
+    if (puppeteer) {
+      return puppeteer.page.goBack();
+    } else {
+      return this.helpers['WebDriver'].browser.back();
+    }
   }
 
   reloadPage() {
-    const page = this.helpers['Puppeteer'].page;
-    return page.reload();
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return helper.refreshPage();
   }
 
   /**
@@ -20,7 +24,8 @@ module.exports = class PuppeteerHelpers extends Helper {
    * @returns {Promise<Array>} - promise holding either collection of elements or empty collection if element is not found
    */
   async locateSelector(selector) {
-    return this.helpers['Puppeteer']._locate(selector);
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return helper._locate(selector);
   }
 
   async hasSelector(selector) {
@@ -37,10 +42,10 @@ module.exports = class PuppeteerHelpers extends Helper {
    * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
    */
   async waitForSelector(locator, sec) {
-    const waitTimeout = sec ? sec * 1000 : this.helpers['Puppeteer'].options.waitForTimeout;
-    const context = await this.helpers['Puppeteer']._getContext();
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
     try {
-      return await context.waitForSelector(locator, {timeout: waitTimeout});
+      return await helper.waitForElement(locator, waitTimeout);
     } catch (error) {
       return undefined;
     }
@@ -51,8 +56,9 @@ module.exports = class PuppeteerHelpers extends Helper {
   }
 
   async canSee(selector){
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
     try {
-      const numVisible = await this.helpers['Puppeteer'].grabNumberOfVisibleElements(selector);
+      const numVisible = await helper.grabNumberOfVisibleElements(selector);
       return !!numVisible;
     } catch (err) {
       return false;
@@ -85,12 +91,13 @@ module.exports = class PuppeteerHelpers extends Helper {
   }
 
   async runAccessibilityTest() {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
 
     if (!testConfig.TestForAccessibility) {
       return;
     }
-    const url = await this.helpers['Puppeteer'].grabCurrentUrl();
-    const {page} = await this.helpers['Puppeteer'];
+    const url = await helper.grabCurrentUrl();
+    const {page} = await helper;
 
     runAccessibility(url, page);
   }
