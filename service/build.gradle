@@ -1,25 +1,26 @@
 buildscript {
-  repositories {
-    jcenter()
-  }
-  dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
-  }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    }
 }
 
 plugins {
-  id "java"
-  id "java-library"
-  id 'application'
-  id 'checkstyle'
-  id 'jacoco'
-  id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'org.springframework.boot' version '2.4.3'
-  id 'com.github.ben-manes.versions' version '0.36.0'
-  id 'org.sonarqube' version '3.1.1'
-  id 'project-report'
-  id "idea"
-  id 'info.solidsoft.pitest' version '1.5.2'
+    id "java"
+    id "java-library"
+    id 'application'
+    id 'checkstyle'
+    id 'jacoco'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version '2.4.3'
+    id 'com.github.ben-manes.versions' version '0.36.0'
+    id 'org.sonarqube' version '3.1.1'
+    id 'project-report'
+    id "idea"
+    id 'info.solidsoft.pitest' version '1.5.2'
+    id 'au.com.dius.pact' version '4.1.0'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -31,305 +32,376 @@ group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
 sourceSets {
-  functionalTest {
-    java {
-      compileClasspath += main.output + test.output
-      runtimeClasspath += main.output + test.output
-      srcDir file('src/functionalTest/java')
+    functionalTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/functionalTest/java')
+        }
+        resources.srcDir file('src/functionalTest/resources')
     }
-    resources.srcDir file('src/functionalTest/resources')
-  }
 
-  integrationTest {
-    java {
-      compileClasspath += main.output + test.output
-      runtimeClasspath += main.output + test.output
-      srcDir file('src/integrationTest/java')
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integrationTest/java')
+        }
+        resources.srcDir file('src/integrationTest/resources')
     }
-    resources.srcDir file('src/integrationTest/resources')
-  }
 
-  smokeTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/smokeTest/java')
+    smokeTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/smokeTest/java')
+        }
+        resources.srcDir file('src/smokeTest/resources')
     }
-    resources.srcDir file('src/smokeTest/resources')
-  }
+
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contractTest/resources')
+    }
 }
 
 tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+    options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
-  testClassesDirs = sourceSets.integrationTest.output.classesDirs
-  classpath = sourceSets.integrationTest.runtimeClasspath
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 
-  // set your environment variables here
-  // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+    // set your environment variables here
+    // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 check.dependsOn integration
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
+    commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
 }
 
 task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
+    commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
 }
 
 task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'lint'
+    commandLine '/usr/bin/yarn', '--silent', 'lint'
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
+    commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
 task runBrowserTests(type: Exec, description: 'Runs brower tests.') {
-  onlyIf {
-    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
-  }
-  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
+    onlyIf {
+        return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
+    }
+    commandLine '/usr/bin/yarn', '--silent', 'test:functional'
 }
 
 task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verification') {
-  onlyIf {
-    return System.env.SKIP_API_TESTS == null || System.env.SKIP_API_TESTS == 'false'
-  }
-  testLogging.showStandardStreams = true
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  classpath = sourceSets.functionalTest.runtimeClasspath
-  finalizedBy aggregate
+    onlyIf {
+        return System.env.SKIP_API_TESTS == null || System.env.SKIP_API_TESTS == 'false'
+    }
+    testLogging.showStandardStreams = true
+    testClassesDirs = sourceSets.functionalTest.output.classesDirs
+    classpath = sourceSets.functionalTest.runtimeClasspath
+    finalizedBy aggregate
 }
 
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
+task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+    onlyIf {
+        return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
+    }
+    useJUnitPlatform()
+    //include "uk/gov/hmcts/payment/api/controllers/consumer/**"
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    systemProperty 'pact.rootDir', "pacts"
+    testLogging.showStandardStreams = true
+
+}
+
+task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
+    logger.lifecycle("Runs pact consumer Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+runAndPublishConsumerPactTests.dependsOn runContractTests
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+pact {
+    publish {
+        pactDirectory = 'service/pacts'
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
+        version = project.pactVersion
+    }
+}
+
+
 def static inStrictOrder(Task... tasks) {
-  for (int i = 0; i < tasks.size() - 1; i++) {
-    tasks[i + 1].mustRunAfter(tasks[i])
-  }
-  return tasks
+    for (int i = 0; i < tasks.size() - 1; i++) {
+        tasks[i + 1].mustRunAfter(tasks[i])
+    }
+    return tasks
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
+    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests))
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
+    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
+}
+
+task contract(description: 'Runs the contract tests.') {
+    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, runContractTests))
 }
 
 checkstyle {
-  maxWarnings = 0
-  toolVersion = "8.25"
-  // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
-  configDirectory.set(file("$rootDir/config/checkstyle"))
+    maxWarnings = 0
+    toolVersion = "8.25"
+    // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
+    configDirectory.set(file("$rootDir/config/checkstyle"))
 }
 
 jacocoTestReport {
-  executionData(test, integration)
-  reports {
-    xml.enabled = true
-    csv.enabled = false
-    xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
-  }
+    executionData(test, integration)
+    reports {
+        xml.enabled = true
+        csv.enabled = false
+        xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+    }
 }
 
 project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 
 dependencyUpdates.resolutionStrategy = {
-  componentSelection { rules ->
-    rules.all { ComponentSelection selection ->
-      boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
-        selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
-      }
-      if (rejected) {
-        selection.reject('Release candidate')
-      }
+    componentSelection { rules ->
+        rules.all { ComponentSelection selection ->
+            boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+            }
+            if (rejected) {
+                selection.reject('Release candidate')
+            }
+        }
     }
-  }
 }
 
 sonarqube {
-  properties {
-    property "sonar.projectName", "FPL :: Service"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    property "sonar.pitest.mode", "reuseReport"
-    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java, **/controllers/support/**"
-  }
+    properties {
+        property "sonar.projectName", "FPL :: Service"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+        property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java, **/controllers/support/**"
+    }
 }
 
 repositories {
-  mavenLocal()
-  jcenter()
-  mavenCentral()
+    mavenLocal()
+    jcenter()
+    mavenCentral()
 
-  maven {
-    url "https://dl.bintray.com/hmcts/hmcts-maven"
-  }
+    maven {
+        url "https://dl.bintray.com/hmcts/hmcts-maven"
+    }
 
-  maven {
-    url "https://repo.spring.io/milestone"
-  }
+    maven {
+        url "https://repo.spring.io/milestone"
+    }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
 // enforces it's own (older) version which is not recommended.
 def versions = [
-  reformLogging   : '5.1.7',
-  springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '2.9.2',
-  log4j           : '2.13.2',
-  pdfbox          : '2.0.20',
-  mockito         : '3.7.7',
-  serenity        : '2.3.4'
+        reformLogging   : '5.1.7',
+        springBoot      : springBoot.class.package.implementationVersion,
+        springfoxSwagger: '2.9.2',
+        log4j           : '2.13.2',
+        pdfbox          : '2.0.20',
+        mockito         : '3.7.7',
+        serenity        : '2.3.4',
+        pact_version    : '4.1.7',
+        junit_jupiter   : '5.7.1'
 ]
 
 dependencies {
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
 
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-  implementation group: 'org.springframework.retry', name: 'spring-retry'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    implementation group: 'org.springframework.retry', name: 'spring-retry'
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  implementation group: 'org.springframework.security', name: 'spring-security-config'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
-  implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+    implementation group: 'org.springframework.security', name: 'spring-security-config'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
 
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
-  implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
-  implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.3'
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.3'
 
-  implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
+    implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.5.4'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.5.4'
 
-  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
+    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
 
-  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
-  compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
+    compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
+    compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '7.0.0'
+    compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
+    compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
+    compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
+    compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
-  implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+    implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
 
-  implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
-  integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+    testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
+    integrationTestImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
 
-  testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
-    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    exclude group: "com.vaadin.external.google", module: "android-json"
-  }
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        exclude group: "com.vaadin.external.google", module: "android-json"
+    }
 
-  integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
-  testCompile group: 'org.springframework.retry', name: 'spring-retry'
-  testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
+    integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+    testCompile group: 'org.springframework.retry', name: 'spring-retry'
+    testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 
-  testCompile group: 'org.springframework.security', name: 'spring-security-test'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
-  testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
-  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
-  testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
+    testCompile group: 'org.mockito', name: 'mockito-core', version: versions.mockito
+    testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: versions.mockito
+    testCompile group: 'org.mockito', name: 'mockito-inline', version: versions.mockito
 
-  functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
-  functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-  functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-  functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-  functionalTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  functionalTestCompile sourceSets.main.runtimeClasspath
-  functionalTestCompile sourceSets.test.runtimeClasspath
+    functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    functionalTestCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+    functionalTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    functionalTestCompile sourceSets.main.runtimeClasspath
+    functionalTestCompile sourceSets.test.runtimeClasspath
 
-  integrationTestCompile configurations.testRuntime {
-    exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
-  }
+    integrationTestCompile configurations.testRuntime {
+        exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+    }
 
-  functionalTestCompile configurations.runtime
+    functionalTestCompile configurations.runtime
 
-  smokeTestCompile configurations.runtime
+    smokeTestCompile configurations.runtime
+
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
+    contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
+    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
+    contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.0'
+    contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
+    contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
+    contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
+    contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.7.RELEASE'
+    contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
+    contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
 
 bootJar {
-  archiveFileName = 'service.jar'
+    archiveFileName = 'service.jar'
 
-  manifest {
-    attributes('Implementation-Version': project.version.toString())
-  }
+    manifest {
+        attributes('Implementation-Version': project.version.toString())
+    }
 }
 
 test {
-  useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 integration {
-  useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 pitest {
-  pitestVersion.set('1.6.2')
-  junit5PluginVersion.set('0.12')
-  targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
-  excludedClasses.set([
-    'uk.gov.hmcts.reform.fpl.config.*',
-    'uk.gov.hmcts.reform.fpl.exceptions.*',
-    'uk.gov.hmcts.reform.fpl.controllers.*',
-    'uk.gov.hmcts.reform.fpl.testingsupport.*'
-  ])
-  threads.set(10)
-  enableDefaultIncrementalAnalysis.set(true)
-  outputFormats.set(['XML', 'HTML'])
-  timestampedReports.set(false)
-  mutationThreshold.set(80)
-  timeoutConstInMillis.set(30000)
-  mutators.set([
-    'CONDITIONALS_BOUNDARY',
-    'INCREMENTS',
-    'INVERT_NEGS',
-    'MATH',
-    'NEGATE_CONDITIONALS',
-    'VOID_METHOD_CALLS',
-    'EMPTY_RETURNS',
-    'FALSE_RETURNS',
-    'NULL_RETURNS',
-    'PRIMITIVE_RETURNS',
-    'TRUE_RETURNS',
-    'REMOVE_CONDITIONALS'
-  ])
+    pitestVersion.set('1.6.2')
+    junit5PluginVersion.set('0.12')
+    targetClasses.set(['uk.gov.hmcts.reform.fpl.*'])
+    excludedClasses.set([
+            'uk.gov.hmcts.reform.fpl.config.*',
+            'uk.gov.hmcts.reform.fpl.exceptions.*',
+            'uk.gov.hmcts.reform.fpl.controllers.*',
+            'uk.gov.hmcts.reform.fpl.testingsupport.*'
+    ])
+    threads.set(10)
+    enableDefaultIncrementalAnalysis.set(true)
+    outputFormats.set(['XML', 'HTML'])
+    timestampedReports.set(false)
+    mutationThreshold.set(80)
+    timeoutConstInMillis.set(30000)
+    mutators.set([
+            'CONDITIONALS_BOUNDARY',
+            'INCREMENTS',
+            'INVERT_NEGS',
+            'MATH',
+            'NEGATE_CONDITIONALS',
+            'VOID_METHOD_CALLS',
+            'EMPTY_RETURNS',
+            'FALSE_RETURNS',
+            'NULL_RETURNS',
+            'PRIMITIVE_RETURNS',
+            'TRUE_RETURNS',
+            'REMOVE_CONDITIONALS'
+    ])
 }
 
 dependencyManagement {
-  imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0'
-  }
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0'
+    }
 }
