@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,10 +16,9 @@ import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.NEW_HEARING;
 
-@ActiveProfiles("integration-test")
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
-class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractControllerTest {
+class ManageHearingsControllerValidateHearingDatesMidEventTest extends AbstractCallbackTest {
     private static LocalDateTime pastDate = LocalDateTime.now().minusDays(1);
     private static LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
 

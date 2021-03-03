@@ -8,7 +8,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
@@ -74,10 +73,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final byte[] PDF = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();

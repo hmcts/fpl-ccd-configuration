@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
@@ -11,10 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ChangeStateController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ChangeStateControllerAboutToStartTest extends AbstractControllerTest {
+class ChangeStateControllerAboutToStartTest extends AbstractCallbackTest {
 
     ChangeStateControllerAboutToStartTest() {
         super("change-state");

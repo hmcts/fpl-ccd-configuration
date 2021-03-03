@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -24,10 +23,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTest {
+class NoticeOfProceedingsControllerAboutToStartTest extends AbstractCallbackTest {
 
     NoticeOfProceedingsControllerAboutToStartTest() {
         super("notice-of-proceedings");
@@ -49,7 +47,7 @@ class NoticeOfProceedingsControllerAboutToStartTest extends AbstractControllerTe
     void shouldSetInitialNoticeOfHearingDataWhenRequiredDataIsPresentOnCaseDetails() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
-                    HEARING_DETAILS_KEY, createHearingBookings(),
+                HEARING_DETAILS_KEY, createHearingBookings(),
                 "familyManCaseNumber", "123",
                 "allocatedJudge", Judge.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)

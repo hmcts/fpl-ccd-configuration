@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -14,10 +13,9 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(AddNoteController.class)
 @OverrideAutoConfiguration(enabled = true)
-class AddNoteAboutToSubmitControllerTest extends AbstractControllerTest {
+class AddNoteAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     AddNoteAboutToSubmitControllerTest() {
         super("add-note");

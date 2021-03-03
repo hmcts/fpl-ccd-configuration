@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -25,10 +24,9 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
+class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     private static final String REPRESENTATIVE_EMAIL = "test@test.com";
     private static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()

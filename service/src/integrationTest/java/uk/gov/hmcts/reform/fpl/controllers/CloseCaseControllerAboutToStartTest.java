@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,10 +16,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CloseCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class CloseCaseControllerAboutToStartTest extends AbstractControllerTest {
+class CloseCaseControllerAboutToStartTest extends AbstractCallbackTest {
 
     public static final String EXPECTED_LABEL_TEXT = "The case will remain open for 21 days to allow for appeal.\n\n"
         + "In a closed case, you can still:\n"

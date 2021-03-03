@@ -5,9 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -38,10 +37,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsLAController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractControllerTest {
+class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final String USER = "LA";
     private static final String USER_ROLES = "caseworker-publiclaw-solicitor";
@@ -161,7 +159,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractControllerTes
         CaseData extractedCaseData = extractCaseData(response);
 
         List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLANC =
-            mapper.convertValue(response.getData().get("correspondenceDocumentsLANC"), new TypeReference<>() {});
+            mapper.convertValue(response.getData().get("correspondenceDocumentsLANC"), new TypeReference<>() {
+            });
 
         assertThat(extractedCaseData.getCorrespondenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertThat(correspondenceDocumentsLANC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
@@ -182,7 +181,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractControllerTes
         CaseData extractedCaseData = extractCaseData(response);
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLANC =
-            mapper.convertValue(response.getData().get("furtherEvidenceDocumentsLANC"), new TypeReference<>() {});
+            mapper.convertValue(response.getData().get("furtherEvidenceDocumentsLANC"), new TypeReference<>() {
+            });
 
         assertThat(extractedCaseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertThat(furtherEvidenceDocumentsLANC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));

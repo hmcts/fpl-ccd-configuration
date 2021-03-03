@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -48,10 +47,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(SendDocumentController.class)
 @OverrideAutoConfiguration(enabled = true)
-class SendDocumentControllerTest extends AbstractControllerTest {
+class SendDocumentControllerTest extends AbstractCallbackTest {
 
     private static final String FAMILY_MAN_NO = RandomStringUtils.randomAlphabetic(10);
     private static final Document COVERSHEET_DOCUMENT = testDocument();

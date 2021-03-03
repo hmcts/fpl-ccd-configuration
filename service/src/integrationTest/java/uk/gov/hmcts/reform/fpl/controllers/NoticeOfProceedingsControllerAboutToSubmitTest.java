@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -34,10 +33,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractControllerTest {
+class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final byte[] PDF = testDocumentBinaries();
     private static final String LA_NAME = "SW";
     private static final String COURT_NAME = "Family Court";

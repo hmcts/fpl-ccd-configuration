@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -26,10 +25,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
+class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
 
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();

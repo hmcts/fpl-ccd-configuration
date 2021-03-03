@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
@@ -12,10 +11,9 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseExtensionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseExtensionControllerMidEventTest extends AbstractControllerTest {
+class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
 
     CaseExtensionControllerMidEventTest() {
         super("case-extension");

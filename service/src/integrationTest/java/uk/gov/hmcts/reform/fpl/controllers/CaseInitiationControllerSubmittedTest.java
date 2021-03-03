@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
@@ -51,10 +50,9 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
+class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final String LOGGED_USER_ID = USER_ID;
     private static final String OTHER_USER_ID = randomUUID().toString();

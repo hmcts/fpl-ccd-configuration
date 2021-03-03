@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -27,10 +26,9 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_ORG_ID;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseInitiationControllerAboutToStartTest extends AbstractControllerTest {
+class CaseInitiationControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Autowired
     private DynamicListHelper dynamicLists;

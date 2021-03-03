@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -40,10 +39,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerServiceRouteMidEventTest extends AbstractControllerTest {
+class StandardDirectionsOrderControllerServiceRouteMidEventTest extends AbstractCallbackTest {
     private static final byte[] PDF = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final String DRAFT_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -21,10 +20,9 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseInitiationControllerMidEventTest extends AbstractControllerTest {
+class CaseInitiationControllerMidEventTest extends AbstractCallbackTest {
 
     @MockBean
     private OrganisationService organisationService;

@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -17,10 +16,9 @@ import java.util.Map;
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("integration-test")
 @OverrideAutoConfiguration(enabled = true)
 @WebMvcTest(ManageHearingsController.class)
-public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractControllerTest {
+class ManageHearingsControllerHearingInPastMidEventTest extends AbstractCallbackTest {
 
     private static final String CASE_ID = "12345";
 
@@ -41,7 +39,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
                 "hearingEndDate", pastDate,
                 "hearingStartDateConfirmation", correctStartDate,
                 "hearingEndDateConfirmation", correctEndDate,
-                "confirmHearingDate","No"))
+                "confirmHearingDate", "No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
@@ -62,7 +60,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
             .data(Map.of("hearingStartDate", pastDate,
                 "hearingEndDate", pastDate,
                 hearingDateConfirmation, correctDate,
-                "confirmHearingDate","No"))
+                "confirmHearingDate", "No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
@@ -78,7 +76,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
         CaseDetails caseDetails = CaseDetails.builder()
             .id(parseLong(CASE_ID))
             .data(Map.of("hearingStartDate", pastDate,
-                "confirmHearingDate","Yes"))
+                "confirmHearingDate", "Yes"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
@@ -99,7 +97,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
                 "hearingEndDate", pastDate,
                 "hearingStartDateConfirmation", correctStartDate,
                 "hearingEndDateConfirmation", correctEndDate,
-                "confirmHearingDate","No"))
+                "confirmHearingDate", "No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
@@ -119,7 +117,7 @@ public class ManageHearingsControllerHearingInPastMidEventTest extends AbstractC
                 "hearingEndDate", pastDate,
                 "hearingStartDateConfirmation", correctStartDate,
                 "hearingEndDateConfirmation", correctEndDate,
-                "confirmHearingDate","No"))
+                "confirmHearingDate", "No"))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "hearing-in-past");
