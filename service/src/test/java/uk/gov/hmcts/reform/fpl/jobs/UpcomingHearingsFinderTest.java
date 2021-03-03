@@ -18,6 +18,9 @@ import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.search.SearchService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogsExtension;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,11 +29,12 @@ import static java.time.LocalDate.now;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyList;
 import static java.util.Date.from;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, TestLogsExtension.class})
 @ContextConfiguration(classes = {FixedTimeConfiguration.class})
 class UpcomingHearingsFinderTest {
 
@@ -58,6 +62,9 @@ class UpcomingHearingsFinderTest {
 
     @Autowired
     Time time;
+
+    @TestLogs
+    private TestLogger logs = new TestLogger(UpcomingHearingsFinder.class);
 
     @InjectMocks
     private UpcomingHearingsFinder upcomingHearingsFinder;
@@ -104,6 +111,12 @@ class UpcomingHearingsFinderTest {
         when(calendarService.isWorkingDay(today)).thenReturn(false);
 
         upcomingHearingsFinder.execute(jobExecutionContext);
+
+        assertThat(logs.getInfos()).containsExactly(
+            "Job 'testName' started",
+            "Job 'testName' skipped on non working day",
+            "Job 'testName' finished"
+        );
 
         verifyNoMoreInteractions(applicationEventPublisher);
     }
