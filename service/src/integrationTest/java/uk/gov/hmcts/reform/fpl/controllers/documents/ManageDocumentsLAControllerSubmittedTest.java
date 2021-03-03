@@ -14,7 +14,6 @@ import uk.gov.service.notify.NotificationClientException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -60,7 +59,7 @@ public class ManageDocumentsLAControllerSubmittedTest extends ManageDocumentsCon
         when(idamClient.getUserDetails(any())).thenReturn(UserDetails.builder().build());
         postSubmittedEvent(buildCallbackRequest(BUNDLE_NAME, false));
 
-        verify(notificationClient, timeout(ASYNC_TIMEOUT)).sendEmail(
+        verify(notificationClient).sendEmail(
             eq(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE),
             eq(REP_1_EMAIL),
             anyMap(),

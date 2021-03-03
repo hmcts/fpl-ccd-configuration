@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractControllerTest {
     protected static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
-    protected static final long ASYNC_TIMEOUT = 10000;
     protected static final Long CASE_ID = 12345L;
     protected static final String EMAIL_REFERENCE = "localhost/" + CASE_ID.toString();
     protected static final String REP_1_EMAIL = "rep1@example.com";

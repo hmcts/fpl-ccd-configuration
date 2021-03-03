@@ -134,8 +134,12 @@ public class CaseInitiationService {
     }
 
     public CaseData updateOrganisationsDetails(CaseData caseData) {
-        final String currentUserOrganisationId = organisationService.findOrganisation()
+        Optional<Organisation> organisation = organisationService.findOrganisation();
+        final String currentUserOrganisationId = organisation
             .map(Organisation::getOrganisationIdentifier)
+            .orElse(null);
+        final String currentUserOrganisationName = organisation
+            .map(Organisation::getName)
             .orElse(null);
 
         final Optional<String> userLocalAuthority = localAuthorities.getLocalAuthorityCode();
@@ -146,11 +150,14 @@ public class CaseInitiationService {
 
         if (isCaseOutsourced) {
             String outsourcingOrgId = localAuthorities.getLocalAuthorityId(outsourcingLocalAuthority.get());
+            String outsourcingOrgName = localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get());
+
             CaseRole outsourcedOrganisationCaseRole = caseData.getOutsourcingType().getCaseRole();
 
             return caseData.toBuilder()
-                .outsourcingPolicy(organisationPolicy(currentUserOrganisationId, outsourcedOrganisationCaseRole))
-                .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, LASOLICITOR))
+                .outsourcingPolicy(organisationPolicy(currentUserOrganisationId, currentUserOrganisationName,
+                    outsourcedOrganisationCaseRole))
+                .localAuthorityPolicy(organisationPolicy(outsourcingOrgId, outsourcingOrgName, LASOLICITOR))
                 .caseLocalAuthority(outsourcingLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(outsourcingLocalAuthority.get()))
                 .build();
@@ -158,7 +165,8 @@ public class CaseInitiationService {
 
         if (userLocalAuthority.isPresent()) {
             return caseData.toBuilder()
-                .localAuthorityPolicy(organisationPolicy(currentUserOrganisationId, LASOLICITOR))
+                .localAuthorityPolicy(
+                    organisationPolicy(currentUserOrganisationId, currentUserOrganisationName, LASOLICITOR))
                 .caseLocalAuthority(userLocalAuthority.get())
                 .caseLocalAuthorityName(localAuthorities.getLocalAuthorityName(userLocalAuthority.get()))
                 .build();
