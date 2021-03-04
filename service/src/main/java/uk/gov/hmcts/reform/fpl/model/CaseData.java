@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
@@ -377,7 +378,6 @@ public class CaseData {
     private final LocalDate epoExclusionStartDate;
     private final EPOExclusionRequirementType epoExclusionRequirementType;
 
-
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
         List<Element<Proceeding>> proceedings = new ArrayList<>();
@@ -484,6 +484,8 @@ public class CaseData {
 
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
+    private final FurtherEvidenceType furtherEvidenceTypeListLA;
+    private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence

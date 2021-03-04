@@ -6,7 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
-import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -24,12 +24,11 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.C2;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.COURT_BUNDLE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -46,7 +45,7 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
     }
 
     @Test
-    void shouldInitialiseFurtherEvidenceCollection() {
+    void shouldInitialiseHearingList() {
         UUID selectedHearingId = randomUUID();
         LocalDateTime today = LocalDateTime.now();
         HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
@@ -60,11 +59,11 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
-            .manageDocumentsHearingList(selectedHearingId)
             .hearingFurtherEvidenceDocuments(List.of(element(selectedHearingId, HearingFurtherEvidenceBundle.builder()
                 .supportingEvidenceBundle(furtherEvidenceBundle)
                 .build())))
-            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
@@ -73,16 +72,11 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
         CaseData responseData = extractCaseData(callbackResponse);
 
         DynamicList expectedDynamicList = ElementUtils
-            .asDynamicList(hearingBookings, selectedHearingId, HearingBooking::toLabel);
+            .asDynamicList(hearingBookings, null, HearingBooking::toLabel);
 
         DynamicList hearingList = mapper.convertValue(responseData.getManageDocumentsHearingList(), DynamicList.class);
 
         assertThat(hearingList).isEqualTo(expectedDynamicList);
-
-        assertThat(callbackResponse.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
-            .isEqualTo(selectedHearingBooking.toLabel());
-
-        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
     }
 
     @Test
@@ -156,12 +150,8 @@ public class ManageDocumentsLAControllerMidEventTest extends AbstractControllerT
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
     }
 
-    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type) {
+    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeListLA type) {
         return ManageDocumentLA.builder().type(type).build();
-    }
-
-    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

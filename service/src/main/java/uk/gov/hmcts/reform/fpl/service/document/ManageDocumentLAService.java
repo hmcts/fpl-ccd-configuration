@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -17,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -29,9 +32,43 @@ public class ManageDocumentLAService {
     public static final String MANAGE_DOCUMENT_LA_KEY = "manageDocumentLA";
     public static final String COURT_BUNDLE_HEARING_LIST_KEY = "courtBundleHearingList";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY = "furtherEvidenceDocumentsLA";
+    public static final String FURTHER_EVIDENCE_TYPE = "furtherEvidenceTypeListLA";
+    public static final String RELATED_TO_HEARING = "manageDocumentsRelatedToHearing";
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
+    public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
+
+    public Map<String, Object> initialiseManageDocumentLAEvent(CaseData caseData) {
+        Map<String, Object> listAndLabel = new HashMap<>();
+        String hasHearings;
+        String hasC2s;
+
+        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
+            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+
+            hasHearings = YES.getValue();
+        } else {
+            hasHearings = NO.getValue();
+        }
+
+        //If toggle not on, replicate old behaviour (always show C2 list, even if empty)
+        if (caseData.hasC2DocumentBundle()) {
+            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+            hasC2s = YES.getValue();
+        } else {
+            hasC2s = NO.getValue();
+        }
+
+        ManageDocumentLA manageDocument = ManageDocumentLA.builder()
+            .hasHearings(hasHearings)
+            .hasC2s(hasC2s)
+            .build();
+
+        listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
+
+        return listAndLabel;
+    }
 
     public Map<String, Object> initialiseCourtBundleFields(CaseData caseData) {
         Map<String, Object> map = new HashMap<>();

@@ -12,7 +12,7 @@
     "ID": "ManageDocumentTypeLA",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Choose a document category?",
+    "ElementLabel": "Choose a document category",
     "FieldTypeParameter": "ManageDocumentTypeListLA",
     "HintText": "Your document will be stored in the corresponding tab",
     "SecurityClassification": "Public"
@@ -34,14 +34,5 @@
     "ElementLabel": "Hidden to control display of the next field when there are no C2s",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentTypeLA",
-    "ListElementCode": "relatedToHearing",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Does the evidence document relate to a hearing?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND hasHearings=\"Yes\""
   }
 ]

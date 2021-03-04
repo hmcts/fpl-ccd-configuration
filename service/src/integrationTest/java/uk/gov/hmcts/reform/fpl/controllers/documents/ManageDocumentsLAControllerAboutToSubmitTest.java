@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -31,11 +31,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.C2;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.COURT_BUNDLE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.FURTHER_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -60,7 +59,6 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         .name("confidential test")
         .confidential(List.of("CONFIDENTIAL"))
         .build();
-
 
     ManageDocumentsLAControllerAboutToSubmitTest() {
         super("manage-documents-la");
@@ -88,7 +86,8 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
                     .build())
                 .build())
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
-            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -106,7 +105,7 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
-            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -242,12 +241,8 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             .build();
     }
 
-    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type) {
+    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeListLA type) {
         return ManageDocumentLA.builder().type(type).build();
-    }
-
-    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

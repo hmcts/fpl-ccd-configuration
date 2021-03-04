@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ManageDocumentTypeLA {
+public enum ManageDocumentTypeListLA {
     FURTHER_EVIDENCE_DOCUMENTS,
     CORRESPONDENCE,
     C2,
