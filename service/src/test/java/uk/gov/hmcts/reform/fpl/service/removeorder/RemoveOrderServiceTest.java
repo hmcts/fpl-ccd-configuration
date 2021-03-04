@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -146,13 +147,13 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(3).getId(), "order 4 - 18 September 2020"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
-                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                        formatLocalDateToString(NOW, DATE))),
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(NOW.minusDays(1), DATE))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(NOW.minusDays(1), DATE))),
                 buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                    formatLocalDateToString(NOW.minusDays(1), DATE)))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -192,13 +193,13 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
-                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                        formatLocalDateToString(NOW, DATE))),
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(NOW.minusDays(1), DATE))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(NOW.minusDays(1), DATE))),
                 buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                    formatLocalDateToString(NOW.minusDays(1), DATE)))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -239,13 +240,13 @@ class RemoveOrderServiceTest {
                 buildListElement(generatedOrders.get(0).getId(), "order 1 - 15 June 2020"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     format("Sealed case management order issued on %s",
-                        formatLocalDateToString(NOW, "d MMMM yyyy"))),
+                        formatLocalDateToString(NOW, DATE))),
                 buildListElement(draftCMO.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(NOW.minusDays(1), DATE))),
                 buildListElement(draftOrder.getId(), format("Draft order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(NOW.minusDays(1), DATE))),
                 buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
+                    formatLocalDateToString(NOW.minusDays(1), DATE)))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
@@ -269,7 +270,7 @@ class RemoveOrderServiceTest {
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(
                 buildListElement(SDO_ID, format("Gatekeeping order - %s",
-                    formatLocalDateToString(NOW, "d MMMM yyyy")))))
+                    formatLocalDateToString(NOW, DATE)))))
             .build();
 
         assertThat(listOfOrders).isEqualTo(expectedList);
