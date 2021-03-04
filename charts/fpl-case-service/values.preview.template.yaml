@@ -83,6 +83,8 @@ xui-webapp:
         secrets:
           - mc-s2s-client-secret
           - mc-idam-client-secret
+          - system-user-name
+          - system-user-password
 ccd:
   ccd:
     adminWeb:

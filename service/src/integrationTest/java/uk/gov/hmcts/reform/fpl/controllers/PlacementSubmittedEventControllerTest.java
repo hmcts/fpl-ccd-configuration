@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.IssuedOrderType;
@@ -63,10 +62,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacementOrderAndNotices;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementSubmittedEventControllerTest extends AbstractControllerTest {
+class PlacementSubmittedEventControllerTest extends AbstractCallbackTest {
 
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String CASE_ID = "12345";

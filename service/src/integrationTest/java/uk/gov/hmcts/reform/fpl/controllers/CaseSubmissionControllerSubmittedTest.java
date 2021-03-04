@@ -12,10 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -75,13 +77,13 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
+class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
+    private static final String LA_EMAIL = "FamilyPublicLaw+PublicLawEmail@gmail.com";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://fake.survey.url";
     private static final Long CASE_ID = nextLong();
@@ -215,6 +217,25 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 expectedIncompleteHmctsParameters,
                 NOTIFICATION_REFERENCE
             ));
+    }
+
+    @Test
+    void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() {
+        CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationName("Third party").build())
+                .build())
+            .caseLocalAuthority("example")
+            .id(CASE_ID)
+            .build();
+
+        CallbackRequest callbackRequest = buildCallbackRequest(asCaseDetails(caseData), OPEN);
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(OUTSOURCED_CASE_TEMPLATE), eq(LA_EMAIL),
+            anyMap(), eq(NOTIFICATION_REFERENCE)));
     }
 
     @Test

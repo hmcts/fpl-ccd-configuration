@@ -1,14 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -38,15 +34,15 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest {
+class RepresentativeSubmittedEventControllerTest extends AbstractCallbackTest {
 
-    private static final String REPPRESENTATIVE_FULLNAME = "John Smith";
+    private static final String REPRESENTATIVE_FULLNAME = "John Smith";
 
     @MockBean
     private NotificationClient notificationClient;
@@ -54,13 +50,10 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private static final Long CASE_ID = 12345L;
     private static final String RESPONDENT_SURNAME = "Watson";
     private static final SyntheticCaseSummary CASE_SUMMARY = SyntheticCaseSummary.builder()
-        .caseSummaryFirstRespondentLegalRep(REPPRESENTATIVE_FULLNAME)
+        .caseSummaryFirstRespondentLegalRep(REPRESENTATIVE_FULLNAME)
         .caseSummaryFirstRespondentLastName(RESPONDENT_SURNAME)
         .build();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -153,7 +146,7 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
 
     private Representative buildRepresentative(RepresentativeServingPreferences servingPreference) {
         return Representative.builder()
-            .fullName(REPPRESENTATIVE_FULLNAME)
+            .fullName(REPRESENTATIVE_FULLNAME)
             .positionInACase("Position")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
             .servingPreferences(servingPreference)
@@ -196,7 +189,6 @@ class RepresentativeSubmittedEventControllerTest extends AbstractControllerTest 
     }
 
     private Map<String, Object> caseSummary() {
-        return objectMapper.convertValue(
-            CASE_SUMMARY, new TypeReference<>() {});
+        return mapper.convertValue(CASE_SUMMARY, MAP_TYPE);
     }
 }
