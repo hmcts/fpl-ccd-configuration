@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -42,10 +41,9 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerAboutToStartTest extends AbstractControllerTest {
+class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
 
     RemoveOrderControllerAboutToStartTest() {

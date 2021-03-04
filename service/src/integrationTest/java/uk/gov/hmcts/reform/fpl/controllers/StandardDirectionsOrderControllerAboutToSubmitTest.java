@@ -8,7 +8,6 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
@@ -39,8 +38,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -51,7 +48,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -75,12 +71,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final byte[] PDF = {1, 2, 3, 4, 5};
+class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
+    private static final byte[] PDF = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
@@ -100,9 +96,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private IdamClient idamClient;
 
     @MockBean
     private DocumentSealingService sealingService;
@@ -176,7 +169,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     void shouldPopulateStandardDirectionOrderObjectFromUploadRoute() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
-        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        givenCurrentUserWithName("adam");
 
         CaseData data = extractCaseData(postAboutToSubmitEvent(validCaseDetailsForUploadRoute(order, DRAFT)));
 
@@ -221,7 +214,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        givenCurrentUserWithName("adam");
         given(sealingService.sealDocument(document)).willReturn(sealedDocument);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -246,7 +239,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     void shouldRemoveTemporaryFields() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
-        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        givenCurrentUserWithName("adam");
 
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(order, DRAFT);
         Map<String, Object> dataMap = new HashMap<>(caseDetails.getData());

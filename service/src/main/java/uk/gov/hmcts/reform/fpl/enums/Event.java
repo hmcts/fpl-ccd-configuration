@@ -23,7 +23,7 @@ public enum Event {
     ////TO DO remove when toggling on FPLA-768
     DOCUMENTS("uploadDocuments", "Upload documents",
         List.of(OPEN, SUBMITTED, GATEKEEPING, CASE_MANAGEMENT, RETURNED)),
-    ORGANISATION_DETAILS("enterApplicant", "Your organisation's details", List.of(OPEN, RETURNED)),
+    ORGANISATION_DETAILS("enterApplicant", "Applicant's details", List.of(OPEN, RETURNED)),
     CHILDREN("enterChildren", "Child's details", List.of(OPEN, RETURNED)),
     RESPONDENTS("enterRespondents", "Respondents' details", List.of(OPEN, RETURNED)),
     ALLOCATION_PROPOSAL("otherProposal", "Allocation proposal", List.of(OPEN, RETURNED)),
