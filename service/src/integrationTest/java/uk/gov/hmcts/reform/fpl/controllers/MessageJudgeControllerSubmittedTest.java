@@ -1,13 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -31,10 +27,9 @@ import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
-class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
+class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String JUDICIAL_MESSAGE_RECIPIENT = "recipient@test.com";
     private static final Long CASE_REFERENCE = 12345L;
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
@@ -47,9 +42,6 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     MessageJudgeControllerSubmittedTest() {
         super("message-judge");
@@ -198,10 +190,10 @@ class MessageJudgeControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private Map<String, Object> caseSummary(String withUnresolvedMessages) {
-        return objectMapper.convertValue(
+        return caseConverter.toMap(
             SyntheticCaseSummary.builder()
                 .caseSummaryHasUnresolvedMessages(withUnresolvedMessages)
                 .caseSummaryFirstRespondentLastName(LAST_NAME)
-                .build(), new TypeReference<>() {});
+                .build());
     }
 }
