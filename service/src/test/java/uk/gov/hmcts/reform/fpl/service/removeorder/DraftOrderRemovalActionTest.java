@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -150,7 +149,7 @@ class DraftOrderRemovalActionTest {
             .order(order)
             .dateSent(LocalDate.now().minusWeeks(1))
             .hearing("Draft Case management hearing sent on "
-                + formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), DATE))
+                + formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), "d MMMM yyyy"))
             .build();
     }
 
