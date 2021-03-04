@@ -4,9 +4,8 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "description",
-    "EventElementLabel": "Notes",
-    "FieldDisplayOrder": 7,
+    "ListElementCode": "document",
+    "EventElementLabel": "Upload C2 application",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -14,10 +13,10 @@
     "ID": "C2DocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "document",
-    "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 6,
-    "DisplayContext": "MANDATORY"
+    "ListElementCode": "c2OrdersRequested",
+    "EventElementLabel": "Are you using the C2 to apply for any of the below?",
+    "HintText": "Select all that apply",
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -10,6 +10,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "c2OrdersRequested",
+    "ElementLabel": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C2OrdersRequested",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
