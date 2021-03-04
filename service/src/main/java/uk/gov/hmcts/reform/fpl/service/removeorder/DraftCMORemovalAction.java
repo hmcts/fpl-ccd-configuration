@@ -15,11 +15,9 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.cmo.DraftOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
@@ -34,6 +32,7 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
     public static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
     private final DraftOrderService draftOrderService;
     private final UpdateCMOHearing updateCmoHearing;
+    private final UpdateHearingOrderBundlesDrafts updateHearingOrderBundlesDrafts;
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
@@ -73,7 +72,8 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         selectedHearingOrderBundle.getValue().getOrders().remove(cmoElement);
         caseData.getDraftUploadedCMOs().remove(cmoElement);
 
-        updateHearingOrderBundlesDrafts(data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
+        updateHearingOrderBundlesDrafts.update(
+            data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
 
         data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
         data.putIfNotEmpty(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
@@ -95,27 +95,5 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
 
         data.getData().put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
         data.getData().put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
-    }
-
-    private void updateHearingOrderBundlesDrafts(CaseDetailsMap data,
-                                                 List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts,
-                                                 Element<HearingOrdersBundle> selectedHearingOrderBundle) {
-        List<Element<HearingOrdersBundle>> updatedHearingOrderBundle;
-
-        if (selectedHearingOrderBundle.getValue().getOrders().isEmpty()) {
-            updatedHearingOrderBundle = new ArrayList<>(hearingOrdersBundlesDrafts);
-            updatedHearingOrderBundle.removeIf(bundle -> bundle.getId().equals(selectedHearingOrderBundle.getId()));
-        } else {
-            updatedHearingOrderBundle = hearingOrdersBundlesDrafts.stream()
-                .map(hearingOrdersBundleElement -> {
-                    if (selectedHearingOrderBundle.getId().equals(hearingOrdersBundleElement.getId())) {
-                        return selectedHearingOrderBundle;
-                    }
-
-                    return hearingOrdersBundleElement;
-                }).collect(Collectors.toList());
-        }
-
-        data.putIfNotEmpty("hearingOrdersBundlesDrafts", updatedHearingOrderBundle);
     }
 }

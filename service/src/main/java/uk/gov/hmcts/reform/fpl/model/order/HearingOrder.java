@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
@@ -60,22 +61,27 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return type.isCmo();
+        return type.isCmo() || (type == C21 && SEND_TO_JUDGE.equals(status));
     }
 
     public String asLabel() {
-        String dateFormat = "d MMMM yyyy";
-        if (APPROVED.equals(status)) {
-            return format("Sealed case management order issued on %s",
-                formatLocalDateToString(dateIssued, dateFormat));
-        }
+        final String dateFormat = "d MMMM yyyy";
 
-        if (SEND_TO_JUDGE.equals(status)) {
-            return format("Agreed case management order sent on %s",
+        if (type == C21 && SEND_TO_JUDGE.equals(status)) {
+            return format("Draft order sent on %s", formatLocalDateToString(dateSent, dateFormat));
+        } else {
+            if (APPROVED.equals(status)) {
+                return format("Sealed case management order issued on %s",
+                    formatLocalDateToString(dateIssued, dateFormat));
+            }
+
+            if (SEND_TO_JUDGE.equals(status)) {
+                return format("Agreed case management order sent on %s",
+                    formatLocalDateToString(dateSent, dateFormat));
+            }
+
+            return format("Draft case management order sent on %s",
                 formatLocalDateToString(dateSent, dateFormat));
         }
-
-        return format("Draft case management order sent on %s",
-            formatLocalDateToString(dateSent, dateFormat));
     }
 }
