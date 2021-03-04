@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
@@ -18,10 +17,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.DEPRI
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.WITHDRAWN;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CloseCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class CloseCaseControllerAboutToSubmitTest extends AbstractControllerTest {
+class CloseCaseControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final String FULL_REASON_KEY = "fullReason";
     private static final String DEPRIVATION_OF_LIBERTY_KEY = "deprivationOfLiberty";
@@ -94,6 +92,7 @@ public class CloseCaseControllerAboutToSubmitTest extends AbstractControllerTest
             .build();
 
         assertThat(response.getData()).containsEntry("closeCaseTabField", mapper.convertValue(closeCase,
-            new TypeReference<Map<String, Object>>() {}));
+            new TypeReference<Map<String, Object>>() {
+            }));
     }
 }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -26,10 +25,9 @@ import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.SPECIFIC_TIME_NAMED_DATE;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ValidateOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ValidateOrderControllerTest extends AbstractControllerTest {
+class ValidateOrderControllerTest extends AbstractCallbackTest {
 
     private static final OrderTypeAndDocument ORDER_TYPE_AND_DOCUMENT = OrderTypeAndDocument.builder()
         .type(GeneratedOrderType.BLANK_ORDER)
@@ -65,7 +63,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotReturnErrorsWithInterimOrderWhenEndDateInTheFuture() {
-        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT, InterimEndDate.builder()
             .type(NAMED_DATE)
             .endDate(dateNow().plusDays(1))
             .build());
@@ -75,7 +73,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWithInterimOrderWhenEndDateToday() {
-        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT, InterimEndDate.builder()
             .type(NAMED_DATE)
             .endDate(dateNow())
             .build());
@@ -85,7 +83,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWithInterimOrderWhenEndDateInThePast() {
-        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT, InterimEndDate.builder()
             .type(NAMED_DATE)
             .endDate(dateNow().minusDays(1))
             .build());
@@ -95,7 +93,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldNotReturnErrorsWithInterimOrderWhenEndDateTimeInTheFuture() {
-        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT, InterimEndDate.builder()
             .type(SPECIFIC_TIME_NAMED_DATE)
             .endDateTime(now().plusMinutes(1))
             .build());
@@ -105,7 +103,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWithInterimOrderWhenEndDateTimeNow() {
-        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT, InterimEndDate.builder()
             .type(SPECIFIC_TIME_NAMED_DATE)
             .endDateTime(now())
             .build());
@@ -115,7 +113,7 @@ class ValidateOrderControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnErrorsWithInterimOrderWhenEndDateTimeInThePast() {
-        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT,InterimEndDate.builder()
+        CaseDetails caseDetails = caseDetailsFor(INTERIM_ORDER_TYPE_AND_DOCUMENT, InterimEndDate.builder()
             .type(SPECIFIC_TIME_NAMED_DATE)
             .endDateTime(now().minusMinutes(1))
             .build());

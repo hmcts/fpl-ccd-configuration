@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
@@ -26,10 +25,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
+class UploadC2DocumentsMidEventControllerTest extends AbstractCallbackTest {
     private static final String ERROR_MESSAGE = "Date received cannot be in the future";
 
     @MockBean
@@ -63,7 +61,7 @@ class UploadC2DocumentsMidEventControllerTest extends AbstractControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
             .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of()),"c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+                Map.of("document", Map.of()), "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
             .build(), "get-fee");
 
         assertThat(response.getData()).extracting("temporaryC2Document").extracting("document").isNull();

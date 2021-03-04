@@ -4,23 +4,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
@@ -55,28 +50,18 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
+class CaseInitiationControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final String LOGGED_USER_ID = USER_ID;
     private static final String OTHER_USER_ID = randomUUID().toString();
 
     @MockBean
-    private IdamClient idam;
-
-    @MockBean
     private OrganisationApi organisationApi;
 
     @MockBean
-    private AuthTokenGenerator authTokenGenerator;
-
-    @MockBean
     private CoreCaseDataService coreCaseDataService;
-
-    @Autowired
-    private SystemUpdateUserConfiguration userConfig;
 
     @MockBean
     private CaseAccessDataStoreApi caseDataAccessApi;
@@ -87,8 +72,8 @@ class CaseInitiationControllerSubmittedTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(USER_AUTH_TOKEN);
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        givenSystemUser();
+        givenFplService();
     }
 
     @Test
