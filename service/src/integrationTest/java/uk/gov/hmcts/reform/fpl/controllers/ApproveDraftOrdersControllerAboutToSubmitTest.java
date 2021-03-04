@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOReviewOutcome;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
@@ -58,10 +57,9 @@ import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractControllerTest {
+class ApproveDraftOrdersControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;

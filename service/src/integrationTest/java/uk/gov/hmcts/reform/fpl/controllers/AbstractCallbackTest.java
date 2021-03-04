@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -12,11 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseConverter;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,27 +21,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
-public abstract class AbstractControllerTest {
-
-    protected static final String USER_AUTH_TOKEN = "Bearer token";
-    protected static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-    protected static final String USER_ID = "1";
+public abstract class AbstractCallbackTest extends AbstractTest {
 
     @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    protected ObjectMapper mapper;
-
-    @Autowired
-    CaseConverter caseConverter;
-
-    @Autowired
-    private Time time;
+    private MockMvc mockMvc;
 
     private final String eventName;
 
-    protected AbstractControllerTest(String eventName) {
+    protected AbstractCallbackTest(String eventName) {
         this.eventName = eventName;
     }
 
@@ -270,14 +252,6 @@ public abstract class AbstractControllerTest {
             .build();
     }
 
-    protected LocalDateTime now() {
-        return time.now();
-    }
-
-    protected LocalDate dateNow() {
-        return time.now().toLocalDate();
-    }
-
     private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus,
                                                            String... userRoles) {
         return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class, userRoles);
@@ -321,4 +295,5 @@ public abstract class AbstractControllerTest {
             .caseDetailsBefore(CaseDetails.builder().data(Map.of()).build())
             .build();
     }
+
 }

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
@@ -58,10 +57,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ApproveDraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApproveDraftOrdersControllerSubmittedTest extends AbstractControllerTest {
+class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12345L;
     private static final String ADMIN_EMAIL = "admin@family-court.com";

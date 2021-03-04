@@ -104,7 +104,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getFurtherEvidenceTypeListLA().equals(OTHER)) {
+        if (OTHER.equals(caseData.getFurtherEvidenceTypeListLA())) {
             caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
                 caseData, caseData.getManageDocumentsRelatedToHearing().equals(YES.getValue())));
 

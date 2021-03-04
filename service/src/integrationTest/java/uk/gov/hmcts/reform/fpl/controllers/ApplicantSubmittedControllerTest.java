@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -16,10 +15,9 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApplicantSubmittedControllerTest extends AbstractControllerTest {
+class ApplicantSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final long CASE_ID = 12323L;
 

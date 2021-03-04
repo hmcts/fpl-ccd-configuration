@@ -3,10 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
@@ -29,16 +28,15 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.M
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsLAController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageDocumentsLAControllerAboutToStartTest extends AbstractControllerTest {
+class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
     ManageDocumentsLAControllerAboutToStartTest() {
         super("manage-documents-la");
     }
 
     @Test
-    void shouldBuildManageDocumentsHearingListAndSupportingC2DocumentsList() {
+    void shouldBuildCourtBundleHearingListAndSupportingC2DocumentsList() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(buildHearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
             element(buildHearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
