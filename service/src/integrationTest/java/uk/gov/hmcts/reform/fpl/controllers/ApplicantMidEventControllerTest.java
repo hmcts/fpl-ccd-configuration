@@ -64,7 +64,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
                         .email(EmailAddress.builder().build())
                         .build())
                     .build()),
-                "solicitor", Solicitor.builder().build()))
+                "solicitor", Solicitor.builder().email("email@example.com").build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -129,7 +129,7 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
                             .build())
                         .build())
                     .build()),
-                "solicitor", Solicitor.builder().build()))
+                "solicitor", Solicitor.builder().email("email@example.com").build()))
             .build();
     }
 }
