@@ -75,7 +75,8 @@ public class CaseAccessDataStoreConsumerTest {
             .method("POST")
             .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER, AUTHORIZATION_TOKEN)
             .path("/case-users")
-            .body(createJsonObject(buildAssignmentRequest(CASE_ID, Set.of(USER_ID), "organisationId", CaseRole.EPSMANAGING)))
+            .body(createJsonObject(buildAssignmentRequest(CASE_ID, Set.of(USER_ID),
+                "organisationId", CaseRole.EPSMANAGING)))
             .willRespondWith()
             .status(HttpStatus.SC_CREATED)
             .toPact();
@@ -84,14 +85,16 @@ public class CaseAccessDataStoreConsumerTest {
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentForDelete")
     public void verifyRemoveRoles() {
-        caseAccessDataStoreApi.removeCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN, buildCaseAssignedUserRolesRequest());
+        caseAccessDataStoreApi.removeCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
+            buildCaseAssignedUserRolesRequest());
 
     }
 
     @Test
     @PactTestFor(pactMethod = "generatePactFragmentForAdd")
     public void verifyAddRoles() {
-        caseAccessDataStoreApi.addCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN, buildAssignmentRequest(CASE_ID, Set.of(USER_ID), "organisationId", CaseRole.EPSMANAGING) );
+        caseAccessDataStoreApi.addCaseUserRoles(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
+            buildAssignmentRequest(CASE_ID, Set.of(USER_ID), "organisationId", CaseRole.EPSMANAGING));
 
     }
 

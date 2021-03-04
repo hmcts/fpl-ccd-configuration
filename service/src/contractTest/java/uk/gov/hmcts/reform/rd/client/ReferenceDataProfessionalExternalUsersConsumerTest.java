@@ -32,7 +32,8 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
             .given("Professional users exist for an Active organisation")
             .uponReceiving("A Request to get users for an active organisation")
             .method("GET")
-            .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER, AUTHORIZATION_TOKEN)
+            .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER,
+                AUTHORIZATION_TOKEN)
             .path("/refdata/external/v1/organisations/users")
             .query("status=ACTIVE&returnRoles=false")
             .willRespondWith()
@@ -48,7 +49,8 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
             .given("Professional users exist for an Active organisation")
             .uponReceiving("A Request to get user by email")
             .method("GET")
-            .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER, AUTHORIZATION_TOKEN, USER_EMAIL, ORGANISATION_EMAIL)
+            .headers(SERVICE_AUTHORIZATION_HEADER, SERVICE_AUTH_TOKEN, AUTHORIZATION_HEADER,
+                AUTHORIZATION_TOKEN, USER_EMAIL, ORGANISATION_EMAIL)
             .path("/refdata/external/v1/organisations/users/accountId")
             .willRespondWith()
             .body(buildOrganisationUserResponsePactDsl())
@@ -60,7 +62,8 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
     @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationUsers")
     public void verifyGetOrganisationalUsers() {
         OrganisationUsers usersInOrganisation =
-            organisationApi.findUsersInOrganisation(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN, Status.ACTIVE, Boolean.FALSE);
+            organisationApi.findUsersInOrganisation(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN,
+                Status.ACTIVE, Boolean.FALSE);
         assertThat(usersInOrganisation.getUsers(), is(not(empty())));
         assertThat(usersInOrganisation.getUsers().get(0).getUserIdentifier(), is("userId"));
 
@@ -70,7 +73,8 @@ public class ReferenceDataProfessionalExternalUsersConsumerTest extends Referenc
     @PactTestFor(pactMethod = "generatePactFragmentForGetOrganisationUserByEmail")
     public void verifyGetOrganisationalUserByEmail() {
         OrganisationUser organisationUser =
-            organisationApi.findUserByEmail(AUTHORIZATION_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_EMAIL);
+            organisationApi.findUserByEmail(AUTHORIZATION_TOKEN,
+                SERVICE_AUTH_TOKEN, ORGANISATION_EMAIL);
         assertThat(organisationUser, is(notNullValue()));
         assertThat(organisationUser.getUserIdentifier(), is("userId"));
     }

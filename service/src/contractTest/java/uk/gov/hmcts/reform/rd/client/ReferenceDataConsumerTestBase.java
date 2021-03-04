@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.rd.client;
 
-
 import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.core.model.annotations.PactFolder;
