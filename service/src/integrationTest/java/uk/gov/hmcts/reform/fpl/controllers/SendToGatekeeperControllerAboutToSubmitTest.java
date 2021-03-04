@@ -4,7 +4,6 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -14,10 +13,9 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(NotifyGatekeeperController.class)
 @OverrideAutoConfiguration(enabled = true)
-class SendToGatekeeperControllerAboutToSubmitTest extends AbstractControllerTest {
+class SendToGatekeeperControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     SendToGatekeeperControllerAboutToSubmitTest() {
         super("send-to-gatekeeper");

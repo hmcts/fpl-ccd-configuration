@@ -70,7 +70,7 @@ class CaseSubmissionCheckerTest {
                 "• Hearing needed error",
                 "In the grounds for the application section:",
                 "• Grounds for application error",
-                "In the your organisation's details section:",
+                "In the applicant's details section:",
                 "• Applicant error 1",
                 "• Applicant error 2",
                 "In the child's details section:",
