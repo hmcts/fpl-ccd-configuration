@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -108,15 +109,15 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
                 buildListElement(generatedOrders.get(4).getId(), "order 5 - 12 September 2018"),
                 buildListElement(sealedCaseManagementOrders.get(0).getId(),
                     String.format("Sealed case management order issued on %s",
-                        formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
+                        formatLocalDateToString(dateNow(), DATE))),
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(dateNow().minusDays(1), DATE))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(dateNow().minusDays(1), DATE))),
                 buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                    formatLocalDateToString(dateNow().minusDays(1), DATE))),
                 buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))))
+                    formatLocalDateToString(dateNow().minusDays(1), DATE)))))
             .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
@@ -141,7 +142,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
             .value(DynamicListElement.EMPTY)
             .listItems(List.of(
                 buildListElement(SDO_ID, format("Gatekeeping order - %s",
-                    formatLocalDateToString(dateNow(), "d MMMM yyyy")))
+                    formatLocalDateToString(dateNow(), DATE)))
             )).build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
