@@ -2,17 +2,22 @@ const testConfig = require('../config.js');
 const {runAccessibility} = require('./accessibility/runner');
 
 module.exports = class BrowserHelpers extends Helper {
+
+  getHelper() {
+    return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+  }
+
   clickBrowserBack() {
-    const puppeteer = this.helpers['Puppeteer'];
-    if (puppeteer) {
-      return puppeteer.page.goBack();
+    const helper = this.getHelper();
+    if (this.helpers['Puppeteer']) {
+      return helper.page.goBack();
     } else {
-      return this.helpers['WebDriver'].browser.back();
+      return helper.browser.back();
     }
   }
 
   reloadPage() {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const helper = this.getHelper();
     return helper.refreshPage();
   }
 
@@ -24,7 +29,7 @@ module.exports = class BrowserHelpers extends Helper {
    * @returns {Promise<Array>} - promise holding either collection of elements or empty collection if element is not found
    */
   async locateSelector(selector) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const helper = this.getHelper();
     return helper._locate(selector);
   }
 
@@ -42,7 +47,7 @@ module.exports = class BrowserHelpers extends Helper {
    * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
    */
   async waitForSelector(locator, sec) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const helper = this.getHelper();
     const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
     try {
       if (this.helpers['Puppeteer']) {
@@ -61,7 +66,7 @@ module.exports = class BrowserHelpers extends Helper {
   }
 
   async canSee(selector){
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const helper = this.getHelper();
     try {
       const numVisible = await helper.grabNumberOfVisibleElements(selector);
       return !!numVisible;
@@ -96,7 +101,7 @@ module.exports = class BrowserHelpers extends Helper {
   }
 
   async runAccessibilityTest() {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    const helper = this.getHelper();
 
     if (!testConfig.TestForAccessibility) {
       return;
