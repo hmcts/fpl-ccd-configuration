@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -23,10 +22,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApplicantMidEventControllerTest extends AbstractControllerTest {
+class ApplicantMidEventControllerTest extends AbstractCallbackTest {
     private static final String ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
 
     ApplicantMidEventControllerTest() {
@@ -42,8 +40,7 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
 
         assertThat(callbackResponse.getErrors()).isNull();
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
+        CaseData caseData = extractCaseData(callbackResponse);
 
         assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
     }
@@ -124,14 +121,14 @@ class ApplicantMidEventControllerTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(12345L)
             .data(ImmutableMap.of("applicants", ImmutableList.of(Element.builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .email(EmailAddress.builder().build())
-                        .pbaNumber(pbaNumber)
+                    .id(UUID.randomUUID())
+                    .value(Applicant.builder()
+                        .party(ApplicantParty.builder()
+                            .email(EmailAddress.builder().build())
+                            .pbaNumber(pbaNumber)
+                            .build())
                         .build())
-                    .build())
-                .build()),
+                    .build()),
                 "solicitor", Solicitor.builder().build()))
             .build();
     }

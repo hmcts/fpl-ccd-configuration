@@ -5,7 +5,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeepersEvent;
 import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.service.notify.NotificationClient;
@@ -18,10 +17,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(NotifyGatekeeperController.class)
 @OverrideAutoConfiguration(enabled = true)
-class NotifyGatekeeperControllerSubmittedTest extends AbstractControllerTest {
+class NotifyGatekeeperControllerSubmittedTest extends AbstractCallbackTest {
     private static final String GATEKEEPER_EMAIL = "FamilyPublicLaw+gatekeeper@gmail.com";
     private static final String CAFCASS_EMAIL = "Cafcass+gatekeeper@gmail.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/12345";
