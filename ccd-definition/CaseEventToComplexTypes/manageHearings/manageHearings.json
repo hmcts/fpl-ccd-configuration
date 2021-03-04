@@ -16,7 +16,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "useAllocatedJudge",
     "EventElementLabel": "Is the allocated judge or magistrate sitting this hearing?",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -26,7 +26,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeSubHeading",
     "EventElementLabel": "Who is sitting this hearing?",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
   },
   {
@@ -36,7 +36,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -46,7 +46,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "otherTitle",
     "EventElementLabel": "Title",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -56,7 +56,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -66,7 +66,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -76,7 +76,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeEmailAddress",
     "EventElementLabel": "Email Address",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -86,7 +86,7 @@
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Justices' Legal Adviser's full name",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
