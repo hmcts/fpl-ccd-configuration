@@ -195,6 +195,10 @@ public class CaseDataGeneratorHelper {
                     .firstName("Timothy")
                     .lastName("Jones")
                     .relationshipToChild("Father")
+                    .address(Address.builder()
+                        .addressLine1("Flat 1")
+                        .postcode("A1 1CD")
+                        .build())
                     .build())
                 .build(),
             Respondent.builder().party(

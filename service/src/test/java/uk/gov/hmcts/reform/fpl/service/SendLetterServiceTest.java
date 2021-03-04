@@ -41,8 +41,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, DocumentSenderService.class})
-class DocumentSenderServiceTest {
+@ContextConfiguration(classes = {FixedTimeConfiguration.class, SendLetterService.class})
+class SendLetterServiceTest {
 
     private static final String SERVICE_AUTH_TOKEN = "Service token";
     private static final String FAMILY_CASE_NUMBER = "familyCaseNumber";
@@ -62,7 +62,7 @@ class DocumentSenderServiceTest {
     private static final List<UUID> LETTERS_IDS = List.of(UUID.randomUUID(), UUID.randomUUID());
 
     @Autowired
-    private DocumentSenderService documentSenderService;
+    private SendLetterService underTest;
 
     @Autowired
     private Time time;
@@ -109,7 +109,7 @@ class DocumentSenderServiceTest {
     void shouldMakeCorrectCallsToCreateAndSendDocuments() {
         String familyCaseNumber = "familyCaseNumber";
 
-        documentSenderService.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID, familyCaseNumber);
+        underTest.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID, familyCaseNumber);
 
         verify(documentDownloadService).downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl());
         verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename());
@@ -133,7 +133,7 @@ class DocumentSenderServiceTest {
 
     @Test
     void shouldReturnSentDocumentsData() {
-        List<SentDocument> sentDocuments = documentSenderService.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID,
+        List<SentDocument> sentDocuments = underTest.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID,
             FAMILY_CASE_NUMBER);
 
         String formattedDate = DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy");

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
 
@@ -20,23 +20,23 @@ public class DocmosisCoverDocumentsService {
 
     public DocmosisDocument createCoverDocuments(String familyManCaseNumber,
                                                  Long caseNumber,
-                                                 Representative representative) {
+                                                 Recipient addressee) {
         DocmosisCoverDocument coverDocumentData = buildCoverDocumentsData(familyManCaseNumber,
-                                                                          caseNumber,
-                                                                          representative);
+            caseNumber,
+            addressee);
         return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData, COVER_DOCS);
     }
 
     public DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber,
-                                                Long caseNumber,
-                                                Representative representative) {
+                                                         Long caseNumber,
+                                                         Recipient addressee) {
         return DocmosisCoverDocument.builder()
-                            .familyManCaseNumber(defaultIfNull(familyManCaseNumber, ""))
-                            .ccdCaseNumber(formatCCDCaseNumber(caseNumber))
-                            .representativeName(representative.getFullName())
-                            .representativeAddress(representative.getAddress().getAddressAsString("\n"))
-                            .hmctsLogoLarge(getHmctsLogoLarge())
-                            .hmctsLogoSmall(getHmctsLogoSmall())
-                            .build();
+            .familyManCaseNumber(defaultIfNull(familyManCaseNumber, ""))
+            .ccdCaseNumber(formatCCDCaseNumber(caseNumber))
+            .representativeName(addressee.getFullName())
+            .representativeAddress(addressee.getAddress().getAddressAsString("\n"))
+            .hmctsLogoLarge(getHmctsLogoLarge())
+            .hmctsLogoSmall(getHmctsLogoSmall())
+            .build();
     }
 }

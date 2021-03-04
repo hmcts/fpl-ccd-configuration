@@ -234,7 +234,7 @@ module.exports = {
   async assertOrderSentToParty(I, caseViewPage, partyName, order) {
     caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
     const numberOfDocuments = await I.grabNumberOfVisibleElements(`//*[text() = '${partyName}']/ancestor::ccd-read-complex-field-table//ccd-read-complex-field-table`);
-    I.seeInTab(['Party 1', 'Representative name'], partyName);
+    I.seeInTab(['Party 1', 'Recipient'], partyName);
     I.seeInTab(['Party 1', `Document ${numberOfDocuments}`, 'File'], order.document);
   },
 };

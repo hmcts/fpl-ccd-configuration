@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -92,5 +93,9 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
                 .partyId(randomUUID().toString())
                 .build())
             .build();
+    }
+
+    public boolean isRepresented() {
+        return ObjectUtils.isNotEmpty(representedBy);
     }
 }

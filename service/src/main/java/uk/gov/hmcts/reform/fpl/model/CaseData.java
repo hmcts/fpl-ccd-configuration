@@ -796,4 +796,7 @@ public class CaseData {
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;
     }
+
+    private List<Element<SentDocuments>> documentsSentToParties;
+
 }
