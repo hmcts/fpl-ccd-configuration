@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +116,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         ManageDocument manageDocument = caseData.getManageDocument();
         List<Element<SupportingEvidenceBundle>> currentBundle;
@@ -128,7 +130,7 @@ public class ManageDocumentsController extends CallbackController {
                     List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
-                    caseDetails.getData().put(
+                    caseDetailsMap.putIfNotEmpty(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
                     );
                 } else {
@@ -137,9 +139,9 @@ public class ManageDocumentsController extends CallbackController {
                     );
 
                     splitter.updateConfidentialDocsInCaseDetails(
-                        caseDetails, currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY
+                        caseDetailsMap, currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY
                     );
-                    caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                    caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, currentBundle);
                 }
                 break;
             case CORRESPONDENCE:
@@ -148,22 +150,22 @@ public class ManageDocumentsController extends CallbackController {
                 );
 
                 splitter.updateConfidentialDocsInCaseDetails(
-                    caseDetails, currentBundle, CORRESPONDING_DOCUMENTS_COLLECTION_KEY
+                    caseDetailsMap, currentBundle, CORRESPONDING_DOCUMENTS_COLLECTION_KEY
                 );
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
+                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
                 break;
             case C2:
                 List<Element<C2DocumentBundle>> updatedC2Documents =
                     manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-                caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+                caseDetailsMap.putIfNotEmpty(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
         }
 
-        removeTemporaryFields(caseDetails, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_KEY,
+        removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY);
 
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 }

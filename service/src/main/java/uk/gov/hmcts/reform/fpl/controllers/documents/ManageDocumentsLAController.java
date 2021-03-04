@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +124,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(request);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
         switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -136,7 +138,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     List<Element<HearingFurtherEvidenceBundle>> updatedBundle =
                         manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
-                    caseDetails.getData().put(
+                    caseDetailsMap.putIfNotEmpty(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
                     );
 
@@ -146,9 +148,9 @@ public class ManageDocumentsLAController extends CallbackController {
                     );
 
                     splitter.updateConfidentialDocsInCaseDetails(
-                        caseDetails, currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
+                        caseDetailsMap, currentBundle, FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY
                     );
-                    caseDetails.getData().put(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY, currentBundle);
+                    caseDetailsMap.putIfNotEmpty(FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY, currentBundle);
                 }
                 break;
             case CORRESPONDENCE:
@@ -158,33 +160,32 @@ public class ManageDocumentsLAController extends CallbackController {
                     );
 
                 splitter.updateConfidentialDocsInCaseDetails(
-                    caseDetails, updatedCorrespondenceDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
+                    caseDetailsMap, updatedCorrespondenceDocuments, CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY
                 );
-                caseDetails.getData().put(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, updatedCorrespondenceDocuments);
+                caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, updatedCorrespondenceDocuments);
                 break;
             case C2:
                 List<Element<C2DocumentBundle>> updatedC2Documents =
                     manageDocumentService.buildFinalC2SupportingDocuments(caseData);
 
-                caseDetails.getData().put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+                caseDetailsMap.putIfNotEmpty(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
                 break;
             case COURT_BUNDLE:
-                caseDetails.getData().put(
-                    COURT_BUNDLE_LIST_KEY, manageDocumentLAService.buildCourtBundleList(caseData)
-                );
+                caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService
+                    .buildCourtBundleList(caseData));
                 break;
             case APPLICATION:
-                caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
+                caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
                     caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
                 ));
                 break;
         }
 
-        removeTemporaryFields(caseDetails, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
+        removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
             COURT_BUNDLE_KEY, FURTHER_EVIDENCE_TYPE, RELATED_TO_HEARING);
 
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 }
