@@ -1,12 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -27,14 +24,12 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
+class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
 
-    public static final String SERVICE_AUTH_TOKEN = RandomStringUtils.randomAlphanumeric(10);
-    public static final String REPRESENTATIVE_EMAIL = "test@test.com";
-    public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+    private static final String REPRESENTATIVE_EMAIL = "test@test.com";
+    private static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .fullName("John Smith")
         .role(LegalRepresentativeRole.EXTERNAL_LA_BARRISTER)
         .email(REPRESENTATIVE_EMAIL)
@@ -42,10 +37,6 @@ class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractContr
         .telephoneNumber("07500045455")
         .build();
     private static final Long CASE_ID = 12345L;
-    public static final String USER_ID = RandomStringUtils.randomAlphanumeric(10);
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -63,8 +54,7 @@ class ManageLegalRepresentativeAboutToSubmitControllerTest extends AbstractContr
 
         CaseDetails caseDetailsBefore = buildCaseData(emptyList());
         CaseDetails caseDetails = buildCaseData(List.of(element(LEGAL_REPRESENTATIVE)));
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        givenFplService();
         given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, REPRESENTATIVE_EMAIL))
             .willReturn(new OrganisationUser(USER_ID));
 

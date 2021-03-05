@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -22,10 +21,9 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class GeneratedOrderControllerAboutToStartTest extends AbstractControllerTest {
+class GeneratedOrderControllerAboutToStartTest extends AbstractCallbackTest {
 
     private static final String CASE_ID = "12345";
     private static final String FAMILY_MAN_CASE_NUMBER_KEY = "familyManCaseNumber";

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,12 +19,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageLegalRepresentativeAboutToStartControllerTest extends AbstractControllerTest {
+class ManageLegalRepresentativeAboutToStartControllerTest extends AbstractCallbackTest {
 
-    public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+    private static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .fullName("John Smith")
         .role(LegalRepresentativeRole.EXTERNAL_LA_BARRISTER)
         .email("email")

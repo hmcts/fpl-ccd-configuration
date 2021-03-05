@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -51,10 +50,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
+class RemoveOrderControllerSubmittedEvent extends AbstractCallbackTest {
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String CASE_ID = "12345";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";

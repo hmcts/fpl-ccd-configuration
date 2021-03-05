@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,10 +31,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
+class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private Element<GeneratedOrder> selectedOrder;
 
@@ -58,7 +56,8 @@ class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
 
         Map<String, Object> extractedFields = Map.of(
             "orderToBeRemoved", mapper.convertValue(selectedOrder.getValue().getDocument(),
-                new TypeReference<Map<String, Object>>() {}),
+                new TypeReference<Map<String, Object>>() {
+                }),
             "orderTitleToBeRemoved", selectedOrder.getValue().getTitle(),
             "orderIssuedDateToBeRemoved", selectedOrder.getValue().getDateOfIssue(),
             "orderDateToBeRemoved", selectedOrder.getValue().getDate()
@@ -104,7 +103,8 @@ class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
 
         Map<String, Object> extractedFields = Map.of(
             "orderToBeRemoved", mapper.convertValue(caseManagementOrder.getOrder(),
-                new TypeReference<Map<String, Object>>() {}),
+                new TypeReference<Map<String, Object>>() {
+                }),
             "orderTitleToBeRemoved", "Sealed case management order",
             "hearingToUnlink", hearingBooking.toLabel()
         );
@@ -152,7 +152,8 @@ class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
 
         Map<String, Object> extractedFields = Map.of(
             "orderToBeRemoved", mapper.convertValue(caseManagementOrder.getOrder(),
-                new TypeReference<Map<String, Object>>() {}),
+                new TypeReference<Map<String, Object>>() {
+                }),
             "orderTitleToBeRemoved", "Draft case management order",
             "hearingToUnlink", hearingBooking.toLabel()
         );
@@ -186,7 +187,8 @@ class RemoveOrderControllerMidEventTest extends AbstractControllerTest {
 
         Map<String, Object> extractedFields = Map.of(
             "orderToBeRemoved", mapper.convertValue(standardDirectionOrder.getOrderDoc(),
-                new TypeReference<Map<String, Object>>() {}),
+                new TypeReference<Map<String, Object>>() {
+                }),
             "orderTitleToBeRemoved", "Gatekeeping order",
             "showRemoveSDOWarningFlag", YES.getValue()
         );
