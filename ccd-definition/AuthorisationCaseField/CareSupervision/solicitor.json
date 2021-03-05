@@ -279,6 +279,27 @@
     "CaseFieldID": "usePbaPayment",
     "UserRole": "[SOLICITOR]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "pbaNumber",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "clientCode",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "fileReference",
+    "UserRole": "[SOLICITOR]",
+    "CRUD": "CRU"
   }
 ]
 
