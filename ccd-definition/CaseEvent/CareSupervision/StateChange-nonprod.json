@@ -5,7 +5,7 @@
     "ID": "returnApplication",
     "Name": "Return application",
     "Description": "Return an application to the LA",
-    "DisplayOrder": 1,
+    "DisplayOrder": 50,
     "PreConditionState(s)": "Submitted;Gatekeeping",
     "PostConditionState": "RETURNED",
     "SecurityClassification": "Public",
