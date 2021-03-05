@@ -1,0 +1,43 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupplementsBundle",
+    "ListElementCode": "name",
+    "FieldType": "FixedList",
+    "ElementLabel": "Select supplement",
+    "FieldTypeParameter": "HearingVenue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupplementsBundle",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupplementsBundle",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupplementsBundle",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupplementsBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  }
+]

@@ -6,6 +6,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "document",
     "EventElementLabel": "Upload C2 application",
+    "FieldDisplayOrder": "1",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -15,7 +16,46 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "c2OrdersRequested",
     "EventElementLabel": "Are you using the C2 to apply for any of the below?",
+    "FieldDisplayOrder": "2",
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Supplements",
+    "ListElementCode": "supplementsBundle",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.name",
+    "FieldDisplayOrder": "4",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.notes",
+    "FieldDisplayOrder": "5",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Upload document",
+    "ListElementCode": "supplementsBundle.document",
+    "FieldDisplayOrder": "6",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,6 +64,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
+    "FieldDisplayOrder": "7",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -33,6 +74,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
+    "FieldDisplayOrder": "8",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -41,6 +83,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
+    "FieldDisplayOrder": "9",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -59,6 +102,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
+    "FieldDisplayOrder": "10",
     "DisplayContext": "MANDATORY"
   }
 ]
