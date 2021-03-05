@@ -82,7 +82,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "usePbaPayment",
     "PageFieldDisplayOrder": 3,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "MANDATORY",
     "PageID": 3,
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
