@@ -51,6 +51,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "remoteHearing",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Remote hearing",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "startDate",
     "FieldType": "DateTime",
     "ElementLabel": "Start date and time",

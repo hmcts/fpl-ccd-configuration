@@ -76,6 +76,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "remoteHearing",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Is this a remote hearing",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "hearingStartDate",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "DateTime",
