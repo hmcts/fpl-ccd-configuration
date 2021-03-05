@@ -9,6 +9,5 @@ public enum ManageDocumentTypeListLA {
     FURTHER_EVIDENCE_DOCUMENTS,
     CORRESPONDENCE,
     C2,
-    COURT_BUNDLE,
-    APPLICATION;
+    COURT_BUNDLE;
 }

@@ -6,9 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -26,6 +28,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
@@ -79,6 +84,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocumentsRelatedToHearing(YES.getValue())
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .furtherEvidenceTypeListLA(OTHER)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -97,11 +103,37 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .furtherEvidenceTypeListLA(OTHER)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
         assertThat(responseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @Test
+    void shouldPopulateApplicationDocumentsCollection() {
+        List<Element<ApplicationDocument>> applicationDocuments = buildApplicationDocuments();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(CORRESPONDENCE))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .applicationDocuments(applicationDocuments)
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .furtherEvidenceTypeListLA(APPLICATION_DOCUMENTS)
+            .build();
+
+        CallbackRequest callback = toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore));
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(callback, USER_ROLES));
+
+        applicationDocuments.get(0).getValue().setDateTimeUploaded(now());
+        applicationDocuments.get(0).getValue().setUploadedBy("kurt@swansea.gov.uk");
+        
+        assertThat(responseData.getApplicationDocuments()).isEqualTo(applicationDocuments);
         assertExpectedFieldsAreRemoved(responseData);
     }
 
@@ -251,6 +283,14 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .name("test")
             .dateTimeUploaded(localDateTime)
             .uploadedBy(USER)
+            .build());
+    }
+
+    private List<Element<ApplicationDocument>> buildApplicationDocuments() {
+        return wrapElements(ApplicationDocument.builder()
+            .document(testDocumentReference())
+            .documentName("Test SWET")
+            .documentType(SWET)
             .build());
     }
 

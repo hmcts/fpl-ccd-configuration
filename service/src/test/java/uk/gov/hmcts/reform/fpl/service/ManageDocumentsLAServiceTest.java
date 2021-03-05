@@ -7,6 +7,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
@@ -72,6 +74,21 @@ class ManageDocumentsLAServiceTest {
         assertThat(listAndLabel)
             .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument);
+    }
+
+    @Test
+    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
+        CaseData caseData = CaseData.builder().build();
+        ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .build();
+
+        Map<String, Object> listAndLabel = manageDocumentLAService.initialiseManageDocumentLAEvent(caseData);
+
+        assertThat(listAndLabel)
+            .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
+            .containsExactly(null, null, expectedManageDocument);
     }
 
     @Test

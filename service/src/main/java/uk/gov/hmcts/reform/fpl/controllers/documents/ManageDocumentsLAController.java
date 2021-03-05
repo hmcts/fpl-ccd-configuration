@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
@@ -130,7 +131,13 @@ public class ManageDocumentsLAController extends CallbackController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 List<Element<SupportingEvidenceBundle>> currentBundle;
 
-                if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
+                //Application documents
+                if (APPLICATION_DOCUMENTS.equals(caseData.getFurtherEvidenceTypeListLA())) {
+                    caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
+                        caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
+                    ));
+                //Hearing related evidence
+                } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
                         caseData, caseDataBefore
                     );
@@ -141,7 +148,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
                     );
-
+                //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
@@ -173,11 +180,6 @@ public class ManageDocumentsLAController extends CallbackController {
             case COURT_BUNDLE:
                 caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService
                     .buildCourtBundleList(caseData));
-                break;
-            case APPLICATION:
-                caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
-                    caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
-                ));
                 break;
         }
 
