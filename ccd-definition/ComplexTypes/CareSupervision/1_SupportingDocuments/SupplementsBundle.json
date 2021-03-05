@@ -5,7 +5,7 @@
     "ListElementCode": "name",
     "FieldType": "FixedList",
     "ElementLabel": "Select supplement",
-    "FieldTypeParameter": "HearingVenue",
+    "FieldTypeParameter": "Supplements",
     "SecurityClassification": "Public"
   },
   {
