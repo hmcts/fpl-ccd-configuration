@@ -1,5 +1,3 @@
-/*global process*/
-
 const defaultPassword = 'Password12';
 
 module.exports = {
@@ -25,6 +23,18 @@ module.exports = {
     email: 'siva@hillingdon.gov.uk',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'siva@hillingdon.gov.uk',
+    surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserOne: {
+    email: 'raghu@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'raghu@wiltshire.gov.uk',
+    surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserTwo: {
+    email: 'sam@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'sam@wiltshire.gov.uk',
     surname: '(local-authority)',
   },
   localAuthorityBarristerUserOne: {
@@ -69,11 +79,23 @@ module.exports = {
     email: process.env.HMCTS_USER_USERNAME,
     password: process.env.HMCTS_USER_PASSWORD,
   },
+  privateSolicitorOne: {
+    email: 'solicitor1@solicitors.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+  },
+  privateSolicitorTwo: {
+    email: 'solicitor2@solicitors.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+  },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  baseUrl: process.env.URL || 'http://localhost:3333',
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
+  ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
+  TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
+  TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
   definition: {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
@@ -86,7 +108,7 @@ module.exports = {
     enterHearingNeeded: 'Hearing urgency',
     enterChildren: 'Child\'s details',
     enterRespondents: 'Respondents\' details',
-    enterApplicant: 'Your organisation\'s details',
+    enterApplicant: 'Applicant\'s details',
     enterOthers: 'Other people in the case',
     enterGrounds: 'Grounds for the application',
     enterRiskAndHarmToChildren: 'Risk and harm to children',
@@ -100,14 +122,14 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
-    uploadCMO: 'Upload CMO',
-    reviewAgreedCmo: 'Review agreed CMO',
+    uploadCMO: 'Upload draft orders',
+    approveOrders: 'Approve orders',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
     manageLegalRepresentatives: 'Manage legal representatives',
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
-    messageJudge: 'Message judge or legal adviser',
+    messageJudge: 'Send and reply to messages',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',

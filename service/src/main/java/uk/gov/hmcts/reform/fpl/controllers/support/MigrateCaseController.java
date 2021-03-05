@@ -14,17 +14,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.removeorder.CMORemovalAction;
-import uk.gov.hmcts.reform.fpl.service.removeorder.GeneratedOrderRemovalAction;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
+import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.springframework.util.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
 @RestController
@@ -32,82 +26,100 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-    private final CMORemovalAction cmoRemovalAction;
-    private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final ConfidentialDocumentsSplitter splitter;
+    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2480".equals(migrationId)) {
-            run2480(caseDetails);
+        if ("FPLA-2724".equals(migrationId)) {
+            run2724(caseDetails);
         }
 
-        if ("FPLA-2608".equals(migrationId)) {
-            Object hiddenOrders = caseDetails.getData().get("hiddenOrders");
-            run2608(caseDetails);
-            caseDetails.getData().put("hiddenOrders", hiddenOrders);
+        if ("FPLA-2705".equals(migrationId)) {
+            run2705(caseDetails);
+        }
+
+        if ("FPLA-2706".equals(migrationId)) {
+            run2706(caseDetails);
+        }
+
+        if ("FPLA-2715".equals(migrationId)) {
+            run2715(caseDetails);
+        }
+
+        if ("FPLA-2740".equals(migrationId)) {
+            run2740(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2480(CaseDetails caseDetails) {
+    private void run2715(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-        if ("LE20C50003".equals(caseData.getFamilyManCaseNumber())) {
-            removeDraftCaseManagementOrder(caseDetails, 0);
+
+        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
         }
     }
 
-    private void run2608(CaseDetails caseDetails) {
-        if ("1595320156232721".equals(caseDetails.getId().toString())) {
-            CaseData caseData = getCaseData(caseDetails);
+    private void run2740(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
 
-            if (caseData.getOrderCollection().size() < 7) {
-                throw new IllegalArgumentException(String.format("Expected to have at least 8 generated orders"
-                        + " but found %s", caseData.getOrderCollection().size()));
-            }
-
-            UUID orderSixId = UUID.fromString("aaa8e7b5-824c-4fde-9ab6-f0abf28a22be");
-            UUID orderSevenId = UUID.fromString("fa2d3751-3517-455d-a67b-35232d257665");
-
-            Optional<Element<GeneratedOrder>> generatedOrderSix
-                = findElement(orderSixId, caseData.getOrderCollection());
-
-            Optional<Element<GeneratedOrder>> generatedOrderSeven
-                = findElement(orderSevenId, caseData.getOrderCollection());
-
-            if (generatedOrderSix.isEmpty()) {
-                throw new IllegalArgumentException(String.format("Could not find generated order %s",
-                    orderSixId));
-            }
-
-            if (generatedOrderSeven.isEmpty()) {
-                throw new IllegalArgumentException(String.format("Could not find generated order %s",
-                    orderSevenId));
-            }
-
-            CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
-
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSeven.get().getId(),
-                generatedOrderSeven.get().getValue());
-
-            generatedOrderRemovalAction.remove(caseData, caseDetailsMap, generatedOrderSix.get().getId(),
-                generatedOrderSix.get().getValue());
-
-            caseDetails.setData(caseDetailsMap);
+        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstCaseNotes(caseDetails);
         }
     }
 
-    private void removeDraftCaseManagementOrder(CaseDetails caseDetails, int index) {
+    private void run2706(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
+
+        if ("CF20C50049".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2724(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("WR20C50007".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2705(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
         if (isEmpty(caseData.getDraftUploadedCMOs())) {
             throw new IllegalArgumentException("No draft case management orders in the case");
         }
-        Element<CaseManagementOrder> draftCmo = caseData.getDraftUploadedCMOs().get(index);
-        cmoRemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, draftCmo);
+
+        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+
+        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
+    }
+
+    private void removeFirstCaseNotes(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
+            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
+                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+        }
+
+        caseData.getCaseNotes().remove(0);
+        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
     }
 }

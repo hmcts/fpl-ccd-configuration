@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -57,6 +59,9 @@ class PaymentServiceTest {
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private PaymentService paymentService;
@@ -198,6 +203,34 @@ class PaymentServiceTest {
             verify(feeService).getFeesDataForC2(WITHOUT_NOTICE);
         }
 
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
+            String customerReference = "customerReference";
+            CaseData caseData = CaseData.builder()
+                .caseLocalAuthority("LA")
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .pbaNumber("PBA123")
+                    .clientCode("clientCode")
+                    .fileReference(customerReference)
+                    .build())))
+                .build();
+
+            when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference(customerReference)
+                .amount(feeForC2WithNotice.getCalculatedAmount())
+                .fees(List.of(feeForC2WithNotice))
+                .build();
+
+            paymentService.makePaymentForC2(CASE_ID, caseData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForC2(WITH_NOTICE);
+        }
 
         private FeesData buildFeesData(FeeDto feeDto) {
             return FeesData.builder()
@@ -308,6 +341,41 @@ class PaymentServiceTest {
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForOrders(orders);
         }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
+            when(feeService.getFeesDataForOrders(orders)).thenReturn(FeesData.builder()
+                .totalAmount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build());
+            CaseData caseData = CaseData.builder()
+                .id(CASE_ID)
+                .caseLocalAuthority("LA")
+                .applicants(List.of(element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .pbaNumber("PBA123")
+                        .clientCode("clientCode")
+                        .customerReference("customerReference")
+                        .build())
+                    .build())))
+                .orders(orders)
+                .build();
+
+            when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .amount(BigDecimal.TEN)
+                .fees(List.of(careOrderFee, supervisionOrderFee))
+                .build();
+
+            paymentService.makePaymentForCaseOrders(caseData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+            verify(feeService).getFeesDataForOrders(orders);
+        }
     }
 
     @AfterEach
@@ -317,33 +385,49 @@ class PaymentServiceTest {
         reset(paymentClient);
     }
 
-    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder() {
-        return CreditAccountPaymentRequest.builder()
+    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder creditAccountPaymentRequestBuilder() {
+        CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder builder = CreditAccountPaymentRequest.builder()
             .accountNumber("PBA123")
-            .caseReference("clientCode")
-            .ccdCaseNumber(String.valueOf(CASE_ID))
             .currency(GBP)
-            .description("Payment for case: " + CASE_ID)
-            .organisationName("Example Local Authority")
             .service(FPL)
-            .siteId("TEST_SITE_ID");
+            .ccdCaseNumber(String.valueOf(CASE_ID))
+            .description("Payment for case: " + CASE_ID)
+            .organisationName("Example Local Authority");
+
+        if (featureToggleService.isFeeAndPayCaseTypeEnabled()) {
+            builder.caseType(CASE_TYPE);
+        } else {
+            builder.siteId("TEST_SITE_ID");
+        }
+
+        return builder;
+    }
+
+    private CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder testCreditAccountPaymentRequestBuilder() {
+        return creditAccountPaymentRequestBuilder().caseReference("clientCode");
     }
 
     private CreditAccountPaymentRequest buildCreditAccountPaymentRequest(String caseReference,
                                                                          String customerReference,
                                                                          FeeDto feeDto) {
-        return CreditAccountPaymentRequest.builder()
-            .accountNumber("PBA123")
+        return creditAccountPaymentRequestBuilder()
             .caseReference(defaultIfBlank(caseReference, BLANK_PARAMETER_VALUE))
             .customerReference(defaultIfBlank(customerReference, BLANK_PARAMETER_VALUE))
-            .ccdCaseNumber(String.valueOf(CASE_ID))
-            .currency(GBP)
-            .description("Payment for case: " + CASE_ID)
-            .organisationName("Example Local Authority")
-            .service(FPL)
-            .siteId("TEST_SITE_ID")
             .amount(feeDto.getCalculatedAmount())
-            .fees(List.of(feeDto)).build();
+            .fees(List.of(feeDto))
+            .build();
+    }
+
+    private CreditAccountPaymentRequest buildCreditAccountPaymentRequestForC110Application(String caseReference,
+                                                                                           String customerReference) {
+        return creditAccountPaymentRequestBuilder()
+            .caseReference(defaultIfBlank(caseReference, BLANK_PARAMETER_VALUE))
+            .customerReference(defaultIfBlank(customerReference, BLANK_PARAMETER_VALUE))
+            .amount(BigDecimal.TEN)
+            .fees(List.of(
+                FeeDto.builder().calculatedAmount(BigDecimal.ONE).build(),
+                FeeDto.builder().calculatedAmount(BigDecimal.TEN).build()))
+            .build();
     }
 
     private CaseData buildCaseData(String clientCode, String customerReference, C2ApplicationType type) {
@@ -355,25 +439,6 @@ class PaymentServiceTest {
                 .clientCode(clientCode)
                 .fileReference(customerReference)
                 .build())))
-            .build();
-    }
-
-    private CreditAccountPaymentRequest buildCreditAccountPaymentRequestForC110Application(String caseReference,
-                                                                                           String customerReference) {
-        return CreditAccountPaymentRequest.builder()
-            .accountNumber("PBA123")
-            .caseReference(defaultIfBlank(caseReference, BLANK_PARAMETER_VALUE))
-            .customerReference(defaultIfBlank(customerReference, BLANK_PARAMETER_VALUE))
-            .ccdCaseNumber(String.valueOf(CASE_ID))
-            .currency(GBP)
-            .description("Payment for case: " + CASE_ID)
-            .organisationName("Example Local Authority")
-            .service(FPL)
-            .siteId("TEST_SITE_ID")
-            .amount(BigDecimal.TEN)
-            .fees(List.of(
-                FeeDto.builder().calculatedAmount(BigDecimal.ONE).build(),
-                FeeDto.builder().calculatedAmount(BigDecimal.TEN).build()))
             .build();
     }
 

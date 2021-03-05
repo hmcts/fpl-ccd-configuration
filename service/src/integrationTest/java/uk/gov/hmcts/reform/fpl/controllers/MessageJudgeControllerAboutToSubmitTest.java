@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions;
@@ -31,10 +30,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
-class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
+class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String SENDER = "ben@fpla.com";
     private static final String MESSAGE = "Some message";
     private static final String REPLY = "Some reply";
@@ -64,6 +62,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .judicialMessageMetaData(JudicialMessageMetaData.builder()
                 .urgency("High urgency")
                 .recipient(MESSAGE_RECIPIENT)
+                .sender(SENDER)
                 .build())
             .build();
 
@@ -102,6 +101,8 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .judicialMessageReply(JudicialMessage.builder()
                 .isReplying(YesNo.YES.getValue())
                 .latestMessage(REPLY)
+                .replyFrom(MESSAGE_RECIPIENT)
+                .replyTo(SENDER)
                 .build())
             .messageJudgeOption(MessageJudgeOptions.REPLY)
             .build();
@@ -115,7 +116,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
             .sender(MESSAGE_RECIPIENT)
             .recipient(SENDER)
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .updatedTime(now())
             .status(OPEN)
             .latestMessage(REPLY)
@@ -219,7 +220,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractControllerTest {
             .recipient(MESSAGE_RECIPIENT)
             .updatedTime(now().minusDays(2))
             .status(OPEN)
-            .requestedBy(MESSAGE_REQUESTED_BY)
+            .subject(MESSAGE_REQUESTED_BY)
             .latestMessage(latestMessage)
             .messageHistory(String.format("%s - %s", SENDER, MESSAGE))
             .dateSent(dateSent)

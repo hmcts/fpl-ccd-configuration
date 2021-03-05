@@ -9,6 +9,7 @@ module.exports = {
     caseState: '#wb-case-state',
     evidenceHandled: '#evidenceHandled-Yes',
     evidenceNotHandled: '#evidenceHandled-No',
+    caseId: 'CCD Case Number',
     caseName: '#caseName',
     search: 'Apply',
     caseList: 'Case list',
@@ -23,11 +24,17 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  async searchForCasesWithHandledEvidences(submittedAt, state = 'Any') {
+  searchForCasesWithHandledEvidences(caseId, state = 'Any') {
     this.setInitialSearchFields(state);
     I.waitForElement(this.fields.evidenceHandled, 30);
-    await I.fillDate(submittedAt);
+    I.fillField(this.fields.caseId, caseId);
     I.click(this.fields.evidenceHandled);
+    I.click(this.fields.search);
+  },
+
+  searchForCasesWithId(caseId, state = 'Any') {
+    this.setInitialSearchFields(state);
+    I.fillField(this.fields.caseId, caseId);
     I.click(this.fields.search);
   },
 
@@ -36,12 +43,13 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  searchForCasesWithName(caseName, state='Any') {
+  async searchForCasesWithName(caseName, state='Any') {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
     I.click(this.fields.search);
+    await I.runAccessibilityTest();
   },
 
   setInitialSearchFields(state='Any') {
@@ -53,13 +61,19 @@ module.exports = {
   },
 
   locateCase(caseId){
-    return locate(`//ccd-search-result/table//tr[//a[contains(@href,'${caseId}')]]`);
+    return `a[href$='${caseId}']`;
   },
 
   locateCaseProperty(caseId, columnNumber){
     const caseRow = this.locateCase(caseId);
     const caseProperty = locate(`//td[${columnNumber}]`);
     return caseProperty.inside(caseRow);
+  },
+
+  async verifyCaseIsShareable(caseId){
+    I.navigateToCaseList();
+    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
+    I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 
 };

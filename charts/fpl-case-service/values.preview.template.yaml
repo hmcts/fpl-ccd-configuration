@@ -29,7 +29,10 @@ java:
         - local-authority-user-mapping
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
+        - local-authority-code-to-org-id-mapping
         - local-authority-code-to-shared-inbox-mapping
+        - eps-to-local-authorities-mapping
+        - mla-to-local-authorities-mapping
         - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password
@@ -80,6 +83,8 @@ xui-webapp:
         secrets:
           - mc-s2s-client-secret
           - mc-idam-client-secret
+          - system-user-name
+          - system-user-password
 ccd:
   ccd:
     adminWeb:

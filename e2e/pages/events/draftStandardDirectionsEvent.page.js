@@ -27,29 +27,35 @@ module.exports = {
 
   async createSDOThroughService() {
     I.click(this.fields.routingRadioGroup.service);
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
   async createSDOThroughUpload() {
     I.click(this.fields.routingRadioGroup.upload);
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
   async uploadPreparedSDO(file) {
+    await I.runAccessibilityTest();
     I.attachFile(this.fields.file.preparedSDO, file);
     await I.goToNextPage();
   },
 
   async uploadReplacementSDO(file) {
+    await I.runAccessibilityTest();
     I.attachFile(this.fields.file.replacementSDO, file);
     await I.goToNextPage();
   },
 
   async skipDateOfIssue(){
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
   async enterDateOfIssue(date){
+    await I.runAccessibilityTest();
     await I.fillDate(date);
     await I.goToNextPage();
   },
@@ -79,11 +85,12 @@ module.exports = {
   },
 
   async markAsFinal() {
+    await I.runAccessibilityTest();
     I.click(this.fields.statusRadioGroup.sealed);
     await I.goToNextPage();
   },
 
-  checkC6() {
+  async checkC6() {
     I.checkOption(this.fields.noticeOfProceedings.c6);
   },
 

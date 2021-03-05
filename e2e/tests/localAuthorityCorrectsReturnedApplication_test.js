@@ -15,8 +15,8 @@ Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnA
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 
   await caseViewPage.goToNewActions(config.administrationActions.returnApplication);
-  returnApplicationEventPage.selectApplicationIncorrect();
-  returnApplicationEventPage.enterRejectionNote();
+  await returnApplicationEventPage.selectApplicationIncorrect();
+  await returnApplicationEventPage.enterRejectionNote();
   await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
 
   I.seeEventSubmissionConfirmation(config.administrationActions.returnApplication);
@@ -47,7 +47,7 @@ Scenario('LA makes corrections to the application', async ({I, caseViewPage, ent
 
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.seeDraftApplicationFile();
-  submitApplicationEventPage.giveConsent();
+  await submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
 

@@ -1,7 +1,10 @@
-/* global process */
 const recorder = require('codeceptjs').recorder;
 const lodash = require('lodash');
-const retryableErrors = ['Execution context was destroyed', 'Node is either not visible or not an HTMLElement', 'Node is detached from document'];
+const retryableErrors = [
+  'Execution context was destroyed',
+  'Node is either not visible or not an HTMLElement',
+  'Node is detached from document',
+  'net::ERR_ABORTED'];
 
 module.exports = class HooksHelpers extends Helper {
   _test(test) {

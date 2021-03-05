@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
@@ -39,13 +38,5 @@ public class Selector {
 
     public static Selector newSelector(Integer size) {
         return Selector.builder().build().setNumberOfOptions(size);
-    }
-
-    public static Selector newSelector(Integer size, Integer min, Integer max) {
-        Selector selector = Selector.builder().build().setNumberOfOptions(size);
-        List<Integer> hidden = IntStream.range(0, size)
-            .filter(x -> x < min && x < max).boxed().collect(Collectors.toList());
-        selector.setHidden(hidden);
-        return selector;
     }
 }

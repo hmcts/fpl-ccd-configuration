@@ -29,9 +29,9 @@ Scenario('HMCTS super user removes a generated order from a case', async ({I, ca
   I.seeInTab([generatedOrders, 'Reason for removal'], 'Entered incorrect order');
 });
 
-Scenario('HMCTS super user removes a cmo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+Scenario('HMCTS super user removes a sealed cmo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   const orderToRemove = finalHearingCaseData.caseData.sealedCMOs[0].value;
-  const labelToSelect = 'Case management order - ' + moment(orderToRemove.dateIssued).format('D MMMM YYYY');
+  const labelToSelect = 'Sealed case management order issued on ' + moment(orderToRemove.dateIssued).format('D MMMM YYYY');
 
   await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
 
@@ -58,9 +58,21 @@ Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, 
   I.seeInTab([removeSDO, 'Reason for removal'], 'Entered incorrect order');
 });
 
+Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
+  const labelToSelect = 'Draft case management order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
+
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+
+  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.dontSeeInTab('Removed case management orders 2');
+});
+
 const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
-  removeOrderEventPage.selectOrderToRemove(labelToSelect);
+  await removeOrderEventPage.selectOrderToRemove(labelToSelect);
   await I.goToNextPage();
   removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
   await I.completeEvent('Submit');

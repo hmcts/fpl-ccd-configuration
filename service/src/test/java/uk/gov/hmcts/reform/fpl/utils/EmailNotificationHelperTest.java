@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -22,10 +25,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {FixedTimeConfiguration.class})
 class EmailNotificationHelperTest {
 
     @Test
@@ -156,27 +161,6 @@ class EmailNotificationHelperTest {
     }
 
     @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlAndCaseIdProvided() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L);
-        String expectedUrl = "http://testurl/cases/case-details/123";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabProvided() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L, "tab1");
-        String expectedUrl = "http://testurl/cases/case-details/123#tab1";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
-    }
-
-    @Test
-    void shouldFormatUrlCorrectlyWhenBaseUrlCaseIdAndTabIsEmpty() {
-        String formattedUrl = formatCaseUrl("http://testurl", 123L, "");
-        String expectedUrl = "http://testurl/cases/case-details/123";
-        assertThat(formattedUrl).isEqualTo(expectedUrl);
-    }
-
-    @Test
     void shouldFormatCallOutWhenAllRequiredFieldsArePresent() {
         LocalDateTime hearingDate = LocalDateTime.now();
         HearingBooking hearingBooking = HearingBooking.builder()
@@ -216,6 +200,42 @@ class EmailNotificationHelperTest {
         String expectedContent = String.format("^12345,%s", buildHearingDateText(hearingBooking));
 
         assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
+    }
+
+    @Test
+    void shouldBuildCallOutWithNextHearing() {
+        LocalDateTime hearingDate = LocalDateTime.now().plusDays(5);
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .startDate(hearingDate)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber("12345")
+            .hearingDetails(List.of(
+                element(hearingBooking)))
+            .build();
+
+        String expectedContent = String.format("^12345,%s", buildHearingDateText(hearingBooking));
+
+        assertThat(buildCalloutWithNextHearing(caseData, LocalDateTime.now())).isEqualTo(expectedContent);
+    }
+
+    @Test
+    void shouldNotIncludeHearingIfNoFutureHearings() {
+        LocalDateTime hearingDate = LocalDateTime.now().minusDays(5);
+        HearingBooking hearingBooking = HearingBooking.builder()
+            .startDate(hearingDate)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .familyManCaseNumber("12345")
+            .hearingDetails(List.of(
+                element(hearingBooking)))
+            .build();
+
+        String expectedContent = "^12345";
+
+        assertThat(buildCalloutWithNextHearing(caseData, LocalDateTime.now())).isEqualTo(expectedContent);
     }
 
     @Test

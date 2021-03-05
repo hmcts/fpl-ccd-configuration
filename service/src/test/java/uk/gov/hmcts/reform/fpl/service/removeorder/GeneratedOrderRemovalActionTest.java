@@ -388,7 +388,7 @@ class GeneratedOrderRemovalActionTest {
     }
 
     @Test
-    void shouldPopulateGeneratedOrderCaseFieldsFromRemovedGeneratedOrder() {
+    void shouldPopulateGeneratedOrderCaseFieldsFromRemovedFinalOrder() {
         GeneratedOrder generatedOrder = buildOrder(
             FINAL_ORDER,
             "order 1",
@@ -416,6 +416,41 @@ class GeneratedOrderRemovalActionTest {
                 "orderDateToBeRemoved")
             .containsExactly(document,
                 generatedOrder.getTitle(),
+                generatedOrder.getDateOfIssue(),
+                generatedOrder.getRemovalReason());
+    }
+
+    @Test
+    void shouldPopulateGeneratedOrderCaseFieldsFromRemovedUploadedOrder() {
+        String orderType = "Appointment of a children's guardian (C47A)";
+
+        GeneratedOrder generatedOrder = GeneratedOrder.builder()
+            .type(orderType)
+            .title(null)
+            .dateOfIssue("15 June 2020")
+            .build();
+
+        DocumentReference document = DocumentReference.builder().build();
+        generatedOrder = generatedOrder.toBuilder().document(document).build();
+
+        CaseData caseData = CaseData.builder()
+            .reasonToRemoveOrder(REASON)
+            .orderCollection(newArrayList(element(TO_REMOVE_ORDER_ID, generatedOrder)))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
+
+        underTest.populateCaseFields(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, generatedOrder);
+
+        assertThat(caseDetailsMap)
+            .extracting("orderToBeRemoved",
+                "orderTitleToBeRemoved",
+                "orderIssuedDateToBeRemoved",
+                "orderDateToBeRemoved")
+            .containsExactly(document,
+                orderType,
                 generatedOrder.getDateOfIssue(),
                 generatedOrder.getRemovalReason());
     }

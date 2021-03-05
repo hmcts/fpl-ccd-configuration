@@ -1,5 +1,6 @@
 /* global process */
 
+require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
 exports.config = {
@@ -25,7 +26,7 @@ exports.config = {
         const otherTests = lodash.difference(files, slowTests);
 
         let chunks = [];
-        if (buckets > slowTests.length) {
+        if (buckets > slowTests.length + 1) {
           const slowTestChunkSize = 1;
           const regularChunkSize = Math.ceil((files.length - slowTests.length) / (buckets - slowTests.length));
           chunks = lodash.union(splitFiles(slowTests, slowTestChunkSize), splitFiles(otherTests, regularChunkSize));
@@ -62,6 +63,9 @@ exports.config = {
     },
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
+    },
+    GenerateReportHelper: {
+      require: './e2e/helpers/generate_report_helper.js'
     },
   },
   include: {

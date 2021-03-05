@@ -2,9 +2,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessageMetaData",
+    "ListElementCode": "sender",
+    "FieldType": "Email",
+    "ElementLabel": "Sender's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessageMetaData",
     "ListElementCode": "recipient",
     "FieldType": "Email",
-    "ElementLabel": "Court or judicial email address",
+    "ElementLabel": "Recipient's email address",
     "SecurityClassification": "Public"
   },
   {
@@ -12,7 +20,7 @@
     "ID": "JudicialMessageMetaData",
     "ListElementCode": "requestedBy",
     "FieldType": "Text",
-    "ElementLabel": "To review an application from:",
+    "ElementLabel": "Message subject",
     "SecurityClassification": "Public"
   },
   {

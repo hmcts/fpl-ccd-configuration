@@ -11,16 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.JudicialMessageReplyEvent;
 import uk.gov.hmcts.reform.fpl.events.NewJudicialMessageEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.MessageJudgeService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData.transientFields;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -32,6 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MessageJudgeController extends CallbackController {
     private final MessageJudgeService messageJudgeService;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -56,10 +62,31 @@ public class MessageJudgeController extends CallbackController {
             caseDetailsMap.putAll(messageJudgeService.populateNewMessageFields(caseData));
         }
 
-        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getFirstHearingLabel(caseData));
+        caseDetailsMap.put("nextHearingLabel", messageJudgeService.getNextHearingLabel(caseData));
+
+        JudicialMessageMetaData judgeMetaData = caseData.getMessageJudgeEventData().getJudicialMessageMetaData();
+        if (nonNull(judgeMetaData)) {
+            String email = judgeMetaData.getRecipient();
+            Optional<String> emailError = validateEmailService.validate(email);
+
+            if (!emailError.isEmpty()) {
+                return respond(caseDetailsMap, List.of(emailError.get()));
+            }
+        }
 
         return respond(caseDetailsMap);
     }
+
+    @PostMapping("/validate/mid-event")
+    public AboutToStartOrSubmitCallbackResponse validateReplyMessage(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<String> errors = messageJudgeService.validateJudgeReplyMessage(caseData);
+
+        return respond(caseDetails, errors);
+    }
+
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -99,5 +126,9 @@ public class MessageJudgeController extends CallbackController {
                 publishEvent(new JudicialMessageReplyEvent(caseData, judicialMessage));
             }
         }
+
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
+
     }
 }

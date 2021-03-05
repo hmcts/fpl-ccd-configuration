@@ -35,7 +35,7 @@ Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage
   I.see('mockFile.docx');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
   await draftStandardDirectionsEventPage.markAsFinal();
-  draftStandardDirectionsEventPage.checkC6();
+  await draftStandardDirectionsEventPage.checkC6();
   draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
 
@@ -46,4 +46,4 @@ Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeInTab(['Notice of proceedings 1', 'File name'], 'Notice_of_proceedings_c6.pdf');
   I.seeInTab(['Notice of proceedings 2', 'File name'], 'Notice_of_proceedings_c6a.pdf');
-});
+}).retry(1); //async action in previous test

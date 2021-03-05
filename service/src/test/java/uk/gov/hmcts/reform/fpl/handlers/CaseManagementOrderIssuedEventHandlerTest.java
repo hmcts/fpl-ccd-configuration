@@ -3,70 +3,79 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.expectedRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {CaseManagementOrderIssuedEventHandler.class, LookupTestConfig.class,
-    IssuedOrderAdminNotificationHandler.class, HmctsAdminNotificationHandler.class, RepresentativeService.class,
-    FixedTimeConfiguration.class})
 class CaseManagementOrderIssuedEventHandlerTest {
 
-    @MockBean
+    @Mock
     private InboxLookupService inboxLookupService;
 
-    @MockBean
+    @Mock
     private NotificationService notificationService;
 
-    @MockBean
-    private RepresentativeService representativeService;
-
-    @MockBean
+    @Mock
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
-    @MockBean
+    @Mock
     private DocumentDownloadService documentDownloadService;
 
-    @MockBean
+    @Mock
     private IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
 
-    @Autowired
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
+
+    @Mock
+    private CoreCaseDataService coreCaseDataService;
+
+    @InjectMocks
     private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
 
-    private final IssuedCMOTemplate issuedCMOTemplate = IssuedCMOTemplate.builder().build();
+    private final IssuedCMOTemplate digitalRepCMOTemplateData
+        = IssuedCMOTemplate.builder().familyManCaseNumber("1").build();
+
+    private final IssuedCMOTemplate emailRepCMOTemplateData
+        = IssuedCMOTemplate.builder().familyManCaseNumber("2").build();
 
     private final CaseData caseData = caseData();
-    private final CaseManagementOrder cmo = buildCmo();
+    private final HearingOrder cmo = buildCmo();
 
     private final CaseManagementOrderIssuedEvent event = new CaseManagementOrderIssuedEvent(caseData, cmo);
+    private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
 
     @BeforeEach
     void init() {
@@ -74,23 +83,52 @@ class CaseManagementOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyHmctsAdminAndLocalAuthorityOfCMOIssued() {
+    void shouldNotifyPartiesOfCMOIssued() {
+        CaseData caseData = caseData();
+        HearingOrder cmo = buildCmo();
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
+        CafcassLookupConfiguration.Cafcass cafcass =
+            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
+
+        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
+
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
             DIGITAL_SERVICE))
-            .willReturn(issuedCMOTemplate);
+            .willReturn(digitalRepCMOTemplateData);
+
+        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
+            EMAIL))
+            .willReturn(emailRepCMOTemplateData);
 
         caseManagementOrderIssuedEventHandler.notifyParties(event);
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            issuedCMOTemplate,
+            digitalRepCMOTemplateData,
             caseData.getId().toString());
+
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
+            "FamilyPublicLaw+cafcass@gmail.com",
+            emailRepCMOTemplateData,
+            caseData.getId());
+
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
+            "fred@flinstone.com",
+            digitalRepCMOTemplateData,
+            caseData.getId());
+
+        verify(notificationService).sendEmail(
+            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
+            "barney@rubble.com",
+            emailRepCMOTemplateData,
+            caseData.getId());
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
@@ -99,29 +137,20 @@ class CaseManagementOrderIssuedEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesOfCMOIssued() {
-        CaseData caseData = caseData();
-        CaseManagementOrder cmo = buildCmo();
+    void shouldNotifyPostRepresentatives() {
+        HearingOrder cmo = buildCmo();
 
-        given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
-            DIGITAL_SERVICE))
-            .willReturn(expectedRepresentatives());
+        caseManagementOrderIssuedEventHandler.sendDocumentToPostRepresentatives(event);
 
-        given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
-            DIGITAL_SERVICE))
-            .willReturn(issuedCMOTemplate);
-
-        caseManagementOrderIssuedEventHandler.notifyParties(event);
-
-        verify(notificationService).sendEmail(
-            CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
-            "abc@example.com",
-            issuedCMOTemplate,
-            caseData.getId());
+        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+            CASE_TYPE,
+            12345L,
+            SEND_DOCUMENT_EVENT,
+            Map.of("documentToBeSent", cmo.getOrder()));
     }
 
-    private CaseManagementOrder buildCmo() {
-        return CaseManagementOrder.builder().order(DocumentReference.builder()
+    private HearingOrder buildCmo() {
+        return HearingOrder.builder().order(DocumentReference.builder()
             .filename("CMO")
             .url("url")
             .binaryUrl("testUrl")

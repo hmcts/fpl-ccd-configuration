@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -15,10 +14,9 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-class TaskListControllerSubmittedTest extends AbstractControllerTest {
+class TaskListControllerSubmittedTest extends AbstractCallbackTest {
 
     TaskListControllerSubmittedTest() {
         super("update-task-list");

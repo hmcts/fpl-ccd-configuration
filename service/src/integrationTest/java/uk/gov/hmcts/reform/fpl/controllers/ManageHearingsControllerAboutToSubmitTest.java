@@ -5,6 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -15,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingCancellationReason;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -22,12 +26,15 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.ADJOURN_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.EDIT_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOptions.RE_LIST_HEARING;
@@ -72,7 +79,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .noticeOfHearingNotes(newHearing.getAdditionalNotes())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue).containsExactly(newHearing);
         assertThat(updatedCaseData.getFirstHearingFlag()).isNull();
@@ -91,7 +98,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
             .children1(createPopulatedChildren(now().toLocalDate()))
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sendNoticeOfHearing("Yes")
             .hearingType(newHearing.getType())
             .hearingVenue(newHearing.getVenue())
@@ -102,7 +109,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .noticeOfHearingNotes(newHearing.getAdditionalNotes())
             .build();
 
-        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
+        CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(initialCaseData));
 
         HearingBooking hearingAfterCallback = newHearing.toBuilder().noticeOfHearing(
             DocumentReference.buildFromDocument(document)).build();
@@ -194,9 +201,12 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
     @Test
     void shouldVacateAndReListHearing() {
+        UUID draftCMOId = UUID.randomUUID();
+
         Element<HearingBooking> pastHearing = element(testHearing(LocalDateTime.now().minusDays(1)));
         Element<HearingBooking> futureHearing = element(testHearing(LocalDateTime.now().plusDays(1)));
-        Element<HearingBooking> futureHearingToBeVacated = element(testHearing(LocalDateTime.now().plusDays(1)));
+        Element<HearingBooking> futureHearingToBeVacated = element(
+            testHearing(LocalDateTime.now().plusDays(1), draftCMOId));
 
         LocalDateTime reListedHearingStartTime = now().plusDays(nextLong(1, 50));
         LocalDateTime reListedHearingEndTime = reListedHearingStartTime.plusDays(nextLong(1, 10));
@@ -204,6 +214,18 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         HearingCancellationReason vacatedReason = HearingCancellationReason.builder()
             .reason("Test reason")
             .build();
+
+        HearingOrder draftCMO = HearingOrder.builder()
+            .hearing(futureHearingToBeVacated.getValue().toLabel())
+            .status(CMOStatus.DRAFT).type(HearingOrderType.DRAFT_CMO)
+            .build();
+
+        Element<HearingOrdersBundle> hearingOrdersBundleElement = element(
+            UUID.randomUUID(), HearingOrdersBundle.builder()
+                .hearingId(futureHearingToBeVacated.getId())
+                .hearingName(futureHearingToBeVacated.getValue().toLabel())
+                .orders(newArrayList(element(draftCMOId, draftCMO)))
+                .build());
 
         CaseData initialCaseData = CaseData.builder()
             .hearingOption(VACATE_HEARING)
@@ -222,6 +244,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .vacatedReason(vacatedReason)
             .noticeOfHearingNotes(futureHearingToBeVacated.getValue().getAdditionalNotes())
             .children1(ElementUtils.wrapElements(Child.builder().party(ChildParty.builder().build()).build()))
+            .hearingOrdersBundlesDrafts(newArrayList(hearingOrdersBundleElement))
             .build();
 
         CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(asCaseDetails(initialCaseData)));
@@ -229,17 +252,19 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
         HearingBooking expectedReListedHearing = futureHearingToBeVacated.getValue().toBuilder()
             .startDate(reListedHearingStartTime)
             .endDate(reListedHearingEndTime)
+            .caseManagementOrderId(null)
             .build();
 
         Element<HearingBooking> expectedVacatedHearing = element(
             futureHearingToBeVacated.getId(),
             futureHearingToBeVacated.getValue().toBuilder()
+                .caseManagementOrderId(draftCMOId)
                 .status(HearingStatus.VACATED_AND_RE_LISTED)
                 .cancellationReason(vacatedReason.getReason())
                 .build());
 
         assertThat(updatedCaseData.getHearingDetails()).extracting(Element::getValue)
-            .containsExactly(pastHearing.getValue(), futureHearing.getValue(), expectedReListedHearing);
+            .containsExactlyInAnyOrder(pastHearing.getValue(), futureHearing.getValue(), expectedReListedHearing);
         assertThat(updatedCaseData.getCancelledHearingDetails()).containsExactly(expectedVacatedHearing);
         assertThat(updatedCaseData.getSelectedHearingId())
             .isIn(findElementsId(expectedReListedHearing, updatedCaseData.getHearingDetails()));

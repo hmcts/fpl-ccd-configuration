@@ -19,7 +19,6 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.formatCaseUrl;
 
 public class OrderIssuedNotificationTestHelper {
 
@@ -29,6 +28,9 @@ public class OrderIssuedNotificationTestHelper {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final String EXAMPLE_COURT = "Family Court";
     private static final String callout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().plusMonths(3)
+        .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
+
+    private static final String cmoCallout = "^Jones, SACCCCCCCC5676576567, hearing " + LocalDateTime.now().minusDays(3)
         .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
 
     public static Map<String, Object> getExpectedParametersMap(String orderType, boolean withCallout) {
@@ -42,7 +44,7 @@ public class OrderIssuedNotificationTestHelper {
             "callout", withCallout ? callout : "",
             "courtName", EXAMPLE_COURT,
             "documentLink", jsonFileObject.toMap(),
-            "caseUrl", formatCaseUrl("http://fake-url", 12345L, "OrdersTab"),
+            "caseUrl", "http://fake-url/cases/case-details/12345#Orders",
             "respondentLastName", "Jones");
     }
 
@@ -52,7 +54,18 @@ public class OrderIssuedNotificationTestHelper {
             .callout(withCallout ? callout : "")
             .courtName(EXAMPLE_COURT)
             .documentLink("http://fake-url/testUrl")
-            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
+            .caseUrl("http://fake-url/cases/case-details/12345#Orders")
+            .respondentLastName("Jones")
+            .build();
+    }
+
+    public static OrderIssuedNotifyData getExpectedCMOParameters(String orderType) {
+        return OrderIssuedNotifyData.builder()
+            .orderType(orderType.toLowerCase())
+            .callout(cmoCallout)
+            .courtName(EXAMPLE_COURT)
+            .documentLink("http://fake-url/testUrl")
+            .caseUrl("http://fake-url/cases/case-details/12345#Orders")
             .respondentLastName("Jones")
             .build();
     }
@@ -93,7 +106,7 @@ public class OrderIssuedNotificationTestHelper {
             .respondentLastName("Jones")
             .judgeTitle("Deputy District Judge")
             .judgeName("Scott")
-            .caseUrl(formatCaseUrl("http://fake-url", 12345L, "OrdersTab"))
+            .caseUrl("http://fake-url/cases/case-details/12345#Orders")
             .build();
     }
 

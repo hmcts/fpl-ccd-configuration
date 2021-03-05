@@ -4,8 +4,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,11 +28,13 @@ import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(MessageJudgeController.class)
 @OverrideAutoConfiguration(enabled = true)
-class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
+class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
+
+    @SpyBean
+    private CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     MessageJudgeControllerMidEventTest() {
         super("message-judge");
@@ -136,7 +140,9 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
         JudicialMessage expectedJudicialMessage = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
-            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .replyFrom(ctscEmailLookupConfiguration.getEmail())
+            .replyTo("sender@gmail.com")
+            .subject(selectedJudicialMessage.getSubject())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
             .latestMessage("")
             .build();
@@ -157,5 +163,40 @@ class MessageJudgeControllerMidEventTest extends AbstractControllerTest {
 
         assertThat(judicialMessageReply).isEqualTo(expectedJudicialMessage);
         assertThat(judicialMessageDynamicList).isEqualTo(expectedJudicialMessageDynamicList);
+    }
+
+    @Test
+    void shouldNotReturnAValidationErrorWhenEmailIsValid() {
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(MessageJudgeEventData
+                .builder()
+                .judicialMessageMetaData(JudicialMessageMetaData
+                    .builder()
+                    .recipient("valid-email@test.com")
+                    .build())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(response.getErrors()).isNull();
+    }
+
+    @Test
+    void shouldReturnAValidationErrorWhenEmailIsInvalid() {
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(MessageJudgeEventData
+                .builder()
+                .judicialMessageMetaData(JudicialMessageMetaData
+                    .builder()
+                    .recipient("Test user <Test.User@HMCTS.NET>")
+                    .build())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(response.getErrors()).contains(
+            "Enter an email address in the correct format, for example name@example.com");
     }
 }

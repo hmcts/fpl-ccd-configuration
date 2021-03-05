@@ -78,6 +78,7 @@ module.exports = {
   async selectC2FromDropdown() {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields.c2DocumentsList);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
 
@@ -101,10 +102,22 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
+  async selectConfidential() {
+    const elementIndex = await this.getActiveElementIndex();
+    I.click(this.fields.supportingDocuments(elementIndex).confidential);
+  },
+
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.uploadDocument(supportingEvidenceDocument.document);
+  },
+
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument) {
+    await this.enterDocumentName(supportingEvidenceDocument.name);
+    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
+    await this.uploadDocument(supportingEvidenceDocument.document);
+    await this.selectConfidential();
   },
 
   async uploadCorrespondenceDocuments(supportingEvidenceDocument) {
@@ -112,6 +125,7 @@ module.exports = {
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
     await this.uploadDocument(supportingEvidenceDocument.document);
+    await I.runAccessibilityTest();
   },
 
   async getActiveElementIndex() {

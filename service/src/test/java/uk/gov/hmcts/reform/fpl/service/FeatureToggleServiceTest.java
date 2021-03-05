@@ -83,7 +83,7 @@ class FeatureToggleServiceTest {
     void shouldMakeCorrectCallForIsAllowCaseCreationForUsersNotOnboardedToMOEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
+        assertThat(service.isCaseCreationForNotOnboardedUsersEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("allow-case-creation-for-users-not-onboarded-to-mo"),
             argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
@@ -104,36 +104,48 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsAddHearingsInPastEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isAddHearingsInPastEnabled()).isEqualTo(toggleState);
+        assertThat(service.isSummaryTabEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("add-hearings-in-past"),
+            eq("summary-tab-update"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
+        assertThat(service.isSummaryTabFirstCronRunEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("application-documents-event"),
+            eq("summary-tab-first-run"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsEpoOrderTypeAndExclusionEnabledBoolean(Boolean toggleState) {
+    void shouldMakeCorrectCallForFeeAndPayCaseTypeEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isEpoOrderTypeAndExclusionEnabled()).isEqualTo(toggleState);
+        assertThat(service.isFeeAndPayCaseTypeEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("epo-order-type-and-exclusion"),
+            eq("fee-and-pay-case-type"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForRetrievingOrganisation(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("retrieve-organisation"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.AbstractJudge;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -20,18 +22,21 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
     public CMOReadyToSealTemplate buildTemplate(HearingBooking hearing, Long caseId,
                                                 AbstractJudge judge, List<Element<Respondent>> respondents,
                                                 String familyManCaseNumber) {
+
         return CMOReadyToSealTemplate.builder()
-            .caseUrl(getCaseUrl(caseId, "DraftOrdersTab"))
-            .judgeName(judge.getJudgeName())
-            .judgeTitle(judge.getJudgeOrMagistrateTitle())
+            .caseUrl(getCaseUrl(caseId, DRAFT_ORDERS))
+            .judgeName(getJudgeName((judge)))
+            .judgeTitle(getJudgeTitle((judge)))
             .respondentLastName(getFirstRespondentLastName(respondents))
-            .subjectLineWithHearingDate(subjectLine(hearing, respondents, familyManCaseNumber))
+            .subjectLineWithHearingDate(subject(hearing, respondents, familyManCaseNumber))
             .build();
     }
 
-    private String subjectLine(HearingBooking hearing, List<Element<Respondent>> respondents,
-                               String familyManCaseNumber) {
-        return String.format("%s, %s", buildSubjectLine(familyManCaseNumber, respondents),
-            uncapitalize(hearing.toLabel()));
+    private String subject(HearingBooking hearing, List<Element<Respondent>> respondents, String familyManCaseNumber) {
+        String subject = buildSubjectLine(familyManCaseNumber, respondents);
+        if (hearing == null) {
+            throw new NoHearingBookingException();
+        }
+        return String.format("%s, %s", subject, uncapitalize(hearing.toLabel()));
     }
 }

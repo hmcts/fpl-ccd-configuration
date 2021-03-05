@@ -194,6 +194,7 @@ module.exports = {
   },
 
   async enterEpoEndDate(date) {
+    await I.runAccessibilityTest();
     await I.fillDateAndTime(date, this.fields.epo.endDate.id);
   },
 
@@ -252,7 +253,8 @@ module.exports = {
     I.fillField(this.fields.epo.exclusionStartDate.year, '2021');
   },
 
-  selectWhoIsExcluded() {
+  async selectWhoIsExcluded() {
     I.fillField(this.fields.epo.epoWhoIsExcluded, 'John Doe');
+    await I.runAccessibilityTest();
   },
 };

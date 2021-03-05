@@ -27,7 +27,27 @@ public class EmailContent {
         return this;
     }
 
+    public EmailContent lines(int lines) {
+        body.append(NEW_LINE.repeat(Math.max(0, lines)));
+        return this;
+    }
+
     public String body() {
         return body.toString();
+    }
+
+    public EmailContent h1(String header) {
+        return line("#" + header);
+    }
+
+    public EmailContent list(String... listItems) {
+        for (String item : listItems) {
+            line("* " + item);
+        }
+        return this;
+    }
+
+    public EmailContent callout(String callout) {
+        return line("^" + callout);
     }
 }

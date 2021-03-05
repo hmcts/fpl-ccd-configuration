@@ -5,12 +5,17 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -30,6 +35,11 @@ import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
@@ -40,6 +50,9 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -48,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 class CaseDataTest {
 
@@ -176,6 +190,29 @@ class CaseDataTest {
     void shouldGetOrderAppliesToAllChildrenWithCustomValueWhenMultipleChildrenOnCase() {
         CaseData caseData = CaseData.builder().children1(testChildren()).orderAppliesToAllChildren("No").build();
         assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("No");
+    }
+
+    @Test
+    void shouldReturnTrueWhenUsingTemporaryJudge() {
+        CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("test@test.com")
+            .build()).build();
+
+        assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUsingAllocatedJudge() {
+        CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+            .build())
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("test@test.com")
+                .build())
+            .build();
+
+        assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isFalse();
     }
 
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
@@ -964,6 +1001,37 @@ class CaseDataTest {
     }
 
     @Nested
+    class GetNextHearingAfter {
+
+        @Test
+        void shouldReturnNextHearingAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+            HearingBooking futureHearing = HearingBooking.builder().startDate(now().plusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing, futureHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).contains(futureHearing);
+        }
+
+        @Test
+        void shouldReturnNothingIfNoHearingsAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).isEmpty();
+        }
+    }
+
+    @Nested
     class GetFirstHearingOfType {
 
         @Test
@@ -1021,16 +1089,16 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
-                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
-                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+                element(firstId, buildJudicialMessage("Subject 1", "Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Subject 2", "Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("Subject 3", "High", "13 November 2020", YES))
             );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(firstId, "C2, Low, 11 November 2020"),
-                Pair.of(secondId, "Medium, 12 November 2020"),
-                Pair.of(thirdId, "C2, High, 13 November 2020")
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
             );
 
             assertThat(caseData.buildJudicialMessageDynamicList())
@@ -1040,29 +1108,277 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
             List<Element<JudicialMessage>> judicialMessages = List.of(
-                element(firstId, buildJudicialMessage("Low", "11 November 2020", YES)),
-                element(secondId, buildJudicialMessage("Medium", "12 November 2020", NO)),
-                element(thirdId, buildJudicialMessage("High", "13 November 2020", YES))
+                element(firstId, buildJudicialMessage("Subject 1", "Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Subject 2", "Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("Subject 3", "High", "13 November 2020", YES))
             );
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = buildDynamicList(2,
-                Pair.of(firstId, "C2, Low, 11 November 2020"),
-                Pair.of(secondId, "Medium, 12 November 2020"),
-                Pair.of(thirdId, "C2, High, 13 November 2020")
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
             );
 
             assertThat(caseData.buildJudicialMessageDynamicList(thirdId))
                 .isEqualTo(expectedDynamicList);
         }
 
-        private JudicialMessage buildJudicialMessage(String urgency, String dateSent, YesNo isRelatedToC2) {
+        private JudicialMessage buildJudicialMessage(String subject, String urgency, String dateSent,
+                                                     YesNo isRelatedToC2) {
             return JudicialMessage.builder()
+                .subject(subject)
                 .urgency(urgency)
                 .dateSent(dateSent)
                 .isRelatedToC2(isRelatedToC2)
                 .build();
         }
+    }
+
+    @Nested
+    class GetRepresentativesByServedPreference {
+        private Representative emailRepOne = testRepresentative(EMAIL);
+        private Representative emailRepTwo = testRepresentative(EMAIL);
+        private Representative digitalRepOne = testRepresentative(DIGITAL_SERVICE);
+        private Representative digitalRepTwo = testRepresentative(DIGITAL_SERVICE);
+
+        @Test
+        void shouldReturnListOfEmailRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+
+            assertThat(emailRepresentatives).containsExactlyInAnyOrder(emailRepOne, emailRepTwo);
+        }
+
+        @Test
+        void shouldReturnListOfDigitalRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives
+                = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).containsExactlyInAnyOrder(digitalRepOne, digitalRepTwo);
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotMatchServingPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnHearingOrdersBundlesForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(AGREED_CMO).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            Element<HearingOrdersBundle> bundle2 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build()),
+                        element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1, bundle2))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval())
+                .extracting(Element::getId)
+                .containsExactly(bundle1.getId(), bundle2.getId());
+        }
+
+        @Test
+        void shouldReturnEmptyWhenNoHearingOrdersBundlesExistForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval()).isEmpty();
+        }
+
+        private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
+            return List.of(
+                element(emailRepOne),
+                element(emailRepTwo),
+                element(digitalRepOne),
+                element(digitalRepTwo));
+        }
+    }
+
+    @Nested
+    class GetHearingOrderDraftCMOs {
+        @Test
+        void shouldReturnAListOfDraftCaseManagementOrdersWhenExistingWithinHearingOrderBundleDrafts() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftCMOTwo = element(randomUUID(), buildHearingOrder(AGREED_CMO));
+            Element<HearingOrder> draftCMOThree = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        draftCMOThree,
+                        element(buildHearingOrder(C21))
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEqualTo(List.of(draftCMOOne, draftCMOTwo, draftCMOThree));
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenHearingOrderBundlesWithDraftCMOsDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(buildHearingOrder(C21)))).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(buildHearingOrder(C21))
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfHearingOrderBundlesDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetDraftUploadedCMOWithId {
+
+        @Test
+        void shouldReturnEmptyWhenCaseDataDoesNotHaveDraftUploadedCMOs() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(draftCMOOne, element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            assertThat(caseData.getDraftUploadedCMOWithId(null)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDraftCMOWhenDraftUploadedCMOsContainTheExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(draftCMOOne, element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            Optional<Element<HearingOrder>> matchingHearingOrder =
+                caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrder).isPresent().contains(draftCMOOne);
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenDraftUploadedCMOsDoNotContainExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            Optional<Element<HearingOrder>> matchingHearingOrder =
+                caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrder).isNotPresent();
+        }
+    }
+
+    @Nested
+    class GetHearingOrderBundleThatContainsOrder {
+        @Test
+        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    draftCMOOne,
+                    element(buildHearingOrder(C21))))
+                .build());
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    element(buildHearingOrder(DRAFT_CMO)),
+                    element(buildHearingOrder(C21))))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleOne, hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrderBundle).isPresent().contains(hearingOrdersBundleOne);
+        }
+
+        @Test
+        void shouldReturnEmptyWhenHearingOrdersBundlesDraftsIsNull() {
+            CaseData caseData = CaseData.builder().build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(randomUUID());
+
+            assertThat(matchingHearingOrderBundle).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenExpectedOrderIsNotContainedWithinHearingOrderBundle() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    element(HearingOrder.builder().type(DRAFT_CMO).build()),
+                    element(HearingOrder.builder().type(C21).build())))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrderBundle).isEmpty();
+        }
+    }
+
+    private HearingOrder buildHearingOrder(HearingOrderType type) {
+        return HearingOrder.builder().type(type).build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {

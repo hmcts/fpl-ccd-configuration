@@ -33,6 +33,7 @@ module.exports = {
   async enterOtherDetails(other) {
     const elementIndex = await this.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).name, other.name);
     I.click(this.fields(elementIndex).DOB.day);
     I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
@@ -48,7 +49,6 @@ module.exports = {
 
   async enterRelationshipToChild(childInformation) {
     const elementIndex = await this.getActiveElementIndex();
-
     I.fillField(this.fields(elementIndex).relationshipToChild, childInformation);
   },
 

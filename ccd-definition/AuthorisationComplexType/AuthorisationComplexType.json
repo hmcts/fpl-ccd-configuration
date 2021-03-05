@@ -4,7 +4,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
-    "UserRole":"[LASOLICITOR]",
+    "UserRoles":[
+      "[LASOLICITOR]",
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -12,7 +16,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
-    "UserRole":"[LASOLICITOR]",
+    "UserRoles":[
+      "[LASOLICITOR]",
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -20,7 +28,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
-    "UserRole":"[LASOLICITOR]",
+    "UserRoles":[
+      "[LASOLICITOR]",
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
+    ],
     "CRUD": "R"
   },
   {
@@ -28,7 +40,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
-    "UserRole":"[LASOLICITOR]",
+    "UserRoles":[
+      "[LASOLICITOR]",
+      "[EPSMANAGING]",
+      "[LAMANAGING]"
+    ],
     "CRUD": "R"
   },
   {

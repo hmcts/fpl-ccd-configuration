@@ -8,7 +8,9 @@ import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -36,8 +38,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -48,11 +48,11 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -71,12 +71,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControllerTest {
-    private static final byte[] PDF = {1, 2, 3, 4, 5};
+class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
+    private static final byte[] PDF = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final Document DOCUMENT = document();
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
@@ -92,10 +92,10 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     private DocmosisDocumentGeneratorService docmosisService;
 
     @MockBean
-    private UploadDocumentService uploadDocumentService;
+    private BankHolidaysApi bankHolidaysApi;
 
     @MockBean
-    private IdamClient idamClient;
+    private UploadDocumentService uploadDocumentService;
 
     @MockBean
     private DocumentSealingService sealingService;
@@ -130,11 +130,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() {
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
+
         CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
         assertThat(caseData.getStandardDirectionOrder()).isEqualTo(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
@@ -168,13 +169,9 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     void shouldPopulateStandardDirectionOrderObjectFromUploadRoute() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
-        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        givenCurrentUserWithName("adam");
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-            validCaseDetailsForUploadRoute(order, DRAFT)
-        );
-
-        CaseData data = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData data = extractCaseData(postAboutToSubmitEvent(validCaseDetailsForUploadRoute(order, DRAFT)));
 
         StandardDirectionOrder expected = StandardDirectionOrder.builder()
             .dateOfUpload(now().toLocalDate())
@@ -188,12 +185,14 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
 
     @Test
     void shouldUpdateStateWhenOrderIsSealedThroughServiceRouteAndRemoveRouterAndSendNoticeOfProceedings() {
+        given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
+            .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
+
         CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(response);
 
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
@@ -215,12 +214,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        givenCurrentUserWithName("adam");
         given(sealingService.sealDocument(document)).willReturn(sealedDocument);
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(response);
 
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
@@ -240,7 +239,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
     void shouldRemoveTemporaryFields() {
         DocumentReference order = DocumentReference.builder().filename("order.pdf").build();
 
-        given(idamClient.getUserInfo(anyString())).willReturn(UserInfo.builder().name("adam").build());
+        givenCurrentUserWithName("adam");
 
         CaseDetails caseDetails = validCaseDetailsForUploadRoute(order, DRAFT);
         Map<String, Object> dataMap = new HashMap<>(caseDetails.getData());
@@ -348,7 +347,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractControl
                 .orderStatus(SEALED)
                 .orderDoc(DocumentReference.builder().build())
                 .build(),
-            "caseLocalAuthority", "example");
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
 
         return CaseDetails.builder()
             .id(1L)

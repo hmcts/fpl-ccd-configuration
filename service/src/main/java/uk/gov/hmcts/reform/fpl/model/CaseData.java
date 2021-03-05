@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -15,7 +16,9 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
@@ -31,14 +34,17 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
-import uk.gov.hmcts.reform.fpl.model.event.UploadCMOEventData;
+import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 import uk.gov.hmcts.reform.fpl.validation.groups.CaseExtensionGroup;
@@ -70,6 +76,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -82,6 +89,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -89,10 +97,12 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
@@ -111,6 +121,12 @@ public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
     private final String caseLocalAuthority;
+    private final String caseLocalAuthorityName;
+    private OrganisationPolicy localAuthorityPolicy;
+    private OrganisationPolicy outsourcingPolicy;
+    private OutsourcingType outsourcingType;
+    private Object outsourcingLAs;
+
     private final Risks risks;
     @NotNull(message = "Add the orders and directions sought")
     @Valid
@@ -121,9 +137,9 @@ public class CaseData {
     @NotNull(message = "Add the grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotEmpty(message = "Add your organisation's details")
+    @NotEmpty(message = "Add applicant's details")
     @Valid
-    private final List<@NotNull(message = "Add your organisation's details") Element<Applicant>> applicants;
+    private final List<@NotNull(message = "Add applicant's details") Element<Applicant>> applicants;
 
     @Valid
     @NotEmpty(message = "Add the respondents' details")
@@ -332,6 +348,18 @@ public class CaseData {
 
     private final List<Element<Representative>> representatives;
 
+    @JsonIgnore
+    public List<Representative> getRepresentativesByServedPreference(RepresentativeServingPreferences preference) {
+        if (isNotEmpty(representatives)) {
+            return representatives.stream()
+                .filter(Objects::nonNull)
+                .map(Element::getValue)
+                .filter(representative -> preference == representative.getServingPreferences())
+                .collect(toList());
+        }
+        return emptyList();
+    }
+
     private final List<Element<LegalRepresentative>> legalRepresentatives;
 
     // EPO Order
@@ -520,11 +548,15 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+    public Optional<HearingBooking> getNextHearingAfter(LocalDateTime time) {
         return unwrapElements(hearingDetails).stream()
             .filter(hearingBooking -> hearingBooking.getStartDate().isAfter(time))
-            .min(comparing(HearingBooking::getStartDate))
-            .orElseThrow(NoHearingBookingException::new);
+            .min(comparing(HearingBooking::getStartDate));
+    }
+
+    @JsonIgnore
+    public HearingBooking getMostUrgentHearingBookingAfter(LocalDateTime time) {
+        return getNextHearingAfter(time).orElseThrow(NoHearingBookingException::new);
     }
 
     @JsonIgnore
@@ -565,12 +597,50 @@ public class CaseData {
 
     private final DocumentReference submittedForm;
 
-    private final List<Element<CaseManagementOrder>> draftUploadedCMOs;
-    @JsonUnwrapped
-    private final UploadCMOEventData uploadCMOEventData;
+    private final List<Element<HearingOrder>> draftUploadedCMOs;
+    private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
+    private final UUID lastHearingOrderDraftsHearingId;
 
-    public List<Element<CaseManagementOrder>> getDraftUploadedCMOs() {
+    @JsonIgnore
+    public List<Element<HearingOrdersBundle>> getBundlesForApproval() {
+        return defaultIfNull(getHearingOrdersBundlesDrafts(), new ArrayList<Element<HearingOrdersBundle>>())
+            .stream().filter(bundle -> isNotEmpty(bundle.getValue().getOrders(SEND_TO_JUDGE)))
+            .collect(toList());
+    }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final UploadDraftOrdersData uploadDraftOrdersEventData = UploadDraftOrdersData.builder().build();
+
+    public List<Element<HearingOrder>> getDraftUploadedCMOs() {
         return defaultIfNull(draftUploadedCMOs, new ArrayList<>());
+    }
+
+    public Optional<Element<HearingOrder>> getDraftUploadedCMOWithId(UUID orderId) {
+        return getDraftUploadedCMOs().stream()
+            .filter(draftCmoElement -> draftCmoElement.getId().equals(orderId))
+            .findFirst();
+    }
+
+    @JsonIgnore
+    public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
+        if (hearingOrdersBundlesDrafts != null) {
+            return hearingOrdersBundlesDrafts.stream()
+                .map(Element::getValue)
+                .flatMap((HearingOrdersBundle hearingOrdersBundle)
+                    -> hearingOrdersBundle.getCaseManagementOrders().stream())
+                .collect(toList());
+        }
+
+        return new ArrayList<>();
+    }
+
+    public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
+        return nullSafeList(hearingOrdersBundlesDrafts).stream()
+            .filter(hearingOrdersBundleElement
+                -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
+                .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
+            .findFirst();
     }
 
     @JsonIgnore
@@ -618,9 +688,13 @@ public class CaseData {
     private final Object cmoToReviewList;
     private final ReviewDecision reviewCMODecision;
     private final String numDraftCMOs;
-    private final List<Element<CaseManagementOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> sealedCMOs;
+    private final List<Element<HearingOrder>> ordersToBeSent;
 
-    public List<Element<CaseManagementOrder>> getSealedCMOs() {
+    @JsonUnwrapped
+    private final ReviewDraftOrdersData reviewDraftOrdersData;
+
+    public List<Element<HearingOrder>> getSealedCMOs() {
         return defaultIfNull(sealedCMOs, new ArrayList<>());
     }
 
@@ -637,10 +711,10 @@ public class CaseData {
             .min(comparing(HearingBooking::getStartDate));
     }
 
-    private final List<Element<CaseManagementOrder>> hiddenCaseManagementOrders;
+    private final List<Element<HearingOrder>> hiddenCaseManagementOrders;
 
     @JsonIgnore
-    public List<Element<CaseManagementOrder>> getHiddenCMOs() {
+    public List<Element<HearingOrder>> getHiddenCMOs() {
         return defaultIfNull(hiddenCaseManagementOrders, new ArrayList<>());
     }
 
@@ -713,5 +787,13 @@ public class CaseData {
 
     public List<Element<JudicialMessage>> getJudicialMessages() {
         return defaultIfNull(judicialMessages, new ArrayList<>());
+    }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
+
+    public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
+        return judge.getJudgeTitle() != null;
     }
 }

@@ -1,4 +1,3 @@
-/* global process */
 const output = require('codeceptjs').output;
 const lodash = require('lodash');
 const config = require('./config');
@@ -13,7 +12,7 @@ const mandatorySubmissionFields = require('./fixtures/caseData/mandatorySubmissi
 
 const normalizeCaseId = caseId => caseId.toString().replace(/\D/g, '');
 
-const baseUrl = process.env.URL || 'http://localhost:3333';
+const baseUrl = config.baseUrl;
 const signedInSelector = 'exui-header';
 const signedOutSelector = '#global-header';
 const maxRetries = 5;
@@ -28,10 +27,11 @@ module.exports = function () {
         output.debug(`Logging in as ${user.email}`);
         currentUser = {}; // reset in case the login fails
 
-        await this.goToPage(baseUrl);
-
         await this.retryUntilExists(async () => {
-          if (await this.waitForAnySelector([signedOutSelector, signedInSelector]) == null) {
+          //To mitigate situation when idam response with blank page
+          await this.goToPage(baseUrl);
+
+          if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
             return;
           }
 
@@ -40,7 +40,7 @@ module.exports = function () {
           }
 
           await loginPage.signIn(user);
-        }, signedInSelector, false, 20);
+        }, signedInSelector, false, 10);
         output.debug(`Logged in as ${user.email}`);
         currentUser = user;
       } else {
@@ -73,10 +73,10 @@ module.exports = function () {
       }
     },
 
-    async logInAndCreateCase(user, caseName) {
+    async logInAndCreateCase(user, caseName, outsourcingLA) {
       await this.signIn(user);
       await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
-      await openApplicationEventPage.populateForm(caseName);
+      await openApplicationEventPage.populateForm(caseName, outsourcingLA);
       await this.completeEvent('Save and continue');
       this.waitForElement('.markdown h2', 5);
       const caseId = normalizeCaseId(await this.grabTextFrom('.markdown h2'));
@@ -84,12 +84,12 @@ module.exports = function () {
       return caseId;
     },
 
-    async completeEvent(button, changeDetails, confirmationPage = false) {
+    async completeEvent(button, changeDetails, confirmationPage = false, selector = '.hmcts-banner--success') {
       await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
-        eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
+        await eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
-      await this.submitEvent(button, confirmationPage);
+      await this.submitEvent(button, confirmationPage, selector);
     },
 
     async seeCheckAnswersAndCompleteEvent(button, confirmationPage = false) {
@@ -98,12 +98,12 @@ module.exports = function () {
       await this.submitEvent(button, confirmationPage);
     },
 
-    async submitEvent(button, confirmationPage) {
+    async submitEvent(button, confirmationPage, selector) {
       if (!confirmationPage) {
-        await eventSummaryPage.submit(button);
+        await eventSummaryPage.submit(button, selector);
       } else {
         await eventSummaryPage.submit(button, '#confirmation-body');
-        await this.retryUntilExists(() => this.click('Close and Return to case details'), '.alert-success');
+        await this.retryUntilExists(() => this.click('Close and Return to case details'), '.hmcts-banner--success');
       }
     },
 
@@ -214,6 +214,7 @@ module.exports = function () {
           await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
         }, signedInSelector);
       }
+      await this.waitForSelector('.ccd-dropdown');
     },
 
     async navigateToCaseDetailsAs(user, caseId) {
@@ -318,18 +319,24 @@ module.exports = function () {
     },
 
     async goToNextPage(label = 'Continue', maxNumberOfTries = maxRetries){
-      const currentUrl = await this.grabCurrentUrl();
-      this.click(label);
+      const originalUrl = await this.grabCurrentUrl();
 
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
-        if(await this.grabCurrentUrl() !== currentUrl){
-          break;
-        } else {
-          this.wait(1);
-          if(await this.grabCurrentUrl() === currentUrl){
-            this.click(label);
+        this.click(label);
+        //Caused by https://tools.hmcts.net/jira/browse/EUI-2498
+        for(let attempt = 0; attempt < 20; attempt++) {
+          let currentUrl = await this.grabCurrentUrl();
+          if (currentUrl !== originalUrl) {
+            if (attempt > 5){
+              output.print(`Page changed in try ${tryNumber} in ${attempt} sec - (${originalUrl} -> ${currentUrl})`);
+            }
+            return;
+          } else {
+            this.wait(1);
           }
         }
+
+        output.print(`Page change failed (${originalUrl})`);
       }
     },
 

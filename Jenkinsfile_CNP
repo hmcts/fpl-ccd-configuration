@@ -51,13 +51,23 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def archiveCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin") {
-    sh "./build-release-ccd-definition.sh ${env}"
+    if("preview" == env){
+      sh "./build-preview-ccd-definitions.sh ${CHANGE_ID}"
+    } else {
+      sh "./build-release-ccd-definition.sh ${env}"
+    }
   }
 
   dir("${WORKSPACE}/build") {
-    steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
+    if("preview" == env){
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-off.xlsx"
+    } else {
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
+    }
   }
 }
+
 /**
  * Imports CCD definitions into specified environment. Import XLSX file is archived when process completed.
  *
@@ -67,11 +77,19 @@ def archiveCoreCaseDataDefinitions(env) {
  */
 def uploadCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin"){
-    ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
-    sh """
-    eval \$(./variables/load-${env}-environment-variables.sh)
-    ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
-  """
+    if("preview" == env){
+      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+      sh """
+        eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+      """
+    } else {
+      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
+      sh """
+        eval \$(./variables/load-${env}-environment-variables.sh)
+        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+      """
+    }
   }
 }
 
@@ -135,15 +153,18 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./fpla-docker/bin/add-roles.sh
-      ./bin/import-ccd-definition.sh
     """
+
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
 
     env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=2
+    env.PARALLEL_CHUNKS=3
+    env.TEST_RETRIES=1
   }
 
   after('smoketest:saat') {
@@ -217,7 +238,7 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
-    env.SKIP_SMOKE_TESTS = 'true'
+    env.SMOKE_TESTS_SELECTOR = "@skip-smoke-test"
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }

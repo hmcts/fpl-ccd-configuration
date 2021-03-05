@@ -11,6 +11,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[EPSMANAGING]",
+    "Name": "External Professional Solicitor",
+    "Description": "External Professional Solicitors role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[LAMANAGING]",
+    "Name": "Managing Local Authority",
+    "Description": "Managing Local Authority role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "[SOLICITOR]",
     "Name": "Solicitor",
     "Description": "Solicitor role",

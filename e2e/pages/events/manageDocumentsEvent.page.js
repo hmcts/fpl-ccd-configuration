@@ -28,7 +28,8 @@ module.exports = {
     I.click(this.fields.documentType.correspondence);
   },
 
-  selectC2SupportingDocuments() {
+  async selectC2SupportingDocuments() {
+    await I.runAccessibilityTest();
     I.click(this.fields.documentType.c2);
   },
 
@@ -64,11 +65,24 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(index).document, document);
   },
 
+  async selectConfidential(index = 0) {
+    I.click(this.fields.supportingDocuments(index).confidential);
+  },
+
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
+  },
+
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument) {
+    const index = await I.getActiveElementIndex();
+    this.enterDocumentName(supportingEvidenceDocument.name, index);
+    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
+    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
+    this.uploadDocument(supportingEvidenceDocument.document, index);
+    this.selectConfidential(index);
   },
 };

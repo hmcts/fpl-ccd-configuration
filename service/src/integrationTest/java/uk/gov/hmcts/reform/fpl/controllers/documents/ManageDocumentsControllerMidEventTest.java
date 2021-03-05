@@ -1,0 +1,192 @@
+package uk.gov.hmcts.reform.fpl.controllers.documents;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+
+@WebMvcTest(ManageDocumentsController.class)
+@OverrideAutoConfiguration(enabled = true)
+class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
+
+    private static final String USER_ROLES = "caseworker-publiclaw-courtadmin";
+
+    ManageDocumentsControllerMidEventTest() {
+        super("manage-documents");
+    }
+
+    @Test
+    void shouldInitialiseFurtherEvidenceCollection() {
+        UUID selectHearingId = randomUUID();
+        LocalDateTime today = now();
+        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
+            element(createHearingBooking(today.plusDays(2), today.plusDays(3))),
+            element(createHearingBooking(today, today.plusDays(1))),
+            element(selectHearingId, selectedHearingBooking)
+        );
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(selectHearingId)
+            .hearingFurtherEvidenceDocuments(List.of(
+                element(selectHearingId, HearingFurtherEvidenceBundle.builder()
+                    .supportingEvidenceBundle(furtherEvidenceBundle)
+                    .build())
+            ))
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            caseData, "initialise-manage-document-collections", USER_ROLES
+        );
+
+        CaseData extractedCaseData = extractCaseData(response);
+
+        DynamicList expectedDynamicList = asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
+
+        DynamicList hearingList = mapper.convertValue(
+            response.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY), DynamicList.class
+        );
+
+        assertThat(hearingList).isEqualTo(expectedDynamicList);
+
+        assertThat(response.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
+            .isEqualTo(selectedHearingBooking.toLabel());
+
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+    }
+
+    @Test
+    void shouldInitialiseCorrespondenceCollection() {
+        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = buildSupportingEvidenceBundle();
+
+        CaseData caseData = CaseData.builder()
+            .correspondenceDocuments(correspondenceDocuments)
+            .manageDocument(buildManagementDocument(CORRESPONDENCE))
+            .build();
+
+        CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
+
+        assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+    }
+
+    @Test
+    void shouldInitialiseC2SupportingDocuments() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<Element<SupportingEvidenceBundle>> c2EvidenceDocuments = buildSupportingEvidenceBundle();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(today.plusDays(2))),
+            element(selectedC2DocumentId, buildC2DocumentBundle(c2EvidenceDocuments)),
+            element(buildC2DocumentBundle(today.plusDays(2))));
+
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .manageDocument(buildManagementDocument(C2))
+            .manageDocumentsSupportingC2List(selectedC2DocumentId)
+            .build();
+
+        CaseData extractedCaseData = extractCaseData(postMidEvent(
+            caseData, "initialise-manage-document-collections", USER_ROLES
+        ));
+
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+    }
+
+    @Test
+    void shouldReturnErrorWhenNoC2sOnCaseAndUserSelectsC2SupportingDocs() {
+        CaseData caseData = CaseData.builder().manageDocument(buildManagementDocument(C2)).build();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections");
+
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "There are no C2s to associate supporting documents with");
+    }
+
+    @Test
+    void shouldReturnValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInTheFuture() {
+        LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(List.of(
+                element(SupportingEvidenceBundle.builder().dateTimeReceived(futureDate).build())
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "validate-supporting-evidence");
+
+        assertThat(response.getErrors()).isNotEmpty();
+        assertThat(response.getErrors()).containsExactly("Date received cannot be in the future");
+    }
+
+    @Test
+    void shouldReturnNoValidationErrorsIfSupportingEvidenceDateTimeReceivedOnFurtherEvidenceIsInThePast() {
+        LocalDateTime pastDate = LocalDateTime.now().minusDays(2);
+        CaseData caseData = CaseData.builder()
+            .supportingEvidenceDocumentsTemp(List.of(
+                element(SupportingEvidenceBundle.builder().dateTimeReceived(pastDate).build())
+            ))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "validate-supporting-evidence");
+
+        assertThat(response.getErrors()).isEmpty();
+    }
+
+    private ManageDocument buildManagementDocument(ManageDocumentType type) {
+        return ManageDocument.builder().type(type).build();
+    }
+
+    private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
+        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
+        return wrapElements(SupportingEvidenceBundle.builder()
+            .name("test")
+            .uploadedBy("HMCTS")
+            .build());
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
+        return buildC2DocumentBundle(now()).toBuilder()
+            .supportingEvidenceBundle(supportingEvidenceBundle)
+            .build();
+    }
+}

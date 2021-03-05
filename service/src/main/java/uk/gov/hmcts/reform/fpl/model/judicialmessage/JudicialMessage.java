@@ -33,6 +33,8 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final String isReplying;
     private final String latestMessage;
     private final String messageHistory;
+    private final String replyFrom;
+    private final String replyTo;
 
     public String toLabel() {
         List<String> labels = new ArrayList<>();
@@ -41,11 +43,15 @@ public class JudicialMessage extends JudicialMessageMetaData {
             labels.add("C2");
         }
 
-        if (isNotBlank(getUrgency())) {
-            labels.add(getUrgency());
+        if (isNotBlank(getSubject())) {
+            labels.add(getSubject());
         }
 
         labels.add(dateSent);
+
+        if (isNotBlank(getUrgency())) {
+            labels.add(getUrgency());
+        }
 
         return String.join(", ", labels);
     }

@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -22,10 +24,40 @@ public class DynamicListElement {
     /**
      * Property that maps to the value attribute of the option tag.
      */
-    private final UUID code;
+    private final String code;
 
     /**
      * Property that maps to the label attribute of the option tag.
      */
     private final String label;
+
+    public boolean hasCode(String code) {
+        return Objects.equals(this.code, code);
+    }
+
+    public boolean hasCode(UUID code) {
+        return hasCode(Optional.ofNullable(code).map(UUID::toString).orElse(null));
+    }
+
+    public static DynamicListElement defaultListItem(String label) {
+        return DynamicListElement.builder()
+            .code(DEFAULT_CODE)
+            .label(label)
+            .build();
+    }
+
+    public static class DynamicListElementBuilder {
+        private String code;
+
+        public DynamicListElementBuilder code(String code) {
+            this.code = code;
+            return this;
+        }
+
+        public DynamicListElementBuilder code(UUID code) {
+            this.code = Optional.ofNullable(code).map(UUID::toString).orElse(null);
+            return this;
+        }
+
+    }
 }

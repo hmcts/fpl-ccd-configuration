@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -24,8 +25,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
@@ -41,6 +45,7 @@ public class MessageJudgeService {
     private final IdentityService identityService;
     private final ObjectMapper mapper;
     private final UserService userService;
+    private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -54,6 +59,8 @@ public class MessageJudgeService {
             data.put("hasJudicialMessages", YES.getValue());
             data.put("judicialMessageDynamicList", caseData.buildJudicialMessageDynamicList());
         }
+
+        data.putAll(prePopulateSenderAndRecipient());
 
         return data;
     }
@@ -76,6 +83,19 @@ public class MessageJudgeService {
         return data;
     }
 
+    public List<String> validateJudgeReplyMessage(CaseData caseData) {
+        List<String> errors = new ArrayList<>();
+
+        MessageJudgeEventData messageJudgeEventData = caseData.getMessageJudgeEventData();
+        JudicialMessage judicialMessageReply = messageJudgeEventData.getJudicialMessageReply();
+
+        if (isReplyingToMessage(judicialMessageReply) && hasMatchingReplyEmaiAddress(judicialMessageReply)) {
+            errors.add("The sender's and recipient's email address cannot be the same");
+        }
+
+        return errors;
+    }
+
     public Map<String, Object> populateReplyMessageFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
@@ -94,9 +114,12 @@ public class MessageJudgeService {
         JudicialMessage judicialMessageReply = JudicialMessage.builder()
             .relatedDocumentFileNames(selectedJudicialMessage.getRelatedDocumentFileNames())
             .recipient(selectedJudicialMessage.getSender())
-            .requestedBy(selectedJudicialMessage.getRequestedBy())
+            .subject(selectedJudicialMessage.getSubject())
+            .urgency(selectedJudicialMessage.getUrgency())
             .messageHistory(selectedJudicialMessage.getMessageHistory())
-            .latestMessage("")
+            .latestMessage(EMPTY)
+            .replyFrom(getReplyFrom())
+            .replyTo(selectedJudicialMessage.getSender())
             .build();
 
         data.put("judicialMessageReply", judicialMessageReply);
@@ -111,12 +134,12 @@ public class MessageJudgeService {
         JudicialMessageMetaData judicialMessageMetaData = messageJudgeEventData.getJudicialMessageMetaData();
         String latestMessage = messageJudgeEventData.getJudicialMessageNote();
 
-        String sender = userService.getUserEmail();
+        String sender = judicialMessageMetaData.getSender();
 
         JudicialMessage.JudicialMessageBuilder<?, ?> judicialMessageBuilder = JudicialMessage.builder()
             .sender(sender)
             .recipient(judicialMessageMetaData.getRecipient())
-            .requestedBy(judicialMessageMetaData.getRequestedBy())
+            .subject(judicialMessageMetaData.getSubject())
             .latestMessage(latestMessage)
             .messageHistory(buildMessageHistory(latestMessage, sender))
             .updatedTime(time.now())
@@ -144,8 +167,8 @@ public class MessageJudgeService {
         return judicialMessages;
     }
 
-    public String getFirstHearingLabel(CaseData caseData) {
-        return caseData.getFirstHearing()
+    public String getNextHearingLabel(CaseData caseData) {
+        return caseData.getNextHearingAfter(time.now())
             .map(hearing -> String.format("Next hearing in the case: %s", hearing.toLabel()))
             .orElse("");
     }
@@ -199,12 +222,12 @@ public class MessageJudgeService {
 
                     JudicialMessage judicialMessage = judicialMessageElement.getValue();
 
-                    String sender = userService.getUserEmail();
+                    String sender = judicialMessageReply.getReplyFrom();
 
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
                         .updatedTime(time.now())
-                        .sender(sender) // Get the email of the current user
-                        .recipient(judicialMessage.getSender()) // Get the sender of the previous message
+                        .sender(sender)
+                        .recipient(judicialMessageReply.getReplyTo())
                         .messageHistory(buildMessageHistory(judicialMessageReply, judicialMessage, sender))
                         .latestMessage(judicialMessageReply.getLatestMessage())
                         .build();
@@ -254,4 +277,38 @@ public class MessageJudgeService {
     private boolean hasJudicialMessages(CaseData caseData) {
         return !caseData.getJudicialMessages().isEmpty();
     }
+
+    private boolean hasMatchingReplyEmaiAddress(JudicialMessage judicialMessageReply) {
+        return isNotEmpty(judicialMessageReply.getReplyFrom())
+            && judicialMessageReply.getReplyFrom().equals(judicialMessageReply.getReplyTo());
+    }
+
+    private boolean isReplyingToMessage(JudicialMessage judicialMessageReply) {
+        return judicialMessageReply != null && YES.getValue().equals(judicialMessageReply.getIsReplying());
+    }
+
+    private Map<String, Object> prePopulateSenderAndRecipient() {
+        Map<String, Object> data = new HashMap<>();
+
+        if (userService.hasUserRole(JUDICIARY)) {
+            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
+                .sender(userService.getUserEmail())
+                .recipient(ctscEmailLookupConfiguration.getEmail()).build());
+        } else {
+            data.put("judicialMessageMetaData", JudicialMessageMetaData.builder()
+                .sender(ctscEmailLookupConfiguration.getEmail())
+                .recipient(EMPTY).build());
+        }
+
+        return data;
+    }
+
+    private String getReplyFrom() {
+        if (userService.hasUserRole(JUDICIARY)) {
+            return userService.getUserEmail();
+        } else {
+            return ctscEmailLookupConfiguration.getEmail();
+        }
+    }
+
 }

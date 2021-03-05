@@ -26,7 +26,7 @@
           }
         }
       ],
-      "caseLocalAuthority": "${localAuthority:-example}",
+      "caseLocalAuthority": "${localAuthority:-test1}",
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
@@ -565,11 +565,11 @@
               "AddressLine2": "Tooley road",
               "AddressLine3": "Tooley"
             },
-            "email": "fred@flinstone.com"
-          },
-          "telephoneNumber": "0717171717",
-          "servingPreferences": "DIGITAL_SERVICE",
-          "role": "CAFCASS_GUARDIAN"
+            "email": "fred@flinstone.com",
+            "servingPreferences": "DIGITAL_SERVICE",
+            "role": "CAFCASS_GUARDIAN",
+            "telephoneNumber": "0717171717"
+          }
         },
         {
           "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
@@ -585,11 +585,11 @@
               "AddressLine2": "Tooley road",
               "AddressLine3": "Tooley"
             },
-            "email": "barney@rubble.com"
-          },
-          "telephoneNumber": "0717171718",
-          "servingPreferences": "EMAIL",
-          "role": "CAFCASS_SOLICITOR"
+            "email": "barney@rubble.com",
+            "telephoneNumber": "0717171718",
+            "servingPreferences": "EMAIL",
+            "role": "CAFCASS_SOLICITOR"
+          }
         }
       ],
       "hearingDetails": [

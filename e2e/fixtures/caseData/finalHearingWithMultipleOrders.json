@@ -230,6 +230,73 @@
           },
           "caseManagementOrderId": "749f29dc-c200-4377-9e12-a5b4bad631b3"
         }
+      },
+      {
+        "id": "c2a5d73a-0c5c-416b-b288-236e3b395df9",
+        "value": {
+          "type": "CASE_MANAGEMENT",
+          "venue": "96",
+          "endDate": "2020-01-06T16:30:00",
+          "startDate": "2020-01-05T15:15:00",
+          "hearingNeedsBooked": [
+            "INTERPRETER",
+            "SOMETHING_ELSE"
+          ],
+          "venueCustomAddress": {},
+          "hearingNeedsDetails": "Some details",
+          "judgeAndLegalAdvisor": {
+            "judgeTitle": "HER_HONOUR_JUDGE",
+            "judgeLastName": "Reed",
+            "legalAdvisorName": "Rupert Robert"
+          },
+          "caseManagementOrderId": "02065be0-b622-4594-9716-a3ae007098d5"
+        }
+      }
+    ],
+    "hearingOrdersBundlesDrafts": [
+      {
+        "id": "cd2fca04-e899-4192-809d-82f87b58aedc",
+        "value": {
+          "orders": [
+            {
+              "id": "02065be0-b622-4594-9716-a3ae007098d5",
+              "value": {
+                "type": "DRAFT_CMO",
+                "order": {
+                  "document_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e",
+                  "document_filename": "mockFile.docx",
+                  "document_binary_url": "${DM_STORE_URL}/documents/f0e33938-b353-437c-af7f-1b974e36192e/binary"
+                },
+                "title": "Draft CMO from advocates' meeting",
+                "status": "DRAFT",
+                "hearing": "Case management hearing, 5 January 2020",
+                "dateSent": "2020-01-02",
+                "dateIssued": null,
+                "removalReason": null,
+                "supportingDocs": [
+                  {
+                    "id": "9ef6e01a-12a2-4390-9a83-6cfb79609ab9",
+                    "value": {
+                      "name": "case summary",
+                      "notes": "this is the case summary",
+                      "document": {
+                        "document_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df",
+                        "document_filename": "mockFile.txt",
+                        "document_binary_url": "${DM_STORE_URL}/documents/a81d69c2-632b-43b1-b7b9-4c438d2910df/binary"
+                      }
+                    }
+                  }
+                ],
+                "requestedChanges": null,
+                "judgeTitleAndName": "Her Honour Judge Reed",
+                "lastUploadedOrder": null
+              }
+            }
+          ],
+          "hearingId": "c2a5d73a-0c5c-416b-b288-236e3b395df9",
+          "hearingName": "Case management hearing, 5 January 2020",
+          "judgeTitleAndName": "Her Honour Judge Reed"
+        }
       }
     ],
     "courtDirections": [
@@ -335,6 +402,7 @@
       {
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
+          "type": "AGREED_CMO",
           "order":"TO BE FILLED WITH VALID DATA",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",

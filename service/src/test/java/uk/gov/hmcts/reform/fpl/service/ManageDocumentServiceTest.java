@@ -1,13 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -19,17 +14,16 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,58 +34,36 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.MANAGE_DOCUMENT_KEY;
-import static uk.gov.hmcts.reform.fpl.service.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class,
-    ManageDocumentService.class,
-    DocumentUploadHelper.class
-})
 class ManageDocumentServiceTest {
     private static final String USER = "HMCTS";
-    private static final String USER_ID = "1";
 
-    @Autowired
-    private Time time;
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final DocumentUploadHelper documentUploadHelper = mock(DocumentUploadHelper.class);
+    private final UserService userService = mock(UserService.class);
+    private final LocalDateTime futureDate = time.now().plusDays(1);
 
-    @Autowired
     private ManageDocumentService manageDocumentService;
-
-    @MockBean
-    private DocumentUploadHelper documentUploadHelper;
-
-    @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
-    private RequestData requestData;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    private LocalDateTime futureDate;
 
     @BeforeEach
     void before() {
-        futureDate = time.now().plusDays(1);
+        manageDocumentService = new ManageDocumentService(new ObjectMapper(), time, documentUploadHelper, userService);
+
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn("HMCTS");
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(userService.isHmctsUser()).willReturn(true);
     }
 
     @Test
@@ -132,9 +104,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseDataAndToggleOn() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(true);
-
+    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
         CaseData caseData = CaseData.builder().build();
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
@@ -147,29 +117,6 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
             .containsExactly(null, null, expectedManageDocument);
-    }
-
-    @Test
-    void shouldReturnEmptyC2DocumentListWhenC2DocumentsAreNotPresentOnCaseDataAndToggleOff() {
-        given(featureToggleService.isApplicationDocumentsEventEnabled()).willReturn(false);
-
-        CaseData caseData = CaseData.builder().build();
-        ManageDocument expectedManageDocument = ManageDocument.builder()
-            .hasC2s(YES.getValue())
-            .hasHearings(NO.getValue())
-            .build();
-
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(
-            caseData, MANAGE_DOCUMENT_KEY);
-
-        DynamicList expectedEmptyList = DynamicList.builder()
-            .value(DynamicListElement.builder().build())
-            .listItems(List.of())
-            .build();
-
-        assertThat(listAndLabel)
-            .extracting(SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
-            .containsExactly(expectedEmptyList, expectedManageDocument);
     }
 
     @Test
@@ -471,6 +418,7 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
+            .supportingEvidenceDocumentsTemp(List.of(element(SupportingEvidenceBundle.builder().build())))
             .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
@@ -486,7 +434,7 @@ class ManageDocumentServiceTest {
 
         Element<HearingFurtherEvidenceBundle> furtherEvidenceBundleElement = hearingFurtherEvidenceBundle.get(0);
         Element<SupportingEvidenceBundle> supportingEvidenceBundleElement
-            = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(0);
+            = furtherEvidenceBundleElement.getValue().getSupportingEvidenceBundle().get(1);
 
         assertThat(hearingFurtherEvidenceBundle.size()).isEqualTo(2);
         assertThat(supportingEvidenceBundleElement).isEqualTo(furtherEvidenceBundle.get(0));
@@ -769,10 +717,108 @@ class ManageDocumentServiceTest {
         assertThat(secondSupportingEvidenceBundle.getDateTimeUploaded()).isEqualTo(time.now());
     }
 
+    @Test
+    void shouldSortSupportingEvidenceByDateUploadedInChronologicalOrder() {
+        UUID selectedC2DocumentId = UUID.randomUUID();
+        Element<SupportingEvidenceBundle> supportingEvidencePast = element(SupportingEvidenceBundle.builder()
+            .name("past")
+            .dateTimeUploaded(futureDate.minusDays(2))
+            .uploadedBy(USER)
+            .build());
+
+        Element<SupportingEvidenceBundle> supportingEvidenceFuture = element(SupportingEvidenceBundle.builder()
+            .name("future")
+            .dateTimeUploaded(futureDate.plusDays(2))
+            .uploadedBy(USER)
+            .build());
+
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate);
+
+        List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
+            element(selectedC2DocumentId, selectedC2DocumentBundle)
+        );
+
+        DynamicList c2DynamicList = buildDynamicList(selectedC2DocumentId);
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsSupportingC2List(c2DynamicList)
+            .c2DocumentBundle(c2DocumentBundleList)
+            .supportingEvidenceDocumentsTemp(List.of(supportingEvidenceFuture, supportingEvidencePast))
+            .build();
+
+        List<Element<C2DocumentBundle>> updatedC2DocumentBundle =
+            manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+
+        assertThat(updatedC2DocumentBundle.get(0).getValue().getSupportingEvidenceBundle())
+            .isEqualTo(List.of(supportingEvidencePast, supportingEvidenceFuture));
+    }
+
+    @Test
+    void shouldRemoveHearingFurtherEvidenceBundleElementWhenAllDocumentsForThatHearingAreRemoved() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        UUID hearingId = UUID.randomUUID();
+        UUID hearingIdTwo = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .supportingEvidenceDocumentsTemp(emptyList())
+            .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 1")
+                    .supportingEvidenceBundle(Arrays.asList())
+                    .build()),
+                element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
+                     .hearingName("Case Management hearing 2")
+                    .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
+
+        assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(1);
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
+            .isEqualTo("Case Management hearing 2");
+    }
+
+    @Test
+    void shouldNotRemoveHearingFurtherEvidenceBundleElementWhenDocumentsForThatHearingExist() {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
+        UUID hearingId = UUID.randomUUID();
+        UUID hearingIdTwo = UUID.randomUUID();
+        List<Element<HearingBooking>> hearingBookings = List.of(element(hearingId, buildFinalHearingBooking()));
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearingBookings)
+            .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .supportingEvidenceDocumentsTemp(buildSupportingEvidenceBundle())
+            .hearingFurtherEvidenceDocuments(new LinkedList<>(Arrays.asList(
+                element(hearingId, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 1")
+                    .supportingEvidenceBundle(Arrays.asList())
+                    .build()),
+                element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
+                    .hearingName("Case Management hearing 2")
+                    .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                    .build()))))
+            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .build();
+
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
+            manageDocumentService.buildHearingFurtherEvidenceCollection(caseData, furtherEvidenceBundle);
+
+        assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(2);
+        assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
+            .isEqualTo("Case Management hearing 1");
+    }
+
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
-            .uploadedBy("HMCTS")
+            .uploadedBy(USER)
             .build());
     }
 
@@ -811,16 +857,6 @@ class ManageDocumentServiceTest {
             .value(DynamicListElement.builder()
                 .code(selectedId)
                 .build())
-            .build();
-    }
-
-    private UserDetails createUserDetailsWithHmctsRole() {
-        return UserDetails.builder()
-            .id(USER_ID)
-            .surname("Hudson")
-            .forename("Steve")
-            .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }
