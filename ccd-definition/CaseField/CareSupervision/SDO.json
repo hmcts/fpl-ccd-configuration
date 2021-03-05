@@ -6,7 +6,8 @@
     "Label": "For all parties",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -15,7 +16,8 @@
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,7 +26,8 @@
     "Label": "Local Authority Directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +36,8 @@
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -42,7 +46,8 @@
     "Label": "Cafcass Directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -51,7 +56,8 @@
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -60,7 +66,8 @@
     "Label": "Parents and respondents directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -69,7 +76,8 @@
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -78,7 +86,8 @@
     "Label": "Other parties directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -87,7 +96,8 @@
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -96,7 +106,8 @@
     "Label": "Court directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -105,7 +116,8 @@
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -115,7 +127,8 @@
     "FieldTypeParameter": "SDORoutes",
     "Label": "What do you want to do?",
     "HintText": "You can upload the final order to send to all parties now, or just upload it and save.",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -123,8 +136,9 @@
     "ID": "preparedSDO",
     "FieldType": "Document",
     "Label": "Attach prepared order",
-    "RegularExpression": ".doc,.docx,.pdf",
-    "SecurityClassification": "Public"
+    "RegularExpression": ".doc,.docx",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -133,6 +147,7 @@
     "FieldType": "Document",
     "Label": "Send this order",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Read only"
   },
   {
@@ -141,8 +156,9 @@
     "ID": "replacementSDO",
     "FieldType": "Document",
     "Label": "Or upload an updated order",
-    "RegularExpression": ".doc,.docx,.pdf",
-    "SecurityClassification": "Public"
+    "RegularExpression": ".doc,.docx",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -150,7 +166,8 @@
     "ID": "useServiceRoute",
     "FieldType": "Text",
     "Label": "Used in allowing progression through SDO event for the second time with the service route",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -158,7 +175,8 @@
     "ID": "useUploadRoute",
     "FieldType": "Text",
     "Label": "Used in allowing progression through SDO event for the second time with the service route",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -166,7 +184,8 @@
     "ID": "draftSDOLabel",
     "FieldType": "Label",
     "Label": "## Draft gatekeeping order",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -174,6 +193,7 @@
     "ID": "standardDirectionOrder",
     "Label": "Gatekeeping order",
     "FieldType": "StandardDirectionOrder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

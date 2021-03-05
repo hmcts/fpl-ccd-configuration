@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.events.TemporaryHearingJudgeAllocationEvent;
@@ -18,16 +19,18 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ManageHearingsService;
 import uk.gov.hmcts.reform.fpl.service.PastHearingDatesValidatorService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingDatesGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingEndDateGroup;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -60,12 +63,15 @@ public class ManageHearingsController extends CallbackController {
     private static final String SELECTED_HEARING_ID = "selectedHearingId";
     private static final String CANCELLED_HEARING_DETAILS_KEY = "cancelledHearingDetails";
     private static final String HEARING_DOCUMENT_BUNDLE_KEY = "hearingFurtherEvidenceDocuments";
+    private static final String HAS_SESSION_KEY = "hasSession";
+    private static final String HEARING_ORDERS_BUNDLES_DRAFTS = "hearingOrdersBundlesDrafts";
+    private static final String DRAFT_UPLOADED_CMOS = "draftUploadedCMOs";
 
     private final ValidateGroupService validateGroupService;
     private final StandardDirectionsService standardDirectionsService;
     private final ManageHearingsService hearingsService;
-    private final FeatureToggleService featureToggleService;
     private final PastHearingDatesValidatorService pastHearingDatesValidatorService;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -130,6 +136,9 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().put(FUTURE_HEARING_LIST,
                 hearingsService.asDynamicList(caseData.getFutureAndTodayHearings(), hearingBookingId));
         } else if (RE_LIST_HEARING == caseData.getHearingOption()) {
+            if (isEmpty(caseData.getToBeReListedHearings())) {
+                return respond(caseDetails, List.of("There are no adjourned or vacated hearings to re-list"));
+            }
             UUID hearingBookingId = hearingsService.getSelectedHearingId(caseData);
 
             HearingBooking cancelledHearing = hearingsService
@@ -182,21 +191,22 @@ public class ManageHearingsController extends CallbackController {
 
         List<String> errors;
 
-        if (featureToggleService.isAddHearingsInPastEnabled() && isAddingNewHearing(caseData)) {
+        if (isAddingNewHearing(caseData)) {
             errors = pastHearingDatesValidatorService.validateHearingDates(caseData.getHearingStartDate(),
                 caseData.getHearingEndDate());
         } else {
             errors = validateGroupService.validateGroup(caseData, HearingDatesGroup.class);
+            if (errors.isEmpty()) {
+                errors = validateGroupService.validateGroup(caseData, HearingEndDateGroup.class);
+            }
         }
 
-        if (featureToggleService.isAddHearingsInPastEnabled()) {
-            caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(caseData
-                    .getHearingStartDate(),
-                caseData.getHearingEndDate()));
-        }
+        caseDetails.getData().putAll(hearingsService.populateFieldsWhenPastHearingDateAdded(
+            caseData.getHearingStartDate(), caseData.getHearingEndDate()));
+
+        caseDetails.getData().put(HAS_SESSION_KEY, YES.getValue());
 
         return respond(caseDetails, errors);
-
     }
 
     @PostMapping("/hearing-in-past/mid-event")
@@ -211,6 +221,24 @@ public class ManageHearingsController extends CallbackController {
             caseDetails.getData().putAll(hearingsService.updateHearingDates(caseData));
 
             return respond(caseDetails, errors);
+        }
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("validate-judge-email/mid-event")
+    public CallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
+
+        if (caseData.hasSelectedTemporaryJudge(tempJudge)) {
+            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+
+            if (!error.isEmpty()) {
+                return respond(caseDetails, List.of(error.get()));
+            }
         }
 
         return respond(caseDetails);
@@ -284,6 +312,8 @@ public class ManageHearingsController extends CallbackController {
         data.putIfNotEmpty(CANCELLED_HEARING_DETAILS_KEY, caseData.getCancelledHearingDetails());
         data.putIfNotEmpty(HEARING_DOCUMENT_BUNDLE_KEY, caseData.getHearingFurtherEvidenceDocuments());
         data.putIfNotEmpty(HEARING_DETAILS_KEY, caseData.getHearingDetails());
+        data.put(HEARING_ORDERS_BUNDLES_DRAFTS, caseData.getHearingOrdersBundlesDrafts());
+        data.put(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
 
         data.keySet().removeAll(hearingsService.caseFieldsToBeRemoved());
 
@@ -293,6 +323,9 @@ public class ManageHearingsController extends CallbackController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
+
+        publishEvent(new AfterSubmissionCaseDataUpdated(getCaseData(callbackRequest),
+            getCaseDataBefore(callbackRequest)));
 
         if (isNotEmpty(caseData.getSelectedHearingId())) {
             if (isInGatekeepingState(callbackRequest.getCaseDetails())
@@ -311,6 +344,7 @@ public class ManageHearingsController extends CallbackController {
                     }
                 });
         }
+
     }
 
     private static JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {

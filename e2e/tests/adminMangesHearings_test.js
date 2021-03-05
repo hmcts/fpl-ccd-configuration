@@ -16,39 +16,26 @@ Feature('Hearing administration');
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
   submittedAt = new Date();
-
-  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
 });
 
-Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+
+Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
-  await manageHearingsEventPage.enterVenue(hearingDetails[0]);
+  manageHearingsEventPage.enterVenue(hearingDetails[0]);
   await I.goToNextPage();
-  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 
-  I.wait(5);
-  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAddNewHearing();
-  await I.goToNextPage();
-  await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
-  await manageHearingsEventPage.selectPreviousVenue();
-  await I.goToNextPage();
-  await manageHearingsEventPage.selectedAllocatedJudge();
-  await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
-  await I.completeEvent('Save and continue');
-
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
-
 
   I.seeInTab(['Hearing 1', 'Type of hearing'], hearingDetails[0].caseManagement);
   I.seeInTab(['Hearing 1', 'Venue'], hearingDetails[0].venue);
@@ -59,22 +46,38 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
   I.seeInTab(['Hearing 1', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+});
+
+Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
+  manageHearingsEventPage.selectAddNewHearing();
+  await I.goToNextPage();
+  await manageHearingsEventPage.enterHearingDetails(hearingDetails[1]);
+  manageHearingsEventPage.selectPreviousVenue();
+  await I.goToNextPage();
+  manageHearingsEventPage.selectedAllocatedJudge();
+  await I.goToNextPage();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
 
   I.seeInTab(['Hearing 2', 'Type of hearing'], hearingDetails[1].caseManagement);
   I.seeInTab(['Hearing 2', 'Venue'], hearingDetails[0].venue);
   I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[1].startDate));
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[1].endDate));
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
+}).retry(1); // async send letters call in submitted of previous event
 
-  I.wait(5);
+Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   await manageHearingsEventPage.enterNewVenue(hearingDetails[1]);
   await I.goToNextPage();
-  await manageHearingsEventPage.selectedAllocatedJudge();
+  manageHearingsEventPage.selectedAllocatedJudge();
   await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes('The venue has changed');
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -97,9 +100,9 @@ Scenario('HMCTS admin manages hearings', async ({I, caseViewPage, manageHearings
 
 Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectFurtherEvidence();
-  await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
-  await manageDocumentsEventPage.selectHearing(formatHearingDate(hearingStartDate));
+  manageDocumentsEventPage.selectFurtherEvidence();
+  manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
+  manageDocumentsEventPage.selectHearing(formatHearingDate(hearingStartDate));
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
@@ -108,35 +111,36 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectFurtherEvidence();
-  await manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
-  await manageDocumentsEventPage.selectHearing('1 January 2060');
+  manageDocumentsEventPage.selectFurtherEvidence();
+  manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
+  manageDocumentsEventPage.selectHearing('1 January 2060');
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents 1', 'Hearing'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents 1', 'Documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Further evidence documents 1', 'Documents 1', 'Uploaded by']);
-  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents 1', 'Documents 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Further evidence documents 1', 'Documents 2', 'Uploaded by']);
-  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060');
-  I.seeInTab(['Further evidence documents 2', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Further evidence documents 2', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents 2', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['Further evidence documents 2', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents 2', 'Documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Further evidence documents 2', 'Documents 1', 'Uploaded by']);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Uploaded by']);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Notes'], 'Case evidence included');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Uploaded by']);
+
+  I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Notes'], 'Evidence will be late');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Uploaded by']);
 }).retry(1); // async send letters call in submitted of previous event
 
 
@@ -144,7 +148,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   const reListedHearingJudgeName = 'Brown';
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAdjournHearing(`Case management hearing, ${formatHearingDate(hearingStartDate)}`);
+  manageHearingsEventPage.selectAdjournHearing(`Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationReasonType('Other lawyers');
   manageHearingsEventPage.selectCancellationReason('No key issue analysis');
@@ -155,7 +159,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeName(reListedHearingJudgeName);
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -173,12 +177,12 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
 
-  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2050');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2050');
 });
 
 Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - and I can add the new date now');
   await I.goToNextPage();
@@ -189,7 +193,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   await I.goToNextPage();
   manageHearingsEventPage.enterJudgeName(hearingDetails[1].judgeAndLegalAdvisor.judgeLastName);
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -206,12 +210,12 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
 
-  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060');
 });
 
 Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
+  manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
   manageHearingsEventPage.selectCancellationAction('Yes - but I do not have the new date yet');
   await I.goToNextPage();
@@ -223,15 +227,15 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   I.seeInTab(['Adjourned or vacated hearing 3', 'Status'], 'Vacated - to be re-listed');
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 1 January 2060 - vacated');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060 - vacated');
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectReListHearing('Case management hearing, 1 January 2060 - vacated');
+  manageHearingsEventPage.selectReListHearing('Case management hearing, 1 January 2060 - vacated');
   await I.goToNextPage();
   await manageHearingsEventPage.enterHearingDetails(hearingDetails[2]);
   await I.goToNextPage();
   await I.goToNextPage();
-  await manageHearingsEventPage.dontSendNoticeOfHearing();
+  manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
@@ -250,32 +254,32 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   I.seeInTab(['Adjourned or vacated hearing 2', 'Status'], 'Vacated');
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents 2', 'Hearing'], 'Case management hearing, 11 January 2060');
+  I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 11 January 2060');
 });
 
 Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  hearingStartDate = moment().subtract(5,'m').toDate();
-  hearingEndDate = moment(hearingStartDate).subtract(5,'m').toDate();
+  hearingStartDate = moment().subtract(10,'m').toDate();
+  hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
-  const correctedHearingStartDate = moment().subtract(5,'m').toDate();
-  const correctedHearingEndDate = moment(correctedHearingStartDate).subtract(5,'m').toDate();
+  const correctedHearingStartDate = moment().subtract(10,'m').toDate();
+  const correctedHearingEndDate = moment(correctedHearingStartDate).add(5,'m').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.selectAddNewHearing();
+  manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
 
   await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
-  await manageHearingsEventPage.selectPreviousVenue();
+  manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
 
   manageHearingsEventPage.selectHearingDateIncorrect();
-  manageHearingsEventPage.enterCorrectedHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
+  await manageHearingsEventPage.enterCorrectedHearingDate({startDate: correctedHearingStartDate, endDate: correctedHearingEndDate});
 
   await I.goToNextPage();
-  await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  await manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
+  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.goToNextPage();
-  await manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
+  manageHearingsEventPage.sendNoticeOfHearingWithNotes(hearingDetails[0].additionalNotes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 

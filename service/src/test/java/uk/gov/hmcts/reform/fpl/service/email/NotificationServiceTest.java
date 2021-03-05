@@ -14,6 +14,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
@@ -23,10 +24,12 @@ import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
 @ContextConfiguration(classes = {NotificationService.class, JacksonAutoConfiguration.class})
 @TestPropertySource(properties = {"fpl.env=" + ENV})
 class NotificationServiceTest {
-    private static final String TEST_RECIPIENT_EMAIL = "test@example.com";
+
+    static final String ENV = "TEST_ENV";
+    private static final String TEST_RECIPIENT_EMAIL_1 = "test1@example.com";
+    private static final String TEST_RECIPIENT_EMAIL_2 = "test2@example.com";
     private static final String REFERENCE = "12345L";
     private static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-    static final String ENV = "TEST_ENV";
     private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
 
     @MockBean
@@ -35,23 +38,41 @@ class NotificationServiceTest {
     @Autowired
     private NotificationService notificationService;
 
+    private static final NotifyData EMAIL_PERSONALISATION = BaseCaseNotifyData.builder()
+        .respondentLastName("Smith")
+        .caseUrl("http://fake-url")
+        .build();
+
+    private static final Map<String, Object> EXPECTED_EMAIL_PERSONALISATION = Map.of(
+        "respondentLastName", "Smith",
+        "caseUrl", "http://fake-url");
+
     @Test
-    void shouldSendNotificationSuccessfullyWhenDataValid() throws NotificationClientException {
-        NotifyData notifyData = BaseCaseNotifyData.builder()
-            .respondentLastName("Smith")
-            .caseUrl("http://fake-url")
-            .build();
-
-        Map<String, Object> expectedParams = Map.of(
-            "respondentLastName", "Smith",
-            "caseUrl", "http://fake-url");
-
-        notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL, notifyData, REFERENCE);
+    void shouldSendEmailToSingleRecipient() throws NotificationClientException {
+        notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL_1, EMAIL_PERSONALISATION, REFERENCE);
 
         verify(notificationClient).sendEmail(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
-            TEST_RECIPIENT_EMAIL,
-            expectedParams,
+            TEST_RECIPIENT_EMAIL_1,
+            EXPECTED_EMAIL_PERSONALISATION,
+            NOTIFICATION_REFERENCE);
+    }
+
+    @Test
+    void shouldSendEmailsToMultipleRecipients() throws NotificationClientException {
+        notificationService.sendEmail(TEMPLATE_ID, Set.of(TEST_RECIPIENT_EMAIL_1, TEST_RECIPIENT_EMAIL_2),
+            EMAIL_PERSONALISATION, REFERENCE);
+
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEST_RECIPIENT_EMAIL_1,
+            EXPECTED_EMAIL_PERSONALISATION,
+            NOTIFICATION_REFERENCE);
+
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEST_RECIPIENT_EMAIL_2,
+            EXPECTED_EMAIL_PERSONALISATION,
             NOTIFICATION_REFERENCE);
     }
 

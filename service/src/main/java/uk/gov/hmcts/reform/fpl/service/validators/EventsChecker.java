@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -17,7 +17,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -29,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 @Service
 public class EventsChecker {
@@ -58,9 +58,6 @@ public class EventsChecker {
     private AllocationProposalChecker allocationProposalChecker;
 
     @Autowired
-    private DocumentsChecker documentsChecker;
-
-    @Autowired
     private CaseSubmissionChecker caseSubmissionChecker;
 
     @Autowired
@@ -80,9 +77,6 @@ public class EventsChecker {
 
     @Autowired
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
-
-    @Autowired
-    private FeatureToggleService featureToggleService;
 
     @Autowired
     private ApplicationDocumentChecker applicationDocumentChecker;
@@ -109,11 +103,7 @@ public class EventsChecker {
     }
 
     private void addCheckersBasedOnToggle() {
-        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
-            eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
-        } else {
-            eventCheckers.put(DOCUMENTS, documentsChecker);
-        }
+        eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
     }
 
     public List<String> validate(Event event, CaseData caseData) {
@@ -127,6 +117,12 @@ public class EventsChecker {
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.isCompleted(caseData))
                 .orElse(false);
+    }
+
+    public TaskState completedState(Event event) {
+        return ofNullable(eventCheckers.get(event))
+            .map(EventChecker::completedState)
+            .orElse(NOT_AVAILABLE);
     }
 
     public boolean isInProgress(Event event, CaseData caseData) {

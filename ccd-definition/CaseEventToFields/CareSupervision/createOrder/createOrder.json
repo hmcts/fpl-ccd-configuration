@@ -116,6 +116,7 @@
     "PageColumnNumber": 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/date-of-issue/mid-event",
     "FieldShowCondition": "orderTypeAndDocument.type!=\"EMERGENCY_PROTECTION_ORDER\"",
+    "PageShowCondition": "orderTypeAndDocument.type!=\"\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -156,7 +157,7 @@
     "PageID": "OrderAppliesToAllChildren",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "PageShowCondition": "pageShow=\"Yes\" AND showFinalOrderSingleChildPage!=\"Yes\" AND orderTypeAndDocument.type!=\"DISCHARGE_OF_CARE_ORDER\"",
+    "PageShowCondition": "pageShow=\"Yes\" AND showFinalOrderSingleChildPage!=\"Yes\" AND orderTypeAndDocument.type!=\"DISCHARGE_OF_CARE_ORDER\" AND orderTypeAndDocument.type!=\"\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/populate-children-selector/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
@@ -171,7 +172,7 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/validate-order/child-selector/mid-event",
-    "PageShowCondition": "orderAppliesToAllChildren=\"No\" AND remainingChildIndex=\"\"",
+    "PageShowCondition": "orderAppliesToAllChildren=\"No\" AND remainingChildIndex=\"\" AND orderTypeAndDocument.type!=\"\"",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -196,7 +197,7 @@
     "PageID": "RemainingChild",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "PageShowCondition": "showFinalOrderSingleChildPage=\"Yes\"",
+    "PageShowCondition": "showFinalOrderSingleChildPage=\"Yes\" AND orderTypeAndDocument.type!=\"\"",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -272,6 +273,7 @@
     "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTypeAndDocument.type=\"EMERGENCY_PROTECTION_ORDER\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/populate-epo-parameters/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -299,6 +301,45 @@
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoExclusionRequirementType",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoExclusionStartDate",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoExclusionRequirementType=\"STARTING_ON_DIFFERENT_DATE\" AND epoType=\"PREVENT_REMOVAL\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoWhoIsExcluded",
+    "PageFieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "PageID": "EPOType",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "epoExclusionRequirementType!=\"NO_TO_EXCLUSION\" AND epoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -339,7 +380,7 @@
     "PageDisplayOrder": 12,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "orderTypeAndDocument.type!=\"UPLOAD\"",
+    "PageShowCondition": "orderTypeAndDocument.type!=\"UPLOAD\" AND orderTypeAndDocument.type!=\"\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/generate-document/mid-event"
   },
   {
@@ -367,7 +408,7 @@
     "PageDisplayOrder": 13,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\" AND orderTypeAndDocument.type!=\"UPLOAD\""
+    "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\" AND orderTypeAndDocument.type!=\"UPLOAD\" AND orderTypeAndDocument.type!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -395,7 +436,7 @@
     "PageDisplayOrder": 14,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "showCloseCaseFromOrderPage=\"YES\""
+    "PageShowCondition": "showCloseCaseFromOrderPage=\"YES\" AND orderTypeAndDocument.type!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",

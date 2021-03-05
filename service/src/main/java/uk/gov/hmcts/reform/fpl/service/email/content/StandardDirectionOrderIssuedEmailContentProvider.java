@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -12,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.StandardDirectionOrderContent;
 
 import static uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked.NONE;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -20,8 +19,6 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDirectionOrderContent {
     private final CaseDataExtractionService caseDataExtractionService;
-    @Value("${manage-case.ui.base.url}")
-    private String xuiBaseUrl;
 
     public CTSCTemplateForSDO buildNotificationParametersForCTSC(CaseData caseData) {
 
@@ -33,9 +30,8 @@ public class StandardDirectionOrderIssuedEmailContentProvider extends StandardDi
             .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .hearingNeedsPresent(getHearingNeedsPresent(hearing))
             .hearingNeeds(hearing.buildHearingNeedsList())
-            .caseUrl(getCaseUrl(caseData.getId(), "OrdersTab"))
-            .documentLink(concatUrlAndMostRecentUploadedDocumentPath(xuiBaseUrl,
-                caseData.getStandardDirectionOrder().getOrderDoc().getBinaryUrl()))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
+            .documentLink(getDocumentUrl(caseData.getStandardDirectionOrder().getOrderDoc()))
             .build();
     }
 

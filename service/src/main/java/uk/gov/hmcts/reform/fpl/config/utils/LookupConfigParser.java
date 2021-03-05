@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,7 @@ public class LookupConfigParser {
      * @return lookup table
      */
     public static Map<String, String> parseStringValue(String config) {
-        return parse(config, value -> value);
+        return parse(config, StringUtils::trim);
     }
 
     /**
@@ -61,7 +62,7 @@ public class LookupConfigParser {
         return Arrays.stream(config.split(MAPPING_SEPARATOR))
             .map(entry -> entry.split(ENTRY_SEPARATOR, 2))
             .collect(toImmutableMap(
-                entry -> checkNotNull(emptyToNull(entry[0]), "Mapping key cannot be empty"),
+                entry -> checkNotNull(emptyToNull(StringUtils.trim(entry[0])), "Mapping key cannot be empty"),
                 entry -> valueParser.parse(checkNotNull(emptyToNull(entry[1]), "Mapping value cannot be empty"))
             ));
     }

@@ -20,9 +20,10 @@ public class TemporaryHearingJudgeContentProvider extends AbstractEmailContentPr
 
     public TemporaryHearingJudgeTemplate buildNotificationParameters(CaseData caseData, HearingBooking hearingBooking) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
+
         TemporaryHearingJudgeTemplate temporaryHearingJudgeTemplate = TemporaryHearingJudgeTemplate.builder()
-            .judgeTitle(judgeAndLegalAdvisor.getJudgeOrMagistrateTitle())
-            .judgeName(judgeAndLegalAdvisor.getJudgeName())
+            .judgeTitle(getJudgeTitle(judgeAndLegalAdvisor))
+            .judgeName(getJudgeName(judgeAndLegalAdvisor))
             .hearingType(hearingBooking.getType().getLabel())
             .caseUrl(getCaseUrl(caseData.getId()))
             .callout(buildCallout(caseData, hearingBooking))

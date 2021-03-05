@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.utils;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -22,11 +24,17 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -45,6 +53,16 @@ public class TestDataHelper {
     public static final byte[] DOCUMENT_CONTENT = {1, 2, 3, 4, 5};
 
     private TestDataHelper() {
+    }
+
+    public static Organisation testOrganisation() {
+        return testOrganisation(RandomStringUtils.randomAlphanumeric(5));
+    }
+
+    public static Organisation testOrganisation(String organisationCode) {
+        return Organisation.builder()
+            .organisationIdentifier(organisationCode)
+            .build();
     }
 
     public static DocumentReference testDocumentReference() {
@@ -234,7 +252,27 @@ public class TestDataHelper {
     public static FeignException feignException(int status, String message) {
         return FeignException.errorStatus(message, Response.builder()
             .status(status)
-            .request(Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null))
+            .request(Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null))
             .build());
+    }
+
+    @SafeVarargs
+    public static DynamicList buildDynamicList(Pair<UUID, String>... listElements) {
+        return buildDynamicList(-1, listElements);
+    }
+
+    @SafeVarargs
+    public static DynamicList buildDynamicList(int selected, Pair<UUID, String>... listElements) {
+        List<DynamicListElement> listItems = Arrays.stream(listElements)
+            .map(listElement -> DynamicListElement.builder()
+                .code(listElement.getKey())
+                .label(listElement.getValue())
+                .build())
+            .collect(Collectors.toList());
+
+        return DynamicList.builder()
+            .listItems(listItems)
+            .value(selected != -1 && selected < listItems.size() ? listItems.get(selected) : DynamicListElement.EMPTY)
+            .build();
     }
 }

@@ -12,13 +12,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -26,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -56,10 +59,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.controllers.CloseCaseControllerAboutToStartTest.EXPECTED_LABEL_TEXT;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -78,10 +82,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
+class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
     private Document document;
 
@@ -431,7 +434,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .map(child -> child.getValue().getParty().getFullName())
                 .collect(Collectors.joining("\n"));
 
-            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {});
+            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {
+            });
 
             assertThat(response.getData())
                 .extracting("readOnlyFamilyManCaseNumber", "readOnlyOrder", "readOnlyChildren")
@@ -467,6 +471,64 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             reset(uploadDocumentService);
         }
 
+        @Test
+        void shouldReturnAValidationErrorWhenJudgeEmailIsInvalid() {
+            CaseData caseData = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(CARE_ORDER).build())
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeEmailAddress("<John Doe> johndoe@email.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), callbackType);
+
+            assertThat(callbackResponse.getErrors()).contains(
+                "Enter an email address in the correct format, for example name@example.com");
+        }
+
+        @Test
+        void shouldNotReturnAValidationErrorWhenJudgeEmailIsValid() {
+            CaseData caseData = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder().type(CARE_ORDER).build())
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeEmailAddress("test@test.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), callbackType);
+
+            assertThat(callbackResponse.getErrors()).isNull();
+        }
+
+        @Test
+        void shouldNotReturnValidationErrorsWhenOrderTypeIsUpload() {
+            List<Element<Child>> children = testChildren();
+            String familyManCaseNumber = "famNum";
+            DocumentReference uploadedOrder = testDocumentReference();
+
+            CaseData caseData = CaseData.builder()
+                .dateOfIssue(dateNow())
+                .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                    .type(UPLOAD)
+                    .uploadedOrderType(UploadedOrderType.C27)
+                    .build())
+                .uploadedOrder(uploadedOrder)
+                .children1(children)
+                .orderAppliesToAllChildren("Yes")
+                .familyManCaseNumber(familyManCaseNumber)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+                    .judgeEmailAddress("<John Doe> johndoe@email.com")
+                    .build())
+                .build();
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), callbackType);
+
+            assertThat(callbackResponse.getErrors()).isNull();
+        }
+
         private Stream<Arguments> generateDocumentMidEventArgumentSource() {
             return Stream.of(
                 Arguments.of(generateBlankOrderCaseDetails(), "blank_order_c21.pdf", ORDER),
@@ -483,6 +545,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .order(GeneratedOrder.builder().details("").build())
                 .orderTypeAndDocument(OrderTypeAndDocument.builder().type(EMERGENCY_PROTECTION_ORDER).build())
                 .dateAndTimeOfIssue(now())
+                .epoExclusionRequirementType(EPOExclusionRequirementType.NO_TO_EXCLUSION)
                 .orderFurtherDirections(FurtherDirections.builder()
                     .directionsNeeded("Yes")
                     .directions("Some directions")
@@ -572,7 +635,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
         }
 
         private CaseData.CaseDataBuilder generateDefaultValues(CaseData.CaseDataBuilder builder) {
-            builder.caseLocalAuthority(DEFAULT_LA);
+            builder.caseLocalAuthority(LOCAL_AUTHORITY_1_CODE);
             builder.familyManCaseNumber("SACCCCCCCC5676576567");
             return builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
         }
@@ -596,6 +659,60 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
             Element<Child> childElement = testChild();
             childElement.getValue().setFinalOrderIssued(finalOrderIssued);
             return childElement;
+        }
+    }
+
+    @Nested
+    class PrePopulateEpoFieldsMidEvent {
+
+        private final String callbackType = "populate-epo-parameters";
+
+        @Test
+        void shouldPrePopulateAddressFieldIfPresentInCaseData() {
+            String address = "1 Main Street, Lurgan, BT66 7PP, Armagh, United Kingdom";
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoRemovalAddress().toString().equals(address));
+        }
+
+        @Test
+        void shouldPrePopulateEpoTypeFieldIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoType().equals(PREVENT_REMOVAL));
+        }
+
+        @Test
+        void shouldPrePopulateWhoIsExcludedFieldIfPresentInCaseData() {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                buildCaseData(), callbackType);
+
+            CaseData caseData = extractCaseData(callbackResponse);
+
+            assertThat(caseData.getEpoWhoIsExcluded().equals("Test User"));
+        }
+
+        private CaseData buildCaseData() {
+            return CaseData.builder()
+                .orders(Orders.builder()
+                    .epoType(EPOType.PREVENT_REMOVAL)
+                    .excluded("Test User")
+                    .address(Address.builder()
+                        .addressLine1("1 Main Street")
+                        .addressLine2("Lurgan")
+                        .postTown("BT66 7PP")
+                        .county("Armagh")
+                        .country("United Kingdom")
+                        .build())
+
+                    .build())
+                .build();
         }
     }
 }

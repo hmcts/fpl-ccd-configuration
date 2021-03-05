@@ -5,7 +5,8 @@
     "ID": "orderTypeAndDocument",
     "Label": "Type of order",
     "FieldType": "OrderTypeAndDocument",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ID": "orderFurtherDirections",
     "Label": "Further directions",
     "FieldType": "FurtherDirections",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ID": "orderExclusionClause",
     "Label": "Exclusion Clause",
     "FieldType": "ExclusionClause",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -29,7 +32,8 @@
     "ID": "order",
     "Label": "Create an order",
     "FieldType": "GeneratedOrder",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -38,6 +42,7 @@
     "Label": "How many months will this order remain in place",
     "FieldType": "Number",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Max": "99",
     "Min": "1"
   },
@@ -47,7 +52,8 @@
     "ID": "epoChildren",
     "Label": "Describe the children",
     "FieldType": "EPOChildren",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -56,7 +62,8 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "EPOTypes",
     "Label": "What type of EPO are you requesting?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -64,7 +71,8 @@
     "ID": "epoRemovalAddress",
     "FieldType": "AddressUK",
     "Label": "Address",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -72,7 +80,8 @@
     "ID": "epoPhrase",
     "Label": "Do you want to include this phrase in the order?",
     "FieldType": "EPOPhrase",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -80,7 +89,8 @@
     "ID": "epoEndDate",
     "Label": "When does the order end",
     "FieldType": "DateTime",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -88,7 +98,8 @@
     "ID": "interimEndDate",
     "Label": "When will this order end?",
     "FieldType": "InterimEndDate",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -96,7 +107,8 @@
     "ID": "childSelector",
     "Label": "Who’s included in the order?",
     "FieldType": "ChildSelector",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -104,7 +116,8 @@
     "ID": "orderAppliesToAllChildren",
     "Label": "Is the order about all the children?",
     "FieldType": "YesOrNo",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -113,6 +126,7 @@
     "FieldType": "YesOrNo",
     "Label": " ",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Field to contain condition for hiding the page displaying the single child without a final order issued"
   },
   {
@@ -121,7 +135,8 @@
     "ID": "remainingChildIndex",
     "Label": " ",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -129,7 +144,8 @@
     "ID": "remainingChild_label",
     "Label": "## Create order for",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -138,6 +154,7 @@
     "Label": "Child included in the order",
     "FieldType": "Text",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Displays a list of names for children, usage of this should be readonly"
   },
   {
@@ -146,7 +163,8 @@
     "ID": "otherFinalOrderChildren_label",
     "Label": "### Other children in this case with final orders:",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -155,6 +173,7 @@
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Displays a list of names for children, usage of this should be readonly"
   },
   {
@@ -163,7 +182,8 @@
     "ID": "singleCareOrder_label",
     "Label": " ",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -171,7 +191,8 @@
     "ID": "multipleCareOrder_label",
     "Label": " ",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -179,7 +200,8 @@
     "ID": "careOrderSelector",
     "Label": "Which orders are being discharged?",
     "FieldType": "CareOrderSelector",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -188,6 +210,7 @@
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public",
+    "Searchable": "N",
     "Comment": "Displays a list of names for children, usage of this should be readonly"
   },
   {
@@ -197,7 +220,8 @@
     "Label": "Add the sealed order",
     "FieldType": "Document",
     "RegularExpression": ".pdf",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -205,7 +229,8 @@
     "ID": "readOnlyFamilyManCaseNumber",
     "Label": "FamilyMan case number",
     "FieldType": "Text",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -213,7 +238,8 @@
     "ID": "readOnlyChildren",
     "Label": "Children in the order",
     "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -221,7 +247,8 @@
     "ID": "readOnlyOrder_label",
     "Label": "### Check and issue order\nCheck you're uploading the right order to the right case. When you're happy, press continue to issue the order.",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -229,7 +256,8 @@
     "ID": "readOnlyOrder",
     "Label": " ",
     "FieldType": "Document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -237,6 +265,35 @@
     "ID": "checkYourOrder_label",
     "Label": "## Check order details",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoExclusionRequirementType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOExclusionRequirementTypes",
+    "Label": "Is there an exclusion requirement?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoExclusionStartDate",
+    "FieldType": "Date",
+    "Label": "Exclusion start date",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "epoWhoIsExcluded",
+    "FieldType": "Text",
+    "Label": "Who's excluded?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

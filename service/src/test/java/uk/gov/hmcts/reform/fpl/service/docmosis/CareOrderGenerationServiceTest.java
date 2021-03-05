@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
@@ -35,8 +36,8 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.EN
     FixedTimeConfiguration.class, ChildrenService.class})
 class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
-    public static final String EXAMPLE_EXCLUSION_CLAUSE = "Example Exclusion Clause";
-    public static final OrderStatus ORDER_STATUS = DRAFT;
+    private static final String EXAMPLE_EXCLUSION_CLAUSE = "Example Exclusion Clause";
+    private static final OrderStatus ORDER_STATUS = DRAFT;
 
     @Autowired
     private CareOrderGenerationService service;
@@ -55,10 +56,11 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
                 .orderTitle("Interim care order")
                 .childrenAct("Section 38 Children Act 1989")
                 .exclusionClause(EXAMPLE_EXCLUSION_CLAUSE)
-                .orderDetails("It is ordered that the children are "
-                    + "placed in the care of Example Local Authority until the end of the proceedings.").build());
+                .orderDetails(String.format("It is ordered that the children are placed in the care of %s "
+                    + "until the end of the proceedings, or until a further order is made.", LOCAL_AUTHORITY_NAME))
+                .build());
 
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
     @Test
@@ -73,13 +75,14 @@ class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest 
             .localAuthorityName(LOCAL_AUTHORITY_NAME)
             .orderTitle("Care order")
             .childrenAct("Section 31 Children Act 1989")
-            .orderDetails("It is ordered that the children are placed in the care of Example Local Authority.");
+            .orderDetails(format("It is ordered that the children are placed in the care of %s.",
+                LOCAL_AUTHORITY_NAME));
 
         DocmosisGeneratedOrder expectedData = enrichWithStandardData(
             CARE_ORDER, INTERIM, ORDER_STATUS, orderBuilder.build()
         );
 
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
     private CaseData getCase(GeneratedOrderSubtype subtype, OrderStatus status) {

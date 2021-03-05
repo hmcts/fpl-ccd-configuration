@@ -36,13 +36,9 @@ public class FeatureToggleService {
             createLDUser(Map.of("report", LDValue.of(true))), false);
     }
 
-    public boolean isCaseUserBulkAssignmentEnabled() {
-        return ldClient.boolVariation("case-user-assignment", createLDUser(), true);
-    }
-
-    public boolean isAllowCaseCreationForUsersNotOnboardedToMOEnabled(String localAuthorityName) {
+    public boolean isCaseCreationForNotOnboardedUsersEnabled(String localAuthorityCode) {
         return ldClient.boolVariation("allow-case-creation-for-users-not-onboarded-to-mo",
-            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
+            createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityCode))), false);
     }
 
     public boolean isRestrictedFromCaseSubmission(String localAuthorityName) {
@@ -55,16 +51,20 @@ public class FeatureToggleService {
             createLDUser(Map.of(LOCAL_AUTHORITY_NAME_KEY, LDValue.of(localAuthorityName))), false);
     }
 
-    public boolean isUploadDraftCMOEnabled() {
-        return ldClient.boolVariation("upload-draft-cmo", createLDUser(), false);
+    public boolean isSummaryTabEnabled() {
+        return ldClient.boolVariation("summary-tab-update", createLDUser(), false);
     }
 
-    public boolean isAddHearingsInPastEnabled() {
-        return ldClient.boolVariation("add-hearings-in-past", createLDUser(), false);
+    public boolean isSummaryTabFirstCronRunEnabled() {
+        return ldClient.boolVariation("summary-tab-first-run", createLDUser(), false);
     }
 
-    public boolean isApplicationDocumentsEventEnabled() {
-        return ldClient.boolVariation("application-documents-event", createLDUser(), false);
+    public boolean isFeeAndPayCaseTypeEnabled() {
+        return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
+    }
+
+    public boolean isRetrievingOrganisationEnabled() {
+        return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

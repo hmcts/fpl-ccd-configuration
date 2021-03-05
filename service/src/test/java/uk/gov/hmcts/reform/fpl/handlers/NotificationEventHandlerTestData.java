@@ -6,25 +6,27 @@ import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplat
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 public class NotificationEventHandlerTestData {
-    static final String LOCAL_AUTHORITY_CODE = "example";
-    static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
-    static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
-    static final String COURT_NAME = "Family Court";
-    static final String AUTH_TOKEN = "Bearer token";
-    static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
-    static final String CAFCASS_NAME = "cafcass";
-    static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
-    static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
-    static final String COURT_CODE = "11";
-    static final String CTSC_INBOX = "Ctsc+test@gmail.com";
-    static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
-    static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
-    static final byte[] DOCUMENT_CONTENTS = {1, 2, 3, 4, 5};
+    public static final String LOCAL_AUTHORITY_CODE = LOCAL_AUTHORITY_1_CODE;
+    public static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
+    public static final String COURT_EMAIL_ADDRESS = "admin@family-court.com";
+    public static final String COURT_NAME = DEFAULT_LA_COURT;
+    public static final String AUTH_TOKEN = "Bearer token";
+    public static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
+    public static final String CAFCASS_NAME = "cafcass";
+    public static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
+    public static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    public static final String ALLOCATED_JUDGE_EMAIL_ADDRESS = "judge@gmail.com";
+    public static final String COURT_CODE = "11";
+    public static final String CTSC_INBOX = "Ctsc+test@gmail.com";
+    public static final String PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS = "barney@rubble.com";
+    public static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL = "fred@flinstone.com";
 
     private NotificationEventHandlerTestData() {
     }
@@ -39,15 +41,7 @@ public class NotificationEventHandlerTestData {
             .build();
     }
 
-    public static List<Representative> expectedRepresentatives() {
-        return ImmutableList.of(Representative.builder()
-            .email("abc@example.com")
-            .fullName("Jon Snow")
-            .servingPreferences(DIGITAL_SERVICE)
-            .build());
-    }
-
-    public static List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
+    static List<Representative> getExpectedEmailRepresentativesForAddingPartiesToCase() {
         return ImmutableList.of(
             Representative.builder()
                 .email("barney@rubble.com")
@@ -56,7 +50,7 @@ public class NotificationEventHandlerTestData {
                 .build());
     }
 
-    public static List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
+    static List<Representative> getExpectedDigitalRepresentativesForAddingPartiesToCase() {
         return ImmutableList.of(
             Representative.builder()
                 .email("fred@flinstone.com")

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -30,31 +29,14 @@ public class C2UploadedEventHandler {
     @EventListener
     public void notifyAdmin(final C2UploadedEvent event) {
         List<String> roles = idamClient.getUserInfo(requestData.authorisation()).getRoles();
-        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
+        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
             CaseData caseData = event.getCaseData();
 
             NotifyData notifyData = c2UploadedEmailContentProvider
                 .getNotifyData(caseData, event.getUploadedBundle().getDocument());
             String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
-
             notificationService
                 .sendEmail(C2_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());
-        }
-    }
-
-    @EventListener
-    public void notifyAllocatedJudge(final C2UploadedEvent event) {
-        CaseData caseData = event.getCaseData();
-
-        if (caseData.hasAllocatedJudgeEmail()) {
-            NotifyData notifyData = c2UploadedEmailContentProvider.getNotifyDataForAllocatedJudge(caseData);
-            String recipient = caseData.getAllocatedJudge().getJudgeEmailAddress();
-
-            notificationService.sendEmail(
-                C2_UPLOAD_NOTIFICATION_TEMPLATE_JUDGE,
-                recipient,
-                notifyData,
-                caseData.getId());
         }
     }
 }

@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +14,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -82,6 +83,12 @@ public class ElementUtils {
     public static <T> DynamicList asDynamicList(List<Element<T>> elements,
                                                 UUID selectedId,
                                                 Function<T, String> labelProducer) {
+        return asDynamicList(emptyList(), elements, selectedId, labelProducer);
+    }
+
+    public static <T> DynamicList asDynamicList(List<DynamicListElement> additionalItems, List<Element<T>> elements,
+                                                UUID selectedId,
+                                                Function<T, String> labelProducer) {
         Objects.requireNonNull(labelProducer, "Label producer is required to convert elements to dynamic lists");
 
         List<DynamicListElement> items = nullSafeCollection(elements).stream()
@@ -93,8 +100,10 @@ public class ElementUtils {
                 .build())
             .collect(toList());
 
+        items.addAll(0, additionalItems);
+
         DynamicListElement selectedItem = items.stream()
-            .filter(element -> element.getCode().equals(selectedId))
+            .filter(element -> element.hasCode(selectedId))
             .findFirst()
             .orElse(DynamicListElement.EMPTY);
 
@@ -106,11 +115,11 @@ public class ElementUtils {
     }
 
     private static <T> Collection<T> nullSafeCollection(Collection<T> collection) {
-        return defaultIfNull(collection, Collections.emptyList());
+        return defaultIfNull(collection, emptyList());
     }
 
     public static <T> List<T> nullSafeList(List<T> collection) {
-        return defaultIfNull(collection, Collections.emptyList());
+        return defaultIfNull(collection, emptyList());
     }
 
     public static UUID getDynamicListSelectedValue(Object dynamicList, ObjectMapper mapper) {
@@ -118,6 +127,9 @@ public class ElementUtils {
             return UUID.fromString((String) dynamicList);
         }
 
-        return mapper.convertValue(dynamicList, DynamicList.class).getValueCode();
+        return ofNullable(mapper.convertValue(dynamicList, DynamicList.class))
+            .map(DynamicList::getValueCodeAsUUID)
+            .orElse(null);
     }
+
 }

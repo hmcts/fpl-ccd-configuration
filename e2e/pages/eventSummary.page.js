@@ -7,12 +7,13 @@ module.exports = {
     description: '#field-trigger-description',
   },
 
-  provideSummary(summary, description) {
+  async provideSummary(summary, description) {
+    await I.runAccessibilityTest();
     I.fillField(this.fields.summary, summary);
     I.fillField(this.fields.description, description);
   },
 
-  async submit(button, locator = '.alert-success') {
+  async submit(button, locator = '.hmcts-banner--success') {
     await I.retryUntilExists(() => I.click(button), locator);
   },
 };

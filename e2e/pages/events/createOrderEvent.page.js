@@ -39,7 +39,7 @@ module.exports = {
     interimEndDate: {
       id: '#interimEndDate_interimEndDate',
       options: {
-        endOfProceedings: 'At the end of the proceedings',
+        endOfProceedings: 'At the end of the proceedings, or until a further order is made',
         namedDate: 'At the end of a named date',
         specificTimeNamedDate: 'At a specific time on a named date',
       },
@@ -77,6 +77,17 @@ module.exports = {
         description: '#epoChildren_description',
       },
       type: '#epoType',
+      epoExclusionRequirementType: {
+        differentDate: '#epoExclusionRequirementType-STARTING_ON_DIFFERENT_DATE',
+        sameDate: '#epoExclusionRequirementType-STARTING_ON_SAME_DATE',
+        noExclusion: '#epoExclusionRequirementType-NO_TO_EXCLUSION',
+      },
+      exclusionStartDate: {
+        day: '#epoExclusionStartDate-day',
+        month: '#epoExclusionStartDate-month',
+        year: '#epoExclusionStartDate-year',
+      },
+      epoWhoIsExcluded: '#epoWhoIsExcluded',
       removalAddress: '#epoRemovalAddress_epoRemovalAddress',
       includePhrase: '#epoPhrase_includePhrase',
       endDate: {
@@ -102,13 +113,9 @@ module.exports = {
   },
 
   selectType(type, subtype, orderType) {
-    within(this.fields.orderTypeList, () => {
-      I.click(locate('label').withText(type));
-    });
+    I.click(type);
     if (subtype) {
-      within(this.fields.orderSubtypeList, () => {
-        I.click(locate('label').withText(subtype));
-      });
+      I.click(subtype);
     }
     if (orderType) {
       I.selectOption(this.fields.orderUploadedTypeList, orderType);
@@ -120,8 +127,8 @@ module.exports = {
     I.fillField(this.fields.order.description, description);
   },
 
-  async uploadOrder(order) {
-    await I.attachFile(this.fields.uploadedOrder, order);
+  uploadOrder(order) {
+    I.attachFile(this.fields.uploadedOrder, order);
   },
 
   checkOrder(orderChecks) {
@@ -169,86 +176,63 @@ module.exports = {
     I.fillField(this.fields.months, numOfMonths);
   },
 
-  async enterChildrenDescription(description) {
-    within(this.fields.epo.childrenDescription.radioGroup, () => {
-      I.click(locate('label').withText('Yes'));
-    });
-
-    await I.fillField(this.fields.epo.childrenDescription.description, description);
+  enterChildrenDescription(description) {
+    I.click(this.fields.epo.childrenDescription.radioGroup + '-Yes');
+    I.fillField(this.fields.epo.childrenDescription.description, description);
   },
 
   selectEpoType(type) {
-    within(this.fields.epo.type, () => {
-      I.click(locate('label').withText(type));
-    });
+    I.click(type);
   },
 
   enterRemovalAddress(address) {
-    within(this.fields.epo.removalAddress, () => {
-      postcodeLookup.enterAddressManually(address);
-    });
+    postcodeLookup.enterAddressManually(address);
   },
 
   includePhrase(option) {
-    within(this.fields.epo.includePhrase, () => {
-      I.click(locate('label').withText(option));
-    });
+    I.click(`${this.fields.epo.includePhrase}-${option}`);
   },
 
-  enterEpoEndDate(date) {
-    I.fillDateAndTime(date, this.fields.epo.endDate.id);
+  async enterEpoEndDate(date) {
+    await I.runAccessibilityTest();
+    await I.fillDateAndTime(date, this.fields.epo.endDate.id);
   },
 
-  async selectEndOfProceedings() {
-    within(this.fields.interimEndDate.id, () => {
-      I.click(locate('label').withText(this.fields.interimEndDate.options.endOfProceedings));
-    });
+  selectEndOfProceedings() {
+    I.click(this.fields.interimEndDate.options.endOfProceedings);
   },
 
   async enterDateOfIssue(date) {
-    I.fillDate(date);
+    await I.fillDate(date, this.fields.dateOfIssue.id);
   },
 
-  enterDateAndTimeOfIssue(dateAndTime) {
-    I.fillDateAndTime(dateAndTime, this.fields.dateAndTimeOfIssue.id);
+  async enterDateAndTimeOfIssue(dateAndTime) {
+    await I.fillDateAndTime(dateAndTime, this.fields.dateAndTimeOfIssue.id);
   },
 
   async selectAndEnterNamedDate(date) {
-    await within(this.fields.interimEndDate.id, () => {
-      I.click(locate('label').withText(this.fields.interimEndDate.options.namedDate));
-    });
     I.click(this.fields.interimEndDate.options.namedDate);
-    I.fillField(this.fields.interimEndDate.endDate.day, date.day);
-    I.fillField(this.fields.interimEndDate.endDate.month, date.month);
-    I.fillField(this.fields.interimEndDate.endDate.year, date.year);
+    await I.fillDate(date, this.fields.interimEndDate.id);
   },
 
-  async selectChildren(children = []) {
+  selectChildren(children = []) {
     for (let child of children) {
-      within(this.fields.childSelector.selector(child), () => {
-        I.click(locate('label').withText(this.fields.childSelector.selectorText));
-      });
+      I.click(`${this.fields.childSelector.selector(child)}-SELECTED`);
     }
   },
 
-  async selectCareOrder(careOrders = []) {
+  selectCareOrder(careOrders = []) {
     for (let order of careOrders) {
-      within(this.fields.careOrderSelector.selector(order), () => {
-        I.click(locate('label').withText(this.fields.careOrderSelector.selectorText));
-      });
+      I.click(`${this.fields.careOrderSelector.selector(order)}-SELECTED`);
     }
   },
 
-  async useAllChildren() {
-    within(this.fields.allChildren.id, () => {
-      I.click(locate('label').withText(this.fields.allChildren.options.yes));
-    });
+  useAllChildren() {
+    I.click(`${this.fields.allChildren.id}-${this.fields.allChildren.options.yes}`);
   },
 
-  async notAllChildren() {
-    within(this.fields.allChildren.id, () => {
-      I.click(locate('label').withText(this.fields.allChildren.options.no));
-    });
+  notAllChildren() {
+    I.click(`${this.fields.allChildren.id}-${this.fields.allChildren.options.no}`);
   },
 
   closeCaseFromOrder(closeCase) {
@@ -257,5 +241,20 @@ module.exports = {
     } else {
       I.click(this.fields.closeCase.options.no);
     }
+  },
+
+  selectExclusionRequirement() {
+    I.click(this.fields.epo.epoExclusionRequirementType.differentDate);
+  },
+
+  selectExclusionRequirementStartDate() {
+    I.fillField(this.fields.epo.exclusionStartDate.day, '01');
+    I.fillField(this.fields.epo.exclusionStartDate.month, '11');
+    I.fillField(this.fields.epo.exclusionStartDate.year, '2021');
+  },
+
+  async selectWhoIsExcluded() {
+    I.fillField(this.fields.epo.epoWhoIsExcluded, 'John Doe');
+    await I.runAccessibilityTest();
   },
 };

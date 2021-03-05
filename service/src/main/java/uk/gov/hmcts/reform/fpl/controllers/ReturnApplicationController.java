@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +21,13 @@ import uk.gov.hmcts.reform.fpl.service.ReturnApplicationService;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ReturnApplicationController extends CallbackController {
     public static final String RETURN_APPLICATION = "returnApplication";
-    private final ObjectMapper mapper;
+
     private final ReturnApplicationService returnApplicationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        caseDetails.getData().put(RETURN_APPLICATION, null);
+        caseDetails.getData().remove(RETURN_APPLICATION);
 
         return respond(caseDetails);
     }
@@ -38,16 +37,15 @@ public class ReturnApplicationController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        DocumentReference documentReference = mapper.convertValue(caseDetails.getData().get("submittedForm"),
-            DocumentReference.class);
+        DocumentReference submittedForm = caseData.getSubmittedForm();
 
-        String updatedFileName = returnApplicationService.appendReturnedToFileName(documentReference.getFilename());
-        documentReference.setFilename(updatedFileName);
+        returnApplicationService.appendReturnedToFileName(submittedForm);
 
         caseDetails.getData().put(RETURN_APPLICATION, returnApplicationService.updateReturnApplication(
-            caseData.getReturnApplication(), documentReference, caseData.getDateSubmitted()));
+            caseData.getReturnApplication(), submittedForm, caseData.getDateSubmitted()
+        ));
 
-        caseDetails.getData().put("submittedForm", null);
+        caseDetails.getData().remove("submittedForm");
 
         return respond(caseDetails);
     }

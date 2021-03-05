@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -50,7 +51,7 @@ class FeatureToggleServiceTest {
         assertThat(service.isCtscEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("CTSC"),
-            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
 
@@ -62,20 +63,8 @@ class FeatureToggleServiceTest {
         assertThat(service.isCtscReportEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("CTSC"),
-            ldUser(ENVIRONMENT).build(),
+            argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForCaseUserAssignment(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isCaseUserBulkAssignmentEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("case-user-assignment"),
-            ldUser(ENVIRONMENT).build(),
-            eq(true));
     }
 
     @ParameterizedTest
@@ -94,10 +83,10 @@ class FeatureToggleServiceTest {
     void shouldMakeCorrectCallForIsAllowCaseCreationForUsersNotOnboardedToMOEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isAllowCaseCreationForUsersNotOnboardedToMOEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
+        assertThat(service.isCaseCreationForNotOnboardedUsersEnabled(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("allow-case-creation-for-users-not-onboarded-to-mo"),
-            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
 
@@ -109,31 +98,55 @@ class FeatureToggleServiceTest {
         assertThat(service.isRestrictedFromCaseSubmission(LOCAL_AUTHORITY)).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
             eq("restrict-case-submission"),
-            ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build(),
+            argThat(ldUser(ENVIRONMENT).withLocalAuthority(LOCAL_AUTHORITY).build()),
             eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsAddHearingsInPastEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsSummaryTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isAddHearingsInPastEnabled()).isEqualTo(toggleState);
+        assertThat(service.isSummaryTabEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("add-hearings-in-past"),
-            ldUser(ENVIRONMENT).build(),
+            eq("summary-tab-update"),
+            argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForIsApplicationDocumentsEventEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsSummaryTabFirstCronRunEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isApplicationDocumentsEventEnabled()).isEqualTo(toggleState);
+        assertThat(service.isSummaryTabFirstCronRunEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("application-documents-event"),
-            ldUser(ENVIRONMENT).build(),
+            eq("summary-tab-first-run"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForFeeAndPayCaseTypeEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isFeeAndPayCaseTypeEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("fee-and-pay-case-type"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForRetrievingOrganisation(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("retrieve-organisation"),
+            argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 

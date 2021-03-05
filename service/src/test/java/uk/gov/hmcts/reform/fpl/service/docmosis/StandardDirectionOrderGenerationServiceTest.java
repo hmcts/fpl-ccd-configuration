@@ -45,6 +45,8 @@ import static org.assertj.core.util.Lists.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -66,8 +68,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     CaseDataExtractionService.class, FixedTimeConfiguration.class
 })
 class StandardDirectionOrderGenerationServiceTest {
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String COURT_NAME = "Family Court";
 
     @MockBean
     private CalendarService calendarService;
@@ -81,7 +81,6 @@ class StandardDirectionOrderGenerationServiceTest {
     @BeforeEach
     void setup() {
         given(calendarService.getWorkingDayFrom(any(LocalDate.class), anyInt())).willReturn(LocalDate.now());
-
     }
 
     @Test
@@ -110,8 +109,8 @@ class StandardDirectionOrderGenerationServiceTest {
 
         DocmosisStandardDirectionOrder template = service.getTemplateData(caseData);
 
-        assertThat(template)
-            .isEqualToComparingFieldByField(docmosisOrder(
+        assertThat(template).usingRecursiveComparison()
+            .isEqualTo(docmosisOrder(
                 "Her Honour Judge Smith",
                 "Bob Ross",
                 "123",
@@ -123,14 +122,15 @@ class StandardDirectionOrderGenerationServiceTest {
     void shouldMapCompleteCaseDataForSDOTemplate() {
         DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
 
-        assertThat(template).isEqualToComparingFieldByField(fullDocmosisOrder());
+        assertThat(template).usingRecursiveComparison()
+            .isEqualTo(fullDocmosisOrder());
     }
 
     private CaseData getCaseData(StandardDirectionOrder order) {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateSubmitted(today)
             .standardDirectionOrder(order)
             .applicants(getEmptyApplicants())
@@ -143,15 +143,11 @@ class StandardDirectionOrderGenerationServiceTest {
             .build());
     }
 
-    private DocmosisStandardDirectionOrder emptyDocmosisOrder(StandardDirectionOrder order) {
-        return docmosisOrder("", "", null, order.getDateOfIssue(), emptyList());
-    }
-
     private CaseData caseDataWithEmptyListValues() {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("123")
             .children1(emptyList())
             .dateSubmitted(today)
@@ -173,7 +169,7 @@ class StandardDirectionOrderGenerationServiceTest {
                 .judgeTitleAndName(judgeTitleAndName)
                 .legalAdvisorName(legalAdvisorName)
                 .build())
-            .courtName(COURT_NAME)
+            .courtName(DEFAULT_LA_COURT)
             .familyManCaseNumber(familyManCaseNumber)
             .dateOfIssue(dateOfIssue)
             .complianceDeadline(formatLocalDateToString(today.plusWeeks(26), LONG))
@@ -196,7 +192,7 @@ class StandardDirectionOrderGenerationServiceTest {
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
                 .build())
-            .courtName(COURT_NAME)
+            .courtName(DEFAULT_LA_COURT)
             .familyManCaseNumber("123")
             .dateOfIssue("29 November 2019")
             .complianceDeadline(formatLocalDateToString(today.plusWeeks(26), LONG))
@@ -222,7 +218,7 @@ class StandardDirectionOrderGenerationServiceTest {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
-            .caseLocalAuthority("example")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("123")
             .children1(createPopulatedChildren(today))
             .hearingDetails(createHearingBookings())

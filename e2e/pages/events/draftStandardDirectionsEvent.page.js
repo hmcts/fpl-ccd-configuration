@@ -26,35 +26,41 @@ module.exports = {
   },
 
   async createSDOThroughService() {
-    await I.click(this.fields.routingRadioGroup.service);
+    I.click(this.fields.routingRadioGroup.service);
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
   async createSDOThroughUpload() {
-    await I.click(this.fields.routingRadioGroup.upload);
+    I.click(this.fields.routingRadioGroup.upload);
+    await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
   async uploadPreparedSDO(file) {
-    await I.attachFile(this.fields.file.preparedSDO, file);
+    await I.runAccessibilityTest();
+    I.attachFile(this.fields.file.preparedSDO, file);
     await I.goToNextPage();
   },
 
   async uploadReplacementSDO(file) {
-    await I.attachFile(this.fields.file.replacementSDO, file);
+    await I.runAccessibilityTest();
+    I.attachFile(this.fields.file.replacementSDO, file);
     await I.goToNextPage();
   },
 
   async skipDateOfIssue(){
-    await this.enterDateOfIssue();
+    await I.runAccessibilityTest();
+    await I.goToNextPage();
   },
 
   async enterDateOfIssue(date){
+    await I.runAccessibilityTest();
     await I.fillDate(date);
     await I.goToNextPage();
   },
 
-  async useAllocatedJudge(legalAdvisorName) {
+  useAllocatedJudge(legalAdvisorName) {
     judgeAndLegalAdvisor.useAllocatedJudge();
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
@@ -75,19 +81,16 @@ module.exports = {
   },
 
   markAsDraft() {
-    within(this.fields.statusRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.fields.statusRadioGroup.draft));
-    });
+    I.click(this.fields.statusRadioGroup.draft);
   },
 
   async markAsFinal() {
-    within(this.fields.statusRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.fields.statusRadioGroup.sealed));
-    });
+    await I.runAccessibilityTest();
+    I.click(this.fields.statusRadioGroup.sealed);
     await I.goToNextPage();
   },
 
-  checkC6() {
+  async checkC6() {
     I.checkOption(this.fields.noticeOfProceedings.c6);
   },
 

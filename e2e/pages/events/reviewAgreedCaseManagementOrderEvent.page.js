@@ -1,39 +1,44 @@
 const { I } = inject();
 
 module.exports = {
-  fields: {
-    cmoToReviewList: '#cmoToReviewList',
-    reviewCmoRadioGroup: {
-      seal: 'Yes, seal and send to all parties',
-      amend: 'No, I need to make changes',
-      return: 'No, the local authority needs to make changes',
-    },
-    changesRequested: '#reviewCMODecision_changesRequestedByJudge',
-    judgeAmendedDocument: '#reviewCMODecision_judgeAmendedDocument',
+
+  async selectCMOToReview(hearing) {
+    I.waitForElement('#cmoToReviewList');
+    I.selectOption('#cmoToReviewList', hearing);
+    await I.runAccessibilityTest();
   },
 
-  selectCMOToReview(date) {
-    I.waitForElement(this.fields.cmoToReviewList);
-    I.selectOption(this.fields.cmoToReviewList, `Case management hearing, ${date}`);
+  async selectSealCmo() {
+    await I.runAccessibilityTest();
+    I.click('#reviewCMODecision_decision-SEND_TO_ALL_PARTIES');
   },
 
-  selectSealCmo() {
-    I.click(this.fields.reviewCmoRadioGroup.seal);
+  selectSealC21(index) {
+    I.click(`#reviewDecision${index}_decision-SEND_TO_ALL_PARTIES`);
   },
 
-  selectMakeChangesToCmo() {
-    I.click(this.fields.reviewCmoRadioGroup.amend);
+  async selectMakeChangesToCmo() {
+    await I.runAccessibilityTest();
+    I.click('No, I need to make changes');
   },
 
   selectReturnCmoForChanges() {
-    I.click(this.fields.reviewCmoRadioGroup.return);
+    I.click('No, the local authority needs to make changes');
+  },
+
+  selectReturnC21ForChanges(index) {
+    I.click(`#reviewDecision${index}_decision-JUDGE_REQUESTED_CHANGES`);
+  },
+
+  enterChangesRequestedC21(index, note) {
+    I.fillField(`#reviewDecision${index}_changesRequestedByJudge`, note);
   },
 
   enterChangesRequested(note) {
-    I.fillField(this.fields.changesRequested, note);
+    I.fillField('#reviewCMODecision_changesRequestedByJudge', note);
   },
 
   uploadAmendedCmo(file) {
-    I.attachFile(this.fields.judgeAmendedDocument, file);
+    I.attachFile('#reviewCMODecision_judgeAmendedDocument', file);
   },
 };

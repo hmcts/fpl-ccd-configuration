@@ -1,7 +1,6 @@
 #!groovy
 
 @Library("Infrastructure")
-import uk.gov.hmcts.contino.ProjectBranch
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = "java"
@@ -16,6 +15,12 @@ def serviceSecrets = [
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
     secret('system-update-user-username', 'SYSTEM_UPDATE_USER_USERNAME'),
     secret('system-update-user-password', 'SYSTEM_UPDATE_USER_PASSWORD')
+  ]
+]
+
+def integrationTestSecrets = [
+  'fpl-aat': [
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
   ]
 ]
 
@@ -46,13 +51,23 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 def archiveCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin") {
-    sh "./build-release-ccd-definition.sh ${env}"
+    if("preview" == env){
+      sh "./build-preview-ccd-definitions.sh ${CHANGE_ID}"
+    } else {
+      sh "./build-release-ccd-definition.sh ${env}"
+    }
   }
 
   dir("${WORKSPACE}/build") {
-    steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
+    if("preview" == env){
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-off.xlsx"
+    } else {
+      steps.archiveArtifacts artifacts: "ccd-release-config/ccd-fpl-${env}.xlsx"
+    }
   }
 }
+
 /**
  * Imports CCD definitions into specified environment. Import XLSX file is archived when process completed.
  *
@@ -62,18 +77,39 @@ def archiveCoreCaseDataDefinitions(env) {
  */
 def uploadCoreCaseDataDefinitions(env) {
   dir("${WORKSPACE}/bin"){
-    ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
-    sh """
-    eval \$(./variables/load-${env}-environment-variables.sh)
-    ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
-  """
+    if("preview" == env){
+      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-preview-${CHANGE_ID}-toggle-on.xlsx"
+      sh """
+        eval \$(./variables/load-preview-environment-variables.sh ${CHANGE_ID})
+        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+      """
+    } else {
+      ccdDefinitionFilePath="${WORKSPACE}/build/ccd-release-config/ccd-fpl-${env}.xlsx"
+      sh """
+        eval \$(./variables/load-${env}-environment-variables.sh)
+        ${WORKSPACE}/fpla-docker/bin/utils/ccd-import-definition.sh ${ccdDefinitionFilePath}
+      """
+    }
   }
+}
+
+def setupSecretsForIntegrationTests(pipelineConf) {
+  withSubscription('nonprod') {
+    withTeamSecrets(pipelineConf, 'aat') {
+      /* Setup Email template integration tests key with gov.notify */
+      env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+    }
+  }
+}
+
+def teardownSecretsForIntegrationTests() {
+  env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
 }
 
 withPipeline(type, product, component) {
   pipelineConf = config;
 
-  loadVaultSecrets(serviceSecrets + otherSecrets)
+  loadVaultSecrets(serviceSecrets + integrationTestSecrets + otherSecrets)
 
   disableLegacyDeployment()
 
@@ -100,6 +136,14 @@ withPipeline(type, product, component) {
     sh """ git submodule update --init """
   }
 
+  before('test') {
+    setupSecretsForIntegrationTests(pipelineConf)
+  }
+
+  after('test') {
+    teardownSecretsForIntegrationTests()
+  }
+
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
@@ -109,15 +153,18 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       ./fpla-docker/bin/add-roles.sh
-      ./bin/import-ccd-definition.sh
     """
+
+    archiveCoreCaseDataDefinitions('preview')
+    uploadCoreCaseDataDefinitions('preview')
 
     env.DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal"
     env.IDAM_API_URL="https://idam-api.aat.platform.hmcts.net"
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-    env.URL="https://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
+    env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=11
+    env.PARALLEL_CHUNKS=3
+    env.TEST_RETRIES=1
   }
 
   after('smoketest:saat') {
@@ -191,6 +238,7 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     env.URL = "https://manage-case.aat.platform.hmcts.net"
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
+    env.SMOKE_TESTS_SELECTOR = "@skip-smoke-test"
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }

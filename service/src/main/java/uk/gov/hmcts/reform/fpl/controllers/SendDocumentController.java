@@ -14,12 +14,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.SentDocuments;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentSenderService;
-import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
 import java.util.List;
@@ -36,15 +36,13 @@ public class SendDocumentController extends CallbackController {
     private final ObjectMapper mapper;
     private final DocumentSenderService documentSenderService;
     private final SentDocumentHistoryService sentDocumentHistoryService;
-    private final RepresentativeService representativeService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSave(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        var representativesServedByPost =
-            representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(), POST);
+        List<Representative> representativesServedByPost = caseData.getRepresentativesByServedPreference(POST);
 
         if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()

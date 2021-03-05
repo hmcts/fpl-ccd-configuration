@@ -21,7 +21,7 @@ git submodule update
 
 Add services, roles and users from fpla-docker repository.
 
-Run 
+Run
 ```
 ./bin/generate-local-user-mappings.sh
 ```
@@ -101,7 +101,7 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 ```$bash
 URL="https://manage-case.aat.platform.hmcts.net" IDAM_API_URL="https://idam-api.aat.platform.hmcts.net" CASE_SERVICE_URL="http://fpl-case-service-aat.service.core-compute-aat.internal" DM_STORE_URL="http://dm-store-aat.service.core-compute-aat.internal" yarn test
 ```
-If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD 
+If environment requires user to login into hmcts account first then set HMCTS_USER_USERNAME and HMCTS_USER_PASSWORD
 
 ## Running E2E against PR enviroment
 
@@ -117,18 +117,100 @@ Application must be up and running
 ./gradlew runApiTest
 ```
 
+## Running email template integration tests locally
+
+In order to run the template tests locally you need to add the gov.uk.notify test-key here:
+```
+Create the file in this location (it's already included in .gitignore)
+.service/src/integrationTest/resources/application-email-template-test.yaml
+
+spring:
+  profiles: email-template-test
+
+integration-test:
+  notify-service:
+    key: <ask for the test key to the other developers>
+
+(the key will start with integrationtests-*, hence not sending real emails since this is a test key,
+see https://docs.notifications.service.gov.uk/java.html#api-keys)
+```
+
 Report is generated in build/reports/serenity
+
+## Connecting to PR database:
+
+```$bash
+kubectl port-forward fpl-case-service-pr-<PR-ID>-postgresql-0 5020:5432
+```
+then connect to data-store db on port 5020
+
+
+## Connecting to local open idm database:
+
+```$bash
+host: localhost
+port: 5051
+user: openidm
+password: openidm
+database: openidm
+```
+User details are kept in openidm.managedobjects table
+
+## Connecting to PR elastic search:
+```$bash
+kubectl port-forward fpl-case-service-pr-<PR-ID>-es-master-0 9210:9200
+```
+then
+```$bash
+curl http://localhost:9210/care_supervision_epo_cases-000001/_search
+```
+
+## Uploading ccd definition into PR environment
+On PR env following ccd definition files are generated and stored as jenkins job artefacts:
+- ccd-fpl-preview-<PR_ID>-toggle-on.xlsx (uploaded automatically by jenkins)
+- ccd-fpl-preview-<PR_ID>-toggle-off.xlsx
+
+you can download these files and import against PR env like follow (vpn needed):
+
+
+```$bash
+PR=<PR_ID> \
+CCD_DEFINITION_STORE_API_BASE_URL=https://ccd-definition-store-fpl-case-service-pr-$PR.service.core-compute-preview.internal \
+SERVICE_AUTH_PROVIDER_API_BASE_URL=http://rpe-service-auth-provider-aat.service.core-compute-aat.internal \
+IDAM_API_BASE_URL=https://idam-api.aat.platform.hmcts.net \
+CCD_IDAM_REDIRECT_URL=https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect \
+CCD_CONFIGURER_IMPORTER_USERNAME=<USER> \
+CCD_CONFIGURER_IMPORTER_PASSWORD=<PASSWORD> \
+CCD_API_GATEWAY_IDAM_CLIENT_SECRET=<IDAM_CLIENT_SECRET> \
+CCD_API_GATEWAY_S2S_SECRET=<S2S_SECRET> \
+fpla-docker/bin/utils/ccd-import-definition.sh <FILEPATH>
+```
+
+where:
+- PR_ID - id of pr, file will be uploaded into this PR env
+- USER - vault: fpl-aat.ccd-importer-username
+- PASSWORD - vault: fpl-aat.ccd-importer-password
+- IDAM_CLIENT_SECRET - vault: ccd-aat.ccd-api-gateway-oauth2-client-secret
+- S2S_SECRET - vault: s2s-aat.microservicekey-ccd-gw
+- FILEPATH - path to file to be uploaded
+
+to get values from vault login into https://portal.azure.com/ and find related vault and value
+or
+```$bash
+az login
+az keyvault secret show --name <secret_name> --vault-name <vault_name> | grep value
+```
 
 ## Service:
 See [fpl-service](service/README.md) for more information.
 
 ## Stubbing
-Some external dependencies need to be stubbed (i.e. professional reference data). 
+Some external dependencies need to be stubbed (i.e. professional reference data).
 Stubbing is configured in fpla-docker repository
 
 ## App insight (optional)
-To connect local environment to azure app insight: 
-- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey) 
+To connect local environment to azure app insight:
+- set APPINSIGHTS_INSTRUMENTATIONKEY env variable (value can be found in env vault under name AppInsightsInstrumentationKey)
 - add env variable JAVA_TOOL_OPTIONS=-javaagent:<PATH_TO_PROJECT>/fpl-ccd-configuration/lib/applicationinsights-agent-2.6.1.jar
 
 To connect preview env to azure app insight:
@@ -136,4 +218,5 @@ To connect preview env to azure app insight:
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+
 

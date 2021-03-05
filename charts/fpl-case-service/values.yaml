@@ -7,6 +7,9 @@ idam-pr:
 xui-webapp:
   enabled: false
 
+elastic:
+  enabled: false
+
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
@@ -23,7 +26,7 @@ java:
     FEES_REGISTER_API_URL: http://fees-register-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     MANAGE_CASE_UI_BASE_URL: https://manage-case.{{ .Values.global.environment }}.platform.hmcts.net
-    DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
+    DOCMOSIS_TORNADO_URL: https://docmosis.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_IDAM_CLIENT_BASEURL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_PROVIDER_SERVICE_CLIENT_BASEURL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     SCHEDULER_DB_USER: fpl_scheduler@fpl-case-service-{{ .Values.global.environment }}
@@ -43,7 +46,10 @@ java:
         - local-authority-user-mapping
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
+        - local-authority-code-to-org-id-mapping
         - local-authority-code-to-shared-inbox-mapping
+        - eps-to-local-authorities-mapping
+        - mla-to-local-authorities-mapping
         - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password

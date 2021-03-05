@@ -7,7 +7,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -20,7 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
@@ -42,6 +41,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
@@ -49,14 +50,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RemoveOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
+class RemoveOrderControllerSubmittedEvent extends AbstractCallbackTest {
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String CASE_ID = "12345";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
@@ -145,7 +143,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
         StandardDirectionOrder previousSDO = StandardDirectionOrder.builder().build();
 
         List<Element<StandardDirectionOrder>> hiddenSDOs = singletonList(element(previousSDO));
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(element(CaseManagementOrder.builder().build()));
+        List<Element<HearingOrder>> hiddenCMOs = singletonList(element(HearingOrder.builder().build()));
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, emptyList());
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), hiddenSDOs, emptyList());
@@ -175,7 +173,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
         List<Element<GeneratedOrder>> previousHiddenOrders = singletonList(order);
         List<Element<StandardDirectionOrder>> hiddenSDOs =
             singletonList(element(StandardDirectionOrder.builder().build()));
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(element(CaseManagementOrder.builder().build()));
+        List<Element<HearingOrder>> hiddenCMOs = singletonList(element(HearingOrder.builder().build()));
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, hiddenOrders);
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(hiddenCMOs, hiddenSDOs, previousHiddenOrders);
@@ -191,10 +189,10 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
     @Test
     void shouldNotifyLocalAuthorityIfACMOIsRemoved() throws NotificationClientException {
-        Element<CaseManagementOrder> previousCMO =
-            element(CaseManagementOrder.builder().removalReason(REMOVAL_REASON).build());
+        Element<HearingOrder> previousCMO =
+            element(HearingOrder.builder().removalReason(REMOVAL_REASON).build());
 
-        List<Element<CaseManagementOrder>> hiddenCMOs = singletonList(previousCMO);
+        List<Element<HearingOrder>> hiddenCMOs = singletonList(previousCMO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList());
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(emptyList(), emptyList(), emptyList());
@@ -207,20 +205,20 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(CMO_REMOVAL_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             eq(expectedOrderRemovalTemplateParameters()),
             eq(NOTIFICATION_REFERENCE));
     }
 
     @Test
     void shouldNotifyLocalAuthorityIfAnAdditionalCMOHasBeenRemoved() throws NotificationClientException {
-        Element<CaseManagementOrder> removedCMO =
-            element(CaseManagementOrder.builder().removalReason(REMOVAL_REASON).build());
-        Element<CaseManagementOrder> previousCMO =
-            element(CaseManagementOrder.builder().removalReason("test reason").build());
+        Element<HearingOrder> removedCMO =
+            element(HearingOrder.builder().removalReason(REMOVAL_REASON).build());
+        Element<HearingOrder> previousCMO =
+            element(HearingOrder.builder().removalReason("test reason").build());
 
-        List<Element<CaseManagementOrder>> hiddenCMOs = List.of(previousCMO, removedCMO);
-        List<Element<CaseManagementOrder>> previouHiddenCMOs = singletonList(previousCMO);
+        List<Element<HearingOrder>> hiddenCMOs = List.of(previousCMO, removedCMO);
+        List<Element<HearingOrder>> previouHiddenCMOs = singletonList(previousCMO);
 
         CaseDetails caseDetails = caseDetailsWithRemovableOrders(hiddenCMOs, emptyList(), emptyList());
         CaseDetails caseDetailsBefore = caseDetailsWithRemovableOrders(previouHiddenCMOs, emptyList(), emptyList());
@@ -234,7 +232,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
 
         verify(notificationClient).sendEmail(
             eq(CMO_REMOVAL_NOTIFICATION_TEMPLATE),
-            eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(LOCAL_AUTHORITY_1_INBOX),
             eq(expectedOrderRemovalTemplateParameters()),
             eq(NOTIFICATION_REFERENCE));
 
@@ -268,7 +266,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
     }
 
     private CaseDetails caseDetailsWithRemovableOrders(
-        List<Element<CaseManagementOrder>> hiddenCMOs,
+        List<Element<HearingOrder>> hiddenCMOs,
         List<Element<StandardDirectionOrder>> hiddenSDOs,
         List<Element<GeneratedOrder>> hiddenOrders
     ) {
@@ -278,7 +276,7 @@ class RemoveOrderControllerSubmittedEvent extends AbstractControllerTest {
             .hiddenStandardDirectionOrders(hiddenSDOs)
             .hiddenCaseManagementOrders(hiddenCMOs)
             .respondents1(singletonList(element(RESPONDENT)))
-            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .gatekeeperEmails(
                 singletonList(element(EmailAddress.builder().email(GATEKEEPER_EMAIL_ADDRESS).build()))
             ).build();

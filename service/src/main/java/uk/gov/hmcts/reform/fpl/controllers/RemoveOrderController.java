@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.events.cmo.CMORemovedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.removeorder.RemoveOrderService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
@@ -90,7 +90,8 @@ public class RemoveOrderController extends CallbackController {
             "orderDateToBeRemoved",
             "hearingToUnlink",
             "showRemoveCMOFieldsFlag",
-            "showRemoveSDOWarningFlag"
+            "showRemoveSDOWarningFlag",
+            "showReasonFieldFlag"
         );
 
         return respond(caseDetailsMap);
@@ -104,7 +105,7 @@ public class RemoveOrderController extends CallbackController {
         Optional<StandardDirectionOrder> removedSDO = service.getRemovedSDO(
             caseData.getHiddenStandardDirectionOrders(), caseDataBefore.getHiddenStandardDirectionOrders()
         );
-        Optional<CaseManagementOrder> removedCMO = service.getRemovedCMO(
+        Optional<HearingOrder> removedCMO = service.getRemovedCMO(
             caseData.getHiddenCMOs(), caseDataBefore.getHiddenCMOs()
         );
 
@@ -114,7 +115,7 @@ public class RemoveOrderController extends CallbackController {
                 caseData, removedSDO.map(StandardDirectionOrder::getRemovalReason).orElse("")));
         } else if (removedCMO.isPresent()) {
             publishEvent(
-                new CMORemovedEvent(caseData, removedCMO.map(CaseManagementOrder::getRemovalReason).orElse("")));
+                new CMORemovedEvent(caseData, removedCMO.map(HearingOrder::getRemovalReason).orElse("")));
         }
     }
 }

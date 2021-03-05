@@ -7,9 +7,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -52,8 +51,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -76,10 +75,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testEmail;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdviser;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
+class GeneratedOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private Document document;
 
@@ -88,9 +86,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private IdamClient idamClient;
 
     GeneratedOrderControllerAboutToSubmitTest() {
         super("create-order");
@@ -184,7 +179,8 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        final String expiryDate = subtype == INTERIM ? "End of the proceedings" : null;
+        final String expiryDate = subtype == INTERIM
+            ? "At the end of the proceedings, or until a further order is made" : null;
         final GeneratedOrder expectedCareOrder = commonExpectedOrder(format("%s care order", subtype.getLabel()))
             .expiryDate(expiryDate)
             .children(expectedChildren(caseData))
@@ -203,7 +199,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         final GeneratedOrder expectedSupervisionOrder = commonExpectedOrder("Interim supervision order")
-            .expiryDate("End of the proceedings")
+            .expiryDate("At the end of the proceedings, or until a further order is made")
             .children(expectedChildren(caseData))
             .build();
 
@@ -231,11 +227,9 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldAddUploadedOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
-        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(
-            UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoles())
-                .build()
-        );
+        givenCurrentUser(UserDetails.builder()
+            .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+            .build());
 
         final CaseData caseData = commonCaseData(UploadedOrderType.C27)
             .orderAppliesToAllChildren("Yes")
@@ -346,6 +340,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .epoType(EPOType.PREVENT_REMOVAL)
             .epoPhrase(EPOPhrase.builder().includePhrase("PHRASE").build())
             .epoEndDate(now().plusDays(5))
+            .epoExclusionRequirementType(EPOExclusionRequirementType.NO_TO_EXCLUSION)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -356,11 +351,9 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSetFinalOrderIssuedForUploadedEducationSupervisionOrder() {
-        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(
-            UserDetails.builder()
-                .roles(UserRole.HMCTS_ADMIN.getRoles())
-                .build()
-        );
+        givenCurrentUser(UserDetails.builder()
+            .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+            .build());
 
         CaseData caseData = commonCaseData(UploadedOrderType.C37)
             .orderAppliesToAllChildren("Yes")
@@ -415,7 +408,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 .map(party -> Child.builder().party(party).build())
                 .map(ElementUtils::element)
                 .collect(toList()))
-            .caseLocalAuthority(DEFAULT_LA)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateOfIssue(dateNow());
     }
 

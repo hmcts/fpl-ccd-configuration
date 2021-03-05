@@ -30,6 +30,7 @@ module.exports = {
   async enterRecipientDetails(recipients) {
     const elementIndex = await this.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
     this.enterRecipientsAddress(elementIndex, recipients);

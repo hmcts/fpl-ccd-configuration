@@ -1,10 +1,21 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.OrderExclusionClause;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -20,9 +31,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.ADJOURNED_TO_BE_RE_LISTED;
@@ -32,11 +49,19 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTE
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
 class CaseDataTest {
 
@@ -165,6 +190,29 @@ class CaseDataTest {
     void shouldGetOrderAppliesToAllChildrenWithCustomValueWhenMultipleChildrenOnCase() {
         CaseData caseData = CaseData.builder().children1(testChildren()).orderAppliesToAllChildren("No").build();
         assertThat(caseData.getOrderAppliesToAllChildren()).isEqualTo("No");
+    }
+
+    @Test
+    void shouldReturnTrueWhenUsingTemporaryJudge() {
+        CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("test@test.com")
+            .build()).build();
+
+        assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenUsingAllocatedJudge() {
+        CaseData caseData = CaseData.builder().judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+            .build())
+            .allocatedJudge(Judge.builder()
+                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+            .judgeEmailAddress("test@test.com")
+                .build())
+            .build();
+
+        assertThat(caseData.hasSelectedTemporaryJudge(caseData.getJudgeAndLegalAdvisor())).isFalse();
     }
 
     private CaseData caseData(Others.OthersBuilder othersBuilder) {
@@ -377,6 +425,33 @@ class CaseDataTest {
     @Nested
     class GetNextHearingAfterCmo {
         @Test
+        void shouldGetAllHearings() {
+            Element<HearingBooking> hearing = element(HearingBooking.builder()
+                .startDate(now())
+                .build());
+            Element<HearingBooking> adjournedHearing = element(HearingBooking.builder()
+                .startDate(now())
+                .status(ADJOURNED)
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(List.of(hearing))
+                .cancelledHearingDetails(List.of(adjournedHearing))
+                .build();
+
+            List<Element<HearingBooking>> allHearings = caseData.getAllHearings();
+            assertThat(allHearings).containsExactly(hearing, adjournedHearing);
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoHearings() {
+            CaseData caseData = CaseData.builder().build();
+
+            List<Element<HearingBooking>> allHearings = caseData.getAllHearings();
+            assertThat(allHearings).isEmpty();
+        }
+
+        @Test
         void shouldReturnExpectedNextHearingBooking() {
             HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
                 ISSUE_RESOLUTION, randomUUID());
@@ -388,6 +463,26 @@ class CaseDataTest {
                 element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
 
             CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+            Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
+
+            assertThat(nextHearingBooking).isPresent().contains(nextHearing);
+        }
+
+        @Test
+        void shouldReturnExpectedHearingWhenCMOAssociatedWithAdjournedHearing() {
+            HearingBooking nextHearing = createHearingBooking(futureDate.plusDays(6), futureDate.plusDays(7),
+                ISSUE_RESOLUTION, randomUUID());
+
+            List<Element<HearingBooking>> hearingBookings = List.of(
+                element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3), CASE_MANAGEMENT, null)),
+                element(nextHearing),
+                element(createHearingBooking(futureDate, futureDate.plusDays(1), ISSUE_RESOLUTION, null)));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(hearingBookings)
+                .cancelledHearingDetails(List.of(element(
+                    createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6), FINAL, cmoID))))
+                .build();
             Optional<HearingBooking> nextHearingBooking = caseData.getNextHearingAfterCmo(cmoID);
 
             assertThat(nextHearingBooking).isPresent().contains(nextHearing);
@@ -591,16 +686,16 @@ class CaseDataTest {
         @Test
         void shouldReturnPastAndTodayHearingBookings() {
             Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
             Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
                 .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
                 .build());
             Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .build());
             Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -618,7 +713,7 @@ class CaseDataTest {
         @Test
         void shouldReturnEmptyListWhenNoPastOrTodayHearingBookings() {
             Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -642,16 +737,16 @@ class CaseDataTest {
         @Test
         void shouldReturnFutureAndTodayHearingBookings() {
             Element<HearingBooking> todayHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
             Element<HearingBooking> todayLateHearingBooking = element(HearingBooking.builder()
                 .startDate(LocalDate.now().plusDays(1).atStartOfDay().minusMinutes(1))
                 .build());
             Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .build());
             Element<HearingBooking> futureHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -669,7 +764,7 @@ class CaseDataTest {
         @Test
         void shouldReturnEmptyListWhenNoFutureOrTodayHearingBookings() {
             Element<HearingBooking> pastHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -754,7 +849,7 @@ class CaseDataTest {
         @Test
         void shouldAddFirstHearingBooking() {
             Element<HearingBooking> firstHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder().build();
@@ -767,11 +862,11 @@ class CaseDataTest {
         @Test
         void shouldAddNewHearingBooking() {
             Element<HearingBooking> existingHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
+                .startDate(now())
                 .build());
 
             Element<HearingBooking> newHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -804,12 +899,12 @@ class CaseDataTest {
         @Test
         void shouldAddNewAdjournedHearingBooking() {
             Element<HearingBooking> existingAdjournedHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().minusDays(1))
+                .startDate(now().minusDays(1))
                 .status(ADJOURNED)
                 .build());
 
             Element<HearingBooking> newAdjournedHearingBooking = element(HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(now().plusDays(1))
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -905,6 +1000,386 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class GetNextHearingAfter {
+
+        @Test
+        void shouldReturnNextHearingAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+            HearingBooking futureHearing = HearingBooking.builder().startDate(now().plusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing, futureHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).contains(futureHearing);
+        }
+
+        @Test
+        void shouldReturnNothingIfNoHearingsAfterGivenTime() {
+            HearingBooking pastHearing = HearingBooking.builder().startDate(now().minusDays(1)).build();
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(pastHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getNextHearingAfter(now());
+
+            assertThat(foundHearing).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetFirstHearingOfType {
+
+        @Test
+        void shouldReturnFirstHearingOfGivenType() {
+            HearingBooking otherHearing = hearingBooking(OTHER, now().plusDays(1));
+            HearingBooking caseManagementHearing = hearingBooking(CASE_MANAGEMENT, now());
+            HearingBooking laterCaseManagementHearing = hearingBooking(CASE_MANAGEMENT, now().plusDays(3));
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(otherHearing, laterCaseManagementHearing, caseManagementHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT);
+
+            assertThat(foundHearing).contains(caseManagementHearing);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenTypeIsNotInPopulatedList() {
+            HearingBooking caseManagementHearing = hearingBooking(CASE_MANAGEMENT, now());
+
+            CaseData caseData = CaseData.builder()
+                .hearingDetails(wrapElements(caseManagementHearing))
+                .build();
+
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(OTHER);
+
+            assertThat(foundHearing).isNotPresent();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyOptional(List<Element<HearingBooking>> hearingBookings) {
+            CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+
+            Optional<HearingBooking> foundHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT);
+
+            assertThat(foundHearing).isNotPresent();
+        }
+
+        private HearingBooking hearingBooking(HearingType type, LocalDateTime startDate) {
+            return HearingBooking.builder()
+                .type(type)
+                .startDate(startDate)
+                .build();
+        }
+    }
+
+    @Nested
+    class BuildJudicialMessageList {
+        UUID firstId = randomUUID();
+        UUID secondId = randomUUID();
+        UUID thirdId = randomUUID();
+
+        @Test
+        void shouldBuildDynamicJudicialMessageListFromJudicialMessages() {
+            List<Element<JudicialMessage>> judicialMessages = List.of(
+                element(firstId, buildJudicialMessage("Subject 1", "Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Subject 2", "Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("Subject 3", "High", "13 November 2020", YES))
+            );
+
+            CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
+            );
+
+            assertThat(caseData.buildJudicialMessageDynamicList())
+                .isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicJudicialMessageListWithSelectorPropertyFromJudicialMessage() {
+            List<Element<JudicialMessage>> judicialMessages = List.of(
+                element(firstId, buildJudicialMessage("Subject 1", "Low", "11 November 2020", YES)),
+                element(secondId, buildJudicialMessage("Subject 2", "Medium", "12 November 2020", NO)),
+                element(thirdId, buildJudicialMessage("Subject 3", "High", "13 November 2020", YES))
+            );
+
+            CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
+            DynamicList expectedDynamicList = buildDynamicList(2,
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
+            );
+
+            assertThat(caseData.buildJudicialMessageDynamicList(thirdId))
+                .isEqualTo(expectedDynamicList);
+        }
+
+        private JudicialMessage buildJudicialMessage(String subject, String urgency, String dateSent,
+                                                     YesNo isRelatedToC2) {
+            return JudicialMessage.builder()
+                .subject(subject)
+                .urgency(urgency)
+                .dateSent(dateSent)
+                .isRelatedToC2(isRelatedToC2)
+                .build();
+        }
+    }
+
+    @Nested
+    class GetRepresentativesByServedPreference {
+        private Representative emailRepOne = testRepresentative(EMAIL);
+        private Representative emailRepTwo = testRepresentative(EMAIL);
+        private Representative digitalRepOne = testRepresentative(DIGITAL_SERVICE);
+        private Representative digitalRepTwo = testRepresentative(DIGITAL_SERVICE);
+
+        @Test
+        void shouldReturnListOfEmailRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+
+            assertThat(emailRepresentatives).containsExactlyInAnyOrder(emailRepOne, emailRepTwo);
+        }
+
+        @Test
+        void shouldReturnListOfDigitalRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives
+                = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+
+            assertThat(digitalRepresentatives).containsExactlyInAnyOrder(digitalRepOne, digitalRepTwo);
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotMatchServingPreference() {
+            CaseData caseData = CaseData.builder()
+                .representatives(getRepresentativesOfMixedServingPreferences())
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenRepresentativesDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .build();
+
+            List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(POST);
+
+            assertThat(digitalRepresentatives).isEmpty();
+        }
+
+        @Test
+        void shouldReturnHearingOrdersBundlesForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(AGREED_CMO).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            Element<HearingOrdersBundle> bundle2 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build()),
+                        element(HearingOrder.builder().type(C21).status(SEND_TO_JUDGE).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1, bundle2))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval())
+                .extracting(Element::getId)
+                .containsExactly(bundle1.getId(), bundle2.getId());
+        }
+
+        @Test
+        void shouldReturnEmptyWhenNoHearingOrdersBundlesExistForApproval() {
+            Element<HearingOrdersBundle> bundle1 = element(randomUUID(),
+                HearingOrdersBundle.builder()
+                    .orders(newArrayList(
+                        element(HearingOrder.builder().type(DRAFT_CMO).status(DRAFT).build())
+                    )).build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(newArrayList(bundle1))
+                .build();
+
+            assertThat(caseData.getBundlesForApproval()).isEmpty();
+        }
+
+        private List<Element<Representative>> getRepresentativesOfMixedServingPreferences() {
+            return List.of(
+                element(emailRepOne),
+                element(emailRepTwo),
+                element(digitalRepOne),
+                element(digitalRepTwo));
+        }
+    }
+
+    @Nested
+    class GetHearingOrderDraftCMOs {
+        @Test
+        void shouldReturnAListOfDraftCaseManagementOrdersWhenExistingWithinHearingOrderBundleDrafts() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftCMOTwo = element(randomUUID(), buildHearingOrder(AGREED_CMO));
+            Element<HearingOrder> draftCMOThree = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        draftCMOThree,
+                        element(buildHearingOrder(C21))
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEqualTo(List.of(draftCMOOne, draftCMOTwo, draftCMOThree));
+        }
+
+        @Test
+        void shouldReturnAnEmptyListWhenHearingOrderBundlesWithDraftCMOsDoNotExist() {
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(buildHearingOrder(C21)))).build()),
+                    element(HearingOrdersBundle.builder().orders(List.of(
+                        element(buildHearingOrder(C21))
+                    )).build())))
+                .build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyListIfHearingOrderBundlesDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+
+            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetDraftUploadedCMOWithId {
+
+        @Test
+        void shouldReturnEmptyWhenCaseDataDoesNotHaveDraftUploadedCMOs() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(draftCMOOne, element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            assertThat(caseData.getDraftUploadedCMOWithId(null)).isEmpty();
+        }
+
+        @Test
+        void shouldReturnDraftCMOWhenDraftUploadedCMOsContainTheExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(draftCMOOne, element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            Optional<Element<HearingOrder>> matchingHearingOrder =
+                caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrder).isPresent().contains(draftCMOOne);
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenDraftUploadedCMOsDoNotContainExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(element(buildHearingOrder(DRAFT_CMO))))
+                .build();
+
+            Optional<Element<HearingOrder>> matchingHearingOrder =
+                caseData.getDraftUploadedCMOWithId(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrder).isNotPresent();
+        }
+    }
+
+    @Nested
+    class GetHearingOrderBundleThatContainsOrder {
+        @Test
+        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedOrder() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    draftCMOOne,
+                    element(buildHearingOrder(C21))))
+                .build());
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    element(buildHearingOrder(DRAFT_CMO)),
+                    element(buildHearingOrder(C21))))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleOne, hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrderBundle).isPresent().contains(hearingOrdersBundleOne);
+        }
+
+        @Test
+        void shouldReturnEmptyWhenHearingOrdersBundlesDraftsIsNull() {
+            CaseData caseData = CaseData.builder().build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(randomUUID());
+
+            assertThat(matchingHearingOrderBundle).isEmpty();
+        }
+
+        @Test
+        void shouldReturnAnEmptyOptionalWhenExpectedOrderIsNotContainedWithinHearingOrderBundle() {
+            Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(List.of(
+                    element(HearingOrder.builder().type(DRAFT_CMO).build()),
+                    element(HearingOrder.builder().type(C21).build())))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
+
+            assertThat(matchingHearingOrderBundle).isEmpty();
+        }
+    }
+
+    private HearingOrder buildHearingOrder(HearingOrderType type) {
+        return HearingOrder.builder().type(type).build();
+    }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();

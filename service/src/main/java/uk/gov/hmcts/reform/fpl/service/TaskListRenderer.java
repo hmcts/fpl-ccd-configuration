@@ -1,27 +1,25 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
+import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.List.of;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -36,19 +34,13 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection.newSection;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TaskListRenderer {
 
     private static final String HORIZONTAL_LINE = "<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>";
     private static final String NEW_LINE = "<br/>";
 
-    private final String imagesBaseUrl;
-    private final FeatureToggleService featureToggleService;
-
-    public TaskListRenderer(@Value("${resources.images.baseUrl}") String imagesBaseUrl,
-                            FeatureToggleService featureToggleService) {
-        this.imagesBaseUrl = imagesBaseUrl;
-        this.featureToggleService = featureToggleService;
-    }
+    private final TaskListRenderElements taskListRenderElements;
 
     //TODO consider templating solution like mustache
     public String render(List<Task> allTasks) {
@@ -80,16 +72,10 @@ public class TaskListRenderer {
                 .withHint("In emergency cases, you can send your application without this information")
         ));
 
-        final TaskSection documents;
-        if (featureToggleService.isApplicationDocumentsEventEnabled()) {
-            documents = newSection("Add application documents",
-                of(tasks.get(APPLICATION_DOCUMENTS)))
-                .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
-                    + "you can send your application without this information ");
-        } else {
-            documents = newSection("Add supporting documents", of(tasks.get(DOCUMENTS)))
-                .withHint("For example, SWET, social work chronology and care plan");
-        }
+        final TaskSection documents = newSection("Add application documents",
+            of(tasks.get(APPLICATION_DOCUMENTS)))
+            .withHint("For example, SWET, social work chronology and care plan<br> In emergency cases, "
+                + "you can send your application without this information ");
 
         final TaskSection parties = newSection("Add information about the parties",
             List.of(
@@ -124,10 +110,10 @@ public class TaskListRenderer {
         final List<String> section = new LinkedList<>();
 
         section.add(NEW_LINE);
-        section.add(renderHeader(sec.getName()));
+        section.add(taskListRenderElements.renderHeader(sec.getName()));
 
-        sec.getHint().map(this::renderHint).ifPresent(section::add);
-        sec.getInfo().map(this::renderInfo).ifPresent(section::add);
+        sec.getHint().map(taskListRenderElements::renderHint).ifPresent(section::add);
+        sec.getInfo().map(taskListRenderElements::renderInfo).ifPresent(section::add);
 
         section.add(HORIZONTAL_LINE);
         sec.getTasks().forEach(task -> {
@@ -143,44 +129,28 @@ public class TaskListRenderer {
 
         switch (task.getState()) {
             case NOT_AVAILABLE:
-                lines.add(renderDisabledLink(task) + renderImage("cannot-send-yet.png", "Cannot send yet"));
+                lines.add(taskListRenderElements.renderDisabledLink(task)
+                    + taskListRenderElements.renderImage("cannot-send-yet.png", "Cannot send yet"));
                 break;
             case IN_PROGRESS:
-                lines.add(renderLink(task) + renderImage("in-progress.png", "In progress"));
+                lines.add(taskListRenderElements.renderLink(task)
+                    + taskListRenderElements.renderImage("in-progress.png", "In progress"));
                 break;
             case COMPLETED:
-                lines.add(renderLink(task) + renderImage("information-added.png", "Information added"));
+                lines.add(taskListRenderElements.renderLink(task)
+                    + taskListRenderElements.renderImage("information-added.png", "Information added"));
+                break;
+            case COMPLETED_FINISHED:
+                lines.add(taskListRenderElements.renderLink(task)
+                    + taskListRenderElements.renderImage("finished.png", "Finished"));
                 break;
             default:
-                lines.add(renderLink(task));
+                lines.add(taskListRenderElements.renderLink(task));
         }
 
-        task.getHint().map(this::renderHint).ifPresent(lines::add);
+        task.getHint().map(taskListRenderElements::renderHint).ifPresent(lines::add);
         return lines;
     }
 
-    private String renderLink(Task event) {
-        return format("<a href='/case/%s/%s/${[CASE_REFERENCE]}/trigger/%s'>%s</a>",
-            JURISDICTION, CASE_TYPE, event.getEvent().getId(), event.getEvent().getName());
-    }
 
-    private String renderDisabledLink(Task event) {
-        return format("<a>%s</a>", event.getEvent().getName());
-    }
-
-    private String renderImage(String imageName, String title) {
-        return format("<img align='right' height='25px' src='%s%s' title='%s'/>", imagesBaseUrl, imageName, title);
-    }
-
-    private String renderHint(String text) {
-        return format("<span class='govuk-hint govuk-!-font-size-14'>%s</span>", text);
-    }
-
-    private String renderInfo(String text) {
-        return format("<div class='panel panel-border-wide govuk-!-font-size-16'>%s</div>", text);
-    }
-
-    private String renderHeader(String text) {
-        return format("## %s", text);
-    }
 }

@@ -10,6 +10,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "lastUploadedOrder",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "hearingDate",
     "FieldType": "Date",
     "ElementLabel": "The date of the hearing",

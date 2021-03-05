@@ -9,11 +9,12 @@ module.exports = {
     },
   },
 
-  checkC6() {
+  async checkC6() {
     I.checkOption(this.fields.proceedingType.c6);
   },
 
-  checkC6A() {
+  async checkC6A() {
+    await I.runAccessibilityTest();
     I.checkOption(this.fields.proceedingType.c6a);
   },
 

@@ -29,13 +29,9 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Risks;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisSocialWorkOther;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -48,7 +44,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -58,7 +53,6 @@ import java.util.Objects;
 
 import static java.lang.String.join;
 import static java.time.LocalDate.parse;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -67,7 +61,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
-import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -88,7 +82,6 @@ public class CaseSubmissionGenerationService
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
     private final IdamClient idamClient;
     private final RequestData requestData;
-    private final FeatureToggleService featureToggleService;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
@@ -119,10 +112,8 @@ public class CaseSubmissionGenerationService
             .groundsThresholdReason(caseData.getGrounds() != null
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
-            .annexDocuments(
-                featureToggleService.isApplicationDocumentsEventEnabled()
-                    ? annexGenerator.generate(caseData) : buildDocmosisAnnexDocuments(caseData)
-            ).userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
+            .annexDocuments(annexGenerator.generate(caseData))
+            .userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
 
         return applicationFormBuilder.build();
     }
@@ -187,6 +178,15 @@ public class CaseSubmissionGenerationService
     private void appendEmergencyProtectionOrdersAndDetailsToOrdersNeeded(final Orders orders,
                                                                          final StringBuilder stringBuilder) {
         if (isNotEmpty(orders.getEmergencyProtectionOrders())) {
+            if (isNotEmpty(orders.getEpoType())) {
+                stringBuilder.append(orders.getEpoType().getLabel());
+                stringBuilder.append(NEW_LINE);
+                if (orders.getEpoType() == PREVENT_REMOVAL) {
+                    String address = orders.getAddress().getAddressAsString(NEW_LINE);
+                    stringBuilder.append(address);
+                    stringBuilder.append(NEW_LINE);
+                }
+            }
             stringBuilder.append(orders.getEmergencyProtectionOrders().stream()
                 .map(EmergencyProtectionOrdersType::getLabel)
                 .collect(joining(NEW_LINE)));
@@ -222,6 +222,12 @@ public class CaseSubmissionGenerationService
 
     private void appendEmergencyProtectionOrderDirectionDetails(final Orders orders,
                                                                 final StringBuilder stringBuilder) {
+
+        if (StringUtils.isNotBlank(orders.getExcluded())) {
+            stringBuilder.append(orders.getExcluded() + " excluded");
+            stringBuilder.append(NEW_LINE);
+        }
+
         if (StringUtils.isNotEmpty(orders.getEmergencyProtectionOrderDirectionDetails())) {
             stringBuilder.append(orders.getEmergencyProtectionOrderDirectionDetails());
             stringBuilder.append(NEW_LINE);
@@ -348,7 +354,7 @@ public class CaseSubmissionGenerationService
         return DocmosisOtherParty.builder()
             .name(other.getName())
             .gender(formatGenderDisplay(other.getGender(), other.getGenderIdentification()))
-            .dateOfBirth(other.getDateOfBirth() != null
+            .dateOfBirth(StringUtils.isNotBlank(other.getDateOfBirth())
                 ? formatLocalDateToString(parse(other.getDateOfBirth()), DATE)
                 : DEFAULT_STRING
             )
@@ -545,48 +551,6 @@ public class CaseSubmissionGenerationService
             .respondentsAwareReason(hearingPresent && StringUtils.isNotEmpty(hearing.getRespondentsAware())
                 ? hearing.getRespondentsAwareReason()
                 : DEFAULT_STRING)
-            .build();
-    }
-
-    private DocmosisAnnexDocuments buildDocmosisAnnexDocuments(final CaseData caseData) {
-        return DocmosisAnnexDocuments.builder()
-            .socialWorkChronology(formatAnnexDocumentDisplay(caseData.getSocialWorkChronologyDocument()))
-            .socialWorkStatement(formatAnnexDocumentDisplay(caseData.getSocialWorkStatementDocument()))
-            .socialWorkAssessment(formatAnnexDocumentDisplay(caseData.getSocialWorkAssessmentDocument()))
-            .socialWorkCarePlan(formatAnnexDocumentDisplay(caseData.getSocialWorkCarePlanDocument()))
-            .socialWorkEvidenceTemplate(formatAnnexDocumentDisplay(caseData.getSocialWorkEvidenceTemplateDocument()))
-            .thresholdDocument(formatAnnexDocumentDisplay(caseData.getThresholdDocument()))
-            .checklistDocument(formatAnnexDocumentDisplay(caseData.getChecklistDocument()))
-            .others(formatAnnexDocumentDisplay(caseData.getOtherSocialWorkDocuments()))
-            .build();
-    }
-
-    private String formatAnnexDocumentDisplay(final Document document) {
-        if (isNotEmpty(document) && StringUtils.isNotEmpty(document.getDocumentStatus())) {
-            StringBuilder sb = new StringBuilder(document.getDocumentStatus());
-            if (!equalsIgnoreCase(document.getDocumentStatus(), ATTACHED.getLabel())
-                && StringUtils.isNotEmpty(document.getStatusReason())) {
-                sb.append(NEW_LINE).append(document.getStatusReason());
-            }
-            return sb.toString();
-
-        }
-        return DEFAULT_STRING;
-    }
-
-    private List<DocmosisSocialWorkOther> formatAnnexDocumentDisplay(
-        final List<Element<DocumentSocialWorkOther>> otherSocialWorkDocuments) {
-        return isNotEmpty(otherSocialWorkDocuments) ? otherSocialWorkDocuments.stream()
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .map(this::buildDocmosisSocialWorkOther)
-            .collect(toList()) : emptyList();
-    }
-
-    private DocmosisSocialWorkOther buildDocmosisSocialWorkOther(DocumentSocialWorkOther document) {
-        return DocmosisSocialWorkOther.builder()
-            .documentTitle(
-                StringUtils.isNotEmpty(document.getDocumentTitle()) ? document.getDocumentTitle() : DEFAULT_STRING)
             .build();
     }
 

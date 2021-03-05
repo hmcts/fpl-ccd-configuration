@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -73,9 +74,9 @@ public class RemoveOrderService {
         return getRemovedOrder(hiddenSDOs, previousHiddenSDOs);
     }
 
-    public Optional<CaseManagementOrder> getRemovedCMO(
-        List<Element<CaseManagementOrder>> hiddenCMOs,
-        List<Element<CaseManagementOrder>> previousHiddenCMOs
+    public Optional<HearingOrder> getRemovedCMO(
+        List<Element<HearingOrder>> hiddenCMOs,
+        List<Element<HearingOrder>> previousHiddenCMOs
     ) {
         return getRemovedOrder(hiddenCMOs, previousHiddenCMOs);
     }
@@ -96,13 +97,27 @@ public class RemoveOrderService {
         List<Element<? extends RemovableOrder>> orders = new ArrayList<>();
         orders.addAll(caseData.getOrderCollection());
         orders.addAll(caseData.getSealedCMOs());
+        orders.addAll(getDraftCMOs(caseData));
 
-        if (caseData.getStandardDirectionOrder() != null) {
+        if (!FINAL_HEARING.equals(caseData.getState()) && caseData.getStandardDirectionOrder() != null) {
             StandardDirectionOrder standardDirectionOrder = caseData.getStandardDirectionOrder();
 
             orders.add(element(standardDirectionOrder.getCollectionId(), standardDirectionOrder));
         }
 
         return orders;
+    }
+
+    private List<Element<HearingOrder>> getDraftCMOs(CaseData caseData) {
+        List<Element<HearingOrder>> hearingOrderDraftCMOs = caseData.getHearingOrderDraftCMOs();
+        caseData.getDraftUploadedCMOs().forEach(
+            draftCMO -> {
+                if (hearingOrderDraftCMOs.stream().noneMatch(cmo -> cmo.getId().equals(draftCMO.getId()))) {
+                    hearingOrderDraftCMOs.add(draftCMO);
+                }
+            }
+        );
+
+        return hearingOrderDraftCMOs;
     }
 }
