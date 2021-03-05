@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractControllerTest {
+abstract class ManageDocumentsControllerSubmittedBaseTest extends AbstractCallbackTest {
     protected static final String CONFIDENTIAL_MARKER = "CONFIDENTIAL";
     protected static final Long CASE_ID = 12345L;
     protected static final String EMAIL_REFERENCE = "localhost/" + CASE_ID.toString();

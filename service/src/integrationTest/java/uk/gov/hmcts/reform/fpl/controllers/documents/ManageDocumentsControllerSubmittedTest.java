@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -29,9 +28,6 @@ class ManageDocumentsControllerSubmittedTest extends ManageDocumentsControllerSu
 
     @MockBean
     private FeatureToggleService featureToggleService;
-
-    @MockBean
-    private IdamClient idamClient;
 
     @MockBean
     private NotificationClient notificationClient;
