@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.CMOType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -97,6 +98,7 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         UploadDraftOrdersData prevEventData = UploadDraftOrdersData.builder()
             .pastHearingsForCMO(pastHearingList)
             .hearingOrderDraftKind(List.of(CMO))
+            .cmoSupportingDocs(supportingDocs)
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -115,6 +117,66 @@ class UploadDraftOrdersPopulateOrdersInfoMidEventControllerTest extends Abstract
         assertThat(updatedEventData.getCmoSupportingDocs()).isEqualTo(supportingDocs);
         assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2020");
         assertThat(updatedEventData.getPastHearingsForCMO()).isEqualTo(pastHearingListAsMap);
+        assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
+    }
+
+    @Test
+    void shouldReplaceSupportingDocumentsInTheDraftCMOWhenSupportingDocumentIsPresent() {
+        List<Element<SupportingEvidenceBundle>> supportingDocs = List.of(element(SupportingEvidenceBundle.builder()
+            .name("some doc")
+            .build()));
+
+        List<Element<SupportingEvidenceBundle>> updatedSupportingDocs = List.of(
+            element(SupportingEvidenceBundle.builder()
+                .name("new document")
+                .build()));
+
+        Element<HearingOrder> draftCMO = element(HearingOrder.builder()
+            .order(DOCUMENT)
+            .status(CMOStatus.DRAFT)
+            .supportingDocs(supportingDocs)
+            .build());
+
+        List<Element<HearingOrder>> unsealedCMOs = List.of(draftCMO);
+
+        List<Element<HearingBooking>> hearings = new ArrayList<>(hearings());
+        hearings.add(hearingWithCMOId(LocalDateTime.of(2021, 3, 17, 11, 11), unsealedCMOs.get(0).getId()));
+
+        DynamicList hearingsList = dynamicLists.from(
+            2,
+            Pair.of("Case management hearing, 15 March 2020", hearings.get(0).getId()),
+            Pair.of("Case management hearing, 16 March 2020", hearings.get(1).getId()),
+            Pair.of("Case management hearing, 17 March 2021", hearings.get(2).getId())
+        );
+
+        Map<String, Object> hearingListAsMap = mapper.convertValue(hearingsList, new TypeReference<>() {
+        });
+
+        UploadDraftOrdersData prevEventData = UploadDraftOrdersData.builder()
+            .futureHearingsForCMO(hearingsList)
+            .hearingOrderDraftKind(List.of(CMO))
+            .cmoUploadType(CMOType.DRAFT)
+            .previousCMO(draftCMO.getValue().getOrder())
+            .showCMOsSentToJudge(YesNo.NO)
+            .cmoSupportingDocs(updatedSupportingDocs)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(hearings)
+            .draftUploadedCMOs(unsealedCMOs)
+            .uploadDraftOrdersEventData(prevEventData)
+            .build();
+
+        CaseData updatedCaseData = extractCaseData(postMidEvent(caseData, "populate-drafts-info"));
+        UploadDraftOrdersData updatedEventData = updatedCaseData.getUploadDraftOrdersEventData();
+
+        assertThat(updatedEventData.getHearingOrderDraftKind()).isEqualTo(prevEventData.getHearingOrderDraftKind());
+        assertThat(updatedEventData.getPreviousCMO()).isEqualTo(DOCUMENT);
+        assertThat(updatedEventData.getCmoToSend()).isEqualTo(DOCUMENT);
+        assertThat(updatedEventData.getShowReplacementCMO()).isEqualTo(YesNo.YES);
+        assertThat(updatedEventData.getCmoSupportingDocs()).isEqualTo(updatedSupportingDocs);
+        assertThat(updatedEventData.getCmoHearingInfo()).isEqualTo("Case management hearing, 17 March 2021");
+        assertThat(updatedEventData.getFutureHearingsForCMO()).isEqualTo(hearingListAsMap);
         assertThat(updatedEventData.getCmoJudgeInfo()).isEqualTo("Her Honour Judge Judy");
     }
 }

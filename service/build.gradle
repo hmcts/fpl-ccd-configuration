@@ -120,6 +120,17 @@ task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
 }
 
+task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
+  onlyIf {
+    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
+  }
+  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+}
+
+task crossbrowser(description: 'Runs crossbrowser tests.') {
+  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"
@@ -218,7 +229,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.5.4'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.6.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
