@@ -10,17 +10,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "c2OrdersRequested",
-    "ElementLabel": "Additional orders requested",
-    "HintText": "Select all that apply",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "C2OrdersRequested",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
@@ -117,6 +106,17 @@
     "ElementLabel": "C2 supporting documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "c2OrdersRequested",
+    "ElementLabel": "Additional orders requested",
+    "HintText": "Select all that apply",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C2OrdersRequested",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
