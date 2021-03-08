@@ -15,9 +15,9 @@ module.exports = {
       yes: '#manageDocumentLA_relatedToHearing-Yes',
       no: '#manageDocumentLA_relatedToHearing-No',
     },
-    furtherEvidenceType: {
-      applicationDocuments: '#furtherEvidenceTypeListLA-APPLICATION_DOCUMENTS',
-      otherDocuments: '#furtherEvidenceTypeListLA-OTHER',
+    subtype: {
+      applicationDocuments: '#manageDocumentSubtypeListLA-APPLICATION_DOCUMENTS',
+      otherDocuments: '#manageDocumentSubtypeListLA-OTHER',
     },
     hearingList: '#manageDocumentsHearingList',
     courtBundleHearingList: '#courtBundleHearingList',
@@ -35,11 +35,11 @@ module.exports = {
   },
 
   async selectFurtherApplicationDocuments() {
-    I.click(this.fields.furtherEvidenceType.applicationDocuments);
+    I.click(this.fields.subtype.applicationDocuments);
   },
 
   async selectAnyOtherDocument() {
-    I.click(this.fields.furtherEvidenceType.otherDocuments);
+    I.click(this.fields.subtype.otherDocuments);
   },
 
   async selectCorrespondence() {

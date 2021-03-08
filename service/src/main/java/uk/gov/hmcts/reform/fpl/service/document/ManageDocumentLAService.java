@@ -32,7 +32,7 @@ public class ManageDocumentLAService {
     public static final String MANAGE_DOCUMENT_LA_KEY = "manageDocumentLA";
     public static final String COURT_BUNDLE_HEARING_LIST_KEY = "courtBundleHearingList";
     public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY = "furtherEvidenceDocumentsLA";
-    public static final String FURTHER_EVIDENCE_TYPE = "furtherEvidenceTypeListLA";
+    public static final String DOCUMENT_SUB_TYPE = "manageDocumentSubtypeListLA";
     public static final String RELATED_TO_HEARING = "manageDocumentsRelatedToHearing";
     public static final String COURT_BUNDLE_KEY = "manageDocumentsCourtBundle";
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";

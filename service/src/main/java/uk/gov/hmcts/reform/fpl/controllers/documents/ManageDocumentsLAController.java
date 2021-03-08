@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.C
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_TYPE;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RELATED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
@@ -186,7 +186,7 @@ public class ManageDocumentsLAController extends CallbackController {
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
-            COURT_BUNDLE_KEY, FURTHER_EVIDENCE_TYPE, RELATED_TO_HEARING);
+            COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING);
 
         return respond(caseDetailsMap);
     }

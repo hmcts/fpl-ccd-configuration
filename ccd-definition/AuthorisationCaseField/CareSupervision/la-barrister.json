@@ -646,7 +646,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "furtherEvidenceTypeListLA",
+    "CaseFieldID": "manageDocumentSubtypeListLA",
     "UserRole": "[LABARRISTER]",
     "CRUD": "CRU"
   },
