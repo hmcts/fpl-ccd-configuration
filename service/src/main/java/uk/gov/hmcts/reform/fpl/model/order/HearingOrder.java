@@ -62,7 +62,7 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return type.isCmo() || (type == C21 && SEND_TO_JUDGE.equals(status));
+        return type != C21 || (type == C21 && SEND_TO_JUDGE.equals(status));
     }
 
     public String asLabel() {
