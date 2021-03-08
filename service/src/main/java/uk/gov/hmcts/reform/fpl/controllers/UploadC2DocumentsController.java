@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -51,6 +52,7 @@ public class UploadC2DocumentsController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final Time time;
     private final UploadC2DocumentsService uploadC2DocumentsService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -97,7 +99,13 @@ public class UploadC2DocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
-        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
+
+        if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
+            caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "additionalApplicationType",
+                "usePbaPayment", AMOUNT_TO_PAY, "pbaNumber", "clientCode", "fileReference"));
+        } else {
+            caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
+        }
 
         return respond(caseDetails);
     }
