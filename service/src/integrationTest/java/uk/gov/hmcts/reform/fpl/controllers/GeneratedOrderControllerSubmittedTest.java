@@ -9,12 +9,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -26,17 +24,13 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import static java.util.UUID.randomUUID;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -54,12 +48,14 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMap;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersMapForRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
@@ -70,7 +66,7 @@ import static uk.gov.hmcts.reform.fpl.utils.matchers.JsonMatcher.eqJson;
 class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1614860986487554L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    private static final String FAMILY_MAN_CASE_NUMBER = "FMN1";
+    private static final String FAMILY_MAN_NUMBER = "FMN1";
     private static final UUID LETTER_1_ID = randomUUID();
     private static final UUID LETTER_2_ID = randomUUID();
     private static final Document ORDER_DOCUMENT = testDocument();
@@ -154,7 +150,7 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static CaseData CASE_DATA = CaseData.builder()
         .id(CASE_ID)
         .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-        .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .familyManCaseNumber(FAMILY_MAN_NUMBER)
         .orderCollection(createOrders(ORDER))
         .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
         .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
@@ -169,13 +165,13 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
             .willReturn(COVERSHEET_REPRESENTATIVE);
         given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
             .willReturn(COVERSHEET_RESPONDENT);
-        given(documentDownloadService.downloadDocument(anyString()))
+        given(documentDownloadService.downloadDocument(ORDER.getBinaryUrl()))
             .willReturn(ORDER_BINARY);
-        given(documentService.createCoverDocuments(any(), any(), eq(REPRESENTATIVE_POST.getValue())))
-            .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_REPRESENTATIVE_BINARY).build());
-        given(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty())))
-            .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
-        given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue()))
+            .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty()))
+            .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
+        given(sendLetterApi.sendLetter(eq(SERVICE_AUTH_TOKEN), any(LetterWithPdfsRequest.class)))
             .willReturn(new SendLetterResponse(LETTER_1_ID))
             .willReturn(new SendLetterResponse(LETTER_2_ID));
     }
@@ -224,10 +220,10 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
         final CaseData caseUpdate = getCase(this.caseDetails);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
-            COVERSHEET_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID);
+            COVERSHEET_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID, now());
 
         SentDocument expectedDocumentSentToRespondent = documentSent(RESPONDENT_NOT_REPRESENTED.getParty(),
-            COVERSHEET_RESPONDENT, ORDER_DOCUMENT, LETTER_2_ID);
+            COVERSHEET_RESPONDENT, ORDER_DOCUMENT, LETTER_2_ID, now());
 
         assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(2);
 
@@ -258,24 +254,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
             eq(DEFAULT_ADMIN_EMAIL),
             any(),
             any());
-    }
-
-    private LetterWithPdfsRequest printRequest(Long caseId, DocumentReference order, byte[]... binaries) {
-        List<String> documents = Stream.of(binaries)
-            .map(Base64.getEncoder()::encodeToString)
-            .collect(toList());
-        Map<String, Object> parameters = Map.of("caseId", caseId, "documentName", order.getFilename());
-        return new LetterWithPdfsRequest(documents, "FPLA001", parameters);
-    }
-
-    private SentDocument documentSent(Recipient recipient, Document coversheet, Document document, UUID letterId) {
-        return SentDocument.builder()
-            .partyName(recipient.getFullName())
-            .letterId(letterId.toString())
-            .document(DocumentReference.buildFromDocument(document))
-            .coversheet(DocumentReference.buildFromDocument(coversheet))
-            .sentAt(formatLocalDateTimeBaseUsingFormat(now(), "h:mma, d MMMM yyyy"))
-            .build();
     }
 
 }
