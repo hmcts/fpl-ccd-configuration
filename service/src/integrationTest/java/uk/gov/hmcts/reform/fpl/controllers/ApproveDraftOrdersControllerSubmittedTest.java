@@ -10,14 +10,19 @@ import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
@@ -66,6 +71,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
+    private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
     private static final DocumentReference orderDocument = testDocumentReference();
 
     @MockBean
@@ -76,6 +82,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private SendLetterService sendLetters;
 
     ApproveDraftOrdersControllerSubmittedTest() {
         super("approve-draft-orders");
@@ -162,6 +171,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
 
+        final List<Recipient> recipients = List.of(createRespondentParty());
+
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
         postSubmittedEvent(callbackRequest);
@@ -202,21 +213,31 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(NOTIFICATION_REFERENCE)
             );
 
-            verify(coreCaseDataService, times(2)).triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                CASE_ID,
-                SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", cmo.getOrder())
+            verify(coreCaseDataService).triggerEvent(eq(JURISDICTION),
+                eq(CASE_TYPE),
+                eq(CASE_ID),
+                eq(UPDATE_CASE_SUMMARY_EVENT),
+                anyMap()
             );
-
-            verify(coreCaseDataService, times(2)).triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                CASE_ID,
-                SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", c21.getOrder()));
 
             verifyNoMoreInteractions(notificationClient);
         });
+
+        verify(sendLetters, times(2)).send(
+            cmo.getOrder(),
+            recipients,
+            CASE_ID,
+            null
+        );
+
+        verify(sendLetters, times(2)).send(
+            c21.getOrder(),
+            recipients,
+            CASE_ID,
+            null
+        );
+
+        verifyNoMoreInteractions(sendLetters);
     }
 
     @Test
@@ -263,6 +284,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
+            .respondents1(createNonRepresentedRespondents())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
@@ -306,5 +328,22 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             .fullName("Charlie Brown")
             .servingPreferences(EMAIL)
             .build());
+    }
+
+    private static List<Element<Respondent>> createNonRepresentedRespondents() {
+        return wrapElements(
+            Respondent.builder().party(createRespondentParty()).build()
+        );
+    }
+
+    private static RespondentParty createRespondentParty() {
+        return RespondentParty.builder()
+            .firstName("John")
+            .lastName("Smith")
+            .address(Address.builder()
+                .addressLine1("Somewhere over the rainbow")
+                .postcode("RA1 9BW")
+                .build())
+            .build();
     }
 }
