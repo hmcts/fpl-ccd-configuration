@@ -278,6 +278,7 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
+
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
         return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();

@@ -65,13 +65,12 @@ public class UploadC2DocumentsService {
                         .build())
                     .collect(Collectors.toList());
 
-            System.out.println("Bundle is" + updatedSupplementsBundle);
-
             c2DocumentBundleBuilder.usePbaPayment(caseData.getUsePbaPayment())
                 .pbaNumber(caseData.getPbaNumber())
                 .clientCode(caseData.getClientCode())
                 .fileReference(caseData.getFileReference())
-                .supplementsBundle(wrapElements(updatedSupplementsBundle));
+                .supplementsBundle(wrapElements(updatedSupplementsBundle)
+                );
         }
 
         c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));

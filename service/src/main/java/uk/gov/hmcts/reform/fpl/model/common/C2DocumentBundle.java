@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
@@ -38,6 +39,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private List<Element<SupplementsBundle>> supplementsBundle;
+    public List<C2OrdersRequested> c2OrdersRequested;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
