@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -42,7 +41,6 @@ public class DraftOrdersApprovedEventHandler {
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
     private final InboxLookupService inboxLookupService;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final CoreCaseDataService coreCaseDataService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
