@@ -7,7 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
@@ -50,7 +50,7 @@ public class HearingBooking {
     private final String venue;
     private final String customPreviousVenue;
     private final Address venueCustomAddress;
-    private final String remoteHearing;
+    private final HearingPresence presence;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime startDate;
@@ -140,6 +140,6 @@ public class HearingBooking {
 
     @JsonIgnore
     public boolean isRemote() {
-        return YesNo.fromString(remoteHearing) == YesNo.YES;
+        return HearingPresence.REMOTE == presence;
     }
 }

@@ -234,6 +234,7 @@ public class ManageHearingsService {
         caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
         caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+        caseFields.put("hearingPresence", hearingBooking.getPresence());
 
         if (hearingBooking.getPreviousHearingVenue() == null
             || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
@@ -315,36 +316,15 @@ public class ManageHearingsService {
 
     public Set<String> caseFieldsToBeRemoved() {
         return Set.of(
-            "hearingType",
-            "hearingTypeDetails",
-            "hearingVenue",
-            "hearingVenueCustom",
-            HEARING_START_DATE,
-            HEARING_END_DATE,
-            "sendNoticeOfHearing",
-            "judgeAndLegalAdvisor",
-            "noticeOfHearingNotes",
-            "previousHearingVenue",
-            "firstHearingFlag",
-            "adjournmentReason",
-            "vacatedReason",
-            HEARING_DATE_LIST,
-            PAST_HEARING_LIST,
-            FUTURE_HEARING_LIST,
-            HAS_HEARINGS_TO_ADJOURN,
-            HAS_HEARINGS_TO_VACATE,
-            HAS_EXISTING_HEARINGS_FLAG,
-            HAS_FUTURE_HEARING_FLAG,
-            "hearingReListOption",
-            HEARING_START_DATE_LABEL,
-            "showConfirmPastHearingDatesPage",
-            HEARING_END_DATE_LABEL,
-            "confirmHearingDate",
-            "hearingStartDateConfirmation",
-            "hearingEndDateConfirmation",
-            START_DATE_FLAG,
-            END_DATE_FLAG,
-            "hasSession");
+            "hearingType", "hearingTypeDetails", "hearingVenue", "hearingVenueCustom", HEARING_START_DATE,
+            HEARING_END_DATE, "sendNoticeOfHearing", "judgeAndLegalAdvisor", "noticeOfHearingNotes",
+            "previousHearingVenue", "firstHearingFlag", "adjournmentReason", "vacatedReason",
+            HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST, HAS_HEARINGS_TO_ADJOURN,
+            HAS_HEARINGS_TO_VACATE, HAS_EXISTING_HEARINGS_FLAG, HAS_FUTURE_HEARING_FLAG, "hearingReListOption",
+            HEARING_START_DATE_LABEL, "showConfirmPastHearingDatesPage", HEARING_END_DATE_LABEL, "confirmHearingDate",
+            "hearingStartDateConfirmation", "hearingEndDateConfirmation", START_DATE_FLAG, END_DATE_FLAG, "hasSession",
+            "hearingPresence"
+        );
     }
 
     public HearingVenue getPreviousHearingVenue(CaseData caseData) {
@@ -417,6 +397,7 @@ public class ManageHearingsService {
             .typeDetails(caseData.getHearingTypeDetails())
             .venue(caseData.getHearingVenue())
             .venueCustomAddress(caseData.getHearingVenueCustom())
+            .presence(caseData.getHearingPresence())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
@@ -450,6 +431,7 @@ public class ManageHearingsService {
             .venue(venue)
             .venueCustomAddress(caseData.getPreviousHearingVenue().getNewVenueCustomAddress())
             .customPreviousVenue(customPreviousVenue)
+            .presence(caseData.getHearingPresence())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
