@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
@@ -170,7 +170,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
                 .supportingEvidenceBundle(furtherEvidenceBundle)
                 .build())))
             .manageDocumentsRelatedToHearing(YES.getValue())
-            .furtherEvidenceTypeListLA(OTHER)
+            .manageDocumentSubtypeListLA(OTHER)
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
@@ -190,6 +190,30 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
             .isEqualTo(selectedHearingBooking.toLabel());
 
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+    }
+
+    @Test
+    void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections", USER_ROLES);
+
+        assertThat(callbackResponse.getErrors().contains("There are no hearings to associate a bundle with"));
+    }
+
+    @Test
+    void shouldThrowErrorWhenC2SelectedButNoC2sFound() {
+        CaseData caseData = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(C2))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections", USER_ROLES);
+
+        assertThat(callbackResponse.getErrors().contains("There are no C2s to associate supporting documents with"));
     }
 
     private ManageDocumentLA buildManagementDocument(ManageDocumentTypeListLA type) {

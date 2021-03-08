@@ -25,8 +25,8 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICATION_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
@@ -105,7 +105,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (OTHER.equals(caseData.getFurtherEvidenceTypeListLA())) {
+        if (OTHER.equals(caseData.getManageDocumentSubtypeListLA())) {
             caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
                 caseData, YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())));
 
@@ -132,7 +132,7 @@ public class ManageDocumentsLAController extends CallbackController {
                 List<Element<SupportingEvidenceBundle>> currentBundle;
 
                 //Application documents
-                if (APPLICATION_DOCUMENTS.equals(caseData.getFurtherEvidenceTypeListLA())) {
+                if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
                     caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
                         caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
                     ));

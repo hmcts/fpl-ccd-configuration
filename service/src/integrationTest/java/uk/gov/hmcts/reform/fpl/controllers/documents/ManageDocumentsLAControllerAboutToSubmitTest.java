@@ -29,8 +29,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICATION_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
@@ -84,7 +84,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocumentsRelatedToHearing(YES.getValue())
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
-            .furtherEvidenceTypeListLA(OTHER)
+            .manageDocumentSubtypeListLA(OTHER)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -103,7 +103,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
-            .furtherEvidenceTypeListLA(OTHER)
+            .manageDocumentSubtypeListLA(OTHER)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -123,7 +123,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         CaseData caseData = CaseData.builder()
             .applicationDocuments(applicationDocuments)
             .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
-            .furtherEvidenceTypeListLA(APPLICATION_DOCUMENTS)
+            .manageDocumentSubtypeListLA(APPLICATION_DOCUMENTS)
             .build();
 
         CallbackRequest callback = toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore));
@@ -132,7 +132,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         applicationDocuments.get(0).getValue().setDateTimeUploaded(now());
         applicationDocuments.get(0).getValue().setUploadedBy("kurt@swansea.gov.uk");
-        
+
         assertThat(responseData.getApplicationDocuments()).isEqualTo(applicationDocuments);
         assertExpectedFieldsAreRemoved(responseData);
     }

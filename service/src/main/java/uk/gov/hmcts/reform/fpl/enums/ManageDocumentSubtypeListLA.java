@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FurtherEvidenceType {
+public enum ManageDocumentSubtypeListLA {
     APPLICATION_DOCUMENTS,
     OTHER
 }

@@ -49,7 +49,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "furtherEvidenceTypeListLA",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "FurtherEvidenceTypeLA",
+    "FieldTypeParameter": "ManageDocumentSubtypeListLA",
     "Label": "Choose a further evidence document type",
     "SecurityClassification": "Public",
     "Searchable": "N"
