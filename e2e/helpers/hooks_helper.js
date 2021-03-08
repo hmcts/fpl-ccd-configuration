@@ -23,8 +23,9 @@ module.exports = class HooksHelpers extends Helper {
   }
 
   _afterStep(step) {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
     if (step.name === 'attachFile') {
-      return this.helpers['Puppeteer'].wait(2); // in seconds; time needed for document store to store uploaded files
+      return helper.wait(2); // in seconds; time needed for document store to store uploaded files
     }
   }
 };
