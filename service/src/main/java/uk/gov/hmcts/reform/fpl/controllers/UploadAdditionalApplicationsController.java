@@ -111,8 +111,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        C2DocumentBundle bundle = caseData.getTemporaryC2Document();
-
         final C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
         publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
 

@@ -73,7 +73,7 @@ public class UploadC2DocumentsService {
                 );
         }
 
-        c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
+        c2DocumentBundle.add(0, element(c2DocumentBundleBuilder.build()));
 
         return c2DocumentBundle;
     }
