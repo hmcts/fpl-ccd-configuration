@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -37,49 +38,49 @@ public class SendDocumentService {
 
         List<Recipient> recipients = defaultIfNull(parties, emptyList());
 
-        List<Recipient> deliverable = recipients.stream()
+        List<Recipient> deliverableRecipients = recipients.stream()
             .filter(Recipient::isDeliverable)
             .collect(toList());
 
-        if (recipients.size() != deliverable.size()) {
+        if (recipients.size() != deliverableRecipients.size()) {
             log.error("Case {} has {} recipients with incomplete postal information", caseData.getId(),
-                recipients.size() - deliverable.size());
+                recipients.size() - deliverableRecipients.size());
         }
 
-        if (isNotEmpty(deliverable) && isNotEmpty(documentToBeSent)) {
+        if (isNotEmpty(deliverableRecipients) && isNotEmpty(documentToBeSent)) {
 
             List<SentDocument> docs = documentToBeSent.stream()
                 .flatMap(document -> sendLetters.send(document,
-                    deliverable,
+                    deliverableRecipients,
                     caseData.getId(),
                     caseData.getFamilyManCaseNumber()).stream())
                 .collect(toList());
 
-            List<Element<SentDocuments>> documentsSentToParties = sentDocuments
-                .addToHistory(caseData.getDocumentsSentToParties(), docs);
+            List<Element<SentDocuments>> documentsSent = sentDocuments.addToHistory(
+                caseData.getDocumentsSentToParties(), docs);
 
-            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSentToParties));
+            caseService.updateCase(caseData.getId(), Map.of("documentsSentToParties", documentsSent));
         }
-    }
-
-    public List<Recipient> getRepresentativesServedByPost(CaseData caseData) {
-        return new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
-    }
-
-    public List<Recipient> getUnrepresentedRespondents(CaseData caseData) {
-        return unwrapElements(caseData.getRespondents1()).stream()
-            .filter(respondent -> !respondent.isRepresented())
-            .map(Respondent::getParty)
-            .collect(toList());
     }
 
     public List<Recipient> getStandardRecipients(CaseData caseData) {
         final List<Recipient> recipients = new ArrayList<>();
 
         recipients.addAll(getRepresentativesServedByPost(caseData));
-        recipients.addAll(getUnrepresentedRespondents(caseData));
+        recipients.addAll(getNotRepresentedRespondents(caseData));
 
         return recipients;
+    }
+
+    private List<Recipient> getRepresentativesServedByPost(CaseData caseData) {
+        return new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
+    }
+
+    private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
+        return unwrapElements(caseData.getRespondents1()).stream()
+            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy()))
+            .map(Respondent::getParty)
+            .collect(toList());
     }
 
 }

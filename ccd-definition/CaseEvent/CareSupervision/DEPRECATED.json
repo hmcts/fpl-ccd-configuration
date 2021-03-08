@@ -280,6 +280,7 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-document/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-document/about-to-submit",
+    "Comment": "Use generic internal-change-UPDATE_CASE instead"
   }
 ]

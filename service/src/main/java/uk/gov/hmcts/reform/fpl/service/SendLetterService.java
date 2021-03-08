@@ -38,11 +38,12 @@ public class SendLetterService {
     private final AuthTokenGenerator authTokenGenerator;
     private final UploadDocumentService uploadDocumentService;
 
-    public List<SentDocument> send(DocumentReference mainDocument, List<? extends Recipient> recipients,
-                                   Long caseId, String familyManCaseNumber) {
+    public List<SentDocument> send(DocumentReference mainDocument, List<Recipient> recipients, Long caseId,
+                                   String familyManCaseNumber) {
         List<SentDocument> sentDocuments = new ArrayList<>();
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
         var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocument.getFilename());
+
         String mainDocumentEncoded = Base64.getEncoder().encodeToString(mainDocumentBinary);
         for (Recipient recipient : recipients) {
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,

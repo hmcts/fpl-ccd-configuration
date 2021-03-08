@@ -74,7 +74,7 @@ public class GeneratedOrderEventHandler {
     }
 
     @EventListener
-    public void notifyByPost(final GeneratedOrderEvent orderEvent) {
+    public void sendOrderByPost(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
 

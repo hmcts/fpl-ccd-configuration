@@ -199,7 +199,7 @@ class GeneratedOrderEventHandlerTest {
     }
 
     @Test
-    void shouldNotifyRepresentativesAndNotRepresentedRespondentsViaPost() {
+    void shouldSendOrderToRepresentativesAndNotRepresentedRespondentsByPost() {
         final Representative representative = Representative.builder()
             .fullName("First Representative")
             .servingPreferences(POST)
@@ -221,7 +221,7 @@ class GeneratedOrderEventHandlerTest {
 
         given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
 
-        generatedOrderEventHandler.notifyByPost(event);
+        generatedOrderEventHandler.sendOrderByPost(event);
 
         verify(sendDocumentService).sendDocuments(caseData, List.of(testDocument), List.of(representative, respondent));
         verify(sendDocumentService).getStandardRecipients(caseData);

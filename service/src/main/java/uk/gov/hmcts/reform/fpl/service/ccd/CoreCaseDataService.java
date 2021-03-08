@@ -33,10 +33,6 @@ public class CoreCaseDataService {
         triggerEvent(JURISDICTION, CASE_TYPE, caseId, "internal-change-UPDATE_CASE", updates);
     }
 
-    public void triggerEvent(Long caseId, String event) {
-        triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, emptyMap());
-    }
-
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());
     }

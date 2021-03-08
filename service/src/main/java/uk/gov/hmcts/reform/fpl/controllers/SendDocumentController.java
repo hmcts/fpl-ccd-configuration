@@ -22,10 +22,16 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.SentDocumentHistoryService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
+/*
+@deprecated - use SendDocumentService instead
+*/
+
+@Deprecated
 @Api
 @Slf4j
 @RestController
@@ -34,7 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 public class SendDocumentController extends CallbackController {
     private static final String DOCUMENT_TO_BE_SENT_KEY = "documentToBeSent";
     private final ObjectMapper mapper;
-    private final SendLetterService documentSenderService;
+    private final SendLetterService sendLetterService;
     private final SentDocumentHistoryService sentDocumentHistoryService;
 
     @PostMapping("/about-to-submit")
@@ -42,14 +48,15 @@ public class SendDocumentController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<? extends Recipient> representativesServedByPost = caseData.getRepresentativesByServedPreference(POST);
+        List<Recipient> representativesServedByPost =
+            new ArrayList<>(caseData.getRepresentativesByServedPreference(POST));
 
         if (!representativesServedByPost.isEmpty()) {
             DocumentReference documentToBeSent = mapper.convertValue(caseDetails.getData()
                 .get(DOCUMENT_TO_BE_SENT_KEY), DocumentReference.class);
             log.info("Sending to representatives served by POST for case {}", caseDetails.getId());
 
-            List<SentDocument> sentDocuments = documentSenderService.send(documentToBeSent,
+            List<SentDocument> sentDocuments = sendLetterService.send(documentToBeSent,
                 representativesServedByPost,
                 caseDetails.getId(),
                 caseData.getFamilyManCaseNumber());

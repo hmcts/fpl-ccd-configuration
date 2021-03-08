@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRepresentative;
 
@@ -49,16 +50,16 @@ class SendLetterServiceTest {
     private static final String COVERSHEET_NAME = "Coversheet.pdf";
     private static final Long CASE_ID = 1L;
     private static final DocumentReference MAIN_DOCUMENT_REFERENCE = testDocumentReference();
-    private static final byte[] MAIN_DOCUMENT_BYTES = new byte[] {1, 2, 3, 4, 5};
+    private static final byte[] MAIN_DOCUMENT_BYTES = testDocumentBinaries();
     private static final String MAIN_DOCUMENT_ENCODED = Base64.getEncoder().encodeToString(MAIN_DOCUMENT_BYTES);
     private static final Document UPLOADED_MAIN_DOCUMENT = testDocument();
-    private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(new byte[] {0}, new byte[] {1});
+    private static final List<byte[]> COVER_DOCUMENTS_BYTES = List.of(new byte[]{0}, new byte[]{1});
     private static final List<String> COVER_DOCUMENTS_ENCODED = List.of(
         Base64.getEncoder().encodeToString(COVER_DOCUMENTS_BYTES.get(0)),
         Base64.getEncoder().encodeToString(COVER_DOCUMENTS_BYTES.get(1))
     );
     private static final List<Document> COVERSHEETS = List.of(testDocument(), testDocument());
-    private static final List<Representative> REPRESENTATIVES = List.of(testRepresentative(), testRepresentative());
+    private static final List<Recipient> RECIPIENTS = List.of(testRepresentative(), testRepresentative());
     private static final List<UUID> LETTERS_IDS = List.of(UUID.randomUUID(), UUID.randomUUID());
 
     @Autowired
@@ -98,9 +99,9 @@ class SendLetterServiceTest {
             .willReturn(new SendLetterResponse(LETTERS_IDS.get(1)));
         given(documentDownloadService.downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl()))
             .willReturn(MAIN_DOCUMENT_BYTES);
-        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(0)))
+        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(0)))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(0)));
-        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, REPRESENTATIVES.get(1)))
+        given(docmosisCoverDocumentsService.createCoverDocuments(FAMILY_CASE_NUMBER, CASE_ID, RECIPIENTS.get(1)))
             .willReturn(testDocmosisDocument(COVER_DOCUMENTS_BYTES.get(1)));
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
@@ -109,12 +110,12 @@ class SendLetterServiceTest {
     void shouldMakeCorrectCallsToCreateAndSendDocuments() {
         String familyCaseNumber = "familyCaseNumber";
 
-        underTest.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID, familyCaseNumber);
+        underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID, familyCaseNumber);
 
         verify(documentDownloadService).downloadDocument(MAIN_DOCUMENT_REFERENCE.getBinaryUrl());
         verify(uploadDocumentService).uploadPDF(MAIN_DOCUMENT_BYTES, MAIN_DOCUMENT_REFERENCE.getFilename());
-        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, REPRESENTATIVES.get(0));
-        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, REPRESENTATIVES.get(1));
+        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(0));
+        verify(docmosisCoverDocumentsService).createCoverDocuments(familyCaseNumber, CASE_ID, RECIPIENTS.get(1));
         verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(0), COVERSHEET_NAME);
         verify(uploadDocumentService).uploadPDF(COVER_DOCUMENTS_BYTES.get(1), COVERSHEET_NAME);
         verify(sendLetterApi, times(2))
@@ -133,13 +134,13 @@ class SendLetterServiceTest {
 
     @Test
     void shouldReturnSentDocumentsData() {
-        List<SentDocument> sentDocuments = underTest.send(MAIN_DOCUMENT_REFERENCE, REPRESENTATIVES, CASE_ID,
+        List<SentDocument> sentDocuments = underTest.send(MAIN_DOCUMENT_REFERENCE, RECIPIENTS, CASE_ID,
             FAMILY_CASE_NUMBER);
 
         String formattedDate = DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy");
 
         assertThat(sentDocuments.get(0)).isEqualTo(SentDocument.builder()
-            .partyName(REPRESENTATIVES.get(0).getFullName())
+            .partyName(RECIPIENTS.get(0).getFullName())
             .document(buildFromDocument(UPLOADED_MAIN_DOCUMENT))
             .coversheet(buildFromDocument(COVERSHEETS.get(0)))
             .sentAt(formattedDate)
@@ -147,7 +148,7 @@ class SendLetterServiceTest {
             .build());
 
         assertThat(sentDocuments.get(1)).isEqualTo(SentDocument.builder()
-            .partyName(REPRESENTATIVES.get(1).getFullName())
+            .partyName(RECIPIENTS.get(1).getFullName())
             .document(buildFromDocument(UPLOADED_MAIN_DOCUMENT))
             .coversheet(buildFromDocument(COVERSHEETS.get(1)))
             .sentAt(formattedDate)

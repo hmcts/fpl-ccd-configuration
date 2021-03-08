@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,8 +71,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1614860986487554L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String FAMILY_MAN_CASE_NUMBER = "FMN1";
-    private static final UUID LETTER_ID = UUID.randomUUID();
-    private static final UUID LETTER_ID_2 = UUID.randomUUID();
+    private static final UUID LETTER_1_ID = randomUUID();
+    private static final UUID LETTER_2_ID = randomUUID();
     private static final Document ORDER_DOCUMENT = testDocument();
     private static final Document COVERSHEET_REPRESENTATIVE = testDocument();
     private static final Document COVERSHEET_RESPONDENT = testDocument();
@@ -175,8 +176,8 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
         given(documentService.createCoverDocuments(any(), any(), eq(RESPONDENT_NOT_REPRESENTED.getParty())))
             .willReturn(DocmosisDocument.builder().bytes(COVERSHEET_RESPONDENT_BINARY).build());
         given(sendLetterApi.sendLetter(any(), any(LetterWithPdfsRequest.class)))
-            .willReturn(new SendLetterResponse(LETTER_ID))
-            .willReturn(new SendLetterResponse(LETTER_ID_2));
+            .willReturn(new SendLetterResponse(LETTER_1_ID))
+            .willReturn(new SendLetterResponse(LETTER_2_ID));
     }
 
     @Test
@@ -223,10 +224,10 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
         final CaseData caseUpdate = getCase(this.caseDetails);
 
         SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
-            COVERSHEET_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_ID);
+            COVERSHEET_REPRESENTATIVE, ORDER_DOCUMENT, LETTER_1_ID);
 
         SentDocument expectedDocumentSentToRespondent = documentSent(RESPONDENT_NOT_REPRESENTED.getParty(),
-            COVERSHEET_RESPONDENT, ORDER_DOCUMENT, LETTER_ID_2);
+            COVERSHEET_RESPONDENT, ORDER_DOCUMENT, LETTER_2_ID);
 
         assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(2);
 

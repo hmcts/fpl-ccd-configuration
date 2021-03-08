@@ -18,23 +18,17 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumbe
 public class DocmosisCoverDocumentsService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
-    public DocmosisDocument createCoverDocuments(String familyManCaseNumber,
-                                                 Long caseNumber,
-                                                 Recipient addressee) {
-        DocmosisCoverDocument coverDocumentData = buildCoverDocumentsData(familyManCaseNumber,
-            caseNumber,
-            addressee);
+    public DocmosisDocument createCoverDocuments(String familyManCaseNumber, Long caseNumber, Recipient recipient) {
+        DocmosisCoverDocument coverDocumentData = buildCoverDocumentsData(familyManCaseNumber, caseNumber, recipient);
         return docmosisDocumentGeneratorService.generateDocmosisDocument(coverDocumentData, COVER_DOCS);
     }
 
-    public DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber,
-                                                         Long caseNumber,
-                                                         Recipient addressee) {
+    public DocmosisCoverDocument buildCoverDocumentsData(String familyManCaseNumber, Long caseId, Recipient recipient) {
         return DocmosisCoverDocument.builder()
             .familyManCaseNumber(defaultIfNull(familyManCaseNumber, ""))
-            .ccdCaseNumber(formatCCDCaseNumber(caseNumber))
-            .representativeName(addressee.getFullName())
-            .representativeAddress(addressee.getAddress().getAddressAsString("\n"))
+            .ccdCaseNumber(formatCCDCaseNumber(caseId))
+            .representativeName(recipient.getFullName())
+            .representativeAddress(recipient.getAddress().getAddressAsString("\n"))
             .hmctsLogoLarge(getHmctsLogoLarge())
             .hmctsLogoSmall(getHmctsLogoSmall())
             .build();
