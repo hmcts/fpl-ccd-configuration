@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "applicationType",
+    "FieldType": "FixedList",
+    "ElementLabel": "Select application",
+    "FieldTypeParameter": "OtherApplicationType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload application",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle",
+    "ElementLabel": "Supplements",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupplementsBundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle",
+    "ElementLabel": "Supporting Documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public"
+  }
+]
+

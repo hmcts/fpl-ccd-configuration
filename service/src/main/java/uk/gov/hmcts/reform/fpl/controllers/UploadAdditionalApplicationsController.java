@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
@@ -46,6 +47,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
+    private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private final ObjectMapper mapper;
     private final FeeService feeService;
     private final PaymentService paymentService;
@@ -66,12 +68,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             removeDocumentFromData(data);
         }
 
-        try {
-            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-            data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-            data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        } catch (FeeRegisterException ignore) {
-            data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
+            try {
+                FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
+                data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+            } catch (FeeRegisterException ignore) {
+                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+            }
         }
 
         return respond(caseDetails);
@@ -83,11 +87,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
         List<String> errors = new ArrayList<>();
-        errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
-        errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
+            var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+            errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
+            errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
+        }
 
         return respond(caseDetails, errors);
     }
@@ -98,9 +104,18 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
+            caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
+        }
 
-        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "additionalApplicationType", "usePbaPayment", AMOUNT_TO_PAY, "pbaNumber", "clientCode", "fileReference"));
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)) {
+            caseDetails.getData().put(TEMPORARY_OTHER_APPLICATIONS_BUNDLE, uploadC2DocumentsService.buildC2DocumentBundle(caseData));
+        }
+
+        caseDetails.getData().keySet().removeAll(
+            Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "additionalApplicationType",
+                "usePbaPayment", AMOUNT_TO_PAY, "pbaNumber", "clientCode", "fileReference",
+                TEMPORARY_OTHER_APPLICATIONS_BUNDLE));
 
         return respond(caseDetails);
     }
