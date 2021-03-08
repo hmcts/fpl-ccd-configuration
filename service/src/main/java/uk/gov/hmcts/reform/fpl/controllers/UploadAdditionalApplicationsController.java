@@ -40,9 +40,9 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @Api
 @Slf4j
 @RestController
-@RequestMapping("/callback/upload-c2")
+@RequestMapping("/callback/upload-additional-applications")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class UploadC2DocumentsController extends CallbackController {
+public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
@@ -100,7 +100,7 @@ public class UploadC2DocumentsController extends CallbackController {
 
         caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
 
-        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
+        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "additionalApplicationType", "usePbaPayment", AMOUNT_TO_PAY, "pbaNumber", "clientCode", "fileReference"));
 
         return respond(caseDetails);
     }
