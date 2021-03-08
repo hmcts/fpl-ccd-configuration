@@ -148,6 +148,8 @@ class RemoveOrderServiceTest {
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
             .build();
 
@@ -229,6 +231,8 @@ class RemoveOrderServiceTest {
                     format("Sealed case management order issued on %s",
                         formatLocalDateToString(NOW, "d MMMM yyyy"))),
                 buildListElement(draftCMO.getId(), format("Draft case management order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
             .build();
 
