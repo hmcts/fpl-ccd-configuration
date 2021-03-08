@@ -76,10 +76,11 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "remoteHearing",
+    "ID": "hearingPresence",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "YesOrNo",
-    "Label": "Is this a remote hearing",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingPresence",
+    "Label": "In person or remote via video",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

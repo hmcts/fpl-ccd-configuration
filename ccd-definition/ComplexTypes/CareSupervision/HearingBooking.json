@@ -51,9 +51,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "remoteHearing",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Remote hearing",
+    "ListElementCode": "hearingPresence",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingPresence",
+    "ElementLabel": "In person or remote",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
