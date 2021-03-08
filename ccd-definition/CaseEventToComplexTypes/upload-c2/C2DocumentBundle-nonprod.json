@@ -34,6 +34,7 @@
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Select supplement",
     "ListElementCode": "supplementsBundle.name",
     "FieldDisplayOrder": "4",
     "DisplayContext": "MANDATORY"

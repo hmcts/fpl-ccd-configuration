@@ -4,7 +4,7 @@
     "ID": "SupplementsBundle",
     "ListElementCode": "name",
     "FieldType": "FixedList",
-    "ElementLabel": "Select supplement",
+    "ElementLabel": "Document name",
     "FieldTypeParameter": "Supplements",
     "SecurityClassification": "Public"
   },

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -55,10 +56,22 @@ public class UploadC2DocumentsService {
             .type(caseData.getC2ApplicationType().get("type"));
 
         if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
+            List<SupplementsBundle> updatedSupplementsBundle =
+                unwrapElements(caseData.getTemporaryC2Document().getSupplementsBundle())
+                    .stream()
+                    .map(supplementsBundle -> supplementsBundle.toBuilder()
+                        .dateTimeUploaded(time.now())
+                        .uploadedBy(uploadedBy)
+                        .build())
+                    .collect(Collectors.toList());
+
+            System.out.println("Bundle is" + updatedSupplementsBundle);
+
             c2DocumentBundleBuilder.usePbaPayment(caseData.getUsePbaPayment())
                 .pbaNumber(caseData.getPbaNumber())
                 .clientCode(caseData.getClientCode())
-                .fileReference(caseData.getFileReference());
+                .fileReference(caseData.getFileReference())
+                .supplementsBundle(wrapElements(updatedSupplementsBundle));
         }
 
         c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
