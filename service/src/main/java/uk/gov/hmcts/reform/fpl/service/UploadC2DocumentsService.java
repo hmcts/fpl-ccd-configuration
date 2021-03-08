@@ -30,6 +30,7 @@ public class UploadC2DocumentsService {
     private final Time time;
     private final SupportingEvidenceValidatorService validateSupportingEvidenceBundleService;
     private final DocumentUploadHelper documentUploadHelper;
+    private final FeatureToggleService featureToggleService;
 
     public List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
@@ -52,6 +53,13 @@ public class UploadC2DocumentsService {
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
             .type(caseData.getC2ApplicationType().get("type"));
+
+        if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
+            c2DocumentBundleBuilder.usePbaPayment(caseData.getUsePbaPayment())
+                .pbaNumber(caseData.getPbaNumber())
+                .clientCode(caseData.getClientCode())
+                .fileReference(caseData.getFileReference());
+        }
 
         c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
 

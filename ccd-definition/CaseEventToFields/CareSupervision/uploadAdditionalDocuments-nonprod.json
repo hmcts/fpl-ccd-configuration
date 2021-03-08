@@ -72,7 +72,7 @@
     "PageID": 3,
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
+    "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "displayAmountToPay=\"Yes\""
   },
   {
