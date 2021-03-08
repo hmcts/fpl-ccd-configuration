@@ -107,12 +107,12 @@ public class ManageDocumentsLAController extends CallbackController {
 
         if (OTHER.equals(caseData.getFurtherEvidenceTypeListLA())) {
             caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
-                caseData, caseData.getManageDocumentsRelatedToHearing().equals(YES.getValue())));
+                caseData, YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())));
 
             List<Element<SupportingEvidenceBundle>> supportingEvidence
                 = manageDocumentService.getFurtherEvidenceCollection(
                 caseData,
-                caseData.getManageDocumentsRelatedToHearing().equals(YES.getValue()),
+                YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing()),
                 caseData.getFurtherEvidenceDocumentsLA());
 
             caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);
@@ -136,7 +136,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
                         caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
                     ));
-                //Hearing related evidence
+                    //Hearing related evidence
                 } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
                         caseData, caseDataBefore
@@ -148,7 +148,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
                     );
-                //Non-hearing-related evidence
+                    //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
