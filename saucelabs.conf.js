@@ -1,59 +1,60 @@
-/* global process */
+/* eslint-disable no-console */
 
-require('./e2e/helpers/event_listener');
-const lodash = require('lodash');
+const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
+const testConfig = require('./e2e/config');
 
-exports.config = {
-  output: './output',
-  multiple: {
-    parallel: {
-      chunks: (files) => {
+const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 45000;
+const smartWait = parseInt(process.env.SMART_WAIT) || 30000;
+const browser = process.env.SAUCELABS_BROWSER || 'chrome';
+const defaultSauceOptions = {
+  username: process.env.SAUCE_USERNAME,
+  accessKey: process.env.SAUCE_ACCESS_KEY,
+  tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
+  acceptSslCerts: true,
+  windowSize: '1600x900',
+  tags: ['FPL']
+};
 
-        const splitFiles = (list, size) => {
-          const sets = [];
-          const chunks = list.length / size;
-          let i = 0;
+function merge(intoObject, fromObject) {
+  return Object.assign({}, intoObject, fromObject);
+}
 
-          while (i < chunks) {
-            sets[i] = list.splice(0, size);
-            i++;
-          }
-          return sets;
-        };
+function getBrowserConfig(browserGroup) {
+  const browserConfig = [];
+  for (const candidateBrowser in supportedBrowsers[browserGroup]) {
+    if (candidateBrowser) {
+      const candidateCapabilities = supportedBrowsers[browserGroup][candidateBrowser];
+      candidateCapabilities['sauce:options'] = merge(
+        defaultSauceOptions, candidateCapabilities['sauce:options']
+      );
+      browserConfig.push({
+        browser: candidateCapabilities.browserName,
+        capabilities: candidateCapabilities
+      });
+    } else {
+      console.error('ERROR: supportedBrowsers.js is empty or incorrectly defined');
+    }
+  }
+  return browserConfig;
+}
 
-        const buckets = parseInt(process.env.PARALLEL_CHUNKS || '5');
-        const slowTests = lodash.filter(files, file => file.includes('@slow'));
-        const otherTests = lodash.difference(files, slowTests);
-
-        let chunks = [];
-        if (buckets > slowTests.length + 1) {
-          const slowTestChunkSize = 1;
-          const regularChunkSize = Math.ceil((files.length - slowTests.length) / (buckets - slowTests.length));
-          chunks = lodash.union(splitFiles(slowTests, slowTestChunkSize), splitFiles(otherTests, regularChunkSize));
-        } else {
-          chunks = splitFiles(files, Math.ceil(files.length / buckets));
-        }
-
-        console.log(chunks);
-
-        return chunks;
-      },
-    },
-  },
+const setupConfig = {
+  tests: './e2e/tests/*_test.js',
+  output: `${process.cwd()}/${testConfig.TestOutputDir}`,
   helpers: {
-    Puppeteer: {
-      show: process.env.SHOW_BROWSER_WINDOW || false,
-      restart: false,
-      keepCookies: true,
-      waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
-      chrome: {
-        ignoreHTTPSErrors: true,
-        args: process.env.PROXY_SERVER ? [
-          `--proxy-server=${process.env.PROXY_SERVER}`,
-        ] : [],
-        devtools: process.env.SHOW_BROWSER_WINDOW || false,
-      },
-      windowSize: '1280x960',
+    WebDriver: {
+      url: testConfig.baseUrl,
+      browser,
+      smartWait,
+      waitForTimeout,
+      cssSelectorsEnabled: 'true',
+      host: 'ondemand.eu-central-1.saucelabs.com',
+      port: 80,
+      region: 'eu',
+      capabilities: {}
+    },
+    SauceLabsReportingHelper: {
+      require: './e2e/helpers/SauceLabsReportingHelper.js'
     },
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',
@@ -64,9 +65,16 @@ exports.config = {
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
-    GenerateReportHelper: {
-      require: './e2e/helpers/generate_report_helper.js'
+  },
+  plugins: {
+    retryFailedStep: {
+      enabled: true,
+      retries: 2
     },
+    autoDelay: {
+      enabled: true,
+      delayAfter: 2000
+    }
   },
   include: {
     config: './e2e/config.js',
@@ -124,54 +132,42 @@ exports.config = {
     addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
   },
-  plugins: {
-    autoDelay: {
-      enabled: true,
-      methods: [
-        'click',
-        'doubleClick',
-        'rightClick',
-        'fillField',
-        'pressKey',
-        'checkOption',
-        'selectOption',
-      ],
-    },
-    retryFailedStep: {
-      enabled: true,
-    },
-    screenshotOnFail: {
-      enabled: true,
-      fullPageScreenshots: true,
-    },
-  },
-  tests: './e2e/tests/*_test.js',
-  teardownAll: require('./e2e/hooks/aggregate-metrics'),
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
         stdout: '-',
-        options: {
-          steps: false,
-        },
+        options: {steps: true}
       },
       'mocha-junit-reporter': {
         stdout: '-',
+        options: {mochaFile: `${testConfig.TestOutputDir}/result.xml`}
+      },
+      mochawesome: {
+        stdout: testConfig.TestOutputDir + '/console.log',
         options: {
-          mochaFile: 'test-results/result.xml',
-        },
-      },
-      'mochawesome': {
-        stdout: '-',
-        options: {
-          reportDir: './output',
-          inlineAssets: true,
-          json: false,
-        },
-      },
-      '../../e2e/reporters/json-file-reporter/reporter': {
-        stdout: '-',
-      },
-    },
+          reportDir: testConfig.TestOutputDir,
+          reportName: 'index',
+          reportTitle: 'Crossbrowser results',
+          inlineAssets: true
+        }
+      }
+    }
   },
+  multiple: {
+    microsoft: {
+      browsers: getBrowserConfig('microsoft')
+    },
+    chrome: {
+      browsers: getBrowserConfig('chrome')
+    },
+    firefox: {
+      browsers: getBrowserConfig('firefox')
+    },
+    safari: {
+      browsers: getBrowserConfig('safari')
+    }
+  },
+  name: 'FPLA FrontEnd Cross-Browser Tests'
 };
+
+exports.config = setupConfig;
