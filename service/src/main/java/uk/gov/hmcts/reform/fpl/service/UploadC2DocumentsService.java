@@ -38,6 +38,13 @@ public class UploadC2DocumentsService {
             caseData.getC2DocumentBundle(), new ArrayList<>()
         );
 
+//        if(!c2DocumentBundle.isEmpty()) {
+//            //sort for old c2 instances
+//            System.out.println("C2 before" + c2DocumentBundle);
+//            c2DocumentBundle.sort(Comparator.comparing(e -> e.getValue().getUploadedDateTime()));
+//            System.out.println("C2 after" + c2DocumentBundle);
+//        }
+
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
