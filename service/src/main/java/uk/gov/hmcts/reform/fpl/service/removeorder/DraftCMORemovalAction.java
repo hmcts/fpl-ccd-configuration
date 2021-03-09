@@ -36,8 +36,8 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
 
     @Override
     public boolean isAccepted(RemovableOrder removableOrder) {
-        return removableOrder instanceof HearingOrder && Optional.ofNullable(((HearingOrder) removableOrder).getType())
-            .filter(HearingOrderType::isCmo)
+        return removableOrder instanceof HearingOrder && Optional.of((HearingOrder) removableOrder)
+            .filter(order -> order.getType() != HearingOrderType.C21)
             .isPresent();
     }
 

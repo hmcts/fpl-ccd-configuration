@@ -82,6 +82,7 @@ Scenario('HMCTS super user removes an agreed cmo from a case', async ({I, caseVi
   I.dontSeeInTab('Removed case management orders 2');
 });
 
+
 Scenario('HMCTS super user removes a draft order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
   const labelToSelect = 'Draft order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
