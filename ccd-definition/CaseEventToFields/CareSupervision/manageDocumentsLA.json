@@ -201,6 +201,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "uploadApplicationDocumentsLabel",
+    "CaseEventFieldLabel": "## Further evidence - further application document",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "ApplicationDocuments",
