@@ -83,11 +83,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-        caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
+        var updatedPbaNumber = pbaNumberService.update(caseData.getPbaNumber());
+        caseDetails.getData().put("pbaNumber", updatedPbaNumber);
         List<String> errors = new ArrayList<>();
-        errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
-        errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
+        errors.addAll(pbaNumberService.validate(updatedPbaNumber));
 
         return respond(caseDetails, errors);
     }
