@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.apache.logging.log4j.util.Strings.isEmpty;
-
 @Api
 @RestController
 @RequestMapping("/callback/enter-applicant")
@@ -125,13 +123,11 @@ public class ApplicantController extends CallbackController {
     }
 
     private void validateSolicitorEmail(String solicitorEmail, List<String> errors) {
-        if (!isEmpty(solicitorEmail)) {
-            Optional<String> error = validateEmailService.validate(solicitorEmail,
-                "Solicitor: Enter an email address in the correct format,"
-                    + " for example name@example.com");
-            if (!error.isEmpty()) {
-                errors.add(error.get());
-            }
+        Optional<String> error = validateEmailService.validate(solicitorEmail,
+            "Solicitor: Enter an email address in the correct format,"
+                + " for example name@example.com");
+        if (!error.isEmpty()) {
+            errors.add(error.get());
         }
     }
 }

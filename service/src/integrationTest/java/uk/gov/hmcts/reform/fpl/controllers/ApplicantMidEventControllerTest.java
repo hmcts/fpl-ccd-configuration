@@ -101,6 +101,22 @@ class ApplicantMidEventControllerTest extends AbstractCallbackTest {
         assertThat(callbackResponse.getErrors()).isNull();
     }
 
+    @Test
+    void shouldReturnErrorsWhenSolicitorEmailsIsNull() {
+        CaseData caseData = CaseData.builder()
+            .applicants(wrapElements(buildApplicant("email@example.com"),
+                buildApplicant("email@example.com")))
+            .solicitor(Solicitor.builder()
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData));
+
+        assertThat(callbackResponse.getErrors()).containsExactly(
+            "Solicitor: Enter an email address in the correct format, for example name@example.com"
+        );
+    }
+
     private Applicant buildApplicant(String email) {
         return Applicant.builder()
             .party(ApplicantParty.builder()
