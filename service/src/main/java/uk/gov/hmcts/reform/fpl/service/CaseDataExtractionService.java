@@ -36,6 +36,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
+import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -181,7 +182,14 @@ public class CaseDataExtractionService {
         String hearingVenue;
         if (venue.getAddress() != null) {
             if (hearing.isRemote()) {
-                hearingVenue = String.format(REMOTE_HEARING_VENUE, venue.getAddress().getAddressLine1());
+                String venueName;
+                if (HEARING_VENUE_ID_OTHER.equals(venue.getHearingVenueId())) {
+                    // assuming that the building name is in address line 1
+                    venueName = venue.getAddress().getAddressLine1();
+                } else {
+                    venueName = venue.getVenue();
+                }
+                hearingVenue = String.format(REMOTE_HEARING_VENUE, venueName);
             } else {
                 hearingVenue = hearingVenueLookUpService.buildHearingVenue(venue);
             }
