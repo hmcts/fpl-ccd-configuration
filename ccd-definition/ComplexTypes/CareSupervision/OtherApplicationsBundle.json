@@ -19,6 +19,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
+    "ListElementCode": "author",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",

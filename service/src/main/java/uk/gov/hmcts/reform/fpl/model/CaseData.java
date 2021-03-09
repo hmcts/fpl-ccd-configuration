@@ -275,7 +275,7 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
-    private final OtherApplicationsBundle otherApplicationsBundle;
+    private final List<Element<OtherApplicationsBundle>> otherApplicationsBundle;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
     @JsonIgnore

@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OtherApplicationsBundle implements ConfidentialBundle {
-    private final OtherApplicationType otherApplicationType;
+    private final OtherApplicationType applicationType;
     private final DocumentReference document;
     private final String usePbaPayment;
     private final String pbaNumber;
@@ -36,6 +36,7 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private List<Element<SupplementsBundle>> supplementsBundle;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
@@ -47,6 +48,7 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @Override
+    @JsonIgnore
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
@@ -54,6 +56,7 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @Override
+    @JsonIgnore
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())

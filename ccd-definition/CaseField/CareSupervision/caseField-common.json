@@ -690,7 +690,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherApplicationsBundle",
     "Label": "Other applications bundle",
-    "FieldType": "OtherApplicationsBundle",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherApplicationsBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
