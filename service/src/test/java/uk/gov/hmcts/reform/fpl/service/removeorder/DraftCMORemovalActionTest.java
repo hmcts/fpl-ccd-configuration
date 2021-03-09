@@ -87,6 +87,13 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
+    void isAcceptedWhenHearingOrderTypeIsNull() {
+        RemovableOrder order = HearingOrder.builder().build();
+
+        assertThat(underTest.isAccepted(order)).isTrue();
+    }
+
+    @Test
     void isNotAcceptedIfAnyOtherClass() {
         assertThat(underTest.isAccepted(mock(RemovableOrder.class))).isFalse();
     }
