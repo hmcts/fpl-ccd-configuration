@@ -150,6 +150,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isFurtherEvidenceUploadNotificationEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("further-evidence-upload-notification"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
