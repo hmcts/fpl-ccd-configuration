@@ -217,8 +217,7 @@ class CaseDataExtractionServiceTest {
         DocmosisHearingBooking expectedHearing = getExpectedHearingBooking(
             "11 December 2020", "3:30pm - 4:30pm", "2:30pm");
 
-        String defaultValue = "";
-        assertThat(service.getHearingBookingData(hearingBooking, defaultValue)).isEqualTo(expectedHearing);
+        assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
     }
 
     @Test
@@ -228,21 +227,13 @@ class CaseDataExtractionServiceTest {
         DocmosisHearingBooking expectedHearing = getExpectedHearingBooking(
             StringUtils.EMPTY, "11 December, 3:30pm - 12 December, 4:30pm", "11 December 2020, 2:30pm");
 
-        String defaultValue = "";
-        assertThat(service.getHearingBookingData(hearingBooking, defaultValue)).isEqualTo(expectedHearing);
+        assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
     }
 
     @Test
-    void shouldGetHearingBookingWithPlaceholderFieldsWhenNoHearing() {
-        String defaultValue = "PLACEHOLDER";
-
-        assertThat(service.getHearingBookingData(null, defaultValue)).isEqualTo(DocmosisHearingBooking.builder()
-            .hearingDate(defaultValue)
-            .hearingVenue(defaultValue)
-            .preHearingAttendance(defaultValue)
-            .hearingTime(defaultValue)
-            .build()
-        );
+    void shouldGetEmptyHearingBookingWhenNoHearing() {
+        assertThat(service.getHearingBookingData(null))
+            .isEqualTo(DocmosisHearingBooking.builder().build());
     }
 
     @Test
@@ -258,7 +249,8 @@ class CaseDataExtractionServiceTest {
             .build();
 
         assertThat(service.baseDirection(direction, 1, List.of(config)))
-            .isEqualToComparingFieldByField(expectedDirection(title));
+            .usingRecursiveComparison()
+            .isEqualTo(expectedDirection(title));
     }
 
     @Test
@@ -267,7 +259,9 @@ class CaseDataExtractionServiceTest {
 
         Direction direction = getDirection(title);
 
-        assertThat(service.baseDirection(direction, 1)).isEqualToComparingFieldByField(expectedDirection(title));
+        assertThat(service.baseDirection(direction, 1))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedDirection(title));
     }
 
     @Test
@@ -277,7 +271,9 @@ class CaseDataExtractionServiceTest {
 
         Direction direction = getDirection(title, directionText);
 
-        assertThat(service.baseDirection(direction, 1)).isEqualToComparingFieldByField(expectedDirection(title));
+        assertThat(service.baseDirection(direction, 1))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedDirection(title));
     }
 
     @Test
@@ -285,7 +281,8 @@ class CaseDataExtractionServiceTest {
         Direction direction = getDirectionWithNoCompleteByDate();
 
         assertThat(service.baseDirection(direction, 1))
-            .isEqualToComparingFieldByField(DocmosisDirection.builder()
+            .usingRecursiveComparison()
+            .isEqualTo(DocmosisDirection.builder()
                 .assignee(DirectionAssignee.LOCAL_AUTHORITY)
                 .title("1. Example title")
                 .body("Example description"));
@@ -294,7 +291,7 @@ class CaseDataExtractionServiceTest {
     @Test
     void shouldReturnExpectedDocmosisJudgeWhenJudgeAndLegalAdvisorGiven() {
         assertThat(service.getAllocatedJudge(JudgeAndLegalAdvisor.from(testJudge())))
-            .isEqualToComparingFieldByField(testDocmosisJudge());
+            .isEqualTo(testDocmosisJudge());
     }
 
     private DocmosisDirection.Builder expectedDirection(String title) {

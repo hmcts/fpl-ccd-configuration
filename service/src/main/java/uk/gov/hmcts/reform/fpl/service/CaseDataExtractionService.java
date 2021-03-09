@@ -46,6 +46,9 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
+    private static final String REMOTE_HEARING_VENUE = "Remote hearing, managed by %s. Link and instructions will be "
+        + "sent by the applicant.";
+
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
@@ -122,8 +125,10 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    public DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
-        return ofNullable(hearingBooking).map(this::buildHearingBooking).orElse(getHearingBookingWithDefault(value));
+    public DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking) {
+        return ofNullable(hearingBooking)
+            .map(this::buildHearingBooking)
+            .orElse(DocmosisHearingBooking.builder().build());
     }
 
     public DocmosisDirection.Builder baseDirection(Direction direction, int index) {
@@ -160,7 +165,7 @@ public class CaseDataExtractionService {
 
         // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
         return format("%d. %s %s", index, direction.getDirectionType(),
-            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+                      formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
     }
 
     private String formatTitleDate(LocalDateTime date, String pattern, Display.Due due) {
@@ -172,26 +177,39 @@ public class CaseDataExtractionService {
     }
 
     private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
-        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor =
-            getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
+        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
+        String hearingVenue;
+        if (venue.getAddress() != null) {
+            if (hearing.isRemote()) {
+                hearingVenue = String.format(REMOTE_HEARING_VENUE, venue.getAddress().getAddressLine1());
+            } else {
+                hearingVenue = hearingVenueLookUpService.buildHearingVenue(venue);
+            }
+        } else {
+            // enters this if:
+            //  • the first hearing uses a custom venue address
+            //  • the second hearing uses the same venue
+            String previousAddress = hearing.getCustomPreviousVenue();
+            if (hearing.isRemote()) {
+                // going to have to assume that the building name of the venue is before the first comma,
+                // but the user could have entered anything, by limiting to 0 even if the string is empty something
+                // is still returned
+                String[] splitAddress = previousAddress.split(",", 0);
+                hearingVenue = String.format(REMOTE_HEARING_VENUE, splitAddress[0]);
+            } else {
+                hearingVenue = previousAddress;
+            }
+        }
+
+        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
 
         return DocmosisHearingBooking.builder()
             .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
-            .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+            .hearingVenue(hearingVenue)
             .preHearingAttendance(extractPrehearingAttendance(hearing))
             .hearingTime(getHearingTime(hearing))
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
             .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
-            .build();
-    }
-
-    private DocmosisHearingBooking getHearingBookingWithDefault(String value) {
-        return DocmosisHearingBooking.builder()
-            .hearingDate(value)
-            .hearingVenue(value)
-            .preHearingAttendance(value)
-            .hearingTime(value)
             .build();
     }
 
@@ -207,8 +225,8 @@ public class CaseDataExtractionService {
             .name(child.getFullName())
             .gender(child.getGender())
             .dateOfBirth(ofNullable(child.getDateOfBirth())
-                .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
-                .orElse(null))
+                             .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
+                             .orElse(null))
             .build();
     }
 
