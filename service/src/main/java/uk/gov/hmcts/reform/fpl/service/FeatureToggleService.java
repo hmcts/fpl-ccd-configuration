@@ -80,4 +80,8 @@ public class FeatureToggleService {
         return builder.build();
     }
 
+    public boolean isFurtherEvidenceUploadNotificationEnabled() {
+        return ldClient.boolVariation("further-evidence-upload-notification",
+            createLDUser(), false);
+    }
 }
