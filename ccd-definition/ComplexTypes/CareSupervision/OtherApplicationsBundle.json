@@ -27,6 +27,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
+    "ListElementCode": "uploadedDateTime",
+    "FieldType": "Text",
+    "ElementLabel": "Date and time of upload",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",

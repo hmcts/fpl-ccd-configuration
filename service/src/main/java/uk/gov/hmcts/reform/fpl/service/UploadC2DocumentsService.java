@@ -77,13 +77,6 @@ public class UploadC2DocumentsService {
         List<SupplementsBundle> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy);
 
-        caseData.getTemporaryC2Document()
-            .toBuilder()
-            .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
-            .type(caseData.getC2ApplicationType().get("type"));
-
         OtherApplicationsBundle.OtherApplicationsBundleBuilder otherApplicationsBundleBuilder =
             temporaryOtherApplicationsBundle.toBuilder()
                 .author(uploadedBy)
