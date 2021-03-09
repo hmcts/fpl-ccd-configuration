@@ -8,7 +8,6 @@ module.exports = {
       furtherEvidence: '#manageDocumentLA_type-FURTHER_EVIDENCE_DOCUMENTS',
       correspondence: '#manageDocumentLA_type-CORRESPONDENCE',
       c2: '#manageDocumentLA_type-C2',
-      application: '#manageDocumentLA_type-APPLICATION',
       courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
     },
     relatedToHearing: {
@@ -32,10 +31,6 @@ module.exports = {
 
   async selectFurtherEvidence() {
     I.click(this.fields.documentType.furtherEvidence);
-  },
-
-  async selectFurtherApplicationDocuments() {
-    I.click(this.fields.subtype.applicationDocuments);
   },
 
   async selectAnyOtherDocument() {

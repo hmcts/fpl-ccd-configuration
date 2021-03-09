@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
@@ -18,8 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -41,31 +41,21 @@ public class ManageDocumentLAService {
 
     public Map<String, Object> initialiseManageDocumentLAEvent(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
-        String hasHearings;
-        String hasC2s;
-
-        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
-            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
-
-            hasHearings = YES.getValue();
-        } else {
-            hasHearings = NO.getValue();
-        }
-
-        //If toggle not on, replicate old behaviour (always show C2 list, even if empty)
-        if (caseData.hasC2DocumentBundle()) {
-            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
-            hasC2s = YES.getValue();
-        } else {
-            hasC2s = NO.getValue();
-        }
 
         ManageDocumentLA manageDocument = ManageDocumentLA.builder()
-            .hasHearings(hasHearings)
-            .hasC2s(hasC2s)
+            .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
+            .hasC2s(YesNo.from(caseData.hasC2DocumentBundle()).getValue())
             .build();
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
+
+        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
+            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+        }
+
+        if (caseData.hasC2DocumentBundle()) {
+            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+        }
 
         return listAndLabel;
     }
@@ -82,7 +72,7 @@ public class ManageDocumentLAService {
 
         UUID selectedHearingId = getDynamicListSelectedValue(caseData.getCourtBundleHearingList(), mapper);
 
-        if (courtBundleList == null || courtBundleList.isEmpty()) {
+        if (isNotEmpty(caseData.getHearingDetails())) {
             return List.of(element(selectedHearingId, caseData.getManageDocumentsCourtBundle()));
         }
 

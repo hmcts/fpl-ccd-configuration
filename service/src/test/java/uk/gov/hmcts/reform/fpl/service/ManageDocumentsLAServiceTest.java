@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class ManageDocumentsLAServiceTest {
 
     private final ManageDocumentLAService manageDocumentLAService = new ManageDocumentLAService(new ObjectMapper());
@@ -59,9 +58,8 @@ class ManageDocumentsLAServiceTest {
 
         DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
 
-        AtomicInteger i = new AtomicInteger(1);
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(c2DocumentBundle, null,
-            documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
+            documentBundle -> documentBundle.toLabel(1));
 
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
