@@ -58,8 +58,8 @@ exports.config = {
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',
     },
-    PuppeteerHelpers: {
-      require: './e2e/helpers/puppeter_helper.js',
+    BrowserHelpers: {
+      require: './e2e/helpers/browser_helper.js',
     },
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',

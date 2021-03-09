@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -28,12 +26,10 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RepresentativeMidEventControllerTest extends AbstractControllerTest {
+class RepresentativeMidEventControllerTest extends AbstractCallbackTest {
 
-    private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
     private final String representativeEmail = "test@test.com";
 
     private final Representative.RepresentativeBuilder representativeBuilder = Representative.builder()
@@ -41,9 +37,6 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
         .positionInACase("Position")
         .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
         .servingPreferences(DIGITAL_SERVICE);
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -66,15 +59,15 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = buildCaseDetails(representativeBuilder
             .email(representativeEmail).build());
 
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail))
+        givenFplService();
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail))
             .willThrow(new FeignException.NotFound("User not found",
-                Request.create(GET, "", Map.of(), new byte[] {}, UTF_8),
-                new byte[] {}));
+                Request.create(GET, "", Map.of(), new byte[]{}, UTF_8),
+                new byte[]{}));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail);
 
         assertThat(callbackResponse.getErrors())
             .contains("Representative must already have an account with the digital service");
@@ -85,13 +78,13 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
         CaseDetails caseDetails = buildCaseDetails(representativeBuilder
             .email(representativeEmail).build());
 
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail))
+        givenFplService();
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail))
             .willReturn(new OrganisationUser(RandomStringUtils.randomAlphanumeric(10)));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representativeEmail);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }

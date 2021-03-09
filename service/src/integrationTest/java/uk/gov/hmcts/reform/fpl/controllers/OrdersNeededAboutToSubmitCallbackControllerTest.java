@@ -3,17 +3,15 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
 @OverrideAutoConfiguration(enabled = true)
-class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractControllerTest {
+class OrdersNeededAboutToSubmitCallbackControllerTest extends AbstractCallbackTest {
 
     OrdersNeededAboutToSubmitCallbackControllerTest() {
         super("orders-needed");

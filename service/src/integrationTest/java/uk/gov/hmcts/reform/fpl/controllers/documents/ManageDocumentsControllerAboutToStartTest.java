@@ -3,10 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers.documents;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
@@ -29,10 +28,9 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MAN
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageDocumentsControllerAboutToStartTest extends AbstractControllerTest {
+class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
     ManageDocumentsControllerAboutToStartTest() {
         super("manage-documents");
     }
