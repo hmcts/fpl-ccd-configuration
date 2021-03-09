@@ -32,6 +32,7 @@ public class UploadC2DocumentsService {
     private final Time time;
     private final SupportingEvidenceValidatorService validateSupportingEvidenceBundleService;
     private final DocumentUploadHelper documentUploadHelper;
+    private final FeatureToggleService featureToggleService;
 
     public List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
@@ -50,7 +51,25 @@ public class UploadC2DocumentsService {
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
             .type(caseData.getC2ApplicationType().get("type"));
 
-        c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
+        if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
+            List<SupplementsBundle> updatedSupplementsBundle =
+                unwrapElements(caseData.getTemporaryC2Document().getSupplementsBundle())
+                    .stream()
+                    .map(supplementsBundle -> supplementsBundle.toBuilder()
+                        .dateTimeUploaded(time.now())
+                        .uploadedBy(uploadedBy)
+                        .build())
+                    .collect(Collectors.toList());
+
+            c2DocumentBundleBuilder.usePbaPayment(caseData.getUsePbaPayment())
+                .pbaNumber(caseData.getPbaNumber())
+                .clientCode(caseData.getClientCode())
+                .fileReference(caseData.getFileReference())
+                .supplementsBundle(wrapElements(updatedSupplementsBundle)
+                );
+        }
+
+        c2DocumentBundle.add(0, element(c2DocumentBundleBuilder.build()));
 
         return c2DocumentBundle;
     }
