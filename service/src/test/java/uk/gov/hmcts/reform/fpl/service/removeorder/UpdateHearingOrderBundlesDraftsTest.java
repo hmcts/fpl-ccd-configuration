@@ -48,7 +48,7 @@ class UpdateHearingOrderBundlesDraftsTest {
     void shouldReplaceHearingOrdersBundleWhenSelectedHearingBundleContainsOrders() {
         UUID selectedBundleId = UUID.randomUUID();
 
-        Element<HearingOrdersBundle> selectedBundle = element(selectedBundleId,
+        Element<HearingOrdersBundle> updatedBundle = element(selectedBundleId,
             HearingOrdersBundle.builder()
                 .orders(newArrayList(element(HearingOrder.builder().type(AGREED_CMO).build()))).build());
 
@@ -66,8 +66,8 @@ class UpdateHearingOrderBundlesDraftsTest {
             .data(newHashMap(Map.of("hearingOrdersBundlesDrafts", hearingOrdersBundles)))
             .build());
 
-        underTest.update(caseDetailsMap, hearingOrdersBundles, selectedBundle);
+        underTest.update(caseDetailsMap, hearingOrdersBundles, updatedBundle);
 
-        assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(bundle, selectedBundle));
+        assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(bundle, updatedBundle));
     }
 }

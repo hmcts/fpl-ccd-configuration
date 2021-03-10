@@ -29,7 +29,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -298,7 +297,7 @@ class DraftCMORemovalActionTest {
             "draftUploadedCMOs", newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))
         );
 
-        verify(updateOrderBundles).update(eq(caseDetailsMap), eq(hearingOrdersBundlesDrafts), eq(selectedBundle));
+        verify(updateOrderBundles).update(caseDetailsMap, hearingOrdersBundlesDrafts, selectedBundle);
         assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 

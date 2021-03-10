@@ -62,11 +62,11 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return type != C21 || (type == C21 && SEND_TO_JUDGE.equals(status));
+        return true;
     }
 
     public String asLabel() {
-        if (type == C21 && SEND_TO_JUDGE.equals(status)) {
+        if (type == C21) {
             return format("Draft order sent on %s", formatLocalDateToString(dateSent, DATE));
         } else {
             if (APPROVED.equals(status)) {

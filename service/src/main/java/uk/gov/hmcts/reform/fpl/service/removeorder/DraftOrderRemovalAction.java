@@ -40,13 +40,16 @@ public class DraftOrderRemovalAction implements OrderRemovalAction {
         Optional<Element<HearingOrdersBundle>> optionalHearingOrderBundle
             = caseData.getHearingOrderBundleThatContainsOrder(removedOrderId);
 
-        optionalHearingOrderBundle.map(selectedBundle -> {
-            selectedBundle.getValue().getOrders().remove(element(removedOrderId, draftOrder));
-            this.updateHearingOrderBundlesDrafts.update(
-                data, caseData.getHearingOrdersBundlesDrafts(), selectedBundle);
-            return data;
-        }).orElseThrow(() -> new IllegalStateException(
-            format("Failed to find hearing order bundle that contains order %s", removedOrderId)));
+        Element<HearingOrdersBundle> selectedHearingOrderBundle =
+            optionalHearingOrderBundle.orElseThrow(
+                () -> new IllegalStateException(
+                    format("Failed to find hearing order bundle that contains order %s", removedOrderId)));
+
+        Element<HearingOrder> draftOrderElement = element(removedOrderId, draftOrder);
+
+        selectedHearingOrderBundle.getValue().getOrders().remove(draftOrderElement);
+        updateHearingOrderBundlesDrafts.update(
+            data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
     }
 
     @Override
