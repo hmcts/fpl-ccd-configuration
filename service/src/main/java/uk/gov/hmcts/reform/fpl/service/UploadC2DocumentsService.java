@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -38,6 +40,11 @@ public class UploadC2DocumentsService {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
             caseData.getC2DocumentBundle(), new ArrayList<>()
         );
+
+        if(featureToggleService.isUploadAdditionalApplicationsEnabled() && !c2DocumentBundle.isEmpty()) {
+            //sort existing c2's from old event
+            c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
+        }
 
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
@@ -67,9 +74,11 @@ public class UploadC2DocumentsService {
                 .fileReference(caseData.getFileReference())
                 .supplementsBundle(wrapElements(updatedSupplementsBundle)
                 );
-        }
 
-        c2DocumentBundle.add(0, element(c2DocumentBundleBuilder.build()));
+            c2DocumentBundle.add(0, element(c2DocumentBundleBuilder.build()));
+        } else {
+            c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
+        }
 
         return c2DocumentBundle;
     }

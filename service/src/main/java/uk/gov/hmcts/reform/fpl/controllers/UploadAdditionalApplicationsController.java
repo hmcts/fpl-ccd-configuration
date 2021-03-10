@@ -85,13 +85,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        var updatedPbaNumber = pbaNumberService.update(caseData.getPbaNumber());
+        caseDetails.getData().put("pbaNumber", updatedPbaNumber);
         List<String> errors = new ArrayList<>();
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
-            var updatedTemporaryC2Document = pbaNumberService.update(caseData.getTemporaryC2Document());
-            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, updatedTemporaryC2Document);
-            errors.addAll(pbaNumberService.validate(updatedTemporaryC2Document));
-            errors.addAll(uploadC2DocumentsService.validate(updatedTemporaryC2Document));
-        }
+        errors.addAll(pbaNumberService.validate(updatedPbaNumber));
 
         return respond(caseDetails, errors);
     }
@@ -152,7 +149,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        final C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
+        final C2DocumentBundle c2DocumentBundle = caseData.getMostRecentC2DocumentBundle();
         publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         if (isNotPaidByPba(c2DocumentBundle)) {

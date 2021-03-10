@@ -150,6 +150,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsUploadAdditionalApplicationsEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isUploadAdditionalApplicationsEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("upload-additional-applications"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

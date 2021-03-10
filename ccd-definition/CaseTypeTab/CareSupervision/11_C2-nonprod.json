@@ -3,19 +3,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "C2Tab",
-    "TabLabel": "C2",
+    "TabID": "OtherApplicationsTab",
+    "TabLabel": "Other applications",
     "TabDisplayOrder": 11,
     "CaseFieldID": "uploadC2Link",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "c2DocumentBundle!=\"\" OR otherApplicationsBundle!=\"\""
+    "TabShowCondition": "c2DocumentBundle!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "C2Tab",
-    "TabLabel": "C2",
+    "TabID": "OtherApplicationsTab",
+    "TabLabel": "Other applications",
     "TabDisplayOrder": 11,
     "CaseFieldID": "c2DocumentBundle",
     "TabFieldDisplayOrder": 2
