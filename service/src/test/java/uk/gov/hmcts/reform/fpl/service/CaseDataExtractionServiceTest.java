@@ -1,20 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,27 +30,26 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.REMOTE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {CaseDataExtractionService.class})
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, HearingVenueLookUpService.class, LookupTestConfig.class
-})
 class CaseDataExtractionServiceTest {
+    private final CaseDataExtractionService service = new CaseDataExtractionService(
+        new LookupTestConfig().courtLookupConfiguration(),
+        new HearingVenueLookUpService(new ObjectMapper())
+    );
     private HearingBooking hearingBooking;
-
-    @Autowired
-    private CaseDataExtractionService service;
 
     @Test
     void shouldReturnAnEmptyStringWhenStartAndEndDateAreNotTheSame() {
@@ -215,7 +211,8 @@ class CaseDataExtractionServiceTest {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         DocmosisHearingBooking expectedHearing = getExpectedHearingBooking(
-            "11 December 2020", "3:30pm - 4:30pm", "2:30pm");
+            "11 December 2020", "3:30pm - 4:30pm", "2:30pm"
+        );
 
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
     }
@@ -225,7 +222,8 @@ class CaseDataExtractionServiceTest {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
         DocmosisHearingBooking expectedHearing = getExpectedHearingBooking(
-            StringUtils.EMPTY, "11 December, 3:30pm - 12 December, 4:30pm", "11 December 2020, 2:30pm");
+            StringUtils.EMPTY, "11 December, 3:30pm - 12 December, 4:30pm", "11 December 2020, 2:30pm"
+        );
 
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
     }
@@ -234,6 +232,79 @@ class CaseDataExtractionServiceTest {
     void shouldGetEmptyHearingBookingWhenNoHearing() {
         assertThat(service.getHearingBookingData(null))
             .isEqualTo(DocmosisHearingBooking.builder().build());
+    }
+
+    @Test
+    void shouldReturnRemoteVenueInstructionsWhenHearingIsRemoteWithKnownVenue() {
+        hearingBooking = createHearingBookingWithTimesOnSameDay().toBuilder()
+            .presence(REMOTE)
+            .build();
+
+        DocmosisHearingBooking expectedHearing = getExpectedRemoteHearingBooking(
+            "11 December 2020", "3:30pm - 4:30pm", "2:30pm"
+        );
+
+        assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
+    }
+
+    // scenarios to cover
+    //  • address is null + not remote
+
+
+    @Test
+    void shouldReturnRemoteVenueInstructionsWhenHearingIsRemoteWithUnknownVenue() {
+        hearingBooking = createHearingBookingWithTimesOnSameDay().toBuilder()
+            .presence(REMOTE)
+            .venue("OTHER")
+            .venueCustomAddress(Address.builder().addressLine1("some building").addressLine2("somewhere").build())
+            .build();
+
+        DocmosisHearingBooking expectedHearing = getExpectedRemoteHearingBooking(
+            "11 December 2020", "3:30pm - 4:30pm", "2:30pm", "some building"
+        );
+
+        DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);
+        assertThat(hearingBookingData).isEqualTo(expectedHearing);
+    }
+
+    @Test
+    void shouldReturnRemoteVenueInstructionsWhenHearingIsRemoteWithUnknownPreviousVenue() {
+        hearingBooking = createHearingBookingWithTimesOnSameDay().toBuilder()
+            .presence(REMOTE)
+            .venue("OTHER")
+            .customPreviousVenue("some building, somewhere")
+            .previousHearingVenue(PreviousHearingVenue.builder()
+                .previousVenue("some building, somewhere")
+                .usePreviousVenue("Yes")
+                .build())
+            .build();
+
+        DocmosisHearingBooking expectedHearing = getExpectedRemoteHearingBooking(
+            "11 December 2020", "3:30pm - 4:30pm", "2:30pm", "some building"
+        );
+
+        DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);
+        assertThat(hearingBookingData).isEqualTo(expectedHearing);
+    }
+
+    @Test
+    void shouldReturnRemoteVenueInstructionsWhenHearingIsInPersonWithUnknownPreviousVenue() {
+        hearingBooking = createHearingBookingWithTimesOnSameDay().toBuilder()
+            .presence(IN_PERSON)
+            .venue("OTHER")
+            .customPreviousVenue("some building, somewhere")
+            .previousHearingVenue(PreviousHearingVenue.builder()
+                .previousVenue("some building, somewhere")
+                .usePreviousVenue("Yes")
+                .build())
+            .build();
+
+        DocmosisHearingBooking expectedHearing = getExpectedHearingBooking(
+            "11 December 2020", "3:30pm - 4:30pm", "2:30pm", false, "some building, somewhere"
+        );
+
+        DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);
+        assertThat(hearingBookingData).isEqualTo(expectedHearing);
     }
 
     @Test
@@ -323,11 +394,31 @@ class CaseDataExtractionServiceTest {
     }
 
     private DocmosisHearingBooking getExpectedHearingBooking(String date, String time, String attendance) {
+        return getExpectedHearingBooking(date, time, attendance, false, "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
+    }
+
+    private DocmosisHearingBooking getExpectedRemoteHearingBooking(String date, String time, String attendance) {
+        return getExpectedHearingBooking(date, time, attendance, true, "Venue");
+    }
+
+    private DocmosisHearingBooking getExpectedRemoteHearingBooking(String date, String time, String attendance,
+                                                                   String venue) {
+        return getExpectedHearingBooking(date, time, attendance, true, venue);
+    }
+
+    private DocmosisHearingBooking getExpectedHearingBooking(String date, String time, String attendance,
+                                                             boolean remote, String venueName) {
+        String venue;
+        if (remote) {
+            venue = format("Remote hearing at %s. Link and instructions will be sent by the applicant.", venueName);
+        } else {
+            venue = venueName;
+        }
         return DocmosisHearingBooking.builder()
             .hearingDate(date)
             .hearingTime(time)
             .preHearingAttendance(attendance)
-            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
+            .hearingVenue(venue)
             .hearingJudgeTitleAndName("Her Honour Judge Law")
             .hearingLegalAdvisorName("Peter Parker")
             .build();
