@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.util.ArrayList;
@@ -51,7 +50,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
-    private final Time time;
     private final UploadC2DocumentsService uploadC2DocumentsService;
 
     @PostMapping("/get-fee/mid-event")
@@ -135,10 +133,15 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 uploadC2DocumentsService.buildOtherApplicationsBundle(caseData));
         }
 
-        caseDetails.getData().keySet().removeAll(
-            Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", "additionalApplicationType",
-                "usePbaPayment", AMOUNT_TO_PAY, "pbaNumber", "clientCode", "fileReference",
-                TEMPORARY_OTHER_APPLICATIONS_BUNDLE));
+        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT,
+            "c2ApplicationType",
+            "additionalApplicationType",
+            "usePbaPayment",
+            AMOUNT_TO_PAY,
+            "pbaNumber",
+            "clientCode",
+            "fileReference",
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE));
 
         return respond(caseDetails);
     }

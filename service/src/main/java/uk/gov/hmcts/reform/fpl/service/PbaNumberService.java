@@ -47,7 +47,7 @@ public class PbaNumberService {
     }
 
     public String update(String pbaNumber) {
-        if(!isEmpty(pbaNumber)) {
+        if (!isEmpty(pbaNumber)) {
             return setPrefix(pbaNumber);
         }
         return null;
@@ -71,7 +71,7 @@ public class PbaNumberService {
     }
 
     public List<String> validate(String pbaNumber) {
-        if(!isEmpty(pbaNumber) && isInvalidPbaNumber(pbaNumber)) {
+        if (!isEmpty(pbaNumber) && isInvalidPbaNumber(pbaNumber)) {
             return List.of(VALIDATION_ERROR_MESSAGE);
         }
         return List.of();

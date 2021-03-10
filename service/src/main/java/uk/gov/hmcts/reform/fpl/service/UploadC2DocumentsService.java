@@ -41,7 +41,7 @@ public class UploadC2DocumentsService {
             caseData.getC2DocumentBundle(), new ArrayList<>()
         );
 
-        if(featureToggleService.isUploadAdditionalApplicationsEnabled() && !c2DocumentBundle.isEmpty()) {
+        if (featureToggleService.isUploadAdditionalApplicationsEnabled() && !c2DocumentBundle.isEmpty()) {
             //sort existing c2's from old event
             c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
         }
