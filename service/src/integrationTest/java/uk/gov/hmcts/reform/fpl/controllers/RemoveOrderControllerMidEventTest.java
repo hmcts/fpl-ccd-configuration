@@ -167,12 +167,6 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
     void shouldExtractDraftOrderFields() {
         DocumentReference documentReference = DocumentReference.builder().build();
 
-        HearingBooking hearingBooking = HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(now())
-            .caseManagementOrderId(null)
-            .build();
-
         HearingOrder draftOrder = HearingOrder.builder()
             .type(HearingOrderType.C21)
             .title("Draft1")
@@ -193,12 +187,10 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
                 element(HearingOrdersBundle.builder()
                     .orders(newArrayList(element(REMOVE_ORDER_ID, draftOrder)))
                     .build())))
-            .hearingDetails(List.of(element(hearingBooking)))
             .removableOrderList(dynamicList)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
-
         Map<String, Object> responseData = response.getData();
 
         Map<String, Object> extractedFields = Map.of(

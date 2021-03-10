@@ -88,9 +88,7 @@ Scenario('HMCTS super user removes a draft order from a case', async ({I, caseVi
   const labelToSelect = 'Draft order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
 
   await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, false);
-
   caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
-  caseViewPage.selectTab(caseViewPage.tabs.orders);
 });
 
 const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect, reasonFieldExists) => {

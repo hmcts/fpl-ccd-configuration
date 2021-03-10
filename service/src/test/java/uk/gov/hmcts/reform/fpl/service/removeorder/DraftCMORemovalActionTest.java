@@ -29,7 +29,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -258,30 +258,31 @@ class DraftCMORemovalActionTest {
     void shouldRemoveCaseManagementOrderWhenOtherCMOisPresent() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
+        Element<HearingOrdersBundle> selectedBundle = element(HEARING_ORDER_BUNDLE_ID_ONE,
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(
+                    element(TO_REMOVE_ORDER_ID, draftCMO),
+                    element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)
+                )).build());
+
+        Element<HearingOrdersBundle> anotherBundle = element(HEARING_ORDER_BUNDLE_ID_TWO,
+            HearingOrdersBundle.builder()
+                .orders(newArrayList(
+                    element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, draftCMO)
+                )).build());
+        List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts = List.of(selectedBundle, anotherBundle);
+
         CaseData caseData = CaseData.builder()
-            .hearingOrdersBundlesDrafts(List.of(
-                element(HEARING_ORDER_BUNDLE_ID_ONE, HearingOrdersBundle.builder()
-                    .orders(newArrayList(
-                        element(TO_REMOVE_ORDER_ID, draftCMO),
-                        element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)
-                    )).build()),
-                element(HEARING_ORDER_BUNDLE_ID_TWO, HearingOrdersBundle.builder()
-                    .orders(newArrayList(
-                        element(ANOTHER_CASE_MANAGEMENT_ORDER_ID, draftCMO)
-                    )).build())
-            ))
+            .hearingOrdersBundlesDrafts(hearingOrdersBundlesDrafts)
             .draftUploadedCMOs(newArrayList(
                 element(TO_REMOVE_ORDER_ID, draftCMO),
                 element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)))
             .hearingDetails(newArrayList(
                 element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID)),
                 element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
-            ))
-            .build();
+            )).build();
 
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
-            .data(Map.of())
-            .build());
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
 
         List<Element<HearingBooking>> updatedHearings = List.of(
             element(HEARING_ID, hearing(null)),
@@ -297,7 +298,7 @@ class DraftCMORemovalActionTest {
             "draftUploadedCMOs", newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))
         );
 
-        verify(updateOrderBundles).update(any(CaseDetailsMap.class), any(), any());
+        verify(updateOrderBundles).update(eq(caseDetailsMap), eq(hearingOrdersBundlesDrafts), eq(selectedBundle));
         assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
     }
 

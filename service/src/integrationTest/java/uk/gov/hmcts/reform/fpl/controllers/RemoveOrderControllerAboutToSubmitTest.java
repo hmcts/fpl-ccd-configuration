@@ -250,9 +250,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
-
-        CaseData responseData = extractCaseData(response);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         Element<HearingOrdersBundle> expectedHearingOrderBundle = element(hearingOrdersBundle.getId(),
             HearingOrdersBundle.builder().orders(newArrayList(draftCMO)).build());

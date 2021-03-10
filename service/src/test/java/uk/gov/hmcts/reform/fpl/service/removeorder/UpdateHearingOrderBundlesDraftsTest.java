@@ -62,11 +62,10 @@ class UpdateHearingOrderBundlesDraftsTest {
 
         List<Element<HearingOrdersBundle>> hearingOrdersBundles = List.of(bundle, selectedBundleBeforeUpdate);
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
             .data(newHashMap(Map.of("hearingOrdersBundlesDrafts", hearingOrdersBundles)))
-            .build();
+            .build());
 
-        CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
         underTest.update(caseDetailsMap, hearingOrdersBundles, selectedBundle);
 
         assertThat(caseDetailsMap.get("hearingOrdersBundlesDrafts")).isEqualTo(List.of(bundle, selectedBundle));
