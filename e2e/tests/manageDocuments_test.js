@@ -20,9 +20,9 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
 
   manageDocumentsEventPage.selectFurtherEvidence();
   await I.goToNextPage();
-  await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await manageDocumentsEventPage.uploadConfidentialFurtherEvidence(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
+  await manageDocumentsEventPage.uploadFurtherEvidence(supportingEvidenceDocuments[1]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
@@ -33,9 +33,9 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await I.goToNextPage();
   await manageDocumentsLAEventPage.selectAnyOtherDocument();
   await I.goToNextPage();
-  await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
+  await manageDocumentsLAEventPage.uploadConfidentialFurtherEvidence(supportingEvidenceDocuments[2]);
   await I.addAnotherElementToCollection();
-  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3]);
+  await manageDocumentsLAEventPage.uploadFurtherEvidence(supportingEvidenceDocuments[3]);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 

@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
 
@@ -24,7 +24,7 @@ module.exports = {
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
-    supportingDocuments: function(index) {
+    supportingDocuments: function (index) {
       return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp');
     },
   },
@@ -109,9 +109,38 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
   },
 
+  async selectFurtherEvidenceType(type) {
+    const elementIndex = await this.getActiveElementIndex();
+    switch (type) {
+      case 'Expert reports':
+        I.checkOption(this.fields.supportingDocuments(elementIndex).type.expert);
+        break;
+      case 'Other reports':
+        I.checkOption(this.fields.supportingDocuments(elementIndex).type.other);
+        break;
+      default:
+        throw new Error(`Unsupported further evidence type ${type}`);
+    }
+  },
+
   async selectConfidential() {
     const elementIndex = await this.getActiveElementIndex();
     I.click(this.fields.supportingDocuments(elementIndex).confidential);
+  },
+
+  async uploadFurtherEvidence(supportingEvidenceDocument) {
+    await this.enterDocumentName(supportingEvidenceDocument.name);
+    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
+    await this.uploadDocument(supportingEvidenceDocument.document);
+    await this.selectFurtherEvidenceType(supportingEvidenceDocument.type);
+  },
+
+  async uploadConfidentialFurtherEvidence(supportingEvidenceDocument) {
+    await this.enterDocumentName(supportingEvidenceDocument.name);
+    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
+    await this.uploadDocument(supportingEvidenceDocument.document);
+    await this.selectFurtherEvidenceType(supportingEvidenceDocument.type);
+    await this.selectConfidential();
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {

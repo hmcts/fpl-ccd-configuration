@@ -65,8 +65,40 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(index).document, document);
   },
 
+  async selectFurtherEvidenceType(type, index = 0) {
+    switch (type) {
+      case 'Expert reports':
+        I.checkOption(this.fields.supportingDocuments(index).type.expert);
+        break;
+      case 'Other reports':
+        I.checkOption(this.fields.supportingDocuments(index).type.other);
+        break;
+      default:
+        throw new Error(`Unsupported further evidence type ${type}`);
+    }
+  },
+
   async selectConfidential(index = 0) {
     I.click(this.fields.supportingDocuments(index).confidential);
+  },
+
+  async uploadFurtherEvidence(supportingEvidenceDocument) {
+    const index = await I.getActiveElementIndex();
+    this.enterDocumentName(supportingEvidenceDocument.name, index);
+    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
+    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
+    this.uploadDocument(supportingEvidenceDocument.document, index);
+    this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
+  },
+
+  async uploadConfidentialFurtherEvidence(supportingEvidenceDocument) {
+    const index = await I.getActiveElementIndex();
+    this.enterDocumentName(supportingEvidenceDocument.name, index);
+    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
+    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
+    this.uploadDocument(supportingEvidenceDocument.document, index);
+    this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
+    this.selectConfidential(index);
   },
 
   async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
@@ -84,5 +116,20 @@ module.exports = {
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
     this.selectConfidential(index);
+  },
+
+  async setRolePreferences(rolePreferences) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    switch (rolePreferences) {
+      case 'Barrister':
+        I.checkOption(this.fields(elementIndex).legalRepresentative.roles.barrister);
+        break;
+      case 'Solicitor':
+        I.checkOption(this.fields(elementIndex).legalRepresentative.roles.solicitor);
+        break;
+      default:
+        throw new Error(`Unsupported representative serving preferences ${rolePreferences}`);
+    }
   },
 };
