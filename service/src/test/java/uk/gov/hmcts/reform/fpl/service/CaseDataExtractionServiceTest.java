@@ -300,7 +300,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         DocmosisHearingBooking expectedHearing = getExpectedHearingBooking(
-            "11 December 2020", "3:30pm - 4:30pm", "2:30pm", false, "some building, somewhere"
+            "11 December 2020", "3:30pm - 4:30pm", "2:30pm", "some building, somewhere"
         );
 
         DocmosisHearingBooking hearingBookingData = service.getHearingBookingData(hearingBooking);
@@ -393,27 +393,26 @@ class CaseDataExtractionServiceTest {
             .build();
     }
 
-    private DocmosisHearingBooking getExpectedHearingBooking(String date, String time, String attendance) {
-        return getExpectedHearingBooking(date, time, attendance, false, "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
-    }
-
     private DocmosisHearingBooking getExpectedRemoteHearingBooking(String date, String time, String attendance) {
-        return getExpectedHearingBooking(date, time, attendance, true, "Venue");
+        return getExpectedRemoteHearingBooking(date, time, attendance, "Venue");
     }
 
     private DocmosisHearingBooking getExpectedRemoteHearingBooking(String date, String time, String attendance,
                                                                    String venue) {
-        return getExpectedHearingBooking(date, time, attendance, true, venue);
+        return getExpectedHearingBooking(
+            date, time, attendance,
+            format("Remote hearing at %s. Link and instructions will be sent by the applicant.", venue)
+        );
     }
 
-    private DocmosisHearingBooking getExpectedHearingBooking(String date, String time, String attendance,
-                                                             boolean remote, String venueName) {
-        String venue;
-        if (remote) {
-            venue = format("Remote hearing at %s. Link and instructions will be sent by the applicant.", venueName);
-        } else {
-            venue = venueName;
-        }
+    private DocmosisHearingBooking getExpectedHearingBooking(String date, String time, String attendance) {
+        return getExpectedHearingBooking(
+            date, time, attendance, "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW"
+        );
+    }
+
+    private DocmosisHearingBooking getExpectedHearingBooking(String date, String time,
+                                                             String attendance, String venue) {
         return DocmosisHearingBooking.builder()
             .hearingDate(date)
             .hearingTime(time)
