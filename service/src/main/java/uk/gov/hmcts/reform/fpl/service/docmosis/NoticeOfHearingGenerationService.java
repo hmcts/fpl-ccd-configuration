@@ -10,8 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-
-import java.time.LocalDate;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
@@ -25,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final Time time;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(hearingBooking.getJudgeAndLegalAdvisor(),
@@ -36,7 +36,7 @@ public class NoticeOfHearingGenerationService {
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
             .hearingBooking(getHearingBooking(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor))
-            .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
+            .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .additionalNotes(hearingBooking.getAdditionalNotes())
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
