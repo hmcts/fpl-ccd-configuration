@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
@@ -49,6 +51,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
 
     @MockBean
     private RequestData requestData;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private Time time;
@@ -65,7 +70,28 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
     }
 
     @Test
-    void shouldCreateC2DocumentBundle() {
+    void shouldCreateC2DocumentBundleWithoutSupplementsIncludedWhenAdditionalApplicationsToggledOff() {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
+        Map<String, Object> data = createTemporaryC2Document();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
+
+        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
+
+        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
+        assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
+        assertSupportingEvidenceBundle(uploadedC2DocumentBundle);
+        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
+    }
+
+    @Test
+    void shouldCreateC2DocumentBundleWithSupplementsIncludedWhenAdditionalApplicationsToggledOn() {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
         Map<String, Object> data = createTemporaryC2Document();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
@@ -105,6 +131,32 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
+    @Test
+    void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
+            "c2ApplicationType", Map.of("type", WITHOUT_NOTICE),
+                "additionalApplicationType", "C2_ORDER",
+                "usePbaPayment", "Yes",
+                "amountToPay", "Yes",
+                "pbaNumber", "1234567",
+                "clientCode", "123",
+                "fileReference", "456"))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(callbackResponse.getData().get("c2ApplicationType")).isNull();
+        assertThat(caseData.getC2ApplicationType()).isNull();
+        assertThat(caseData.getUsePbaPayment()).isNull();
+        assertThat(caseData.getAmountToPay()).isNull();
+        assertThat(caseData.getPbaNumber()).isNull();
+        assertThat(caseData.getClientCode()).isNull();
+        assertThat(caseData.getFileReference()).isNull();
+    }
+
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
         Document document = document();
 
@@ -117,6 +169,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
     private void assertSupportingEvidenceBundle(C2DocumentBundle documentBundle) {
         List<SupportingEvidenceBundle> supportingEvidenceBundle =
             unwrapElements(documentBundle.getSupportingEvidenceBundle());
+
+        System.out.println("SUpporting is" + supportingEvidenceBundle);
 
         assertThat(supportingEvidenceBundle).first()
             .extracting(
@@ -137,6 +191,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
     private void assertSupplementsBundle(C2DocumentBundle documentBundle) {
         List<SupplementsBundle> supplementsBundle =
             unwrapElements(documentBundle.getSupplementsBundle());
+
+        System.out.println("SUp is" + supplementsBundle);
 
         assertThat(supplementsBundle).first()
             .extracting(
