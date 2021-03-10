@@ -1,12 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
@@ -56,6 +52,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -97,7 +94,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdviser;
 
-@ExtendWith(MockitoExtension.class)
 class ManageHearingsServiceTest {
 
     private static final String VENUE = "31";
@@ -117,31 +113,20 @@ class ManageHearingsServiceTest {
     public static final UUID HEARING_BUNDLE_ID = randomUUID();
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final HearingVenueLookUpService hearingVenueLookUpService = mock(HearingVenueLookUpService.class);
+    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService = mock(
+        NoticeOfHearingGenerationService.class
+    );
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService = mock(
+        DocmosisDocumentGeneratorService.class
+    );
+    private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
+    private final IdentityService identityService = mock(IdentityService.class);
 
-    @Mock
-    private HearingVenueLookUpService hearingVenueLookUpService;
-
-    @Mock
-    private NoticeOfHearingGenerationService noticeOfHearingGenerationService;
-
-    @Mock
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @Mock
-    private UploadDocumentService uploadDocumentService;
-
-    @Mock
-    private IdentityService identityService;
-
-    private ManageHearingsService service;
-
-    @BeforeEach
-    void setUp() {
-        service = new ManageHearingsService(
-            noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
-            hearingVenueLookUpService, new ObjectMapper(), identityService, time
-        );
-    }
+    private final ManageHearingsService service = new ManageHearingsService(
+        noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
+        hearingVenueLookUpService, new ObjectMapper(), identityService, time
+    );
 
     @Nested
     class PopulatePastAndFutureHearingListsTest {

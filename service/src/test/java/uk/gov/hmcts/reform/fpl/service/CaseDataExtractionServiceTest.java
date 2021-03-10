@@ -247,10 +247,6 @@ class CaseDataExtractionServiceTest {
         assertThat(service.getHearingBookingData(hearingBooking)).isEqualTo(expectedHearing);
     }
 
-    // scenarios to cover
-    //  • address is null + not remote
-
-
     @Test
     void shouldReturnRemoteVenueInstructionsWhenHearingIsRemoteWithUnknownVenue() {
         hearingBooking = createHearingBookingWithTimesOnSameDay().toBuilder()
