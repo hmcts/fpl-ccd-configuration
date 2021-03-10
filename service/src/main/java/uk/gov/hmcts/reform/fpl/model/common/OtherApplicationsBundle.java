@@ -64,19 +64,20 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @JsonIgnore
-    public String getAllC2DocumentFileNames() {
-        String c2Filename = "";
+    public String getAllDocumentsFileNames() {
+        String fileName = "";
 
         if (document != null) {
-            c2Filename = document.getFilename();
+            fileName = document.getFilename();
         }
 
-        String stringBuilder = c2Filename + "\n" + getSupportingEvidenceFileNames();
+        String stringBuilder = String.join(
+            "\n", fileName, getSupportingEvidenceFileNames(), getSupplementsFileNames());
         return stringBuilder.trim();
     }
 
     @JsonIgnore
-    public List<Element<DocumentReference>> getAllC2DocumentReferences() {
+    public List<Element<DocumentReference>> getAllDocumentReferences() {
         List<Element<DocumentReference>> documentReferences = new ArrayList<>();
 
         if (document != null) {
@@ -84,6 +85,7 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
         }
 
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
+        documentReferences.addAll(getSupplementsBundleReferences());
 
         return documentReferences;
     }
@@ -98,10 +100,28 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @JsonIgnore
+    private String getSupplementsFileNames() {
+        return getSupplementsBundle().stream()
+            .map(Element::getValue)
+            .map(SupplementsBundle::getDocument)
+            .map(DocumentReference::getFilename)
+            .collect(Collectors.joining("\n"));
+    }
+
+    @JsonIgnore
     private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
         return getSupportingEvidenceBundle().stream()
             .map(Element::getValue)
             .map(SupportingEvidenceBundle::getDocument)
+            .map(ElementUtils::element)
+            .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    private List<Element<DocumentReference>> getSupplementsBundleReferences() {
+        return getSupplementsBundle().stream()
+            .map(Element::getValue)
+            .map(SupplementsBundle::getDocument)
             .map(ElementUtils::element)
             .collect(Collectors.toList());
     }

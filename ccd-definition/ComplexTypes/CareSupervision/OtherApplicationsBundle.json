@@ -4,7 +4,7 @@
     "ID": "OtherApplicationsBundle",
     "ListElementCode": "applicationType",
     "FieldType": "FixedList",
-    "ElementLabel": "Select application",
+    "ElementLabel": "Application type",
     "FieldTypeParameter": "OtherApplicationType",
     "SecurityClassification": "Public"
   },
@@ -13,7 +13,7 @@
     "ID": "OtherApplicationsBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Upload application",
+    "ElementLabel": "File",
     "SecurityClassification": "Public"
   },
   {

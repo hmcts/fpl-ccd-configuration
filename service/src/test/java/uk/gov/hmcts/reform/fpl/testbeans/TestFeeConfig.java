@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -16,12 +17,15 @@ import static java.util.stream.Collectors.toMap;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITH_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHANGE_SURNAME;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CHILD_ASSESSMENT;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.RECOVERY_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SUPERVISION_ORDER;
 
 @Configuration
@@ -43,21 +47,28 @@ public class TestFeeConfig {
     public static final String PLACEMENT_KEYWORD = "P";
     public static final String SUPERVISION_ORDER_KEYWORD = "SO";
 
+    public static final String CHANGE_SURNAME_KEYWORD = "ZAB";
+    public static final String CHILD_ASSESSMENT_KEYWORD = "NOP";
+    public static final String RECOVERY_ORDER_KEYWORD = "NOP";
+
     private static final Map<FeeType, String> feeTypeToKeyword;
 
     static {
-        feeTypeToKeyword = Map.of(
-            C2_WITHOUT_NOTICE, C2_WITHOUT_NOTICE_KEYWORD,
-            C2_WITH_NOTICE, C2_WITH_NOTICE_KEYWORD,
-            CARE_ORDER, CARE_ORDER_KEYWORD,
-            EDUCATION_SUPERVISION_ORDER, EDUCTION_SUPERVISION_ORDER_KEYWORD,
-            EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER_KEYWORD,
-            INTERIM_CARE_ORDER, INTERIM_CARE_ORDER_KEYWORD,
-            INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER_KEYWORD,
-            OTHER, OTHER_KEYWORD,
-            PLACEMENT, PLACEMENT_KEYWORD,
-            SUPERVISION_ORDER, SUPERVISION_ORDER_KEYWORD
-        );
+        feeTypeToKeyword = new HashMap<>();
+        feeTypeToKeyword.put(C2_WITHOUT_NOTICE, C2_WITHOUT_NOTICE_KEYWORD);
+        feeTypeToKeyword.put(C2_WITH_NOTICE, C2_WITH_NOTICE_KEYWORD);
+        feeTypeToKeyword.put(CARE_ORDER, CARE_ORDER_KEYWORD);
+        feeTypeToKeyword.put(EDUCATION_SUPERVISION_ORDER, EDUCTION_SUPERVISION_ORDER_KEYWORD);
+        feeTypeToKeyword.put(EMERGENCY_PROTECTION_ORDER, EMERGENCY_PROTECTION_ORDER_KEYWORD);
+        feeTypeToKeyword.put(INTERIM_CARE_ORDER, INTERIM_CARE_ORDER_KEYWORD);
+        feeTypeToKeyword.put(INTERIM_SUPERVISION_ORDER, INTERIM_SUPERVISION_ORDER_KEYWORD);
+        feeTypeToKeyword.put(OTHER, OTHER_KEYWORD);
+        feeTypeToKeyword.put(PLACEMENT, PLACEMENT_KEYWORD);
+        feeTypeToKeyword.put(SUPERVISION_ORDER, SUPERVISION_ORDER_KEYWORD);
+
+        feeTypeToKeyword.put(CHANGE_SURNAME, CHANGE_SURNAME_KEYWORD);
+        feeTypeToKeyword.put(CHILD_ASSESSMENT, CHILD_ASSESSMENT_KEYWORD);
+        feeTypeToKeyword.put(RECOVERY_ORDER, RECOVERY_ORDER_KEYWORD);
     }
 
     @ConditionalOnMissingBean

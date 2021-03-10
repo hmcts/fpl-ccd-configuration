@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.payment;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
@@ -24,8 +27,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromApplicationType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
 
 @Slf4j
 @Service
@@ -65,6 +71,20 @@ public class FeeService {
             .totalAmount(feeResponse.getAmount())
             .fees(List.of(FeeDto.fromFeeResponse(feeResponse)))
             .build();
+    }
+
+    public FeesData getFeesDataForOtherApplications(
+        OtherApplicationType applicationType, List<Supplements> supplementTypes) {
+
+        List<FeeType> feeTypes = newArrayList(fromApplicationType(applicationType));
+        if (ObjectUtils.isNotEmpty(supplementTypes)) {
+            feeTypes.addAll(fromSupplementTypes(supplementTypes));
+        }
+
+        return Optional.of(feeTypes)
+            .map(this::getFees)
+            .map(this::buildFeesDataFromFeeResponses)
+            .orElse(FeesData.builder().totalAmount(BigDecimal.ZERO).build());
     }
 
     private FeeResponse makeRequest(FeeType feeType) {

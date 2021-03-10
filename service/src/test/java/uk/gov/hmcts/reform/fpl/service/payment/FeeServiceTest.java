@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
@@ -40,15 +41,21 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.Supplements.C16_CHILD_ASSESSMENT;
+import static uk.gov.hmcts.reform.fpl.enums.Supplements.C18_RECOVERY_ORDER;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.C2_WITHOUT_NOTICE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.C2_WITH_NOTICE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CARE_ORDER_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHANGE_SURNAME_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHANNEL;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CHILD_ASSESSMENT_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.EVENT;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_1;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.JURISDICTION_2;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.OTHER_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.PLACEMENT_KEYWORD;
+import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.RECOVERY_ORDER_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SERVICE;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SUPERVISION_ORDER_KEYWORD;
 
@@ -163,7 +170,7 @@ class FeeServiceTest {
         void shouldPropagateExceptionWhenThereIsAnErrorInTheResponse() {
             when(feesRegisterApi.findFee(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenThrow(new FeignException.BadRequest(
-                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null), new byte[] {})
+                    "", Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null), new byte[]{})
                 );
 
             Orders orders = Orders.builder()
@@ -224,6 +231,64 @@ class FeeServiceTest {
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.TEN);
             assertThat(getFirstFeeCode(feeService.getFeesDataForC2(C2ApplicationType.WITHOUT_NOTICE))).isEqualTo(
                 WITHOUT_NOTICE_FEE_CODE);
+        }
+
+        private String getFirstFeeCode(FeesData feesData) {
+            return feesData.getFees().get(0).getCode();
+        }
+
+        @AfterEach
+        void resetInvocations() {
+            reset(feesRegisterApi);
+        }
+    }
+
+    @Nested
+    class GetFeesDataForOtherApplications {
+
+        private static final String CHANGE_SURNAME = "FEE0330";
+        private static final String CHILD_ASSESSMENT = "FEE0326";
+        private static final String RECOVERY_ORDER = "FEE0323";
+
+        @BeforeEach
+        void setup() {
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                CHANGE_SURNAME_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(CHANGE_SURNAME, BigDecimal.valueOf(70)));
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                CHILD_ASSESSMENT_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(CHILD_ASSESSMENT, BigDecimal.valueOf(40)));
+            when(feesRegisterApi.findFee(CHANNEL,
+                EVENT,
+                JURISDICTION_1,
+                JURISDICTION_2,
+                RECOVERY_ORDER_KEYWORD,
+                SERVICE)).thenReturn(buildFeeResponse(RECOVERY_ORDER, BigDecimal.valueOf(90)));
+        }
+
+        @Test
+        void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplements() {
+            FeesData feesData = feeService.getFeesDataForOtherApplications(
+                C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, List.of(C16_CHILD_ASSESSMENT, C18_RECOVERY_ORDER));
+
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(90));
+            assertThat(getFirstFeeCode(feesData)).isEqualTo(RECOVERY_ORDER);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnApplicationFeesDataWhenNoSupplementsExist(List<Supplements> supplementTypes) {
+            FeesData feesData = feeService.getFeesDataForOtherApplications(
+                C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, supplementTypes);
+
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(70));
+            assertThat(getFirstFeeCode(feesData)).isEqualTo(CHANGE_SURNAME);
         }
 
         private String getFirstFeeCode(FeesData feesData) {

@@ -96,6 +96,33 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
+    @PostMapping("/applications-fee/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleFeeMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
+        data.remove(DISPLAY_AMOUNT_TO_PAY);
+
+        //workaround for previous-continue bug
+        if (shouldRemoveDocument(caseData)) {
+            removeDocumentFromData(data);
+        }
+
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)) {
+            try {
+                //todo supplements fee code
+                FeesData feesData = feeService.getFeesDataForOtherApplications(
+                    caseData.getTemporaryOtherApplicationsBundle().getApplicationType(), List.of());
+                data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
+                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+            } catch (FeeRegisterException ignore) {
+                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+            }
+        }
+
+        return respond(caseDetails);
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
