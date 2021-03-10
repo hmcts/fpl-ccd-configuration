@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(UploadC2DocumentsController.class)
+@WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractControllerTest {
     private static final String USER_NAME = "HMCTS";
