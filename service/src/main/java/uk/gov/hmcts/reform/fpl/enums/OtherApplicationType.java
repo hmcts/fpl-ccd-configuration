@@ -12,6 +12,7 @@ public enum OtherApplicationType {
     C1_PARENTAL_RESPONSIBILITY("C1 - Parental responsibility"),
     C1_WITH_SUPPLEMENT("C1 - With supplement"),
     C4_WHEREABOUTS_OF_A_MISSING_CHILD("C4 - Whereabouts of a missing child"),
+    C3_SEARCH_TAKE_CHARGE_DELIVERY_OF_CHILD("C3 - Search, take charge and delivery of a child"),
     C12_WARRANT_TO_ASSIST_PERSON("C12 - Warrant to assist person authorised by an emergency protection order"),
     C17_EDUCATION_SUPERVISION_ORDER("C17 - Education supervision order (ESO)"),
     C17A_EXTENSION_OF_ESO("C17a - Variation or extension of ESO"),

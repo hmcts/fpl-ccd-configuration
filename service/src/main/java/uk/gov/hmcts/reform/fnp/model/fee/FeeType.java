@@ -82,6 +82,7 @@ public enum FeeType {
         applicationToFeeMap.put(C1_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         applicationToFeeMap.put(C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         applicationToFeeMap.put(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
+        applicationToFeeMap.put(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_DELIVERY_OF_CHILD, C2_WITH_NOTICE);
         //TODO "C4 - Whereabouts of a missing child" - fee code not found
         applicationToFeeMap.put(OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON, WARRANT_TO_ASSIST_PERSON);
         applicationToFeeMap.put(
