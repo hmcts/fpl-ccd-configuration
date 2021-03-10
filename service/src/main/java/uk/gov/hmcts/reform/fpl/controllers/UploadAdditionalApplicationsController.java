@@ -110,7 +110,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        final C2DocumentBundle c2DocumentBundle = caseData.getLastC2DocumentBundle();
+        final C2DocumentBundle c2DocumentBundle = caseData.getMostRecentC2DocumentBundle();
         publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
 
         if (isNotPaidByPba(c2DocumentBundle)) {
