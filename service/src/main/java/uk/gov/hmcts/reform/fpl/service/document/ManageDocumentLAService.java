@@ -49,7 +49,7 @@ public class ManageDocumentLAService {
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
 
-        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
+        if (isNotEmpty(caseData.getHearingDetails())) {
             listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
         }
 
