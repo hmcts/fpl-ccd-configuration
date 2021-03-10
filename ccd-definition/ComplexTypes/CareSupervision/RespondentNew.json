@@ -29,6 +29,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentNew",
+    "ListElementCode": "organisationPolicy",
+    "FieldType": "OrganisationPolicy",
+    "ElementLabel": "XXXX",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
     "ListElementCode": "representedBy",
     "FieldType": "Collection",
     "FieldTypeParameter": "Text",
