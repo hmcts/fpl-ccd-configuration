@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -31,6 +33,21 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     private String persistRepresentedBy;
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();
+
+    private OrganisationPolicy organisationPolicy;
+    private OrganisationPolicyStash organisationPolicyStash;
+
+    public void stashOrganisationPolicy() {
+        this.setOrganisationPolicyStash(Optional.ofNullable(organisationPolicy)
+            .map(OrganisationPolicyStash::from).orElse(null));
+        this.organisationPolicy = null;
+    }
+
+    public void restoreOrganisationPolicyStash() {
+        this.setOrganisationPolicy(Optional.ofNullable(organisationPolicyStash)
+            .map(OrganisationPolicyStash::toOrganisationPolicy)
+            .orElse(null));
+    }
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {

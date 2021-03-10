@@ -40,10 +40,18 @@ public class RespondentController extends CallbackController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        if (!(caseDetails.getData().get("respondents1") instanceof List)) {
+            caseDetails.getData().remove("respondents1");
+        }
+
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(RESPONDENTS_KEY, confidentialDetailsService.prepareCollection(
-            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
+        List<Element<Respondent>> respondents = confidentialDetailsService.prepareCollection(
+            caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
+
+        respondents.forEach(res -> res.getValue().restoreOrganisationPolicyStash());
+
+        caseDetails.getData().put(RESPONDENTS_KEY, respondents);
 
         return respond(caseDetails);
     }
@@ -71,6 +79,8 @@ public class RespondentController extends CallbackController {
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.persistRepresentativesRelationship(
             caseData.getAllRespondents(), caseDataBefore.getAllRespondents()
         ));
+        //just for test to not reindex, respondents1 is marked as non searchable
+        caseDetails.getData().put("respondents1Copy", caseDetails.getData().get("respondents1"));
 
         return respond(caseDetails);
     }

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -108,6 +109,11 @@ public class CaseSubmissionController extends CallbackController {
         List<String> errors = validate(caseData);
 
         if (errors.isEmpty()) {
+
+            if (isNotEmpty(caseData.getRespondents1())) {
+                caseData.getRespondents1().forEach(res -> res.getValue().restoreOrganisationPolicyStash());
+            }
+
             Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
 
             ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
@@ -121,6 +127,9 @@ public class CaseSubmissionController extends CallbackController {
                 .put("document_binary_url", document.links.binary.href)
                 .put("document_filename", document.originalDocumentName)
                 .build());
+            data.put("respondents1", caseData.getRespondents1());
+            //just for test to not reindex, respondents1 is marked as non searchable
+            data.put("respondents1Copy", caseData.getRespondents1());
         }
 
         return respond(caseDetails, errors);

@@ -1,0 +1,34 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrganisationPolicyStash",
+    "ListElementCode": "organisationId",
+    "FieldType": "Text",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrganisationPolicyStash",
+    "ListElementCode": "organisationName",
+    "FieldType": "Text",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrganisationPolicyStash",
+    "ListElementCode": "reference",
+    "FieldType": "Text",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrganisationPolicyStash",
+    "ListElementCode": "role",
+    "FieldType": "Text",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  }
+]

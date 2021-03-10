@@ -33,7 +33,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void aboutToStartShouldPrepopulateRespondent() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("data", "some data"))
+            .data(Map.of("data", "some data","respondents1", Map.of("organisationPolicy","test")))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);

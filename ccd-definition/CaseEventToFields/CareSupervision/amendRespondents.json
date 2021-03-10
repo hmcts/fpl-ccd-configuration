@@ -5,7 +5,7 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1

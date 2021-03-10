@@ -31,7 +31,15 @@
     "ID": "RespondentNew",
     "ListElementCode": "organisationPolicy",
     "FieldType": "OrganisationPolicy",
-    "ElementLabel": "XXXX",
+    "ElementLabel": "Representative organisation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "organisationPolicyStash",
+    "FieldType": "OrganisationPolicyStash",
+    "ElementLabel": "Representative organisation",
     "SecurityClassification": "Public"
   },
   {
