@@ -22,6 +22,11 @@ module.exports = class HooksHelpers extends Helper {
     });
   }
 
+  _beforeStep() {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return helper.waitForInvisible('xuilib-loading-spinner', 20);
+  }
+
   _afterStep(step) {
     const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
     if (step.name === 'attachFile') {
