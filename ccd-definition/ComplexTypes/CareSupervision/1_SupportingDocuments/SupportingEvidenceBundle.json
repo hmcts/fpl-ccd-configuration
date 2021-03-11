@@ -88,6 +88,8 @@
     "FieldTypeParameter": "FurtherEvidenceType",
     "ElementLabel": "Choose a further evidence document type",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
   }
 ]
