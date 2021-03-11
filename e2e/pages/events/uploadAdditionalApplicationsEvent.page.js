@@ -1,7 +1,7 @@
 const { I } = inject();
 const money = require('../../helpers/money_helper');
-const c2SupportingDocuments = require('../../fixtures/c2SupportingDocuments.js');
 const supportingDocumentsFragment = require('../../fragments/supportingDocuments.js');
+const supplementsFragment = require('../../fragments/supplements.js');
 module.exports = {
   fields: {
     uploadC2: '#temporaryC2Document_document',
@@ -14,7 +14,7 @@ module.exports = {
     clientCode: '#clientCode',
     customerReference: '#fileReference',
     supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
-    supplements: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supplementsBundle'),
+    supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
   },
 
   applicationTypePrefix: '#c2ApplicationType_type-',
@@ -33,18 +33,18 @@ module.exports = {
     I.attachFile(this.fields.uploadC2, file);
   },
 
-  async uploadSupplement() {
+  async uploadSupplement(documents) {
     await I.addAnotherElementToCollection('Supplements');
-    I.fillField(this.fields.supplements.name, c2SupportingDocuments.name);
-    I.fillField(this.fields.supplements.notes, c2SupportingDocuments.notes);
-    I.attachFile(this.fields.supplements.document, c2SupportingDocuments.document);
+    I.fillField(this.fields.supplements.name, documents.name);
+    I.fillField(this.fields.supplements.notes, documents.notes);
+    I.attachFile(this.fields.supplements.document, documents.document);
   },
 
-  async uploadC2SupportingDocument() {
+  async uploadSupportingDocument(documents) {
     await I.addAnotherElementToCollection('Supporting Documents');
-    I.fillField(this.fields.supportingDocuments.name, c2SupportingDocuments.name);
-    I.fillField(this.fields.supportingDocuments.notes, c2SupportingDocuments.notes);
-    I.attachFile(this.fields.supportingDocuments.document, c2SupportingDocuments.document);
+    I.fillField(this.fields.supportingDocuments.name, documents.name);
+    I.fillField(this.fields.supportingDocuments.notes, documents.notes);
+    I.attachFile(this.fields.supportingDocuments.document, documents.document);
   },
 
   selectC2AdditionalOrdersRequested(ordersRequested) {

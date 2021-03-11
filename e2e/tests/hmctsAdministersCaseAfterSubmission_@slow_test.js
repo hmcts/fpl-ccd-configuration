@@ -11,6 +11,9 @@ const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
+const c2SupportingDocuments = require('../fixtures/c2SupportingDocuments.js');
+const supplements = require('../fixtures/supplements.js');
+
 const dateFormat = require('dateformat');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 
@@ -57,51 +60,6 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
 });
 
-//DELETE THIS
-Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
-  uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
-  await I.goToNextPage();
-  const feeToPay = await uploadC2DocumentsEventPage.getFeeToPay();
-  uploadC2DocumentsEventPage.usePbaPayment();
-  uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
-  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
-  await uploadC2DocumentsEventPage.uploadC2SupportingDocument();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
-
-  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
-
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
-  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', 'Notes'], 'Rachel Zane C2');
-  I.seeInTab(['C2 Application 1', 'Paid with PBA'], 'Yes');
-  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
-  I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
-  I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
-  I.seeInTab(['C2 Application 1', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeTextInTab(['C2 Application 1', 'Date and time uploaded']);
-  I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
-  I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
-
-  await I.startEventViaHyperlink('Upload a new C2 application');
-
-  uploadC2DocumentsEventPage.selectApplicationType('WITHOUT_NOTICE');
-  await I.goToNextPage();
-  uploadC2DocumentsEventPage.usePbaPayment(false);
-  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
-  I.seeInTab(['C2 Application 2', 'File'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 2', 'Notes'], 'Jessica Pearson C2');
-  I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
-});
-
 Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
@@ -109,14 +67,18 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('CHANGE_SURNAME_OR_REMOVE_JURISDICTION');
-  await uploadAdditionalApplicationsEventPage.uploadSupplement();
-  await uploadAdditionalApplicationsEventPage.uploadC2SupportingDocument();
+  await uploadAdditionalApplicationsEventPage.uploadSupplement(supplements);
+  await uploadAdditionalApplicationsEventPage.uploadSupportingDocument(c2SupportingDocuments);
   await I.goToNextPage();
+  //const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
+
+  // caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  // await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
   I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
@@ -133,7 +95,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'File'], 'mockFile.txt');
   I.seeInTab(['C2 Application 1', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
-  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Notes'], 'This is a note about supporting doc');
+  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Notes'], 'This is a note about supplement');
   I.seeInTab(['C2 Application 1', 'Supplements 1', 'Date and time uploaded']);
   I.seeInTab(['C2 Application 1', 'Supplements 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['C2 Application 1', 'Supplements 1', 'File'], 'mockFile.txt');
