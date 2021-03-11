@@ -30,6 +30,7 @@ public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .caseUrl(getCaseUrl(caseData.getId(), C2))
             .documentUrl(getDocumentUrl(latestC2))
+            .applicationTypes(caseData.getLastC2DocumentBundle().getApplicationTypes())
             .build();
     }
 

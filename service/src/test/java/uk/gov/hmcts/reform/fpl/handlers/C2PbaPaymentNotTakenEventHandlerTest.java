@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -36,6 +37,9 @@ class C2PbaPaymentNotTakenEventHandlerTest {
     private final BaseCaseNotifyData c2PaymentNotTakenParameters = BaseCaseNotifyData.builder()
         .caseUrl("http://fpl/case/12345")
         .build();
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private IdamClient idamClient;

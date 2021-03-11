@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -42,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -59,6 +62,9 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -87,7 +93,8 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedEventShouldNotifyHmctsAdminWhenCtscToggleIsDisabled() throws Exception {
+    void submittedEventShouldNotifyHmctsAdminWhenAdditionalApplicationsToggledOff() throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
         verify(notificationClient).sendEmail(
@@ -106,7 +113,28 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWhenCtscToggleIsEnabled() throws Exception {
+    void submittedEventShouldNotifyHmctsAdminWhenAdditionalApplicationsToggledOn() throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+        postSubmittedEvent(buildCaseDetails(NO, YES));
+
+        verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("admin@family-court.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsToggledOff() throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         postSubmittedEvent(buildCaseDetails(YES, YES));
 
         verify(notificationClient, never()).sendEmail(
@@ -125,13 +153,34 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPayment() throws Exception {
+    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsToggledOn() throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+        postSubmittedEvent(buildCaseDetails(YES, YES));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("admin@family-court.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+
+        verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotifyAdminWhenAdditionalApplicationsToggledOff() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildC2DocumentBundle(NO))
             .put("displayAmountToPay", YES.getValue())
             .build();
 
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
@@ -152,7 +201,38 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWhenC2IsNotUsingPbaPaymentAndCtscToggleIsEnabled() throws Exception {
+    void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPaymentAndWhenAdditionalApplicationsToggledOn()
+        throws Exception {
+        final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .putAll(buildC2DocumentBundle(NO))
+            .put("displayAmountToPay", YES.getValue())
+            .build();
+
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationClient).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verifyNoInteractions(paymentService);
+    }
+
+    @Test
+    void submittedEventShouldNotifyCtscAdminWhenC2IsNotUsingPbaPaymentAndWhenAdditionalApplicationsToggledOff()
+        throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         postSubmittedEvent(buildCaseDetails(YES, NO));
 
         verify(notificationClient, never()).sendEmail(
@@ -171,11 +251,48 @@ class UploadC2DocumentsSubmittedControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void submittedEventShouldNotNotifyAdminWhenUC2IsUsingPbaPayment() throws Exception {
+    void submittedEventShouldNotifyCtscAdminWhenC2IsNotUsingPbaPaymentAndWhenAdditionalApplicationsToggledOn()
+        throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+        postSubmittedEvent(buildCaseDetails(YES, NO));
+
+        verify(notificationClient, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verify(notificationClient).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotNotifyAdminWhenUC2IsUsingPbaPaymentAndWhenAdditionalApplicationsToggledOff()
+        throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         postSubmittedEvent(buildCaseDetails(NO, YES));
 
         verify(notificationClient, never()).sendEmail(
-            eq(C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE),
+            eq(INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE),
+            anyString(),
+            anyMap(),
+            anyString()
+        );
+    }
+
+    @Test
+    void submittedEventShouldNotNotifyAdminWhenUC2IsUsingPbaPaymentAndWhenAdditionalApplicationsToggledOn()
+        throws Exception {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+        postSubmittedEvent(buildCaseDetails(NO, YES));
+
+        verify(notificationClient, never()).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE),
             anyString(),
             anyMap(),
             anyString()
