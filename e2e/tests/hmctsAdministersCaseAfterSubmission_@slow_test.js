@@ -57,6 +57,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
 });
 
+//DELETE THIS
 Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage, uploadC2DocumentsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
@@ -116,6 +117,26 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
+
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
+  I.seeInTab(['C2 Application 1', 'Date and time of upload']);
+  I.seeTextInTab(['C2 Application 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['C2 Application 1', 'Paid with PBA'], 'Yes');
+  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
+  I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
+  I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
+  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Document name'], 'C2 supporting document');
+  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
+  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
+  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Notes'], 'This is a note about supporting doc');
+  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Date and time uploaded']);
+  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['C2 Application 1', 'Supplements 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
