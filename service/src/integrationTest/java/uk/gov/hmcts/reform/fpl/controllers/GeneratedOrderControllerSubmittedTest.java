@@ -80,6 +80,50 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinary();
     private static final DocumentReference ORDER = testDocumentReference();
+    private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
+        .fullName("First Representative")
+        .servingPreferences(POST)
+        .address(testAddress())
+        .build());
+    private static final Element<Representative> REPRESENTATIVE_EMAIL = element(Representative.builder()
+        .fullName("Third Representative")
+        .servingPreferences(EMAIL)
+        .email("third@representatives.com")
+        .build());
+    private static final Element<Representative> REPRESENTATIVE_DIGITAL = element(Representative.builder()
+        .fullName("Second Representative")
+        .servingPreferences(DIGITAL_SERVICE)
+        .email("second@representatives.com")
+        .build());
+    private static final Respondent RESPONDENT_NOT_REPRESENTED = Respondent.builder()
+        .party(RespondentParty.builder()
+            .firstName("Alex")
+            .lastName("Jones")
+            .address(testAddress())
+            .build())
+        .build();
+    private static final Respondent RESPONDENT_WITHOUT_ADDRESS = Respondent.builder()
+        .party(RespondentParty.builder()
+            .firstName("Emma")
+            .lastName("Jones")
+            .build())
+        .build();
+    private static final Respondent RESPONDENT_REPRESENTED = Respondent.builder()
+        .party(RespondentParty.builder()
+            .firstName("George")
+            .lastName("Jones")
+            .address(testAddress())
+            .build())
+        .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
+        .build();
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .id(CASE_ID)
+        .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+        .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+        .orderCollection(createOrders(ORDER))
+        .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
+        .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
+        .build();
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDetails;
@@ -108,57 +152,6 @@ class GeneratedOrderControllerSubmittedTest extends AbstractCallbackTest {
     GeneratedOrderControllerSubmittedTest() {
         super("create-order");
     }
-
-    private static Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
-        .fullName("First Representative")
-        .servingPreferences(POST)
-        .address(testAddress())
-        .build());
-
-    private static Element<Representative> REPRESENTATIVE_EMAIL = element(Representative.builder()
-        .fullName("Third Representative")
-        .servingPreferences(EMAIL)
-        .email("third@representatives.com")
-        .build());
-
-    private static Element<Representative> REPRESENTATIVE_DIGITAL = element(Representative.builder()
-        .fullName("Second Representative")
-        .servingPreferences(DIGITAL_SERVICE)
-        .email("second@representatives.com")
-        .build());
-
-    private static Respondent RESPONDENT_NOT_REPRESENTED = Respondent.builder()
-        .party(RespondentParty.builder()
-            .firstName("Alex")
-            .lastName("Jones")
-            .address(testAddress())
-            .build())
-        .build();
-
-    private static Respondent RESPONDENT_WITHOUT_ADDRESS = Respondent.builder()
-        .party(RespondentParty.builder()
-            .firstName("Emma")
-            .lastName("Jones")
-            .build())
-        .build();
-
-    private static Respondent RESPONDENT_REPRESENTED = Respondent.builder()
-        .party(RespondentParty.builder()
-            .firstName("George")
-            .lastName("Jones")
-            .address(testAddress())
-            .build())
-        .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
-        .build();
-
-    private static CaseData CASE_DATA = CaseData.builder()
-        .id(CASE_ID)
-        .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-        .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
-        .orderCollection(createOrders(ORDER))
-        .respondents1(wrapElements(RESPONDENT_NOT_REPRESENTED, RESPONDENT_WITHOUT_ADDRESS, RESPONDENT_REPRESENTED))
-        .representatives(List.of(REPRESENTATIVE_POST, REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL))
-        .build();
 
     @BeforeEach
     void init() {
