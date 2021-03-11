@@ -1,4 +1,5 @@
 const testConfig = require('../config.js');
+const output = require('codeceptjs').output;
 const {runAccessibility} = require('./accessibility/runner');
 
 module.exports = class BrowserHelpers extends Helper {
@@ -117,10 +118,10 @@ module.exports = class BrowserHelpers extends Helper {
         break;
       }
       if (i < waitTimeout) {
-        console.log('ExUI loading spinner found, waiting...');
+        output.log('ExUI loading spinner found, waiting...');
         await helper.wait(1);
       } else {
-        console.log(`Warning: ExUI loading spinner not finished after ${waitTimeout} seconds.`);
+        output.error(`Warning: ExUI loading spinner not finished after ${waitTimeout} seconds.`);
       }
     }
   }

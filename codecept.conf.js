@@ -67,9 +67,6 @@ exports.config = {
     GenerateReportHelper: {
       require: './e2e/helpers/generate_report_helper.js'
     },
-    Mochawesome: {
-      uniqueScreenshotNames: 'true'
-    },
   },
   include: {
     config: './e2e/config.js',
