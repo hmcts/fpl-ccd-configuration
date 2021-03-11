@@ -246,7 +246,7 @@ Scenario('HMCTS admin handles supplementary evidence', async ({I, caseListPage, 
   await I.seeEventSubmissionConfirmation(config.administrationActions.handleSupplementaryEvidence);
 
   I.navigateToCaseList();
-  await I.retryUntilExists(() => caseListPage.searchForCasesWithHandledEvidences(caseId), caseListPage.locateCase(caseId), false);
+  await I.retryUntilExists(async () => await caseListPage.searchForCasesWithHandledEvidences(caseId), caseListPage.locateCase(caseId), false);
   I.seeCaseInSearchResult(caseId);
 }).retry(1); //Async case update in prev test
 

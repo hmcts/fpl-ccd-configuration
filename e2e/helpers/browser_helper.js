@@ -65,7 +65,7 @@ module.exports = class BrowserHelpers extends Helper {
     return this.waitForSelector([].concat(selectors).join(','), maxWaitInSecond);
   }
 
-  async canSee(selector){
+  async canSee(selector) {
     const helper = this.getHelper();
     try {
       const numVisible = await helper.grabNumberOfVisibleElements(selector);
@@ -100,6 +100,31 @@ module.exports = class BrowserHelpers extends Helper {
     }
   }
 
+  async waitForSpinnerToFinish() {
+    const helper = this.getHelper();
+    const waitTimeout = helper.options.waitForTimeout;
+    const spinnerElement = {css: 'xuilib-loading-spinner'};
+    const noCasesText = {xpath: '//div[contains(text(), "No cases found")]'};
+
+    let spinner = await this.hasSelector(spinnerElement);
+    if (await this.hasSelector(noCasesText) && !spinner) {
+      // short wait to allow spinner to appear
+      await helper.wait(3);
+    }
+    for (let i = 0; i <= waitTimeout; i++) {
+      spinner = await this.hasSelector(spinnerElement);
+      if (!spinner) {
+        break;
+      }
+      if (i < waitTimeout) {
+        console.log('ExUI loading spinner found, waiting...');
+        await helper.wait(1);
+      } else {
+        console.log(`Warning: ExUI loading spinner not finished after ${waitTimeout} seconds.`);
+      }
+    }
+  }
+
   async runAccessibilityTest() {
     const helper = this.getHelper();
 
@@ -109,6 +134,6 @@ module.exports = class BrowserHelpers extends Helper {
     const url = await helper.grabCurrentUrl();
     const {page} = await helper;
 
-    runAccessibility(url, page);
+    await runAccessibility(url, page);
   }
 };

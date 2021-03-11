@@ -75,6 +75,7 @@ module.exports = function () {
 
     async logInAndCreateCase(user, caseName, outsourcingLA) {
       await this.signIn(user);
+      await this.waitForSpinnerToFinish();
       await this.retryUntilExists(() => this.click('Create case'), openApplicationEventPage.fields.jurisdiction);
       await openApplicationEventPage.populateForm(caseName, outsourcingLA);
       await this.completeEvent('Save and continue');
@@ -215,6 +216,7 @@ module.exports = function () {
         }, signedInSelector);
       }
       await this.waitForSelector('.ccd-dropdown');
+      await this.waitForSpinnerToFinish();
     },
 
     async navigateToCaseDetailsAs(user, caseId) {

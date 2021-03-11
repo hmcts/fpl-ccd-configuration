@@ -19,21 +19,21 @@ module.exports = {
     I.click(this.fields.caseList);
   },
 
-  changeStateFilter(desiredState) {
-    this.setInitialSearchFields(desiredState);
+  async changeStateFilter(desiredState) {
+    await this.setInitialSearchFields(desiredState);
     I.click(this.fields.search);
   },
 
-  searchForCasesWithHandledEvidences(caseId, state = 'Any') {
-    this.setInitialSearchFields(state);
+  async searchForCasesWithHandledEvidences(caseId, state = 'Any') {
+    await this.setInitialSearchFields(state);
     I.waitForElement(this.fields.evidenceHandled, 30);
     I.fillField(this.fields.caseId, caseId);
     I.click(this.fields.evidenceHandled);
     I.click(this.fields.search);
   },
 
-  searchForCasesWithId(caseId, state = 'Any') {
-    this.setInitialSearchFields(state);
+  async searchForCasesWithId(caseId, state = 'Any') {
+    await this.setInitialSearchFields(state);
     I.fillField(this.fields.caseId, caseId);
     I.click(this.fields.search);
   },
@@ -44,7 +44,7 @@ module.exports = {
   },
 
   async searchForCasesWithName(caseName, state='Any') {
-    this.setInitialSearchFields(state);
+    await this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
     I.fillField(this.fields.caseName, caseName);
@@ -52,8 +52,9 @@ module.exports = {
     await I.runAccessibilityTest();
   },
 
-  setInitialSearchFields(state='Any') {
+  async setInitialSearchFields(state='Any') {
     // wait for initial filters to load
+    await I.waitForSpinnerToFinish();
     I.waitForVisible(this.fields.jurisdiction, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
     I.selectOption(this.fields.caseType, config.definition.caseTypeFullDesc);
@@ -72,7 +73,7 @@ module.exports = {
 
   async verifyCaseIsShareable(caseId){
     I.navigateToCaseList();
-    await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
+    await I.retryUntilExists(async () => await this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
     I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 

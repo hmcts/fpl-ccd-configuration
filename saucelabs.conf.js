@@ -65,6 +65,9 @@ const setupConfig = {
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
+    Mochawesome: {
+      uniqueScreenshotNames: 'true'
+    },
   },
   plugins: {
     retryFailedStep: {
