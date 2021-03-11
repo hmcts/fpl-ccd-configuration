@@ -10,11 +10,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+
+import java.util.Arrays;
 
 import static org.mockito.BDDMockito.given;
 
@@ -42,6 +45,9 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private C2UploadedEventHandler underTest;
 
     @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @MockBean
     private IdamClient idamClient;
 
     @MockBean
@@ -51,8 +57,10 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Test
-    void notifyAdmin() {
+    void notifyAdminWhenAdditionalApplicationsToggledOff() {
         CaseData caseData = caseData();
+
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
@@ -83,6 +91,54 @@ public class C2UploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .list("check the C2",
                     "check payment has been taken",
                     "send a message to the judge or legal adviser",
+                    "send a copy to relevant parties")
+                .line()
+                .end("To review the application, sign in to " + caseUrl)
+            );
+    }
+
+    @Test
+    void notifyAdminWhenAdditionalApplicationsToggledOn() {
+        CaseData caseData = caseData();
+
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+
+        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
+
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
+            UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build());
+
+        given(c2UploadedEmailContentProvider.getNotifyData(caseData,
+            c2DocumentBundle.getDocument()))
+            .willReturn(
+                C2UploadedTemplate.builder()
+                    .callout(calloutText)
+                    .respondentLastName(respondentLastName)
+                    .caseUrl(caseUrl)
+                    .applicationTypes(Arrays.asList("C2", "C13A - Special guardianship order"))
+                    .build()
+            );
+
+        underTest.notifyAdmin(new C2UploadedEvent(caseData, c2DocumentBundle));
+
+        assertThat(response())
+            .hasSubject("New application uploaded, " + respondentLastName)
+            .hasBody(emailContent()
+                .line("New applications have been made for the case:")
+                .line()
+                .line(calloutText)
+                .line()
+                .h1("Applications")
+                .line()
+                .line()
+                .list("C2")
+                .list("C13A - Special guardianship order")
+                .line()
+                .h1("Next steps")
+                .line("You need to:")
+                .list("check the orders",
+                    "check payment has been taken",
+                    "confirm the judge or legal adviser has received their notification",
                     "send a copy to relevant parties")
                 .line()
                 .end("To review the application, sign in to " + caseUrl)
