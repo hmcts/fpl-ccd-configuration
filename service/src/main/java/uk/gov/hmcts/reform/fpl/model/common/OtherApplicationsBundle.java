@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
@@ -88,6 +89,15 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
         documentReferences.addAll(getSupplementsBundleReferences());
 
         return documentReferences;
+    }
+
+    @JsonIgnore
+    public List<Supplements> getSupplementsTypes() {
+        return getSupplementsBundle().stream()
+            .map(Element::getValue)
+            .map(SupplementsBundle::getName)
+            .map(Supplements::valueOf)
+            .collect(Collectors.toList());
     }
 
     @JsonIgnore

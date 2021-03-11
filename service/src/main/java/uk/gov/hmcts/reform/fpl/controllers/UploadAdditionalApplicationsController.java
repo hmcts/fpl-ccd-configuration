@@ -19,19 +19,18 @@ import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
-import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
-import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -47,10 +46,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private final ObjectMapper mapper;
-    private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final UploadC2DocumentsService uploadC2DocumentsService;
+    private final ApplicationsFeeCalculator applicationsFeeCalculator;
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -64,14 +63,21 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             removeDocumentFromData(data);
         }
 
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
-            try {
-                FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-                data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-            } catch (FeeRegisterException ignore) {
-                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+        if (caseData.getAdditionalApplicationTypes().size() == 2) {
+
+            if (isNotEmpty(caseData.getTemporaryOtherApplicationsBundle())
+                && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null) {
+                applicationsFeeCalculator.getAdditionalApplicationsFee(data, caseData);
             }
+            return respond(caseDetails);
+        }
+
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
+            applicationsFeeCalculator.getC2ApplicationFee(data, caseData);
+        }
+
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)) {
+            applicationsFeeCalculator.getOtherApplicationsFee(data, caseData);
         }
 
         return respond(caseDetails);
@@ -89,33 +95,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         errors.addAll(pbaNumberService.validate(updatedPbaNumber));
 
         return respond(caseDetails, errors);
-    }
-
-    @PostMapping("/applications-fee/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleFeeMidEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
-        data.remove(DISPLAY_AMOUNT_TO_PAY);
-
-        //workaround for previous-continue bug
-        if (shouldRemoveDocument(caseData)) {
-            removeDocumentFromData(data);
-        }
-
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)) {
-            try {
-                //todo supplements fee code
-                FeesData feesData = feeService.getFeesDataForOtherApplications(
-                    caseData.getTemporaryOtherApplicationsBundle().getApplicationType(), List.of());
-                data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-                data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-            } catch (FeeRegisterException ignore) {
-                data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
-            }
-        }
-
-        return respond(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
