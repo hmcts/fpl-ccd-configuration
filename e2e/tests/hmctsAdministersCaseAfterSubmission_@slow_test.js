@@ -101,6 +101,23 @@ Scenario('HMCTS admin uploads C2 documents to the case', async ({I, caseViewPage
   I.seeInTab(['C2 Application 2', 'Paid with PBA'], 'No');
 });
 
+Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
+  uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
+  uploadAdditionalApplicationsEventPage.selectApplicationType('WITH_NOTICE');
+  await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
+  uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('CHANGE_SURNAME_OR_REMOVE_JURISDICTION');
+  await uploadAdditionalApplicationsEventPage.uploadSupplement();
+  await uploadAdditionalApplicationsEventPage.uploadC2SupportingDocument();
+  await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.usePbaPayment();
+  uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
+});
+
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   await manageDocumentsEventPage.selectC2SupportingDocuments();
