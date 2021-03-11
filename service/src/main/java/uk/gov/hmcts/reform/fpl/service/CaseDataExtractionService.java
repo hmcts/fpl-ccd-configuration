@@ -166,7 +166,7 @@ public class CaseDataExtractionService {
 
         // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
         return format("%d. %s %s", index, direction.getDirectionType(),
-                      formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
     }
 
     private String formatTitleDate(LocalDateTime date, String pattern, Display.Due due) {
@@ -178,36 +178,7 @@ public class CaseDataExtractionService {
     }
 
     private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {
-        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
-        String hearingVenue;
-        if (venue.getAddress() != null) {
-            if (hearing.isRemote()) {
-                String venueName;
-                if (HEARING_VENUE_ID_OTHER.equals(venue.getHearingVenueId())) {
-                    // assuming that the building name is in address line 1
-                    venueName = venue.getAddress().getAddressLine1();
-                } else {
-                    venueName = venue.getVenue();
-                }
-                hearingVenue = String.format(REMOTE_HEARING_VENUE, venueName);
-            } else {
-                hearingVenue = hearingVenueLookUpService.buildHearingVenue(venue);
-            }
-        } else {
-            // enters this if:
-            //  • the first hearing uses a custom venue address
-            //  • the second hearing uses the same venue
-            String previousAddress = hearing.getCustomPreviousVenue();
-            if (hearing.isRemote()) {
-                // going to have to assume that the building name of the venue is before the first comma,
-                // but the user could have entered anything, by limiting to 0 even if the string is empty something
-                // is still returned
-                String[] splitAddress = previousAddress.split(",", 0);
-                hearingVenue = String.format(REMOTE_HEARING_VENUE, splitAddress[0]);
-            } else {
-                hearingVenue = previousAddress;
-            }
-        }
+        String hearingVenue = buildHearingVenue(hearing);
 
         DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
 
@@ -219,6 +190,34 @@ public class CaseDataExtractionService {
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
             .hearingLegalAdvisorName(judgeAndLegalAdvisor.getLegalAdvisorName())
             .build();
+    }
+
+    private String buildHearingVenue(HearingBooking hearing) {
+        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
+        if (venue.getAddress() != null) {
+            if (hearing.isRemote()) {
+                String venueName = HEARING_VENUE_ID_OTHER.equals(venue.getHearingVenueId())
+                    ? venue.getAddress().getAddressLine1() : venue.getVenue();
+                // assuming that the building name is in address line 1
+                return String.format(REMOTE_HEARING_VENUE, venueName);
+            } else {
+                return hearingVenueLookUpService.buildHearingVenue(venue);
+            }
+        } else {
+            // enters this if:
+            //  • the first hearing uses a custom venue address
+            //  • the second hearing uses the same venue
+            String previousAddress = hearing.getCustomPreviousVenue();
+            if (hearing.isRemote()) {
+                // going to have to assume that the building name of the venue is before the first comma,
+                // but the user could have entered anything, by limiting to 0 even if the string is empty something
+                // is still returned
+                String[] splitAddress = previousAddress.split(",", 0);
+                return String.format(REMOTE_HEARING_VENUE, splitAddress[0]);
+            } else {
+                return previousAddress;
+            }
+        }
     }
 
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {
@@ -233,8 +232,8 @@ public class CaseDataExtractionService {
             .name(child.getFullName())
             .gender(child.getGender())
             .dateOfBirth(ofNullable(child.getDateOfBirth())
-                             .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
-                             .orElse(null))
+                .map(dob -> formatLocalDateToString(child.getDateOfBirth(), LONG))
+                .orElse(null))
             .build();
     }
 

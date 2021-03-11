@@ -73,14 +73,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJu
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageHearingsService {
 
-    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-    private final UploadDocumentService uploadDocumentService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final ObjectMapper mapper;
-    private final IdentityService identityService;
-    private final Time time;
-
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
     public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
     public static final String HAS_HEARINGS_TO_VACATE = "hasHearingsToVacate";
@@ -99,6 +91,14 @@ public class ManageHearingsService {
     public static final String END_DATE_FLAG = "endDateFlag";
     public static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
     public static final String TO_RE_LIST_HEARING_LABEL = "toReListHearingsLabel";
+
+    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final ObjectMapper mapper;
+    private final IdentityService identityService;
+    private final Time time;
 
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
@@ -316,13 +316,36 @@ public class ManageHearingsService {
 
     public Set<String> caseFieldsToBeRemoved() {
         return Set.of(
-            "hearingType", "hearingTypeDetails", "hearingVenue", "hearingVenueCustom", HEARING_START_DATE,
-            HEARING_END_DATE, "sendNoticeOfHearing", "judgeAndLegalAdvisor", "noticeOfHearingNotes",
-            "previousHearingVenue", "firstHearingFlag", "adjournmentReason", "vacatedReason",
-            HEARING_DATE_LIST, PAST_HEARING_LIST, FUTURE_HEARING_LIST, HAS_HEARINGS_TO_ADJOURN,
-            HAS_HEARINGS_TO_VACATE, HAS_EXISTING_HEARINGS_FLAG, HAS_FUTURE_HEARING_FLAG, "hearingReListOption",
-            HEARING_START_DATE_LABEL, "showConfirmPastHearingDatesPage", HEARING_END_DATE_LABEL, "confirmHearingDate",
-            "hearingStartDateConfirmation", "hearingEndDateConfirmation", START_DATE_FLAG, END_DATE_FLAG, "hasSession",
+            "hearingType",
+            "hearingTypeDetails",
+            "hearingVenue",
+            "hearingVenueCustom",
+            HEARING_START_DATE,
+            HEARING_END_DATE,
+            "sendNoticeOfHearing",
+            "judgeAndLegalAdvisor",
+            "noticeOfHearingNotes",
+            "previousHearingVenue",
+            "firstHearingFlag",
+            "adjournmentReason",
+            "vacatedReason",
+            HEARING_DATE_LIST,
+            PAST_HEARING_LIST,
+            FUTURE_HEARING_LIST,
+            HAS_HEARINGS_TO_ADJOURN,
+            HAS_HEARINGS_TO_VACATE,
+            HAS_EXISTING_HEARINGS_FLAG,
+            HAS_FUTURE_HEARING_FLAG,
+            "hearingReListOption",
+            HEARING_START_DATE_LABEL,
+            "showConfirmPastHearingDatesPage",
+            HEARING_END_DATE_LABEL,
+            "confirmHearingDate",
+            "hearingStartDateConfirmation",
+            "hearingEndDateConfirmation",
+            START_DATE_FLAG,
+            END_DATE_FLAG,
+            "hasSession",
             "hearingPresence"
         );
     }
@@ -542,7 +565,7 @@ public class ManageHearingsService {
             });
     }
 
-    private static String hearingLabels(List<Element<HearingBooking>> hearings) {
+    private String hearingLabels(List<Element<HearingBooking>> hearings) {
         return hearings.stream()
             .map(Element::getValue)
             .map(HearingBooking::toLabel)
