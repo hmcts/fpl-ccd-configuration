@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.c2uploaded.C2UploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -48,6 +49,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {C2UploadedEventHandler.class, LookupTestConfig.class, HmctsAdminNotificationHandler.class})
 class C2UploadedEventHandlerTest {
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @MockBean
     private IdamClient idamClient;
 
