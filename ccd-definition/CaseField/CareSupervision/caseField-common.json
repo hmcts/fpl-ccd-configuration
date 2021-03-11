@@ -688,8 +688,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "otherApplicationsPbaPayment",
-    "Label": "PBA Payment",
+    "ID": "temporaryPbaPayment",
+    "Label": " ",
     "FieldType": "PBAPayment",
     "SecurityClassification": "Public",
     "Searchable": "N"

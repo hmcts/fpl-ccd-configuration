@@ -96,7 +96,6 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
         return getSupplementsBundle().stream()
             .map(Element::getValue)
             .map(SupplementsBundle::getName)
-            .map(Supplements::valueOf)
             .collect(Collectors.toList());
     }
 

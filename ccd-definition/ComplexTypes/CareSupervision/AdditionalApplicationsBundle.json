@@ -22,5 +22,24 @@
     "FieldType": "PBAPayment",
     "ElementLabel": "PBA Payment",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "uploadedDateTime",
+    "FieldType": "Text",
+    "ElementLabel": "Date and time of upload",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "c2Document=\"Do Not Show\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalApplicationsBundle",
+    "ListElementCode": "author",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "c2Document=\"Do Not Show\""
+
   }
 ]

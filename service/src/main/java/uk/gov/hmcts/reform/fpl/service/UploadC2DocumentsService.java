@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
@@ -37,15 +39,6 @@ public class UploadC2DocumentsService {
     private final FeatureToggleService featureToggleService;
 
     public List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData) {
-        List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
-            caseData.getC2DocumentBundle(), new ArrayList<>()
-        );
-
-        if (featureToggleService.isUploadAdditionalApplicationsEnabled() && !c2DocumentBundle.isEmpty()) {
-            //sort existing c2's from old event
-            c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
-        }
-
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
@@ -68,19 +61,20 @@ public class UploadC2DocumentsService {
                         .build())
                     .collect(Collectors.toList());
 
-            c2DocumentBundleBuilder.usePbaPayment(caseData.getUsePbaPayment())
-                .pbaNumber(caseData.getPbaNumber())
-                .clientCode(caseData.getClientCode())
-                .fileReference(caseData.getFileReference())
-                .supplementsBundle(wrapElements(updatedSupplementsBundle)
-                );
-
-            c2DocumentBundle.add(0, element(c2DocumentBundleBuilder.build()));
+            return List.of(element(
+                c2DocumentBundleBuilder.supplementsBundle(wrapElements(updatedSupplementsBundle)).build()));
         } else {
-            c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
-        }
+            List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
+                caseData.getC2DocumentBundle(), new ArrayList<>()
+            );
 
-        return c2DocumentBundle;
+            if (featureToggleService.isUploadAdditionalApplicationsEnabled() && !c2DocumentBundle.isEmpty()) {
+                //sort existing c2's from old event
+                c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
+            }
+            c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
+            return c2DocumentBundle;
+        }
     }
 
     public List<String> validate(C2DocumentBundle c2DocumentBundle) {
@@ -90,11 +84,30 @@ public class UploadC2DocumentsService {
             .orElse(emptyList());
     }
 
-    public List<Element<OtherApplicationsBundle>> buildOtherApplicationsBundle(CaseData caseData) {
-        List<Element<OtherApplicationsBundle>> otherApplicationsBundle = defaultIfNull(
-            caseData.getOtherApplicationsBundle(), new ArrayList<>()
-        );
+    public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(
+        CaseData caseData,
+        C2DocumentBundle c2DocumentBundle,
+        OtherApplicationsBundle otherApplicationsBundle
+    ) {
 
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+        PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
+
+        return AdditionalApplicationsBundle.builder()
+            .c2Document(c2DocumentBundle)
+            .otherApplications(otherApplicationsBundle)
+            .pbaPayment(PBAPayment.builder()
+                .usePbaPayment(temporaryPbaPayment.getUsePbaPayment())
+                .pbaNumber(temporaryPbaPayment.getPbaNumber())
+                .clientCode(temporaryPbaPayment.getClientCode())
+                .fileReference(temporaryPbaPayment.getFileReference())
+                .build())
+            .author(uploadedBy)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .build();
+    }
+
+    public OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
@@ -105,18 +118,14 @@ public class UploadC2DocumentsService {
         List<SupplementsBundle> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy);
 
-        OtherApplicationsBundle.OtherApplicationsBundleBuilder otherApplicationsBundleBuilder =
-            temporaryOtherApplicationsBundle.toBuilder()
-                .author(uploadedBy)
-                .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-                .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
-                .document(temporaryOtherApplicationsBundle.getDocument())
-                .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
-                .supplementsBundle(wrapElements(updatedSupplementsBundle));
-
-        otherApplicationsBundle.add(element(otherApplicationsBundleBuilder.build()));
-
-        return otherApplicationsBundle;
+        return temporaryOtherApplicationsBundle.toBuilder()
+            .author(uploadedBy)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
+            .document(temporaryOtherApplicationsBundle.getDocument())
+            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
+            .supplementsBundle(wrapElements(updatedSupplementsBundle))
+            .build();
     }
 
     private List<SupportingEvidenceBundle> getSupportingEvidenceBundle(

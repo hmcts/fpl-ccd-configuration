@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,10 @@ import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
@@ -30,10 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @Slf4j
@@ -56,10 +64,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-        data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         //workaround for previous-continue bug
-        if (shouldRemoveDocument(caseData)) {
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)
+            && shouldRemoveDocument(caseData)) {
             removeDocumentFromData(data);
         }
 
@@ -76,7 +84,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             applicationsFeeCalculator.getC2ApplicationFee(data, caseData);
         }
 
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)) {
+        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)
+            && caseData.getTemporaryOtherApplicationsBundle() != null) {
             applicationsFeeCalculator.getOtherApplicationsFee(data, caseData);
         }
 
@@ -89,10 +98,15 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        var updatedPbaNumber = pbaNumberService.update(caseData.getPbaNumber());
-        caseDetails.getData().put("pbaNumber", updatedPbaNumber);
         List<String> errors = new ArrayList<>();
-        errors.addAll(pbaNumberService.validate(updatedPbaNumber));
+
+        if (ObjectUtils.isEmpty(caseData.getTemporaryPbaPayment())) {
+            errors.add("Complete the mandatory fields"); //TODO: check with UX
+        } else {
+            var updatedPbaNumber = pbaNumberService.update(caseData.getTemporaryPbaPayment().getPbaNumber());
+            caseDetails.getData().put("pbaNumber", updatedPbaNumber);
+            errors.addAll(pbaNumberService.validate(updatedPbaNumber));
+        }
 
         return respond(caseDetails, errors);
     }
@@ -103,14 +117,26 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        List<Element<AdditionalApplicationsBundle>> additionalApplications = defaultIfNull(
+            caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
+        );
+        additionalApplications.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
+
+        C2DocumentBundle c2DocumentBundle = null;
+        OtherApplicationsBundle otherApplicationsBundle = null;
+
         if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
-            caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
+            c2DocumentBundle = uploadC2DocumentsService.buildC2DocumentBundle(caseData).get(0).getValue();
         }
 
         if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)) {
-            caseDetails.getData().put("otherApplicationsBundle",
-                uploadC2DocumentsService.buildOtherApplicationsBundle(caseData));
+            otherApplicationsBundle = uploadC2DocumentsService.buildOtherApplicationsBundle(caseData);
         }
+
+        additionalApplications.add(0, element(uploadC2DocumentsService.buildAdditionalApplicationsBundle(
+            caseData, c2DocumentBundle, otherApplicationsBundle)));
+
+        caseDetails.getData().put("additionalApplicationsBundle", additionalApplications);
 
         caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT,
             "c2ApplicationType",
@@ -120,6 +146,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             "pbaNumber",
             "clientCode",
             "fileReference",
+            "temporaryPbaPayment",
             TEMPORARY_OTHER_APPLICATIONS_BUNDLE));
 
         return respond(caseDetails);

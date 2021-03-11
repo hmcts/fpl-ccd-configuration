@@ -65,8 +65,8 @@ class ApplicationsFeeCalculatorTest {
                 OtherApplicationsBundle.builder()
                     .applicationType(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION)
                     .supplementsBundle(List.of(
-                        element(SupplementsBundle.builder().name(C16_CHILD_ASSESSMENT.name()).build()),
-                        element(SupplementsBundle.builder().name(C18_RECOVERY_ORDER.name()).build()))).build())
+                        element(SupplementsBundle.builder().name(C16_CHILD_ASSESSMENT).build()),
+                        element(SupplementsBundle.builder().name(C18_RECOVERY_ORDER).build()))).build())
             .build();
 
         Map<String, Object> caseDetailsMap = new HashMap<>();
@@ -97,7 +97,7 @@ class ApplicationsFeeCalculatorTest {
                     .applicationType(C12_WARRANT_TO_ASSIST_PERSON)
                     .supplementsBundle(List.of(
                         element(SupplementsBundle.builder()
-                            .name(C15_CONTACT_WITH_CHILD_IN_CARE.name()).build())))
+                            .name(C15_CONTACT_WITH_CHILD_IN_CARE).build())))
                     .build())
             .build();
 

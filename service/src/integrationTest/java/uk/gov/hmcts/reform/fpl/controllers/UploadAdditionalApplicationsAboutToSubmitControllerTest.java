@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -135,7 +136,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
-            "c2ApplicationType", Map.of("type", WITHOUT_NOTICE),
+                "c2ApplicationType", Map.of("type", WITHOUT_NOTICE),
                 "additionalApplicationType", "C2_ORDER",
                 "usePbaPayment", "Yes",
                 "amountToPay", "Yes",
@@ -150,11 +151,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(callbackResponse.getData().get("c2ApplicationType")).isNull();
         assertThat(caseData.getC2ApplicationType()).isNull();
-        assertThat(caseData.getUsePbaPayment()).isNull();
+        assertThat(caseData.getTemporaryPbaPayment()).isNull();
         assertThat(caseData.getAmountToPay()).isNull();
-        assertThat(caseData.getPbaNumber()).isNull();
-        assertThat(caseData.getClientCode()).isNull();
-        assertThat(caseData.getFileReference()).isNull();
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
@@ -245,7 +243,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
 
     private SupplementsBundle createSupplementsBundle() {
         return SupplementsBundle.builder()
-            .name("C13A - special guardianship order")
+            .name(Supplements.C13A_SPECIAL_GUARDIANSHIP)
             .notes("Supplement notes")
             .dateTimeUploaded(time.now())
             .document(document)

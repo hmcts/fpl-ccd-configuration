@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
@@ -270,17 +271,15 @@ public class CaseData {
     }
 
     private LocalDate dateSubmitted;
-    private final String usePbaPayment;
-    private final String pbaNumber;
-    private final String clientCode;
-    private final String fileReference;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
+    private final PBAPayment temporaryPbaPayment;
     private final List<Element<OtherApplicationsBundle>> otherApplicationsBundle;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
