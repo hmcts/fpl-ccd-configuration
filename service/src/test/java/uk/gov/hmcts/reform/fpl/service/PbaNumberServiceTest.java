@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class PbaNumberServiceTest {
@@ -52,6 +53,51 @@ class PbaNumberServiceTest {
         var updatedC2DocumentBundle = pbaNumberService.update(testDocumentBundle);
 
         assertThat(updatedC2DocumentBundle).isEqualTo(expectedUpdatedDocumentBundle);
+    }
+
+    @Test
+    void shouldUpdatePbaNumberToIncludePrefix() {
+        String pbaNumber = "1234567";
+
+        String updatedPbaNumber = pbaNumberService.update(pbaNumber);
+
+        assertThat(updatedPbaNumber).isEqualTo("PBA1234567");
+    }
+
+    @Test
+    void shouldReturnNullWhenEmptyPbaNumber() {
+        String pbaNumber = "";
+
+        String updatedPbaNumber = pbaNumberService.update(pbaNumber);
+
+        assertNull(updatedPbaNumber);
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenValidPbaNumber() {
+        String pbaNumber = "PBA1234567";
+
+        List<String> errors = pbaNumberService.validate(pbaNumber);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenInvalidPbaNumber() {
+        String pbaNumber = "1";
+
+        List<String> errors = pbaNumberService.validate(pbaNumber);
+
+        assertThat(errors).containsExactly(VALIDATION_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenPbaNumberIsNull() {
+        String pbaNumber = null;
+
+        List<String> errors = pbaNumberService.validate(pbaNumber);
+
+        assertThat(errors).isEmpty();
     }
 
     @Test

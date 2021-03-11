@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -202,7 +203,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
                 SupplementsBundle::getDocument,
                 SupplementsBundle::getUploadedBy
             ).containsExactly(
-            "C13A - special guardianship order",
+            Supplements.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
             document,
@@ -245,7 +246,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
 
     private SupplementsBundle createSupplementsBundle() {
         return SupplementsBundle.builder()
-            .name("C13A - special guardianship order")
+            .name(Supplements.C13A_SPECIAL_GUARDIANSHIP)
             .notes("Supplement notes")
             .dateTimeUploaded(time.now())
             .document(document)

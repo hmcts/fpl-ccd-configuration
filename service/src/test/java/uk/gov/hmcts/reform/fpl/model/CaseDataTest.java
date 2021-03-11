@@ -277,6 +277,28 @@ class CaseDataTest {
             caseData = CaseData.builder().c2DocumentBundle(null).build();
             assertThat(caseData.getLastC2DocumentBundle()).isNull();
         }
+
+        @Test
+        void shouldReturnMostRecentC2DocumentBundleWhenC2DocumentBundleIsPopulated() {
+            C2DocumentBundle c2DocumentBundle1 = C2DocumentBundle.builder()
+                .description("Mock bundle 1")
+                .build();
+
+            C2DocumentBundle c2DocumentBundle2 = C2DocumentBundle.builder()
+                .description("Mock bundle 2")
+                .build();
+
+            List<Element<C2DocumentBundle>> c2DocumentBundle = wrapElements(c2DocumentBundle1, c2DocumentBundle2);
+
+            caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            assertThat(caseData.getMostRecentC2DocumentBundle()).isEqualTo(c2DocumentBundle1);
+        }
+
+        @Test
+        void shouldReturnNullIfC2DocumentBundleIsEmpty() {
+            caseData = CaseData.builder().c2DocumentBundle(null).build();
+            assertThat(caseData.getMostRecentC2DocumentBundle()).isNull();
+        }
     }
 
     @Test

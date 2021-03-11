@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
@@ -150,7 +151,7 @@ class C2DocumentBundleSerializationTest {
                     .build())))
             .supplementsBundle(List.of(element(UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6385"),
                 SupplementsBundle.builder()
-                    .name("BundleName")
+                    .name(Supplements.C13A_SPECIAL_GUARDIANSHIP)
                     .dateTimeUploaded(LocalDateTime.of(2013, 9, 10, 3, 4))
                     .document(DocumentReference.builder()
                         .binaryUrl("binaryUrl")
@@ -180,7 +181,7 @@ class C2DocumentBundleSerializationTest {
         List<Map<String, Object>> expectedSupplementBundle = List.of(Map.of(
             "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6385",
             "value", Map.of(
-                "name", "BundleName",
+                "name", Supplements.C13A_SPECIAL_GUARDIANSHIP.toString(),
                 "uploadedBy", "uploadedBy",
                 "dateTimeUploaded", "2013-09-10T03:04:00",
                 "document", Map.of(
