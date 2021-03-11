@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "otherApplicationsPbaPayment",
+    "DisplayContext": "READONLY",
+    "ListElementCode": "displayAmountToPay",
+    "FieldDisplayOrder": "1",
+    "FieldShowCondition": "c2ApplicationType=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "otherApplicationsPbaPayment",
+    "DisplayContext": "READONLY",
+    "ListElementCode": "paymentDetailsLabel",
+    "FieldDisplayOrder": "2",
+    "FieldShowCondition": "displayAmountToPay=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "otherApplicationsPbaPayment",
+    "DisplayContext": "READONLY",
+    "ListElementCode": "amountToPay",
+    "FieldDisplayOrder": "3",
+    "FieldShowCondition": "displayAmountToPay=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "otherApplicationsPbaPayment",
+    "DisplayContext": "MANDATORY",
+    "ListElementCode": "usePbaPayment",
+    "FieldDisplayOrder": "4",
+    "FieldShowCondition": "displayAmountToPay=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "pbaNumber",
+    "DisplayContext": "MANDATORY",
+    "ListElementCode": "usePbaPayment",
+    "FieldDisplayOrder": "5",
+    "FieldShowCondition": "usePbaPayment=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "pbaNumber",
+    "DisplayContext": "OPTIONAL",
+    "ListElementCode": "clientCode",
+    "FieldDisplayOrder": "6",
+    "FieldShowCondition": "usePbaPayment=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "pbaNumber",
+    "DisplayContext": "OPTIONAL",
+    "ListElementCode": "fileReference",
+    "FieldDisplayOrder": "7",
+    "FieldShowCondition": "usePbaPayment=\"Yes\""
+  }
+]

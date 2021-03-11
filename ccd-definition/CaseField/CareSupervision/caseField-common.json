@@ -688,10 +688,29 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherApplicationsPbaPayment",
+    "Label": "PBA Payment",
+    "FieldType": "PBAPayment",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherApplicationsBundle",
     "Label": "Other applications",
     "FieldType": "Collection",
     "FieldTypeParameter": "OtherApplicationsBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "additionalApplicationsBundle",
+    "Label": "Additional applications",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdditionalApplicationsBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

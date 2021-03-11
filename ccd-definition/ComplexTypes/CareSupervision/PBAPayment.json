@@ -1,0 +1,35 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPayment",
+    "ListElementCode": "usePbaPayment",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Paid with PBA",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPayment",
+    "ListElementCode": "pbaNumber",
+    "HintText": "For example, PBA1234567",
+    "FieldType": "Text",
+    "ElementLabel": "Payment by account (PBA) number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPayment",
+    "ListElementCode": "clientCode",
+    "FieldType": "Text",
+    "ElementLabel": "Client code",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PBAPayment",
+    "ListElementCode": "fileReference",
+    "FieldType": "Text",
+    "ElementLabel": "Customer reference",
+    "SecurityClassification": "Public"
+  }
+]

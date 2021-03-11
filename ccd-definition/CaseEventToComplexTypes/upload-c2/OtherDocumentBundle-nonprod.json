@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AdditionalDocumentBundleComplexType",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "applicationType",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AdditionalDocumentBundleComplexType",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "document",
@@ -21,7 +21,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Supplements",
@@ -31,7 +31,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.name",
@@ -40,7 +40,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.notes",
@@ -49,7 +49,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Upload document",
@@ -59,7 +59,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "OtherApplicationsBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "Supporting Documents",
@@ -69,7 +69,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "EventElementLabel": "File name",
@@ -79,7 +79,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.notes",
@@ -88,7 +88,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.dateTimeReceived",
@@ -97,7 +97,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
+    "ID": "OtherDocumentBundleComplexType",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle.document",
