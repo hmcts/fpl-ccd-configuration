@@ -114,7 +114,6 @@
     "CaseEventID": "manageHearings",
     "CaseFieldID": "previousHearingVenue",
     "ListElementCode": "newVenue",
-    "EventElementLabel": "Venue",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },

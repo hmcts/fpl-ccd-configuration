@@ -23,8 +23,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -36,7 +36,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldBuildManageDocumentsHearingListAndSupportingC2DocumentsList() {
+    void shouldBuildCourtBundleHearingListAndSupportingC2DocumentsList() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(buildHearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
             element(buildHearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
@@ -63,8 +63,8 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
             .asDynamicList(c2DocumentBundle, null, documentBundle ->
                 documentBundle.toLabel(i.getAndIncrement()));
 
-        DynamicList hearingDynamicList =
-            mapper.convertValue(response.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY), DynamicList.class);
+        DynamicList courtBundleHearingList =
+            mapper.convertValue(response.getData().get(COURT_BUNDLE_HEARING_LIST_KEY), DynamicList.class);
 
         DynamicList c2DocumentDynamicList =
             mapper.convertValue(response.getData().get(SUPPORTING_C2_LIST_KEY), DynamicList.class);
@@ -77,7 +77,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
             .hasC2s(YES.getValue())
             .build();
 
-        assertThat(hearingDynamicList).isEqualTo(expectedHearingDynamicList);
+        assertThat(courtBundleHearingList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
     }
