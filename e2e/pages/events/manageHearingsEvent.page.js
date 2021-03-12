@@ -12,12 +12,16 @@ module.exports = {
       vacateHearing: '#hearingOption-VACATE_HEARING',
       reListHearing: '#hearingOption-RE_LIST_HEARING',
     },
+    presence: {
+      inPerson: '#hearingPresence-IN_PERSON',
+      remote: '#hearingPresence-REMOTE',
+    },
     hearingDateList: '#hearingDateList',
     pastAndTodayHearingDateList: '#pastAndTodayHearingDateList',
     futureAndTodayHearingDateList: '#futureAndTodayHearingDateList',
     toReListHearingDateList: '#toReListHearingDateList',
     hearingType: {
-      final: '#hearingType-CASE_MANAGEMENT',
+      caseManagement: '#hearingType-CASE_MANAGEMENT',
     },
     hearingVenue: '#hearingVenue',
     usePreviousHearingVenue: '#previousHearingVenue_usePreviousVenue-Yes',
@@ -61,20 +65,28 @@ module.exports = {
     I.selectOption(this.fields.toReListHearingDateList, hearing);
   },
 
-  selectCancellationReasonType(type){
+  selectCancellationReasonType(type) {
     I.click(type);
   },
 
-  selectCancellationReason(reason){
+  selectCancellationReason(reason) {
     I.selectOption('//select[not(@disabled)]', reason);
   },
 
-  selectCancellationAction(action){
+  selectCancellationAction(action) {
     I.click(action);
   },
 
   async enterHearingDetails(hearingDetails) {
-    I.click(this.fields.hearingType.final);
+    I.click(this.fields.hearingType.caseManagement);
+
+    if (hearingDetails.presence) {
+      if (hearingDetails.presence === 'Remote') {
+        this.selectRemoteHearing();
+      } else {
+        this.selectInPersonHearing();
+      }
+    }
 
     await I.fillDateAndTime(hearingDetails.startDate, this.fields.startDate);
     await I.fillDateAndTime(hearingDetails.endDate, this.fields.endDate);
@@ -97,6 +109,14 @@ module.exports = {
         postcodeLookup.enterAddressManually(hearingDetails.venueCustomAddress);
       });
     }
+  },
+
+  selectInPersonHearing() {
+    I.click(this.fields.presence.inPerson);
+  },
+
+  selectRemoteHearing() {
+    I.click(this.fields.presence.remote);
   },
 
   enterJudgeDetails(hearingDetails) {
