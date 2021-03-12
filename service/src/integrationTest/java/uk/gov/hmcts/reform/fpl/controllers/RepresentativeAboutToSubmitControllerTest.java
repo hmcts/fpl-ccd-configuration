@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -36,15 +34,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
-
-    private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
+class RepresentativeAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private OrganisationApi organisationApi;
@@ -79,15 +71,15 @@ class RepresentativeAboutToSubmitControllerTest extends AbstractControllerTest {
             .caseDetails(caseDetails)
             .build();
 
-        given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representative.getEmail()))
+        givenFplService();
+        given(organisationApi.findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representative.getEmail()))
             .willReturn(new OrganisationUser(userId));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
-        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, serviceAuthToken, representative.getEmail());
+        verify(organisationApi).findUserByEmail(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, representative.getEmail());
 
-        verify(caseUserApi).updateCaseRolesForUser(USER_AUTH_TOKEN, serviceAuthToken,
+        verify(caseUserApi).updateCaseRolesForUser(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN,
             caseDetails.getId().toString(), userId, new CaseUser(userId, Set.of(SOLICITOR.formattedName())));
 
         CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);

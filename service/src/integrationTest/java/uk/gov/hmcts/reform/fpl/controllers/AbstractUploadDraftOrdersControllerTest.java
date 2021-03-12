@@ -17,7 +17,7 @@ import java.util.UUID;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-abstract class AbstractUploadDraftOrdersControllerTest extends AbstractControllerTest {
+abstract class AbstractUploadDraftOrdersControllerTest extends AbstractCallbackTest {
 
     @Autowired
     DynamicListHelper dynamicLists;

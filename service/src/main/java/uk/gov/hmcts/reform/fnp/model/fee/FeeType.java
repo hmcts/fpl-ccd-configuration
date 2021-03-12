@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN;
@@ -100,7 +101,7 @@ public enum FeeType {
         c2OrdersRequestedToFeesMap = new HashMap<>();
         c2OrdersRequestedToFeesMap.put(CHANGE_SURNAME_OR_REMOVE_JURISDICTION, CHANGE_SURNAME);
         c2OrdersRequestedToFeesMap.put(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
-        c2OrdersRequestedToFeesMap.put(C2OrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
+        c2OrdersRequestedToFeesMap.put(TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         c2OrdersRequestedToFeesMap.put(C2OrdersRequested.PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
     }
 

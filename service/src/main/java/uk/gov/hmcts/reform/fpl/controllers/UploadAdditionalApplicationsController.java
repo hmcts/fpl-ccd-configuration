@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.UploadC2DocumentsService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
-import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -52,7 +52,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
-    private final ObjectMapper mapper;
+    private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final UploadC2DocumentsService uploadC2DocumentsService;
@@ -64,20 +64,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        //workaround for previous-continue bug
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)
-            && shouldRemoveDocument(caseData)) {
-            removeDocumentFromData(data);
-        }
-
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
         return respond(caseDetails);
     }
 
     @PostMapping("/validate/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -160,17 +153,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
             }
         }
-    }
-
-    private boolean shouldRemoveDocument(CaseData caseData) {
-        return caseData.getTemporaryC2Document() != null
-            && caseData.getTemporaryC2Document().getDocument().getUrl() == null;
-    }
-
-    private void removeDocumentFromData(Map<String, Object> data) {
-        var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
-        updatedC2DocumentMap.remove("document");
-        data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {

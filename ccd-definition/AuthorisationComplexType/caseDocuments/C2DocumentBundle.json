@@ -400,33 +400,25 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
-          "[LASOLICITOR]",
-          "[LABARRISTER]",
-          "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
         ],
         "CRUD": "R"
-      },
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "U"
       }
     ]
   },
@@ -438,33 +430,25 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
-          "[LASOLICITOR]",
-          "[LABARRISTER]",
-          "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
         ],
         "CRUD": "R"
-      },
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "U"
       }
     ]
   }

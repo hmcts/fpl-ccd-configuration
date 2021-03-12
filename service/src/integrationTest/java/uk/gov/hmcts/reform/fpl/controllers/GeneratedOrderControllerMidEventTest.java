@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -83,10 +82,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChildren;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
+class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
 
     private Document document;
 
@@ -436,7 +434,8 @@ class GeneratedOrderControllerMidEventTest extends AbstractControllerTest {
                 .map(child -> child.getValue().getParty().getFullName())
                 .collect(Collectors.joining("\n"));
 
-            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {});
+            Map<String, Object> documentMap = mapper.convertValue(uploadedOrder, new TypeReference<>() {
+            });
 
             assertThat(response.getData())
                 .extracting("readOnlyFamilyManCaseNumber", "readOnlyOrder", "readOnlyChildren")

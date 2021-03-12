@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -12,15 +11,14 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
+class CaseSubmissionControllerMidEventTest extends AbstractCallbackTest {
 
     CaseSubmissionControllerMidEventTest() {
         super("case-submission");
     }
-    
+
     @Test
     void shouldNotReturnDocumentErrorsWhenCaseDataIsEmpty() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -36,8 +34,8 @@ class CaseSubmissionControllerMidEventTest extends AbstractControllerTest {
             "• Add the child's details",
             "In the respondents' details section:",
             "• Add the respondents' details",
-            "In the your organisation's details section:",
-            "• Add your organisation's details",
+            "In the applicant's details section:",
+            "• Add applicant's details",
             "• Add the applicant's solicitor's details",
             "In the grounds for the application section:",
             "• Add the grounds for the application",

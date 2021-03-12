@@ -31,5 +31,7 @@ public interface Constants {
     String DEFAULT_LA_COURT = "Family Court";
     String DEFAULT_CAFCASS_COURT = "cafcass";
     String DEFAULT_CAFCASS_EMAIL = "FamilyPublicLaw+cafcass@gmail.com";
+    String DEFAULT_CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
+    String DEFAULT_ADMIN_EMAIL = "admin@family-court.com";
     String USER_AUTH_TOKEN = "token";
 }

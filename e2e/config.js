@@ -108,7 +108,7 @@ module.exports = {
     enterHearingNeeded: 'Hearing urgency',
     enterChildren: 'Child\'s details',
     enterRespondents: 'Respondents\' details',
-    enterApplicant: 'Your organisation\'s details',
+    enterApplicant: 'Applicant\'s details',
     enterOthers: 'Other people in the case',
     enterGrounds: 'Grounds for the application',
     enterRiskAndHarmToChildren: 'Risk and harm to children',

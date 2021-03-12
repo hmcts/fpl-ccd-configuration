@@ -87,15 +87,13 @@ public class UploadC2DocumentsService {
         List<SupplementsBundle> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy);
 
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = wrapElements(updatedSupportingEvidenceBundle);
-        List<Element<SupplementsBundle>> supplementsBundle = wrapElements(updatedSupplementsBundle);
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
             .document(temporaryOtherApplicationsBundle.getDocument())
-            .supportingEvidenceBundle(supportingEvidenceBundle)
-            .supplementsBundle(supplementsBundle)
+            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
+            .supplementsBundle(wrapElements(updatedSupplementsBundle))
             .build();
     }
 

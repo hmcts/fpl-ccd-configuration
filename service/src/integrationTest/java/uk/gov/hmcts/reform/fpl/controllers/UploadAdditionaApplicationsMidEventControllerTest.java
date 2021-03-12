@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadAdditionaApplicationsMidEventControllerTest extends AbstractControllerTest {
+class UploadAdditionaApplicationsMidEventControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private FeeService feeService;
@@ -48,38 +48,6 @@ class UploadAdditionaApplicationsMidEventControllerTest extends AbstractControll
         assertThat(response.getData())
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
-    }
-
-    @Test
-    void shouldRemoveTemporaryC2DocumentForEmptyUrl() {
-        given(feeService.getFeesDataForC2(WITH_NOTICE)).willReturn(FeesData.builder()
-            .totalAmount(BigDecimal.TEN)
-            .build());
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of()),"c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build(), "get-fee");
-
-        assertThat(response.getData()).extracting("temporaryC2Document").extracting("document").isNull();
-    }
-
-    @Test
-    void shouldKeepTemporaryC2DocumentForNonEmptyUrl() {
-        given(feeService.getFeesDataForC2(WITH_NOTICE)).willReturn(FeesData.builder()
-            .totalAmount(BigDecimal.TEN)
-            .build());
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("temporaryC2Document",
-                Map.of("document", Map.of("url", "example_url")),
-                "c2ApplicationType", Map.of("type", "WITH_NOTICE")))
-            .build(), "get-fee");
-
-        assertThat(response.getData()).extracting("temporaryC2Document")
-            .extracting("document")
-            .extracting("url")
-            .isEqualTo("example_url");
     }
 
     @Test

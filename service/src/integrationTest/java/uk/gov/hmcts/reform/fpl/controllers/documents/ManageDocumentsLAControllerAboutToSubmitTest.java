@@ -5,12 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.controllers.AbstractControllerTest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -29,23 +28,22 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.C2;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.COURT_BUNDLE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeLA.FURTHER_EVIDENCE_DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ManageDocumentsLAController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractControllerTest {
+class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final String USER = "LA";
     private static final String USER_ROLES = "caseworker-publiclaw-solicitor";
@@ -61,17 +59,13 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         .confidential(List.of("CONFIDENTIAL"))
         .build();
 
-
     ManageDocumentsLAControllerAboutToSubmitTest() {
         super("manage-documents-la");
     }
 
-    @MockBean
-    private IdamClient idamClient;
-
     @BeforeEach
     void init() {
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(buildUserDetailsWithLARole());
+        givenCurrentUser(buildUserDetailsWithLARole());
     }
 
     @Test
@@ -88,7 +82,9 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
                     .build())
                 .build())
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
-            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .manageDocumentSubtypeListLA(OTHER)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -106,12 +102,38 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
-            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .manageDocumentSubtypeListLA(OTHER)
             .build();
 
         CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
 
         assertThat(responseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
+    @Test
+    void shouldPopulateApplicationDocumentsCollection() {
+        List<Element<ApplicationDocument>> applicationDocuments = buildApplicationDocuments();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .manageDocumentLA(buildManagementDocument(CORRESPONDENCE))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .applicationDocuments(applicationDocuments)
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .manageDocumentSubtypeListLA(APPLICATION_DOCUMENTS)
+            .build();
+
+        CallbackRequest callback = toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore));
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(callback, USER_ROLES));
+
+        applicationDocuments.get(0).getValue().setDateTimeUploaded(now());
+        applicationDocuments.get(0).getValue().setUploadedBy("kurt@swansea.gov.uk");
+
+        assertThat(responseData.getApplicationDocuments()).isEqualTo(applicationDocuments);
         assertExpectedFieldsAreRemoved(responseData);
     }
 
@@ -169,7 +191,8 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         CaseData extractedCaseData = extractCaseData(response);
 
         List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLANC =
-            mapper.convertValue(response.getData().get("correspondenceDocumentsLANC"), new TypeReference<>() {});
+            mapper.convertValue(response.getData().get("correspondenceDocumentsLANC"), new TypeReference<>() {
+            });
 
         assertThat(extractedCaseData.getCorrespondenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertThat(correspondenceDocumentsLANC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
@@ -190,7 +213,8 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
         CaseData extractedCaseData = extractCaseData(response);
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLANC =
-            mapper.convertValue(response.getData().get("furtherEvidenceDocumentsLANC"), new TypeReference<>() {});
+            mapper.convertValue(response.getData().get("furtherEvidenceDocumentsLANC"), new TypeReference<>() {
+            });
 
         assertThat(extractedCaseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertThat(furtherEvidenceDocumentsLANC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
@@ -242,12 +266,8 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             .build();
     }
 
-    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type) {
+    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeListLA type) {
         return ManageDocumentLA.builder().type(type).build();
-    }
-
-    private ManageDocumentLA buildManagementDocument(ManageDocumentTypeLA type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
@@ -263,6 +283,14 @@ public class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractContro
             .name("test")
             .dateTimeUploaded(localDateTime)
             .uploadedBy(USER)
+            .build());
+    }
+
+    private List<Element<ApplicationDocument>> buildApplicationDocuments() {
+        return wrapElements(ApplicationDocument.builder()
+            .document(testDocumentReference())
+            .documentName("Test SWET")
+            .documentType(SWET)
             .build());
     }
 

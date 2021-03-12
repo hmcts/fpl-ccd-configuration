@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
@@ -67,14 +66,13 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAll
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderController extends CallbackController {
 
+    private final Time time;
     private final GeneratedOrderService service;
     private final ValidateGroupService validateGroupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
     private final DischargeCareOrderService dischargeCareOrder;
-    private final Time time;
     private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
@@ -186,7 +184,7 @@ public class GeneratedOrderController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
 
-        JudgeAndLegalAdvisor tempJudge  = caseData.getJudgeAndLegalAdvisor();
+        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
 
         if (!orderTypeAndDocument.isUploaded() && caseData.hasSelectedTemporaryJudge(tempJudge)) {
             Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
@@ -241,9 +239,9 @@ public class GeneratedOrderController extends CallbackController {
 
         final List<String> errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
 
-        data.put("epoWhoIsExcluded",caseData.getOrders().getExcluded());
-        data.put("epoType",caseData.getOrders().getEpoType());
-        data.put("epoRemovalAddress",caseData.getOrders().getAddress());
+        data.put("epoWhoIsExcluded", caseData.getOrders().getExcluded());
+        data.put("epoType", caseData.getOrders().getEpoType());
+        data.put("epoRemovalAddress", caseData.getOrders().getAddress());
 
         return respond(caseDetails, errors);
     }
@@ -301,13 +299,6 @@ public class GeneratedOrderController extends CallbackController {
         DocumentReference mostRecentUploadedDocument = service.getMostRecentUploadedOrderDocument(
             caseData.getOrderCollection());
 
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change-SEND_DOCUMENT",
-            Map.of("documentToBeSent", mostRecentUploadedDocument)
-        );
         publishEvent(new GeneratedOrderEvent(caseData, mostRecentUploadedDocument));
     }
 

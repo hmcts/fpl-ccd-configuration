@@ -60,25 +60,25 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage}) => {
+Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
-  uploadAdditionalApplicationsEventPage.selectApplicationType('WITH_NOTICE');
+  uploadAdditionalApplicationsEventPage.selectC2ApplicationType('WITH_NOTICE');
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('CHANGE_SURNAME_OR_REMOVE_JURISDICTION');
   await uploadAdditionalApplicationsEventPage.uploadSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadSupportingDocument(c2SupportingDocuments);
   await I.goToNextPage();
-  //const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
+  const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
 
-  // caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  // await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
+  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
   I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
@@ -310,10 +310,13 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEve
 }).retry(1);
 
 const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
+  const notRepresentedRespondent = mandatoryWithMultipleChildren.caseData.respondents1[1].value.party;
+  const notRepresentedRespondentName = `${notRepresentedRespondent.firstName} ${notRepresentedRespondent.lastName}`;
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   const defaultIssuedDate = new Date();
   await orderFunctions.createOrder(I, createOrderEventPage, order);
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
   await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
   await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order);
+  await orderFunctions.assertOrderSentToParty(I, caseViewPage, notRepresentedRespondentName, order, 2);
 };

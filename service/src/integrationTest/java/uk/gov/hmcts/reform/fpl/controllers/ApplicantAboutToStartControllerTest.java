@@ -2,14 +2,10 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -17,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -30,26 +25,16 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
+class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
 
     private static final Organisation POPULATED_ORGANISATION = buildOrganisation();
     private static final Organisation EMPTY_ORGANISATION = Organisation.builder().build();
     private static final String ORGANISATION_ID = "ORGSA";
 
-    @Autowired
-    private SystemUpdateUserConfiguration userConfig;
-
-    @MockBean
-    private IdamClient idamClient;
-
     @MockBean
     private OrganisationApi organisationApi;
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -60,9 +45,8 @@ class ApplicantAboutToStartControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
-            .willReturn(AUTH_TOKEN);
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        givenSystemUser();
+        givenFplService();
     }
 
     @Test

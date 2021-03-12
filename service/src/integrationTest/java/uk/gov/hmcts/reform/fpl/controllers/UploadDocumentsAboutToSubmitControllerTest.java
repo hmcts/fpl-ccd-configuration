@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -25,10 +24,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SOCIAL_WORK_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(UploadDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadDocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
+class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     private static final UUID UUID_1 = UUID.randomUUID();
     private static final UUID UUID_2 = UUID.randomUUID();
     private static final String FILE_URL = "https://docuURL";

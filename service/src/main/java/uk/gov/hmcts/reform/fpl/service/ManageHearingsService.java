@@ -73,14 +73,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJu
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManageHearingsService {
 
-    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-    private final UploadDocumentService uploadDocumentService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final ObjectMapper mapper;
-    private final IdentityService identityService;
-    private final Time time;
-
     public static final String HEARING_DETAILS_KEY = "hearingDetails";
     public static final String HAS_HEARINGS_TO_ADJOURN = "hasHearingsToAdjourn";
     public static final String HAS_HEARINGS_TO_VACATE = "hasHearingsToVacate";
@@ -99,6 +91,14 @@ public class ManageHearingsService {
     public static final String END_DATE_FLAG = "endDateFlag";
     public static final String SHOW_PAST_HEARINGS_PAGE = "showConfirmPastHearingDatesPage";
     public static final String TO_RE_LIST_HEARING_LABEL = "toReListHearingsLabel";
+
+    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final ObjectMapper mapper;
+    private final IdentityService identityService;
+    private final Time time;
 
     public Map<String, Object> populateHearingLists(CaseData caseData) {
 
@@ -234,6 +234,7 @@ public class ManageHearingsService {
         caseFields.put(HEARING_START_DATE, hearingBooking.getStartDate());
         caseFields.put(HEARING_END_DATE, hearingBooking.getEndDate());
         caseFields.put("judgeAndLegalAdvisor", judgeAndLegalAdvisor);
+        caseFields.put("hearingPresence", hearingBooking.getPresence());
 
         if (hearingBooking.getPreviousHearingVenue() == null
             || hearingBooking.getPreviousHearingVenue().getPreviousVenue() == null) {
@@ -344,7 +345,9 @@ public class ManageHearingsService {
             "hearingEndDateConfirmation",
             START_DATE_FLAG,
             END_DATE_FLAG,
-            "hasSession");
+            "hasSession",
+            "hearingPresence"
+        );
     }
 
     public HearingVenue getPreviousHearingVenue(CaseData caseData) {
@@ -417,6 +420,7 @@ public class ManageHearingsService {
             .typeDetails(caseData.getHearingTypeDetails())
             .venue(caseData.getHearingVenue())
             .venueCustomAddress(caseData.getHearingVenueCustom())
+            .presence(caseData.getHearingPresence())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
@@ -450,6 +454,7 @@ public class ManageHearingsService {
             .venue(venue)
             .venueCustomAddress(caseData.getPreviousHearingVenue().getNewVenueCustomAddress())
             .customPreviousVenue(customPreviousVenue)
+            .presence(caseData.getHearingPresence())
             .startDate(caseData.getHearingStartDate())
             .endDate(caseData.getHearingEndDate())
             .allocatedJudgeLabel(caseData.getAllocatedJudge() != null
@@ -560,7 +565,7 @@ public class ManageHearingsService {
             });
     }
 
-    private static String hearingLabels(List<Element<HearingBooking>> hearings) {
+    private String hearingLabels(List<Element<HearingBooking>> hearings) {
         return hearings.stream()
             .map(Element::getValue)
             .map(HearingBooking::toLabel)
