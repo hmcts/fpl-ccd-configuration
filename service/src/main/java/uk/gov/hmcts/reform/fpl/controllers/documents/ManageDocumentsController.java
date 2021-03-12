@@ -61,7 +61,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().putAll(
-            manageDocumentService.initialiseManageDocumentEvent(caseData, MANAGE_DOCUMENT_KEY)
+            manageDocumentService.initialiseManageDocumentEvent(caseData)
         );
 
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
