@@ -63,7 +63,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
-  uploadAdditionalApplicationsEventPage.selectApplicationType('WITH_NOTICE');
+  uploadAdditionalApplicationsEventPage.selectC2ApplicationType('WITH_NOTICE');
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('CHANGE_SURNAME_OR_REMOVE_JURISDICTION');

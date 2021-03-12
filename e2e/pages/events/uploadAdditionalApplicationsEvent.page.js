@@ -6,6 +6,7 @@ module.exports = {
   fields: {
     uploadC2: '#temporaryC2Document_document',
     description: '#temporaryC2Document_description',
+    c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
     usePbaPayment: {
       yes: '#usePbaPayment-Yes',
       no: '#usePbaPayment-No',
@@ -13,38 +14,38 @@ module.exports = {
     pbaNumber: '#pbaNumber',
     clientCode: '#clientCode',
     customerReference: '#fileReference',
+    applicationType: {
+      c2ApplicationTypePrefix: '#c2ApplicationType_type-',
+      additionalApplicationTypePrefix: '#additionalApplicationType-',
+    },
     supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
   },
-
-  applicationTypePrefix: '#c2ApplicationType_type-',
-  additionalApplicationTypePrefix: '#additionalApplicationType-',
-  c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
 
   selectAdditionalApplicationType(type) {
     I.click(this.additionalApplicationTypePrefix + type);
   },
 
-  selectApplicationType(type) {
-    I.click(this.applicationTypePrefix + type);
+  selectC2ApplicationType(type) {
+    I.click(this.fields.applicationType.c2ApplicationTypePrefix + type);
   },
 
   uploadC2Document(file) {
     I.attachFile(this.fields.uploadC2, file);
   },
 
-  async uploadSupplement(documents) {
+  async uploadSupplement(document) {
     await I.addAnotherElementToCollection('Supplements');
-    I.fillField(this.fields.supplements.name, documents.name);
-    I.fillField(this.fields.supplements.notes, documents.notes);
-    I.attachFile(this.fields.supplements.document, documents.document);
+    I.fillField(this.fields.supplements.name, document.name);
+    I.fillField(this.fields.supplements.notes, document.notes);
+    I.attachFile(this.fields.supplements.document, document.document);
   },
 
-  async uploadSupportingDocument(documents) {
+  async uploadSupportingDocument(document) {
     await I.addAnotherElementToCollection('Supporting Documents');
-    I.fillField(this.fields.supportingDocuments.name, documents.name);
-    I.fillField(this.fields.supportingDocuments.notes, documents.notes);
-    I.attachFile(this.fields.supportingDocuments.document, documents.document);
+    I.fillField(this.fields.supportingDocuments.name, document.name);
+    I.fillField(this.fields.supportingDocuments.notes, document.notes);
+    I.attachFile(this.fields.supportingDocuments.document, document.document);
   },
 
   selectC2AdditionalOrdersRequested(ordersRequested) {
