@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -26,6 +28,10 @@ public class CoreCaseDataService {
     private final IdamClient idamClient;
     private final CoreCaseDataApi coreCaseDataApi;
     private final RequestData requestData;
+
+    public void updateCase(Long caseId, Map<String, Object> updates) {
+        triggerEvent(JURISDICTION, CASE_TYPE, caseId, "internal-change-UPDATE_CASE", updates);
+    }
 
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
         triggerEvent(jurisdiction, caseType, caseId, event, emptyMap());

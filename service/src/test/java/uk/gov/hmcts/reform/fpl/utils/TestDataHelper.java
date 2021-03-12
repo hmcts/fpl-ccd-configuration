@@ -65,6 +65,10 @@ public class TestDataHelper {
             .build();
     }
 
+    public static byte[] testDocumentBinary() {
+        return RandomUtils.nextBytes(RandomUtils.nextInt(3, 10));
+    }
+
     public static DocumentReference testDocumentReference() {
         return testDocumentReference(randomAlphanumeric(10));
     }
@@ -252,7 +256,7 @@ public class TestDataHelper {
     public static FeignException feignException(int status, String message) {
         return FeignException.errorStatus(message, Response.builder()
             .status(status)
-            .request(Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null))
+            .request(Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null))
             .build());
     }
 

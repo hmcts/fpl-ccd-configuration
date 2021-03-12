@@ -230,6 +230,7 @@ public class CaseData {
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
+    private final List<Element<SentDocuments>> documentsSentToParties;
 
     @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
