@@ -88,12 +88,14 @@ class UploadC2DocumentsServiceTest {
         CaseData caseData = CaseData.builder()
             .temporaryC2Document(createC2DocumentBundleWithSupplements())
             .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .pbaNumber("PBA1234567")
+            .clientCode("123")
+            .fileReference("456")
             .build();
 
         List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
             .buildC2DocumentBundle(caseData);
         C2DocumentBundle actualC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
-
 
         assertC2Bundle(actualC2DocumentBundle);
         assertThat(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue())
@@ -189,6 +191,9 @@ class UploadC2DocumentsServiceTest {
         assertThat(documentBundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(documentBundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(documentBundle.getSupplementsBundle()).hasSize(1);
+        assertThat(documentBundle.getPbaNumber()).isEqualTo("PBA1234567");
+        assertThat(documentBundle.getClientCode()).isEqualTo("123");
+        assertThat(documentBundle.getFileReference()).isEqualTo("456");
     }
 
     private C2DocumentBundle createC2DocumentBundle() {
