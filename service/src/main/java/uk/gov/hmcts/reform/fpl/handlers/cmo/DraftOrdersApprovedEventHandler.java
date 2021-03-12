@@ -127,8 +127,9 @@ public class DraftOrdersApprovedEventHandler {
 
     }
 
+    @Async
     @EventListener
-    public void sendDocumentToPostRepresentatives(final DraftOrdersApproved event) {
+    public void sendDocumentToPostRecipients(final DraftOrdersApproved event) {
         final CaseData caseData = event.getCaseData();
 
         final List<DocumentReference> documents = event.getApprovedOrders()

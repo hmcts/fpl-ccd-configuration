@@ -200,7 +200,7 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderDocumentToRcepients() {
+    void shouldSendOrderDocumentToRecipients() {
         final HearingOrder hearingOrder1 = hearingOrder();
         final HearingOrder hearingOrder2 = hearingOrder();
 
@@ -226,7 +226,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
 
-        draftOrdersApprovedEventHandler.sendDocumentToPostRepresentatives(new DraftOrdersApproved(caseData, orders));
+        draftOrdersApprovedEventHandler.sendDocumentToPostRecipients(new DraftOrdersApproved(caseData, orders));
 
         verify(sendDocumentService).getStandardRecipients(caseData);
 

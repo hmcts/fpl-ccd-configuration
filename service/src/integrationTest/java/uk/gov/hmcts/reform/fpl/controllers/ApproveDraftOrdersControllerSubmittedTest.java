@@ -72,6 +72,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
+    private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
     private static final DocumentReference orderDocument = testDocumentReference();
 
     @MockBean
@@ -227,14 +228,14 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             cmo.getOrder(),
             recipients,
             CASE_ID,
-            null
+            FAMILY_MAN_CASE_NUMBER
         );
 
         verify(sendLetters, times(2)).send(
             c21.getOrder(),
             recipients,
             CASE_ID,
-            null
+            FAMILY_MAN_CASE_NUMBER
         );
 
         verifyNoMoreInteractions(sendLetters);
@@ -289,6 +290,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
             .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .build());
 
         caseDetails.setId(CASE_ID);
