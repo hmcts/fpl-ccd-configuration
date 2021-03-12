@@ -7,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -29,22 +26,15 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_2_USER_EMAIL;
 import static uk.gov.hmcts.reform.fpl.Constants.PRIVATE_ORG_ID;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOrganisation;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseInitiationController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseInitiationControllerAboutToStartTest extends AbstractControllerTest {
+class CaseInitiationControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Autowired
     private DynamicListHelper dynamicLists;
 
     @MockBean
-    private IdamClient idam;
-
-    @MockBean
     private OrganisationApi organisationApi;
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     CaseInitiationControllerAboutToStartTest() {
         super("case-initiation");
@@ -52,15 +42,14 @@ class CaseInitiationControllerAboutToStartTest extends AbstractControllerTest {
 
     @BeforeEach
     void setup() {
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        givenFplService();
     }
 
     @Test
     void shouldReturnListOfOutsourcingLAsIfPrivateSolicitorAllowedToCreateCaseOnBehalfOfLAs() {
         final Organisation organisation = testOrganisation(PRIVATE_ORG_ID);
 
-        given(idam.getUserInfo(USER_AUTH_TOKEN))
-            .willReturn(UserInfo.builder().sub("test@private.solicitors.uk").build());
+        givenCurrentUser(UserInfo.builder().sub("test@private.solicitors.uk").build());
 
         given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(organisation);
 
@@ -76,8 +65,7 @@ class CaseInitiationControllerAboutToStartTest extends AbstractControllerTest {
     void shouldReturnListOfOutsourcingLAsIfLASolicitorAllowedToCreateCaseOnBehalfOfOtherLA() {
         final Organisation organisation = testOrganisation(LOCAL_AUTHORITY_2_ID);
 
-        given(idam.getUserInfo(USER_AUTH_TOKEN))
-            .willReturn(UserInfo.builder().sub(LOCAL_AUTHORITY_2_USER_EMAIL).build());
+        givenCurrentUser(UserInfo.builder().sub(LOCAL_AUTHORITY_2_USER_EMAIL).build());
 
         given(organisationApi.findUserOrganisation(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN)).willReturn(organisation);
 
