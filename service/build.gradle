@@ -116,15 +116,16 @@ task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verificatio
 }
 
 project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
+    pacticipant = 'payment_App'
+    pacticipantVersion = getCheckedOutGitCommitHash()
 }
+
 
 task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
     onlyIf {
         return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
     }
     useJUnitPlatform()
-    //include "uk/gov/hmcts/payment/api/controllers/consumer/**"
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     systemProperty 'pact.rootDir', "pacts"
@@ -147,11 +148,13 @@ def getCheckedOutGitCommitHash() {
 }
 
 pact {
+    broker {
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    }
     publish {
         pactDirectory = 'service/pacts'
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
         tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
-        version = project.pactVersion
+        version = project.pacticipantVersion
     }
 }
 
