@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -83,11 +84,20 @@ class UploadC2DocumentsServiceTest {
     void shouldBuildExpectedC2DocumentBundleWhenAdditionalApplicationsToggledOn() {
         given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
 
+        CaseData caseData = CaseData.builder()
+            .temporaryC2Document(createC2DocumentBundleWithSupplements())
+            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .build();
+
         List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
-            .buildC2DocumentBundle(createCaseDataWithC2DocumentBundle(createC2DocumentBundleWithSupplements()));
-        C2DocumentBundle firstC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
-        C2DocumentBundle expectedC2Bundle = createC2DocumentBundleWithSupplements();
-        assertThat(firstC2DocumentBundle).isEqualToComparingFieldByField(expectedC2Bundle);
+            .buildC2DocumentBundle(caseData);
+        C2DocumentBundle actualC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
+
+
+        assertC2Bundle(actualC2DocumentBundle);
+        assertThat(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue())
+            .extracting("name", "notes")
+            .containsExactly(C13A_SPECIAL_GUARDIANSHIP, "Document notes");
     }
 
     @Test
@@ -104,11 +114,20 @@ class UploadC2DocumentsServiceTest {
 
     private C2DocumentBundle createC2DocumentBundleWithSupplements() {
         return C2DocumentBundle.builder()
-            .author("Elon Musk")
             .type(WITH_NOTICE)
+            .document(DocumentReference.builder()
+                .filename("Test")
+                .build())
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundleWithInvalidDateReceived()))
             .supplementsBundle(wrapElements(createSupplementsBundle()))
             .build();
+    }
+
+    private void assertC2Bundle(C2DocumentBundle documentBundle) {
+        assertThat(documentBundle.getDocument().getFilename()).isEqualTo("Test");
+        assertThat(documentBundle.getType()).isEqualTo(WITH_NOTICE);
+        assertThat(documentBundle.getSupportingEvidenceBundle()).hasSize(1);
+        assertThat(documentBundle.getSupplementsBundle()).hasSize(1);
     }
 
     private C2DocumentBundle createC2DocumentBundle() {
