@@ -11,6 +11,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SupplementsBundle",
+    "ListElementCode": "secureAccommodationType",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Secure accommodation type",
+    "FieldTypeParameter": "SecureAccommodationType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupplementsBundle",
     "ListElementCode": "notes",
     "FieldType": "TextArea",
     "ElementLabel": "Notes",

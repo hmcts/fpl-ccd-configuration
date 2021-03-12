@@ -68,7 +68,7 @@ public class FeatureToggleService {
     }
 
     public boolean isUploadAdditionalApplicationsEnabled() {
-        return ldClient.boolVariation("upload-additional-applications", createLDUser(), true);
+        return ldClient.boolVariation("upload-additional-applications", createLDUser(), false);
     }
 
     private LDUser createLDUser() {

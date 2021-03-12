@@ -37,43 +37,50 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
+    "ListElementCode": "C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD",
+    "ListElement": "C3 - Search, take charge and delivery of a child",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationType",
     "ListElementCode": "C4_WHEREABOUTS_OF_A_MISSING_CHILD",
     "ListElement": "C4 - Whereabouts of a missing child",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
     "ListElementCode": "C12_WARRANT_TO_ASSIST_PERSON",
     "ListElement": "C12 - Warrant to assist person authorised by an emergency protection order",
-    "DisplayOrder": 7
+    "DisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
     "ListElementCode": "C17_EDUCATION_SUPERVISION_ORDER",
     "ListElement": "C17 - Education supervision order (ESO)",
-    "DisplayOrder": 8
+    "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
     "ListElementCode": "C17A_EXTENSION_OF_ESO",
     "ListElement": "C17a - Variation or extension of ESO",
-    "DisplayOrder": 9
+    "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
     "ListElementCode": "C19_WARRANT_TO_ASSISTANCE",
     "ListElement": "C19 - Warrant of assistance",
-    "DisplayOrder": 10
+    "DisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
     "ListElementCode": "C100_CHILD_ARRANGEMENTS",
     "ListElement": "C100 - Child arrangements, prohibited steps or specific issue",
-    "DisplayOrder": 11
+    "DisplayOrder": 12
   }
 ]

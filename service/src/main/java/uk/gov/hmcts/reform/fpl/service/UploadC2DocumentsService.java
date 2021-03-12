@@ -52,17 +52,9 @@ public class UploadC2DocumentsService {
             .type(caseData.getC2ApplicationType().get("type"));
 
         if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
-            List<SupplementsBundle> updatedSupplementsBundle =
-                unwrapElements(caseData.getTemporaryC2Document().getSupplementsBundle())
-                    .stream()
-                    .map(supplementsBundle -> supplementsBundle.toBuilder()
-                        .dateTimeUploaded(time.now())
-                        .uploadedBy(uploadedBy)
-                        .build())
-                    .collect(Collectors.toList());
-
-            return List.of(element(
-                c2DocumentBundleBuilder.supplementsBundle(wrapElements(updatedSupplementsBundle)).build()));
+            return List.of(element(c2DocumentBundleBuilder.supplementsBundle(wrapElements(
+                getSupplementsBundle(caseData.getTemporaryC2Document().getSupplementsBundle(), uploadedBy)))
+                .build()));
         } else {
             List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(
                 caseData.getC2DocumentBundle(), new ArrayList<>()
@@ -84,29 +76,6 @@ public class UploadC2DocumentsService {
             .orElse(emptyList());
     }
 
-    public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(
-        CaseData caseData,
-        C2DocumentBundle c2DocumentBundle,
-        OtherApplicationsBundle otherApplicationsBundle
-    ) {
-
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-        PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
-
-        return AdditionalApplicationsBundle.builder()
-            .c2Document(c2DocumentBundle)
-            .otherApplications(otherApplicationsBundle)
-            .pbaPayment(PBAPayment.builder()
-                .usePbaPayment(temporaryPbaPayment.getUsePbaPayment())
-                .pbaNumber(temporaryPbaPayment.getPbaNumber())
-                .clientCode(temporaryPbaPayment.getClientCode())
-                .fileReference(temporaryPbaPayment.getFileReference())
-                .build())
-            .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .build();
-    }
-
     public OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
@@ -125,6 +94,28 @@ public class UploadC2DocumentsService {
             .document(temporaryOtherApplicationsBundle.getDocument())
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
             .supplementsBundle(wrapElements(updatedSupplementsBundle))
+            .build();
+    }
+
+    public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(
+        CaseData caseData,
+        C2DocumentBundle c2DocumentBundle,
+        OtherApplicationsBundle otherApplicationsBundle
+    ) {
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+        PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
+
+        return AdditionalApplicationsBundle.builder()
+            .c2Document(c2DocumentBundle)
+            .otherApplications(otherApplicationsBundle)
+            .pbaPayment(PBAPayment.builder()
+                .usePbaPayment(temporaryPbaPayment.getUsePbaPayment())
+                .pbaNumber(temporaryPbaPayment.getPbaNumber())
+                .clientCode(temporaryPbaPayment.getClientCode())
+                .fileReference(temporaryPbaPayment.getFileReference())
+                .build())
+            .author(uploadedBy)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .build();
     }
 

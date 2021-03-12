@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toMap;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.C2_WITH_NOTICE;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
@@ -24,8 +25,12 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.EMERGENCY_PROTECTION_ORD
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PARENTAL_RESPONSIBILITY_FATHER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PARENTAL_RESPONSIBILITY_FEMALE_PARENT;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.RECOVERY_ORDER;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SECURE_ACCOMMODATION_ENGLAND;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SECURE_ACCOMMODATION_WALES;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.SUPERVISION_ORDER;
 
 @Configuration
@@ -48,8 +53,13 @@ public class TestFeeConfig {
     public static final String SUPERVISION_ORDER_KEYWORD = "SO";
 
     public static final String CHANGE_SURNAME_KEYWORD = "ZAB";
+    public static final String APPOINTMENT_OF_GUARDIAN_KEYWORD = "UVW";
     public static final String CHILD_ASSESSMENT_KEYWORD = "NOP";
-    public static final String RECOVERY_ORDER_KEYWORD = "NOP";
+    public static final String RECOVERY_ORDER_KEYWORD = "Recovery";
+    public static final String SECURE_ACCOMMODATION_ENG_KEYWORD = "SecureAccommEngland";
+    public static final String SECURE_ACCOMMODATION_WALES_KEYWORD = "SecureAccommWales";
+    public static final String PR_FATHER_KEYWORD = "XYZ";
+    public static final String PR_FEMALE_PARENT_KEYWORD = "AABC";
 
     private static final Map<FeeType, String> feeTypeToKeyword;
 
@@ -68,7 +78,12 @@ public class TestFeeConfig {
 
         feeTypeToKeyword.put(CHANGE_SURNAME, CHANGE_SURNAME_KEYWORD);
         feeTypeToKeyword.put(CHILD_ASSESSMENT, CHILD_ASSESSMENT_KEYWORD);
+        feeTypeToKeyword.put(APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN_KEYWORD);
         feeTypeToKeyword.put(RECOVERY_ORDER, RECOVERY_ORDER_KEYWORD);
+        feeTypeToKeyword.put(SECURE_ACCOMMODATION_ENGLAND, SECURE_ACCOMMODATION_ENG_KEYWORD);
+        feeTypeToKeyword.put(SECURE_ACCOMMODATION_WALES, SECURE_ACCOMMODATION_WALES_KEYWORD);
+        feeTypeToKeyword.put(PARENTAL_RESPONSIBILITY_FATHER, PR_FATHER_KEYWORD);
+        feeTypeToKeyword.put(PARENTAL_RESPONSIBILITY_FEMALE_PARENT, PR_FEMALE_PARENT_KEYWORD);
     }
 
     @ConditionalOnMissingBean

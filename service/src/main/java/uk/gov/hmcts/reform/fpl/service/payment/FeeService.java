@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -27,11 +29,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromApplicationType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromC2ApplicationType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromParentalResponsibilityTypes;
+import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
 
 @Slf4j
@@ -75,17 +79,25 @@ public class FeeService {
     }
 
     public FeesData getFeesDataForOtherApplications(
-        OtherApplicationType applicationType, List<Supplements> supplementTypes) {
-        return getFeesDataForAdditionalApplications(null, applicationType, supplementTypes);
+        OtherApplicationType applicationType,
+        ParentalResponsibilityType parentalResponsibilityType,
+        List<Supplements> supplementTypes,
+        List<SecureAccommodationType> secureAccommodationSupplements
+    ) {
+        return getFeesDataForAdditionalApplications(
+            null, applicationType, parentalResponsibilityType,
+            supplementTypes, secureAccommodationSupplements);
     }
 
     public FeesData getFeesDataForAdditionalApplications(
         C2ApplicationType c2ApplicationType,
         OtherApplicationType applicationType,
-        List<Supplements> supplementTypes) {
+        ParentalResponsibilityType parentalResponsibilityType,
+        List<Supplements> supplementTypes,
+        List<SecureAccommodationType> secureAccommodationTypes) {
 
         List<FeeType> feeTypes = getAdditionalApplicationsFeeTypes(
-            c2ApplicationType, applicationType, supplementTypes);
+            c2ApplicationType, applicationType, parentalResponsibilityType, supplementTypes, secureAccommodationTypes);
 
         return Optional.of(feeTypes)
             .map(this::getFees)
@@ -96,21 +108,27 @@ public class FeeService {
     private List<FeeType> getAdditionalApplicationsFeeTypes(
         C2ApplicationType c2ApplicationType,
         OtherApplicationType applicationType,
-        List<Supplements> supplementTypes
+        ParentalResponsibilityType parentalResponsibilityType,
+        List<Supplements> supplementTypes,
+        List<SecureAccommodationType> secureAccommodationTypes
     ) {
         List<FeeType> feeTypes = new ArrayList<>();
 
-        if (isNotEmpty(c2ApplicationType)) {
+        if (!isNull(c2ApplicationType)) {
             feeTypes.add(fromC2ApplicationType(c2ApplicationType));
         }
 
-        if (isNotEmpty(applicationType)) {
-            feeTypes.add(fromApplicationType(applicationType));
+        if (!isNull(applicationType)) {
+            if (OtherApplicationType.C1_PARENTAL_RESPONSIBILITY == applicationType
+                && !isNull(parentalResponsibilityType)) {
+                feeTypes.add(fromParentalResponsibilityTypes(parentalResponsibilityType));
+            } else {
+                feeTypes.add(fromApplicationType(applicationType));
+            }
         }
 
-        if (isNotEmpty(supplementTypes)) {
-            feeTypes.addAll(fromSupplementTypes(supplementTypes));
-        }
+        feeTypes.addAll(fromSupplementTypes(supplementTypes));
+        feeTypes.addAll(fromSecureAccommodationTypes(secureAccommodationTypes));
         return feeTypes;
     }
 

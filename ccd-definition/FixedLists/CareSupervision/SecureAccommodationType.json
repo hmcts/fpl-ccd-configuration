@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SecureAccommodationType",
+    "ListElementCode": "SECTION_25_ENGLAND",
+    "ListElement": "SECTION 25 (England)",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SecureAccommodationType",
+    "ListElementCode": "SECTION_119_WALES",
+    "ListElement": "SECTION 119 (Wales)",
+    "DisplayOrder": 2
+  }
+]

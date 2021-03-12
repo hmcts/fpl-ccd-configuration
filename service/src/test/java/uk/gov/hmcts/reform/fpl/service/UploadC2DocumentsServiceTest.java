@@ -55,6 +55,9 @@ class UploadC2DocumentsServiceTest {
     @MockBean
     private RequestData requestData;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @Test
     void shouldBuildExpectedC2DocumentBundle() {
         given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
@@ -65,7 +68,7 @@ class UploadC2DocumentsServiceTest {
             .buildC2DocumentBundle(createCaseDataWithC2DocumentBundle());
         C2DocumentBundle firstC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
         C2DocumentBundle expectedC2Bundle = createC2DocumentBundle();
-        assertThat(firstC2DocumentBundle).isEqualToComparingFieldByField(expectedC2Bundle);
+        assertThat(firstC2DocumentBundle).usingRecursiveComparison().isEqualTo(expectedC2Bundle);
     }
 
     @Test

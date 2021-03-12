@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.Supplements;
 
 import java.util.HashMap;
@@ -66,23 +68,20 @@ public enum FeeType {
             Supplements.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, CONTACT_WITH_CHILD_IN_CARE,
             Supplements.C15_CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE,
             Supplements.C16_CHILD_ASSESSMENT, CHILD_ASSESSMENT,
-            Supplements.C18_RECOVERY_ORDER, RECOVERY_ORDER,
-            Supplements.C20_SECURE_ACCOMMODATION, SECURE_ACCOMMODATION_ENGLAND
-            //TODO SECURE_ACCOMMODATION_WALES - differentiate fee code for england/wales
+            Supplements.C18_RECOVERY_ORDER, RECOVERY_ORDER
         );
     }
 
     private static final Map<OtherApplicationType, FeeType> applicationToFeeMap;
 
     static {
-        //TODO PARENTAL_RESPONSIBILITY_FEMALE_PARENT - differentiate fee code between father/mother
         //TODO "C1 - With supplement" - fee code not found
         applicationToFeeMap = new HashMap<>();
         applicationToFeeMap.put(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, CHANGE_SURNAME);
         applicationToFeeMap.put(C1_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         applicationToFeeMap.put(C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         applicationToFeeMap.put(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
-        applicationToFeeMap.put(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_DELIVERY_OF_CHILD, C2_WITH_NOTICE);
+        applicationToFeeMap.put(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD, C2_WITH_NOTICE);
         //TODO "C4 - Whereabouts of a missing child" - fee code not found
         applicationToFeeMap.put(OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON, WARRANT_TO_ASSIST_PERSON);
         applicationToFeeMap.put(
@@ -116,6 +115,13 @@ public enum FeeType {
         return applicationToFeeMap.get(applicationType);
     }
 
+    public static FeeType fromParentalResponsibilityTypes(ParentalResponsibilityType parentalResponsibilityType) {
+        if (ParentalResponsibilityType.PR_BY_FATHER == parentalResponsibilityType) {
+            return PARENTAL_RESPONSIBILITY_FATHER;
+        }
+        return PARENTAL_RESPONSIBILITY_FEMALE_PARENT;
+    }
+
     public static List<FeeType> fromSupplementTypes(List<Supplements> supplementTypes) {
         if (isEmpty(supplementTypes)) {
             return ImmutableList.of();
@@ -124,5 +130,22 @@ public enum FeeType {
         return supplementTypes.stream()
             .map(supplementToFeeMap::get)
             .collect(toUnmodifiableList());
+    }
+
+    public static List<FeeType> fromSecureAccommodationTypes(List<SecureAccommodationType> accommodationTypes) {
+        if (isEmpty(accommodationTypes)) {
+            return ImmutableList.of();
+        }
+
+        return accommodationTypes.stream()
+            .map(FeeType::getSecureAccommodationFeeType)
+            .collect(toUnmodifiableList());
+    }
+
+    private static FeeType getSecureAccommodationFeeType(SecureAccommodationType secureAccommodationType) {
+        if (SecureAccommodationType.SECTION_25_ENGLAND == secureAccommodationType) {
+            return SECURE_ACCOMMODATION_ENGLAND;
+        }
+        return SECURE_ACCOMMODATION_WALES;
     }
 }
