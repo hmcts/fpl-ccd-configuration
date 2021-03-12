@@ -120,12 +120,7 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
 
-  onMaster() {
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-  }
-  onPR() {
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-  }
+  enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
 
 
   after('checkout') {
