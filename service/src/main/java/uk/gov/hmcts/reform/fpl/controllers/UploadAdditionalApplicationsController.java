@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,11 +56,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
-        //workaround for previous-continue bug
-        if (shouldRemoveDocument(caseData)) {
-            removeDocumentFromData(data);
-        }
-
         try {
             FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
@@ -74,15 +68,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     }
 
     @PostMapping("/validate/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleValidateMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
         var updatedPbaNumber = pbaNumberService.update(caseData.getPbaNumber());
         caseDetails.getData().put("pbaNumber", updatedPbaNumber);
-        List<String> errors = new ArrayList<>();
-        errors.addAll(pbaNumberService.validate(updatedPbaNumber));
+        List errors = pbaNumberService.validate(updatedPbaNumber);
 
         return respond(caseDetails, errors);
     }
@@ -132,11 +124,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
             }
         }
-    }
-
-    private boolean shouldRemoveDocument(CaseData caseData) {
-        return caseData.getTemporaryC2Document() != null
-            && caseData.getTemporaryC2Document().getDocument().getUrl() == null;
     }
 
     private void removeDocumentFromData(Map<String, Object> data) {
