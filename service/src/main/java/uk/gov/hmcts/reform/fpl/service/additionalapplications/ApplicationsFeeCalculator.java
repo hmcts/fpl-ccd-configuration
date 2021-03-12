@@ -14,11 +14,14 @@ import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static java.util.Collections.emptyMap;
+import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -32,54 +35,59 @@ public class ApplicationsFeeCalculator {
 
     private final FeeService feeService;
 
-    public void getC2ApplicationFee(Map<String, Object> data, CaseData caseData) {
-        try {
-            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
-            data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-            data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        } catch (FeeRegisterException ignore) {
-            data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
+    public Map<String, Object> calculateFee(CaseData caseData) {
+        if (caseData.getAdditionalApplicationTypes().size() == 2) {
+
+            if (caseData.getTemporaryOtherApplicationsBundle() != null
+                && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null) {
+                return getAdditionalApplicationsFee(caseData);
+            }
+            return emptyMap();
         }
+
+        return getAdditionalApplicationsFee(caseData);
     }
 
-    public void getOtherApplicationsFee(Map<String, Object> data, CaseData caseData) {
+    private Map<String, Object> getAdditionalApplicationsFee(CaseData caseData) {
+        Map<String, Object> data = new HashMap<>();
+
         try {
-            List<Element<SupplementsBundle>> supplementsBundles = defaultIfNull(
-                caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle(), new ArrayList<>());
-
-            FeesData feesData = feeService.getFeesDataForOtherApplications(
-                caseData.getTemporaryOtherApplicationsBundle().getApplicationType(),
-                caseData.getTemporaryOtherApplicationsBundle().getParentalResponsibilityType(),
-                getSupplements(supplementsBundles),
-                getSecureAccommodationTypes(supplementsBundles));
-
-            data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
-            data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        } catch (FeeRegisterException ignore) {
-            data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
-        }
-    }
-
-    public void getAdditionalApplicationsFee(Map<String, Object> data, CaseData caseData) {
-        try {
-            List<Element<SupplementsBundle>> supplementsBundles = defaultIfNull(
-                caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle(), new ArrayList<>());
+            List<Element<SupplementsBundle>> supplementsBundles = mergeSupplementsBundles(caseData);
 
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
-                caseData.getC2ApplicationType().get("type"),
-                caseData.getTemporaryOtherApplicationsBundle().getApplicationType(),
-                caseData.getTemporaryOtherApplicationsBundle().getParentalResponsibilityType(),
-                getSupplements(supplementsBundles),
+                caseData.getTemporaryC2Document(),
+                caseData.getTemporaryOtherApplicationsBundle(),
+                getSupplementsWithoutSecureAccommodationType(supplementsBundles),
                 getSecureAccommodationTypes(supplementsBundles));
 
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
             data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+
         } catch (FeeRegisterException ignore) {
             data.put(DISPLAY_AMOUNT_TO_PAY, NO.getValue());
         }
+        return data;
     }
 
-    private List<Supplements> getSupplements(List<Element<SupplementsBundle>> supplementsBundles) {
+    private List<Element<SupplementsBundle>> mergeSupplementsBundles(CaseData caseData) {
+        List<Element<SupplementsBundle>> supplementsBundles = new ArrayList<>();
+
+        if (caseData.getTemporaryC2Document() != null
+            && isNotEmpty(caseData.getTemporaryC2Document().getSupplementsBundle())) {
+            supplementsBundles.addAll(caseData.getTemporaryC2Document().getSupplementsBundle());
+        }
+
+        if (!isNull(caseData.getTemporaryOtherApplicationsBundle())
+            && isNotEmpty(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle())) {
+            supplementsBundles.addAll(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle());
+        }
+
+        return supplementsBundles;
+    }
+
+    private List<Supplements> getSupplementsWithoutSecureAccommodationType(
+        List<Element<SupplementsBundle>> supplementsBundles) {
+
         return unwrapElements(supplementsBundles).stream()
             .map(SupplementsBundle::getName)
             .filter(name -> !Supplements.C20_SECURE_ACCOMMODATION.equals(name))

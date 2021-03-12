@@ -37,7 +37,6 @@ import java.util.Set;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -71,23 +70,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             removeDocumentFromData(data);
         }
 
-        if (caseData.getAdditionalApplicationTypes().size() == 2) {
-
-            if (isNotEmpty(caseData.getTemporaryOtherApplicationsBundle())
-                && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null) {
-                applicationsFeeCalculator.getAdditionalApplicationsFee(data, caseData);
-            }
-            return respond(caseDetails);
-        }
-
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.C2_ORDER)) {
-            applicationsFeeCalculator.getC2ApplicationFee(data, caseData);
-        }
-
-        if (caseData.getAdditionalApplicationTypes().contains(AdditionalApplicationType.OTHER_ORDER)
-            && caseData.getTemporaryOtherApplicationsBundle() != null) {
-            applicationsFeeCalculator.getOtherApplicationsFee(data, caseData);
-        }
+        caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
         return respond(caseDetails);
     }

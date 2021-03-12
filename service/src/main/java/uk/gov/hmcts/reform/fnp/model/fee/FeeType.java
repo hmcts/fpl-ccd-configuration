@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fnp.model.fee;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
@@ -11,10 +12,12 @@ import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN;
@@ -91,6 +94,16 @@ public enum FeeType {
         applicationToFeeMap.put(OtherApplicationType.C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS);
     }
 
+    private static final Map<C2OrdersRequested, FeeType> c2OrdersRequestedToFeesMap;
+
+    static {
+        c2OrdersRequestedToFeesMap = new HashMap<>();
+        c2OrdersRequestedToFeesMap.put(CHANGE_SURNAME_OR_REMOVE_JURISDICTION, CHANGE_SURNAME);
+        c2OrdersRequestedToFeesMap.put(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
+        c2OrdersRequestedToFeesMap.put(C2OrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
+        c2OrdersRequestedToFeesMap.put(C2OrdersRequested.PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
+    }
+
     public static List<FeeType> fromOrderType(List<OrderType> orderTypes) {
         if (isEmpty(orderTypes)) {
             return ImmutableList.of();
@@ -108,11 +121,21 @@ public enum FeeType {
         return C2_WITHOUT_NOTICE;
     }
 
-    public static FeeType fromApplicationType(OtherApplicationType applicationType) {
-        if (!applicationToFeeMap.containsKey(applicationType)) {
-            return null;
+    public static List<FeeType> fromC2OrdersRequestedType(List<C2OrdersRequested> c2OrdersRequestedList) {
+        if (isEmpty(c2OrdersRequestedList)) {
+            return ImmutableList.of();
         }
-        return applicationToFeeMap.get(applicationType);
+
+        return c2OrdersRequestedList.stream()
+            .map(c2OrdersRequestedToFeesMap::get)
+            .collect(toUnmodifiableList());
+    }
+
+    public static Optional<FeeType> fromApplicationType(OtherApplicationType applicationType) {
+        if (!applicationToFeeMap.containsKey(applicationType)) {
+            return Optional.empty();
+        }
+        return Optional.of(applicationToFeeMap.get(applicationType));
     }
 
     public static FeeType fromParentalResponsibilityTypes(ParentalResponsibilityType parentalResponsibilityType) {

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
@@ -26,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig;
 
 import java.math.BigDecimal;
@@ -266,7 +269,7 @@ class FeeServiceTest {
         @BeforeEach
         void setup() {
             when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, C2_WITH_NOTICE_KEYWORD,
-                SERVICE)).thenReturn(buildFeeResponse(CHANGE_SURNAME, BigDecimal.valueOf(20)));
+                SERVICE)).thenReturn(buildFeeResponse(WITH_NOTICE_FEE_CODE, BigDecimal.valueOf(20)));
 
             when(feesRegisterApi.findFee(CHANNEL, EVENT, JURISDICTION_1, JURISDICTION_2, CHANGE_SURNAME_KEYWORD,
                 SERVICE)).thenReturn(buildFeeResponse(CHANGE_SURNAME, BigDecimal.valueOf(50)));
@@ -294,9 +297,9 @@ class FeeServiceTest {
 
         @Test
         void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplements() {
-            FeesData feesData = feeService.getFeesDataForOtherApplications(
-                C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION,
+            FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
+                buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
                 List.of(C16_CHILD_ASSESSMENT, C18_RECOVERY_ORDER),
                 List.of());
 
@@ -307,9 +310,10 @@ class FeeServiceTest {
         @ParameterizedTest
         @NullAndEmptySource
         void shouldReturnApplicationFeesDataWhenNoSupplementsExist(List<Supplements> supplementTypes) {
-            FeesData feesData = feeService.getFeesDataForOtherApplications(
-                C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION,
-                null, supplementTypes, List.of());
+            FeesData feesData = feeService.getFeesDataForAdditionalApplications(
+                null,
+                buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
+                supplementTypes, List.of());
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(50));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(CHANGE_SURNAME);
@@ -317,9 +321,9 @@ class FeeServiceTest {
 
         @Test
         void shouldReturnFeesDataWithMaximumAmountForSupplementsWithSecureAccommodationWales() {
-            FeesData feesData = feeService.getFeesDataForOtherApplications(
-                C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION,
+            FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
+                buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
                 List.of(C16_CHILD_ASSESSMENT, C18_RECOVERY_ORDER),
                 List.of(SecureAccommodationType.SECTION_119_WALES));
 
@@ -331,8 +335,7 @@ class FeeServiceTest {
         void shouldReturnFeesDataWithMaximumAmountForSupplementsWithSecureAccommodationEngland() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
-                C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION,
-                null,
+                buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
                 List.of(C16_CHILD_ASSESSMENT, C18_RECOVERY_ORDER),
                 List.of(SecureAccommodationType.SECTION_25_ENGLAND));
 
@@ -343,14 +346,14 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForParentalResponsibilityType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
-                C2ApplicationType.WITH_NOTICE,
-                OtherApplicationType.C1_PARENTAL_RESPONSIBILITY,
-                ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT,
+                buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN)),
+                buildOtherApplicationsBundle(
+                    OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, ParentalResponsibilityType.PR_BY_FATHER),
                 List.of(C13A_SPECIAL_GUARDIANSHIP),
                 List.of());
 
-            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(30));
-            assertThat(getFirstFeeCode(feesData)).isEqualTo(PARENTAL_RESPONSIBILITY_FEMALE_PARENT);
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(35));
+            assertThat(getFirstFeeCode(feesData)).isEqualTo(PARENTAL_RESPONSIBILITY_FATHER);
         }
 
         private String getFirstFeeCode(FeesData feesData) {
@@ -370,5 +373,14 @@ class FeeServiceTest {
         feeResponse.setVersion(1);
         feeResponse.setDescription("test description");
         return feeResponse;
+    }
+
+    private C2DocumentBundle buildC2Document(C2ApplicationType type, List<C2OrdersRequested> c2Orders) {
+        return C2DocumentBundle.builder().type(type).c2OrdersRequested(c2Orders).build();
+    }
+
+    private OtherApplicationsBundle buildOtherApplicationsBundle(
+        OtherApplicationType type, ParentalResponsibilityType prType) {
+        return OtherApplicationsBundle.builder().applicationType(type).parentalResponsibilityType(prType).build();
     }
 }
