@@ -6,14 +6,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
-
-import java.time.LocalDate;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
@@ -26,15 +23,10 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final Time time;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
-        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
-
-        String hearingVenue = venue.getAddress() != null
-            ? hearingVenueLookUpService.buildHearingVenue(venue) : hearingBooking.getCustomPreviousVenue();
-
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(hearingBooking.getJudgeAndLegalAdvisor(),
             caseData.getAllocatedJudge());
 
@@ -42,18 +34,20 @@ public class NoticeOfHearingGenerationService {
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
-            .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(dataService.getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""))
-                .hearingTime(dataService.getHearingTime(hearingBooking))
-                .hearingType(getHearingType(hearingBooking))
-                .hearingVenue(hearingVenue)
-                .preHearingAttendance(dataService.extractPrehearingAttendance(hearingBooking))
-                .build())
+            .hearingBooking(getHearingBooking(hearingBooking))
             .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor))
-            .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
+            .postingDate(formatLocalDateToString(time.now().toLocalDate(), DATE))
             .additionalNotes(hearingBooking.getAdditionalNotes())
             .courtseal(COURT_SEAL.getValue())
             .crest(CREST.getValue())
+            .build();
+    }
+
+    private DocmosisHearingBooking getHearingBooking(HearingBooking hearingBooking) {
+        return dataService.getHearingBookingData(hearingBooking).toBuilder()
+            .hearingType(getHearingType(hearingBooking))
+            .hearingJudgeTitleAndName(null) // wipe unnecessary fields
+            .hearingLegalAdvisorName(null)
             .build();
     }
 

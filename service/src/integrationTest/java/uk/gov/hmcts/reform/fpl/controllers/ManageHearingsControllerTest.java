@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 
 @OverrideAutoConfiguration(enabled = true)
@@ -75,6 +76,7 @@ abstract class ManageHearingsControllerTest extends AbstractCallbackTest {
             .venueCustomAddress(Address.builder().build())
             .caseManagementOrderId(cmoId)
             .venue(venue)
+            .presence(IN_PERSON)
             .build();
     }
 

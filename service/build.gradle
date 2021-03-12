@@ -120,6 +120,17 @@ task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
 }
 
+task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
+  onlyIf {
+    return System.env.SKIP_BROWSER_TESTS == null || System.env.SKIP_BROWSER_TESTS == 'false'
+  }
+  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+}
+
+task crossbrowser(description: 'Runs crossbrowser tests.') {
+  dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runCrossBrowserTests))
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = "8.25"
@@ -213,12 +224,12 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.3'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.3.0'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.5.4'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -232,7 +243,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
