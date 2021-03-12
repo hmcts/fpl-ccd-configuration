@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -11,13 +12,13 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -34,19 +35,14 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();
 
+    private Organisation organisation;
     private OrganisationPolicy organisationPolicy;
-    private OrganisationPolicyStash organisationPolicyStash;
 
-    public void stashOrganisationPolicy() {
-        this.setOrganisationPolicyStash(Optional.ofNullable(organisationPolicy)
-            .map(OrganisationPolicyStash::from).orElse(null));
-        this.organisationPolicy = null;
-    }
-
-    public void restoreOrganisationPolicyStash() {
-        this.setOrganisationPolicy(Optional.ofNullable(organisationPolicyStash)
-            .map(OrganisationPolicyStash::toOrganisationPolicy)
-            .orElse(null));
+    public void addOrgPolicy() {
+        this.organisationPolicy = OrganisationPolicy.builder()
+            .orgPolicyCaseAssignedRole(SOLICITOR.formattedName())
+            .organisation(organisation)
+            .build();
     }
 
     public void addRepresentative(UUID representativeId) {

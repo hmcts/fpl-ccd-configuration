@@ -1,25 +1,13 @@
 [
   {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterRespondents",
-    "CaseEventID": "enterRespondents",
-    "CaseFieldID": "respondents1",
-    "ListElementCode": "organisationPolicy.OrgPolicyCaseAssignedRole",
-    "DefaultValue": "[SOLICITOR]",
-    "EventElementLabel": "Case role",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
-    "RetainHiddenField": "Y"
-  },
-  {
     "LiveFrom": "05/08/2020",
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "organisationPolicy.Organisation.OrganisationID",
-    "EventElementLabel": " ",
-    "FieldDisplayOrder": "",
-    "DisplayContext": "OPTIONAL"
+    "ListElementCode": "organisation.OrganisationName",
+    "EventElementLabel": " test",
+    "FieldDisplayOrder": "1",
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",

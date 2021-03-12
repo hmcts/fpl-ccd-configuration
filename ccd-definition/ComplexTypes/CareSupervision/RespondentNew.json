@@ -29,18 +29,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentNew",
-    "ListElementCode": "organisationPolicy",
-    "FieldType": "OrganisationPolicy",
+    "ListElementCode": "organisation",
+    "FieldType": "Organisation",
     "ElementLabel": "Representative organisation",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentNew",
-    "ListElementCode": "organisationPolicyStash",
-    "FieldType": "OrganisationPolicyStash",
-    "ElementLabel": "Representative organisation",
-    "SecurityClassification": "Public"
+    "ListElementCode": "organisationPolicy",
+    "FieldType": "OrganisationPolicy",
+    "ElementLabel": "Representative organisation policy",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

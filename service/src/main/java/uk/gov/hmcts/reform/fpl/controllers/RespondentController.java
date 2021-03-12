@@ -49,8 +49,6 @@ public class RespondentController extends CallbackController {
         List<Element<Respondent>> respondents = confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection());
 
-        respondents.forEach(res -> res.getValue().restoreOrganisationPolicyStash());
-
         caseDetails.getData().put(RESPONDENTS_KEY, respondents);
 
         return respond(caseDetails);

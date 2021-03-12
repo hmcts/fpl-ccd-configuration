@@ -206,6 +206,11 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
+    slackSend(channel: '#fpla-tech', color: 'warning', message: "TEST")
+  }
+
+  after('functionalTest:preview') {
+    slackSend(channel: '#fpla-tech', color: 'warning', message: "TEST")
   }
 
   before('buildinfra:demo') {

@@ -111,7 +111,7 @@ public class CaseSubmissionController extends CallbackController {
         if (errors.isEmpty()) {
 
             if (isNotEmpty(caseData.getRespondents1())) {
-                caseData.getRespondents1().forEach(res -> res.getValue().restoreOrganisationPolicyStash());
+                caseData.getRespondents1().forEach(res -> res.getValue().addOrgPolicy());
             }
 
             Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);

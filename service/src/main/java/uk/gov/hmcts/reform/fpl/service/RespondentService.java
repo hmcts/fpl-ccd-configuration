@@ -41,8 +41,6 @@ public class RespondentService {
             );
         });
 
-        newRespondents.forEach(res -> res.getValue().stashOrganisationPolicy());
-
         return newRespondents;
     }
 
