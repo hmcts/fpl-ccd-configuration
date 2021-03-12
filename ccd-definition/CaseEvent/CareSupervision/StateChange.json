@@ -46,23 +46,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "returnApplication",
-    "Name": "Return application",
-    "Description": "Return an application to the LA",
-    "DisplayOrder": 1,
-    "PreConditionState(s)": "Submitted",
-    "PostConditionState": "RETURNED",
-    "SecurityClassification": "Public",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/submitted",
-    "ShowSummary": "N",
-    "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sendToGatekeeper",
     "Name": "Send to gatekeeper",
     "Description": "Send email to gatekeeper",
@@ -90,6 +73,23 @@
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Submit"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "returnApplication",
+    "Name": "Return application",
+    "Description": "Return an application to the LA",
+    "DisplayOrder": 50,
+    "PreConditionState(s)": "Submitted;Gatekeeping",
+    "PostConditionState": "RETURNED",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/return-application/submitted",
+    "ShowSummary": "N",
+    "ShowEventNotes": "Y",
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
