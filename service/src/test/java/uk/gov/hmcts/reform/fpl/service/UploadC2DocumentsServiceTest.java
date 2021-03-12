@@ -8,12 +8,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -24,7 +25,6 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +35,9 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
-import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -52,6 +51,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class UploadC2DocumentsServiceTest {
     private static final String ERROR_MESSAGE = "Date received cannot be in the future";
     private static final String USER_ID = "1";
+    public static final String HMCTS = "HMCTS";
+    public static final DocumentReference DOCUMENT = testDocumentReference();
 
     @Autowired
     private UploadC2DocumentsService service;
@@ -90,11 +91,28 @@ class UploadC2DocumentsServiceTest {
     void shouldBuildExpectedC2DocumentBundleWhenAdditionalApplicationsToggledOn() {
         given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
 
+        C2DocumentBundle c2DocumentBundle = createC2DocumentBundleWithSupplements();
         List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
-            .buildC2DocumentBundle(createCaseDataWithC2DocumentBundle(createC2DocumentBundleWithSupplements()));
-        C2DocumentBundle firstC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
-        C2DocumentBundle expectedC2Bundle = createC2DocumentBundleWithSupplements();
-        assertThat(firstC2DocumentBundle).usingRecursiveComparison().isEqualTo(expectedC2Bundle);
+            .buildC2DocumentBundle(createCaseDataWithC2DocumentBundle(c2DocumentBundle));
+
+        C2DocumentBundle actualC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
+
+        assertThat(actualC2DocumentBundle.getType()).isEqualTo(c2DocumentBundle.getType());
+        assertThat(actualC2DocumentBundle.getAuthor()).isEqualTo(HMCTS);
+
+        SupplementsBundle supplementBundle = c2DocumentBundle.getSupplementsBundle().get(0).getValue();
+        assertThat(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue())
+            .extracting("name", "notes", "document", "uploadedBy")
+            .containsExactly(
+                supplementBundle.getName(), supplementBundle.getNotes(), supplementBundle.getDocument(), HMCTS);
+
+        SupportingEvidenceBundle supportingDocument =
+            c2DocumentBundle.getSupportingEvidenceBundle().get(0).getValue();
+
+        assertThat(actualC2DocumentBundle.getSupportingEvidenceBundle().get(0).getValue())
+            .extracting("name", "notes", "document", "uploadedBy")
+            .containsExactly(
+                supportingDocument.getName(), supportingDocument.getNotes(), supportingDocument.getDocument(), HMCTS);
     }
 
     @Test
@@ -111,66 +129,75 @@ class UploadC2DocumentsServiceTest {
 
     @Test
     void shouldBuildOtherApplicationsBundle() {
-        SupplementsBundle supplementsBundle = SupplementsBundle.builder()
-            .name(Supplements.C16_CHILD_ASSESSMENT).uploadedBy("Elon Musk")
-            .dateTimeUploaded(LocalDateTime.now()).build();
+        SupplementsBundle supplementsBundle = createSupplementsBundle();
+        SupportingEvidenceBundle supportingDocument = buildSupportingEvidenceBundle();
 
-        SupplementsBundle expectedSupplementsBundle = SupplementsBundle.builder()
-            .name(Supplements.C16_CHILD_ASSESSMENT)
-            .uploadedBy("HMCTS")
-            .dateTimeUploaded(LocalDateTime.now()).build();
+        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle(
+            supplementsBundle, supportingDocument);
 
-        SupportingEvidenceBundle supportingDocument1 = SupportingEvidenceBundle.builder()
-            .name("supporting document1").uploadedBy("Elon Musk")
-            .dateTimeUploaded(LocalDateTime.now()).build();
+        OtherApplicationsBundle actualOtherApplicationsBundle = service.buildOtherApplicationsBundle(
+            CaseData.builder().temporaryOtherApplicationsBundle(otherApplicationsBundle).build());
 
-        SupportingEvidenceBundle expectedSupportingDocument1 = SupportingEvidenceBundle.builder()
-            .name("supporting document1").uploadedBy("HMCTS")
-            .dateTimeUploaded(LocalDateTime.now()).build();
+        assertThat(actualOtherApplicationsBundle).isNotNull();
+        assertThat(actualOtherApplicationsBundle.getApplicationType())
+            .isEqualTo(otherApplicationsBundle.getApplicationType());
+        assertThat(actualOtherApplicationsBundle.getAuthor()).isEqualTo(HMCTS);
 
-        OtherApplicationsBundle tempOtherApplicationsBundle = OtherApplicationsBundle.builder()
+        assertThat(actualOtherApplicationsBundle.getSupplementsBundle().get(0).getValue())
+            .extracting("name", "notes", "document", "uploadedBy")
+            .containsExactly(
+                supplementsBundle.getName(), supplementsBundle.getNotes(), supplementsBundle.getDocument(), HMCTS);
+
+        assertThat(actualOtherApplicationsBundle.getSupportingEvidenceBundle().get(0).getValue())
+            .extracting("name", "notes", "document", "uploadedBy")
+            .containsExactly(
+                supportingDocument.getName(), supportingDocument.getNotes(), supportingDocument.getDocument(), HMCTS);
+    }
+
+    @Test
+    void shouldBuildAdditionalApplicationsBundle() {
+        SupplementsBundle supplementsBundle = createSupplementsBundle();
+        SupportingEvidenceBundle supportingDocument = buildSupportingEvidenceBundle();
+
+        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .supplementsBundle(wrapElements(supplementsBundle))
+            .supportingEvidenceBundle(wrapElements(supportingDocument)).build();
+
+        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle(
+            supplementsBundle, supportingDocument);
+
+        PBAPayment pbaPayment = PBAPayment.builder().usePbaPayment("Yes").usePbaPayment("PBA12345").build();
+
+        AdditionalApplicationsBundle actual = service.buildAdditionalApplicationsBundle(
+            CaseData.builder().temporaryPbaPayment(pbaPayment).build(),
+            c2DocumentBundle,
+            otherApplicationsBundle);
+
+        assertThat(actual).extracting("author", "c2Document", "otherApplications", "pbaPayment")
+            .containsExactly(HMCTS, c2DocumentBundle, otherApplicationsBundle, pbaPayment);
+    }
+
+    private OtherApplicationsBundle buildOtherApplicationsBundle(
+        SupplementsBundle supplementsBundle, SupportingEvidenceBundle supportingDocument1) {
+        return OtherApplicationsBundle.builder()
             .applicationType(C12_WARRANT_TO_ASSIST_PERSON)
-            .supplementsBundle(List.of(element(supplementsBundle)))
-            .supportingEvidenceBundle(List.of(element(supportingDocument1)))
+            .supplementsBundle(wrapElements(supplementsBundle))
+            .supportingEvidenceBundle(wrapElements(supportingDocument1))
             .build();
+    }
 
-
-        OtherApplicationsBundle expectedBundle = OtherApplicationsBundle.builder()
-            .applicationType(C12_WARRANT_TO_ASSIST_PERSON)
-            .supplementsBundle(List.of(element(supplementsBundle)))
-            .supportingEvidenceBundle(List.of(element(supportingDocument1)))
-            .build();
-
-
-        OtherApplicationsBundle actualOtherApplicationsBundle = service
-            .buildOtherApplicationsBundle(
-                createCaseDataWithOtherApplicationsBundle(createOtherApplicationsBundleWithSupplements()));
-
-        //OtherApplicationsBundle firstC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
-        OtherApplicationsBundle expectedOtherApplicationsBundle = createOtherApplicationsBundleWithSupplements();
-        assertThat(actualOtherApplicationsBundle).usingRecursiveComparison().isEqualTo(expectedOtherApplicationsBundle);
-
-       /* OtherApplicationsBundle applicationsBundle = service.buildOtherApplicationsBundle(
-            CaseData.builder().temporaryOtherApplicationsBundle(tempOtherApplicationsBundle).build());
-
-        assertThat(actualOtherApplicationsBundle).usingRecursiveComparison().isEqualTo(tempOtherApplicationsBundle);*/
-
-
+    private SupportingEvidenceBundle buildSupportingEvidenceBundle() {
+        return SupportingEvidenceBundle.builder()
+            .name("supporting document1")
+            .notes("note1")
+            .document(DOCUMENT).build();
     }
 
     private C2DocumentBundle createC2DocumentBundleWithSupplements() {
         return C2DocumentBundle.builder()
-            .author("Elon Musk")
+            .author(HMCTS)
             .type(WITH_NOTICE)
-            .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundleWithInvalidDateReceived()))
-            .supplementsBundle(wrapElements(createSupplementsBundle()))
-            .build();
-    }
-
-    private OtherApplicationsBundle createOtherApplicationsBundleWithSupplements() {
-        return OtherApplicationsBundle.builder()
-            .author("Elon Musk")
-            .applicationType(C12_WARRANT_TO_ASSIST_PERSON)
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundleWithInvalidDateReceived()))
             .supplementsBundle(wrapElements(createSupplementsBundle()))
             .build();
@@ -178,7 +205,7 @@ class UploadC2DocumentsServiceTest {
 
     private C2DocumentBundle createC2DocumentBundle() {
         return C2DocumentBundle.builder()
-            .author("Elon Musk")
+            .author(HMCTS)
             .type(WITH_NOTICE)
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundleWithInvalidDateReceived()))
             .build();
@@ -210,12 +237,6 @@ class UploadC2DocumentsServiceTest {
             .c2DocumentBundle(wrapElements(c2DocumentBundle))
             .temporaryC2Document(c2DocumentBundle)
             .c2ApplicationType(Map.of("type", WITH_NOTICE))
-            .build();
-    }
-
-    private CaseData createCaseDataWithOtherApplicationsBundle(OtherApplicationsBundle otherApplicationsBundle) {
-        return CaseData.builder()
-            .temporaryOtherApplicationsBundle(otherApplicationsBundle)
             .build();
     }
 
