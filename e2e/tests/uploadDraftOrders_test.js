@@ -243,6 +243,6 @@ const assertSealedC21 = (I, collectionId, draftOrder) => {
 };
 
 const assertDocumentSentToParties = I => {
-  I.seeInTab(['Party 1', 'Representative name'], 'Marie Kelly');
+  I.seeInTab(['Party 1', 'Recipient'], 'Marie Kelly');
   I.seeInTab(['Party 1', 'Document 1', 'File'], 'mockFile.pdf');
 };
