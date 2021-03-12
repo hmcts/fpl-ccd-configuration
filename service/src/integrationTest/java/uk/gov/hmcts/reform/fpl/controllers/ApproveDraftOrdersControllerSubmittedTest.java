@@ -73,7 +73,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
     private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
     private static final DocumentReference orderDocumentCmo = testDocumentReference("cmo.pdf");
-    private static final DocumentReference orderDocumentC21 = testDocumentReference("cd1.pdf");
+    private static final DocumentReference orderDocumentC21 = testDocumentReference("c21.pdf");
 
     @MockBean
     private NotificationClient notificationClient;

@@ -42,8 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     NotificationService.class,
     ObjectMapper.class,
     CaseUrlService.class,
-    RepresentativeNotificationService.class,
-    SendDocumentService.class
+    RepresentativeNotificationService.class
 })
 class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
     @MockBean
