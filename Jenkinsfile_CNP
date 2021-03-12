@@ -242,11 +242,4 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }
-
-  onMaster() {
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-  }
-  onPR() {
-    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-  }
 }
