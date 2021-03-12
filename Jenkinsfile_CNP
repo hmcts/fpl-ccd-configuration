@@ -2,6 +2,7 @@
 
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 
@@ -120,8 +121,12 @@ withPipeline(type, product, component) {
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
 
-  enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-
+  onMaster() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+  onPR() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
 
   after('checkout') {
     onMaster {
