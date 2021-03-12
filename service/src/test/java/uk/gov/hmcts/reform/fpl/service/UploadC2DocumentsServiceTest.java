@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -101,6 +102,66 @@ class UploadC2DocumentsServiceTest {
     }
 
     @Test
+    void shouldAddC2DocumentBundleElementToFirstIndexWhenAdditionalApplicationsToggledOn() {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .document(DocumentReference.builder()
+                .filename("Document 1")
+                .build()).build();
+
+        C2DocumentBundle secondBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .document(DocumentReference.builder()
+                .filename("Document 2")
+                .build()).build();
+
+        CaseData caseData = CaseData.builder()
+            .temporaryC2Document(secondBundleAdded)
+            .c2DocumentBundle(wrapElements(firstBundleAdded))
+            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .build();
+
+        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
+            .buildC2DocumentBundle(caseData);
+        C2DocumentBundle bundleAtFirstIndex = actualC2DocumentBundleList.get(0).getValue();
+
+        assertThat(bundleAtFirstIndex.getDocument().getFilename()).isEqualTo("Document 2");
+        assertThat(bundleAtFirstIndex.getType()).isEqualTo(WITH_NOTICE);
+    }
+
+    @Test
+    void shouldAddC2DocumentBundleElementToLastIndexWhenAdditionalApplicationsToggledOff() {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
+
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .document(DocumentReference.builder()
+                .filename("Document 1")
+                .build()).build();
+
+        C2DocumentBundle secondBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .document(DocumentReference.builder()
+                .filename("Document 2")
+                .build()).build();
+
+        CaseData caseData = CaseData.builder()
+            .temporaryC2Document(secondBundleAdded)
+            .c2DocumentBundle(wrapElements(firstBundleAdded))
+            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .build();
+
+        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
+            .buildC2DocumentBundle(caseData);
+        C2DocumentBundle bundleAtFirstIndex = actualC2DocumentBundleList.get(0).getValue();
+
+        assertThat(bundleAtFirstIndex.getDocument().getFilename()).isEqualTo("Document 1");
+        assertThat(bundleAtFirstIndex.getType()).isEqualTo(WITHOUT_NOTICE);
+    }
+
+    @Test
     void shouldReturnErrorsWhenTheDateOfIssueIsInFutureAndWhenAdditionalApplicationsToggledOff() {
         given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         assertThat(service.validate(createC2DocumentBundle()).toArray()).contains(ERROR_MESSAGE);
@@ -132,7 +193,6 @@ class UploadC2DocumentsServiceTest {
 
     private C2DocumentBundle createC2DocumentBundle() {
         return C2DocumentBundle.builder()
-            .author("Elon Musk")
             .type(WITH_NOTICE)
             .supportingEvidenceBundle(wrapElements(createSupportingEvidenceBundleWithInvalidDateReceived()))
             .build();
