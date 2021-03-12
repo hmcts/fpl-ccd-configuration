@@ -4,6 +4,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractControllerTest {
+class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallbackTest {
 
     private static final UserInfo USER_INFO_CAFCASS = UserInfo.builder().roles(UserRole.CAFCASS.getRoleNames()).build();
     private static final String RESPONDENT_SURNAME = "Watson";
@@ -63,7 +64,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractContro
     @MockBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @Autowired
     private IdamClient idamClient;
 
     @MockBean

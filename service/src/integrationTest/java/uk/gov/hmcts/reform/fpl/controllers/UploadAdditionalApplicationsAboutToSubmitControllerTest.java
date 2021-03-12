@@ -42,12 +42,12 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractControllerTest {
+class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCallbackTest {
     private static final String USER_NAME = "HMCTS";
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference document = testDocumentReference();
 
-    @MockBean
+    @Autowired
     private IdamClient idamClient;
 
     @MockBean
