@@ -200,7 +200,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCo
                 SupplementsBundle::getDocument,
                 SupplementsBundle::getUploadedBy
             ).containsExactly(
-            "C13A - special guardianship order",
+            Supplements.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
             document,
