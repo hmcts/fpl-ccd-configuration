@@ -310,10 +310,13 @@ Scenario('HMCTS admin closes the case', async ({I, caseViewPage, closeTheCaseEve
 }).retry(1);
 
 const verifyOrderCreation = async (I, caseViewPage, createOrderEventPage, order) => {
+  const notRepresentedRespondent = mandatoryWithMultipleChildren.caseData.respondents1[1].value.party;
+  const notRepresentedRespondentName = `${notRepresentedRespondent.firstName} ${notRepresentedRespondent.lastName}`;
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   const defaultIssuedDate = new Date();
   await orderFunctions.createOrder(I, createOrderEventPage, order);
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
   await orderFunctions.assertOrder(I, caseViewPage, order, defaultIssuedDate);
   await orderFunctions.assertOrderSentToParty(I, caseViewPage, representatives.servedByPost.fullName, order);
+  await orderFunctions.assertOrderSentToParty(I, caseViewPage, notRepresentedRespondentName, order, 2);
 };

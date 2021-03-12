@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
@@ -16,10 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons.INCOMPLETE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(ReturnApplicationController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
+class ReturnApplicationAboutToSubmitTest extends AbstractCallbackTest {
     ReturnApplicationAboutToSubmitTest() {
         super("return-application");
     }
@@ -35,7 +33,7 @@ class ReturnApplicationAboutToSubmitTest extends AbstractControllerTest {
 
         CaseData caseData = CaseData.builder()
             .returnApplication(returnApplication)
-            .dateSubmitted(LocalDate.of(2050,5,19))
+            .dateSubmitted(LocalDate.of(2050, 5, 19))
             .submittedForm(submittedForm)
             .state(State.OPEN)
             .build();
