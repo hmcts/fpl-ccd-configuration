@@ -48,7 +48,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "PageShowCondition": "additionalApplicationType=\"*\""
+    "PageShowCondition": "additionalApplicationType CONTAINS \"C2_ORDER\""
   },
   {
     "LiveFrom": "01/01/2017",

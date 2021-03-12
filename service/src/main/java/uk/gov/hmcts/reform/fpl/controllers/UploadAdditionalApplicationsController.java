@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
-    private final ObjectMapper mapper;
     private final FeeService feeService;
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
@@ -74,7 +72,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         var updatedPbaNumber = pbaNumberService.update(caseData.getPbaNumber());
         caseDetails.getData().put("pbaNumber", updatedPbaNumber);
-        List errors = pbaNumberService.validate(updatedPbaNumber);
+        List<String> errors = pbaNumberService.validate(updatedPbaNumber);
 
         return respond(caseDetails, errors);
     }
@@ -124,12 +122,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
             }
         }
-    }
-
-    private void removeDocumentFromData(Map<String, Object> data) {
-        var updatedC2DocumentMap = mapper.convertValue(data.get(TEMPORARY_C2_DOCUMENT), Map.class);
-        updatedC2DocumentMap.remove("document");
-        data.put(TEMPORARY_C2_DOCUMENT, updatedC2DocumentMap);
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {
