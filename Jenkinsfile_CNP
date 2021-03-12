@@ -242,4 +242,12 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('aat')
     uploadCoreCaseDataDefinitions('aat')
   }
+
+  after('deploy:preview') {
+    slackSend(
+      channel: "#fpla-tech",
+      color: 'warning',
+      message: 'testing after preview deployment message'
+    )
+  }
 }
