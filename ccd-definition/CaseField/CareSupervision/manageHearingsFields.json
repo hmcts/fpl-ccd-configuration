@@ -41,7 +41,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingVenue",
-    "Label": "Venue",
+    "Label": "Court",
     "FieldType": "FixedList",
     "FieldTypeParameter": "HearingVenue",
     "SecurityClassification": "Public",
@@ -52,7 +52,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingVenueCustom",
     "FieldType": "AddressUK",
-    "Label": "Venue address",
+    "Label": "Court address",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -60,7 +60,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "previousHearingVenue",
-    "Label": "Last hearing venue",
+    "Label": "Last court",
     "FieldType": "PreviousHearingVenue",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -71,6 +71,16 @@
     "ID": "previousVenueId",
     "Label": " ",
     "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "hearingPresence",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingPresence",
+    "Label": "In person or remote via video",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
