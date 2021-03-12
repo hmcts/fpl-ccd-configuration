@@ -60,7 +60,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage}) => {
+Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
   uploadAdditionalApplicationsEventPage.selectApplicationType('WITH_NOTICE');
@@ -70,15 +70,15 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await uploadAdditionalApplicationsEventPage.uploadSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadSupportingDocument(c2SupportingDocuments);
   await I.goToNextPage();
-  //const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
+  const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
 
-  // caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  // await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
+  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
+  await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
   I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');

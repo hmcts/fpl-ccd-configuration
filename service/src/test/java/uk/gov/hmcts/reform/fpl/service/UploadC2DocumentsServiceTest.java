@@ -164,6 +164,50 @@ class UploadC2DocumentsServiceTest {
     }
 
     @Test
+    void shouldSortOldC2DocumentBundlesToDateDescendingWhenAdditionalApplicationsToggledOn() {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .uploadedDateTime("14 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 1")
+                .build()).build();
+
+        C2DocumentBundle secondBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .uploadedDateTime("15 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 2")
+                .build()).build();
+
+        C2DocumentBundle thirdBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .uploadedDateTime("16 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 3")
+                .build()).build();
+
+        C2DocumentBundle mostRecentBundle = createC2DocumentBundle();
+
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded))
+            .temporaryC2Document(mostRecentBundle)
+            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .build();
+
+        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
+            .buildC2DocumentBundle(caseData);
+        C2DocumentBundle bundleAtSecondIndex = actualC2DocumentBundleList.get(1).getValue();
+        C2DocumentBundle bundleAtLastIndex = actualC2DocumentBundleList.get(3).getValue();
+
+        assertThat(bundleAtSecondIndex.getUploadedDateTime()).isEqualTo(thirdBundleAdded
+            .getUploadedDateTime());
+        assertThat(bundleAtLastIndex.getUploadedDateTime()).isEqualTo(firstBundleAdded
+            .getUploadedDateTime());
+    }
+
+    @Test
     void shouldReturnErrorsWhenTheDateOfIssueIsInFutureAndWhenAdditionalApplicationsToggledOff() {
         given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
         assertThat(service.validate(createC2DocumentBundle()).toArray()).contains(ERROR_MESSAGE);
