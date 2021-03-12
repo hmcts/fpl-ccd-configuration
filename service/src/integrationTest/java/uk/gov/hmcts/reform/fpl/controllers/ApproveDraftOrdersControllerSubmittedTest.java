@@ -36,7 +36,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -73,7 +72,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
     private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
     private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
-    private static final DocumentReference orderDocument = testDocumentReference();
+    private static final DocumentReference orderDocumentCmo = testDocumentReference("cmo.pdf");
+    private static final DocumentReference orderDocumentC21 = testDocumentReference("cd1.pdf");
 
     @MockBean
     private NotificationClient notificationClient;
@@ -107,9 +107,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
-        given(documentDownloadService.downloadDocument(orderDocument.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED);
+        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
 
         CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
 
@@ -165,10 +165,11 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders() {
-        given(documentDownloadService.downloadDocument(orderDocument.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED);
-        HearingOrder c21 = buildOrder(C21, APPROVED);
+        HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
+        HearingOrder c21 = buildOrder(C21, APPROVED, orderDocumentC21);
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
 
@@ -221,29 +222,28 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 anyMap()
             );
 
+            verify(sendLetters).send(
+                cmo.getOrder(),
+                recipients,
+                CASE_ID,
+                FAMILY_MAN_CASE_NUMBER
+            );
+
+            verify(sendLetters).send(
+                c21.getOrder(),
+                recipients,
+                CASE_ID,
+                FAMILY_MAN_CASE_NUMBER
+            );
+
             verifyNoMoreInteractions(notificationClient);
+            verifyNoMoreInteractions(sendLetters);
         });
-
-        verify(sendLetters, times(2)).send(
-            cmo.getOrder(),
-            recipients,
-            CASE_ID,
-            FAMILY_MAN_CASE_NUMBER
-        );
-
-        verify(sendLetters, times(2)).send(
-            c21.getOrder(),
-            recipients,
-            CASE_ID,
-            FAMILY_MAN_CASE_NUMBER
-        );
-
-        verifyNoMoreInteractions(sendLetters);
     }
 
     @Test
     void shouldSendCMORejectedNotificationIfJudgeRequestedChanges() {
-        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED));
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo));
         caseDetails.setId(CASE_ID);
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
@@ -262,7 +262,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendDraftOrdersRejectedNotificationIfJudgeRequestedChangesOnMultipleOrders() {
-        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED), buildOrder(C21, RETURNED));
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo),
+            buildOrder(C21, RETURNED, orderDocumentC21));
         caseDetails.setId(CASE_ID);
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
@@ -299,7 +300,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
-    private HearingOrder buildOrder(HearingOrderType type, CMOStatus status) {
+    private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument) {
         return HearingOrder.builder()
             .type(type)
             .status(status)
