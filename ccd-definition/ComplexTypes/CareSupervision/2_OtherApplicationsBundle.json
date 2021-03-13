@@ -5,7 +5,8 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -14,7 +15,8 @@
     "FieldType": "FixedList",
     "ElementLabel": "Application type",
     "FieldTypeParameter": "OtherApplicationType",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -23,7 +25,8 @@
     "FieldType": "FixedRadioList",
     "ElementLabel": "Parental responsibility type",
     "FieldTypeParameter": "ParentalResponsibilityType",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -31,7 +34,8 @@
     "ListElementCode": "uploadedDateTime",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -39,7 +43,8 @@
     "ListElementCode": "author",
     "FieldType": "Text",
     "ElementLabel": "Uploaded by",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,7 +53,8 @@
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupplementsBundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,7 +63,7 @@
     "ElementLabel": "Supporting Documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
-

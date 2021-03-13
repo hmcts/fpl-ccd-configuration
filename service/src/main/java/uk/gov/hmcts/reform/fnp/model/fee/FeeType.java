@@ -37,7 +37,7 @@ public enum FeeType {
     SUPERVISION_ORDER,
     ESO_EXTENSION,
     CHILD_ARRANGEMENTS,
-    WARRANT_TO_ASSISTANCE,
+    WARRANT_OF_ASSISTANCE,
     RECOVERY_ORDER,
     WARRANT_TO_ASSIST_PERSON,
     CHILD_ASSESSMENT,
@@ -79,30 +79,27 @@ public enum FeeType {
     private static final Map<OtherApplicationType, FeeType> applicationToFeeMap;
 
     static {
-        //TODO "C1 - With supplement" - fee code not found
         applicationToFeeMap = new HashMap<>();
         applicationToFeeMap.put(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, CHANGE_SURNAME);
         applicationToFeeMap.put(C1_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         applicationToFeeMap.put(C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
         applicationToFeeMap.put(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
         applicationToFeeMap.put(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD, C2_WITH_NOTICE);
-        //TODO "C4 - Whereabouts of a missing child" - fee code not found
         applicationToFeeMap.put(OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON, WARRANT_TO_ASSIST_PERSON);
         applicationToFeeMap.put(
             OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER);
         applicationToFeeMap.put(OtherApplicationType.C17A_EXTENSION_OF_ESO, ESO_EXTENSION);
-        applicationToFeeMap.put(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE, WARRANT_TO_ASSISTANCE);
+        applicationToFeeMap.put(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE, WARRANT_OF_ASSISTANCE);
         applicationToFeeMap.put(OtherApplicationType.C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS);
     }
 
     private static final Map<C2OrdersRequested, FeeType> c2OrdersRequestedToFeesMap;
 
     static {
-        c2OrdersRequestedToFeesMap = new HashMap<>();
-        c2OrdersRequestedToFeesMap.put(CHANGE_SURNAME_OR_REMOVE_JURISDICTION, CHANGE_SURNAME);
-        c2OrdersRequestedToFeesMap.put(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
-        c2OrdersRequestedToFeesMap.put(TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
-        c2OrdersRequestedToFeesMap.put(C2OrdersRequested.PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
+        c2OrdersRequestedToFeesMap = Map.of(
+            CHANGE_SURNAME_OR_REMOVE_JURISDICTION, CHANGE_SURNAME,
+            C2OrdersRequested.APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN,
+            TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
     }
 
     public static List<FeeType> fromOrderType(List<OrderType> orderTypes) {

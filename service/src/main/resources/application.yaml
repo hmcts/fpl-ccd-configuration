@@ -125,7 +125,7 @@ fees-register:
       jurisdiction2: family court
       keyword: ExtSupervision
       service: private law
-    WARRANT_TO_ASSISTANCE:
+    WARRANT_OF_ASSISTANCE:
       channel: default
       event: miscellaneous
       jurisdiction1: family

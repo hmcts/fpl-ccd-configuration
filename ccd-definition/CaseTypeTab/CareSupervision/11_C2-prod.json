@@ -8,7 +8,7 @@
     "TabDisplayOrder": 11,
     "CaseFieldID": "uploadC2Link",
     "TabFieldDisplayOrder": 1,
-    "TabShowCondition": "c2DocumentBundle!=\"\" OR otherApplicationsBundle!=\"\""
+    "TabShowCondition": "c2DocumentBundle!=\"\""
   },
   {
     "LiveFrom": "01/01/2017",

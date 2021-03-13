@@ -14,16 +14,18 @@ import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -53,9 +56,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @MockBean
     private RequestData requestData;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private Time time;
 
@@ -71,56 +71,40 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     }
 
     @Test
-    void shouldCreateC2DocumentBundleWithoutSupplementsIncludedWhenAdditionalApplicationsToggledOff() {
-        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(false);
-        Map<String, Object> data = createTemporaryC2Document();
+    void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded() {
+        Map<String, Object> data = createDataWithC2ApplicationType();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
+        AdditionalApplicationsBundle additionalApplicationsBundle
+            = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+        C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2Document();
 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle);
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
     }
 
     @Test
-    void shouldCreateC2DocumentBundleWithSupplementsIncludedWhenAdditionalApplicationsToggledOn() {
-        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
-        Map<String, Object> data = createTemporaryC2Document();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
-
-        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
-
-        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
-        assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
-        assertSupportingEvidenceBundle(uploadedC2DocumentBundle);
-        assertSupplementsBundle(uploadedC2DocumentBundle);
-        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
-    }
-
-    @Test
-    void shouldAppendAnAdditionalC2DocumentBundleWhenAC2DocumentBundleIsPresent() {
+    void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
+        AdditionalApplicationsBundle appendedApplicationsBundle
+            = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        AdditionalApplicationsBundle existingApplicationsBundle
+            = caseData.getAdditionalApplicationsBundle().get(1).getValue();
 
-        C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
+        C2DocumentBundle existingC2Document = existingApplicationsBundle.getC2Document();
+        C2DocumentBundle appendedC2Document = appendedApplicationsBundle.getC2Document();
 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
@@ -128,7 +112,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertC2BundleDocument(existingC2Document, "C2 document one");
         assertC2BundleDocument(appendedC2Document, "C2 document two");
         assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(caseData.getC2DocumentBundle()).hasSize(2);
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
@@ -137,12 +120,14 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
                 "c2ApplicationType", Map.of("type", WITHOUT_NOTICE),
-                "additionalApplicationType", "C2_ORDER",
+                "additionalApplicationType", List.of("C2_ORDER"),
                 "usePbaPayment", "Yes",
                 "amountToPay", "Yes",
                 "pbaNumber", "1234567",
                 "clientCode", "123",
-                "fileReference", "456"))
+                "fileReference", "456",
+                "temporaryOtherApplicationsBundle", OtherApplicationsBundle.builder()
+                    .applicationType(C1_WITH_SUPPLEMENT).build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -152,6 +137,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(callbackResponse.getData().get("c2ApplicationType")).isNull();
         assertThat(caseData.getC2ApplicationType()).isNull();
         assertThat(caseData.getTemporaryPbaPayment()).isNull();
+        assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
         assertThat(caseData.getAmountToPay()).isNull();
     }
 
@@ -167,8 +153,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private void assertSupportingEvidenceBundle(C2DocumentBundle documentBundle) {
         List<SupportingEvidenceBundle> supportingEvidenceBundle =
             unwrapElements(documentBundle.getSupportingEvidenceBundle());
-
-        System.out.println("SUpporting is" + supportingEvidenceBundle);
 
         assertThat(supportingEvidenceBundle).first()
             .extracting(
@@ -190,8 +174,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         List<SupplementsBundle> supplementsBundle =
             unwrapElements(documentBundle.getSupplementsBundle());
 
-        System.out.println("SUp is" + supplementsBundle);
-
         assertThat(supplementsBundle).first()
             .extracting(
                 SupplementsBundle::getName,
@@ -206,6 +188,13 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             document,
             USER_NAME
         );
+    }
+
+    private Map<String, Object> createDataWithC2ApplicationType() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("additionalApplicationType", List.of("C2_ORDER"));
+        data.putAll(createTemporaryC2Document());
+        return data;
     }
 
     private Map<String, Object> createTemporaryC2Document() {

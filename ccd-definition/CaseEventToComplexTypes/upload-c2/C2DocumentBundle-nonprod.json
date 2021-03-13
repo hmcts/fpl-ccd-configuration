@@ -21,6 +21,17 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "parentalResponsibilityType",
+    "EventElementLabel": "Parental responsibility type",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryC2Document.c2OrdersRequested CONTAINS \"PARENTAL_RESPONSIBILITY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
@@ -38,6 +49,17 @@
     "ListElementCode": "supplementsBundle.name",
     "FieldDisplayOrder": "4",
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.secureAccommodationType",
+    "EventElementLabel": "Secure accommodation type",
+    "FieldDisplayOrder": "5",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryC2Document.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
   },
   {
     "LiveFrom": "01/01/2017",

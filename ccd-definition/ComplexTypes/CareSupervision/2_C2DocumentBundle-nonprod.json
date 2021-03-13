@@ -107,9 +107,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "FieldShowCondition": "supportingEvidenceBundle=\"Do Not Show\""
-
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -119,8 +117,7 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public",
-    "Searchable": "N",
-    "FieldShowCondition": "supportingEvidenceBundle=\"Do Not Show\""
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -132,6 +129,15 @@
     "FieldTypeParameter": "C2OrdersRequested",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "parentalResponsibilityType",
+    "ElementLabel": "Parental responsibility type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ParentalResponsibilityType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
-

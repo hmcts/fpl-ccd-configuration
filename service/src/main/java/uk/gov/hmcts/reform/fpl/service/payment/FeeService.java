@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.Supplements;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromParentalResponsibilityTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
+import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.PARENTAL_RESPONSIBILITY;
 
 @Slf4j
 @Service
@@ -108,7 +110,7 @@ public class FeeService {
             feeTypes.addAll(getC2ApplicationsFeeTypes(c2DocumentBundle));
         }
 
-        if (!isNull(otherApplicationsBundle.getApplicationType())) {
+        if (!isNull(otherApplicationsBundle)) {
             feeTypes.addAll(getOtherApplicationsFeeTypes(otherApplicationsBundle));
         }
 
@@ -136,8 +138,15 @@ public class FeeService {
 
         feeTypes.add(fromC2ApplicationType(c2DocumentBundle.getType()));
 
-        if (isNotEmpty(c2DocumentBundle.getC2OrdersRequested())) {
-            feeTypes.addAll(fromC2OrdersRequestedType(c2DocumentBundle.getC2OrdersRequested()));
+        List<C2OrdersRequested> c2OrdersRequested = c2DocumentBundle.getC2OrdersRequested();
+
+        if (isNotEmpty(c2OrdersRequested)) {
+            if (c2OrdersRequested.contains(PARENTAL_RESPONSIBILITY)) {
+                c2OrdersRequested.remove(PARENTAL_RESPONSIBILITY);
+                feeTypes.add(fromParentalResponsibilityTypes(c2DocumentBundle.getParentalResponsibilityType()));
+            }
+
+            feeTypes.addAll(fromC2OrdersRequestedType(c2OrdersRequested));
         }
         return feeTypes;
     }

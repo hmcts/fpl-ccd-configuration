@@ -274,6 +274,10 @@ public class CaseData {
     }
 
     private LocalDate dateSubmitted;
+    private final String usePbaPayment;
+    private final String pbaNumber;
+    private final String clientCode;
+    private final String fileReference;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
@@ -329,8 +333,8 @@ public class CaseData {
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final List<AdditionalApplicationType> additionalApplicationType;
 
-    public List<AdditionalApplicationType> getAdditionalApplicationTypes() {
-        return defaultIfNull(getAdditionalApplicationType(), emptyList());
+    public List<AdditionalApplicationType> getAdditionalApplicationType() {
+        return defaultIfNull(additionalApplicationType, emptyList());
     }
 
     private final FurtherDirections orderFurtherDirections;

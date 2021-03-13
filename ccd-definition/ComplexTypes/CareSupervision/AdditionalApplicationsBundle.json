@@ -5,7 +5,8 @@
     "ListElementCode": "c2Document",
     "FieldType": "C2DocumentBundle",
     "ElementLabel": "C2 application",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ListElementCode": "otherApplications",
     "FieldType": "OtherApplicationsBundle",
     "ElementLabel": "Other applications",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +23,8 @@
     "ListElementCode": "pbaPayment",
     "FieldType": "PBAPayment",
     "ElementLabel": "PBA Payment",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,7 +33,8 @@
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "c2Document=\"Do Not Show\""
+    "FieldShowCondition": "c2Document=\"Do Not Show\"",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -39,7 +43,7 @@
     "FieldType": "Text",
     "ElementLabel": "Uploaded by",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "c2Document=\"Do Not Show\""
-
+    "FieldShowCondition": "c2Document=\"Do Not Show\"",
+    "Searchable": "N"
   }
 ]

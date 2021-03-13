@@ -36,7 +36,7 @@ public class ApplicationsFeeCalculator {
     private final FeeService feeService;
 
     public Map<String, Object> calculateFee(CaseData caseData) {
-        if (caseData.getAdditionalApplicationTypes().size() == 2) {
+        if (caseData.getAdditionalApplicationType().size() == 2) {
 
             if (caseData.getTemporaryOtherApplicationsBundle() != null
                 && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null) {
