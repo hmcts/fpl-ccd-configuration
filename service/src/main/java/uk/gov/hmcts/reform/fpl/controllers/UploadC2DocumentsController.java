@@ -97,7 +97,6 @@ public class UploadC2DocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
-
         caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT, "c2ApplicationType", AMOUNT_TO_PAY));
 
         return respond(caseDetails);

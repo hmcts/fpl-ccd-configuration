@@ -10,13 +10,16 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -72,7 +75,11 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @Test
     void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded() {
-        Map<String, Object> data = createDataWithC2ApplicationType();
+        Map<String, Object> data = new HashMap<>();
+        data.put("additionalApplicationType", List.of("C2_ORDER"));
+        data.putAll(createTemporaryC2Document());
+        PBAPayment temporaryPbaPayment = createPbaPayment();
+        data.put("temporaryPbaPayment", temporaryPbaPayment);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -80,15 +87,34 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         AdditionalApplicationsBundle additionalApplicationsBundle
             = caseData.getAdditionalApplicationsBundle().get(0).getValue();
 
-        C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2Document();
+        C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
 
-        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
+        assertC2DocumentBundle(uploadedC2DocumentBundle);
+        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
+        assertTemporaryFieldsAreRemoved(caseData);
+    }
 
-        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
-        assertSupportingEvidenceBundle(uploadedC2DocumentBundle);
-        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
+    @Test
+    void shouldCreateAdditionalApplicationsBundleWhenC2OrderAndOtherOrderAreSelected() {
+        PBAPayment temporaryPbaPayment = createPbaPayment();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("additionalApplicationType", List.of("C2_ORDER", "OTHER_ORDER"));
+        data.putAll(createTemporaryC2Document());
+        data.putAll(createTemporaryOtherApplicationDocument());
+        data.put("temporaryPbaPayment", temporaryPbaPayment);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        AdditionalApplicationsBundle additionalApplicationsBundle
+            = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+        assertC2DocumentBundle(additionalApplicationsBundle.getC2DocumentBundle());
+        assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
+        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
+
+        assertTemporaryFieldsAreRemoved(caseData);
     }
 
     @Test
@@ -103,14 +129,17 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         AdditionalApplicationsBundle existingApplicationsBundle
             = caseData.getAdditionalApplicationsBundle().get(1).getValue();
 
-        C2DocumentBundle existingC2Document = existingApplicationsBundle.getC2Document();
-        C2DocumentBundle appendedC2Document = appendedApplicationsBundle.getC2Document();
+        C2DocumentBundle existingC2Document = existingApplicationsBundle.getC2DocumentBundle();
+        C2DocumentBundle appendedC2Document = appendedApplicationsBundle.getC2DocumentBundle();
 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertC2BundleDocument(existingC2Document, "C2 document one");
-        assertC2BundleDocument(appendedC2Document, "C2 document two");
+        assertDocument(existingC2Document.getDocument());
+        assertThat(existingC2Document.getDescription()).isEqualTo("C2 document one");
+        assertDocument(appendedC2Document.getDocument());
+        assertThat(appendedC2Document.getDescription()).isEqualTo("C2 document two");
+
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
@@ -141,18 +170,49 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getAmountToPay()).isNull();
     }
 
-    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) {
-        Document document = document();
+    private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {
+        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
 
-        assertThat(documentBundle.getDocument().getUrl()).isEqualTo(document.links.self.href);
-        assertThat(documentBundle.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
-        assertThat(documentBundle.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
-        assertThat(documentBundle.getDescription()).isEqualTo(description);
+        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
+
+        assertThat(uploadedC2DocumentBundle.getDescription()).isEqualTo("Test description");
+        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
+
+        assertDocument(uploadedC2DocumentBundle.getDocument());
+        assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
+        assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
 
-    private void assertSupportingEvidenceBundle(C2DocumentBundle documentBundle) {
-        List<SupportingEvidenceBundle> supportingEvidenceBundle =
-            unwrapElements(documentBundle.getSupportingEvidenceBundle());
+    private void assertOtherApplicationsBundle(OtherApplicationsBundle uploadedOtherApplicationsBundle) {
+        String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
+
+        assertThat(uploadedOtherApplicationsBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
+
+        assertThat(uploadedOtherApplicationsBundle.getApplicationType())
+            .isEqualTo(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN);
+        assertThat(uploadedOtherApplicationsBundle.getAuthor()).isEqualTo(USER_NAME);
+
+        assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
+        assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
+
+    }
+
+    private void assertTemporaryFieldsAreRemoved(CaseData caseData) {
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
+        assertThat(caseData.getTemporaryPbaPayment()).isNull();
+    }
+
+    private void assertDocument(DocumentReference actualDocument) {
+        Document expectedDocument = document();
+
+        assertThat(actualDocument.getUrl()).isEqualTo(expectedDocument.links.self.href);
+        assertThat(actualDocument.getFilename()).isEqualTo(expectedDocument.originalDocumentName);
+        assertThat(actualDocument.getBinaryUrl()).isEqualTo(expectedDocument.links.binary.href);
+    }
+
+    private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle) {
+        List<SupportingEvidenceBundle> supportingEvidenceBundle = unwrapElements(documentBundle);
 
         assertThat(supportingEvidenceBundle).first()
             .extracting(
@@ -170,9 +230,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
     }
 
-    private void assertSupplementsBundle(C2DocumentBundle documentBundle) {
-        List<SupplementsBundle> supplementsBundle =
-            unwrapElements(documentBundle.getSupplementsBundle());
+    private void assertSupplementsBundle(List<Element<SupplementsBundle>> documentBundle) {
+        List<SupplementsBundle> supplementsBundle = unwrapElements(documentBundle);
 
         assertThat(supplementsBundle).first()
             .extracting(
@@ -190,11 +249,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
     }
 
-    private Map<String, Object> createDataWithC2ApplicationType() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("additionalApplicationType", List.of("C2_ORDER"));
-        data.putAll(createTemporaryC2Document());
-        return data;
+    private PBAPayment createPbaPayment() {
+        return PBAPayment.builder().pbaNumber("PBA1234567").usePbaPayment("Yes").build();
     }
 
     private Map<String, Object> createTemporaryC2Document() {
@@ -208,6 +264,21 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
                     "document_filename", "file.pdf"),
                 "description", "Test description",
+                "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
+                "supplementsBundle", wrapElements(createSupplementsBundle())
+            )
+        );
+    }
+
+    private Map<String, Object> createTemporaryOtherApplicationDocument() {
+        return Map.of(
+            "temporaryOtherApplicationsBundle", Map.of(
+                "applicationType", OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN.name(),
+                "document", Map.of(
+                    "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                    "document_binary_url",
+                    "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+                    "document_filename", "file.pdf"),
                 "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
                 "supplementsBundle", wrapElements(createSupplementsBundle())
             )

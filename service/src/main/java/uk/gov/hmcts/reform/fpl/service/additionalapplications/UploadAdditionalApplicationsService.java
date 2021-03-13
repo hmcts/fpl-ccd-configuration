@@ -77,8 +77,8 @@ public class UploadAdditionalApplicationsService {
         PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
 
         return AdditionalApplicationsBundle.builder()
-            .c2Document(c2DocumentBundle)
-            .otherApplications(otherApplicationsBundle)
+            .c2DocumentBundle(c2DocumentBundle)
+            .otherApplicationsBundle(otherApplicationsBundle)
             .pbaPayment(temporaryPbaPayment)
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))

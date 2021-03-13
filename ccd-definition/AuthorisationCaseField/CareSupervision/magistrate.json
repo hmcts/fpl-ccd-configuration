@@ -1601,5 +1601,26 @@
     "CaseFieldID": "fileReference",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryPbaPayment",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "R"
   }
 ]

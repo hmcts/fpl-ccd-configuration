@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 public class AdditionalApplicationsBundle {
     private final String uploadedDateTime;
     private final String author;
-    private C2DocumentBundle c2Document;
-    private OtherApplicationsBundle otherApplications;
+    private C2DocumentBundle c2DocumentBundle;
+    private OtherApplicationsBundle otherApplicationsBundle;
     private PBAPayment pbaPayment;
 }

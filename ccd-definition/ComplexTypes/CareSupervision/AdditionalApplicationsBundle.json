@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AdditionalApplicationsBundle",
-    "ListElementCode": "c2Document",
+    "ListElementCode": "c2DocumentBundle",
     "FieldType": "C2DocumentBundle",
     "ElementLabel": "C2 application",
     "SecurityClassification": "Public",
@@ -11,7 +11,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AdditionalApplicationsBundle",
-    "ListElementCode": "otherApplications",
+    "ListElementCode": "otherApplicationsBundle",
     "FieldType": "OtherApplicationsBundle",
     "ElementLabel": "Other applications",
     "SecurityClassification": "Public",
@@ -33,7 +33,7 @@
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "c2Document=\"Do Not Show\"",
+    "FieldShowCondition": "c2DocumentBundle=\"Do Not Show\"",
     "Searchable": "N"
   },
   {
@@ -43,7 +43,7 @@
     "FieldType": "Text",
     "ElementLabel": "Uploaded by",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "c2Document=\"Do Not Show\"",
+    "FieldShowCondition": "c2DocumentBundle=\"Do Not Show\"",
     "Searchable": "N"
   }
 ]

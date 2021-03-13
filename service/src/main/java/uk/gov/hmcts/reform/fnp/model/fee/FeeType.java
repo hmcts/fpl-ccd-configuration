@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.Supplements;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,9 +18,15 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C19_WARRANT_TO_ASSISTANCE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD;
 
 public enum FeeType {
     // Names should match OrderType enum names exactly
@@ -79,18 +84,16 @@ public enum FeeType {
     private static final Map<OtherApplicationType, FeeType> applicationToFeeMap;
 
     static {
-        applicationToFeeMap = new HashMap<>();
-        applicationToFeeMap.put(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, CHANGE_SURNAME);
-        applicationToFeeMap.put(C1_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
-        applicationToFeeMap.put(C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
-        applicationToFeeMap.put(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, PARENTAL_RESPONSIBILITY_FATHER);
-        applicationToFeeMap.put(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD, C2_WITH_NOTICE);
-        applicationToFeeMap.put(OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON, WARRANT_TO_ASSIST_PERSON);
-        applicationToFeeMap.put(
-            OtherApplicationType.C17_EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER);
-        applicationToFeeMap.put(OtherApplicationType.C17A_EXTENSION_OF_ESO, ESO_EXTENSION);
-        applicationToFeeMap.put(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE, WARRANT_OF_ASSISTANCE);
-        applicationToFeeMap.put(OtherApplicationType.C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS);
+        applicationToFeeMap = Map.of(
+            C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, CHANGE_SURNAME,
+            C1_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN,
+            C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN, APPOINTMENT_OF_GUARDIAN,
+            C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD, C2_WITH_NOTICE,
+            C12_WARRANT_TO_ASSIST_PERSON, WARRANT_TO_ASSIST_PERSON,
+            C17_EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER,
+            C17A_EXTENSION_OF_ESO, ESO_EXTENSION,
+            C19_WARRANT_TO_ASSISTANCE, WARRANT_OF_ASSISTANCE,
+            C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS);
     }
 
     private static final Map<C2OrdersRequested, FeeType> c2OrdersRequestedToFeesMap;

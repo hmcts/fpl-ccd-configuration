@@ -8,11 +8,15 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
-import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
@@ -23,8 +27,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.Supplements.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -42,26 +49,36 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     }
 
     @Test
-    void shouldAddAmountToPayField() {
+    void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
             .type(WITH_NOTICE)
             .supplementsBundle(
                 List.of(element(SupplementsBundle.builder().name(C13A_SPECIAL_GUARDIANSHIP).build())))
             .build();
 
+        OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
+            .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
+            .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
+            .document(DocumentReference.builder().build())
+            .supplementsBundle(
+                List.of(element(SupplementsBundle.builder().name(C20_SECURE_ACCOMMODATION)
+                    .secureAccommodationType(SecureAccommodationType.SECTION_119_WALES).build())))
+            .build();
+
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
+            .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+            .temporaryOtherApplicationsBundle(temporaryOtherDocument)
             .temporaryC2Document(temporaryC2Document)
             .build();
 
-        given(feeService.getFeesDataForAdditionalApplications(
-            temporaryC2Document, null, List.of(C13A_SPECIAL_GUARDIANSHIP), List.of()))
+        given(feeService.getFeesDataForAdditionalApplications(temporaryC2Document, temporaryOtherDocument,
+            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.SECTION_119_WALES)))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
 
-        verify(feeService).getFeesDataForAdditionalApplications(
-            temporaryC2Document, null, List.of(C13A_SPECIAL_GUARDIANSHIP), List.of());
+        verify(feeService).getFeesDataForAdditionalApplications(temporaryC2Document, temporaryOtherDocument,
+            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.SECTION_119_WALES));
 
         assertThat(response.getData())
             .containsEntry("amountToPay", "1000")
@@ -74,7 +91,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .willThrow((new FeeRegisterException(1, "", new Throwable())));
 
         CaseData caseData = CaseData.builder()
-            .additionalApplicationType(List.of(AdditionalApplicationType.C2_ORDER))
+            .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(C2DocumentBundle.builder().type(WITH_NOTICE).build())
             .build();
 

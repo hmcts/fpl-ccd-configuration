@@ -323,7 +323,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             "additionalApplicationsBundle", wrapElements(
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
-                    .c2Document(C2DocumentBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
                         .document(latestC2Document)
                         .usePbaPayment(usePbaPayment.getValue()).build())
                     .build()));

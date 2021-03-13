@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
 import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -36,13 +34,13 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private List<Element<SupplementsBundle>> supplementsBundle;
 
-    public String toLabel(int index) {
-        return format("Application %d: %s", index, uploadedDateTime);
-    }
-
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
+    }
+
+    public List<Element<SupplementsBundle>> getSupplementsBundle() {
+        return defaultIfNull(supplementsBundle, new ArrayList<>());
     }
 
     @Override
@@ -62,15 +60,14 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @JsonIgnore
-    public String getAllDocumentsFileNames() {
-        String fileName = "";
+    public String getAllDocumentFileNames() {
+        String c2Filename = "";
 
         if (document != null) {
-            fileName = document.getFilename();
+            c2Filename = document.getFilename();
         }
 
-        String stringBuilder = String.join(
-            "\n", fileName, getSupportingEvidenceFileNames(), getSupplementsFileNames());
+        String stringBuilder = c2Filename + "\n" + getSupportingEvidenceFileNames();
         return stringBuilder.trim();
     }
 
@@ -83,17 +80,8 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
         }
 
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
-        documentReferences.addAll(getSupplementsBundleReferences());
 
         return documentReferences;
-    }
-
-    @JsonIgnore
-    public List<Supplements> getSupplementsTypes() {
-        return getSupplementsBundle().stream()
-            .map(Element::getValue)
-            .map(SupplementsBundle::getName)
-            .collect(Collectors.toList());
     }
 
     @JsonIgnore
@@ -106,28 +94,10 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @JsonIgnore
-    private String getSupplementsFileNames() {
-        return getSupplementsBundle().stream()
-            .map(Element::getValue)
-            .map(SupplementsBundle::getDocument)
-            .map(DocumentReference::getFilename)
-            .collect(Collectors.joining("\n"));
-    }
-
-    @JsonIgnore
     private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
         return getSupportingEvidenceBundle().stream()
             .map(Element::getValue)
             .map(SupportingEvidenceBundle::getDocument)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList());
-    }
-
-    @JsonIgnore
-    private List<Element<DocumentReference>> getSupplementsBundleReferences() {
-        return getSupplementsBundle().stream()
-            .map(Element::getValue)
-            .map(SupplementsBundle::getDocument)
             .map(ElementUtils::element)
             .collect(Collectors.toList());
     }

@@ -134,7 +134,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
             C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
-                .get(0).getValue().getC2Document();
+                .get(0).getValue().getC2DocumentBundle();
 
             if (pbaPayment != null) {
                 c2DocumentBundle.toBuilder()

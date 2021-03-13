@@ -1069,5 +1069,26 @@
     "CaseFieldID": "fileReference",
     "UserRole": "[EPSMANAGING]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryPbaPayment",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
   }
 ]

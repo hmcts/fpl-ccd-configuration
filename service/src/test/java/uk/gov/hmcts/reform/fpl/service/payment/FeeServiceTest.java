@@ -47,7 +47,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FATHER;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C16_CHILD_ASSESSMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C18_RECOVERY_ORDER;
@@ -348,7 +350,19 @@ class FeeServiceTest {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN)),
                 buildOtherApplicationsBundle(
-                    OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, ParentalResponsibilityType.PR_BY_FATHER),
+                    OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, PR_BY_FATHER),
+                List.of(C13A_SPECIAL_GUARDIANSHIP),
+                List.of());
+
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(35));
+            assertThat(getFirstFeeCode(feesData)).isEqualTo(PARENTAL_RESPONSIBILITY_FATHER);
+        }
+
+        @Test
+        void shouldReturnFeesDataWithMaximumAmountWhenC2OrdersRequestedHaveParentalResponsibilityType() {
+            FeesData feesData = feeService.getFeesDataForAdditionalApplications(
+                buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(PARENTAL_RESPONSIBILITY), PR_BY_FATHER),
+                null,
                 List.of(C13A_SPECIAL_GUARDIANSHIP),
                 List.of());
 
@@ -376,7 +390,14 @@ class FeeServiceTest {
     }
 
     private C2DocumentBundle buildC2Document(C2ApplicationType type, List<C2OrdersRequested> c2Orders) {
-        return C2DocumentBundle.builder().type(type).c2OrdersRequested(c2Orders).build();
+        return buildC2Document(type, c2Orders, null);
+    }
+
+    private C2DocumentBundle buildC2Document(
+        C2ApplicationType type, List<C2OrdersRequested> c2Orders, ParentalResponsibilityType prType) {
+        return C2DocumentBundle.builder().type(type).c2OrdersRequested(c2Orders)
+            .parentalResponsibilityType(prType)
+            .build();
     }
 
     private OtherApplicationsBundle buildOtherApplicationsBundle(

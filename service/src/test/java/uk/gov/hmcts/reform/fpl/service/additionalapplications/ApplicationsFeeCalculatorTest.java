@@ -193,6 +193,4 @@ class ApplicationsFeeCalculatorTest {
 
         assertThat(actualData).containsExactlyEntriesOf(Map.of("displayAmountToPay", "No"));
     }
-
-    //TODO: add tests
 }
