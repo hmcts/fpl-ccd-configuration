@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -129,7 +132,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void submittedEventShouldNotifyAdminWhenC2IsNotUsingPbaPayment() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(NO))
+            .putAll(buildAdditionalApplicationsBundle(NO))
             .put("displayAmountToPay", YES.getValue())
             .build();
 
@@ -187,7 +190,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void shouldMakePaymentWhenAmountToPayWasDisplayed() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(YES))
+            .putAll(buildAdditionalApplicationsBundle(YES))
             .put("displayAmountToPay", YES.getValue())
             .build();
 
@@ -202,7 +205,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void shouldNotMakePaymentWhenAmountToPayWasNotDisplayed() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(YES))
+            .putAll(buildAdditionalApplicationsBundle(YES))
             .put("displayAmountToPay", NO.getValue())
             .build();
 
@@ -215,7 +218,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void shouldSendFailedPaymentNotificationOnPaymentsApiException() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(YES))
+            .putAll(buildAdditionalApplicationsBundle(YES))
             .put("displayAmountToPay", YES.getValue())
             .build();
 
@@ -240,7 +243,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void shouldSendFailedPaymentNotificationOnHiddenDisplayAmountToPay() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(YES))
+            .putAll(buildAdditionalApplicationsBundle(YES))
             .put("displayAmountToPay", NO.getValue())
             .build();
 
@@ -263,7 +266,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     void shouldNotSendFailedPaymentNotificationWhenDisplayAmountToPayNotSet() throws NotificationClientException {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(YES))
+            .putAll(buildAdditionalApplicationsBundle(YES))
             .build();
 
         postSubmittedEvent(createCase(caseData));
@@ -284,7 +287,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private CaseDetails buildCaseDetails(YesNo enableCtsc, YesNo usePbaPayment) {
         return createCase(ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
-            .putAll(buildC2DocumentBundle(usePbaPayment))
+            .putAll(buildAdditionalApplicationsBundle(usePbaPayment))
             .put("sendToCtsc", enableCtsc.getValue())
             .build());
     }
@@ -314,13 +317,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .build();
     }
 
-    private Map<String, Object> buildC2DocumentBundle(YesNo usePbaPayment) {
+    private Map<String, Object> buildAdditionalApplicationsBundle(YesNo usePbaPayment) {
         return ImmutableMap.of(
-            "c2DocumentBundle", wrapElements(C2DocumentBundle.builder()
-                .document(latestC2Document)
-                .usePbaPayment(usePbaPayment.getValue())
-                .build())
-        );
+            "additionalApplicationType", List.of(C2_ORDER),
+            "additionalApplicationsBundle", wrapElements(
+                AdditionalApplicationsBundle.builder()
+                    .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
+                    .c2Document(C2DocumentBundle.builder()
+                        .document(latestC2Document)
+                        .usePbaPayment(usePbaPayment.getValue()).build())
+                    .build()));
     }
 
     private Map<String, Object> expectedCtscNotificationParameters() {
