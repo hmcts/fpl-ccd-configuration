@@ -62,7 +62,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .document(DocumentReference.builder().build())
             .supplementsBundle(
                 List.of(element(SupplementsBundle.builder().name(C20_SECURE_ACCOMMODATION)
-                    .secureAccommodationType(SecureAccommodationType.SECTION_119_WALES).build())))
+                    .secureAccommodationType(SecureAccommodationType.WALES).build())))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -72,13 +72,13 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .build();
 
         given(feeService.getFeesDataForAdditionalApplications(temporaryC2Document, temporaryOtherDocument,
-            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.SECTION_119_WALES)))
+            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.WALES)))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
 
         verify(feeService).getFeesDataForAdditionalApplications(temporaryC2Document, temporaryOtherDocument,
-            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.SECTION_119_WALES));
+            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.WALES));
 
         assertThat(response.getData())
             .containsEntry("amountToPay", "1000")

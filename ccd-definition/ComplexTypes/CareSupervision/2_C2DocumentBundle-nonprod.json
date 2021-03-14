@@ -134,7 +134,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
     "ListElementCode": "parentalResponsibilityType",
-    "ElementLabel": "Parental responsibility type",
+    "ElementLabel": "Who's seeking parental responsibility?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ParentalResponsibilityType",
     "SecurityClassification": "Public",

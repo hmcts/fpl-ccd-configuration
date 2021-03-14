@@ -40,7 +40,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private List<Element<SupplementsBundle>> supplementsBundle;
-    public List<C2OrdersRequested> c2OrdersRequested;
+    public final List<C2OrdersRequested> c2OrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
 
     public String toLabel(int index) {

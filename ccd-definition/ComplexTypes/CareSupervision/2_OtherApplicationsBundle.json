@@ -23,7 +23,7 @@
     "ID": "OtherApplicationsBundle",
     "ListElementCode": "parentalResponsibilityType",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Parental responsibility type",
+    "ElementLabel": "Who's seeking parental responsibility?",
     "FieldTypeParameter": "ParentalResponsibilityType",
     "SecurityClassification": "Public",
     "Searchable": "N"

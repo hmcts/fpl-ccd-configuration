@@ -31,13 +31,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FATHER;
-import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.SECTION_119_WALES;
+import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -71,7 +70,7 @@ class UploadAdditionalApplicationsServiceTest {
     @BeforeEach()
     void init() {
         given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
 
@@ -243,7 +242,7 @@ class UploadAdditionalApplicationsServiceTest {
     private SupplementsBundle createSupplementsBundle(Supplements name) {
         return SupplementsBundle.builder()
             .name(name)
-            .secureAccommodationType(name == C20_SECURE_ACCOMMODATION ? SECTION_119_WALES : null)
+            .secureAccommodationType(name == C20_SECURE_ACCOMMODATION ? WALES : null)
             .notes("Document notes")
             .document(SUPPLEMENT_DOCUMENT)
             .build();

@@ -167,7 +167,7 @@ public enum FeeType {
     }
 
     private static FeeType getSecureAccommodationFeeType(SecureAccommodationType secureAccommodationType) {
-        if (SecureAccommodationType.SECTION_25_ENGLAND == secureAccommodationType) {
+        if (SecureAccommodationType.ENGLAND == secureAccommodationType) {
             return SECURE_ACCOMMODATION_ENGLAND;
         }
         return SECURE_ACCOMMODATION_WALES;

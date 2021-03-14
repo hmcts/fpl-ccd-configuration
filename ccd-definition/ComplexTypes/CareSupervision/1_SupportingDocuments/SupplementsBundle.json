@@ -13,7 +13,7 @@
     "ID": "SupplementsBundle",
     "ListElementCode": "secureAccommodationType",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Secure accommodation type",
+    "ElementLabel": "Which jurisdiction?",
     "FieldTypeParameter": "SecureAccommodationType",
     "SecurityClassification": "Public"
   },

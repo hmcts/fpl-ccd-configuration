@@ -15,7 +15,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "parentalResponsibilityType",
-    "EventElementLabel": "Parental responsibility type",
+    "EventElementLabel": "Who's seeking parental responsibility?",
     "FieldDisplayOrder": "2",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryOtherApplicationsBundle.applicationType=\"C1_PARENTAL_RESPONSIBILITY\""
@@ -55,7 +55,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryOtherApplicationsBundle",
     "ListElementCode": "supplementsBundle.secureAccommodationType",
-    "EventElementLabel": "Secure accommodation type",
+    "EventElementLabel": "Which jurisdiction?",
     "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryOtherApplicationsBundle.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""

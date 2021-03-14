@@ -284,7 +284,6 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
     private final PBAPayment temporaryPbaPayment;
-    private final List<Element<OtherApplicationsBundle>> otherApplicationsBundle;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
 

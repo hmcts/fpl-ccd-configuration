@@ -93,11 +93,11 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         C2DocumentBundle c2DocumentBundle = null;
         OtherApplicationsBundle otherApplicationsBundle = null;
 
-        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+        if (hasC2Order(caseData)) {
             c2DocumentBundle = uploadC2DocumentsService.buildC2DocumentBundle(caseData);
         }
 
-        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER)) {
+        if (hasOtherApplicationsOrder(caseData)) {
             otherApplicationsBundle = uploadC2DocumentsService.buildOtherApplicationsBundle(caseData);
         }
 
@@ -132,7 +132,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
 
-        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+        if (hasC2Order(caseData)) {
             C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
                 .get(0).getValue().getC2DocumentBundle();
 
@@ -163,6 +163,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 }
             }
         }
+    }
+
+    private boolean hasC2Order(CaseData caseData) {
+        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER);
+    }
+
+    private boolean hasOtherApplicationsOrder(CaseData caseData) {
+        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER);
     }
 
     private boolean displayAmountToPay(CaseDetails caseDetails) {

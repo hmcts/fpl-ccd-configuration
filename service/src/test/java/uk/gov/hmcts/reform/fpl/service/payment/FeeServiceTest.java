@@ -327,7 +327,7 @@ class FeeServiceTest {
                 null,
                 buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
                 List.of(C16_CHILD_ASSESSMENT, C18_RECOVERY_ORDER),
-                List.of(SecureAccommodationType.SECTION_119_WALES));
+                List.of(SecureAccommodationType.WALES));
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(75));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(SECURE_ACCOMMODATION_WALES);
@@ -339,7 +339,7 @@ class FeeServiceTest {
                 null,
                 buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
                 List.of(C16_CHILD_ASSESSMENT, C18_RECOVERY_ORDER),
-                List.of(SecureAccommodationType.SECTION_25_ENGLAND));
+                List.of(SecureAccommodationType.ENGLAND));
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(60));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(CHILD_ASSESSMENT);

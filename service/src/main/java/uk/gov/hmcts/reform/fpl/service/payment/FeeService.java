@@ -123,8 +123,7 @@ public class FeeService {
     private List<FeeType> getOtherApplicationsFeeTypes(OtherApplicationsBundle applicationsBundle) {
         List<FeeType> feeTypes = new ArrayList<>();
 
-        if (OtherApplicationType.C1_PARENTAL_RESPONSIBILITY == applicationsBundle.getApplicationType()
-            && !isNull(applicationsBundle.getParentalResponsibilityType())) {
+        if (OtherApplicationType.C1_PARENTAL_RESPONSIBILITY == applicationsBundle.getApplicationType()) {
             feeTypes.add(fromParentalResponsibilityTypes(applicationsBundle.getParentalResponsibilityType()));
         } else {
             fromApplicationType(applicationsBundle.getApplicationType()).ifPresent(feeTypes::add);

@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
-import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.SECTION_119_WALES;
+import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C16_CHILD_ASSESSMENT;
 import static uk.gov.hmcts.reform.fpl.enums.Supplements.C20_SECURE_ACCOMMODATION;
@@ -152,7 +152,7 @@ class ApplicationsFeeCalculatorTest {
             .supplementsBundle(List.of(
                 element(SupplementsBundle.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()),
                 element(SupplementsBundle.builder().name(C20_SECURE_ACCOMMODATION)
-                    .secureAccommodationType(SECTION_119_WALES).build())))
+                    .secureAccommodationType(WALES).build())))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -161,7 +161,7 @@ class ApplicationsFeeCalculatorTest {
             .temporaryOtherApplicationsBundle(otherApplicationsBundle).build();
 
         when(feeService.getFeesDataForAdditionalApplications(c2Document, otherApplicationsBundle,
-            List.of(C16_CHILD_ASSESSMENT, C13A_SPECIAL_GUARDIANSHIP), List.of(SECTION_119_WALES)))
+            List.of(C16_CHILD_ASSESSMENT, C13A_SPECIAL_GUARDIANSHIP), List.of(WALES)))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.valueOf(50)).build());
 
         Map<String, Object> actualData = feeCalculator.calculateFee(caseData);
@@ -171,7 +171,7 @@ class ApplicationsFeeCalculatorTest {
             "displayAmountToPay", YES.getValue());
 
         verify(feeService).getFeesDataForAdditionalApplications(c2Document, otherApplicationsBundle,
-            List.of(C16_CHILD_ASSESSMENT, C13A_SPECIAL_GUARDIANSHIP), List.of(SECTION_119_WALES));
+            List.of(C16_CHILD_ASSESSMENT, C13A_SPECIAL_GUARDIANSHIP), List.of(WALES));
 
         assertThat(actualData).containsExactlyInAnyOrderEntriesOf(expectedData);
     }

@@ -117,9 +117,9 @@ class FeeTypeTest {
 
     @Test
     void shouldReturnCorrespondingFeeTypeForSecureAccommodationType() {
-        assertThat(fromSecureAccommodationTypes(List.of(SecureAccommodationType.SECTION_25_ENGLAND)))
+        assertThat(fromSecureAccommodationTypes(List.of(SecureAccommodationType.ENGLAND)))
             .isEqualTo(List.of(SECURE_ACCOMMODATION_ENGLAND));
-        assertThat(fromSecureAccommodationTypes(List.of(SecureAccommodationType.SECTION_119_WALES)))
+        assertThat(fromSecureAccommodationTypes(List.of(SecureAccommodationType.WALES)))
             .isEqualTo(List.of(SECURE_ACCOMMODATION_WALES));
     }
 
