@@ -17,13 +17,13 @@ module.exports = {
     clientCode: '#clientCode',
     customerReference: '#fileReference',
     applicationType: {
-      c2TypePrefix: '#c2ApplicationType_type-',
+      c2TypePrefix: '#c2Type-',
       additionalApplicationTypePrefix: '#additionalApplicationType-',
     },
   },
 
   selectAdditionalApplicationType(type) {
-    I.click(this.additionalApplicationTypePrefix + type);
+    I.click(this.fields.applicationType.additionalApplicationTypePrefix + type);
   },
 
   selectC2Type(type) {
@@ -49,7 +49,7 @@ module.exports = {
   },
 
   selectC2AdditionalOrdersRequested(ordersRequested) {
-    I.click(this.c2AdditionalOrdersRequested + ordersRequested);
+    I.click(this.fields.c2AdditionalOrdersRequested + ordersRequested);
   },
 
   usePbaPayment(usePbaPayment=true) {
