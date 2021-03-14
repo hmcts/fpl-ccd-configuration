@@ -86,7 +86,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
 
         caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT,
-            "c2ApplicationType",
+            "c2Type",
             "additionalApplicationType",
             "usePbaPayment",
             AMOUNT_TO_PAY,

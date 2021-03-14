@@ -136,7 +136,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
-            "c2ApplicationType", Map.of("type", WITHOUT_NOTICE),
+            "c2Type", WITHOUT_NOTICE,
                 "additionalApplicationType", "C2_ORDER",
                 "usePbaPayment", "Yes",
                 "amountToPay", "Yes",
@@ -150,7 +150,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(callbackResponse.getData().get("c2ApplicationType")).isNull();
-        assertThat(caseData.getC2ApplicationType()).isNull();
+        assertThat(caseData.getC2Type()).isNull();
         assertThat(caseData.getUsePbaPayment()).isNull();
         assertThat(caseData.getAmountToPay()).isNull();
         assertThat(caseData.getPbaNumber()).isNull();
