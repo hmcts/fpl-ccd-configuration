@@ -122,7 +122,7 @@ class UploadC2DocumentsServiceTest {
         CaseData caseData = CaseData.builder()
             .temporaryC2Document(secondBundleAdded)
             .c2DocumentBundle(wrapElements(firstBundleAdded))
-            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .c2Type(WITH_NOTICE)
             .build();
 
         List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service
