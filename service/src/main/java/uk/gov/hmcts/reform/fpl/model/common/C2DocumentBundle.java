@@ -39,7 +39,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private List<Element<SupplementsBundle>> supplementsBundle;
-    public List<C2OrdersRequested> c2OrdersRequested;
+    private List<C2OrdersRequested> c2OrdersRequested;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);

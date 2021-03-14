@@ -55,7 +55,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         data.remove(DISPLAY_AMOUNT_TO_PAY);
 
         try {
-            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2ApplicationType().get("type"));
+            FeesData feesData = feeService.getFeesDataForC2(caseData.getC2Type());
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
             data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
         } catch (FeeRegisterException ignore) {

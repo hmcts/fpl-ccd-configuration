@@ -446,5 +446,12 @@
     "CaseFieldID": "fileReference",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2Type",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "CRU"
   }
 ]

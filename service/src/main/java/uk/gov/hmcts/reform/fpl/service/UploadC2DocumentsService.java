@@ -59,8 +59,7 @@ public class UploadC2DocumentsService {
         C2DocumentBundle.C2DocumentBundleBuilder c2DocumentBundleBuilder = caseData.getTemporaryC2Document().toBuilder()
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
-            .type(caseData.getC2ApplicationType().get("type"));
+            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
 
         if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
             List<SupplementsBundle> updatedSupplementsBundle =
@@ -76,11 +75,13 @@ public class UploadC2DocumentsService {
                 .pbaNumber(caseData.getPbaNumber())
                 .clientCode(caseData.getClientCode())
                 .fileReference(caseData.getFileReference())
+                .type(caseData.getC2Type())
                 .supplementsBundle(wrapElements(updatedSupplementsBundle)
                 );
 
             c2DocumentBundle.add(0, element(c2DocumentBundleBuilder.build()));
         } else {
+            c2DocumentBundleBuilder.type(caseData.getC2ApplicationType().get("type"));
             c2DocumentBundle.add(element(c2DocumentBundleBuilder.build()));
         }
 

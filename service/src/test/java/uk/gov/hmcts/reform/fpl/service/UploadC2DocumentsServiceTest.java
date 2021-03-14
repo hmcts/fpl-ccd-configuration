@@ -87,7 +87,7 @@ class UploadC2DocumentsServiceTest {
 
         CaseData caseData = CaseData.builder()
             .temporaryC2Document(createC2DocumentBundleWithSupplements())
-            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .c2Type(WITH_NOTICE)
             .pbaNumber("PBA1234567")
             .clientCode("123")
             .fileReference("456")

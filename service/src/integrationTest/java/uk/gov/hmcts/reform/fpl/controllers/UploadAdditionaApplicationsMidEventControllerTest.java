@@ -41,7 +41,7 @@ class UploadAdditionaApplicationsMidEventControllerTest extends AbstractCallback
             .build());
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(CaseDetails.builder()
-            .data(Map.of("c2ApplicationType", Map.of("type", "WITH_NOTICE")))
+            .data(Map.of("c2Type","WITH_NOTICE"))
             .build(), "get-fee");
 
         verify(feeService).getFeesDataForC2(WITH_NOTICE);
