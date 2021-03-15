@@ -49,7 +49,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .leadRespondentsName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .callout("^Smith")
+            .callout("Smith")
             .build();
 
         SDONotifyData actualData = localAuthorityEmailContentProvider
