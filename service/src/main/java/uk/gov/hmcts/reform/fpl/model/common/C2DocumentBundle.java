@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -107,5 +108,17 @@ public class C2DocumentBundle implements ConfidentialBundle {
             .map(SupportingEvidenceBundle::getDocument)
             .map(ElementUtils::element)
             .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public List<String> getApplicationTypes() {
+        List<String> applicationTypes = new ArrayList<>(Collections.singletonList("C2"));
+
+        getSupplementsBundle().stream()
+            .map(Element::getValue)
+            .map(SupplementsBundle::getName)
+            .forEach(name -> applicationTypes.add(name.getName()));
+
+        return applicationTypes;
     }
 }
