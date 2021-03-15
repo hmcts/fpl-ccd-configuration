@@ -213,7 +213,7 @@ class ManageDocumentServiceTest {
             manageDocumentService.getFurtherEvidenceCollection(caseData, false, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
-        assertThat(furtherDocumentBundleCollection.get(0).getValue().getType() == OTHER_REPORTS);
+        assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
     @Test
