@@ -356,6 +356,27 @@
                 "judgeTitleAndName": "Her Honour Judge Reed",
                 "lastUploadedOrder": null
               }
+            },
+            {
+              "id": "383fc615-b638-41a6-9987-72458a84dcfe",
+              "value": {
+                "type": "C21",
+                "order": {
+                  "document_url": "${DM_STORE_URL}/documents/587ea46d-d7fb-4ad1-a7eb-54b3c6aa6381",
+                  "document_filename": "mockFile.docx",
+                  "document_binary_url": "${DM_STORE_URL}/documents/587ea46d-d7fb-4ad1-a7eb-54b3c6aa6381/binary"
+                },
+                "title": "Draft Order1",
+                "status": "SEND_TO_JUDGE",
+                "hearing": "Case management hearing, 5 January 2020",
+                "dateSent": "2020-01-02",
+                "dateIssued": null,
+                "removalReason": null,
+                "supportingDocs": [],
+                "requestedChanges": null,
+                "judgeTitleAndName": null,
+                "lastUploadedOrder": null
+              }
             }
           ],
           "hearingId": "42a5d73a-0c5c-416b-b288-236e3b395df9",
@@ -468,13 +489,13 @@
         "id": "749f29dc-c200-4377-9e12-a5b4bad631b3",
         "value": {
           "type": "AGREED_CMO",
-          "order":"TO BE FILLED WITH VALID DATA",
+          "order": "TO BE FILLED WITH VALID DATA",
           "status": "APPROVED",
           "hearing": "Case management hearing, 1 January 2020",
           "dateSent": "2020-08-27",
           "dateIssued": "2020-08-27",
           "requestedChanges": null,
-          "judgeTitleAndName":"Her Honour Judge Reed"
+          "judgeTitleAndName": "Her Honour Judge Reed"
         }
       }
     ],

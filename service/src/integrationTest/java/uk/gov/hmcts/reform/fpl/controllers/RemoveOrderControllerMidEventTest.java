@@ -23,11 +23,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.controllers.RemoveOrderController.CMO_ERROR_MESSAGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -35,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @OverrideAutoConfiguration(enabled = true)
 class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    private static final UUID REMOVE_ORDER_ID = UUID.randomUUID();
     private Element<GeneratedOrder> selectedOrder;
 
     RemoveOrderControllerMidEventTest() {
@@ -68,13 +72,12 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldExtractSelectedSealedCaseManagementOrderFields() {
-        UUID removedOrderId = UUID.randomUUID();
         DocumentReference documentReference = DocumentReference.builder().build();
 
         HearingBooking hearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(now())
-            .caseManagementOrderId(removedOrderId)
+            .caseManagementOrderId(REMOVE_ORDER_ID)
             .build();
 
         HearingOrder caseManagementOrder = HearingOrder.builder()
@@ -86,13 +89,13 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
         DynamicList dynamicList = DynamicList.builder()
             .value(DynamicListElement.builder()
-                .code(removedOrderId)
+                .code(REMOVE_ORDER_ID)
                 .label("Case management order - 12 March 1234")
                 .build())
             .build();
 
         CaseData caseData = CaseData.builder()
-            .sealedCMOs(List.of(element(removedOrderId, caseManagementOrder)))
+            .sealedCMOs(List.of(element(REMOVE_ORDER_ID, caseManagementOrder)))
             .hearingDetails(List.of(element(hearingBooking)))
             .removableOrderList(dynamicList)
             .build();
@@ -114,13 +117,12 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldExtractDraftSealedCaseManagementOrderFields() {
-        UUID removedOrderId = UUID.randomUUID();
         DocumentReference documentReference = DocumentReference.builder().build();
 
         HearingBooking hearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(now())
-            .caseManagementOrderId(removedOrderId)
+            .caseManagementOrderId(REMOVE_ORDER_ID)
             .build();
 
         HearingOrder caseManagementOrder = HearingOrder.builder()
@@ -132,7 +134,7 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
         DynamicList dynamicList = DynamicList.builder()
             .value(DynamicListElement.builder()
-                .code(removedOrderId)
+                .code(REMOVE_ORDER_ID)
                 .label("Case management order - 12 March 1234")
                 .build())
             .build();
@@ -140,7 +142,7 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .hearingOrdersBundlesDrafts(newArrayList(
                 element(HearingOrdersBundle.builder()
-                    .orders(newArrayList(element(removedOrderId, caseManagementOrder)))
+                    .orders(newArrayList(element(REMOVE_ORDER_ID, caseManagementOrder)))
                     .build())))
             .hearingDetails(List.of(element(hearingBooking)))
             .removableOrderList(dynamicList)
@@ -156,6 +158,48 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
                 }),
             "orderTitleToBeRemoved", "Draft case management order",
             "hearingToUnlink", hearingBooking.toLabel()
+        );
+
+        assertThat(responseData).containsAllEntriesOf(extractedFields);
+    }
+
+    @Test
+    void shouldExtractDraftOrderFields() {
+        DocumentReference documentReference = DocumentReference.builder().build();
+
+        HearingOrder draftOrder = HearingOrder.builder()
+            .type(HearingOrderType.C21)
+            .title("Draft1")
+            .status(SEND_TO_JUDGE)
+            .order(documentReference)
+            .dateSent(now().toLocalDate())
+            .build();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(REMOVE_ORDER_ID)
+                .label("Draft order sent on 12 March 1234")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingOrdersBundlesDrafts(newArrayList(
+                element(HearingOrdersBundle.builder()
+                    .orders(newArrayList(element(REMOVE_ORDER_ID, draftOrder)))
+                    .build())))
+            .removableOrderList(dynamicList)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
+        Map<String, Object> responseData = response.getData();
+
+        Map<String, Object> extractedFields = Map.of(
+            "orderToBeRemoved", mapper.convertValue(draftOrder.getOrder(),
+                new TypeReference<Map<String, Object>>() {
+                }),
+            "orderTitleToBeRemoved", draftOrder.getTitle(),
+            "showRemoveCMOFieldsFlag", EMPTY,
+            "showReasonFieldFlag", NO.getValue()
         );
 
         assertThat(responseData).containsAllEntriesOf(extractedFields);
@@ -199,7 +243,6 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldThrowAnErrorWhenCaseManagementOrderHasNotLinkedHearing() {
-        UUID removedOrderId = UUID.randomUUID();
         DocumentReference documentReference = DocumentReference.builder().build();
 
         HearingBooking hearingBooking = HearingBooking.builder()
@@ -215,20 +258,20 @@ class RemoveOrderControllerMidEventTest extends AbstractCallbackTest {
 
         DynamicList dynamicList = DynamicList.builder()
             .value(DynamicListElement.builder()
-                .code(removedOrderId)
+                .code(REMOVE_ORDER_ID)
                 .label("Case management order - 12 March 1234")
                 .build())
             .build();
 
         CaseData caseData = CaseData.builder()
-            .sealedCMOs(List.of(element(removedOrderId, caseManagementOrder)))
+            .sealedCMOs(List.of(element(REMOVE_ORDER_ID, caseManagementOrder)))
             .hearingDetails(List.of(element(hearingBooking)))
             .removableOrderList(dynamicList)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
-        assertThat(response.getErrors()).isEqualTo(List.of(String.format(CMO_ERROR_MESSAGE, removedOrderId)));
+        assertThat(response.getErrors()).isEqualTo(List.of(String.format(CMO_ERROR_MESSAGE, REMOVE_ORDER_ID)));
     }
 
     @Test
