@@ -44,7 +44,6 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @Override
-    @JsonIgnore
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !(doc.getValue().isUploadedByHMCTS() && doc.getValue().isConfidentialDocument()))
@@ -52,7 +51,6 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     }
 
     @Override
-    @JsonIgnore
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceNC() {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
