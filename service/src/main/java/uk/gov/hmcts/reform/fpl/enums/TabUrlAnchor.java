@@ -24,6 +24,7 @@ public enum TabUrlAnchor {
     CORRESPONDENCE("Correspondence"),
     JUDICIAL_MESSAGES("Judicial%20messages"),
     C2("C2"),
+    OTHER_APPLICATIONS("Other%20applications"),
     CONFIDENTIAL("Confidential%20information");
 
     private final String anchor;

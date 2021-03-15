@@ -20,8 +20,8 @@ public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAss
 
     public SendEmailResponseAssert hasBody(EmailContent emailContent) {
         isNotNull();
-        String actualBody = actual.getBody();
-        String expectedBody = emailContent.body();
+        String actualBody = actual.getBody().replaceAll("\\P{Print}", "");
+        String expectedBody = emailContent.body().replaceAll("\\P{Print}", "");
         if (!Objects.equals(actualBody, expectedBody)) {
             failWithMessage("\nExpecting Body to be\n<%s>\nbut was:\n<%s>",
                 expectedBody, actualBody
