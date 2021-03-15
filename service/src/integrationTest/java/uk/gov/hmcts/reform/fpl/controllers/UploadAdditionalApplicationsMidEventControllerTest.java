@@ -25,12 +25,12 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadAdditionaApplicationsMidEventControllerTest extends AbstractCallbackTest {
+class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private FeeService feeService;
 
-    UploadAdditionaApplicationsMidEventControllerTest() {
+    UploadAdditionalApplicationsMidEventControllerTest() {
         super("upload-additional-applications");
     }
 

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
@@ -47,10 +48,9 @@ public class PbaNumberService {
     }
 
     public String update(String pbaNumber) {
-        if (!isEmpty(pbaNumber)) {
-            return setPrefix(pbaNumber);
-        }
-        return null;
+        return ofNullable(pbaNumber)
+            .map(PbaNumberHelper::setPrefix)
+            .orElse(null);
     }
 
     public List<String> validate(List<Element<Applicant>> applicantElementsList) {

@@ -27,11 +27,11 @@ import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @Slf4j
@@ -85,14 +85,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.buildC2DocumentBundle(caseData));
 
-        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT,
+        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT,
             "c2Type",
             "additionalApplicationType",
             "usePbaPayment",
             AMOUNT_TO_PAY,
             "pbaNumber",
             "clientCode",
-            "fileReference"));
+            "fileReference");
 
         return respond(caseDetails);
     }
@@ -110,7 +110,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             log.info("C2 payment for case {} not taken due to user decision", caseDetails.getId());
             publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
         } else {
-            if (displayAmountToPay(caseDetails)) {
+            if (amountToPayShownToUser(caseDetails)) {
                 try {
                     paymentService.makePaymentForC2(caseDetails.getId(), caseData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
@@ -124,7 +124,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         }
     }
 
-    private boolean displayAmountToPay(CaseDetails caseDetails) {
+    private boolean amountToPayShownToUser(CaseDetails caseDetails) {
         return YES.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY));
     }
 

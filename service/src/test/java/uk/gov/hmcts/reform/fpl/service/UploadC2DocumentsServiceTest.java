@@ -32,7 +32,7 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -98,9 +98,15 @@ class UploadC2DocumentsServiceTest {
         C2DocumentBundle actualC2DocumentBundle = actualC2DocumentBundleList.get(0).getValue();
 
         assertC2Bundle(actualC2DocumentBundle);
-        assertThat(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue())
-            .extracting("name", "notes")
-            .containsExactly(C13A_SPECIAL_GUARDIANSHIP, "Document notes");
+
+        assertThat(actualC2DocumentBundle.getSupplementsBundle())
+            .extracting(Element::getValue)
+            .containsExactly( SupplementsBundle.builder()
+                .name(C13A_SPECIAL_GUARDIANSHIP)
+                .notes("Document notes")
+                .dateTimeUploaded(time.now())
+                .uploadedBy("HMCTS")
+                .build());
     }
 
     @Test

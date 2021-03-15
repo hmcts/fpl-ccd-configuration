@@ -294,9 +294,10 @@ class CaseDataTest {
             assertThat(caseData.getMostRecentC2DocumentBundle()).isEqualTo(c2DocumentBundle1);
         }
 
-        @Test
-        void shouldReturnNullIfC2DocumentBundleIsEmpty() {
-            caseData = CaseData.builder().c2DocumentBundle(null).build();
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNullIfC2DocumentBundleIsEmpty(List<Element<C2DocumentBundle>> bundles) {
+            caseData = CaseData.builder().c2DocumentBundle(bundles).build();
             assertThat(caseData.getMostRecentC2DocumentBundle()).isNull();
         }
     }
