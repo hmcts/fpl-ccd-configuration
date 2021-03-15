@@ -11,7 +11,7 @@ const orderFunctions = require('../helpers/generated_order_helper');
 const representatives = require('../fixtures/representatives.js');
 const c2Payment = require('../fixtures/c2Payment.js');
 const expertReportLog = require('../fixtures/expertReportLog.js');
-const c2SupportingDocuments = require('../fixtures/c2SupportingDocuments.js');
+const supportingDocuments = require('../fixtures/c2SupportingDocuments.js');
 const supplements = require('../fixtures/supplements.js');
 
 const dateFormat = require('dateformat');
@@ -68,12 +68,14 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('CHANGE_SURNAME_OR_REMOVE_JURISDICTION');
-  await uploadAdditionalApplicationsEventPage.uploadSupplement(supplements);
-  await uploadAdditionalApplicationsEventPage.uploadSupportingDocument(c2SupportingDocuments);
+  await uploadAdditionalApplicationsEventPage.uploadC2Supplement(supplements);
+  await uploadAdditionalApplicationsEventPage.uploadC2SupportingDocument(supportingDocuments);
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
-  //await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadDocument(config.testFile);
+  await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
+  await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
+  await I.goToNextPage();
   const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);

@@ -6,8 +6,10 @@ module.exports = {
   fields: {
     uploadC2: '#temporaryC2Document_document',
     description: '#temporaryC2Document_description',
-    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
-    supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
+    c2SupportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
+    c2Supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
+    otherSupportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryOtherApplicationsBundle_supportingEvidenceBundle'),
+    otherSupplements: supplementsFragment.supplements(0, 'temporaryOtherApplicationsBundle_supplementsBundle'),
     c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
     usePbaPayment: {
       yes: '#usePbaPayment-Yes',
@@ -36,18 +38,18 @@ module.exports = {
     I.attachFile(this.fields.uploadC2, file);
   },
 
-  async uploadSupplement(document) {
+  async uploadC2Supplement(document) {
     await I.addAnotherElementToCollection('Supplements');
-    I.fillField(this.fields.supplements.name, document.name);
-    I.fillField(this.fields.supplements.notes, document.notes);
-    I.attachFile(this.fields.supplements.document, document.document);
+    I.fillField(this.fields.c2Supplements.name, document.name);
+    I.fillField(this.fields.c2Supplements.notes, document.notes);
+    I.attachFile(this.fields.c2Supplements.document, document.document);
   },
 
-  async uploadSupportingDocument(document) {
+  async uploadC2SupportingDocument(document) {
     await I.addAnotherElementToCollection('Supporting Documents');
-    I.fillField(this.fields.supportingDocuments.name, document.name);
-    I.fillField(this.fields.supportingDocuments.notes, document.notes);
-    I.attachFile(this.fields.supportingDocuments.document, document.document);
+    I.fillField(this.fields.c2SupportingDocuments.name, document.name);
+    I.fillField(this.fields.c2SupportingDocuments.notes, document.notes);
+    I.attachFile(this.fields.c2SupportingDocuments.document, document.document);
   },
 
   selectC2AdditionalOrdersRequested(ordersRequested) {
@@ -56,6 +58,20 @@ module.exports = {
 
   selectOtherApplication(type) {
     I.fillField(this.fields.otherApplicationPrefix, type);
+  },
+
+  async uploadOtherSupplement(document) {
+    await I.addAnotherElementToCollection('Supplements');
+    I.fillField(this.fields.otherSupplements.name, document.name);
+    I.fillField(this.fields.otherSupplements.notes, document.notes);
+    I.attachFile(this.fields.otherSupplements.document, document.document);
+  },
+
+  async uploadOtherSupportingDocument(document) {
+    await I.addAnotherElementToCollection('Supporting Documents');
+    I.fillField(this.fields.otherSupportingDocuments.name, document.name);
+    I.fillField(this.fields.otherSupportingDocuments.notes, document.notes);
+    I.attachFile(this.fields.otherSupportingDocuments.document, document.document);
   },
 
   usePbaPayment(usePbaPayment=true) {
