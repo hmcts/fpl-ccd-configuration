@@ -6,11 +6,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,9 +30,11 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromParentalResponsibilityTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
-import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
@@ -73,13 +75,13 @@ class FeeTypeTest {
     @ParameterizedTest
     @MethodSource("c2RequestedOrderToFeeTypeSource")
     void shouldReturnCorrespondingFeeTypeForC2RequestedOrdersType(
-        C2OrdersRequested c2OrderRequested, FeeType feeType) {
-        assertThat(fromC2OrdersRequestedType(List.of(c2OrderRequested))).isEqualTo(List.of(feeType));
+        C2AdditionalOrdersRequested c2AdditionalOrders, FeeType feeType) {
+        assertThat(fromC2OrdersRequestedType(List.of(c2AdditionalOrders))).isEqualTo(List.of(feeType));
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldReturnEmptyListWhenC2RequestedOrderIsNullOrEmptyList(List<C2OrdersRequested> list) {
+    void shouldReturnEmptyListWhenC2RequestedOrderIsNullOrEmptyList(List<C2AdditionalOrdersRequested> list) {
         assertThat(fromC2OrdersRequestedType(list)).isEmpty();
     }
 
@@ -98,13 +100,13 @@ class FeeTypeTest {
 
     @ParameterizedTest
     @MethodSource("supplementTypeToFeeTypeSource")
-    void shouldReturnCorrespondingFeeTypeForSupplementType(Supplements supplementType, List<FeeType> feeTypes) {
+    void shouldReturnCorrespondingFeeTypeForSupplementType(SupplementType supplementType, List<FeeType> feeTypes) {
         assertThat(fromSupplementTypes(List.of(supplementType))).isEqualTo(feeTypes);
     }
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldReturnEmptyListWhenSupplementTypeIsNullOrEmptyList(List<Supplements> supplementsList) {
+    void shouldReturnEmptyListWhenSupplementTypeIsNullOrEmptyList(List<SupplementType> supplementsList) {
         assertThat(fromSupplementTypes(supplementsList)).isEmpty();
     }
 
@@ -132,8 +134,8 @@ class FeeTypeTest {
     private static Stream<Arguments> c2RequestedOrderToFeeTypeSource() {
         return Stream.of(
             Arguments.of(CHANGE_SURNAME_OR_REMOVE_JURISDICTION, FeeType.CHANGE_SURNAME),
-            Arguments.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN, FeeType.APPOINTMENT_OF_GUARDIAN),
-            Arguments.of(C2OrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, FeeType.APPOINTMENT_OF_GUARDIAN)
+            Arguments.of(APPOINTMENT_OF_GUARDIAN, FeeType.APPOINTMENT_OF_GUARDIAN),
+            Arguments.of(TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, FeeType.APPOINTMENT_OF_GUARDIAN)
         );
     }
 
@@ -153,12 +155,12 @@ class FeeTypeTest {
 
     private static Stream<Arguments> supplementTypeToFeeTypeSource() {
         return Stream.of(
-            Arguments.of(Supplements.C13A_SPECIAL_GUARDIANSHIP, List.of(FeeType.SPECIAL_GUARDIANSHIP)),
+            Arguments.of(SupplementType.C13A_SPECIAL_GUARDIANSHIP, List.of(FeeType.SPECIAL_GUARDIANSHIP)),
             Arguments.of(
-                Supplements.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, List.of(FeeType.CONTACT_WITH_CHILD_IN_CARE)),
-            Arguments.of(Supplements.C15_CONTACT_WITH_CHILD_IN_CARE, List.of(FeeType.CONTACT_WITH_CHILD_IN_CARE)),
-            Arguments.of(Supplements.C16_CHILD_ASSESSMENT, List.of(FeeType.CHILD_ASSESSMENT)),
-            Arguments.of(Supplements.C18_RECOVERY_ORDER, List.of(FeeType.RECOVERY_ORDER))
+                SupplementType.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, List.of(FeeType.CONTACT_WITH_CHILD_IN_CARE)),
+            Arguments.of(SupplementType.C15_CONTACT_WITH_CHILD_IN_CARE, List.of(FeeType.CONTACT_WITH_CHILD_IN_CARE)),
+            Arguments.of(SupplementType.C16_CHILD_ASSESSMENT, List.of(FeeType.CHILD_ASSESSMENT)),
+            Arguments.of(SupplementType.C18_RECOVERY_ORDER, List.of(FeeType.RECOVERY_ORDER))
         );
     }
 

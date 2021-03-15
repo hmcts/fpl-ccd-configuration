@@ -30,12 +30,12 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
@@ -106,13 +106,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         caseDetails.getData().put("additionalApplicationsBundle", additionalApplications);
 
-        removeTemporaryFields(caseDetails);
-
-        return respond(caseDetails);
-    }
-
-    private void removeTemporaryFields(CaseDetails caseDetails) {
-        caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT,
+        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT,
             "c2Type",
             "additionalApplicationType",
             "usePbaPayment",
@@ -121,7 +115,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             "clientCode",
             "fileReference",
             "temporaryPbaPayment",
-            TEMPORARY_OTHER_APPLICATIONS_BUNDLE));
+            TEMPORARY_OTHER_APPLICATIONS_BUNDLE);
+
+        return respond(caseDetails);
     }
 
     @PostMapping("/submitted")
@@ -150,7 +146,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
                 publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
             } else {
-                if (displayAmountToPay(caseDetails)) {
+                if (amountToPayShownToUser(caseDetails)) {
                     try {
                         paymentService.makePaymentForC2(caseDetails.getId(), caseData);
                     } catch (FeeRegisterException | PaymentsApiException paymentException) {
@@ -173,7 +169,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER);
     }
 
-    private boolean displayAmountToPay(CaseDetails caseDetails) {
+    private boolean amountToPayShownToUser(CaseDetails caseDetails) {
         return YES.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY));
     }
 

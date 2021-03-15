@@ -6,12 +6,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
@@ -28,12 +27,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C16_CHILD_ASSESSMENT;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C20_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C16_CHILD_ASSESSMENT;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -49,9 +50,8 @@ class ApplicationsFeeCalculatorTest {
     @Test
     void shouldCalculateFeeForC2DocumentBundle() {
         C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2OrdersRequested(List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN,
-                C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
-            .supplementsBundle(List.of(element(SupplementsBundle.builder().name(C16_CHILD_ASSESSMENT).build())))
+            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -77,9 +77,9 @@ class ApplicationsFeeCalculatorTest {
     @Test
     void shouldNotCalculateFeeWhenC2AndOtherApplicationsAreSelectedAndOnlyC2DocumentBundleExists() {
         C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2OrdersRequested(List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN,
-                C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
-            .supplementsBundle(List.of(element(SupplementsBundle.builder().name(C16_CHILD_ASSESSMENT).build())))
+            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN,
+                CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -95,8 +95,7 @@ class ApplicationsFeeCalculatorTest {
     @Test
     void shouldNotCalculateFeeWhenC2AndOtherApplicationsAreSelectedAndOtherApplicationsBundleDocumentIsNull() {
         C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2OrdersRequested(List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN,
-                C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -114,7 +113,7 @@ class ApplicationsFeeCalculatorTest {
     void shouldCalculateFeeForOtherDocumentBundle() {
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
-            .supplementsBundle(List.of(element(SupplementsBundle.builder().name(C13A_SPECIAL_GUARDIANSHIP).build())))
+            .supplementsBundle(List.of(element(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build())))
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -140,9 +139,8 @@ class ApplicationsFeeCalculatorTest {
     @Test
     void shouldCalculateFeeForC2DocumentBundleAndOtherApplicationsBundle() {
         C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2OrdersRequested(List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN,
-                C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
-            .supplementsBundle(List.of(element(SupplementsBundle.builder().name(C16_CHILD_ASSESSMENT).build())))
+            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
             .build();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
@@ -150,8 +148,8 @@ class ApplicationsFeeCalculatorTest {
             .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
             .document(DocumentReference.builder().build())
             .supplementsBundle(List.of(
-                element(SupplementsBundle.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()),
-                element(SupplementsBundle.builder().name(C20_SECURE_ACCOMMODATION)
+                element(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()),
+                element(Supplement.builder().name(C20_SECURE_ACCOMMODATION)
                     .secureAccommodationType(WALES).build())))
             .build();
 

@@ -18,13 +18,13 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeResponse;
 import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -47,12 +47,14 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.OTHER;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.PLACEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FATHER;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C16_CHILD_ASSESSMENT;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C18_RECOVERY_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C16_CHILD_ASSESSMENT;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C18_RECOVERY_ORDER;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.C2_WITHOUT_NOTICE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.C2_WITH_NOTICE_KEYWORD;
 import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.CARE_ORDER_KEYWORD;
@@ -298,7 +300,7 @@ class FeeServiceTest {
         }
 
         @Test
-        void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplements() {
+        void shouldReturnFeesDataWithMaximumAmountForOtherApplicationTypeAndSupplementType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
                 buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
@@ -311,7 +313,7 @@ class FeeServiceTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnApplicationFeesDataWhenNoSupplementsExist(List<Supplements> supplementTypes) {
+        void shouldReturnApplicationFeesDataWhenNoSupplementTypeExist(List<SupplementType> supplementTypes) {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
                 buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
@@ -322,7 +324,7 @@ class FeeServiceTest {
         }
 
         @Test
-        void shouldReturnFeesDataWithMaximumAmountForSupplementsWithSecureAccommodationWales() {
+        void shouldReturnFeesDataWithMaximumAmountForSupplementTypeWithSecureAccommodationWales() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
                 buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
@@ -334,7 +336,7 @@ class FeeServiceTest {
         }
 
         @Test
-        void shouldReturnFeesDataWithMaximumAmountForSupplementsWithSecureAccommodationEngland() {
+        void shouldReturnFeesDataWithMaximumAmountForSupplementTypeWithSecureAccommodationEngland() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 null,
                 buildOtherApplicationsBundle(C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION, null),
@@ -348,9 +350,8 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForParentalResponsibilityType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
-                buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(C2OrdersRequested.APPOINTMENT_OF_GUARDIAN)),
-                buildOtherApplicationsBundle(
-                    OtherApplicationType.C1_PARENTAL_RESPONSIBILITY, PR_BY_FATHER),
+                buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(APPOINTMENT_OF_GUARDIAN)),
+                buildOtherApplicationsBundle(C1_PARENTAL_RESPONSIBILITY, PR_BY_FATHER),
                 List.of(C13A_SPECIAL_GUARDIANSHIP),
                 List.of());
 
@@ -359,7 +360,7 @@ class FeeServiceTest {
         }
 
         @Test
-        void shouldReturnFeesDataWithMaximumAmountWhenC2OrdersRequestedHaveParentalResponsibilityType() {
+        void shouldReturnFeesDataWithMaximumAmountWhenC2AdditionalOrdersRequestedHaveParentalResponsibilityType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(PARENTAL_RESPONSIBILITY), PR_BY_FATHER),
                 null,
@@ -389,13 +390,15 @@ class FeeServiceTest {
         return feeResponse;
     }
 
-    private C2DocumentBundle buildC2Document(C2ApplicationType type, List<C2OrdersRequested> c2Orders) {
+    private C2DocumentBundle buildC2Document(C2ApplicationType type, List<C2AdditionalOrdersRequested> c2Orders) {
         return buildC2Document(type, c2Orders, null);
     }
 
     private C2DocumentBundle buildC2Document(
-        C2ApplicationType type, List<C2OrdersRequested> c2Orders, ParentalResponsibilityType prType) {
-        return C2DocumentBundle.builder().type(type).c2OrdersRequested(c2Orders)
+        C2ApplicationType type,
+        List<C2AdditionalOrdersRequested> additionalC2Orders,
+        ParentalResponsibilityType prType) {
+        return C2DocumentBundle.builder().type(type).c2AdditionalOrdersRequested(additionalC2Orders)
             .parentalResponsibilityType(prType)
             .build();
     }

@@ -11,10 +11,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -230,18 +230,18 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
     }
 
-    private void assertSupplementsBundle(List<Element<SupplementsBundle>> documentBundle) {
-        List<SupplementsBundle> supplementsBundle = unwrapElements(documentBundle);
+    private void assertSupplementsBundle(List<Element<Supplement>> documentBundle) {
+        List<Supplement> supplementsBundle = unwrapElements(documentBundle);
 
         assertThat(supplementsBundle).first()
             .extracting(
-                SupplementsBundle::getName,
-                SupplementsBundle::getNotes,
-                SupplementsBundle::getDateTimeUploaded,
-                SupplementsBundle::getDocument,
-                SupplementsBundle::getUploadedBy
+                Supplement::getName,
+                Supplement::getNotes,
+                Supplement::getDateTimeUploaded,
+                Supplement::getDocument,
+                Supplement::getUploadedBy
             ).containsExactly(
-            Supplements.C13A_SPECIAL_GUARDIANSHIP,
+            SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
             document,
@@ -300,9 +300,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
     }
 
-    private SupplementsBundle createSupplementsBundle() {
-        return SupplementsBundle.builder()
-            .name(Supplements.C13A_SPECIAL_GUARDIANSHIP)
+    private Supplement createSupplementsBundle() {
+        return Supplement.builder()
+            .name(SupplementType.C13A_SPECIAL_GUARDIANSHIP)
             .notes("Supplement notes")
             .dateTimeUploaded(time.now())
             .document(document)

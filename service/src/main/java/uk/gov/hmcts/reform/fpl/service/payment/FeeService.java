@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromParentalResponsibilityTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationTypes;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
-import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.PARENTAL_RESPONSIBILITY;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY;
 
 @Slf4j
 @Service
@@ -86,7 +86,7 @@ public class FeeService {
     public FeesData getFeesDataForAdditionalApplications(
         C2DocumentBundle c2DocumentBundle,
         OtherApplicationsBundle otherApplicationsBundle,
-        List<Supplements> supplementTypes,
+        List<SupplementType> supplementTypes,
         List<SecureAccommodationType> secureAccommodationTypes) {
 
         List<FeeType> feeTypes = getFeeTypes(
@@ -101,7 +101,7 @@ public class FeeService {
     private List<FeeType> getFeeTypes(
         C2DocumentBundle c2DocumentBundle,
         OtherApplicationsBundle otherApplicationsBundle,
-        List<Supplements> supplementTypes,
+        List<SupplementType> supplementTypes,
         List<SecureAccommodationType> secureAccommodationTypes
     ) {
         List<FeeType> feeTypes = new ArrayList<>();
@@ -137,15 +137,16 @@ public class FeeService {
 
         feeTypes.add(fromC2ApplicationType(c2DocumentBundle.getType()));
 
-        List<C2OrdersRequested> c2OrdersRequested = new ArrayList<>(c2DocumentBundle.getC2OrdersRequested());
+        List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested
+            = new ArrayList<>(c2DocumentBundle.getC2AdditionalOrdersRequested());
 
-        if (isNotEmpty(c2OrdersRequested)) {
-            if (c2OrdersRequested.contains(PARENTAL_RESPONSIBILITY)) {
-                c2OrdersRequested.remove(PARENTAL_RESPONSIBILITY);
+        if (isNotEmpty(c2AdditionalOrdersRequested)) {
+            if (c2AdditionalOrdersRequested.contains(PARENTAL_RESPONSIBILITY)) {
+                c2AdditionalOrdersRequested.remove(PARENTAL_RESPONSIBILITY);
                 feeTypes.add(fromParentalResponsibilityTypes(c2DocumentBundle.getParentalResponsibilityType()));
             }
 
-            feeTypes.addAll(fromC2OrdersRequestedType(c2OrdersRequested));
+            feeTypes.addAll(fromC2OrdersRequestedType(c2AdditionalOrdersRequested));
         }
         return feeTypes;
     }

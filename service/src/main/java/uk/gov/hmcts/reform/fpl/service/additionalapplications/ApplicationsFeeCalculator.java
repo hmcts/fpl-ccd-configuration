@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
@@ -52,13 +52,13 @@ public class ApplicationsFeeCalculator {
         Map<String, Object> data = new HashMap<>();
 
         try {
-            List<Element<SupplementsBundle>> supplementsBundles = mergeSupplementsBundles(caseData);
+            List<Element<Supplement>> supplementsBundle = mergeSupplementsBundles(caseData);
 
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 caseData.getTemporaryC2Document(),
                 caseData.getTemporaryOtherApplicationsBundle(),
-                getSupplementsWithoutSecureAccommodationType(supplementsBundles),
-                getSecureAccommodationTypes(supplementsBundles));
+                getSupplementsWithoutSecureAccommodationType(supplementsBundle),
+                getSecureAccommodationTypes(supplementsBundle));
 
             data.put(AMOUNT_TO_PAY, BigDecimalHelper.toCCDMoneyGBP(feesData.getTotalAmount()));
             data.put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
@@ -69,36 +69,36 @@ public class ApplicationsFeeCalculator {
         return data;
     }
 
-    private List<Element<SupplementsBundle>> mergeSupplementsBundles(CaseData caseData) {
-        List<Element<SupplementsBundle>> supplementsBundles = new ArrayList<>();
+    private List<Element<Supplement>> mergeSupplementsBundles(CaseData caseData) {
+        List<Element<Supplement>> supplementsBundle = new ArrayList<>();
 
         if (caseData.getTemporaryC2Document() != null
             && isNotEmpty(caseData.getTemporaryC2Document().getSupplementsBundle())) {
-            supplementsBundles.addAll(caseData.getTemporaryC2Document().getSupplementsBundle());
+            supplementsBundle.addAll(caseData.getTemporaryC2Document().getSupplementsBundle());
         }
 
         if (!isNull(caseData.getTemporaryOtherApplicationsBundle())
             && isNotEmpty(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle())) {
-            supplementsBundles.addAll(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle());
+            supplementsBundle.addAll(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle());
         }
 
-        return supplementsBundles;
+        return supplementsBundle;
     }
 
-    private List<Supplements> getSupplementsWithoutSecureAccommodationType(
-        List<Element<SupplementsBundle>> supplementsBundles) {
+    private List<SupplementType> getSupplementsWithoutSecureAccommodationType(
+        List<Element<Supplement>> supplementsBundles) {
 
         return unwrapElements(supplementsBundles).stream()
-            .map(SupplementsBundle::getName)
-            .filter(name -> !Supplements.C20_SECURE_ACCOMMODATION.equals(name))
+            .map(Supplement::getName)
+            .filter(name -> !SupplementType.C20_SECURE_ACCOMMODATION.equals(name))
             .collect(Collectors.toList());
     }
 
     private List<SecureAccommodationType> getSecureAccommodationTypes(
-        List<Element<SupplementsBundle>> supplementsBundles) {
+        List<Element<Supplement>> supplementsBundles) {
         return unwrapElements(supplementsBundles).stream()
-            .filter(supplement -> Supplements.C20_SECURE_ACCOMMODATION.equals(supplement.getName()))
-            .map(SupplementsBundle::getSecureAccommodationType)
+            .filter(supplement -> SupplementType.C20_SECURE_ACCOMMODATION.equals(supplement.getName()))
+            .map(Supplement::getSecureAccommodationType)
             .collect(Collectors.toList());
     }
 }

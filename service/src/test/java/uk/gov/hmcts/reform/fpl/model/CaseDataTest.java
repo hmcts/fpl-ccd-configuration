@@ -294,9 +294,10 @@ class CaseDataTest {
             assertThat(caseData.getMostRecentC2DocumentBundle()).isEqualTo(c2DocumentBundle1);
         }
 
-        @Test
-        void shouldReturnNullIfC2DocumentBundleIsEmpty() {
-            caseData = CaseData.builder().c2DocumentBundle(null).build();
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnNullIfC2DocumentBundleIsEmpty(List<Element<C2DocumentBundle>> bundles) {
+            caseData = CaseData.builder().c2DocumentBundle(bundles).build();
             assertThat(caseData.getMostRecentC2DocumentBundle()).isNull();
         }
     }
@@ -1257,44 +1258,29 @@ class CaseDataTest {
     }
 
     @Nested
-    class GetHearingOrderDraftCMOs {
+    class GetHearingOrdersBundlesDraftOrders {
         @Test
         void shouldReturnAListOfDraftCaseManagementOrdersWhenExistingWithinHearingOrderBundleDrafts() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
             Element<HearingOrder> draftCMOTwo = element(randomUUID(), buildHearingOrder(AGREED_CMO));
             Element<HearingOrder> draftCMOThree = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftOrder = element(buildHearingOrder(C21));
 
             CaseData caseData = CaseData.builder()
                 .hearingOrdersBundlesDrafts(List.of(
-                    element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
-                    element(HearingOrdersBundle.builder().orders(List.of(
-                        draftCMOThree,
-                        element(buildHearingOrder(C21))
-                    )).build())))
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne, draftCMOTwo)).build()),
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOThree, draftOrder)).build())))
                 .build();
 
-            assertThat(caseData.getHearingOrderDraftCMOs()).isEqualTo(List.of(draftCMOOne, draftCMOTwo, draftCMOThree));
-        }
-
-        @Test
-        void shouldReturnAnEmptyListWhenHearingOrderBundlesWithDraftCMOsDoNotExist() {
-            CaseData caseData = CaseData.builder()
-                .hearingOrdersBundlesDrafts(List.of(
-                    element(HearingOrdersBundle.builder().orders(List.of(
-                        element(buildHearingOrder(C21)))).build()),
-                    element(HearingOrdersBundle.builder().orders(List.of(
-                        element(buildHearingOrder(C21))
-                    )).build())))
-                .build();
-
-            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+            assertThat(caseData.getOrdersFromHearingOrderDraftsBundles()).isEqualTo(
+                List.of(draftCMOOne, draftCMOTwo, draftCMOThree, draftOrder));
         }
 
         @Test
         void shouldReturnAnEmptyListIfHearingOrderBundlesDoNotExist() {
             CaseData caseData = CaseData.builder().build();
 
-            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+            assertThat(caseData.getOrdersFromHearingOrderDraftsBundles()).isEmpty();
         }
     }
 
@@ -1343,11 +1329,11 @@ class CaseDataTest {
     @Nested
     class GetHearingOrderBundleThatContainsOrder {
         @Test
-        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedOrder() {
+        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedCaseManagementOrder() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
-                .orders(List.of(
+                .orders(newArrayList(
                     draftCMOOne,
                     element(buildHearingOrder(C21))))
                 .build());
@@ -1369,6 +1355,28 @@ class CaseDataTest {
         }
 
         @Test
+        void shouldReturnHearingOrdersBundleWhenBundleContainsExpectedDraftOrder() {
+            Element<HearingOrder> draftOrder = element(buildHearingOrder(C21));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(newArrayList(element(buildHearingOrder(DRAFT_CMO)), element(buildHearingOrder(C21))))
+                .build());
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(newArrayList(element(buildHearingOrder(DRAFT_CMO)), draftOrder))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleOne, hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftOrder.getId());
+
+            assertThat(matchingHearingOrderBundle).isPresent().contains(hearingOrdersBundleTwo);
+        }
+
+        @Test
         void shouldReturnEmptyWhenHearingOrdersBundlesDraftsIsNull() {
             CaseData caseData = CaseData.builder().build();
 
@@ -1383,7 +1391,7 @@ class CaseDataTest {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
-                .orders(List.of(
+                .orders(newArrayList(
                     element(HearingOrder.builder().type(DRAFT_CMO).build()),
                     element(HearingOrder.builder().type(C21).build())))
                 .build());

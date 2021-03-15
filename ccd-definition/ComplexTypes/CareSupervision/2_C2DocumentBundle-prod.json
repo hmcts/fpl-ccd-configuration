@@ -104,15 +104,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "supplementsBundle",
-    "ElementLabel": "Supplements",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupplementsBundle",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
     "ListElementCode": "supportingEvidenceLA",
     "ElementLabel": "C2 supporting documents",
     "FieldType": "Collection",

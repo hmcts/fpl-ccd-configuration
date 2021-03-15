@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -36,8 +36,8 @@ import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FATHER;
 import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C20_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -75,49 +75,49 @@ class UploadAdditionalApplicationsServiceTest {
 
     @Test
     void shouldBuildExpectedC2DocumentBundle() {
-        SupplementsBundle supplementsBundle = createSupplementsBundle();
+        Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
 
         CaseData caseData = CaseData.builder()
-            .temporaryC2Document(createC2DocumentBundle(supplementsBundle, supportingEvidenceBundle))
+            .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
             .c2Type(WITH_NOTICE)
             .build();
 
         C2DocumentBundle actualC2DocumentBundle = service.buildC2DocumentBundle(caseData);
 
         assertC2Bundle(actualC2DocumentBundle);
-        assertSupplementsBundle(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue(), supplementsBundle);
+        assertSupplementsBundle(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue(), supplement);
         assertSupportingEvidenceBundle(
             actualC2DocumentBundle.getSupportingEvidenceBundle().get(0).getValue(), supportingEvidenceBundle);
     }
 
     @Test
     void shouldBuildOtherApplicationsBundle() {
-        SupplementsBundle supplementsBundle = createSupplementsBundle();
+        Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
 
         OtherApplicationsBundle otherApplicationsBundle = createOtherApplicationsBundle(
-            supplementsBundle, supportingDocument);
+            supplement, supportingDocument);
 
         OtherApplicationsBundle actualOtherApplicationsBundle = service.buildOtherApplicationsBundle(
             CaseData.builder().temporaryOtherApplicationsBundle(otherApplicationsBundle).build());
 
         assertOtherApplicationsBundle(actualOtherApplicationsBundle);
         assertSupplementsBundle(
-            actualOtherApplicationsBundle.getSupplementsBundle().get(0).getValue(), supplementsBundle);
+            actualOtherApplicationsBundle.getSupplementsBundle().get(0).getValue(), supplement);
         assertSupportingEvidenceBundle(
             actualOtherApplicationsBundle.getSupportingEvidenceBundle().get(0).getValue(), supportingDocument);
     }
 
     @Test
     void shouldBuildAdditionalApplicationsBundle() {
-        SupplementsBundle c2SupplementsBundle = createSupplementsBundle();
+        Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
 
-        SupplementsBundle otherSupplementsBundle = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
+        Supplement otherSupplementsBundle = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
 
-        C2DocumentBundle c2DocumentBundle = createC2DocumentBundle(c2SupplementsBundle, c2SupportingDocument);
+        C2DocumentBundle c2DocumentBundle = createC2DocumentBundle(c2Supplement, c2SupportingDocument);
 
         OtherApplicationsBundle otherApplicationsBundle = createOtherApplicationsBundle(
             otherSupplementsBundle, otherSupportingDocument);
@@ -135,10 +135,10 @@ class UploadAdditionalApplicationsServiceTest {
 
     @Test
     void shouldBuildAdditionalApplicationsBundleWithC2DocumentBundleAndPBAPayment() {
-        SupplementsBundle c2SupplementsBundle = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
+        Supplement c2Supplement = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
 
-        C2DocumentBundle c2DocumentBundle = createC2DocumentBundle(c2SupplementsBundle, c2SupportingDocument);
+        C2DocumentBundle c2DocumentBundle = createC2DocumentBundle(c2Supplement, c2SupportingDocument);
 
         PBAPayment pbaPayment = buildPBAPayment();
 
@@ -151,11 +151,11 @@ class UploadAdditionalApplicationsServiceTest {
 
     @Test
     void shouldBuildAdditionalApplicationsBundleWithOtherDocumentBundleAndPBAPayment() {
-        SupplementsBundle supplementsBundle = createSupplementsBundle(Supplements.C16_CHILD_ASSESSMENT);
+        Supplement supplement = createSupplementsBundle(SupplementType.C16_CHILD_ASSESSMENT);
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
 
         OtherApplicationsBundle otherApplicationsBundle = createOtherApplicationsBundle(
-            supplementsBundle, supportingDocument);
+            supplement, supportingDocument);
 
         PBAPayment pbaPayment = buildPBAPayment();
 
@@ -182,7 +182,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(documentBundle.getSupplementsBundle()).hasSize(1);
     }
 
-    private void assertSupplementsBundle(SupplementsBundle actual, SupplementsBundle expected) {
+    private void assertSupplementsBundle(Supplement actual, Supplement expected) {
         assertThat(actual)
             .extracting("name", "notes", "document", "uploadedBy")
             .containsExactly(expected.getName(), expected.getNotes(), expected.getDocument(), HMCTS);
@@ -199,22 +199,22 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     private OtherApplicationsBundle createOtherApplicationsBundle(
-        SupplementsBundle supplementsBundle, SupportingEvidenceBundle supportingDocument1) {
+        Supplement supplement, SupportingEvidenceBundle supportingDocument1) {
         return OtherApplicationsBundle.builder()
             .applicationType(C1_PARENTAL_RESPONSIBILITY)
             .document(DOCUMENT)
             .parentalResponsibilityType(PR_BY_FATHER)
-            .supplementsBundle(wrapElements(supplementsBundle))
+            .supplementsBundle(wrapElements(supplement))
             .supportingEvidenceBundle(wrapElements(supportingDocument1))
             .build();
     }
 
     private C2DocumentBundle createC2DocumentBundle(
-        SupplementsBundle supplementsBundle, SupportingEvidenceBundle supportingEvidenceBundle) {
+        Supplement supplementsBundle, SupportingEvidenceBundle supportingEvidenceBundle) {
         return C2DocumentBundle.builder()
             .type(WITH_NOTICE)
             .document(DOCUMENT)
-            .c2OrdersRequested(List.of(C2OrdersRequested.PARENTAL_RESPONSIBILITY))
+            .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
             .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_SECOND_FEMALE_PARENT)
             .supportingEvidenceBundle(wrapElements(supportingEvidenceBundle))
             .supplementsBundle(wrapElements(supplementsBundle))
@@ -234,12 +234,12 @@ class UploadAdditionalApplicationsServiceTest {
             .build();
     }
 
-    private SupplementsBundle createSupplementsBundle() {
+    private Supplement createSupplementsBundle() {
         return createSupplementsBundle(C13A_SPECIAL_GUARDIANSHIP);
     }
 
-    private SupplementsBundle createSupplementsBundle(Supplements name) {
-        return SupplementsBundle.builder()
+    private Supplement createSupplementsBundle(SupplementType name) {
+        return Supplement.builder()
             .name(name)
             .secureAccommodationType(name == C20_SECURE_ACCOMMODATION ? WALES : null)
             .notes("Document notes")

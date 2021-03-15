@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -10,7 +12,6 @@ import java.util.List;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class PbaNumberServiceTest {
@@ -64,13 +65,10 @@ class PbaNumberServiceTest {
         assertThat(updatedPbaNumber).isEqualTo("PBA1234567");
     }
 
-    @Test
-    void shouldReturnNullWhenEmptyPbaNumber() {
-        String pbaNumber = "";
-
-        String updatedPbaNumber = pbaNumberService.update(pbaNumber);
-
-        assertNull(updatedPbaNumber);
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnNullWhenEmptyPbaNumber(String pbaNumber) {
+        assertThat(pbaNumberService.update(pbaNumber)).isNull();
     }
 
     @Test
@@ -91,13 +89,10 @@ class PbaNumberServiceTest {
         assertThat(errors).containsExactly(VALIDATION_ERROR_MESSAGE);
     }
 
-    @Test
-    void shouldReturnEmptyListWhenPbaNumberIsNull() {
-        String pbaNumber = null;
-
-        List<String> errors = pbaNumberService.validate(pbaNumber);
-
-        assertThat(errors).isEmpty();
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnEmptyListWhenPbaNumberIsNull(String pbaNumber) {
+        assertThat(pbaNumberService.validate(pbaNumber)).isEmpty();
     }
 
     @Test

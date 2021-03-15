@@ -84,19 +84,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceBundle",
-    "ElementLabel": "Supporting documents",
+    "ListElementCode": "supplementsBundle",
+    "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "FieldTypeParameter": "SupplementsBundle",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "supplementsBundle",
-    "ElementLabel": "Supplements",
+    "ListElementCode": "supportingEvidenceBundle",
+    "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupplementsBundle",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public"
   },
   {
@@ -112,21 +112,21 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "supportingEvidenceNC",
-    "ElementLabel": "C2 supporting documents",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ListElementCode": "c2AdditionalOrdersRequested",
+    "ElementLabel": "Additional orders requested",
+    "HintText": "Select all that apply",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C2AdditionalOrdersRequested",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "c2OrdersRequested",
-    "ElementLabel": "Additional orders requested",
-    "HintText": "Select all that apply",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "C2OrdersRequested",
+    "ListElementCode": "supportingEvidenceNC",
+    "ElementLabel": "C2 supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -35,7 +35,7 @@ public class UploadAdditionalApplicationsService {
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
             getSupportingEvidenceBundle(caseData.getTemporaryC2Document().getSupportingEvidenceBundle(), uploadedBy);
 
-        List<SupplementsBundle> updatedSupplementsBundle =
+        List<Supplement> updatedSupplementsBundle =
             getSupplementsBundle(caseData.getTemporaryC2Document().getSupplementsBundle(), uploadedBy);
 
         return caseData.getTemporaryC2Document()
@@ -55,7 +55,7 @@ public class UploadAdditionalApplicationsService {
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
             temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy);
 
-        List<SupplementsBundle> updatedSupplementsBundle = getSupplementsBundle(
+        List<Supplement> updatedSupplementsBundle = getSupplementsBundle(
             temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy);
 
         return temporaryOtherApplicationsBundle.toBuilder()
@@ -96,8 +96,8 @@ public class UploadAdditionalApplicationsService {
             .collect(Collectors.toList());
     }
 
-    private List<SupplementsBundle> getSupplementsBundle(
-        List<Element<SupplementsBundle>> supplementsBundle, String uploadedBy) {
+    private List<Supplement> getSupplementsBundle(
+        List<Element<Supplement>> supplementsBundle, String uploadedBy) {
         return unwrapElements(supplementsBundle)
             .stream()
             .map(supplement -> supplement.toBuilder()

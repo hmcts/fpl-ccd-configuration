@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SupplementsBundle {
-    private final Supplements name;
+public class Supplement {
+    private final SupplementType name;
     private final SecureAccommodationType secureAccommodationType;
     private final String notes;
     private LocalDateTime dateTimeUploaded;

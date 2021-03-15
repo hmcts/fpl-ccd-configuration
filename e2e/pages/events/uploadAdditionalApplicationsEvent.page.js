@@ -10,7 +10,7 @@ module.exports = {
     c2Supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
     otherSupportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryOtherApplicationsBundle_supportingEvidenceBundle'),
     otherSupplements: supplementsFragment.supplements(0, 'temporaryOtherApplicationsBundle_supplementsBundle'),
-    c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
+    c2AdditionalOrdersRequested:'#temporaryC2Document_c2AdditionalOrdersRequested-',
     usePbaPayment: {
       yes: '#temporaryPbaPayment_usePbaPayment-Yes',
       no: '#temporaryPbaPayment_usePbaPayment-No',

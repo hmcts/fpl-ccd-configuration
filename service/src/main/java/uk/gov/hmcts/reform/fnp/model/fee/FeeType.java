@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fnp.model.fee;
 
 import com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.Supplements;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +15,9 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
-import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.CHANGE_SURNAME_OR_REMOVE_JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested.TERMINATION_OF_APPOINTMENT_OF_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C100_CHILD_ARRANGEMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
@@ -69,15 +69,15 @@ public enum FeeType {
         );
     }
 
-    private static final Map<Supplements, FeeType> supplementToFeeMap;
+    private static final Map<SupplementType, FeeType> supplementToFeeMap;
 
     static {
         supplementToFeeMap = Map.of(
-            Supplements.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
-            Supplements.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, CONTACT_WITH_CHILD_IN_CARE,
-            Supplements.C15_CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE,
-            Supplements.C16_CHILD_ASSESSMENT, CHILD_ASSESSMENT,
-            Supplements.C18_RECOVERY_ORDER, RECOVERY_ORDER
+            SupplementType.C13A_SPECIAL_GUARDIANSHIP, SPECIAL_GUARDIANSHIP,
+            SupplementType.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, CONTACT_WITH_CHILD_IN_CARE,
+            SupplementType.C15_CONTACT_WITH_CHILD_IN_CARE, CONTACT_WITH_CHILD_IN_CARE,
+            SupplementType.C16_CHILD_ASSESSMENT, CHILD_ASSESSMENT,
+            SupplementType.C18_RECOVERY_ORDER, RECOVERY_ORDER
         );
     }
 
@@ -96,12 +96,12 @@ public enum FeeType {
             C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS);
     }
 
-    private static final Map<C2OrdersRequested, FeeType> c2OrdersRequestedToFeesMap;
+    private static final Map<C2AdditionalOrdersRequested, FeeType> c2AdditionalOrdersToFeesMap;
 
     static {
-        c2OrdersRequestedToFeesMap = Map.of(
+        c2AdditionalOrdersToFeesMap = Map.of(
             CHANGE_SURNAME_OR_REMOVE_JURISDICTION, CHANGE_SURNAME,
-            C2OrdersRequested.APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN,
+            C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN,
             TERMINATION_OF_APPOINTMENT_OF_GUARDIAN, APPOINTMENT_OF_GUARDIAN);
     }
 
@@ -122,13 +122,13 @@ public enum FeeType {
         return C2_WITHOUT_NOTICE;
     }
 
-    public static List<FeeType> fromC2OrdersRequestedType(List<C2OrdersRequested> c2OrdersRequestedList) {
+    public static List<FeeType> fromC2OrdersRequestedType(List<C2AdditionalOrdersRequested> c2OrdersRequestedList) {
         if (isEmpty(c2OrdersRequestedList)) {
             return ImmutableList.of();
         }
 
         return c2OrdersRequestedList.stream()
-            .map(c2OrdersRequestedToFeesMap::get)
+            .map(c2AdditionalOrdersToFeesMap::get)
             .collect(toUnmodifiableList());
     }
 
@@ -146,7 +146,7 @@ public enum FeeType {
         return PARENTAL_RESPONSIBILITY_FEMALE_PARENT;
     }
 
-    public static List<FeeType> fromSupplementTypes(List<Supplements> supplementTypes) {
+    public static List<FeeType> fromSupplementTypes(List<SupplementType> supplementTypes) {
         if (isEmpty(supplementTypes)) {
             return ImmutableList.of();
         }

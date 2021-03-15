@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -32,14 +32,14 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
-    private List<Element<SupplementsBundle>> supplementsBundle;
+    private List<Element<Supplement>> supplementsBundle;
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
-    public List<Element<SupplementsBundle>> getSupplementsBundle() {
+    public List<Element<Supplement>> getSupplementsBundle() {
         return defaultIfNull(supplementsBundle, new ArrayList<>());
     }
 
