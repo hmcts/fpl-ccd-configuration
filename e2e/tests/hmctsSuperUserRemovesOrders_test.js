@@ -18,7 +18,7 @@ Scenario('HMCTS super user removes a generated order from a case', async ({I, ca
   const orderToRemove = finalHearingCaseData.caseData.orderCollection[0];
   const labelToSelect = `${orderToRemove.value.title} - ${orderToRemove.value.dateOfIssue}`;
 
-  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, true);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   const generatedOrders = 'Other removed orders 1';
@@ -33,7 +33,7 @@ Scenario('HMCTS super user removes a sealed cmo from a case', async ({I, caseVie
   const orderToRemove = finalHearingCaseData.caseData.sealedCMOs[0].value;
   const labelToSelect = 'Sealed case management order issued on ' + moment(orderToRemove.dateIssued).format('D MMMM YYYY');
 
-  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, true);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   const sealedCMO = 'Removed case management orders 1';
@@ -49,7 +49,7 @@ Scenario('HMCTS super user removes a sdo from a case', async ({I, caseViewPage, 
   const orderToRemove = finalHearingCaseData.caseData.standardDirectionOrder;
   const labelToSelect = `Gatekeeping order - ${moment(orderToRemove.dateOfIssue, 'DDMMMMY').format('D MMMM YYYY')}`;
 
-  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, true);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   const removeSDO = 'Removed gatekeeping orders 1';
@@ -62,9 +62,9 @@ Scenario('HMCTS super user removes a draft cmo from a case', async ({I, caseView
   const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
   const labelToSelect = 'Draft case management order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
 
-  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, false);
 
-  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.dontSeeInTab('Removed case management orders 2');
@@ -74,19 +74,30 @@ Scenario('HMCTS super user removes an agreed cmo from a case', async ({I, caseVi
   const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
   const labelToSelect = 'Agreed case management order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
 
-  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect);
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, false);
 
-  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.dontSeeInTab('Removed case management orders 2');
 });
 
-const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect) => {
+
+Scenario('HMCTS super user removes a draft order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
+  const orderToRemove = finalHearingCaseData.caseData.hearingOrdersBundlesDrafts[0].value.orders[0].value;
+  const labelToSelect = 'Draft order sent on ' + moment(orderToRemove.dateSent).format('D MMMM YYYY');
+
+  await removeOrder(I, caseViewPage, removeOrderEventPage, labelToSelect, false);
+  caseViewPage.checkTabIsNotPresent(caseViewPage.tabs.draftOrders);
+});
+
+const removeOrder = async (I, caseViewPage, removeOrderEventPage, labelToSelect, reasonFieldExists) => {
   await caseViewPage.goToNewActions(config.superUserActions.removeOrder);
   await removeOrderEventPage.selectOrderToRemove(labelToSelect);
   await I.goToNextPage();
-  removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
+  if(reasonFieldExists) {
+    removeOrderEventPage.addRemoveOrderReason('Entered incorrect order');
+  }
   await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.superUserActions.removeOrder);
 };

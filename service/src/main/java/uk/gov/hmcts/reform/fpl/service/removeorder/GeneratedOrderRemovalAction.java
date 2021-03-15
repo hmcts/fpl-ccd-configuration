@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Component
@@ -63,10 +64,11 @@ public class GeneratedOrderRemovalAction implements OrderRemovalAction {
             generatedRemovableOrder.getType()));
         data.put("orderIssuedDateToBeRemoved", generatedRemovableOrder.getDateOfIssue());
         data.put("orderDateToBeRemoved", generatedRemovableOrder.getDate());
+        data.put("showRemoveCMOFieldsFlag", NO.getValue());
     }
 
     private List<Element<Child>> removeFinalOrderPropertiesFromChildren(CaseData caseData,
-                                                                       GeneratedOrder removedOrder) {
+                                                                        GeneratedOrder removedOrder) {
         if (!removedOrder.isFinalOrder()) {
             return caseData.getAllChildren();
         }
