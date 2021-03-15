@@ -329,6 +329,7 @@ public class CaseData {
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
+    private final C2ApplicationType c2Type;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final List<AdditionalApplicationType> additionalApplicationType;
 

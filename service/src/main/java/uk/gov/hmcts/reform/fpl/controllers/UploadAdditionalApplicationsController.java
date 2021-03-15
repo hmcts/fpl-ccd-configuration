@@ -113,7 +113,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
     private void removeTemporaryFields(CaseDetails caseDetails) {
         caseDetails.getData().keySet().removeAll(Set.of(TEMPORARY_C2_DOCUMENT,
-            "c2ApplicationType",
+            "c2Type",
             "additionalApplicationType",
             "usePbaPayment",
             AMOUNT_TO_PAY,

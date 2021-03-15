@@ -6,6 +6,8 @@ module.exports = {
   fields: {
     uploadC2: '#temporaryC2Document_document',
     description: '#temporaryC2Document_description',
+    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
+    supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
     c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
     usePbaPayment: {
       yes: '#usePbaPayment-Yes',
@@ -15,19 +17,17 @@ module.exports = {
     clientCode: '#clientCode',
     customerReference: '#fileReference',
     applicationType: {
-      c2ApplicationTypePrefix: '#c2ApplicationType_type-',
+      c2TypePrefix: '#c2Type-',
       additionalApplicationTypePrefix: '#additionalApplicationType-',
     },
-    supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
-    supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
   },
 
   selectAdditionalApplicationType(type) {
-    I.click(this.additionalApplicationTypePrefix + type);
+    I.click(this.fields.applicationType.additionalApplicationTypePrefix + type);
   },
 
-  selectC2ApplicationType(type) {
-    I.click(this.fields.applicationType.c2ApplicationTypePrefix + type);
+  selectC2Type(type) {
+    I.click(this.fields.applicationType.c2TypePrefix + type);
   },
 
   uploadC2Document(file) {
@@ -49,7 +49,7 @@ module.exports = {
   },
 
   selectC2AdditionalOrdersRequested(ordersRequested) {
-    I.click(this.c2AdditionalOrdersRequested + ordersRequested);
+    I.click(this.fields.c2AdditionalOrdersRequested + ordersRequested);
   },
 
   usePbaPayment(usePbaPayment=true) {

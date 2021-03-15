@@ -44,7 +44,7 @@ public class UploadAdditionalApplicationsService {
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .supplementsBundle(wrapElements(updatedSupplementsBundle))
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
-            .type(caseData.getC2ApplicationType().get("type")).build();
+            .type(caseData.getC2Type()).build();
     }
 
     public OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData) {

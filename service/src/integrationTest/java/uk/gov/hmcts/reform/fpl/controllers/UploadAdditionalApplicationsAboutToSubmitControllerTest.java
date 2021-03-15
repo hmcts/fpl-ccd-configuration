@@ -148,7 +148,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
-                "c2ApplicationType", Map.of("type", WITHOUT_NOTICE),
+                "c2Type", WITHOUT_NOTICE,
                 "additionalApplicationType", List.of("C2_ORDER"),
                 "usePbaPayment", "Yes",
                 "amountToPay", "Yes",
@@ -163,7 +163,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getTemporaryC2Document()).isNull();
-        assertThat(callbackResponse.getData().get("c2ApplicationType")).isNull();
+        assertThat(callbackResponse.getData().get("c2Type")).isNull();
         assertThat(caseData.getC2ApplicationType()).isNull();
         assertThat(caseData.getTemporaryPbaPayment()).isNull();
         assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
@@ -255,8 +255,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     private Map<String, Object> createTemporaryC2Document() {
         return Map.of(
-            "c2ApplicationType", Map.of(
-                "type", "WITH_NOTICE"),
+            "c2Type", "WITH_NOTICE",
             "temporaryC2Document", Map.of(
                 "document", Map.of(
                     "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",

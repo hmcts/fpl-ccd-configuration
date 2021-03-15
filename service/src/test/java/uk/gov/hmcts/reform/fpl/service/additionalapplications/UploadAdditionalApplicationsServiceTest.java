@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -81,7 +80,7 @@ class UploadAdditionalApplicationsServiceTest {
 
         CaseData caseData = CaseData.builder()
             .temporaryC2Document(createC2DocumentBundle(supplementsBundle, supportingEvidenceBundle))
-            .c2ApplicationType(Map.of("type", WITH_NOTICE))
+            .c2Type(WITH_NOTICE)
             .build();
 
         C2DocumentBundle actualC2DocumentBundle = service.buildC2DocumentBundle(caseData);
