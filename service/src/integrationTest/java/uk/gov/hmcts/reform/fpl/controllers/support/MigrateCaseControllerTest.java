@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
@@ -34,6 +35,29 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     MigrateCaseControllerTest() {
         super("migrate-case");
+    }
+
+    @Nested
+    class Fpla2871 {
+        String familyManNumber = "WR20C50015";
+        String migrationId = "FPLA-2871";
+
+        @Test
+        void shouldRemoveFirstC2() {
+
+            Element<C2DocumentBundle> firstC2 = element(C2DocumentBundle.builder().description("test1").build());
+            Element<C2DocumentBundle> secondC2 = element(C2DocumentBundle.builder().description("test2").build());
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManNumber)
+                .c2DocumentBundle(List.of(firstC2, secondC2))
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getC2DocumentBundle()).containsOnly(secondC2);
+        }
     }
 
     @Nested
@@ -621,7 +645,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .getRootCause()
                 .hasMessage("No draft case management orders in the case");
         }
-
 
         private CaseDetails caseDetails(String migrationId,
                                         String familyManNumber,
