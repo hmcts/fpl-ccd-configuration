@@ -112,7 +112,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-//        if (hasC2Order(caseData)) {
+        if (hasC2Order(caseData)) {
             C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
                 .get(0).getValue().getC2DocumentBundle();
 
