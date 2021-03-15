@@ -28,7 +28,7 @@
     "EventElementLabel": "Who's seeking parental responsibility?",
     "FieldDisplayOrder": "3",
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "temporaryC2Document.c2OrdersRequested CONTAINS \"PARENTAL_RESPONSIBILITY\""
+    "FieldShowCondition": "temporaryC2Document.c2AdditionalOrdersRequested CONTAINS \"PARENTAL_RESPONSIBILITY\""
   },
   {
     "LiveFrom": "01/01/2017",
