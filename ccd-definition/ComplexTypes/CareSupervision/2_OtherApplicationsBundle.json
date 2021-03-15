@@ -60,7 +60,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
     "ListElementCode": "supportingEvidenceBundle",
-    "ElementLabel": "Supporting Documents",
+    "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public",

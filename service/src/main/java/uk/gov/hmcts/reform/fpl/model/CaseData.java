@@ -274,10 +274,6 @@ public class CaseData {
     }
 
     private LocalDate dateSubmitted;
-    private final String usePbaPayment;
-    private final String pbaNumber;
-    private final String clientCode;
-    private final String fileReference;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
