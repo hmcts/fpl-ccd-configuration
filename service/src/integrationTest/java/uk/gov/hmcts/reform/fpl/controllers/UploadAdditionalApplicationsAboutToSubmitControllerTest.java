@@ -134,6 +134,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @Test
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
+        given(featureToggleService.isUploadAdditionalApplicationsEnabled()).willReturn(true);
+
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
             "c2Type", WITHOUT_NOTICE,
