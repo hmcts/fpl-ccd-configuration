@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -35,6 +36,7 @@ public class SDORemovalAction implements OrderRemovalAction {
         data.put("orderToBeRemoved", standardDirectionOrder.getOrderDoc());
         data.put("orderTitleToBeRemoved", "Gatekeeping order");
         data.put("showRemoveSDOWarningFlag", YES.getValue());
+        data.put("showRemoveCMOFieldsFlag", NO.getValue());
     }
 
     @Override

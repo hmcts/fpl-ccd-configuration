@@ -627,12 +627,12 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
+    public List<Element<HearingOrder>> getOrdersFromHearingOrderDraftsBundles() {
         if (hearingOrdersBundlesDrafts != null) {
             return hearingOrdersBundlesDrafts.stream()
                 .map(Element::getValue)
                 .flatMap((HearingOrdersBundle hearingOrdersBundle)
-                    -> hearingOrdersBundle.getCaseManagementOrders().stream())
+                    -> hearingOrdersBundle.getOrders().stream())
                 .collect(toList());
         }
 
@@ -642,7 +642,7 @@ public class CaseData {
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
         return nullSafeList(hearingOrdersBundlesDrafts).stream()
             .filter(hearingOrdersBundleElement
-                -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
+                -> hearingOrdersBundleElement.getValue().getOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
             .findFirst();
     }
