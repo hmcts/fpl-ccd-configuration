@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingBookingDetailsGatekeeping",
     "Name": "Add hearing details",
-    "Description": "Add hearing booking details to a case",
+    "Description": "Add hearing booking details to a case2",
     "DisplayOrder": 2,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",

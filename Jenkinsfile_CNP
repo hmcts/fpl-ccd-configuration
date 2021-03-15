@@ -118,6 +118,17 @@ withPipeline(type, product, component) {
 
   after('checkout') {
     sh """ git submodule update --init """
+
+    environment {
+      DEFINITION_UPDATED = sh(script: "git show -- ccd-definition | wc -l", returnStdout: true).trim()
+    }
+
+    if (env.DEFINITION_UPDATED == 0) {
+      slackSend(channel: '#fpla-tech', color: 'warning', message: "Please upload ccd definition: <${env.RUN_DISPLAY_URL}|Build ${env.BUILD_DISPLAY_NAME}>.")
+    } else{
+      slackSend(channel: '#fpla-tech', color: 'warning', message: "No def to be uploaded: <${env.RUN_DISPLAY_URL}|Build ${env.BUILD_DISPLAY_NAME}>.")
+    }
+
   }
 
   before('test') {
