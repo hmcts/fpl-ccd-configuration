@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SupplementsBundle {
+public class Supplement {
     private final SupplementType name;
     private final String notes;
     private LocalDateTime dateTimeUploaded;

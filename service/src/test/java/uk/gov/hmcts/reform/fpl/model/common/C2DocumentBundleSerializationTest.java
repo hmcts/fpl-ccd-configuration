@@ -10,7 +10,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
 import java.time.LocalDateTime;
@@ -60,7 +60,7 @@ class C2DocumentBundleSerializationTest {
                     .uploadedBy("uploadedBy")
                     .build())))
             .supplementsBundle(List.of(element(UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6385"),
-                SupplementsBundle.builder()
+                Supplement.builder()
                     .name(SupplementType.C13A_SPECIAL_GUARDIANSHIP)
                     .dateTimeUploaded(LocalDateTime.of(2013, 9, 10, 3, 4))
                     .document(DocumentReference.builder()

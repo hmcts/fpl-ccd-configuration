@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.C2OrdersRequested;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -38,8 +38,8 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
-    private List<Element<SupplementsBundle>> supplementsBundle;
-    private List<C2OrdersRequested> c2OrdersRequested;
+    private List<Element<Supplement>> supplementsBundle;
+    private List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
@@ -50,7 +50,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
-    public List<Element<SupplementsBundle>> getSupplementsBundle() {
+    public List<Element<Supplement>> getSupplementsBundle() {
         return defaultIfNull(supplementsBundle, new ArrayList<>());
     }
 

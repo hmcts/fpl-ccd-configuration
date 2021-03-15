@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -192,18 +192,18 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     }
 
     private void assertSupplementsBundle(C2DocumentBundle documentBundle) {
-        List<SupplementsBundle> supplementsBundle =
+        List<Supplement> supplementsBundle =
             unwrapElements(documentBundle.getSupplementsBundle());
 
         System.out.println("SUp is" + supplementsBundle);
 
         assertThat(supplementsBundle).first()
             .extracting(
-                SupplementsBundle::getName,
-                SupplementsBundle::getNotes,
-                SupplementsBundle::getDateTimeUploaded,
-                SupplementsBundle::getDocument,
-                SupplementsBundle::getUploadedBy
+                Supplement::getName,
+                Supplement::getNotes,
+                Supplement::getDateTimeUploaded,
+                Supplement::getDocument,
+                Supplement::getUploadedBy
             ).containsExactly(
             SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
@@ -246,8 +246,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .build();
     }
 
-    private SupplementsBundle createSupplementsBundle() {
-        return SupplementsBundle.builder()
+    private Supplement createSupplementsBundle() {
+        return Supplement.builder()
             .name(SupplementType.C13A_SPECIAL_GUARDIANSHIP)
             .notes("Supplement notes")
             .dateTimeUploaded(time.now())

@@ -9,7 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -101,7 +101,7 @@ class UploadC2DocumentsServiceTest {
 
         assertThat(actualC2DocumentBundle.getSupplementsBundle())
             .extracting(Element::getValue)
-            .containsExactly( SupplementsBundle.builder()
+            .containsExactly(Supplement.builder()
                 .name(C13A_SPECIAL_GUARDIANSHIP)
                 .notes("Document notes")
                 .dateTimeUploaded(time.now())
@@ -267,8 +267,8 @@ class UploadC2DocumentsServiceTest {
             .build();
     }
 
-    private SupplementsBundle createSupplementsBundle() {
-        return SupplementsBundle.builder()
+    private Supplement createSupplementsBundle() {
+        return Supplement.builder()
             .name(C13A_SPECIAL_GUARDIANSHIP)
             .notes("Document notes")
             .build();

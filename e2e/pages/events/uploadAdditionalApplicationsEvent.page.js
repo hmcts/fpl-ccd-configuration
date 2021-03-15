@@ -8,7 +8,7 @@ module.exports = {
     description: '#temporaryC2Document_description',
     supportingDocuments: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supplements: supplementsFragment.supplements(0, 'temporaryC2Document_supplementsBundle'),
-    c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
+    c2AdditionalOrdersRequested:'#temporaryC2Document_c2AdditionalOrdersRequested-',
     usePbaPayment: {
       yes: '#usePbaPayment-Yes',
       no: '#usePbaPayment-No',

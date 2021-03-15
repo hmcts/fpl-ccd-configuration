@@ -10,11 +10,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "ListElementCode": "c2OrdersRequested",
+    "ListElementCode": "c2AdditionalOrdersRequested",
     "ElementLabel": " ",
     "HintText": "Select all that apply",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "C2OrdersRequested",
+    "FieldTypeParameter": "C2AdditionalOrdersRequested",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

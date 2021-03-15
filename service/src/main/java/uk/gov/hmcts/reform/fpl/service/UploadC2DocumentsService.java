@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -61,7 +61,7 @@ public class UploadC2DocumentsService {
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle));
 
         if (featureToggleService.isUploadAdditionalApplicationsEnabled()) {
-            List<SupplementsBundle> updatedSupplementsBundle =
+            List<Supplement> updatedSupplementsBundle =
                 unwrapElements(caseData.getTemporaryC2Document().getSupplementsBundle())
                     .stream()
                     .map(supplementsBundle -> supplementsBundle.toBuilder()
