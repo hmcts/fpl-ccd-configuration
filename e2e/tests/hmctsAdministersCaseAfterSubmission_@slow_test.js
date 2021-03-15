@@ -89,24 +89,24 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
-  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
-  I.seeInTab(['C2 Application 1', 'Date and time of upload']);
-  I.seeTextInTab(['C2 Application 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['C2 Application 1', 'Paid with PBA'], 'Yes');
-  I.seeInTab(['C2 Application 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
-  I.seeInTab(['C2 Application 1', 'Client code'], c2Payment.clientCode);
-  I.seeInTab(['C2 Application 1', 'Customer reference'], c2Payment.customerReference);
-  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Document name'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Date and time uploaded']);
-  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['C2 Application 1', 'Supporting documents 1', 'File'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
-  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Notes'], 'This is a note about supplement');
-  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Date and time uploaded']);
-  I.seeInTab(['C2 Application 1', 'Supplements 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['C2 Application 1', 'Supplements 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
+  I.seeInTab(['Additional applications 1', 'Date and time of upload']);
+  I.seeTextInTab(['Additional applications 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['Additional applications 1', 'Paid with PBA'], 'Yes');
+  I.seeInTab(['Additional applications 1', 'Payment by account (PBA) number'], c2Payment.pbaNumber);
+  I.seeInTab(['Additional applications 1', 'Client code'], c2Payment.clientCode);
+  I.seeInTab(['Additional applications 1', 'Customer reference'], c2Payment.customerReference);
+  I.seeInTab(['Additional applications 1', 'Supporting documents 1', 'Document name'], 'Supporting document');
+  I.seeInTab(['Additional applications 1', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
+  I.seeInTab(['Additional applications 1', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeInTab(['Additional applications 1', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['Additional applications 1', 'Supporting documents 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
+  I.seeInTab(['Additional applications 1', 'Supplements 1', 'Notes'], 'This is a note about supplement');
+  I.seeInTab(['Additional applications 1', 'Supplements 1', 'Date and time uploaded']);
+  I.seeInTab(['Additional applications 1', 'Supplements 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['Additional applications 1', 'Supplements 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
@@ -118,13 +118,13 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.c2);
-  I.seeInTab(['C2 Application 1', 'Document name'], 'Updated document name');
-  I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['C2 Application 1', 'Date and time uploaded']);
-  I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
+  I.seeInTab(['Additional applications 1', 'Document name'], 'Updated document name');
+  I.seeInTab(['Additional applications 1', 'Notes'], 'C2 supporting document');
+  I.seeInTab(['Additional applications 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
+  I.seeInTab(['Additional applications 1', 'Document name'], 'This is a note about supporting doc');
+  I.seeInTab(['Additional applications 1', 'File'], 'mockFile.txt');
+  I.seeTextInTab(['Additional applications 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'Uploaded by']);
 });
 
 Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {
