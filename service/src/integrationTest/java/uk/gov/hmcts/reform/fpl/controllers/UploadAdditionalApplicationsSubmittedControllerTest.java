@@ -325,7 +325,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     private Map<String, Object> expectedCtscNotificationParameters() {
         return Map.of("applicationType", "C2",
-            "caseUrl", "http://fake-url/cases/case-details/12345#Other%20applications");
+            "caseUrl", "http://fake-url/cases/case-details/12345#C2");
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
