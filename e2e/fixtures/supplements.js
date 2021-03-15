@@ -1,7 +1,7 @@
 const config = require('../config.js');
 
 module.exports = {
-  name: 'C20 - Secure accommodation',
+  name: 'C18 - Recovery order',
   notes: 'This is a note about supplement',
   date : {
     day: 1,

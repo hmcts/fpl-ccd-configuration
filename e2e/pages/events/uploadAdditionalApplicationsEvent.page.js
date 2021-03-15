@@ -20,6 +20,8 @@ module.exports = {
       c2TypePrefix: '#c2Type-',
       additionalApplicationTypePrefix: '#additionalApplicationType-',
     },
+    otherApplicationPrefix: '#temporaryOtherApplicationsBundle_applicationType',
+    uploadOtherApplication: '#temporaryOtherApplicationsBundle_document',
   },
 
   selectAdditionalApplicationType(type) {
@@ -52,12 +54,20 @@ module.exports = {
     I.click(this.fields.c2AdditionalOrdersRequested + ordersRequested);
   },
 
+  selectOtherApplication(type) {
+    I.fillField(this.fields.otherApplicationPrefix, type);
+  },
+
   usePbaPayment(usePbaPayment=true) {
     if (usePbaPayment) {
       I.click(this.fields.usePbaPayment.yes);
     } else {
       I.click(this.fields.usePbaPayment.no);
     }
+  },
+
+  uploadDocument(file) {
+    I.attachFile(this.fields.uploadOtherApplication, file);
   },
 
   enterPbaPaymentDetails(payment) {

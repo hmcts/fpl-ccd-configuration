@@ -62,6 +62,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 
 Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage, paymentHistoryPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
+  uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('OTHER_ORDER');
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
   uploadAdditionalApplicationsEventPage.selectC2Type('WITH_NOTICE');
   await I.goToNextPage();
@@ -70,6 +71,9 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await uploadAdditionalApplicationsEventPage.uploadSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadSupportingDocument(c2SupportingDocuments);
   await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
+  //await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.uploadDocument(config.testFile);
   const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
