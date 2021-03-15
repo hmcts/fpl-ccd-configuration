@@ -12,18 +12,21 @@ module.exports = {
     otherSupplements: supplementsFragment.supplements(0, 'temporaryOtherApplicationsBundle_supplementsBundle'),
     c2AdditionalOrdersRequested:'#temporaryC2Document_c2OrdersRequested-',
     usePbaPayment: {
-      yes: '#usePbaPayment-Yes',
-      no: '#usePbaPayment-No',
+      yes: '#temporaryPbaPayment_usePbaPayment-Yes',
+      no: '#temporaryPbaPayment_usePbaPayment-No',
     },
-    pbaNumber: '#pbaNumber',
-    clientCode: '#clientCode',
-    customerReference: '#fileReference',
+    pbaNumber: '#temporaryPbaPayment_pbaNumber',
+    clientCode: '#temporaryPbaPayment_clientCode',
+    customerReference: '#temporaryPbaPayment_fileReference',
     applicationType: {
       c2TypePrefix: '#c2Type-',
       additionalApplicationTypePrefix: '#additionalApplicationType-',
     },
     otherApplicationPrefix: '#temporaryOtherApplicationsBundle_applicationType',
     uploadOtherApplication: '#temporaryOtherApplicationsBundle_document',
+    otherSecureAccommodationTypePrefix: '#temporaryOtherApplicationsBundle_supplementsBundle_0_secureAccommodationType-',
+    otherParentalResponsibilityTypePrefix: '#temporaryOtherApplicationsBundle_parentalResponsibilityType-',
+    c2ParentalResponsibilityTypePrefix: '#temporaryC2Document_parentalResponsibilityType-',
   },
 
   selectAdditionalApplicationType(type) {
@@ -41,6 +44,7 @@ module.exports = {
   async uploadC2Supplement(document) {
     await I.addAnotherElementToCollection('Supplements');
     I.fillField(this.fields.c2Supplements.name, document.name);
+    I.click(this.fields.c2Supplements.secureAccommodationType + document.secureAccommodationType);
     I.fillField(this.fields.c2Supplements.notes, document.notes);
     I.attachFile(this.fields.c2Supplements.document, document.document);
   },
@@ -63,6 +67,7 @@ module.exports = {
   async uploadOtherSupplement(document) {
     await I.addAnotherElementToCollection('Supplements');
     I.fillField(this.fields.otherSupplements.name, document.name);
+    I.click(this.fields.otherSupplements.secureAccommodationType + document.secureAccommodationType);
     I.fillField(this.fields.otherSupplements.notes, document.notes);
     I.attachFile(this.fields.otherSupplements.document, document.document);
   },
@@ -84,6 +89,14 @@ module.exports = {
 
   uploadDocument(file) {
     I.attachFile(this.fields.uploadOtherApplication, file);
+  },
+
+  selectOtherParentalResponsibilityType(type) {
+    I.click(this.fields.otherParentalResponsibilityTypePrefix + type);
+  },
+
+  selectC2ParentalResponsibilityType(type) {
+    I.click(this.fields.c2ParentalResponsibilityTypePrefix + type);
   },
 
   enterPbaPaymentDetails(payment) {

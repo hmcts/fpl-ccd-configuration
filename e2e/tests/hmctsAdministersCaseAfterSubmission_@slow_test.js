@@ -67,11 +67,13 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   uploadAdditionalApplicationsEventPage.selectC2Type('WITH_NOTICE');
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
-  uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('CHANGE_SURNAME_OR_REMOVE_JURISDICTION');
+  uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('PARENTAL_RESPONSIBILITY');
+  uploadAdditionalApplicationsEventPage.selectC2ParentalResponsibilityType('PR_BY_FATHER');
   await uploadAdditionalApplicationsEventPage.uploadC2Supplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadC2SupportingDocument(supportingDocuments);
   await I.goToNextPage();
-  uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
+  uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Parental responsibility');
+  uploadAdditionalApplicationsEventPage.selectOtherParentalResponsibilityType('PR_BY_FATHER');
   uploadAdditionalApplicationsEventPage.uploadDocument(config.testFile);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);

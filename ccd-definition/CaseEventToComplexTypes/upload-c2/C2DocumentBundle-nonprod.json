@@ -37,7 +37,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supplements",
     "ListElementCode": "supplementsBundle",
-    "FieldDisplayOrder": "3",
+    "FieldDisplayOrder": "4",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -47,7 +47,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Select supplement",
     "ListElementCode": "supplementsBundle.name",
-    "FieldDisplayOrder": "4",
+    "FieldDisplayOrder": "5",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -57,7 +57,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supplementsBundle.secureAccommodationType",
     "EventElementLabel": "Which jurisdiction?",
-    "FieldDisplayOrder": "5",
+    "FieldDisplayOrder": "6",
     "DisplayContext": "MANDATORY",
     "FieldShowCondition": "temporaryC2Document.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
   },
@@ -67,7 +67,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supplementsBundle.notes",
-    "FieldDisplayOrder": "5",
+    "FieldDisplayOrder": "7",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -77,7 +77,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Upload document",
     "ListElementCode": "supplementsBundle.document",
-    "FieldDisplayOrder": "6",
+    "FieldDisplayOrder": "8",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -87,7 +87,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "Supporting Documents",
     "ListElementCode": "supportingEvidenceBundle",
-    "FieldDisplayOrder": "7",
+    "FieldDisplayOrder": "9",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -97,7 +97,7 @@
     "CaseFieldID": "temporaryC2Document",
     "EventElementLabel": "File name",
     "ListElementCode": "supportingEvidenceBundle.name",
-    "FieldDisplayOrder": "8",
+    "FieldDisplayOrder": "10",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -106,7 +106,7 @@
     "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
-    "FieldDisplayOrder": "9",
+    "FieldDisplayOrder": "11",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -125,7 +125,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
-    "FieldDisplayOrder": "10",
+    "FieldDisplayOrder": "12",
     "DisplayContext": "MANDATORY"
   }
 ]
