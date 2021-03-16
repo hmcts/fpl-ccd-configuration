@@ -110,7 +110,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseData.getC2DocumentBundle(), new ArrayList<>()
         );
 
-        caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService.sortOldC2DocumentCollection(oldc2DocumentCollection));
+        caseDetails.getData().put("c2DocumentBundle", uploadC2DocumentsService
+            .sortOldC2DocumentCollection(oldc2DocumentCollection));
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT,
             "c2Type",

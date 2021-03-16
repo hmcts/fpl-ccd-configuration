@@ -195,7 +195,8 @@ class UploadAdditionalApplicationsServiceTest {
         List<Element<C2DocumentBundle>> oldC2DocumentBundle = Arrays.asList(element(firstBundleAdded),
             element(secondBundleAdded), element(thirdBundleAdded));
 
-        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service.sortOldC2DocumentCollection(oldC2DocumentBundle);
+        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service.sortOldC2DocumentCollection(
+            oldC2DocumentBundle);
         C2DocumentBundle bundleAtFirstIndex = actualC2DocumentBundleList.get(0).getValue();
         C2DocumentBundle bundleAtLastIndex = actualC2DocumentBundleList.get(2).getValue();
 

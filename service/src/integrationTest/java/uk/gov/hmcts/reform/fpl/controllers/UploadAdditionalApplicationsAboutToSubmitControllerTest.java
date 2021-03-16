@@ -221,7 +221,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        List<Element<C2DocumentBundle>> expectedC2DocumentBundle = wrapElements(thirdBundleAdded, secondBundleAdded, firstBundleAdded);
+        List<Element<C2DocumentBundle>> expectedC2DocumentBundle = wrapElements(thirdBundleAdded, secondBundleAdded,
+            firstBundleAdded);
 
         assertThat(caseData.getC2DocumentBundle()).isEqualTo(expectedC2DocumentBundle);
     }

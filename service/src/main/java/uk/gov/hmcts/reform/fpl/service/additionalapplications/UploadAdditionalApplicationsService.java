@@ -87,7 +87,8 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> c2DocumentBundle) {
+    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>>
+                                                                           c2DocumentBundle) {
         c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
         return c2DocumentBundle;
     }
