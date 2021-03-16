@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -83,6 +85,11 @@ public class UploadAdditionalApplicationsService {
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .build();
+    }
+
+    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>> c2DocumentBundle) {
+        c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
+        return c2DocumentBundle;
     }
 
     private List<SupportingEvidenceBundle> getSupportingEvidenceBundle(

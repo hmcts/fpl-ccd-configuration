@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
@@ -187,6 +188,42 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getTemporaryPbaPayment()).isNull();
         assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
         assertThat(caseData.getAmountToPay()).isNull();
+    }
+
+    @Test
+    void shouldUpdateOldC2DocumentBundleCollection() {
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .uploadedDateTime("14 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 1")
+                .build()).build();
+
+        C2DocumentBundle secondBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .uploadedDateTime("15 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 2")
+                .build()).build();
+
+        C2DocumentBundle thirdBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .uploadedDateTime("16 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 3")
+                .build()).build();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("c2DocumentBundle", wrapElements(firstBundleAdded,
+                secondBundleAdded, thirdBundleAdded)))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        List<Element<C2DocumentBundle>> expectedC2DocumentBundle = wrapElements(thirdBundleAdded, secondBundleAdded, firstBundleAdded);
+
+        assertThat(caseData.getC2DocumentBundle()).isEqualTo(expectedC2DocumentBundle);
     }
 
     private void assertC2DocumentBundle(C2DocumentBundle uploadedC2DocumentBundle) {

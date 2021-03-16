@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -32,12 +33,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
 import static uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType.PR_BY_FATHER;
 import static uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType.WALES;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -164,6 +167,42 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertThat(actual).extracting("author", "c2DocumentBundle", "otherApplicationsBundle", "pbaPayment")
             .containsExactly(HMCTS, null, otherApplicationsBundle, pbaPayment);
+    }
+
+    @Test
+    void shouldSortOldC2DocumentBundlesToDateDescending() {
+        C2DocumentBundle firstBundleAdded = C2DocumentBundle.builder()
+            .type(WITHOUT_NOTICE)
+            .uploadedDateTime("14 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 1")
+                .build()).build();
+
+        C2DocumentBundle secondBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .uploadedDateTime("15 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 2")
+                .build()).build();
+
+        C2DocumentBundle thirdBundleAdded = C2DocumentBundle.builder()
+            .type(WITH_NOTICE)
+            .uploadedDateTime("16 December 2020, 4:24pm")
+            .document(DocumentReference.builder()
+                .filename("Document 3")
+                .build()).build();
+
+        List<Element<C2DocumentBundle>> oldC2DocumentBundle = Arrays.asList(element(firstBundleAdded),
+            element(secondBundleAdded), element(thirdBundleAdded));
+
+        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service.sortOldC2DocumentCollection(oldC2DocumentBundle);
+        C2DocumentBundle bundleAtFirstIndex = actualC2DocumentBundleList.get(0).getValue();
+        C2DocumentBundle bundleAtLastIndex = actualC2DocumentBundleList.get(2).getValue();
+
+        assertThat(bundleAtFirstIndex.getUploadedDateTime()).isEqualTo(thirdBundleAdded
+            .getUploadedDateTime());
+        assertThat(bundleAtLastIndex.getUploadedDateTime()).isEqualTo(firstBundleAdded
+            .getUploadedDateTime());
     }
 
     private void assertC2Bundle(C2DocumentBundle documentBundle) {
