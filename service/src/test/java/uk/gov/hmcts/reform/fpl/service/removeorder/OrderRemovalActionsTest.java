@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.removeorder.RemovableOrderActionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
@@ -16,6 +18,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 
 @ExtendWith(MockitoExtension.class)
 class OrderRemovalActionsTest {
@@ -31,16 +37,20 @@ class OrderRemovalActionsTest {
     @Mock
     private DraftCMORemovalAction draftCMORemovalAction;
 
+    @Mock
+    private DraftOrderRemovalAction draftOrderRemovalAction;
+
     @InjectMocks
     private OrderRemovalActions orderRemovalActions;
 
-    private static final HearingOrder SEALED_CASE_MANAGEMENT_ORDER = HearingOrder.builder().status(APPROVED).build();
-    private static final HearingOrder DRAFT_CASE_MANAGEMENT_ORDER = HearingOrder.builder().status(DRAFT).build();
+    private static final HearingOrder SEALED_CASE_MANAGEMENT_ORDER = hearingOrder(AGREED_CMO, APPROVED);
+    private static final HearingOrder DRAFT_CASE_MANAGEMENT_ORDER = hearingOrder(DRAFT_CMO, DRAFT);
+    private static final HearingOrder DRAFT_ORDER = hearingOrder(C21, SEND_TO_JUDGE);
     private static final GeneratedOrder GENERATED_ORDER = GeneratedOrder.builder().build();
     private static final StandardDirectionOrder STANDARD_DIRECTION_ORDER = StandardDirectionOrder.builder().build();
 
     @Test
-    void shouldReturnSealedOrderActionWhenGettingActionForGeneratedOrder() {
+    void shouldReturnSealedOrderActionWhenGettingActionForSealedCaseManagementOrder() {
         when(sealedCMORemovalAction.isAccepted(SEALED_CASE_MANAGEMENT_ORDER)).thenReturn(true);
 
         assertThat(orderRemovalActions.getAction(SEALED_CASE_MANAGEMENT_ORDER))
@@ -48,11 +58,18 @@ class OrderRemovalActionsTest {
     }
 
     @Test
-    void shouldReturnDraftOrderActionWhenGettingActionForGeneratedOrder() {
+    void shouldReturnDraftCMOOrderActionWhenGettingActionForDraftCaseManagementOrder() {
         when(draftCMORemovalAction.isAccepted(DRAFT_CASE_MANAGEMENT_ORDER)).thenReturn(true);
 
         assertThat(orderRemovalActions.getAction(DRAFT_CASE_MANAGEMENT_ORDER))
             .isEqualTo(draftCMORemovalAction);
+    }
+
+    @Test
+    void shouldReturnDraftOrderActionWhenGettingActionForDraftOrder() {
+        when(draftOrderRemovalAction.isAccepted(DRAFT_ORDER)).thenReturn(true);
+
+        assertThat(orderRemovalActions.getAction(DRAFT_ORDER)).isEqualTo(draftOrderRemovalAction);
     }
 
     @Test
@@ -80,4 +97,9 @@ class OrderRemovalActionsTest {
             .hasMessage(format("Removable order action for order of type %s not found", GENERATED_ORDER.getClass()
                 .getSimpleName()));
     }
+
+    private static HearingOrder hearingOrder(HearingOrderType hearingOrderType, CMOStatus status) {
+        return HearingOrder.builder().type(hearingOrderType).status(status).build();
+    }
+
 }

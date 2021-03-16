@@ -71,7 +71,8 @@
     "FieldType": "Label",
     "Label": "## Further evidence",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Update label in 2768"
   },
   {
     "LiveFrom": "01/01/2017",

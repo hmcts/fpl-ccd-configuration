@@ -31,7 +31,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -56,15 +55,13 @@ public class ManageDocumentService {
     public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
 
-    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData, String caseFieldKey) {
+    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
         String hasHearings;
         String hasC2s;
 
         if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
             listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
-            //only relevant for LA event
-            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
 
             hasHearings = YES.getValue();
         } else {
@@ -84,7 +81,7 @@ public class ManageDocumentService {
             .hasC2s(hasC2s)
             .build();
 
-        listAndLabel.put(caseFieldKey, manageDocument);
+        listAndLabel.put(MANAGE_DOCUMENT_KEY, manageDocument);
 
         return listAndLabel;
     }

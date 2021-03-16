@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
@@ -379,7 +380,6 @@ public class CaseData {
     private final LocalDate epoExclusionStartDate;
     private final EPOExclusionRequirementType epoExclusionRequirementType;
 
-
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
         List<Element<Proceeding>> proceedings = new ArrayList<>();
@@ -486,6 +486,8 @@ public class CaseData {
 
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
+    private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
+    private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
@@ -625,12 +627,12 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
+    public List<Element<HearingOrder>> getOrdersFromHearingOrderDraftsBundles() {
         if (hearingOrdersBundlesDrafts != null) {
             return hearingOrdersBundlesDrafts.stream()
                 .map(Element::getValue)
                 .flatMap((HearingOrdersBundle hearingOrdersBundle)
-                    -> hearingOrdersBundle.getCaseManagementOrders().stream())
+                    -> hearingOrdersBundle.getOrders().stream())
                 .collect(toList());
         }
 
@@ -640,7 +642,7 @@ public class CaseData {
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
         return nullSafeList(hearingOrdersBundlesDrafts).stream()
             .filter(hearingOrdersBundleElement
-                -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
+                -> hearingOrdersBundleElement.getValue().getOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
             .findFirst();
     }
