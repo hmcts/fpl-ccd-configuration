@@ -386,11 +386,6 @@ class FeeServiceTest {
         private String getFirstFeeCode(FeesData feesData) {
             return feesData.getFees().get(0).getCode();
         }
-
-        @AfterEach
-        void resetInvocations() {
-            reset(feesRegisterApi);
-        }
     }
 
     private FeeResponse buildFeeResponse(String code, BigDecimal amount) {

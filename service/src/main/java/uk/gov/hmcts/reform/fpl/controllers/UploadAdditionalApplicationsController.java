@@ -141,7 +141,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
-                log.error("Additional applications payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
+                log.error("Additional applications payment for case {} not taken as payment fee not shown to user",
+                    caseDetails.getId());
                 publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
             }
         }

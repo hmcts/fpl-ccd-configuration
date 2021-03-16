@@ -81,8 +81,9 @@ class FeeTypeTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void shouldReturnEmptyListWhenC2RequestedOrderIsNullOrEmptyList(List<C2AdditionalOrdersRequested> list) {
-        assertThat(fromC2OrdersRequestedType(list)).isEmpty();
+    void shouldReturnEmptyListWhenC2RequestedOrderIsNullOrEmptyList(
+        List<C2AdditionalOrdersRequested> ordersRequested) {
+        assertThat(fromC2OrdersRequestedType(ordersRequested)).isEmpty();
     }
 
     @ParameterizedTest

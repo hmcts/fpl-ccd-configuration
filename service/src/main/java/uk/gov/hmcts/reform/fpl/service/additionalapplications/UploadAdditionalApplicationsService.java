@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -15,15 +14,15 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -33,65 +32,64 @@ public class UploadAdditionalApplicationsService {
     private final DocumentUploadHelper documentUploadHelper;
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
+        final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+        final LocalDateTime currentDateTime = time.now();
+
         C2DocumentBundle c2DocumentBundle = null;
         OtherApplicationsBundle otherApplicationsBundle = null;
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
-            c2DocumentBundle = buildC2DocumentBundle(caseData);
+            c2DocumentBundle = buildC2DocumentBundle(caseData, uploadedBy, currentDateTime);
         }
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER)) {
-            otherApplicationsBundle = buildOtherApplicationsBundle(caseData);
+            otherApplicationsBundle = buildOtherApplicationsBundle(caseData, uploadedBy, currentDateTime);
         }
-
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-        PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
 
         return AdditionalApplicationsBundle.builder()
             .c2DocumentBundle(c2DocumentBundle)
             .otherApplicationsBundle(otherApplicationsBundle)
-            .pbaPayment(temporaryPbaPayment)
+            .pbaPayment(caseData.getTemporaryPbaPayment())
             .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(currentDateTime, DATE_TIME))
             .build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(CaseData caseData) {
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+    private C2DocumentBundle buildC2DocumentBundle(CaseData caseData, String uploadedBy, LocalDateTime uploadedTime) {
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
+            caseData.getTemporaryC2Document().getSupportingEvidenceBundle(), uploadedBy, uploadedTime);
 
-        List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
-            getSupportingEvidenceBundle(caseData.getTemporaryC2Document().getSupportingEvidenceBundle(), uploadedBy);
-
-        List<Supplement> updatedSupplementsBundle =
-            getSupplementsBundle(caseData.getTemporaryC2Document().getSupplementsBundle(), uploadedBy);
+        List<Element<Supplement>> updatedSupplementsBundle =
+            getSupplementsBundle(defaultIfNull(caseData.getTemporaryC2Document().getSupplementsBundle(), emptyList()),
+                uploadedBy, uploadedTime);
 
         return caseData.getTemporaryC2Document()
             .toBuilder()
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
-            .supplementsBundle(wrapElements(updatedSupplementsBundle))
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
+            .supplementsBundle(updatedSupplementsBundle)
+            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .type(caseData.getC2Type()).build();
     }
 
-    private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData) {
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+    private OtherApplicationsBundle buildOtherApplicationsBundle(
+        CaseData caseData, String uploadedBy, LocalDateTime uploadedTime) {
 
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
 
-        List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
-            temporaryOtherApplicationsBundle.getSupportingEvidenceBundle(), uploadedBy);
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle = getSupportingEvidenceBundle(
+            caseData.getTemporaryOtherApplicationsBundle().getSupportingEvidenceBundle(), uploadedBy, uploadedTime);
 
-        List<Supplement> updatedSupplementsBundle = getSupplementsBundle(
-            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy);
+        List<Element<Supplement>> updatedSupplementsBundle = getSupplementsBundle(
+            temporaryOtherApplicationsBundle.getSupplementsBundle(), uploadedBy, uploadedTime);
 
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
             .document(temporaryOtherApplicationsBundle.getDocument())
-            .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
-            .supplementsBundle(wrapElements(updatedSupplementsBundle))
+            .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
+            .supplementsBundle(updatedSupplementsBundle)
             .build();
     }
 
@@ -101,25 +99,25 @@ public class UploadAdditionalApplicationsService {
         return c2DocumentBundle;
     }
 
-    private List<SupportingEvidenceBundle> getSupportingEvidenceBundle(
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle, String uploadedBy) {
-        return unwrapElements(supportingEvidenceBundle)
-            .stream()
-            .map(supportingEvidence -> supportingEvidence.toBuilder()
-                .dateTimeUploaded(time.now())
-                .uploadedBy(uploadedBy)
-                .build())
-            .collect(Collectors.toList());
+    private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle,
+        String uploadedBy, LocalDateTime uploadedDateTime) {
+
+        supportingEvidenceBundle.forEach(supportingEvidence -> {
+            supportingEvidence.getValue().setDateTimeUploaded(uploadedDateTime);
+            supportingEvidence.getValue().setUploadedBy(uploadedBy);
+        });
+
+        return supportingEvidenceBundle;
     }
 
-    private List<Supplement> getSupplementsBundle(
-        List<Element<Supplement>> supplementsBundle, String uploadedBy) {
-        return unwrapElements(supplementsBundle)
-            .stream()
-            .map(supplement -> supplement.toBuilder()
-                .dateTimeUploaded(time.now())
-                .uploadedBy(uploadedBy)
-                .build())
-            .collect(Collectors.toList());
+    private List<Element<Supplement>> getSupplementsBundle(
+        List<Element<Supplement>> supplementsBundle, String uploadedBy, LocalDateTime dateTime) {
+        supplementsBundle.forEach(supplementElement -> {
+            supplementElement.getValue().setUploadedBy(uploadedBy);
+            supplementElement.getValue().setDateTimeUploaded(dateTime);
+        });
+
+        return supplementsBundle;
     }
 }

@@ -168,11 +168,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
                 "c2Type", WITHOUT_NOTICE,
                 "additionalApplicationType", List.of("C2_ORDER"),
-                "usePbaPayment", "Yes",
+                "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
-                "pbaNumber", "1234567",
-                "clientCode", "123",
-                "fileReference", "456",
                 "temporaryOtherApplicationsBundle", OtherApplicationsBundle.builder()
                     .applicationType(C1_WITH_SUPPLEMENT).build()))
             .build();

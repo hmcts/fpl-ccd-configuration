@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,13 +53,13 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 })
 class UploadAdditionalApplicationsServiceTest {
     private static final String USER_ID = "1";
-    public static final String HMCTS = "HMCTS";
-    public static final DocumentReference DOCUMENT = testDocumentReference("TestDocument.doc");
-    public static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
-    public static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
+    private static final String HMCTS = "HMCTS";
+    private static final DocumentReference DOCUMENT = testDocumentReference("TestDocument.doc");
+    private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
+    private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
     @Autowired
-    private UploadAdditionalApplicationsService service;
+    private UploadAdditionalApplicationsService underTest;
 
     @Autowired
     private Time time;
@@ -73,7 +72,6 @@ class UploadAdditionalApplicationsServiceTest {
 
     @BeforeEach()
     void init() {
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name("Emma Taylor").build());
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
     }
@@ -91,7 +89,7 @@ class UploadAdditionalApplicationsServiceTest {
             .c2Type(WITH_NOTICE)
             .build();
 
-        AdditionalApplicationsBundle applicationsBundle = service.buildAdditionalApplicationsBundle(caseData);
+        AdditionalApplicationsBundle applicationsBundle = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
         assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
@@ -111,7 +109,7 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryPbaPayment(pbaPayment)
             .build();
 
-        AdditionalApplicationsBundle applicationsBundle = service.buildAdditionalApplicationsBundle(caseData);
+        AdditionalApplicationsBundle applicationsBundle = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
         assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
@@ -136,7 +134,7 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryPbaPayment(pbaPayment)
             .build();
 
-        AdditionalApplicationsBundle applicationsBundle = service.buildAdditionalApplicationsBundle(caseData);
+        AdditionalApplicationsBundle applicationsBundle = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
         assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
@@ -208,7 +206,7 @@ class UploadAdditionalApplicationsServiceTest {
         List<Element<C2DocumentBundle>> oldC2DocumentBundle = Arrays.asList(element(firstBundleAdded),
             element(secondBundleAdded), element(thirdBundleAdded));
 
-        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = service.sortOldC2DocumentCollection(
+        List<Element<C2DocumentBundle>> actualC2DocumentBundleList = underTest.sortOldC2DocumentCollection(
             oldC2DocumentBundle);
         C2DocumentBundle bundleAtFirstIndex = actualC2DocumentBundleList.get(0).getValue();
         C2DocumentBundle bundleAtLastIndex = actualC2DocumentBundleList.get(2).getValue();
@@ -236,9 +234,9 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     private void assertSupplementsBundle(Supplement actual, Supplement expected) {
-        assertThat(actual)
-            .extracting("name", "notes", "document", "uploadedBy")
-            .containsExactly(expected.getName(), expected.getNotes(), expected.getDocument(), HMCTS);
+        assertThat(actual).isEqualTo(expected.toBuilder()
+            .dateTimeUploaded(time.now())
+            .uploadedBy(HMCTS).build());
     }
 
     private void assertSupportingEvidenceBundle(SupportingEvidenceBundle actual, SupportingEvidenceBundle expected) {
