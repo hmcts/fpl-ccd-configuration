@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -90,6 +91,24 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
 
         assertC2DocumentBundle(uploadedC2DocumentBundle);
+        assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
+        assertTemporaryFieldsAreRemoved(caseData);
+    }
+
+    @Test
+    void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("additionalApplicationType", List.of("OTHER_ORDER"));
+        data.putAll(createTemporaryOtherApplicationDocument());
+        PBAPayment temporaryPbaPayment = createPbaPayment();
+        data.put("temporaryPbaPayment", temporaryPbaPayment);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        AdditionalApplicationsBundle additionalApplicationsBundle
+            = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
         assertTemporaryFieldsAreRemoved(caseData);
     }
@@ -255,8 +274,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     private Map<String, Object> createTemporaryC2Document() {
         return Map.of(
-            "c2Type", "WITH_NOTICE",
             "temporaryC2Document", Map.of(
+                "type", C2ApplicationType.WITH_NOTICE,
                 "document", Map.of(
                     "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
                     "document_binary_url",
