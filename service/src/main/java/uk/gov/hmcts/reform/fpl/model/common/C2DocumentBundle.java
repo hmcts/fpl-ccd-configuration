@@ -109,16 +109,4 @@ public class C2DocumentBundle implements ConfidentialBundle {
             .map(ElementUtils::element)
             .collect(Collectors.toList());
     }
-
-    @JsonIgnore
-    public List<String> getApplicationTypes() {
-        List<String> applicationTypes = new ArrayList<>(Collections.singletonList("C2"));
-
-        getSupplementsBundle().stream()
-            .map(Element::getValue)
-            .map(Supplement::getName)
-            .forEach(name -> applicationTypes.add(name.name()));
-
-        return applicationTypes;
-    }
 }
