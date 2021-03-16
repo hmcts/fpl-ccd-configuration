@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.SupplementsBundle;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
@@ -25,7 +25,7 @@ import java.util.Locale;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.Supplements.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -95,11 +95,11 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     }
 
     private CaseData buildCaseData() {
-        SupplementsBundle supplementsBundle = SupplementsBundle.builder().name(C13A_SPECIAL_GUARDIANSHIP).build();
+        Supplement supplement = Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build();
 
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .supplementsBundle(wrapElements(Collections.singletonList(
-                supplementsBundle)))
+                supplement)))
             .build();
 
         return CaseData.builder()
