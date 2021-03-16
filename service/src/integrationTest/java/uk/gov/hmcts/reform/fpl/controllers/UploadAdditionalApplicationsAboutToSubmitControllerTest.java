@@ -155,9 +155,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
         assertDocument(existingC2Document.getDocument());
-        assertThat(existingC2Document.getDescription()).isEqualTo("C2 document one");
         assertDocument(appendedC2Document.getDocument());
-        assertThat(appendedC2Document.getDescription()).isEqualTo("C2 document two");
 
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
@@ -194,9 +192,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
 
-        assertThat(uploadedC2DocumentBundle.getDescription()).isEqualTo("Test description");
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
-
         assertDocument(uploadedC2DocumentBundle.getDocument());
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
@@ -281,7 +277,6 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
                     "document_filename", "file.pdf"),
-                "description", "Test description",
                 "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
                 "supplementsBundle", wrapElements(createSupplementsBundle())
             )

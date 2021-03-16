@@ -52,10 +52,6 @@ public class C2DocumentBundle implements ConfidentialBundle {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());
     }
 
-    public List<Element<Supplement>> getSupplementsBundle() {
-        return defaultIfNull(supplementsBundle, new ArrayList<>());
-    }
-
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceLA() {
         return getSupportingEvidenceBundle().stream()
