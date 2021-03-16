@@ -350,13 +350,25 @@ class FeeServiceTest {
         @Test
         void shouldReturnFeesDataWithMaximumAmountForParentalResponsibilityType() {
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
-                buildC2Document(C2ApplicationType.WITH_NOTICE, List.of(APPOINTMENT_OF_GUARDIAN)),
+                buildC2Document(C2ApplicationType.WITHOUT_NOTICE, List.of(APPOINTMENT_OF_GUARDIAN)),
                 buildOtherApplicationsBundle(C1_PARENTAL_RESPONSIBILITY, PR_BY_FATHER),
                 List.of(C13A_SPECIAL_GUARDIANSHIP),
                 List.of());
 
             assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(35));
             assertThat(getFirstFeeCode(feesData)).isEqualTo(PARENTAL_RESPONSIBILITY_FATHER);
+        }
+
+        @Test
+        void shouldReturnFeeForOnlyC2ApplicationsWhenAdditionalApplicationsAreNotSelected() {
+            FeesData feesData = feeService.getFeesDataForAdditionalApplications(
+                buildC2Document(C2ApplicationType.WITH_NOTICE, null),
+                null,
+                List.of(C13A_SPECIAL_GUARDIANSHIP),
+                List.of());
+
+            assertThat(feesData.getTotalAmount()).isEqualTo(BigDecimal.valueOf(20));
+            assertThat(getFirstFeeCode(feesData)).isEqualTo(WITH_NOTICE_FEE_CODE);
         }
 
         @Test

@@ -31,8 +31,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromApplicationType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromC2ApplicationType;
@@ -138,7 +140,7 @@ public class FeeService {
         feeTypes.add(fromC2ApplicationType(c2DocumentBundle.getType()));
 
         List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested
-            = new ArrayList<>(c2DocumentBundle.getC2AdditionalOrdersRequested());
+            = defaultIfNull(c2DocumentBundle.getC2AdditionalOrdersRequested(), emptyList());
 
         if (isNotEmpty(c2AdditionalOrdersRequested)) {
             if (c2AdditionalOrdersRequested.contains(PARENTAL_RESPONSIBILITY)) {

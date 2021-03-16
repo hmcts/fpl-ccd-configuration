@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -120,5 +121,13 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData().get("temporaryPbaPayment")).extracting("pbaNumber")
             .isEqualTo("PBA1234567");
+    }
+
+    @Test
+    void shouldNotValidatePbaNumberWhenPBAPaymentIsNull() {
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
+            CaseDetails.builder().data(Collections.emptyMap()).build(), "validate");
+
+        assertThat(response.getErrors()).isEmpty();
     }
 }
