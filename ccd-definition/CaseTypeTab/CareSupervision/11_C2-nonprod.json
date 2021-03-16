@@ -28,6 +28,7 @@
     "TabLabel": "Other applications",
     "TabDisplayOrder": 11,
     "CaseFieldID": "c2DocumentBundle",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "c2DocumentBundle!=\"\""
   }
 ]
