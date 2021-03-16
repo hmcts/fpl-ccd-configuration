@@ -1565,48 +1565,11 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "usePbaPayment",
-    "Label": "Are you using PBA to pay?",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "additionalApplicationsLabel",
     "Label": "Use this feature to upload applications for additional orders. You might need to upload additional forms, depending on your application type.",
     "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "pbaNumber",
-    "Label": "Payment by account (PBA) number",
-    "FieldType": "Text",
-    "HintText": "For example, PBA1234567",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "clientCode",
-    "Label": "Client code",
-    "FieldType": "Text",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "fileReference",
-    "Label": "Customer reference",
-    "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

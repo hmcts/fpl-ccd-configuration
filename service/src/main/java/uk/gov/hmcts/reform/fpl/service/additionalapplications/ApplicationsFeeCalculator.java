@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -36,7 +38,7 @@ public class ApplicationsFeeCalculator {
     private final FeeService feeService;
 
     public Map<String, Object> calculateFee(CaseData caseData) {
-        if (caseData.getAdditionalApplicationType().size() == 2) {
+        if (isAllApplicationTypesProvided(caseData.getAdditionalApplicationType())) {
 
             if (caseData.getTemporaryOtherApplicationsBundle() != null
                 && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null) {
@@ -100,5 +102,9 @@ public class ApplicationsFeeCalculator {
             .filter(supplement -> SupplementType.C20_SECURE_ACCOMMODATION.equals(supplement.getName()))
             .map(Supplement::getSecureAccommodationType)
             .collect(Collectors.toList());
+    }
+
+    private boolean isAllApplicationTypesProvided(List<AdditionalApplicationType> applicationTypes) {
+        return applicationTypes.containsAll(asList(AdditionalApplicationType.values()));
     }
 }

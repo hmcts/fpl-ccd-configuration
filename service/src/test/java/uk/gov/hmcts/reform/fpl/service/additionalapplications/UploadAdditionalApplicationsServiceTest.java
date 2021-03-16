@@ -33,6 +33,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_PARENTAL_RESPONSIBILITY;
@@ -80,93 +82,104 @@ class UploadAdditionalApplicationsServiceTest {
     void shouldBuildExpectedC2DocumentBundle() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
+        PBAPayment pbaPayment = buildPBAPayment();
 
         CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
+            .temporaryPbaPayment(pbaPayment)
             .c2Type(WITH_NOTICE)
             .build();
 
-        C2DocumentBundle actualC2DocumentBundle = service.buildC2DocumentBundle(caseData);
+        AdditionalApplicationsBundle applicationsBundle = service.buildAdditionalApplicationsBundle(caseData);
 
-        assertC2Bundle(actualC2DocumentBundle);
-        assertSupplementsBundle(actualC2DocumentBundle.getSupplementsBundle().get(0).getValue(), supplement);
-        assertSupportingEvidenceBundle(
-            actualC2DocumentBundle.getSupportingEvidenceBundle().get(0).getValue(), supportingEvidenceBundle);
+        assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
+        assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
+
+        assertC2DocumentBundleWithDocuments(applicationsBundle, supplement, supportingEvidenceBundle);
     }
 
     @Test
     void shouldBuildOtherApplicationsBundle() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
+        PBAPayment pbaPayment = buildPBAPayment();
 
-        OtherApplicationsBundle otherApplicationsBundle = createOtherApplicationsBundle(
-            supplement, supportingDocument);
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
+            .temporaryPbaPayment(pbaPayment)
+            .build();
 
-        OtherApplicationsBundle actualOtherApplicationsBundle = service.buildOtherApplicationsBundle(
-            CaseData.builder().temporaryOtherApplicationsBundle(otherApplicationsBundle).build());
+        AdditionalApplicationsBundle applicationsBundle = service.buildAdditionalApplicationsBundle(caseData);
 
-        assertOtherApplicationsBundle(actualOtherApplicationsBundle);
-        assertSupplementsBundle(
-            actualOtherApplicationsBundle.getSupplementsBundle().get(0).getValue(), supplement);
-        assertSupportingEvidenceBundle(
-            actualOtherApplicationsBundle.getSupportingEvidenceBundle().get(0).getValue(), supportingDocument);
+        assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
+        assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
+
+        assertOtherDocumentBundleWithDocuments(applicationsBundle, supplement, supportingDocument);
     }
 
     @Test
-    void shouldBuildAdditionalApplicationsBundle() {
+    void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
 
-        Supplement otherSupplementsBundle = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
+        Supplement otherSupplement = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
-
-        C2DocumentBundle c2DocumentBundle = createC2DocumentBundle(c2Supplement, c2SupportingDocument);
-
-        OtherApplicationsBundle otherApplicationsBundle = createOtherApplicationsBundle(
-            otherSupplementsBundle, otherSupportingDocument);
-
         PBAPayment pbaPayment = buildPBAPayment();
 
-        AdditionalApplicationsBundle actual = service.buildAdditionalApplicationsBundle(
-            CaseData.builder().temporaryPbaPayment(pbaPayment).build(),
-            c2DocumentBundle,
-            otherApplicationsBundle);
+        CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
+            .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
+            .c2Type(WITH_NOTICE)
+            .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
+            .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
+            .temporaryPbaPayment(pbaPayment)
+            .build();
 
-        assertThat(actual).extracting("author", "c2DocumentBundle", "otherApplicationsBundle", "pbaPayment")
-            .containsExactly(HMCTS, c2DocumentBundle, otherApplicationsBundle, pbaPayment);
+        AdditionalApplicationsBundle applicationsBundle = service.buildAdditionalApplicationsBundle(caseData);
+
+        assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
+        assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
+
+        assertC2DocumentBundleWithDocuments(applicationsBundle, c2Supplement, c2SupportingDocument);
+        assertOtherDocumentBundleWithDocuments(applicationsBundle, otherSupplement, otherSupportingDocument);
     }
 
-    @Test
-    void shouldBuildAdditionalApplicationsBundleWithC2DocumentBundleAndPBAPayment() {
-        Supplement c2Supplement = createSupplementsBundle(C20_SECURE_ACCOMMODATION);
-        SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
+    private void assertC2DocumentBundleWithDocuments(
+        AdditionalApplicationsBundle applicationsBundle,
+        Supplement expectedSupplement,
+        SupportingEvidenceBundle expectedSupportingEvidence
+    ) {
+        C2DocumentBundle actualC2Bundle = applicationsBundle.getC2DocumentBundle();
 
-        C2DocumentBundle c2DocumentBundle = createC2DocumentBundle(c2Supplement, c2SupportingDocument);
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
+        assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
+        assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
 
-        PBAPayment pbaPayment = buildPBAPayment();
-
-        AdditionalApplicationsBundle actual = service.buildAdditionalApplicationsBundle(
-            CaseData.builder().temporaryPbaPayment(pbaPayment).build(), c2DocumentBundle, null);
-
-        assertThat(actual).extracting("author", "c2DocumentBundle", "otherApplicationsBundle", "pbaPayment")
-            .containsExactly(HMCTS, c2DocumentBundle, null, pbaPayment);
+        assertSupplementsBundle(actualC2Bundle.getSupplementsBundle().get(0).getValue(), expectedSupplement);
+        assertSupportingEvidenceBundle(
+            actualC2Bundle.getSupportingEvidenceBundle().get(0).getValue(), expectedSupportingEvidence);
     }
 
-    @Test
-    void shouldBuildAdditionalApplicationsBundleWithOtherDocumentBundleAndPBAPayment() {
-        Supplement supplement = createSupplementsBundle(SupplementType.C16_CHILD_ASSESSMENT);
-        SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
+    private void assertOtherDocumentBundleWithDocuments(
+        AdditionalApplicationsBundle applicationsBundle,
+        Supplement expectedSupplement,
+        SupportingEvidenceBundle expectedSupportingDocument
+    ) {
+        OtherApplicationsBundle actualOtherApplications = applicationsBundle.getOtherApplicationsBundle();
 
-        OtherApplicationsBundle otherApplicationsBundle = createOtherApplicationsBundle(
-            supplement, supportingDocument);
+        assertThat(actualOtherApplications.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actualOtherApplications.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
+        assertThat(actualOtherApplications.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
+        assertThat(actualOtherApplications.getAuthor()).isEqualTo(HMCTS);
+        assertThat(actualOtherApplications.getSupportingEvidenceBundle()).hasSize(1);
+        assertThat(actualOtherApplications.getSupplementsBundle()).hasSize(1);
 
-        PBAPayment pbaPayment = buildPBAPayment();
-
-        AdditionalApplicationsBundle actual = service.buildAdditionalApplicationsBundle(
-            CaseData.builder().temporaryPbaPayment(pbaPayment).build(), null, otherApplicationsBundle);
-
-        assertThat(actual).extracting("author", "c2DocumentBundle", "otherApplicationsBundle", "pbaPayment")
-            .containsExactly(HMCTS, null, otherApplicationsBundle, pbaPayment);
+        assertOtherApplicationsBundle(actualOtherApplications);
+        assertSupplementsBundle(actualOtherApplications.getSupplementsBundle().get(0).getValue(), expectedSupplement);
+        assertSupportingEvidenceBundle(
+            actualOtherApplications.getSupportingEvidenceBundle().get(0).getValue(), expectedSupportingDocument);
     }
 
     @Test

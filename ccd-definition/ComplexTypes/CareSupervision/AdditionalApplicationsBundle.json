@@ -33,7 +33,7 @@
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "c2DocumentBundle=\"Do Not Show\"",
+    "FieldShowCondition": "c2DocumentBundle=\"DO NOT SHOW\"",
     "Searchable": "N"
   },
   {

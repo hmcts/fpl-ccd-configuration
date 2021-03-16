@@ -52,7 +52,7 @@
     "ListElementCode": "supplementsBundle",
     "ElementLabel": "Supplements",
     "FieldType": "Collection",
-    "FieldTypeParameter": "SupplementsBundle",
+    "FieldTypeParameter": "Supplement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

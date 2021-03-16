@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper;
@@ -17,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumber;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getNonEmptyPbaNumbers;
+import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.getPBAPaymentWithNonEmptyPbaNumber;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.isInvalidPbaNumber;
 import static uk.gov.hmcts.reform.fpl.utils.PbaNumberHelper.setPrefix;
 
@@ -51,6 +53,22 @@ public class PbaNumberService {
             return setPrefix(pbaNumber);
         }
         return null;
+    }
+
+    public PBAPayment updatePBAPayment(PBAPayment pbaPayment) {
+        if (pbaPayment != null && !isEmpty(pbaPayment.getPbaNumber())) {
+            return pbaPayment.toBuilder().pbaNumber(setPrefix(pbaPayment.getPbaNumber())).build();
+        }
+        return null;
+    }
+
+    public List<String> validate(PBAPayment pbaPayment) {
+        if (getPBAPaymentWithNonEmptyPbaNumber(pbaPayment)
+            .map(PbaNumberHelper::isInvalidPbaNumber)
+            .orElse(false)) {
+            return List.of(VALIDATION_ERROR_MESSAGE);
+        }
+        return List.of();
     }
 
     public List<String> validate(List<Element<Applicant>> applicantElementsList) {
