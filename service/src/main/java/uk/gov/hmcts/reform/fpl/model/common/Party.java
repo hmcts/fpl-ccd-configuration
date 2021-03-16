@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 
 import java.time.LocalDate;
 
@@ -17,7 +18,7 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(force = true)
-public class Party {
+public class Party implements Recipient {
     protected final String partyId;
     protected final PartyType partyType;
     protected final String firstName;
