@@ -140,7 +140,7 @@ public class FeeService {
         feeTypes.add(fromC2ApplicationType(c2DocumentBundle.getType()));
 
         List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested
-            = defaultIfNull(c2DocumentBundle.getC2AdditionalOrdersRequested(), emptyList());
+            = new ArrayList<>(defaultIfNull(c2DocumentBundle.getC2AdditionalOrdersRequested(), emptyList()));
 
         if (isNotEmpty(c2AdditionalOrdersRequested)) {
             if (c2AdditionalOrdersRequested.contains(PARENTAL_RESPONSIBILITY)) {
