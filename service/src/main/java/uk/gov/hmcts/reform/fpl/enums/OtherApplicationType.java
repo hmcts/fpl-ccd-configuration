@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-@Getter
 public enum OtherApplicationType {
     C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION,
     C1_APPOINTMENT_OF_A_GUARDIAN,

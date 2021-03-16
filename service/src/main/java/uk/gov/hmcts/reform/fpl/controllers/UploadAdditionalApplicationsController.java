@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -107,7 +108,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
+        final AdditionalApplicationsBundle lastBundle = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+        final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
         if (hasC2Order(caseData)) {
             C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
@@ -122,22 +125,24 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             }
 
             publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
+        }
 
-            if (isNotPaidByPba(c2DocumentBundle)) {
-                log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
-                publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
-            } else {
-                if (amountToPayShownToUser(caseDetails)) {
-                    try {
-                        paymentService.makePaymentForC2(caseDetails.getId(), caseData);
-                    } catch (FeeRegisterException | PaymentsApiException paymentException) {
-                        log.error("C2 payment for case {} failed", caseDetails.getId());
-                        publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
-                    }
-                } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
-                    log.error("C2 payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
+        //TODO: notification will be updated in FPLA-2745
+        if (isNotPaidByPba(pbaPayment)) {
+            log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
+            publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
+        } else {
+            if (amountToPayShownToUser(caseDetails)) {
+                try {
+                    FeesData feesData = applicationsFeeCalculator.getFeeDataForAdditionalApplications(lastBundle);
+                    paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
+                } catch (FeeRegisterException | PaymentsApiException paymentException) {
+                    log.error("Additional applications payment for case {} failed", caseDetails.getId());
                     publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
                 }
+            } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
+                log.error("Additional applications payment for case {} not taken as payment fee not shown to user", caseDetails.getId());
+                publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
             }
         }
     }
@@ -146,15 +151,11 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER);
     }
 
-    private boolean hasOtherApplicationsOrder(CaseData caseData) {
-        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER);
-    }
-
     private boolean amountToPayShownToUser(CaseDetails caseDetails) {
         return YES.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY));
     }
 
-    private boolean isNotPaidByPba(C2DocumentBundle c2DocumentBundle) {
-        return NO.getValue().equals(c2DocumentBundle.getUsePbaPayment());
+    private boolean isNotPaidByPba(PBAPayment pbaPayment) {
+        return pbaPayment != null && NO.getValue().equals(pbaPayment.getUsePbaPayment());
     }
 }

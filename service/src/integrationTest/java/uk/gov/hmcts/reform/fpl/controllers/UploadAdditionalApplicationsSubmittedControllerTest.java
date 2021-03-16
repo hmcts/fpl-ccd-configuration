@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -21,12 +22,14 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +68,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static DocumentReference latestC2Document;
     private static final byte[] C2_BINARY = {5, 4, 3, 2, 1};
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    public static final FeesData FEES_DATA = FeesData.builder().totalAmount(BigDecimal.TEN).build();
 
     @MockBean
     private NotificationClient notificationClient;
@@ -74,6 +78,9 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
     @MockBean
     private PaymentService paymentService;
+
+    @MockBean
+    private FeeService feeService;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
@@ -201,7 +208,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void shouldMakePaymentWhenAmountToPayWasDisplayed() {
+    void shouldMakePaymentWhenAmountToPayWasDisplayedFor() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildAdditionalApplicationsBundle(YES))
@@ -210,9 +217,13 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         CaseDetails caseDetails = createCase(caseData);
 
+        when(feeService.getFeesDataForAdditionalApplications(any(), any(), any(), any()))
+            .thenReturn(FEES_DATA);
+
         postSubmittedEvent(caseDetails);
 
-        verify(paymentService).makePaymentForC2(CASE_ID, caseConverter.convert(caseDetails));
+        verify(paymentService).makePaymentForAdditionalApplications(
+            CASE_ID, caseConverter.convert(caseDetails), FEES_DATA);
     }
 
     @Test
@@ -236,7 +247,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             .put("displayAmountToPay", YES.getValue())
             .build();
 
-        doThrow(new PaymentsApiException("", new Throwable())).when(paymentService).makePaymentForC2(any(), any());
+        doThrow(new PaymentsApiException("", new Throwable()))
+            .when(paymentService).makePaymentForAdditionalApplications(any(), any(), any());
 
         postSubmittedEvent(createCase(caseData));
 

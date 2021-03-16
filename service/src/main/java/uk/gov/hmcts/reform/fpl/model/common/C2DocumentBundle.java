@@ -39,8 +39,8 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
-    private List<Element<Supplement>> supplementsBundle;
-    private List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
+    private final List<Element<Supplement>> supplementsBundle;
+    private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
 
     public String toLabel(int index) {

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
@@ -78,6 +79,22 @@ public class PaymentService {
             c2DocumentBundle.getPbaNumber(),
             defaultIfBlank(c2DocumentBundle.getClientCode(), BLANK_PARAMETER_VALUE),
             defaultIfBlank(c2DocumentBundle.getFileReference(), BLANK_PARAMETER_VALUE),
+            localAuthorityName,
+            feesData);
+
+        paymentClient.callPaymentsApi(paymentRequest);
+    }
+
+    public void makePaymentForAdditionalApplications(Long caseId, CaseData caseData, FeesData feesData) {
+        final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
+
+        String localAuthorityName =
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+
+        CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
+            pbaPayment.getPbaNumber(),
+            defaultIfBlank(pbaPayment.getClientCode(), BLANK_PARAMETER_VALUE),
+            defaultIfBlank(pbaPayment.getFileReference(), BLANK_PARAMETER_VALUE),
             localAuthorityName,
             feesData);
 

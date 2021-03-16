@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 @Builder(toBuilder = true)
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class AdditionalApplicationsBundle {
     private final String uploadedDateTime;
     private final String author;

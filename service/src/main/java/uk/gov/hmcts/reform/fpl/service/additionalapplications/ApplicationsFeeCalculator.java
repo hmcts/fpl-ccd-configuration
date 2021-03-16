@@ -10,7 +10,10 @@ import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
 
@@ -42,19 +45,32 @@ public class ApplicationsFeeCalculator {
 
             if (caseData.getTemporaryOtherApplicationsBundle() != null
                 && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null) {
-                return getAdditionalApplicationsFee(caseData);
+                return calculateAdditionalApplicationsFee(caseData);
             }
             return emptyMap();
         }
 
-        return getAdditionalApplicationsFee(caseData);
+        return calculateAdditionalApplicationsFee(caseData);
     }
 
-    private Map<String, Object> getAdditionalApplicationsFee(CaseData caseData) {
+    public FeesData getFeeDataForAdditionalApplications(AdditionalApplicationsBundle applicationsBundle) {
+        List<Element<Supplement>> supplementsBundle = mergeSupplementsBundles(
+            applicationsBundle.getC2DocumentBundle(), applicationsBundle.getOtherApplicationsBundle());
+
+        return feeService.getFeesDataForAdditionalApplications(
+            applicationsBundle.getC2DocumentBundle(),
+            applicationsBundle.getOtherApplicationsBundle(),
+            getSupplementsWithoutSecureAccommodationType(supplementsBundle),
+            getSecureAccommodationTypes(supplementsBundle));
+    }
+
+    private Map<String, Object> calculateAdditionalApplicationsFee(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         try {
-            List<Element<Supplement>> supplementsBundle = mergeSupplementsBundles(caseData);
+            List<Element<Supplement>> supplementsBundle = mergeSupplementsBundles(
+                caseData.getTemporaryC2Document(),
+                caseData.getTemporaryOtherApplicationsBundle());
 
             FeesData feesData = feeService.getFeesDataForAdditionalApplications(
                 caseData.getTemporaryC2Document(),
@@ -71,17 +87,17 @@ public class ApplicationsFeeCalculator {
         return data;
     }
 
-    private List<Element<Supplement>> mergeSupplementsBundles(CaseData caseData) {
+    private List<Element<Supplement>> mergeSupplementsBundles(
+        C2DocumentBundle c2DocumentBundle, OtherApplicationsBundle otherApplicationsBundle) {
         List<Element<Supplement>> supplementsBundle = new ArrayList<>();
 
-        if (caseData.getTemporaryC2Document() != null
-            && isNotEmpty(caseData.getTemporaryC2Document().getSupplementsBundle())) {
-            supplementsBundle.addAll(caseData.getTemporaryC2Document().getSupplementsBundle());
+        if (c2DocumentBundle != null
+            && isNotEmpty(c2DocumentBundle.getSupplementsBundle())) {
+            supplementsBundle.addAll(c2DocumentBundle.getSupplementsBundle());
         }
 
-        if (!isNull(caseData.getTemporaryOtherApplicationsBundle())
-            && isNotEmpty(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle())) {
-            supplementsBundle.addAll(caseData.getTemporaryOtherApplicationsBundle().getSupplementsBundle());
+        if (!isNull(otherApplicationsBundle) && isNotEmpty(otherApplicationsBundle.getSupplementsBundle())) {
+            supplementsBundle.addAll(otherApplicationsBundle.getSupplementsBundle());
         }
 
         return supplementsBundle;

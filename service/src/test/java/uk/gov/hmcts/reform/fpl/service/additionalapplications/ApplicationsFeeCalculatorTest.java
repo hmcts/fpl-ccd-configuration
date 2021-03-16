@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
@@ -49,10 +50,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldCalculateFeeForC2DocumentBundle() {
-        C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
-            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
-            .build();
+        C2DocumentBundle c2Document = buildC2Document();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER))
@@ -76,11 +74,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldNotCalculateFeeWhenC2AndOtherApplicationsAreSelectedAndOnlyC2DocumentBundleExists() {
-        C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN,
-                CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
-            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
-            .build();
+        C2DocumentBundle c2Document = buildC2Document();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
@@ -111,10 +105,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldCalculateFeeForOtherDocumentBundle() {
-        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
-            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
-            .supplementsBundle(List.of(element(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build())))
-            .build();
+        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(OTHER_ORDER))
@@ -138,10 +129,7 @@ class ApplicationsFeeCalculatorTest {
 
     @Test
     void shouldCalculateFeeForC2DocumentBundleAndOtherApplicationsBundle() {
-        C2DocumentBundle c2Document = C2DocumentBundle.builder().type(WITH_NOTICE)
-            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
-            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
-            .build();
+        C2DocumentBundle c2Document = buildC2Document();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
@@ -190,5 +178,82 @@ class ApplicationsFeeCalculatorTest {
         Map<String, Object> actualData = feeCalculator.calculateFee(caseData);
 
         assertThat(actualData).containsExactlyEntriesOf(Map.of("displayAmountToPay", "No"));
+    }
+
+    @Test
+    void shouldCalculateFeeForAdditionalApplicationsBundleWithC2Document() {
+        C2DocumentBundle c2Document = buildC2Document();
+
+        AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(c2Document)
+            .build();
+
+        when(feeService.getFeesDataForAdditionalApplications(
+            c2Document, null, List.of(C16_CHILD_ASSESSMENT), List.of()))
+            .thenReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
+
+        FeesData actualFeesData = feeCalculator.getFeeDataForAdditionalApplications(bundle);
+
+        verify(feeService).getFeesDataForAdditionalApplications(
+            c2Document, null, List.of(C16_CHILD_ASSESSMENT), List.of());
+
+        assertThat(actualFeesData).isEqualTo(FeesData.builder().totalAmount(BigDecimal.TEN).build());
+    }
+
+    @Test
+    void shouldCalculateFeeForAdditionalApplicationsBundleWithC2DocumentAndOtherApplications() {
+        C2DocumentBundle c2Document = buildC2Document();
+        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle();
+
+        AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(c2Document)
+            .otherApplicationsBundle(otherApplicationsBundle)
+            .build();
+
+        when(feeService.getFeesDataForAdditionalApplications(
+            c2Document, otherApplicationsBundle,
+            List.of(C16_CHILD_ASSESSMENT, C13A_SPECIAL_GUARDIANSHIP), List.of()))
+            .thenReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
+
+        FeesData actualFeesData = feeCalculator.getFeeDataForAdditionalApplications(bundle);
+
+        verify(feeService).getFeesDataForAdditionalApplications(
+            c2Document, otherApplicationsBundle, List.of(C16_CHILD_ASSESSMENT, C13A_SPECIAL_GUARDIANSHIP), List.of());
+
+        assertThat(actualFeesData).isEqualTo(FeesData.builder().totalAmount(BigDecimal.TEN).build());
+    }
+
+    @Test
+    void shouldCalculateFeeForAdditionalApplicationsBundleWithOtherApplications() {
+        OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationsBundle();
+
+        AdditionalApplicationsBundle bundle = AdditionalApplicationsBundle.builder()
+            .otherApplicationsBundle(otherApplicationsBundle)
+            .build();
+
+        when(feeService.getFeesDataForAdditionalApplications(
+            null, otherApplicationsBundle, List.of(C13A_SPECIAL_GUARDIANSHIP), List.of()))
+            .thenReturn(FeesData.builder().totalAmount(BigDecimal.valueOf(20)).build());
+
+        FeesData actualFeesData = feeCalculator.getFeeDataForAdditionalApplications(bundle);
+
+        verify(feeService).getFeesDataForAdditionalApplications(
+            null, otherApplicationsBundle, List.of(C13A_SPECIAL_GUARDIANSHIP), List.of());
+
+        assertThat(actualFeesData).isEqualTo(FeesData.builder().totalAmount(BigDecimal.valueOf(20)).build());
+    }
+
+    private C2DocumentBundle buildC2Document() {
+        return C2DocumentBundle.builder().type(WITH_NOTICE)
+            .c2AdditionalOrdersRequested(List.of(APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME_OR_REMOVE_JURISDICTION))
+            .supplementsBundle(List.of(element(Supplement.builder().name(C16_CHILD_ASSESSMENT).build())))
+            .build();
+    }
+
+    private OtherApplicationsBundle buildOtherApplicationsBundle() {
+        return OtherApplicationsBundle.builder()
+            .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
+            .supplementsBundle(List.of(element(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build())))
+            .build();
     }
 }

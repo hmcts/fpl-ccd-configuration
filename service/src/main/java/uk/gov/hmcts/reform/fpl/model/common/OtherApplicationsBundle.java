@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -11,14 +10,12 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -32,7 +29,7 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
-    private List<Element<Supplement>> supplementsBundle;
+    private final List<Element<Supplement>> supplementsBundle;
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
@@ -57,46 +54,4 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
             .collect(Collectors.toList());
     }
 
-    @JsonIgnore
-    public String getAllDocumentFileNames() {
-        String c2Filename = "";
-
-        if (document != null) {
-            c2Filename = document.getFilename();
-        }
-
-        String stringBuilder = c2Filename + "\n" + getSupportingEvidenceFileNames();
-        return stringBuilder.trim();
-    }
-
-    @JsonIgnore
-    public List<Element<DocumentReference>> getAllDocumentReferences() {
-        List<Element<DocumentReference>> documentReferences = new ArrayList<>();
-
-        if (document != null) {
-            documentReferences.add(element(document));
-        }
-
-        documentReferences.addAll(getSupportingEvidenceBundleReferences());
-
-        return documentReferences;
-    }
-
-    @JsonIgnore
-    private String getSupportingEvidenceFileNames() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(DocumentReference::getFilename)
-            .collect(Collectors.joining("\n"));
-    }
-
-    @JsonIgnore
-    private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList());
-    }
 }
