@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -46,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -126,6 +128,18 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         );
+    }
+
+    @Test
+    void submittedEventShouldNotifyWhenAdditionalApplciationsBundleDoesNotHaveC2DocumentBundle() {
+        final Map<String, Object> caseData = ImmutableMap.of(
+            "additionalApplicationType", List.of(OTHER_ORDER),
+            "additionalApplicationsBundle", wrapElements(
+                AdditionalApplicationsBundle.builder()
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder().build()).build()));
+
+        postSubmittedEvent(createCase(caseData));
+        verifyNoInteractions(notificationClient);
     }
 
     @Test
