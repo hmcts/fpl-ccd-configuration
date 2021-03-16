@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -69,6 +70,48 @@ class PbaNumberServiceTest {
     @NullAndEmptySource
     void shouldReturnNullWhenEmptyPbaNumber(String pbaNumber) {
         assertThat(pbaNumberService.update(pbaNumber)).isNull();
+    }
+
+    @Test
+    void shouldUpdatePbaPaymentPbaNumberToIncludePrefix() {
+        String pbaNumber = "1234567";
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber(pbaNumber).build();
+
+        PBAPayment updatedPbaNumber = pbaNumberService.updatePBAPayment(pbaPayment);
+
+        assertThat(updatedPbaNumber).isEqualTo(PBAPayment.builder().pbaNumber("PBA1234567").build());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldUpdatePbaPaymentPbaNumberToIncludePrefix(String pbaNumber) {
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber(pbaNumber).build();
+
+        PBAPayment updatedPbaNumber = pbaNumberService.updatePBAPayment(pbaPayment);
+
+        assertThat(updatedPbaNumber).isNull();
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenPBAPaymentHasValidPbaNumber() {
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").build();
+        List<String> errors = pbaNumberService.validate(pbaPayment);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenPBAPaymentHasInvalidPbaNumber() {
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber("1").build();
+        List<String> errors = pbaNumberService.validate(pbaPayment);
+
+        assertThat(errors).containsExactly(VALIDATION_ERROR_MESSAGE);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnEmptyListWhenPBAPaymentHasNullPbaNumber(String pbaNumber) {
+        assertThat(pbaNumberService.validate(PBAPayment.builder().pbaNumber(pbaNumber).build())).isEmpty();
     }
 
     @Test

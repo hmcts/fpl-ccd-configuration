@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -29,7 +30,31 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
 
-    public C2DocumentBundle buildC2DocumentBundle(CaseData caseData) {
+    public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
+        C2DocumentBundle c2DocumentBundle = null;
+        OtherApplicationsBundle otherApplicationsBundle = null;
+
+        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
+            c2DocumentBundle = buildC2DocumentBundle(caseData);
+        }
+
+        if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER)) {
+            otherApplicationsBundle = buildOtherApplicationsBundle(caseData);
+        }
+
+        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
+        PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
+
+        return AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .otherApplicationsBundle(otherApplicationsBundle)
+            .pbaPayment(temporaryPbaPayment)
+            .author(uploadedBy)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(CaseData caseData) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         List<SupportingEvidenceBundle> updatedSupportingEvidenceBundle =
@@ -47,7 +72,7 @@ public class UploadAdditionalApplicationsService {
             .type(caseData.getC2Type()).build();
     }
 
-    public OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData) {
+    private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData) {
         String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
 
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
@@ -65,23 +90,6 @@ public class UploadAdditionalApplicationsService {
             .document(temporaryOtherApplicationsBundle.getDocument())
             .supportingEvidenceBundle(wrapElements(updatedSupportingEvidenceBundle))
             .supplementsBundle(wrapElements(updatedSupplementsBundle))
-            .build();
-    }
-
-    public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(
-        CaseData caseData,
-        C2DocumentBundle c2DocumentBundle,
-        OtherApplicationsBundle otherApplicationsBundle
-    ) {
-        String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
-        PBAPayment temporaryPbaPayment = caseData.getTemporaryPbaPayment();
-
-        return AdditionalApplicationsBundle.builder()
-            .c2DocumentBundle(c2DocumentBundle)
-            .otherApplicationsBundle(otherApplicationsBundle)
-            .pbaPayment(temporaryPbaPayment)
-            .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
             .build();
     }
 

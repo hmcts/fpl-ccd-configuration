@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
@@ -50,7 +49,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
-    private final UploadAdditionalApplicationsService uploadC2DocumentsService;
+    private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
 
     @PostMapping("/get-fee/mid-event")
@@ -68,16 +67,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = new ArrayList<>();
+        PBAPayment updatedPbaPayment = pbaNumberService.updatePBAPayment(caseData.getTemporaryPbaPayment());
+        caseDetails.getData().put("temporaryPbaPayment", updatedPbaPayment);
 
-        if (caseData.getTemporaryPbaPayment() != null) {
-            var updatedPbaNumber = pbaNumberService.update(caseData.getTemporaryPbaPayment().getPbaNumber());
-            caseDetails.getData().put("temporaryPbaPayment",
-                caseData.getTemporaryPbaPayment().toBuilder().pbaNumber(updatedPbaNumber).build());
-            errors.addAll(pbaNumberService.validate(updatedPbaNumber));
-        }
-
-        return respond(caseDetails, errors);
+        return respond(caseDetails, pbaNumberService.validate(updatedPbaPayment));
     }
 
     @PostMapping("/about-to-submit")
@@ -90,32 +83,13 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
         );
 
-        C2DocumentBundle c2DocumentBundle = null;
-        OtherApplicationsBundle otherApplicationsBundle = null;
-
-        if (hasC2Order(caseData)) {
-            c2DocumentBundle = uploadC2DocumentsService.buildC2DocumentBundle(caseData);
-        }
-
-        if (hasOtherApplicationsOrder(caseData)) {
-            otherApplicationsBundle = uploadC2DocumentsService.buildOtherApplicationsBundle(caseData);
-        }
-
-        additionalApplications.add(0, element(uploadC2DocumentsService.buildAdditionalApplicationsBundle(
-            caseData, c2DocumentBundle, otherApplicationsBundle)));
+        additionalApplications.add(0, element(
+            uploadAdditionalApplicationsService.buildAdditionalApplicationsBundle(caseData)));
 
         caseDetails.getData().put("additionalApplicationsBundle", additionalApplications);
 
-        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT,
-            "c2Type",
-            "additionalApplicationType",
-            "usePbaPayment",
-            AMOUNT_TO_PAY,
-            "pbaNumber",
-            "clientCode",
-            "fileReference",
-            "temporaryPbaPayment",
-            TEMPORARY_OTHER_APPLICATIONS_BUNDLE);
+        removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
+            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE);
 
         return respond(caseDetails);
     }
