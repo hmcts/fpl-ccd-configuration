@@ -58,6 +58,36 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(extractedCaseData.getC2DocumentBundle()).containsOnly(secondC2);
         }
+
+        @Test
+        void shouldDoNothingIfIncorrectFamilyNumber() {
+            Element<C2DocumentBundle> firstC2 = element(C2DocumentBundle.builder().description("test1").build());
+            Element<C2DocumentBundle> secondC2 = element(C2DocumentBundle.builder().description("test2").build());
+
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber("1234")
+                .c2DocumentBundle(List.of(firstC2, secondC2))
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getC2DocumentBundle()).containsExactly(firstC2, secondC2);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNoC2s() {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManNumber)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No C2s on case");
+        }
     }
 
     @Nested
