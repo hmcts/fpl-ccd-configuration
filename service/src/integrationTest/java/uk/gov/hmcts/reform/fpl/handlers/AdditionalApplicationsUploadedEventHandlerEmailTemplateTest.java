@@ -39,7 +39,7 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
     private final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
     private final String respondentLastName = "Smith";
     private final String calloutText = "Smith, SACCCCCCCC5676576567";
-    private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#C2";
+    private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#Other%20applications";
     private final List<String> applicationTypes = Arrays.asList("C2", "C13A - Special guardianship order");
 
     @Autowired
@@ -81,7 +81,7 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
             .hasBody(emailContent()
                 .line("New applications have been made for the case:")
                 .line()
-                .line(calloutText)
+                .callout(calloutText)
                 .line()
                 .h1("Applications")
                 .line()
@@ -93,7 +93,7 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
                 .line("You need to:")
                 .list("check the orders",
                     "check payment has been taken",
-                    "confirm the judge or legal adviser has received their notification",
+                    "send a message to the judge or legal adviser",
                     "send a copy to relevant parties")
                 .line()
                 .end("To review the application, sign in to " + caseUrl)

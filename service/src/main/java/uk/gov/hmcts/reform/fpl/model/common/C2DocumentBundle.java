@@ -112,11 +112,22 @@ public class C2DocumentBundle implements ConfidentialBundle {
 
     @JsonIgnore
     public List<String> getApplicationTypes() {
-        List<String> applicationTypes = new ArrayList<>(Collections.singletonList("C2"));
+//        String C2 = "C2";
+//
+//        C2 += " - " + c2AdditionalOrdersRequested.stream()
+//            .map(C2AdditionalOrdersRequested::getOrder)
+//            .collect(Collectors.joining(", "));
+//
+        System.out.println(c2AdditionalOrdersRequested);
+        System.out.println(getSupplementsBundle());
+
+//        List<String> applicationTypes = new ArrayList<>(Collections.singletonList(C2));
+
+        List<String> applicationTypes = new ArrayList<>();
 
         getSupplementsBundle().stream()
             .map(Element::getValue)
-            .map(SupplementsBundle::getName)
+            .map(Supplement::getName)
             .forEach(name -> applicationTypes.add(name.getName()));
 
         return applicationTypes;

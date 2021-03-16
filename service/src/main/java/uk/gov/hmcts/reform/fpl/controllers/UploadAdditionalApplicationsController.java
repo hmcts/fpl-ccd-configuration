@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
+import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -112,7 +112,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-        if (hasC2Order(caseData)) {
+//        if (hasC2Order(caseData)) {
             C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
                 .get(0).getValue().getC2DocumentBundle();
 
@@ -124,13 +124,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     .fileReference(pbaPayment.getFileReference()).build();
             }
 
-            publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
+            publishEvent(new AdditionalApplicationsUploadedEvent(caseData, c2DocumentBundle));
         }
 
-        //TODO: notification will be updated in FPLA-2745
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
-            publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
+            publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
         } else {
             if (amountToPayShownToUser(caseDetails)) {
                 try {
