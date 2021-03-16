@@ -298,15 +298,6 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public C2DocumentBundle getMostRecentC2DocumentBundle() {
-        return Stream.of(ElementUtils.unwrapElements(c2DocumentBundle))
-            .filter(list -> !list.isEmpty())
-            .map(c2DocumentBundles -> c2DocumentBundles.get(0))
-            .findFirst()
-            .orElse(null);
-    }
-
-    @JsonIgnore
     public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
         return c2DocumentBundle.stream()
             .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
