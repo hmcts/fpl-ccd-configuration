@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
+import java.util.List;
+
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
@@ -108,20 +110,23 @@ public class MigrateCaseController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         if ("WR20C50015".equals(caseData.getFamilyManCaseNumber())) {
+            log.info("Attempting to remove first C2 from WR20C50015");
             removeFirstC2(caseDetails);
+            log.info("Successfully removed C2 from WR20C50015");
         }
     }
 
     private void removeFirstC2(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
+        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
 
-        if (isEmpty(caseData.getC2DocumentBundle())) {
+        if (isEmpty(c2DocumentBundle)) {
             throw new IllegalArgumentException("No C2s on case");
         }
 
-        caseData.getC2DocumentBundle().remove(0);
+        c2DocumentBundle.remove(0);
 
-        caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
+        caseDetails.getData().put("c2DocumentBundle", c2DocumentBundle);
 
     }
 
