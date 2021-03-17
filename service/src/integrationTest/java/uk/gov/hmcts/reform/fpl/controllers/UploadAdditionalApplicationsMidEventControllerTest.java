@@ -73,8 +73,8 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .temporaryC2Document(temporaryC2Document)
             .build();
 
-        List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.PARENTAL_RESPONSIBILITY_FATHER,
-            FeeType.SPECIAL_GUARDIANSHIP, FeeType.SECURE_ACCOMMODATION_WALES);
+        List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.SPECIAL_GUARDIANSHIP,
+            FeeType.PARENTAL_RESPONSIBILITY_FATHER, FeeType.SECURE_ACCOMMODATION_WALES);
 
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());

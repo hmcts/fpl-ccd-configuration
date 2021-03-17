@@ -128,27 +128,11 @@ public enum FeeType {
         return PARENTAL_RESPONSIBILITY_FEMALE_PARENT;
     }
 
-    public static List<FeeType> fromSupplementTypes(List<SupplementType> supplementTypes) {
-        if (isEmpty(supplementTypes)) {
-            return ImmutableList.of();
-        }
-
-        return supplementTypes.stream()
-            .map(supplementToFeeMap::get)
-            .collect(toUnmodifiableList());
+    public static FeeType fromSupplementTypes(SupplementType supplementType) {
+        return supplementToFeeMap.get(supplementType);
     }
 
-    public static List<FeeType> fromSecureAccommodationTypes(List<SecureAccommodationType> accommodationTypes) {
-        if (isEmpty(accommodationTypes)) {
-            return ImmutableList.of();
-        }
-
-        return accommodationTypes.stream()
-            .map(FeeType::getSecureAccommodationFeeType)
-            .collect(toUnmodifiableList());
-    }
-
-    private static FeeType getSecureAccommodationFeeType(SecureAccommodationType secureAccommodationType) {
+    public static FeeType fromSecureAccommodationTypes(SecureAccommodationType secureAccommodationType) {
         if (SecureAccommodationType.ENGLAND == secureAccommodationType) {
             return SECURE_ACCOMMODATION_ENGLAND;
         }

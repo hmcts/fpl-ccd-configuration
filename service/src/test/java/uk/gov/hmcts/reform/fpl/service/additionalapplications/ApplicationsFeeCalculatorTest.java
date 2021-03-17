@@ -172,7 +172,7 @@ class ApplicationsFeeCalculatorTest {
             .temporaryOtherApplicationsBundle(otherApplicationsBundle).build();
 
         List<FeeType> feeTypeList = List.of(C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME,
-            PARENTAL_RESPONSIBILITY_FATHER, CHILD_ASSESSMENT, SPECIAL_GUARDIANSHIP, SECURE_ACCOMMODATION_WALES);
+            CHILD_ASSESSMENT, PARENTAL_RESPONSIBILITY_FATHER, SPECIAL_GUARDIANSHIP, SECURE_ACCOMMODATION_WALES);
 
         when(feeService.getFeesDataForAdditionalApplications(feeTypeList))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.valueOf(50)).build());
@@ -232,7 +232,7 @@ class ApplicationsFeeCalculatorTest {
             .build();
 
         List<FeeType> feeTypes = List.of(C2_WITH_NOTICE, APPOINTMENT_OF_GUARDIAN, CHANGE_SURNAME,
-            APPOINTMENT_OF_GUARDIAN, CHILD_ASSESSMENT, SPECIAL_GUARDIANSHIP);
+            CHILD_ASSESSMENT, APPOINTMENT_OF_GUARDIAN, SPECIAL_GUARDIANSHIP);
 
         when(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .thenReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());

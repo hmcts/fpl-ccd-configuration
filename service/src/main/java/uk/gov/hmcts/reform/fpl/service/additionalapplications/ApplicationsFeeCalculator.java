@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -24,12 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
-import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -65,6 +62,23 @@ public class ApplicationsFeeCalculator {
         return calculateAdditionalApplicationsFee(caseData);
     }
 
+    public FeesData getFeeDataForAdditionalApplications(AdditionalApplicationsBundle applicationsBundle) {
+        final List<FeeType> feeTypes = getFeeTypes(
+            applicationsBundle.getC2DocumentBundle(),
+            applicationsBundle.getOtherApplicationsBundle());
+
+        return feeService.getFeesDataForAdditionalApplications(feeTypes);
+    }
+
+    private boolean isAllApplicationsSpecified(List<AdditionalApplicationType> applicationTypes) {
+        return applicationTypes.containsAll(asList(AdditionalApplicationType.values()));
+    }
+
+    private boolean isAllApplicationsUploaded(CaseData caseData) {
+        return caseData.getTemporaryOtherApplicationsBundle() != null
+            && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null;
+    }
+
     private Map<String, Object> calculateAdditionalApplicationsFee(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
@@ -82,72 +96,19 @@ public class ApplicationsFeeCalculator {
         return data;
     }
 
-    public FeesData getFeeDataForAdditionalApplications(AdditionalApplicationsBundle applicationsBundle) {
-        final List<FeeType> feeTypes = getFeeTypes(
-            applicationsBundle.getC2DocumentBundle(),
-            applicationsBundle.getOtherApplicationsBundle());
-
-        return feeService.getFeesDataForAdditionalApplications(feeTypes);
-    }
-
-    private List<Element<Supplement>> mergeSupplementsBundles(
-        C2DocumentBundle c2DocumentBundle, OtherApplicationsBundle otherApplicationsBundle) {
-        List<Element<Supplement>> supplementsBundle = new ArrayList<>();
-
-        if (isNotEmpty(c2DocumentBundle)) {
-            ofNullable(c2DocumentBundle.getSupplementsBundle()).ifPresent(supplementsBundle::addAll);
-        }
-
-        if (isNotEmpty(otherApplicationsBundle)) {
-            ofNullable(otherApplicationsBundle.getSupplementsBundle()).ifPresent(supplementsBundle::addAll);
-        }
-
-        return supplementsBundle;
-    }
-
-    private List<SupplementType> getSupplementsWithoutSecureAccommodationType(
-        List<Element<Supplement>> supplementsBundles) {
-
-        return unwrapElements(supplementsBundles).stream()
-            .map(Supplement::getName)
-            .filter(name -> !SupplementType.C20_SECURE_ACCOMMODATION.equals(name))
-            .collect(Collectors.toList());
-    }
-
-    private List<SecureAccommodationType> getSecureAccommodationTypes(
-        List<Element<Supplement>> supplementsBundles) {
-        return unwrapElements(supplementsBundles).stream()
-            .filter(supplement -> SupplementType.C20_SECURE_ACCOMMODATION.equals(supplement.getName()))
-            .map(Supplement::getSecureAccommodationType)
-            .collect(Collectors.toList());
-    }
-
-    private boolean isAllApplicationsSpecified(List<AdditionalApplicationType> applicationTypes) {
-        return applicationTypes.containsAll(asList(AdditionalApplicationType.values()));
-    }
-
-    private boolean isAllApplicationsUploaded(CaseData caseData) {
-        return caseData.getTemporaryOtherApplicationsBundle() != null
-            && caseData.getTemporaryOtherApplicationsBundle().getDocument() != null;
-    }
-
     private List<FeeType> getFeeTypes(C2DocumentBundle c2Bundle, OtherApplicationsBundle otherBundle) {
         List<FeeType> feeTypes = new ArrayList<>();
 
-        if (!isNull(c2Bundle)) {
+        if (isNotEmpty(c2Bundle)) {
             feeTypes.addAll(getC2ApplicationsFeeTypes(c2Bundle));
+            ofNullable(c2Bundle.getSupplementsBundle()).ifPresent(
+                bundle -> feeTypes.addAll(getSupplementsFeeTypes(bundle)));
         }
 
-        if (!isNull(otherBundle)) {
+        if (isNotEmpty(otherBundle)) {
             feeTypes.addAll(getOtherApplicationsFeeTypes(otherBundle));
+            feeTypes.addAll(getSupplementsFeeTypes(otherBundle.getSupplementsBundle()));
         }
-
-        final List<Element<Supplement>> supplementsBundle = mergeSupplementsBundles(c2Bundle, otherBundle);
-        List<SupplementType> supplementTypes = getSupplementsWithoutSecureAccommodationType(supplementsBundle);
-        List<SecureAccommodationType> secureAccommodationTypes = getSecureAccommodationTypes(supplementsBundle);
-
-        feeTypes.addAll(fromSupplementTypes(supplementTypes));
-        feeTypes.addAll(fromSecureAccommodationTypes(secureAccommodationTypes));
 
         return feeTypes;
     }
@@ -179,6 +140,21 @@ public class ApplicationsFeeCalculator {
         } else {
             fromApplicationType(applicationsBundle.getApplicationType()).ifPresent(feeTypes::add);
         }
+
+        return feeTypes;
+    }
+
+    private List<FeeType> getSupplementsFeeTypes(List<Element<Supplement>> supplementsBundle) {
+        List<FeeType> feeTypes = new ArrayList<>();
+
+        unwrapElements(supplementsBundle)
+            .forEach(supplement -> {
+                if (SupplementType.C20_SECURE_ACCOMMODATION.equals(supplement.getName())) {
+                    feeTypes.add(fromSecureAccommodationTypes(supplement.getSecureAccommodationType()));
+                } else {
+                    feeTypes.add(fromSupplementTypes(supplement.getName()));
+                }
+            });
 
         return feeTypes;
     }

@@ -101,14 +101,8 @@ class FeeTypeTest {
 
     @ParameterizedTest
     @MethodSource("supplementTypeToFeeTypeSource")
-    void shouldReturnCorrespondingFeeTypeForSupplementType(SupplementType supplementType, List<FeeType> feeTypes) {
-        assertThat(fromSupplementTypes(List.of(supplementType))).isEqualTo(feeTypes);
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldReturnEmptyListWhenSupplementTypeIsNullOrEmptyList(List<SupplementType> supplementsList) {
-        assertThat(fromSupplementTypes(supplementsList)).isEmpty();
+    void shouldReturnCorrespondingFeeTypeForSupplementType(SupplementType supplementType, FeeType feeType) {
+        assertThat(fromSupplementTypes(supplementType)).isEqualTo(feeType);
     }
 
     @Test
@@ -120,16 +114,9 @@ class FeeTypeTest {
 
     @Test
     void shouldReturnCorrespondingFeeTypeForSecureAccommodationType() {
-        assertThat(fromSecureAccommodationTypes(List.of(SecureAccommodationType.ENGLAND)))
-            .isEqualTo(List.of(SECURE_ACCOMMODATION_ENGLAND));
-        assertThat(fromSecureAccommodationTypes(List.of(SecureAccommodationType.WALES)))
-            .isEqualTo(List.of(SECURE_ACCOMMODATION_WALES));
-    }
-
-    @ParameterizedTest
-    @NullAndEmptySource
-    void shouldReturnEmptyListWhenSecureAccommodationTypeListIsNullOrEmptyList(List<SecureAccommodationType> types) {
-        assertThat(fromSecureAccommodationTypes(types)).isEmpty();
+        assertThat(fromSecureAccommodationTypes(SecureAccommodationType.ENGLAND))
+            .isEqualTo(SECURE_ACCOMMODATION_ENGLAND);
+        assertThat(fromSecureAccommodationTypes(SecureAccommodationType.WALES)).isEqualTo(SECURE_ACCOMMODATION_WALES);
     }
 
     private static Stream<Arguments> c2RequestedOrderToFeeTypeSource() {
@@ -156,12 +143,12 @@ class FeeTypeTest {
 
     private static Stream<Arguments> supplementTypeToFeeTypeSource() {
         return Stream.of(
-            Arguments.of(SupplementType.C13A_SPECIAL_GUARDIANSHIP, List.of(FeeType.SPECIAL_GUARDIANSHIP)),
+            Arguments.of(SupplementType.C13A_SPECIAL_GUARDIANSHIP, FeeType.SPECIAL_GUARDIANSHIP),
             Arguments.of(
-                SupplementType.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, List.of(FeeType.CONTACT_WITH_CHILD_IN_CARE)),
-            Arguments.of(SupplementType.C15_CONTACT_WITH_CHILD_IN_CARE, List.of(FeeType.CONTACT_WITH_CHILD_IN_CARE)),
-            Arguments.of(SupplementType.C16_CHILD_ASSESSMENT, List.of(FeeType.CHILD_ASSESSMENT)),
-            Arguments.of(SupplementType.C18_RECOVERY_ORDER, List.of(FeeType.RECOVERY_ORDER))
+                SupplementType.C14_AUTHORITY_TO_REFUSE_CONTACT_WITH_CHILD, FeeType.CONTACT_WITH_CHILD_IN_CARE),
+            Arguments.of(SupplementType.C15_CONTACT_WITH_CHILD_IN_CARE, FeeType.CONTACT_WITH_CHILD_IN_CARE),
+            Arguments.of(SupplementType.C16_CHILD_ASSESSMENT, FeeType.CHILD_ASSESSMENT),
+            Arguments.of(SupplementType.C18_RECOVERY_ORDER, FeeType.RECOVERY_ORDER)
         );
     }
 
