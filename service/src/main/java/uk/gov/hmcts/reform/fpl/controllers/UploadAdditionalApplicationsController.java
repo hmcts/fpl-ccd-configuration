@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
