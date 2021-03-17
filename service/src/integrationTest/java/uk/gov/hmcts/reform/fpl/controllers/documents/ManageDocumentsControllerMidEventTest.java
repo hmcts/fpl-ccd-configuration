@@ -85,6 +85,13 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             .isEqualTo(selectedHearingBooking.toLabel());
 
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
+
+        assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
+            .type(FURTHER_EVIDENCE_DOCUMENTS)
+            .relatedToHearing("Yes")
+            .hasHearings("Yes")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -99,6 +106,12 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         CaseData extractedCaseData = extractCaseData(postMidEvent(caseData, "initialise-manage-document-collections"));
 
         assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
+
+        assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
+            .type(CORRESPONDENCE)
+            .hasHearings("No")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -124,6 +137,12 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         ));
 
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+
+        assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
+            .type(C2)
+            .hasHearings("No")
+            .hasC2s("Yes")
+            .build());
     }
 
     @Test
