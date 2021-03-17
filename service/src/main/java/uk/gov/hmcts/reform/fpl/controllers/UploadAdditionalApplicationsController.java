@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -116,18 +117,15 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
                 .get(0).getValue().getC2DocumentBundle();
 
-            if (pbaPayment != null) {
-                c2DocumentBundle.toBuilder()
-                    .usePbaPayment(pbaPayment.getUsePbaPayment())
-                    .pbaNumber(pbaPayment.getPbaNumber())
-                    .clientCode(pbaPayment.getClientCode())
-                    .fileReference(pbaPayment.getFileReference()).build();
-            }
+            c2DocumentBundle.toBuilder()
+                .usePbaPayment(pbaPayment.getUsePbaPayment())
+                .pbaNumber(pbaPayment.getPbaNumber())
+                .clientCode(pbaPayment.getClientCode())
+                .fileReference(pbaPayment.getFileReference()).build();
 
             publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
         }
 
-        //TODO: notification will be updated in FPLA-2745
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
             publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
