@@ -11,5 +11,5 @@ public enum C2AdditionalOrdersRequested {
     TERMINATION_OF_APPOINTMENT_OF_GUARDIAN("Termination of appointment of a guardian"),
     PARENTAL_RESPONSIBILITY("Parental responsibility");
 
-    private final String order;
+    private final String label;
 }
