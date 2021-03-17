@@ -22,5 +22,21 @@
     "FieldType": "Text",
     "ElementLabel": "Email address",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "solicitorOrganisation",
+    "FieldType": "Organisation",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "additionalOrgDetails",
+    "FieldType": "AdditionalOrgDetails",
+    "ElementLabel": "Add a new organisation, or a different organisation",
+    "SecurityClassification": "Public"
   }
 ]

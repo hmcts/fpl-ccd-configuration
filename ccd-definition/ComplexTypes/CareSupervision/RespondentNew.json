@@ -35,22 +35,5 @@
     "ElementLabel": "Represented by",
     "SecurityClassification": "Public",
     "FieldShowCondition": "persistRepresentedBy=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentNew",
-    "ListElementCode": "legalRepresentation",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Do they have legal representation?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentNew",
-    "ListElementCode": "respondentSolicitor",
-    "FieldType": "RespondentSolicitor",
-    "ElementLabel": "Representative",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "legalRepresentation=\"Yes\""
   }
 ]

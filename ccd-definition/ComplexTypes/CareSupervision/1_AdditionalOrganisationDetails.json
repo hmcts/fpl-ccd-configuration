@@ -1,0 +1,45 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalOrgDetails",
+    "ListElementCode": "newOrganisationRequest",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you want to send a sign-up request to an unregistered organisation?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalOrgDetails",
+    "ListElementCode": "newOrganisationName",
+    "FieldType": "Text",
+    "ElementLabel": "Organisation name",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "newOrganisationRequest=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalOrgDetails",
+    "ListElementCode": "newOrgAddress",
+    "FieldType": "AddressUK",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "newOrganisationRequest=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalOrgDetails",
+    "ListElementCode": "additionalOffice",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you want to add another office for a registered organisation?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AdditionalOrgDetails",
+    "ListElementCode": "regionalOfficeAddress",
+    "FieldType": "AddressUK",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "additionalOffice=\"Yes\""
+  }
+]
