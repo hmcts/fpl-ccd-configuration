@@ -1,0 +1,26 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "Representative's first name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Representative's last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  }
+]

@@ -1,0 +1,221 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.firstName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.lastName",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.dateOfBirth",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.gender",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.genderIdentification",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.AddressLine1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.AddressLine2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.AddressLine3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.PostTown",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.County",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address.Country",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.telephoneNumber",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.telephoneNumber.telephoneNumber",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.telephoneNumber.contactDirection",
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.relationshipLabel",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.relationshipToChild",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.contactDetailsHidden",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.contactDetailsHiddenReason",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.proceedingsLabel",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.litigationIssues",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "legalRepresentation",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "respondentSolicitor.firstName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "respondentSolicitor.lastName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "respondentSolicitor.email",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  }
+]
