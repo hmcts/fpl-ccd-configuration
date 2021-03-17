@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
+import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
@@ -72,15 +73,15 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
             .temporaryC2Document(temporaryC2Document)
             .build();
 
-        given(feeService.getFeesDataForAdditionalApplications(temporaryC2Document, temporaryOtherDocument,
-            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.WALES)))
+        List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.PARENTAL_RESPONSIBILITY_FATHER,
+            FeeType.SPECIAL_GUARDIANSHIP, FeeType.SECURE_ACCOMMODATION_WALES);
+
+        given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
 
-        verify(feeService).getFeesDataForAdditionalApplications(temporaryC2Document, temporaryOtherDocument,
-            List.of(C13A_SPECIAL_GUARDIANSHIP), List.of(SecureAccommodationType.WALES));
-
+        verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
             .containsEntry("amountToPay", "1000")
             .containsEntry("displayAmountToPay", YES.getValue());
@@ -88,7 +89,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
     @Test
     void shouldAddErrorOnFeeRegisterException() {
-        given(feeService.getFeesDataForAdditionalApplications(any(), any(), any(), any()))
+        given(feeService.getFeesDataForAdditionalApplications(any()))
             .willThrow((new FeeRegisterException(1, "", new Throwable())));
 
         CaseData caseData = CaseData.builder()

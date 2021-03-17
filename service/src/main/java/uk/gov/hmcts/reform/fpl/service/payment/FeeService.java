@@ -12,18 +12,11 @@ import uk.gov.hmcts.reform.fnp.model.fee.FeeType;
 import uk.gov.hmcts.reform.fnp.model.payment.FeeDto;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig;
 import uk.gov.hmcts.reform.fpl.config.payment.FeesConfig.FeeParameters;
-import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
-import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
-import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -31,19 +24,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromApplicationType;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromC2ApplicationType;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromC2OrdersRequestedType;
 import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromOrderType;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromParentalResponsibilityTypes;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSecureAccommodationTypes;
-import static uk.gov.hmcts.reform.fnp.model.fee.FeeType.fromSupplementTypes;
-import static uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY;
 
 @Slf4j
 @Service
@@ -85,72 +67,11 @@ public class FeeService {
             .build();
     }
 
-    public FeesData getFeesDataForAdditionalApplications(
-        C2DocumentBundle c2DocumentBundle,
-        OtherApplicationsBundle otherApplicationsBundle,
-        List<SupplementType> supplementTypes,
-        List<SecureAccommodationType> secureAccommodationTypes) {
-
-        List<FeeType> feeTypes = getFeeTypes(
-            c2DocumentBundle, otherApplicationsBundle, supplementTypes, secureAccommodationTypes);
-
-        return Optional.of(feeTypes)
+    public FeesData getFeesDataForAdditionalApplications(List<FeeType> applicationsFeeTypes) {
+        return Optional.of(applicationsFeeTypes)
             .map(this::getFees)
             .map(this::buildFeesDataFromFeeResponses)
             .orElse(FeesData.builder().totalAmount(BigDecimal.ZERO).build());
-    }
-
-    private List<FeeType> getFeeTypes(
-        C2DocumentBundle c2DocumentBundle,
-        OtherApplicationsBundle otherApplicationsBundle,
-        List<SupplementType> supplementTypes,
-        List<SecureAccommodationType> secureAccommodationTypes
-    ) {
-        List<FeeType> feeTypes = new ArrayList<>();
-
-        if (!isNull(c2DocumentBundle)) {
-            feeTypes.addAll(getC2ApplicationsFeeTypes(c2DocumentBundle));
-        }
-
-        if (!isNull(otherApplicationsBundle)) {
-            feeTypes.addAll(getOtherApplicationsFeeTypes(otherApplicationsBundle));
-        }
-
-        feeTypes.addAll(fromSupplementTypes(supplementTypes));
-        feeTypes.addAll(fromSecureAccommodationTypes(secureAccommodationTypes));
-
-        return feeTypes;
-    }
-
-    private List<FeeType> getOtherApplicationsFeeTypes(OtherApplicationsBundle applicationsBundle) {
-        List<FeeType> feeTypes = new ArrayList<>();
-
-        if (OtherApplicationType.C1_PARENTAL_RESPONSIBILITY == applicationsBundle.getApplicationType()) {
-            feeTypes.add(fromParentalResponsibilityTypes(applicationsBundle.getParentalResponsibilityType()));
-        } else {
-            fromApplicationType(applicationsBundle.getApplicationType()).ifPresent(feeTypes::add);
-        }
-
-        return feeTypes;
-    }
-
-    private List<FeeType> getC2ApplicationsFeeTypes(C2DocumentBundle c2DocumentBundle) {
-        List<FeeType> feeTypes = new ArrayList<>();
-
-        feeTypes.add(fromC2ApplicationType(c2DocumentBundle.getType()));
-
-        List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested
-            = new ArrayList<>(defaultIfNull(c2DocumentBundle.getC2AdditionalOrdersRequested(), emptyList()));
-
-        if (isNotEmpty(c2AdditionalOrdersRequested)) {
-            if (c2AdditionalOrdersRequested.contains(PARENTAL_RESPONSIBILITY)) {
-                c2AdditionalOrdersRequested.remove(PARENTAL_RESPONSIBILITY);
-                feeTypes.add(fromParentalResponsibilityTypes(c2DocumentBundle.getParentalResponsibilityType()));
-            }
-
-            feeTypes.addAll(fromC2OrdersRequestedType(c2AdditionalOrdersRequested));
-        }
-        return feeTypes;
     }
 
     private FeeResponse makeRequest(FeeType feeType) {
