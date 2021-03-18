@@ -26,7 +26,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentSolicitor",
-    "ListElementCode": "solicitorOrganisation",
+    "ListElementCode": "organisation",
     "FieldType": "Organisation",
     "ElementLabel": " ",
     "SecurityClassification": "Public"

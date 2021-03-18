@@ -223,7 +223,7 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.solicitorOrganisation",
+    "ListElementCode": "solicitor.organisation",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
@@ -232,7 +232,7 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.solicitorOrganisation.OrganisationName",
+    "ListElementCode": "solicitor.organisation.OrganisationName",
     "DisplayContext": "MANDATORY"
   },
   {
@@ -243,7 +243,7 @@
     "ListElementCode": "solicitor.additionalOrgDetails.newOrganisationRequest",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "respondents1.solicitor.solicitorOrganisation.OrganisationName=\"\""
+    "FieldShowCondition": "respondents1.solicitor.organisation.OrganisationName=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
