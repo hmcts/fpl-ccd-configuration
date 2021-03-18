@@ -4,13 +4,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -20,12 +27,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
+import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -86,20 +95,43 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
 
     private AdditionalApplicationsUploadedTemplate getAdditionalApplicationsUploadedTemplateParameters() {
         return AdditionalApplicationsUploadedTemplate.builder()
-            .callout("^Smith, 12345, " + HEARING_CALLOUT)
+            .callout("Smith, 12345, " + HEARING_CALLOUT)
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
             .documentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")
-            .applicationTypes(Arrays.asList("C2", "C13A - Special guardianship order"))
+            .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
+                "C13A - Special guardianship order",
+                "C20 - Secure accommodation (England)",
+                "C1 - Parental responsibility by the father",
+                "C13A - Special guardianship order",
+                "C20 - Secure accommodation (England)"))
             .build();
     }
 
     private CaseData buildCaseData() {
-        Supplement supplement = Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build();
+        List<Supplement> supplements = Arrays.asList(
+            Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build(),
+            Supplement.builder()
+                .name(C20_SECURE_ACCOMMODATION)
+                .secureAccommodationType(SecureAccommodationType.ENGLAND)
+                .build()
+        );
 
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
-            .supplementsBundle(wrapElements(Collections.singletonList(
-                supplement)))
+            .type(C2ApplicationType.WITH_NOTICE)
+            .supplementsBundle(wrapElements(supplements))
+            .c2AdditionalOrdersRequested(Collections.singletonList(C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN))
+            .build();
+
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
+            .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
+            .supplementsBundle(wrapElements(supplements))
+            .build();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .otherApplicationsBundle(otherApplicationsBundle)
             .build();
 
         return CaseData.builder()
@@ -110,7 +142,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .lastName("Smith")
                 .build()).build()))
             .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
-            .c2DocumentBundle(wrapElements(c2DocumentBundle))
+            .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
             .build();
     }
 }

@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.AdditionalApplicationsUploadedEmailContentProvider;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIF
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEventHandler {
-    private final IdamClient idamClient;
     private final RequestData requestData;
     private final NotificationService notificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
@@ -28,7 +27,7 @@ public class AdditionalApplicationsUploadedEventHandler {
 
     @EventListener
     public void notifyAdmin(final AdditionalApplicationsUploadedEvent event) {
-        List<String> roles = idamClient.getUserInfo(requestData.authorisation()).getRoles();
+        List<String> roles = new ArrayList<>(requestData.userRoles());
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoleNames())) {
             CaseData caseData = event.getCaseData();
 

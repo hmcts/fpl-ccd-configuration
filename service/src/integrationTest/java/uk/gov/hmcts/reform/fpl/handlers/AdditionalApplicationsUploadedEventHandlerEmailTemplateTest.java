@@ -40,7 +40,8 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
     private final String respondentLastName = "Smith";
     private final String calloutText = "Smith, SACCCCCCCC5676576567";
     private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#Other%20applications";
-    private final List<String> applicationTypes = Arrays.asList("C2", "C13A - Special guardianship order");
+    private final List<String> applicationTypes = Arrays.asList("C2 (With notice)",
+        "C13A - Special guardianship order");
 
     @Autowired
     private AdditionalApplicationsUploadedEventHandler underTest;
@@ -86,12 +87,12 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
                 .h1("Applications")
                 .line()
                 .line()
-                .list("C2")
+                .list("C2 (With notice)")
                 .list("C13A - Special guardianship order")
                 .line()
                 .h1("Next steps")
                 .line("You need to:")
-                .list("check the orders",
+                .list("check the applications",
                     "check payment has been taken",
                     "send a message to the judge or legal adviser",
                     "send a copy to relevant parties")

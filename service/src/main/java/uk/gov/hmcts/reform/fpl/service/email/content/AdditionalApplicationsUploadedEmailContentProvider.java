@@ -63,7 +63,7 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested =
             c2DocumentBundle.getC2AdditionalOrdersRequested();
 
-        if (!c2AdditionalOrdersRequested.isEmpty()) {
+        if (c2AdditionalOrdersRequested != null) {
             List<String> c2AdditionalOrdersRequestedLabels = new ArrayList<>();
 
             for (C2AdditionalOrdersRequested orderRequested : c2AdditionalOrdersRequested) {

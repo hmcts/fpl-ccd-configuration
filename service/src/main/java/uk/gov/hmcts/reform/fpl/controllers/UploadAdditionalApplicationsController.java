@@ -112,20 +112,25 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
+        C2DocumentBundle c2DocumentBundle;
+
         if (hasC2Order(caseData)) {
-            C2DocumentBundle c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
+            c2DocumentBundle = caseData.getAdditionalApplicationsBundle()
                 .get(0).getValue().getC2DocumentBundle();
-
-            if (pbaPayment != null) {
-                c2DocumentBundle.toBuilder()
-                    .usePbaPayment(pbaPayment.getUsePbaPayment())
-                    .pbaNumber(pbaPayment.getPbaNumber())
-                    .clientCode(pbaPayment.getClientCode())
-                    .fileReference(pbaPayment.getFileReference()).build();
-            }
-
-            publishEvent(new AdditionalApplicationsUploadedEvent(caseData, c2DocumentBundle));
+        } else {
+            c2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
         }
+
+        if (pbaPayment != null) {
+            c2DocumentBundle.toBuilder()
+                .usePbaPayment(pbaPayment.getUsePbaPayment())
+                .pbaNumber(pbaPayment.getPbaNumber())
+                .clientCode(pbaPayment.getClientCode())
+                .fileReference(pbaPayment.getFileReference()).build();
+        }
+
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData, c2DocumentBundle));
+
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());

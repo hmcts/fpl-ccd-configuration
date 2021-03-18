@@ -30,6 +30,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIF
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.OTHER_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -350,6 +352,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                 AdditionalApplicationsBundle.builder()
                     .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
                     .c2DocumentBundle(C2DocumentBundle.builder()
+                        .type(WITH_NOTICE)
+                        .supplementsBundle(new ArrayList<>())
                         .document(latestC2Document)
                         .usePbaPayment(usePbaPayment.getValue()).build())
                     .build()));

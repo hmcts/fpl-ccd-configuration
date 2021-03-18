@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -36,7 +37,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
@@ -146,8 +146,8 @@ class AdditionalApplicationsUploadedEventHandlerTest {
     void shouldNotNotifyHmctsAdminOnAdditionalApplicationsUpload() {
         CaseData caseData = caseData();
 
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
-            UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoleNames()).build());
+        given(requestData.userRoles()).willReturn(new HashSet<>(Arrays.asList("caseworker", "caseworker-publiclaw",
+            "caseworker-publiclaw-courtadmin")));
 
         additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData,
             c2DocumentBundle));
