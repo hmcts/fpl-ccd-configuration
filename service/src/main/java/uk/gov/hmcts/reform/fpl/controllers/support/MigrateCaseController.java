@@ -13,10 +13,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
@@ -53,6 +57,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2740".equals(migrationId)) {
             run2740(caseDetails);
+        }
+
+        if ("FPLA-2885".equals(migrationId)) {
+            run2885(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -97,6 +105,33 @@ public class MigrateCaseController extends CallbackController {
         if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
             removeFirstDraftCaseManagementOrder(caseDetails);
         }
+    }
+
+    private void run2885(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getCancelledHearingDetails())) {
+            throw new IllegalArgumentException("Case does not contain cancelled hearing bookings");
+        }
+
+        List<Element<HearingBooking>> updatedCancelledHearings = caseData.getCancelledHearingDetails().stream()
+            .map(hearingBookingElement -> {
+                switch (hearingBookingElement.getValue().getCancellationReason()) {
+                    case "OT8":
+                        hearingBookingElement.getValue().setCancellationReason("IN1");
+                        break;
+                    case "OT9":
+                        hearingBookingElement.getValue().setCancellationReason("OT8");
+                        break;
+                    case "OT10":
+                        hearingBookingElement.getValue().setCancellationReason("OT9");
+                        break;
+                }
+
+                return hearingBookingElement;
+            }).collect(Collectors.toList());
+
+        caseDetails.getData().put("cancelledHearingDetails", updatedCancelledHearings);
     }
 
     private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
