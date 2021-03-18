@@ -25,10 +25,20 @@ module.exports = {
         },
         litigationIssuesDetails: `#respondents1_${index}_party_litigationIssuesDetails`,
       },
+      solicitor: {
+        firstName: `#respondents1_${index}_solicitor_firstName`,
+        lastName: `#respondents1_${index}_solicitor_lastName`,
+        email: `#respondents1_${index}_solicitor_email`,
+      },
       contactDetailsHidden: (option) => {
         return {
           option: `#respondents1_${index}_party_contactDetailsHidden-${option}`,
           reason: `#respondents1_${index}_party_contactDetailsHiddenReason`,
+        };
+      },
+      legalRepresentation: (option) => {
+        return {
+          option: `#respondents1_${index}_legalRepresentation-${option}`,
         };
       },
     };
@@ -46,7 +56,6 @@ module.exports = {
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
-    I.fillField(this.fields(elementIndex).respondent.placeOfBirth, respondent.placeOfBirth);
     await within(this.fields(elementIndex).respondent.address, () => {
       postcodeLookup.enterAddressManually(respondent.address);
     });
@@ -86,6 +95,18 @@ module.exports = {
     }
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).respondent.litigationIssuesDetails, litigationIssueDetail);
+    }
+  },
+
+  async enterRepresentationDetails(option, respondent) {
+    const elementIndex = await I.getActiveElementIndex();
+
+    I.click(this.fields(elementIndex).legalRepresentation(option).option);
+    if (option === 'Yes') {
+      I.fillField(this.fields(elementIndex).solicitor.firstName, respondent.solicitor.firstName);
+      I.fillField(this.fields(elementIndex).solicitor.lastName, respondent.solicitor.lastName);
+      I.fillField(this.fields(elementIndex).solicitor.email, respondent.solicitor.email);
+      I.fillField(this.fields(elementIndex).solicitor.email, respondent.solicitor.email);
     }
   },
 };

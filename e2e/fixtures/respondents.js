@@ -21,7 +21,11 @@ module.exports = [
     telephone: '00000 000000',
     relationshipToChild: 'Uncle',
     gender: 'Male',
-    placeOfBirth: 'London',
+    solicitor: {
+      firstName: 'Adam',
+      lastName: 'Smith',
+      email: 'adam@smith.com',
+    },
   },
   {
     firstName: 'Wayne',
@@ -45,6 +49,5 @@ module.exports = [
     telephone: '00000 000000',
     relationshipToChild: 'Uncle',
     gender: 'Male',
-    placeOfBirth: 'London',
   },
 ];

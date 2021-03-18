@@ -189,7 +189,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentation",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -216,7 +216,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.email",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -225,7 +225,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.organisation",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -233,7 +233,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.organisation.OrganisationName",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -242,7 +242,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.additionalOrgDetails.newOrganisationRequest",
     "FieldDisplayOrder": 5,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "respondents1.solicitor.organisation.OrganisationName=\"\""
   },
   {
@@ -252,7 +252,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.additionalOrgDetails.newOrganisationName",
     "FieldDisplayOrder": 6,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -261,7 +261,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
@@ -319,7 +319,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.additionalOrgDetails.additionalOffice",
     "FieldDisplayOrder": 8,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -328,7 +328,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress",
     "FieldDisplayOrder": 9,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",

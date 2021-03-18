@@ -218,11 +218,14 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
+  await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[0]);
   await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
+  await enterRespondentsEventPage.enterRepresentationDetails('No');
+
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
