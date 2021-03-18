@@ -145,10 +145,6 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         final Map<String, Object> caseData = ImmutableMap.of(
             "caseLocalAuthority",
             LOCAL_AUTHORITY_1_CODE,
-            "c2DocumentBundle",
-            wrapElements(C2DocumentBundle.builder()
-                .document(DocumentReference.builder().binaryUrl("testUrl").build())
-                .build()),
             "additionalApplicationType",
             List.of(OTHER_ORDER),
             "additionalApplicationsBundle",
@@ -156,7 +152,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                 AdditionalApplicationsBundle.builder()
                     .otherApplicationsBundle(OtherApplicationsBundle.builder()
                         .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
-                        .build()).build()));
+                        .build())
+                    .pbaPayment(PBAPayment.builder().build()).build()));
 
         postSubmittedEvent(createCase(caseData));
 
