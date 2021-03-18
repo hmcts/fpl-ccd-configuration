@@ -89,12 +89,12 @@ class UploadAdditionalApplicationsServiceTest {
             .c2Type(WITH_NOTICE)
             .build();
 
-        AdditionalApplicationsBundle applicationsBundle = underTest.buildAdditionalApplicationsBundle(caseData);
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
-        assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
-        assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getAuthor()).isEqualTo(HMCTS);
+        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
 
-        assertC2DocumentBundleWithDocuments(applicationsBundle, supplement, supportingEvidenceBundle);
+        assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
     }
 
     @Test
@@ -109,12 +109,12 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryPbaPayment(pbaPayment)
             .build();
 
-        AdditionalApplicationsBundle applicationsBundle = underTest.buildAdditionalApplicationsBundle(caseData);
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
-        assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
-        assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getAuthor()).isEqualTo(HMCTS);
+        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
 
-        assertOtherDocumentBundleWithDocuments(applicationsBundle, supplement, supportingDocument);
+        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
     }
 
     @Test
@@ -134,22 +134,21 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryPbaPayment(pbaPayment)
             .build();
 
-        AdditionalApplicationsBundle applicationsBundle = underTest.buildAdditionalApplicationsBundle(caseData);
+        AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
-        assertThat(applicationsBundle.getAuthor()).isEqualTo(HMCTS);
-        assertThat(applicationsBundle.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getAuthor()).isEqualTo(HMCTS);
+        assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
 
-        assertC2DocumentBundleWithDocuments(applicationsBundle, c2Supplement, c2SupportingDocument);
-        assertOtherDocumentBundleWithDocuments(applicationsBundle, otherSupplement, otherSupportingDocument);
+        assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
+        assertOtherDocumentBundle(
+            actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
     }
 
-    private void assertC2DocumentBundleWithDocuments(
-        AdditionalApplicationsBundle applicationsBundle,
+    private void assertC2DocumentBundle(
+        C2DocumentBundle actualC2Bundle,
         Supplement expectedSupplement,
         SupportingEvidenceBundle expectedSupportingEvidence
     ) {
-        C2DocumentBundle actualC2Bundle = applicationsBundle.getC2DocumentBundle();
-
         assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
@@ -160,24 +159,21 @@ class UploadAdditionalApplicationsServiceTest {
             actualC2Bundle.getSupportingEvidenceBundle().get(0).getValue(), expectedSupportingEvidence);
     }
 
-    private void assertOtherDocumentBundleWithDocuments(
-        AdditionalApplicationsBundle applicationsBundle,
+    private void assertOtherDocumentBundle(
+        OtherApplicationsBundle actual,
         Supplement expectedSupplement,
         SupportingEvidenceBundle expectedSupportingDocument
     ) {
-        OtherApplicationsBundle actualOtherApplications = applicationsBundle.getOtherApplicationsBundle();
+        assertThat(actual.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
+        assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
+        assertThat(actual.getAuthor()).isEqualTo(HMCTS);
+        assertThat(actual.getSupportingEvidenceBundle()).hasSize(1);
+        assertThat(actual.getSupplementsBundle()).hasSize(1);
 
-        assertThat(actualOtherApplications.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
-        assertThat(actualOtherApplications.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
-        assertThat(actualOtherApplications.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
-        assertThat(actualOtherApplications.getAuthor()).isEqualTo(HMCTS);
-        assertThat(actualOtherApplications.getSupportingEvidenceBundle()).hasSize(1);
-        assertThat(actualOtherApplications.getSupplementsBundle()).hasSize(1);
-
-        assertOtherApplicationsBundle(actualOtherApplications);
-        assertSupplementsBundle(actualOtherApplications.getSupplementsBundle().get(0).getValue(), expectedSupplement);
+        assertSupplementsBundle(actual.getSupplementsBundle().get(0).getValue(), expectedSupplement);
         assertSupportingEvidenceBundle(
-            actualOtherApplications.getSupportingEvidenceBundle().get(0).getValue(), expectedSupportingDocument);
+            actual.getSupportingEvidenceBundle().get(0).getValue(), expectedSupportingDocument);
     }
 
     @Test
@@ -217,22 +213,6 @@ class UploadAdditionalApplicationsServiceTest {
             .getUploadedDateTime());
     }
 
-    private void assertC2Bundle(C2DocumentBundle documentBundle) {
-        assertThat(documentBundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
-        assertThat(documentBundle.getType()).isEqualTo(WITH_NOTICE);
-        assertThat(documentBundle.getSupportingEvidenceBundle()).hasSize(1);
-        assertThat(documentBundle.getSupplementsBundle()).hasSize(1);
-    }
-
-    private void assertOtherApplicationsBundle(OtherApplicationsBundle documentBundle) {
-        assertThat(documentBundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
-        assertThat(documentBundle.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
-        assertThat(documentBundle.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
-        assertThat(documentBundle.getAuthor()).isEqualTo(HMCTS);
-        assertThat(documentBundle.getSupportingEvidenceBundle()).hasSize(1);
-        assertThat(documentBundle.getSupplementsBundle()).hasSize(1);
-    }
-
     private void assertSupplementsBundle(Supplement actual, Supplement expected) {
         assertThat(actual).isEqualTo(expected.toBuilder()
             .dateTimeUploaded(time.now())
@@ -240,9 +220,10 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     private void assertSupportingEvidenceBundle(SupportingEvidenceBundle actual, SupportingEvidenceBundle expected) {
-        assertThat(actual)
-            .extracting("name", "notes", "document", "uploadedBy")
-            .containsExactly(expected.getName(), expected.getNotes(), expected.getDocument(), HMCTS);
+        assertThat(actual).isEqualTo(expected.toBuilder()
+            .dateTimeUploaded(time.now())
+            .uploadedBy(HMCTS)
+            .build());
     }
 
     private PBAPayment buildPBAPayment() {

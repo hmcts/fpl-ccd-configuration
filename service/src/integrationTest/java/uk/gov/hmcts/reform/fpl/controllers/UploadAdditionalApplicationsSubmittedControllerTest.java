@@ -236,7 +236,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
 
         CaseDetails caseDetails = createCase(caseData);
 
-        when(feeService.getFeesDataForAdditionalApplications(any(), any(), any(), any()))
+        when(feeService.getFeesDataForAdditionalApplications(any()))
             .thenReturn(FEES_DATA);
 
         postSubmittedEvent(caseDetails);
