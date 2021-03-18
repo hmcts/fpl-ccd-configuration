@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -140,15 +141,31 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyWhenAdditionalApplciationsBundleDoesNotHaveC2DocumentBundle() {
+    void submittedEventShouldNotifyWhenAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.of(
-            "additionalApplicationType", List.of(OTHER_ORDER),
-            "additionalApplicationsBundle", wrapElements(
+            "caseLocalAuthority",
+            LOCAL_AUTHORITY_1_CODE,
+            "c2DocumentBundle",
+            wrapElements(C2DocumentBundle.builder()
+                .document(DocumentReference.builder().binaryUrl("testUrl").build())
+                .build()),
+            "additionalApplicationType",
+            List.of(OTHER_ORDER),
+            "additionalApplicationsBundle",
+            wrapElements(
                 AdditionalApplicationsBundle.builder()
-                    .otherApplicationsBundle(OtherApplicationsBundle.builder().build()).build()));
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                        .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+                        .build()).build()));
 
         postSubmittedEvent(createCase(caseData));
-        verifyNoInteractions(notificationClient);
+
+        verify(notificationClient).sendEmail(
+            eq(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE),
+            eq("admin@family-court.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
     }
 
     @Test
