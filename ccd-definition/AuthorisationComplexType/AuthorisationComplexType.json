@@ -52,56 +52,32 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[SOLICITOR]"
-        ],
-        "CRUD": "R"
-      }
-    ]
+    "UserRole": ["[SOLICITOR]"],
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[SOLICITOR]"
-        ],
-        "CRUD": "R"
-      }
-    ]
+    "UserRole": ["[SOLICITOR]"],
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[SOLICITOR]"
-        ],
-        "CRUD": "R"
-      }
-    ]
+    "UserRole": ["[SOLICITOR]"],
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[SOLICITOR]"
-        ],
-        "CRUD": "R"
-      }
-    ]
+    "UserRole": ["[SOLICITOR]"],
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
