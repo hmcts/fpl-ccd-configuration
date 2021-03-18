@@ -106,7 +106,6 @@ module.exports = {
       I.fillField(this.fields(elementIndex).solicitor.firstName, respondent.solicitor.firstName);
       I.fillField(this.fields(elementIndex).solicitor.lastName, respondent.solicitor.lastName);
       I.fillField(this.fields(elementIndex).solicitor.email, respondent.solicitor.email);
-      I.fillField(this.fields(elementIndex).solicitor.email, respondent.solicitor.email);
     }
   },
 };

@@ -246,6 +246,9 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Do you need contact details hidden from other parties?'], 'No');
   I.seeInTab(['Respondents 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'Yes');
   I.seeInTab(['Respondents 1', 'Give details, including assessment outcomes and referrals to health services'], 'mock reason');
+  I.seeInTab(['Respondents 1', 'Representative'], 'Representative\'s first name', respondents[0].solicitor.firstName);
+  I.seeInTab(['Respondents 1', 'Representative'], 'Representative\'s last name', respondents[0].solicitor.lastName);
+  I.seeInTab(['Respondents 1', 'Representative'], 'Email address', respondents[0].solicitor.email);
 
   I.seeInTab(['Respondents 2', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 2', 'Party', 'Last name'], respondents[1].lastName);
