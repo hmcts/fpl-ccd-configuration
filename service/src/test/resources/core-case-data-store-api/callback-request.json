@@ -307,6 +307,7 @@
                 "telephoneNumber": "07712345678"
               }
             },
+            "legalRepresentation": "No",
             "leadRespondentIndicator": "Y",
             "representedBy": []
           }
@@ -343,6 +344,7 @@
                 "telephoneNumber": "02892611016"
               }
             },
+            "legalRepresentation": "No",
             "leadRespondentIndicator": "Y",
             "representedBy": []
           }
@@ -375,6 +377,7 @@
                 "telephoneNumber": "0987654321"
               }
             },
+            "legalRepresentation": "No",
             "leadRespondentIndicator": "Y",
             "representedBy": []
           }
