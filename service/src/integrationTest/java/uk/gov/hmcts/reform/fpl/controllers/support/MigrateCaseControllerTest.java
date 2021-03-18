@@ -674,12 +674,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(List.of(
+            assertThat(extractedCaseData.getCancelledHearingDetails()).containsExactly(
                 element(idOne, hearingBookingWithCancellationReason("IN1")),
                 element(idTwo, hearingBookingWithCancellationReason("OT8")),
                 element(idThree, hearingBookingWithCancellationReason("OT9")),
                 element(idFour, hearingBookingWithCancellationReason("OT7"))
-            ));
+            );
         }
 
         @Test
