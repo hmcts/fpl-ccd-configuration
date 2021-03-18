@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "document",
+    "ListElementCode": "description",
     "AccessControl": [
       {
         "UserRoles": [
@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "type",
+    "ListElementCode": "nameOfRepresentative",
     "AccessControl": [
       {
         "UserRoles": [
@@ -59,7 +59,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "uploadedDateTime",
+    "ListElementCode": "usePbaPayment",
     "AccessControl": [
       {
         "UserRoles": [
@@ -87,7 +87,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "author",
+    "ListElementCode": "pbaNumber",
     "AccessControl": [
       {
         "UserRoles": [
@@ -115,66 +115,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "supportingEvidenceBundle",
+    "ListElementCode": "clientCode",
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
-        ],
-        "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
-          "[LASOLICITOR]",
           "[LABARRISTER]",
-          "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "R"
-      },
-      {
-        "UserRoles": [
-          "[BARRISTER]",
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "U"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "supportingEvidenceLA",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
+          "[SOLICITOR]",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CRU"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
       },
       {
         "UserRoles": [
@@ -183,7 +135,7 @@
           "caseworker-publiclaw-magistrate",
           "[BARRISTER]"
         ],
-        "CRUD": "U"
+        "CRUD": "R"
       }
     ]
   },
@@ -191,33 +143,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "ListElementCode": "supportingEvidenceNC",
+    "ListElementCode": "fileReference",
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
+          "[LABARRISTER]",
+          "[SOLICITOR]",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
-        ],
-        "CRUD": "CU"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate"
-        ],
-        "CRUD": "U"
-      },
-      {
-        "UserRoles": [
           "[CAFCASSSOLICITOR]",
-          "[SOLICITOR]"
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "CRU"
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
           "[BARRISTER]"
         ],
         "CRUD": "R"

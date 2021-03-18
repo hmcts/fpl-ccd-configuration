@@ -130,8 +130,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         }
 
         publishEvent(new AdditionalApplicationsUploadedEvent(caseData, c2DocumentBundle));
-
-
+        
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
             publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
