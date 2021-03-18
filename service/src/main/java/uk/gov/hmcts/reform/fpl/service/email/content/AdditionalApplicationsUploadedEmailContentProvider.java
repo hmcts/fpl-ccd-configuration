@@ -38,7 +38,6 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
             .callout(buildCallout(caseData))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
-            .documentUrl(getDocumentUrl(latestC2))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
             .build();
     }
