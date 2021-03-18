@@ -115,6 +115,174 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
+    "ListElementCode": "description",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
+    "ListElementCode": "nameOfRepresentative",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
+    "ListElementCode": "usePbaPayment",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
+    "ListElementCode": "pbaNumber",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
+    "ListElementCode": "clientCode",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
+    "ListElementCode": "fileReference",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LABARRISTER]",
+          "[SOLICITOR]",
+          "[LASOLICITOR]",
+          "[CAFCASSSOLICITOR]",
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "CRU"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[BARRISTER]"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
     "ListElementCode": "supportingEvidenceBundle",
     "AccessControl": [
       {
