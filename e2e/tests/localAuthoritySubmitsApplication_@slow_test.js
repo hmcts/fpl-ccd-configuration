@@ -215,13 +215,11 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
 Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
-  await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
   await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[0]);
   await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
-  await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
   await enterRespondentsEventPage.enterRepresentationDetails('No');
@@ -234,7 +232,6 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Party', 'Last name'], respondents[0].lastName);
   I.seeInTab(['Respondents 1', 'Party', 'Date of birth'], '1 Jan 1980');
   I.seeInTab(['Respondents 1', 'Party', 'Gender'], respondents[0].gender);
-  I.seeInTab(['Respondents 1', 'Party', 'Place of birth'], respondents[0].placeOfBirth);
   I.seeInTab(['Respondents 1', 'Current address', 'Building and Street'], respondents[0].address.buildingAndStreet.lineOne);
   I.seeInTab(['Respondents 1', 'Current address', 'Address Line 2'], respondents[0].address.buildingAndStreet.lineTwo);
   I.seeInTab(['Respondents 1', 'Current address', 'Address Line 3'], respondents[0].address.buildingAndStreet.lineThree);
@@ -242,20 +239,20 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Current address', 'Postcode/Zipcode'], respondents[0].address.postcode);
   I.seeInTab(['Respondents 1', 'Current address', 'Country'], respondents[0].address.country);
   I.seeInTab(['Respondents 1', 'Telephone', 'Telephone number'], respondents[0].telephone);
-  I.seeInTab(['Respondents 1', 'What is the respondent\'s relationship to the child or children in this case?'], 'mock reason');
+  I.seeInTab(['Respondents 1', 'What is the respondent\'s relationship to the child or children in this case?'], respondents[0].relationshipToChild);
   I.seeInTab(['Respondents 1', 'Do you need contact details hidden from other parties?'], 'No');
   I.seeInTab(['Respondents 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'Yes');
   I.seeInTab(['Respondents 1', 'Give details, including assessment outcomes and referrals to health services'], 'mock reason');
-  I.seeInTab(['Respondents 1', 'Representative'], 'Representative\'s first name', respondents[0].solicitor.firstName);
-  I.seeInTab(['Respondents 1', 'Representative'], 'Representative\'s last name', respondents[0].solicitor.lastName);
-  I.seeInTab(['Respondents 1', 'Representative'], 'Email address', respondents[0].solicitor.email);
+  I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s first name'], respondents[0].solicitor.firstName);
+  I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s last name'], respondents[0].solicitor.lastName);
+  I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
+  //I.seeInTab(['Respondents 1', 'Representative', 'Organisation'], 'Swansea City Council');
 
   I.seeInTab(['Respondents 2', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 2', 'Party', 'Last name'], respondents[1].lastName);
   I.seeInTab(['Respondents 2', 'Party', 'Date of birth'], '1 Jan 1955');
   I.seeInTab(['Respondents 2', 'Party', 'Gender'], respondents[1].gender);
-  I.seeInTab(['Respondents 2', 'Party', 'Place of birth'], respondents[1].placeOfBirth);
-  I.seeInTab(['Respondents 2', 'What is the respondent\'s relationship to the child or children in this case?'], 'mock reason');
+  I.seeInTab(['Respondents 2', 'What is the respondent\'s relationship to the child or children in this case?'], respondents[1].relationshipToChild);
   I.seeInTab(['Respondents 2', 'Do you need contact details hidden from other parties?'], 'Yes');
   I.seeInTab(['Respondents 2', 'Give reason'], 'mock reason');
   I.seeInTab(['Respondents 2', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');

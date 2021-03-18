@@ -24,8 +24,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.dateOfBirth",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "party=\"DO_NOT_SHOW\""
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -181,6 +180,15 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.litigationIssues",
     "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.litigationIssuesDetails",
+    "FieldDisplayOrder": 14,
     "DisplayContext": "OPTIONAL"
   },
   {

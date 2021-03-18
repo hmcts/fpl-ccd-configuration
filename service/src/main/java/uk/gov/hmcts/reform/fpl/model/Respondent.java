@@ -32,6 +32,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();
 
+    @NotNull(message = "Select if the respondent needs representation")
     private String legalRepresentation;
     private RespondentSolicitor solicitor;
 

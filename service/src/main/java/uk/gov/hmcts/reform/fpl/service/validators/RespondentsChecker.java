@@ -49,17 +49,18 @@ public class RespondentsChecker extends PropertiesChecker {
         }
 
         return isEmptyAddress(respondentParty.getAddress())
-                && isEmptyTelephone(respondentParty.getTelephoneNumber())
-                && isEmptyEmail(respondentParty.getEmail())
-                && allEmpty(
-                respondentParty.getFirstName(),
-                respondentParty.getLastName(),
-                respondentParty.getDateOfBirth(),
-                respondentParty.getGender(),
-                respondentParty.getPlaceOfBirth(),
-                respondentParty.getRelationshipToChild(),
-                respondentParty.getContactDetailsHidden(),
-                respondentParty.getLitigationIssues());
+            && isEmptyTelephone(respondentParty.getTelephoneNumber())
+            && isEmptyEmail(respondentParty.getEmail())
+            && allEmpty(
+            respondentParty.getFirstName(),
+            respondentParty.getLastName(),
+            respondentParty.getDateOfBirth(),
+            respondentParty.getGender(),
+            respondentParty.getPlaceOfBirth(),
+            respondentParty.getRelationshipToChild(),
+            respondentParty.getContactDetailsHidden(),
+            respondentParty.getLitigationIssues(),
+            respondent.getLegalRepresentation());
     }
 
 }

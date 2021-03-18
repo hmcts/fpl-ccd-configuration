@@ -25,6 +25,7 @@ module.exports = [
       firstName: 'Adam',
       lastName: 'Smith',
       email: 'adam@smith.com',
+      organisation: 'Swansea',
     },
   },
   {

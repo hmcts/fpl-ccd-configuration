@@ -28,7 +28,7 @@
     "ID": "RespondentSolicitor",
     "ListElementCode": "organisation",
     "FieldType": "Organisation",
-    "ElementLabel": " ",
+    "ElementLabel": "Organisation",
     "SecurityClassification": "Public"
   },
   {

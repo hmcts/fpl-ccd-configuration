@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
@@ -106,6 +106,11 @@ module.exports = {
       I.fillField(this.fields(elementIndex).solicitor.firstName, respondent.solicitor.firstName);
       I.fillField(this.fields(elementIndex).solicitor.lastName, respondent.solicitor.lastName);
       I.fillField(this.fields(elementIndex).solicitor.email, respondent.solicitor.email);
+
+      await within(this.fields(elementIndex).solicitor, () => {
+        I.fillField('//input[@id="search-org-text"]', respondent.solicitor.organisation);
+        I.click('//*[@id="organisation-table"]/tbody/tr/td[2]/a');
+      });
     }
   },
 };
