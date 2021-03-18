@@ -98,7 +98,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
+xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
