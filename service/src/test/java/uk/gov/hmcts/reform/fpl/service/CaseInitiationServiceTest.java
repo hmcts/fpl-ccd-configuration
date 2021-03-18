@@ -332,7 +332,7 @@ class CaseInitiationServiceTest {
             underTest.grantCaseAccess(caseData);
 
             verify(caseRoleService).revokeCaseRoleFromUser(CASE_ID, USER_ID, CREATOR);
-            verify(caseRoleService).grantCaseRoleToLocalAuthority(CASE_ID, LA1.code, caseRole);
+            verify(caseRoleService).grantCaseRoleToLocalAuthority(CASE_ID, USER_ID, LA1.code, caseRole);
             verifyNoMoreInteractions(caseRoleService);
         }
 
