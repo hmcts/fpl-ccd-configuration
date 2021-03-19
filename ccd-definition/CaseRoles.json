@@ -38,6 +38,87 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORONE]",
+    "Name": "Solicitor 1",
+    "Description": "Solicitor 1 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORTWO]",
+    "Name": "Solicitor 2",
+    "Description": "Solicitor 2 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORTHREE]",
+    "Name": "Solicitor 3",
+    "Description": "Solicitor 3 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORFOUR]",
+    "Name": "Solicitor 4",
+    "Description": "Solicitor 4 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORFIVE]",
+    "Name": "Solicitor 5",
+    "Description": "Solicitor 5 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORSIX]",
+    "Name": "Solicitor 6",
+    "Description": "Solicitor 6 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORSEVEN]",
+    "Name": "Solicitor 7",
+    "Description": "Solicitor 7 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITOREIGHT]",
+    "Name": "Solicitor 8",
+    "Description": "Solicitor 8 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "[SOLICITORNINE]",
+    "Name": "Solicitor 9",
+    "Description": "Solicitor 9 role",
+    "JurisdictionID": "PUBLICLAW",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "[LABARRISTER]",
     "Name": "LA Barrister",
     "Description": "LA Barrister role",

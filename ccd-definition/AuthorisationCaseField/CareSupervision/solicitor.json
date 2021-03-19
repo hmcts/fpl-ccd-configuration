@@ -3,7 +3,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseHistory",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
@@ -18,252 +20,324 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryC2Document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearing",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orders",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "internationalElement",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "factorsParenting",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "risks",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal_label",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingPreferences",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "grounds",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkChronology_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkStatement_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkAssessment_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_threshold_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_checklist_document",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundle",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents_label",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "others_label",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placements",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendToCtsc",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "amountToPay",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "displayAmountToPay",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2SupportingDocuments",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderCollection",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sealedCMOs",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftUploadedCMOs",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrdersBundlesDrafts",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsNC",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsNC",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsLANC",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   }
 ]

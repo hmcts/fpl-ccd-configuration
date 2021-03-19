@@ -52,7 +52,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
@@ -60,7 +62,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
@@ -68,7 +72,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
@@ -76,7 +82,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
-    "UserRoles": ["[SOLICITOR]"],
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
+      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    ],
     "CRUD": "R"
   },
   {
