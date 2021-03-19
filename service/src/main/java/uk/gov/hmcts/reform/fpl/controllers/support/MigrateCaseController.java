@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,10 +14,13 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
+
+import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
@@ -55,8 +59,35 @@ public class MigrateCaseController extends CallbackController {
             run2740(caseDetails);
         }
 
+        if ("FPLA-2774".equals(migrationId)) {
+            run2774(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2774(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("NE21C50007".equals(caseData.getFamilyManCaseNumber())) {
+            List<Element<HearingBooking>> hearings = caseData.getHearingDetails();
+
+            if (ObjectUtils.isEmpty(hearings)) {
+                throw new IllegalArgumentException("No hearings in the case");
+            }
+
+            if (hearings.size() < 2) {
+                throw new IllegalArgumentException(String.format("Expected 2 hearings in the case but found %s",
+                    hearings.size()));
+            }
+
+            Element<HearingBooking> hearingToBeRemoved = hearings.get(1);
+
+            hearings.remove(hearingToBeRemoved);
+
+            caseDetails.getData().put("hearingDetails", hearings);
+        }
     }
 
     private void run2715(CaseDetails caseDetails) {
