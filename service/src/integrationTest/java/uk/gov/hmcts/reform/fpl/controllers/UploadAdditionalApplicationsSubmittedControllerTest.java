@@ -41,6 +41,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -247,11 +250,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
-            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "admin@family-court.com",
-            expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
-        );
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            LOCAL_AUTHORITY_1_INBOX,
+            Map.of("applicationType", "C2"),
+            NOTIFICATION_REFERENCE);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -265,11 +273,16 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient).sendEmail(
-            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
-            "admin@family-court.com",
-            expectedPbaPaymentNotTakenNotificationParams(),
-            NOTIFICATION_REFERENCE
-        );
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
+            LOCAL_AUTHORITY_1_INBOX,
+            Map.of("applicationType", "C2"),
+            NOTIFICATION_REFERENCE);
+
+        verify(notificationClient).sendEmail(
+            APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedCtscNotificationParameters(),
+            NOTIFICATION_REFERENCE);
     }
 
     @Test
@@ -282,7 +295,13 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
         postSubmittedEvent(createCase(caseData));
 
         verify(notificationClient, never()).sendEmail(
-            eq(INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE),
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA),
+            anyString(),
+            anyMap(),
+            anyString());
+
+        verify(notificationClient, never()).sendEmail(
+            eq(APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC),
             anyString(),
             anyMap(),
             anyString());
@@ -328,6 +347,11 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
                         .supplementsBundle(new ArrayList<>())
                         .usePbaPayment(usePbaPayment.getValue()).build())
                     .build()));
+    }
+
+    private Map<String, Object> expectedCtscNotificationParameters() {
+        return Map.of("applicationType", "C2",
+            "caseUrl", "http://fake-url/cases/case-details/12345#C2");
     }
 
     private Map<String, Object> expectedPbaPaymentNotTakenNotificationParams() {
