@@ -760,7 +760,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseData))
                 .getRootCause()
-                .hasMessage("Issues Resolution/Early Final hearing, 5 March 2021");
+                .hasMessage("Issues Resolution/Early Final Hearing hearing, 5 March 2021");
         }
 
 
@@ -778,7 +778,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .build();
 
             HearingFurtherEvidenceBundle evidenceBundle = HearingFurtherEvidenceBundle.builder()
-                .hearingName("Issues Resolution/Early Final hearing, 5 March 2021")
+                .hearingName("Issues Resolution/Early Final Hearing hearing, 5 March 2021")
                 .supportingEvidenceBundle(wrapElements(supportingDoc1, supportingDoc2))
                 .build();
 
@@ -814,7 +814,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
 
             Element<HearingFurtherEvidenceBundle> bundle = element(HearingFurtherEvidenceBundle.builder()
-                .hearingName("Issues Resolution/Early Final hearing, 5 March 2021")
+                .hearingName("Issues Resolution/Early Final Hearing hearing, 5 March 2021")
                 .supportingEvidenceBundle(wrapElements(supportingDoc1, supportingDoc2, supportingDoc3))
                 .build());
 
@@ -860,7 +860,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
 
             Element<HearingFurtherEvidenceBundle> bundle1 = element(HearingFurtherEvidenceBundle.builder()
-                .hearingName("Issues Resolution/Early Final hearing, 5 March 2021")
+                .hearingName("Issues Resolution/Early Final Hearing hearing, 5 March 2021")
                 .supportingEvidenceBundle(List.of(supportingDoc1, supportingDoc2, supportingDoc3, supportingDoc4))
                 .build());
 
