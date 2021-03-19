@@ -645,4 +645,88 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .build();
         }
     }
+
+    @Nested
+    class Fpla2774 {
+        String familyManNumber = "NE21C50007";
+        String migrationId = "FPLA-2774";
+        UUID hearingIdOne = UUID.randomUUID();
+        UUID hearingIdTwo = UUID.randomUUID();
+        HearingBooking hearingBooking = HearingBooking.builder().build();
+
+        @Test
+        void shouldRemoveSecondHearing() {
+            Element<HearingBooking> hearingOne = element(hearingIdOne, hearingBooking);
+            Element<HearingBooking> hearingTwo = element(hearingIdTwo, hearingBooking);
+
+            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne, hearingTwo);
+            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, hearingBookings);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(hearingOne));
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            String incorrectMigrationId = "FPLA-1111";
+
+            Element<HearingBooking> hearingOne = element(hearingIdOne, hearingBooking);
+            Element<HearingBooking> hearingTwo = element(hearingIdTwo, hearingBooking);
+
+            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne, hearingTwo);
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, hearingBookings);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedFamilyManCaseNumber() {
+            String invalidFamilyManNumber = "PO20C50031";
+
+            Element<HearingBooking> hearingOne = element(hearingIdOne, hearingBooking);
+            Element<HearingBooking> hearingTwo = element(hearingIdTwo, hearingBooking);
+
+            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne, hearingTwo);
+            CaseDetails caseDetails = caseDetails(migrationId, invalidFamilyManNumber, hearingBookings);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseContainsFewerHearingsThanExpected() {
+            Element<HearingBooking> hearingOne = element(hearingIdOne, hearingBooking);
+            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingOne);
+
+            CaseDetails caseDetails = caseDetails(
+                migrationId, familyManNumber, hearingBookings);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected 2 hearings in the case but found 1");
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainHearings() {
+            CaseDetails caseDetails = caseDetails(
+                migrationId, familyManNumber, null);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No hearings in the case");
+        }
+
+        private CaseDetails caseDetails(String migrationId,
+                                        String familyManCaseNumber,
+                                        List<Element<HearingBooking>> hearingBookings) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManCaseNumber)
+                .hearingDetails(hearingBookings)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+    }
 }
