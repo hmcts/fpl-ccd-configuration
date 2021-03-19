@@ -10,17 +10,16 @@ import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
@@ -30,10 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AdditionalApplicationsUploadedEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final Time time;
-
-    public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData,
-                                                                final DocumentReference latestC2) {
+    public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(buildCallout(caseData))
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
@@ -62,7 +58,9 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested =
             c2DocumentBundle.getC2AdditionalOrdersRequested();
 
-        if (c2AdditionalOrdersRequested != null) {
+
+
+        if (isNotEmpty(c2AdditionalOrdersRequested)) {
             List<String> c2AdditionalOrdersRequestedLabels = new ArrayList<>();
 
             for (C2AdditionalOrdersRequested orderRequested : c2AdditionalOrdersRequested) {

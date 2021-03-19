@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.PBAPayment;
@@ -31,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
@@ -111,19 +109,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-
-        C2DocumentBundle c2DocumentBundle = lastBundle.getC2DocumentBundle();
-        if (c2DocumentBundle == null) {
-            c2DocumentBundle = C2DocumentBundle.builder().build();
-        }
-
-        c2DocumentBundle.toBuilder()
-            .usePbaPayment(pbaPayment.getUsePbaPayment())
-            .pbaNumber(pbaPayment.getPbaNumber())
-            .clientCode(pbaPayment.getClientCode())
-            .fileReference(pbaPayment.getFileReference()).build();
-
-        publishEvent(new AdditionalApplicationsUploadedEvent(caseData, c2DocumentBundle));
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData));
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
@@ -135,12 +121,12 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                     paymentService.makePaymentForAdditionalApplications(caseDetails.getId(), caseData, feesData);
                 } catch (FeeRegisterException | PaymentsApiException paymentException) {
                     log.error("Additional applications payment for case {} failed", caseDetails.getId());
-                    publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                    publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
                 }
             } else if (NO.getValue().equals(caseDetails.getData().get(DISPLAY_AMOUNT_TO_PAY))) {
                 log.error("Additional applications payment for case {} not taken as payment fee not shown to user",
                     caseDetails.getId());
-                publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
+                publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
             }
         }
     }

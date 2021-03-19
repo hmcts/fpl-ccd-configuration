@@ -32,7 +32,7 @@ public class AdditionalApplicationsUploadedEventHandler {
             CaseData caseData = event.getCaseData();
 
             NotifyData notifyData = additionalApplicationsUploadedEmailContentProvider
-                .getNotifyData(caseData, event.getUploadedBundle().getDocument());
+                .getNotifyData(caseData);
             String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
             notificationService
                 .sendEmail(INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE, recipient, notifyData, caseData.getId());

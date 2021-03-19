@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 })
 
 public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
-    private final C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
     private final String respondentLastName = "Smith";
     private final String calloutText = "Smith, SACCCCCCCC5676576567";
     private final String caseUrl = "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345#Other%20applications";
@@ -64,8 +62,7 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
         given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoleNames()).build());
 
-        given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData,
-            c2DocumentBundle.getDocument()))
+        given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(
                 AdditionalApplicationsUploadedTemplate.builder()
                     .callout(calloutText)
@@ -75,7 +72,7 @@ public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends
                     .build()
             );
 
-        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData, c2DocumentBundle));
+        underTest.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
 
         assertThat(response())
             .hasSubject("New application uploaded, " + respondentLastName)

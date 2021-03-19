@@ -100,12 +100,10 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
                 COURT_CODE));
 
-        given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData,
-            c2DocumentBundle.getDocument()))
+        given(additionalApplicationsUploadedEmailContentProvider.getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
 
-        additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData,
-            c2DocumentBundle));
+        additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -129,11 +127,10 @@ class AdditionalApplicationsUploadedEventHandlerTest {
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(additionalApplicationsUploadedEmailContentProvider
-            .getNotifyData(caseData, c2DocumentBundle.getDocument()))
+            .getNotifyData(caseData))
             .willReturn(additionalApplicationsParameters);
 
-        additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData,
-            c2DocumentBundle));
+        additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
 
         verify(notificationService).sendEmail(
             INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE,
@@ -149,8 +146,7 @@ class AdditionalApplicationsUploadedEventHandlerTest {
         given(requestData.userRoles()).willReturn(new HashSet<>(Arrays.asList("caseworker", "caseworker-publiclaw",
             "caseworker-publiclaw-courtadmin")));
 
-        additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData,
-            c2DocumentBundle));
+        additionalApplicationsUploadedEventHandler.notifyAdmin(new AdditionalApplicationsUploadedEvent(caseData));
 
         verifyNoInteractions(notificationService);
     }
