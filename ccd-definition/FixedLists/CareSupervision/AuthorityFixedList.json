@@ -324,30 +324,37 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NPT",
+    "ListElement": "Neath & Port Talbot County Council",
+    "DisplayOrder": 53
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NHC",
     "ListElement": "Nottingham City Council",
-    "DisplayOrder": 53
+    "DisplayOrder": 54
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NGC",
     "ListElement": "Nottinghamshire County Council",
-    "DisplayOrder": 54
+    "DisplayOrder": 55
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "OLC",
     "ListElement": "Oldham Council",
-    "DisplayOrder": 55
+    "DisplayOrder": 56
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "OCC",
     "ListElement": "Oxfordshire County Council",
-    "DisplayOrder": 56
+    "DisplayOrder": 57
   },
   {
     "LiveFrom": "01/01/2017",
@@ -492,51 +499,58 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "VOG",
+    "ListElement": "Vale of Glamorgan Council",
+    "DisplayOrder": 94
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "WMD",
     "ListElement": "Wakefield Metropolitan District Council",
-    "DisplayOrder": 94
+    "DisplayOrder": 95
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WAL",
     "ListElement": "Walsall Borough Council",
-    "DisplayOrder": 95
+    "DisplayOrder": 96
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WCC",
     "ListElement": "Warwickshire County Council",
-    "DisplayOrder": 96
+    "DisplayOrder": 97
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WIC",
     "ListElement": "Wigan Council",
-    "DisplayOrder": 97
+    "DisplayOrder": 98
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SNW",
     "ListElement": "Wiltshire Council",
-    "DisplayOrder": 98
+    "DisplayOrder": 99
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WIR",
     "ListElement": "Wirral Borough Council",
-    "DisplayOrder": 99
+    "DisplayOrder": 100
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "WOL",
     "ListElement": "Wolverhampton City Council",
-    "DisplayOrder": 100
+    "DisplayOrder": 101
   },
   {
     "LiveFrom": "01/01/2017",
