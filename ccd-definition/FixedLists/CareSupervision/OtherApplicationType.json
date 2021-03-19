@@ -79,8 +79,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationType",
+    "ListElementCode": "C63_DECLARATION_OF_PARENTAGE",
+    "ListElement": "C63 - Declaration of parentage",
+    "DisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationType",
     "ListElementCode": "C100_CHILD_ARRANGEMENTS",
     "ListElement": "C100 - Child arrangements, prohibited steps or specific issue",
-    "DisplayOrder": 12
+    "DisplayOrder": 13
   }
 ]

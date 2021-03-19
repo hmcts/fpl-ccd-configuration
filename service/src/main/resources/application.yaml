@@ -209,6 +209,13 @@ fees-register:
       jurisdiction2: family court
       keyword: SecureAccommWales
       service: private law
+    DECLARATION_OF_PARENTAGE:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: JKL
+      service: other
 
 payment:
   site_id: ABA3
