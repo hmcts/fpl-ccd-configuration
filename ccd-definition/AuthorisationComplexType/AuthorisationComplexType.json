@@ -52,8 +52,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
-    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
-      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
+      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
     "CRUD": "R"
   },
@@ -62,8 +62,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
-    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
-      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
+      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
     "CRUD": "R"
   },
@@ -72,8 +72,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
-    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
-      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
+      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
     "CRUD": "R"
   },
@@ -82,8 +82,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
-    "UserRoles": ["[SOLICITOR]", "[SOLICITORONE]", "[SOLICITORTWO]", "[SOLICITORTHREE]", "[SOLICITORFOUR]",
-      "[SOLICITORFIVE]", "[SOLICITORSIX]", "[SOLICITORSEVEN]", "[SOLICITOREIGHT]", "[SOLICITORNINE]"
+    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
+      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
     "CRUD": "R"
   },
