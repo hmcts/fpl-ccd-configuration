@@ -17,5 +17,4 @@ public class RespondentSolicitor {
     private String email;
     private Organisation organisation;
     private AdditionalOrgDetails additionalOrgDetails;
-
 }

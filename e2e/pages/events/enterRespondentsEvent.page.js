@@ -109,7 +109,7 @@ module.exports = {
 
       await within(this.fields(elementIndex).solicitor, () => {
         I.fillField('//input[@id="search-org-text"]', respondent.solicitor.organisation);
-        I.click('//*[@id="organisation-table"]/tbody/tr/td[2]/a');
+        I.click('//*[@id="organisation-table"]/caption/h3[text()="Swansea City Council"]/../../tbody//a');
       });
     }
   },
