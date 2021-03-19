@@ -397,7 +397,7 @@ class CaseDataExtractionServiceTest {
                                                                    String venue) {
         return getExpectedHearingBooking(
             date, time, attendance,
-            format("Remote hearing at %s. Link and instructions will be sent by the applicant.", venue)
+            format("Remote hearing at %s. Link and instructions will be sent by the local court.", venue)
         );
     }
 
