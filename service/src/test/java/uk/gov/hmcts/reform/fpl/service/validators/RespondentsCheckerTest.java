@@ -11,6 +11,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -56,6 +57,30 @@ class RespondentsCheckerTest {
             "Enter the respondent's relationship to child",
             "Enter the respondent's full name",
             "Select if the respondent needs representation"
+        );
+        assertThat(isCompleted).isFalse();
+    }
+
+    @Test
+    void shouldReturnErrorWhenNoRepresentativeEmailEntered() {
+        final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .relationshipToChild("Uncle")
+                .build())
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder().firstName("Steve").build())
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .respondents1(ElementUtils.wrapElements(respondent))
+            .build();
+
+        final List<String> errors = respondentsChecker.validate(caseData);
+        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
+
+        assertThat(errors).containsExactlyInAnyOrder(
+            "Enter the respondent's solicitor email address"
         );
         assertThat(isCompleted).isFalse();
     }

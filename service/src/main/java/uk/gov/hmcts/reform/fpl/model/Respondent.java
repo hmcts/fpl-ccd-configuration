@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -12,10 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -34,7 +39,31 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
 
     @NotNull(message = "Select if the respondent needs representation")
     private String legalRepresentation;
+    @Valid
     private RespondentSolicitor solicitor;
+
+    @JsonIgnore
+    private boolean organisationSpecifiedForRepresented;
+
+    @JsonIgnore
+    @AssertTrue(message = "Add organisation details for the respondent solicitor")
+    public boolean isOrganisationSpecifiedForRespondentSolicitor() {
+        if (legalRepresentation.equals(YES.getValue())) {
+            //User selected yes but did not enter any details
+            if (isEmpty(solicitor)) {
+                return false;
+            }
+            //User selected an organisation
+            if (isNotEmpty(solicitor.getOrganisation())
+                && isNotEmpty(solicitor.getOrganisation().getOrganisationID())) {
+                return true;
+            }
+            //User entered unregistered organisation details
+            return isNotEmpty(solicitor.getUnregisteredOrganisation())
+                && isNotEmpty(solicitor.getUnregisteredOrganisation().getName());
+        }
+        return true;
+    }
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {

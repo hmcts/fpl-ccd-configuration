@@ -248,9 +248,10 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrganisationRequest",
-    "FieldDisplayOrder": 5,
+    "ListElementCode": "solicitor.unregisteredOrganisation",
+    "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
+    "EventElementLabel": " ",
     "FieldShowCondition": "respondents1.solicitor.organisation.OrganisationName=\"\""
   },
   {
@@ -258,8 +259,23 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrganisationName",
-    "FieldDisplayOrder": 6,
+    "ListElementCode": "solicitor.unregisteredOrganisation.signupRequestHeader",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.signupRequestLabel",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.name",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -267,57 +283,56 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress",
-    "FieldDisplayOrder": 7,
+    "ListElementCode": "solicitor.unregisteredOrganisation.address",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.AddressLine1",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine1",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.AddressLine2",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.AddressLine3",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.PostTown",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.PostTown",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.County",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.County",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.PostCode",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.PostCode",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.newOrgAddress.Country",
+    "ListElementCode": "solicitor.unregisteredOrganisation.address.Country",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -325,7 +340,7 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.additionalOffice",
+    "ListElementCode": "solicitor.additionalOfficeHeader",
     "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
@@ -334,57 +349,66 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress",
+    "ListElementCode": "solicitor.additionalOfficeLabel",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
+    "LiveFrom": "01/01/2017",
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.AddressLine1",
+    "ListElementCode": "solicitor.regionalOfficeAddress",
+    "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.AddressLine2",
+    "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine1",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.AddressLine3",
+    "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine2",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.PostTown",
+    "ListElementCode": "solicitor.regionalOfficeAddress.AddressLine3",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.County",
+    "ListElementCode": "solicitor.regionalOfficeAddress.PostTown",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.PostCode",
+    "ListElementCode": "solicitor.regionalOfficeAddress.County",
     "DisplayContext": "OPTIONAL"
   },
   {
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOrgDetails.regionalOfficeAddress.Country",
+    "ListElementCode": "solicitor.regionalOfficeAddress.PostCode",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "solicitor.regionalOfficeAddress.Country",
     "DisplayContext": "OPTIONAL"
   }
 ]
