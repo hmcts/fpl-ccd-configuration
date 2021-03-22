@@ -19,6 +19,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
+import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +39,33 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final ConfidentialDocumentsSplitter splitter;
+    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
+
+        if ("FPLA-2724".equals(migrationId)) {
+            run2724(caseDetails);
+        }
+
+        if ("FPLA-2705".equals(migrationId)) {
+            run2705(caseDetails);
+        }
+
+        if ("FPLA-2706".equals(migrationId)) {
+            run2706(caseDetails);
+        }
+
+        if ("FPLA-2715".equals(migrationId)) {
+            run2715(caseDetails);
+        }
+
+        if ("FPLA-2740".equals(migrationId)) {
+            run2740(caseDetails);
+        }
 
         if ("FPLA-2774".equals(migrationId)) {
             run2774(caseDetails);
@@ -59,7 +85,7 @@ public class MigrateCaseController extends CallbackController {
 
         if ("PO20C50010".equals(caseData.getFamilyManCaseNumber())) {
 
-            final String hearingName = "Issues Resolution/Early Final hearing, 5 March 2021";
+            final String hearingName = "Issues Resolution/Early Final Hearing hearing, 5 March 2021";
             final Set<String> documentNames = Set.of("Placement application", "Statement of facts", "CPR");
 
             List<Element<HearingFurtherEvidenceBundle>> bundles =
@@ -113,5 +139,71 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("hearingDetails", hearings);
         }
+    }
+
+    private void run2715(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2740(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstCaseNotes(caseDetails);
+        }
+    }
+
+    private void run2706(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("CF20C50049".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2724(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("WR20C50007".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2705(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
+            removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
+
+        if (isEmpty(caseData.getDraftUploadedCMOs())) {
+            throw new IllegalArgumentException("No draft case management orders in the case");
+        }
+
+        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
+
+        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetailsMap, firstDraftCmo);
+        caseDetails.setData(caseDetailsMap);
+    }
+
+    private void removeFirstCaseNotes(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
+            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
+                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+        }
+
+        caseData.getCaseNotes().remove(0);
+        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
     }
 }

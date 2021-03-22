@@ -387,6 +387,23 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
+    void shouldThrowAnExceptionIfDraftUploadedCMOContainingRemovedCMOCannotBeFound() {
+        HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(
+                element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
+
+        assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO))
+            .usingRecursiveComparison()
+            .isEqualTo(new IllegalStateException(format("Failed to find hearing order that contains order %s",
+                TO_REMOVE_ORDER_ID)));
+    }
+
+    @Test
     void shouldRemoveDraftCaseManagementOrderAndUnlinkHearing() {
         DocumentReference order = testDocumentReference();
         Element<HearingOrder> orderToBeRemoved = element(TO_REMOVE_ORDER_ID, cmo(testDocumentReference()));
