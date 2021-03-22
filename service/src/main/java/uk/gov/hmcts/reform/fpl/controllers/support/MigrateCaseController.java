@@ -78,6 +78,10 @@ public class MigrateCaseController extends CallbackController {
             run2905(caseDetails);
         }
 
+        if ("FPLA-2872".equals(migrationId)) {
+            run2872(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -187,8 +191,6 @@ public class MigrateCaseController extends CallbackController {
     private void run2905(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-
-
         if ("CF20C50047".equals(caseData.getFamilyManCaseNumber())) {
 
             if (isEmpty(caseData.getC2DocumentBundle())) {
@@ -196,6 +198,29 @@ public class MigrateCaseController extends CallbackController {
             }
 
             caseData.getC2DocumentBundle().remove(1);
+            caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
+        } else {
+            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
+        }
+    }
+
+    private void run2872(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("NE20C50023".equals(caseData.getFamilyManCaseNumber())) {
+            if (isEmpty(caseData.getC2DocumentBundle())) {
+                throw new IllegalArgumentException("No C2 document bundles in the case");
+            }
+
+            if (caseData.getC2DocumentBundle().size() < 5) {
+                throw new IllegalArgumentException(String.format("Expected at least 5 C2 document bundles in the case"
+                    + " but found %s", caseData.getC2DocumentBundle().size()));
+            }
+
+            caseData.getC2DocumentBundle().remove(4);
+            caseData.getC2DocumentBundle().remove(3);
+            caseData.getC2DocumentBundle().remove(2);
+
             caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
         } else {
             throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
