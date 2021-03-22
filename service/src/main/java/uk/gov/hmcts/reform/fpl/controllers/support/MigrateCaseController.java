@@ -38,6 +38,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String FMN_ERROR_MESSAGE = "Unexpected FMN ";
     private final ConfidentialDocumentsSplitter splitter;
     private final DraftCMORemovalAction draftCMORemovalAction;
 
@@ -121,7 +122,7 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("hearingFurtherEvidenceDocuments", bundles);
         } else {
-            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
@@ -200,7 +201,7 @@ public class MigrateCaseController extends CallbackController {
             caseData.getC2DocumentBundle().remove(1);
             caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
         } else {
-            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
@@ -223,7 +224,7 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
         } else {
-            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
