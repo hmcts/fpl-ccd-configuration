@@ -121,7 +121,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyWhenAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle() throws Exception {
+    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle()
+        throws Exception {
         final Map<String, Object> caseData = ImmutableMap.of(
             "caseLocalAuthority",
             LOCAL_AUTHORITY_1_CODE,
@@ -146,7 +147,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyAdminWhenWhenAdditionalApplicationsAreUsingPbaPayment() throws Exception {
+    void submittedEventShouldNotifyAdminWhenWhenAdditionalApplicationsAreNotUsingPbaPayment() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildAdditionalApplicationsBundle(NO))
@@ -173,7 +174,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsAreUsingPbaPaymentAndCtscToggleIsEnabled()
+    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsAreNotUsingPbaPaymentAndCtscToggleIsEnabled()
         throws Exception {
         postSubmittedEvent(buildCaseDetails(YES, NO));
 
