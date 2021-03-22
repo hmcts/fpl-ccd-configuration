@@ -82,54 +82,20 @@ module.exports = {
     I.click(this.fields.supportingDocuments(index).confidential);
   },
 
-  async uploadFurtherEvidence(supportingEvidenceDocument) {
+  async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
     await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
-    this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
-  },
-
-  async uploadConfidentialFurtherEvidence(supportingEvidenceDocument) {
-    const index = await I.getActiveElementIndex();
-    this.enterDocumentName(supportingEvidenceDocument.name, index);
-    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
-    this.uploadDocument(supportingEvidenceDocument.document, index);
-    this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
-    this.selectConfidential(index);
-  },
-
-  async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
-    const index = await I.getActiveElementIndex();
-    this.enterDocumentName(supportingEvidenceDocument.name, index);
-    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
-    this.uploadDocument(supportingEvidenceDocument.document, index);
-  },
-
-  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument) {
-    const index = await I.getActiveElementIndex();
-    this.enterDocumentName(supportingEvidenceDocument.name, index);
-    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
-    this.uploadDocument(supportingEvidenceDocument.document, index);
-    this.selectConfidential(index);
-  },
-
-  async setRolePreferences(rolePreferences) {
-    const elementIndex = await this.getActiveElementIndex();
-
-    switch (rolePreferences) {
-      case 'Barrister':
-        I.checkOption(this.fields(elementIndex).legalRepresentative.roles.barrister);
-        break;
-      case 'Solicitor':
-        I.checkOption(this.fields(elementIndex).legalRepresentative.roles.solicitor);
-        break;
-      default:
-        throw new Error(`Unsupported representative serving preferences ${rolePreferences}`);
+    if(selectEvidenceType) {
+      this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
     }
+  },
+
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
+    const index = await I.getActiveElementIndex();
+    await this.uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType);
+    this.selectConfidential(index);
   },
 };

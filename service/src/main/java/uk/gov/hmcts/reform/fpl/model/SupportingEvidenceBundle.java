@@ -30,7 +30,7 @@ public class SupportingEvidenceBundle {
 
     @JsonIgnore
     public boolean isConfidentialDocument() {
-        return confidential != null  && confidential.contains("CONFIDENTIAL");
+        return confidential != null && confidential.contains("CONFIDENTIAL");
     }
 
     @JsonIgnore

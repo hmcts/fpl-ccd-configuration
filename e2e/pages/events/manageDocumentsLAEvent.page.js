@@ -24,9 +24,7 @@ module.exports = {
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsForC2: supportingDocumentsFragment.supportingDocuments(0, 'temporaryC2Document_supportingEvidenceBundle'),
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
-    supportingDocuments: function (index) {
-      return supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp');
-    },
+    supportingDocuments: index => supportingDocumentsFragment.supportingDocuments(index, 'supportingEvidenceDocumentsTemp'),
   },
 
   async selectFurtherEvidence() {
@@ -128,31 +126,17 @@ module.exports = {
     I.click(this.fields.supportingDocuments(elementIndex).confidential);
   },
 
-  async uploadFurtherEvidence(supportingEvidenceDocument) {
+  async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType) {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
     await this.uploadDocument(supportingEvidenceDocument.document);
-    await this.selectFurtherEvidenceType(supportingEvidenceDocument.type);
+    if(selectEvidenceType) {
+      await this.selectFurtherEvidenceType(supportingEvidenceDocument.type);
+    }
   },
 
-  async uploadConfidentialFurtherEvidence(supportingEvidenceDocument) {
-    await this.enterDocumentName(supportingEvidenceDocument.name);
-    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
-    await this.uploadDocument(supportingEvidenceDocument.document);
-    await this.selectFurtherEvidenceType(supportingEvidenceDocument.type);
-    await this.selectConfidential();
-  },
-
-  async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
-    await this.enterDocumentName(supportingEvidenceDocument.name);
-    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
-    await this.uploadDocument(supportingEvidenceDocument.document);
-  },
-
-  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument) {
-    await this.enterDocumentName(supportingEvidenceDocument.name);
-    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
-    await this.uploadDocument(supportingEvidenceDocument.document);
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
+    await this.uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType);
     await this.selectConfidential();
   },
 
