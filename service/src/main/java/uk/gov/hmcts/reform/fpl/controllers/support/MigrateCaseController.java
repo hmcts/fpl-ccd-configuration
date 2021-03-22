@@ -75,6 +75,10 @@ public class MigrateCaseController extends CallbackController {
             run2898(caseDetails);
         }
 
+        if ("FPLA-2905".equals(migrationId)) {
+            run2905(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -178,6 +182,24 @@ public class MigrateCaseController extends CallbackController {
 
         if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
             removeFirstDraftCaseManagementOrder(caseDetails);
+        }
+    }
+
+    private void run2905(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+
+
+        if ("CF20C50047".equals(caseData.getFamilyManCaseNumber())) {
+
+            if (isEmpty(caseData.getC2DocumentBundle())) {
+                throw new IllegalArgumentException("No C2 document bundles in the case");
+            }
+
+            caseData.getC2DocumentBundle().remove(1);
+            caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
+        } else {
+            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
         }
     }
 
