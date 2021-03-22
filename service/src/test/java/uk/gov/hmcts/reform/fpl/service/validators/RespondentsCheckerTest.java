@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -62,7 +64,7 @@ class RespondentsCheckerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenNoRepresentativeEmailEntered() {
+    void shouldReturnErrorWhenNoOrganisationDetailsEntered() {
         final Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("John")
@@ -70,7 +72,10 @@ class RespondentsCheckerTest {
                 .relationshipToChild("Uncle")
                 .build())
             .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder().firstName("Steve").build())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Steve")
+                .email("steve@steve.com")
+                .build())
             .build();
         final CaseData caseData = CaseData.builder()
             .respondents1(ElementUtils.wrapElements(respondent))
@@ -80,13 +85,13 @@ class RespondentsCheckerTest {
         final boolean isCompleted = respondentsChecker.isCompleted(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-            "Enter the respondent's solicitor email address"
+            "Add organisation details for the respondent solicitor"
         );
         assertThat(isCompleted).isFalse();
     }
 
     @Test
-    void shouldReturnEmptyErrorsWhenRequiredRespondentsDetailsArePresentAndValid() {
+    void shouldReturnErrorWhenNoRepresentativeEmailEntered() {
         final Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("John")
@@ -94,6 +99,64 @@ class RespondentsCheckerTest {
                 .relationshipToChild("Uncle")
                 .build())
             .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder().organisationID("Test org ID").build())
+                .firstName("Steve")
+                .build())
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .respondents1(ElementUtils.wrapElements(respondent))
+            .build();
+
+        final List<String> errors = respondentsChecker.validate(caseData);
+        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
+
+        assertThat(errors).containsExactlyInAnyOrder(
+            "Enter the respondent's solicitor's email address"
+        );
+        assertThat(isCompleted).isFalse();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenRegisteredOrganisationDetailsEntered() {
+        final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .relationshipToChild("Uncle")
+                .build())
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder().organisationID("Test org ID").build())
+                .firstName("Steve")
+                .email("steve@steve.com")
+                .build())
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .respondents1(ElementUtils.wrapElements(respondent))
+            .build();
+
+        final List<String> errors = respondentsChecker.validate(caseData);
+        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenUnregisteredOrganisationDetailsEntered() {
+        final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .relationshipToChild("Uncle")
+                .build())
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .unregisteredOrganisation(UnregisteredOrganisation.builder().name("Unregistered Org Name").build())
+                .firstName("Steve")
+                .email("steve@steve.com")
+                .build())
             .build();
         final CaseData caseData = CaseData.builder()
             .respondents1(ElementUtils.wrapElements(respondent))
