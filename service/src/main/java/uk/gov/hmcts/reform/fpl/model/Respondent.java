@@ -39,11 +39,14 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
 
     @NotNull(message = "Select if the respondent needs representation")
     private String legalRepresentation;
-    @Valid
+
     private RespondentSolicitor solicitor;
 
     @JsonIgnore
     private boolean organisationSpecifiedForRespondentSolicitor;
+
+    @JsonIgnore
+    private boolean emailEnteredWhenRequired;
 
     @JsonIgnore
     @AssertTrue(message = "Add organisation details for the respondent solicitor")
@@ -61,6 +64,15 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
             //User entered unregistered organisation details
             return isNotEmpty(solicitor.getUnregisteredOrganisation())
                 && isNotEmpty(solicitor.getUnregisteredOrganisation().getName());
+        }
+        return true;
+    }
+
+    @JsonIgnore
+    @AssertTrue(message = "Enter the respondent's solicitor's email address")
+    public boolean isEmailEnteredWhenRequired() {
+        if (YES.getValue().equals(legalRepresentation)) {
+            return isNotEmpty(solicitor.getEmail());
         }
         return true;
     }

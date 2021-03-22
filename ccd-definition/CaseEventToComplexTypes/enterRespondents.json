@@ -196,6 +196,13 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
+    "ListElementCode": "legalRepresentationLabel",
+    "DisplayContext": "READONLY"
+  },  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EnterRespondents",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentation",
     "DisplayContext": "OPTIONAL"
   },
@@ -259,7 +266,7 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.unregisteredOrganisation.signupRequestHeader",
+    "ListElementCode": "solicitor.unregisteredOrganisation.signUpRequestHeader",
     "DisplayContext": "READONLY"
   },
   {

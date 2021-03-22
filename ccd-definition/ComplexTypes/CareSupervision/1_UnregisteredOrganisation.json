@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UnregisteredOrganisation",
-    "ListElementCode": "signupRequestHeader",
+    "ListElementCode": "signUpRequestHeader",
     "FieldType": "Label",
     "ElementLabel": "## Ask an organisation to register",
     "SecurityClassification": "Public"
