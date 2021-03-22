@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseNote;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
@@ -888,6 +889,85 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
                 .familyManCaseNumber(familyManCaseNumber)
                 .hearingFurtherEvidenceDocuments(bundles)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+    }
+
+    @Nested
+    class Fpla2905 {
+        String familyManNumber = "CF20C50047";
+        String migrationId = "FPLA-2905";
+
+        @Test
+        void shouldRemoveSecondC2DocumentBundle() {
+            UUID elementIdOne = UUID.randomUUID();
+            UUID elementIdTwo = UUID.randomUUID();
+
+            Element<C2DocumentBundle> c2DocumentBundleElementOne = element(elementIdOne,
+                C2DocumentBundle.builder().build());
+
+            Element<C2DocumentBundle> c2DocumentBundleElementTwo = element(elementIdTwo,
+                C2DocumentBundle.builder().build());
+
+            CaseDetails caseData = caseDetails(migrationId, familyManNumber, List.of(c2DocumentBundleElementOne,
+                c2DocumentBundleElementTwo));
+
+            CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+            assertThat(updatedCaseData.getC2DocumentBundle()).containsExactly(c2DocumentBundleElementOne);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            String incorrectMigrationId = "FPLA-1111";
+
+            UUID elementIdOne = UUID.randomUUID();
+            UUID elementIdTwo = UUID.randomUUID();
+
+            Element<C2DocumentBundle> c2DocumentBundleElementOne = element(elementIdOne,
+                C2DocumentBundle.builder().build());
+
+            Element<C2DocumentBundle> c2DocumentBundleElementTwo = element(elementIdTwo,
+                C2DocumentBundle.builder().build());
+
+            CaseDetails caseData = caseDetails(incorrectMigrationId, familyManNumber,
+                List.of(c2DocumentBundleElementOne, c2DocumentBundleElementTwo));
+
+            List<Element<C2DocumentBundle>> expectedBundle = List.of(c2DocumentBundleElementOne,
+                c2DocumentBundleElementTwo);
+
+            CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+            assertThat(updatedCaseData.getC2DocumentBundle()).isEqualTo(expectedBundle);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenUnexpectedFamilyManNumber() {
+            CaseDetails caseData = caseDetails(migrationId, "test", emptyList());
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseData))
+                .getRootCause()
+                .hasMessage("Unexpected FMN test");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenC2documentBundleIsMissing() {
+            CaseDetails caseData = caseDetails(migrationId, familyManNumber, null);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseData))
+                .getRootCause()
+                .hasMessage("No C2 document bundles in the case");
+        }
+
+        private CaseDetails caseDetails(String migrationId,
+                                        String familyManCaseNumber,
+                                        List<Element<C2DocumentBundle>> bundles) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .familyManCaseNumber(familyManCaseNumber)
+                .c2DocumentBundle(bundles)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
