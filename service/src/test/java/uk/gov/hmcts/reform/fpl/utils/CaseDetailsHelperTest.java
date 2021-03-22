@@ -61,6 +61,25 @@ class CaseDetailsHelperTest {
     }
 
     @Nested
+    class IsCaseNumber {
+
+        @Test
+        void shouldReturnTrueWhenStringIs16DigitNumber() {
+            assertThat(CaseDetailsHelper.isCaseNumber("1234567898765432")).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseIfStringIsNotANumber() {
+            assertThat(CaseDetailsHelper.isCaseNumber("111-111-111-111")).isFalse();
+        }
+
+        @Test
+        void shouldReturnTrueWhenStringIsNot16DigitNumber() {
+            assertThat(CaseDetailsHelper.isCaseNumber("123456789")).isFalse();
+        }
+    }
+
+    @Nested
     class RemoveTemporaryFields {
         private Map<String, Object> data = new HashMap<>();
         private CaseDetails caseDetails = CaseDetails.builder().data(data).build();

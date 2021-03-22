@@ -3,10 +3,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "localAuthorityPolicy",
-    "UserRoles": [
-      "caseworker-caa",
-      "caseworker-approver"
-    ],
+    "UserRole": "caseworker-caa",
     "CRUD": "CRU"
   },
   {
