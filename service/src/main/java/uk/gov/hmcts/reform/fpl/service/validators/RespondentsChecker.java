@@ -56,7 +56,6 @@ public class RespondentsChecker extends PropertiesChecker {
             respondentParty.getLastName(),
             respondentParty.getDateOfBirth(),
             respondentParty.getGender(),
-            respondentParty.getPlaceOfBirth(),
             respondentParty.getRelationshipToChild(),
             respondentParty.getContactDetailsHidden(),
             respondentParty.getLitigationIssues(),

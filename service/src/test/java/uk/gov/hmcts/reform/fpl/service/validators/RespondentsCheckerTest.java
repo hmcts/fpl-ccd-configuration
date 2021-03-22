@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ExtendWith(SpringExtension.class)
@@ -157,6 +158,27 @@ class RespondentsCheckerTest {
                 .firstName("Steve")
                 .email("steve@steve.com")
                 .build())
+            .build();
+        final CaseData caseData = CaseData.builder()
+            .respondents1(ElementUtils.wrapElements(respondent))
+            .build();
+
+        final List<String> errors = respondentsChecker.validate(caseData);
+        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
+
+        assertThat(errors).isEmpty();
+        assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenNoLegalRepresentationNeeded() {
+        final Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("John")
+                .lastName("Smith")
+                .relationshipToChild("Uncle")
+                .build())
+            .legalRepresentation(NO.getValue())
             .build();
         final CaseData caseData = CaseData.builder()
             .respondents1(ElementUtils.wrapElements(respondent))
