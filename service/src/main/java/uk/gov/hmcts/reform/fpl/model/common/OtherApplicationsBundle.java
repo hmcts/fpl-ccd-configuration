@@ -9,12 +9,14 @@ import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
@@ -22,7 +24,8 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OtherApplicationsBundle implements ConfidentialBundle {
+public class OtherApplicationsBundle implements ApplicationsBundle {
+    private final UUID id;
     private final OtherApplicationType applicationType;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final DocumentReference document;
@@ -30,6 +33,10 @@ public class OtherApplicationsBundle implements ConfidentialBundle {
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private final List<Element<Supplement>> supplementsBundle;
+
+    public String toLabel() {
+        return format("%s, %s", applicationType.getType(), uploadedDateTime);
+    }
 
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {

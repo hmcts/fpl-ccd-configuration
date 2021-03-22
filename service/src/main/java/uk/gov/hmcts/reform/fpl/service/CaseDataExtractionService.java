@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
     private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Link and instructions will be "
-        + "sent by the applicant.";
+        + "sent by the local court.";
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;

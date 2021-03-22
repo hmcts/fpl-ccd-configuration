@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -106,6 +107,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -285,7 +287,12 @@ public class CaseData {
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
-        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+        return isNotEmpty(c2DocumentBundle);
+    }
+
+    @JsonIgnore
+    public boolean hasApplicationBundles() {
+        return isNotEmpty(c2DocumentBundle) || isNotEmpty(additionalApplicationsBundle);
     }
 
     @JsonIgnore
@@ -306,13 +313,50 @@ public class CaseData {
             .orElse(null);
     }
 
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
+    }
+
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
         IncrementalInteger i = new IncrementalInteger(1);
         return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
     }
 
-    public DynamicList buildC2DocumentDynamicList() {
-        return buildC2DocumentDynamicList(null);
+    public DynamicList buildApplicationBundlesDynamicList() {
+        return buildApplicationBundlesDynamicList(null);
+    }
+
+    public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
+        return asDynamicList(getAllApplicationsBundles(), selected, ApplicationsBundle::toLabel);
+    }
+
+    @JsonIgnore
+    public List<Element<ApplicationsBundle>> getAllApplicationsBundles() {
+        List<Element<ApplicationsBundle>> applicationBundles = new ArrayList<>();
+
+        ofNullable(c2DocumentBundle).ifPresent(
+            bundle -> bundle.forEach(c2 -> applicationBundles.add(element(c2.getId(), c2.getValue()))));
+
+        unwrapElements(getAdditionalApplicationsBundle()).forEach(
+            bundle -> {
+                ofNullable(bundle.getC2DocumentBundle()).ifPresent(
+                    c2 -> applicationBundles.add(element(c2.getId(), c2)));
+
+                ofNullable(bundle.getOtherApplicationsBundle()).ifPresent(
+                    otherBundle -> applicationBundles.add(element(otherBundle.getId(), otherBundle)));
+            }
+        );
+
+        return applicationBundles;
+    }
+
+    @JsonIgnore
+    public ApplicationsBundle getApplicationBundleByUUID(UUID elementId) {
+        return getAllApplicationsBundles().stream()
+            .filter(bundleElement -> bundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
