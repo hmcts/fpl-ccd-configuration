@@ -88,7 +88,7 @@ public class MigrateCaseController extends CallbackController {
 
         if ("PO20C50010".equals(caseData.getFamilyManCaseNumber())) {
 
-            final String hearingName = "Issues Resolution/Early Final hearing, 5 March 2021";
+            final String hearingName = "Issues Resolution/Early Final Hearing hearing, 5 March 2021";
             final Set<String> documentNames = Set.of("Placement application", "Statement of facts", "CPR");
 
             List<Element<HearingFurtherEvidenceBundle>> bundles =
