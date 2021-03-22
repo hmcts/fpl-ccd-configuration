@@ -313,6 +313,10 @@ public class CaseData {
             .orElse(null);
     }
 
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
+    }
+
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
         IncrementalInteger i = new IncrementalInteger(1);
         return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
@@ -353,10 +357,6 @@ public class CaseData {
             .map(Element::getValue)
             .findFirst()
             .orElse(null);
-    }
-
-    public DynamicList buildC2DocumentDynamicList() {
-        return buildC2DocumentDynamicList(null);
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
