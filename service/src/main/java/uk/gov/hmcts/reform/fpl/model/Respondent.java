@@ -43,12 +43,12 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     private RespondentSolicitor solicitor;
 
     @JsonIgnore
-    private boolean organisationSpecifiedForRepresented;
+    private boolean organisationSpecifiedForRespondentSolicitor;
 
     @JsonIgnore
     @AssertTrue(message = "Add organisation details for the respondent solicitor")
     public boolean isOrganisationSpecifiedForRespondentSolicitor() {
-        if (legalRepresentation.equals(YES.getValue())) {
+        if (YES.getValue().equals(legalRepresentation)) {
             //User selected yes but did not enter any details
             if (isEmpty(solicitor)) {
                 return false;
