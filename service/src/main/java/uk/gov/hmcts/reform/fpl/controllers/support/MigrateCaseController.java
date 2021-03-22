@@ -38,6 +38,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String FMN_ERROR_MESSAGE = "Unexpected FMN ";
     private final ConfidentialDocumentsSplitter splitter;
     private final DraftCMORemovalAction draftCMORemovalAction;
 
@@ -76,6 +77,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2905".equals(migrationId)) {
             run2905(caseDetails);
+        }
+
+        if ("FPLA-2872".equals(migrationId)) {
+            run2872(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -117,7 +122,7 @@ public class MigrateCaseController extends CallbackController {
 
             caseDetails.getData().put("hearingFurtherEvidenceDocuments", bundles);
         } else {
-            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
@@ -187,8 +192,6 @@ public class MigrateCaseController extends CallbackController {
     private void run2905(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-
-
         if ("CF20C50047".equals(caseData.getFamilyManCaseNumber())) {
 
             if (isEmpty(caseData.getC2DocumentBundle())) {
@@ -198,7 +201,30 @@ public class MigrateCaseController extends CallbackController {
             caseData.getC2DocumentBundle().remove(1);
             caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
         } else {
-            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
+        }
+    }
+
+    private void run2872(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("NE20C50023".equals(caseData.getFamilyManCaseNumber())) {
+            if (isEmpty(caseData.getC2DocumentBundle())) {
+                throw new IllegalArgumentException("No C2 document bundles in the case");
+            }
+
+            if (caseData.getC2DocumentBundle().size() < 5) {
+                throw new IllegalArgumentException(String.format("Expected at least 5 C2 document bundles in the case"
+                    + " but found %s", caseData.getC2DocumentBundle().size()));
+            }
+
+            caseData.getC2DocumentBundle().remove(4);
+            caseData.getC2DocumentBundle().remove(3);
+            caseData.getC2DocumentBundle().remove(2);
+
+            caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
+        } else {
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
