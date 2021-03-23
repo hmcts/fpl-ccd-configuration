@@ -6,7 +6,7 @@ public enum CaseRole {
     EPSMANAGING,
     LAMANAGING,
     SOLICITOR,
-    // Disabling names as ALL CAPS makes this unreadable
+    // Disabling enum naming convention check (Java S115) as ALL CAPS makes this unreadable
     solicitorA, //NOSONAR
     solicitorB, //NOSONAR
     solicitorC, //NOSONAR
