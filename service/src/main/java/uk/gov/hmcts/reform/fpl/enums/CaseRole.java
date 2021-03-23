@@ -6,15 +6,16 @@ public enum CaseRole {
     EPSMANAGING,
     LAMANAGING,
     SOLICITOR,
-    solicitorA,
-    solicitorB,
-    solicitorC,
-    solicitorD,
-    solicitorE,
-    solicitorF,
-    solicitorG,
-    solicitorH,
-    solicitorI,
+    // Disabling names as ALL CAPS makes this unreadable
+    solicitorA, //NOSONAR
+    solicitorB, //NOSONAR
+    solicitorC, //NOSONAR
+    solicitorD, //NOSONAR
+    solicitorE, //NOSONAR
+    solicitorF, //NOSONAR
+    solicitorG, //NOSONAR
+    solicitorH, //NOSONAR
+    solicitorI, //NOSONAR
     LABARRISTER,
     BARRISTER,
     CAFCASSSOLICITOR;
