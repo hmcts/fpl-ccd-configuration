@@ -289,9 +289,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NPT",
+    "ListElement": "Neath & Port Talbot County Council",
+    "DisplayOrder": 42
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NCC",
     "ListElement": "Newcastle City Council",
-    "DisplayOrder": 42
+    "DisplayOrder": 43
   },
   {
     "LiveFrom": "01/01/2017",
@@ -324,8 +331,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "NPT",
-    "ListElement": "Neath & Port Talbot County Council",
+    "ListElementCode": "NTH",
+    "ListElement": "Northamptonshire County Council",
     "DisplayOrder": 53
   },
   {
