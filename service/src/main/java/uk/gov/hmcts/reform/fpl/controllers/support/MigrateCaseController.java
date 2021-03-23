@@ -13,22 +13,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
@@ -38,6 +31,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private static final String FMN_ERROR_MESSAGE = "Unexpected FMN ";
     private final ConfidentialDocumentsSplitter splitter;
     private final DraftCMORemovalAction draftCMORemovalAction;
 
@@ -46,76 +40,22 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2724".equals(migrationId)) {
-            run2724(caseDetails);
-        }
-
-        if ("FPLA-2705".equals(migrationId)) {
-            run2705(caseDetails);
-        }
-
-        if ("FPLA-2706".equals(migrationId)) {
-            run2706(caseDetails);
-        }
-
-        if ("FPLA-2715".equals(migrationId)) {
-            run2715(caseDetails);
-        }
-
-        if ("FPLA-2740".equals(migrationId)) {
-            run2740(caseDetails);
-        }
-
         if ("FPLA-2774".equals(migrationId)) {
             run2774(caseDetails);
         }
 
-        if ("FPLA-2898".equals(migrationId)) {
-            run2898(caseDetails);
+        if ("FPLA-2905".equals(migrationId)) {
+            run2905(caseDetails);
+        }
+
+        if ("FPLA-2872".equals(migrationId)) {
+            run2872(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-
-    private void run2898(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("PO20C50010".equals(caseData.getFamilyManCaseNumber())) {
-
-            final String hearingName = "Issues Resolution/Early Final Hearing hearing, 5 March 2021";
-            final Set<String> documentNames = Set.of("Placement application", "Statement of facts", "CPR");
-
-            List<Element<HearingFurtherEvidenceBundle>> bundles =
-                defaultIfNull(caseData.getHearingFurtherEvidenceDocuments(), new ArrayList<>());
-
-            Element<HearingFurtherEvidenceBundle> hearingBundle = bundles.stream()
-                .peek(hearing -> log.info("Migration 2898 - hearing name" + hearing.getValue().getHearingName()))
-                .filter(hearing -> hearing.getValue().getHearingName().equals(hearingName))
-                .findFirst()
-                .orElseThrow(() -> new HearingNotFoundException(hearingName));
-
-            List<Element<SupportingEvidenceBundle>> all = hearingBundle.getValue()
-                .getSupportingEvidenceBundle().stream()
-                .filter(doc -> documentNames.contains(doc.getValue().getName()))
-                .collect(Collectors.toList());
-
-            if (all.size() != 3) {
-                throw new IllegalStateException("Unexpected number of found documents: " + all.size());
-            }
-
-            hearingBundle.getValue().getSupportingEvidenceBundle().removeAll(all);
-
-            if (isEmpty(hearingBundle.getValue().getSupportingEvidenceBundle())) {
-                bundles.remove(hearingBundle);
-            }
-
-            caseDetails.getData().put("hearingFurtherEvidenceDocuments", bundles);
-        } else {
-            throw new IllegalStateException("Unexpected FMN " + caseData.getFamilyManCaseNumber());
-        }
-    }
 
     private void run2774(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
@@ -140,43 +80,43 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void run2715(CaseDetails caseDetails) {
+
+    private void run2905(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
+        if ("CF20C50047".equals(caseData.getFamilyManCaseNumber())) {
+
+            if (isEmpty(caseData.getC2DocumentBundle())) {
+                throw new IllegalArgumentException("No C2 document bundles in the case");
+            }
+
+            caseData.getC2DocumentBundle().remove(1);
+            caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
+        } else {
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
-    private void run2740(CaseDetails caseDetails) {
+    private void run2872(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstCaseNotes(caseDetails);
-        }
-    }
+        if ("NE20C50023".equals(caseData.getFamilyManCaseNumber())) {
+            if (isEmpty(caseData.getC2DocumentBundle())) {
+                throw new IllegalArgumentException("No C2 document bundles in the case");
+            }
 
-    private void run2706(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+            if (caseData.getC2DocumentBundle().size() < 5) {
+                throw new IllegalArgumentException(String.format("Expected at least 5 C2 document bundles in the case"
+                    + " but found %s", caseData.getC2DocumentBundle().size()));
+            }
 
-        if ("CF20C50049".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
+            caseData.getC2DocumentBundle().remove(4);
+            caseData.getC2DocumentBundle().remove(3);
+            caseData.getC2DocumentBundle().remove(2);
 
-    private void run2724(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("WR20C50007".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void run2705(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
+            caseDetails.getData().put("c2DocumentBundle", caseData.getC2DocumentBundle());
+        } else {
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
     }
 
