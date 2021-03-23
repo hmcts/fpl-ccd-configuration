@@ -810,5 +810,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "UserRole": "[LABARRISTER]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsSentToParties",
+    "UserRole": "[LABARRISTER]",
+    "CRUD": "R"
   }
 ]

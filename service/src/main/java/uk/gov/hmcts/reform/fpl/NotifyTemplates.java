@@ -43,9 +43,9 @@ public final class NotifyTemplates {
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
     public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";
     public static final String NOTICE_OF_NEW_HEARING = "c5525d1b-6431-489d-be0e-51de3f163583";
-    public static final String SDO_AND_NOP_ISSUED_CTSC = "16fbe2b8-a8e5-4b75-8a0c-0bf274a9a461";
-    public static final String SDO_AND_NOP_ISSUED_LA = "3a1d72c7-61cf-4cf9-8fbd-071ffe90dbf0";
-    public static final String SDO_AND_NOP_ISSUED_CAFCASS = "a84e75e9-a468-442d-a8c5-c7981d9fdc7c";
+    public static final String SDO_AND_NOP_ISSUED_CTSC = "5ddf3927-f102-4c81-900a-57d8facac1d0";
+    public static final String SDO_AND_NOP_ISSUED_LA = "6d0316f4-f58f-4ae8-ae25-a344854ac494";
+    public static final String SDO_AND_NOP_ISSUED_CAFCASS = "e6292279-cc27-42d3-92ca-f75da3e18681";
     public static final String TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE = "eeb3a6f5-af49-48aa-a52a-a29a7be2bc38";
     public static final String CMO_REMOVAL_NOTIFICATION_TEMPLATE = "cd114602-4343-42ce-ab60-1be88b797cd2";
     public static final String SDO_REMOVAL_NOTIFICATION_TEMPLATE = "8f66e70f-e328-4a22-aa17-f52f44e69d45";
