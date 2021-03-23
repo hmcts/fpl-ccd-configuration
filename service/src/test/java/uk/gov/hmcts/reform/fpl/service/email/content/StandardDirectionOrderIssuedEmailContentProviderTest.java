@@ -46,7 +46,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
             .hearingNeeds(List.of("Intermediary"))
             .hearingNeedsPresent("Yes")
             .courtName(COURT_NAME)
-            .callout("^Smith, 12345, hearing 1 Jan 2020")
+            .callout("Smith, 12345, hearing 1 Jan 2020")
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .build();
@@ -58,7 +58,7 @@ class StandardDirectionOrderIssuedEmailContentProviderTest extends AbstractEmail
             .hearingNeeds(List.of())
             .hearingNeedsPresent("No")
             .courtName(COURT_NAME)
-            .callout("^Smith, 12345L, hearing 1 Jan 2020")
+            .callout("Smith, 12345L, hearing 1 Jan 2020")
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .build();
