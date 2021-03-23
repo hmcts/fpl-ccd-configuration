@@ -50,7 +50,7 @@ public class EmailNotificationHelper {
     }
 
     public static String buildCallout(final CaseData caseData) {
-        return "^" + buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
+        return buildSubjectLineWithHearingBookingDateSuffix(caseData.getFamilyManCaseNumber(),
             caseData.getRespondents1(),
             caseData.getFirstHearing().orElse(null));
     }
