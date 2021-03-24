@@ -15,10 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
-import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
 import java.util.List;
 
@@ -32,8 +30,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
     private static final String FMN_ERROR_MESSAGE = "Unexpected FMN ";
-    private final ConfidentialDocumentsSplitter splitter;
-    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -50,6 +46,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2872".equals(migrationId)) {
             run2872(caseDetails);
+        }
+
+        if ("FPLA-2871".equals(migrationId)) {
+            run2871(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -120,27 +120,27 @@ public class MigrateCaseController extends CallbackController {
         }
     }
 
-    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
+    private void run2871(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (isEmpty(caseData.getDraftUploadedCMOs())) {
-            throw new IllegalArgumentException("No draft case management orders in the case");
+        if ("WR20C50015".equals(caseData.getFamilyManCaseNumber())) {
+            log.info("Attempting to remove first C2 from WR20C50015");
+            removeFirstC2(caseDetails);
+            log.info("Successfully removed C2 from WR20C50015");
         }
-
-        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
-
-        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
     }
 
-    private void removeFirstCaseNotes(CaseDetails caseDetails) {
+    private void removeFirstC2(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
+        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
 
-        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
-            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
-                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+        if (isEmpty(c2DocumentBundle)) {
+            throw new IllegalArgumentException("No C2s on case");
         }
 
-        caseData.getCaseNotes().remove(0);
-        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
+        c2DocumentBundle.remove(0);
+
+        caseDetails.getData().put("c2DocumentBundle", c2DocumentBundle);
+
     }
 }
