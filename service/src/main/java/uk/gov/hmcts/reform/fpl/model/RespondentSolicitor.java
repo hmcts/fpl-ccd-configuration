@@ -14,7 +14,7 @@ import javax.validation.Valid;
 public class RespondentSolicitor {
     private String firstName;
     private String lastName;
-    private String email;
+    private String email; //validate this in mid event in respondent details(?)
     private Organisation organisation;
     private Address regionalOfficeAddress;
     private UnregisteredOrganisation unregisteredOrganisation;

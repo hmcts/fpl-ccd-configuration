@@ -28,7 +28,7 @@
     "ID": "UnregisteredOrganisation",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
-    "ElementLabel": " ",
+    "ElementLabel": "Address",
     "SecurityClassification": "Public"
   }
 ]

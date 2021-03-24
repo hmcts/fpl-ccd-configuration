@@ -19,7 +19,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentSolicitor",
     "ListElementCode": "email",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "ElementLabel": "Email address",
     "SecurityClassification": "Public"
   },
@@ -63,7 +63,7 @@
     "ID": "RespondentSolicitor",
     "ListElementCode": "unregisteredOrganisation",
     "FieldType": "UnregisteredOrganisation",
-    "ElementLabel": " ",
+    "ElementLabel": "Organisation (unregistered)",
     "SecurityClassification": "Public"
   }
 ]
