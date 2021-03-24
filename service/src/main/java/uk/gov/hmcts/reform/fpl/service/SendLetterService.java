@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class DocumentSenderService {
+public class SendLetterService {
 
     private static final String SEND_LETTER_TYPE = "FPLA001";
     private static final String COVERSHEET_FILENAME = "Coversheet.pdf";
@@ -38,16 +38,17 @@ public class DocumentSenderService {
     private final AuthTokenGenerator authTokenGenerator;
     private final UploadDocumentService uploadDocumentService;
 
-    public List<SentDocument> send(DocumentReference mainDocument, List<Representative> representativesServedByPost,
-                                   Long caseId, String familyManCaseNumber) {
+    public List<SentDocument> send(DocumentReference mainDocument, List<Recipient> recipients, Long caseId,
+                                   String familyManCaseNumber) {
         List<SentDocument> sentDocuments = new ArrayList<>();
         byte[] mainDocumentBinary = documentDownloadService.downloadDocument(mainDocument.getBinaryUrl());
         var mainDocumentCopy = uploadDocument(mainDocumentBinary, mainDocument.getFilename());
+
         String mainDocumentEncoded = Base64.getEncoder().encodeToString(mainDocumentBinary);
-        for (Representative representative : representativesServedByPost) {
+        for (Recipient recipient : recipients) {
             byte[] coverDocument = docmosisCoverDocumentsService.createCoverDocuments(familyManCaseNumber,
                 caseId,
-                representative).getBytes();
+                recipient).getBytes();
 
             String coverDocumentEncoded = Base64.getEncoder().encodeToString(coverDocument);
 
@@ -60,7 +61,7 @@ public class DocumentSenderService {
             var coversheet = uploadDocument(coverDocument, COVERSHEET_FILENAME);
 
             sentDocuments.add(SentDocument.builder()
-                .partyName(representative.getFullName())
+                .partyName(recipient.getFullName())
                 .document(mainDocumentCopy)
                 .coversheet(coversheet)
                 .sentAt(formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"))

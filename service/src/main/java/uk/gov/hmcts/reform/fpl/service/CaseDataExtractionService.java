@@ -36,6 +36,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.trim;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Display.Due.BY;
+import static uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService.HEARING_VENUE_ID_OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -46,6 +47,9 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
+    private static final String REMOTE_HEARING_VENUE = "Remote hearing at %s. Link and instructions will be "
+        + "sent by the local court.";
+
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final HearingVenueLookUpService hearingVenueLookUpService;
 
@@ -122,8 +126,10 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    public DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking, String value) {
-        return ofNullable(hearingBooking).map(this::buildHearingBooking).orElse(getHearingBookingWithDefault(value));
+    public DocmosisHearingBooking getHearingBookingData(HearingBooking hearingBooking) {
+        return ofNullable(hearingBooking)
+            .map(this::buildHearingBooking)
+            .orElse(DocmosisHearingBooking.builder().build());
     }
 
     public DocmosisDirection.Builder baseDirection(Direction direction, int index) {
@@ -172,13 +178,13 @@ public class CaseDataExtractionService {
     }
 
     private DocmosisHearingBooking buildHearingBooking(HearingBooking hearing) {
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
-        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor =
-            getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
+        String hearingVenue = buildHearingVenue(hearing);
+
+        DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(hearing.getJudgeAndLegalAdvisor());
 
         return DocmosisHearingBooking.builder()
             .hearingDate(getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
-            .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+            .hearingVenue(hearingVenue)
             .preHearingAttendance(extractPrehearingAttendance(hearing))
             .hearingTime(getHearingTime(hearing))
             .hearingJudgeTitleAndName(judgeAndLegalAdvisor.getJudgeTitleAndName())
@@ -186,13 +192,32 @@ public class CaseDataExtractionService {
             .build();
     }
 
-    private DocmosisHearingBooking getHearingBookingWithDefault(String value) {
-        return DocmosisHearingBooking.builder()
-            .hearingDate(value)
-            .hearingVenue(value)
-            .preHearingAttendance(value)
-            .hearingTime(value)
-            .build();
+    private String buildHearingVenue(HearingBooking hearing) {
+        HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearing);
+        if (venue.getAddress() != null) {
+            if (hearing.isRemote()) {
+                String venueName = HEARING_VENUE_ID_OTHER.equals(venue.getHearingVenueId())
+                    ? venue.getAddress().getAddressLine1() : venue.getVenue();
+                // assuming that the building name is in address line 1
+                return String.format(REMOTE_HEARING_VENUE, venueName);
+            } else {
+                return hearingVenueLookUpService.buildHearingVenue(venue);
+            }
+        } else {
+            // enters this if:
+            //  • the first hearing uses a custom venue address
+            //  • the second hearing uses the same venue
+            String previousAddress = hearing.getCustomPreviousVenue();
+            if (hearing.isRemote()) {
+                // going to have to assume that the building name of the venue is before the first comma,
+                // but the user could have entered anything, by limiting to 0 even if the string is empty something
+                // is still returned
+                String[] splitAddress = previousAddress.split(",", 0);
+                return String.format(REMOTE_HEARING_VENUE, splitAddress[0]);
+            } else {
+                return previousAddress;
+            }
+        }
     }
 
     private DocmosisRespondent buildRespondent(RespondentParty respondent) {

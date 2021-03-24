@@ -11,7 +11,7 @@ const createHearing = async (I, caseViewPage, manageHearingsEventPage) => {
   hearingEndDate = moment(hearingStartDate).add(5, 'm').toDate();
 
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate});
+  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate, presence: hearingDetails[0].presence});
   await manageHearingsEventPage.enterVenue(hearingDetails[0]);
   await I.goToNextPage();
   await manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
