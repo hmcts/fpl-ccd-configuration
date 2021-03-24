@@ -6,7 +6,7 @@ module.exports = {
     documentType: {
       furtherEvidence: '#manageDocument_type-FURTHER_EVIDENCE_DOCUMENTS',
       correspondence: '#manageDocument_type-CORRESPONDENCE',
-      c2: '#manageDocument_type-C2',
+      c2: '#manageDocument_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
     },
     relatedToHearing: {
       yes: '#manageDocument_relatedToHearing-Yes',
@@ -49,6 +49,12 @@ module.exports = {
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
 
+  async selectOtherApplicationFromDropdown() {
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(3)`);
+    I.waitForElement(this.fields.c2DocumentsList);
+    I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
+  },
+
   enterDocumentName(documentName, index = 0) {
     I.fillField(this.fields.supportingDocuments(index).name, documentName);
   },
@@ -73,7 +79,6 @@ module.exports = {
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
   },
 
@@ -81,7 +86,6 @@ module.exports = {
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
     this.selectConfidential(index);
   },

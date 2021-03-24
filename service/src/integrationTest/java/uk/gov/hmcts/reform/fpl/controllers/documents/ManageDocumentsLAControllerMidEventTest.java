@@ -6,14 +6,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -24,7 +27,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.FURTHER_EVIDENCE_DOCUMENTS;
@@ -139,7 +142,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
-            .manageDocumentLA(buildManagementDocument(C2))
+            .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .manageDocumentsSupportingC2List(selectedC2DocumentId)
             .build();
 
@@ -148,6 +151,66 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+    }
+
+    @Test
+    void shouldInitialiseC2ApplicationSupportingDocumentsWhenTheSelectedC2IsInAdditionalApplicationsBundles() {
+        UUID selectedApplicationId = UUID.randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<Element<SupportingEvidenceBundle>> c2EvidenceDocuments = buildSupportingEvidenceBundle();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(element(buildC2DocumentBundle(today.plusDays(2))));
+
+        C2DocumentBundle selectedC2Application = C2DocumentBundle.builder()
+            .id(selectedApplicationId)
+            .supportingEvidenceBundle(c2EvidenceDocuments)
+            .uploadedDateTime(today.plusDays(1).toString())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(selectedC2Application).build()))
+            .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
+            .manageDocumentsSupportingC2List(selectedApplicationId)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections", USER_ROLES);
+
+        CaseData responseData = extractCaseData(callbackResponse);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+    }
+
+    @Test
+    void shouldInitialiseOtherApplicationSupportingDocumentsWhenTheSelectedIdIsInAdditionalApplicationsBundles() {
+        UUID selectedApplicationId = UUID.randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle();
+
+        C2DocumentBundle c2Application = C2DocumentBundle.builder()
+            .id(randomUUID()).uploadedDateTime(today.plusDays(1).toString()).build();
+
+        OtherApplicationsBundle selectedApplication = OtherApplicationsBundle.builder()
+            .id(selectedApplicationId)
+            .applicationType(OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON)
+            .supportingEvidenceBundle(supportingEvidenceBundle)
+            .uploadedDateTime(today.plusDays(1).toString()).build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2Application).otherApplicationsBundle(selectedApplication).build()))
+            .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
+            .manageDocumentsSupportingC2List(selectedApplicationId)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "initialise-manage-document-collections", USER_ROLES);
+
+        CaseData responseData = extractCaseData(callbackResponse);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
     }
 
     @Test
@@ -201,19 +264,20 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
-        assertThat(callbackResponse.getErrors().contains("There are no hearings to associate a bundle with"));
+        assertThat(callbackResponse.getErrors()).contains("There are no hearings to associate a bundle with");
     }
 
     @Test
-    void shouldThrowErrorWhenC2SelectedButNoC2sFound() {
+    void shouldThrowErrorWhenAdditionalApplicationsDocumentsIsSelectedButNoApplicationBundlesFound() {
         CaseData caseData = CaseData.builder()
-            .manageDocumentLA(buildManagementDocument(C2))
+            .manageDocumentLA(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections", USER_ROLES);
 
-        assertThat(callbackResponse.getErrors().contains("There are no C2s to associate supporting documents with"));
+        assertThat(callbackResponse.getErrors())
+            .contains("There are no additional applications to associate supporting documents with");
     }
 
     private ManageDocumentLA buildManagementDocument(ManageDocumentTypeListLA type) {

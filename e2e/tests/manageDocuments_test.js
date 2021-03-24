@@ -98,9 +98,9 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
-xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
+  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsEventPage.selectC2SupportingDocuments();
@@ -112,17 +112,16 @@ xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', asyn
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   assertConfidentialC2SupportingDocuments(I, 1, 'Email to say evidence will be late', 'Evidence will be late');
   assertC2SupportingDocuments(I, 2, 'Email with evidence attached', 'Case evidence included');
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
   assertC2SupportingDocuments(I, 1, 'Email with evidence attached', 'Case evidence included');
-
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
@@ -135,14 +134,14 @@ xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', asyn
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   assertC2SupportingDocuments(I, 1, 'Email with evidence attached', 'Case evidence included');
   assertConfidentialC2SupportingDocuments(I, 2, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 3, 'C2 supporting document', 'Supports the C2 application');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   assertConfidentialC2SupportingDocuments(I, 1, 'Email to say evidence will be late', 'Evidence will be late');
   assertC2SupportingDocuments(I, 2, 'Email with evidence attached', 'Case evidence included');
@@ -184,14 +183,14 @@ const assertConfidentialC2SupportingDocuments = (I, index, docName, notes) => {
 };
 
 const assertC2SupportingDocuments = (I, index, docName, notes, confidential = false) => {
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Document name'], docName);
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Notes'], notes);
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'File'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Additional applications 1', 'C2 application', `Supporting documents ${index}`, 'Document name'], docName);
+  I.seeInTab(['Additional applications 1', 'C2 application', `Supporting documents ${index}`, 'Notes'], notes);
+  I.seeInTab(['Additional applications 1', 'C2 application', `Supporting documents ${index}`, 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Additional applications 1', 'C2 application', `Supporting documents ${index}`, 'File'], 'mockFile.txt');
+
+  I.seeTextInTab(['Additional applications 1', 'C2 application', `Supporting documents ${index}`, 'Uploaded by']);
 
   if (confidential) {
-    I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, ''], 'Confidential');
+    I.seeInTab(['Additional applications 1', 'C2 application', `Supporting documents ${index}`, ''], 'Confidential');
   }
-
-  I.seeTextInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Uploaded by']);
 };

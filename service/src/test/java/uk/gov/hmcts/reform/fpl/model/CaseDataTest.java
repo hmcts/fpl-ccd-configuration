@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -724,8 +725,9 @@ class CaseDataTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnFalseIfC2DocumentBundleIsNullOrEmpty() {
-            CaseData caseData = CaseData.builder().build();
+        void shouldReturnFalseIfC2DocumentBundleIsNullOrEmpty(
+            List<Element<C2DocumentBundle>> c2Bundles) {
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2Bundles).build();
             assertThat(caseData.hasApplicationBundles()).isFalse();
         }
 
@@ -738,6 +740,83 @@ class CaseDataTest {
                 .build();
 
             assertThat(caseData.hasApplicationBundles()).isFalse();
+        }
+    }
+
+    @Nested
+    class GetApplicationBundleByUUID {
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatchesWithTheC2DocumentBundlesCollection() {
+            UUID selectedId = randomUUID();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().author("Test").build();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(
+                    element(selectedId, c2DocumentBundle),
+                    element(C2DocumentBundle.builder().build())))
+                .additionalApplicationsBundle(List.of(element(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder().id(randomUUID()).build())
+                        .build()
+                )))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(selectedId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatchesWithTheAdditionalApplicationsBundlesCollection() {
+            UUID selectedId = randomUUID();
+            String uploadedTime = now().toString();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+                .id(selectedId).author("Test").build();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder().uploadedDateTime(uploadedTime).build())))
+                .additionalApplicationsBundle(List.of(element(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(c2DocumentBundle)
+                        .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                            .applicationType(C17A_EXTENSION_OF_ESO).id(randomUUID()).build())
+                        .build())))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(selectedId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnOtherApplicationBundleWhenIdMatchesWithTheAdditionalApplicationsBundlesCollection() {
+            UUID selectedId = randomUUID();
+            OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+                .id(selectedId).author("Test").build();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder().build())))
+                .additionalApplicationsBundle(List.of(element(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder().id(randomUUID()).build())
+                        .otherApplicationsBundle(otherApplicationsBundle)
+                        .build())))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(selectedId)).isEqualTo(otherApplicationsBundle);
+        }
+
+        @Test
+        void shouldReturnNullWhenIdDoNotMatchWithC2DocumentsBundlesAndAdditionalApplicationsBundle() {
+            UUID elementId = randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(
+                    element(C2DocumentBundle.builder().build()), element(C2DocumentBundle.builder().build())))
+                .additionalApplicationsBundle(List.of(
+                    element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder().id(randomUUID()).build())
+                        .otherApplicationsBundle(OtherApplicationsBundle.builder().id(randomUUID()).build())
+                        .build())))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(elementId)).isNull();
         }
     }
 
