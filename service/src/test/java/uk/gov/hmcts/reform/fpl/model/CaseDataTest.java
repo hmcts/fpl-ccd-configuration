@@ -56,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
@@ -1381,6 +1382,125 @@ class CaseDataTest {
                 caseData.getHearingOrderBundleThatContainsOrder(draftCMOOne.getId());
 
             assertThat(matchingHearingOrderBundle).isEmpty();
+        }
+    }
+
+    @Nested
+    class BuildRespondentStatementDynamicList {
+        @Test
+        void shouldBuildDynamicRespondentStatementListFromRespondents() {
+            List<Element<Respondent>> respondents = createRespondents();
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+            IncrementalInteger i = new IncrementalInteger(1);
+
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(respondents, null,
+                    respondent -> String.format("Respondent %d statements - %s",
+                        i.getAndIncrement(), respondent.getParty().getFullName()));
+
+            assertThat(caseData.buildRespondentStatementDynamicList())
+                .isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicRespondentStatementListWithSelectorPropertyFromRespondents() {
+            UUID selectedRespondentId = randomUUID();
+
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Sam")
+                        .lastName("Wilson")
+                        .relationshipToChild("Father")
+                        .build())
+                    .build()),
+                element(selectedRespondentId, Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Megan")
+                        .lastName("Hannah")
+                        .relationshipToChild("Mother")
+                        .build())
+                    .build()));
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+            IncrementalInteger i = new IncrementalInteger(1);
+
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(respondents, null,
+                    respondent -> String.format("Respondent %d statements - %s",
+                        i.getAndIncrement(), respondent.getParty().getFullName()));
+
+            assertThat(caseData.buildRespondentStatementDynamicList()).isEqualTo(expectedDynamicList);
+        }
+    }
+
+    @Nested
+    class GetRespondentStatementByRespondentId {
+        UUID elementId = randomUUID();
+
+        @Test
+        void shouldReturnRespondentStatementWhenRespondentIdMatches() {
+            Element<RespondentStatement> respondentStatementElementOne
+                = element(RespondentStatement.builder().respondentId(elementId).build());
+
+            List<Element<RespondentStatement>> respondentStatements = List.of(
+                respondentStatementElementOne,
+                element(RespondentStatement.builder().build()));
+
+            CaseData caseData = CaseData.builder().respondentStatements(respondentStatements).build();
+
+            Optional<Element<RespondentStatement>> optionalRespondentStatementElement
+                = caseData.getRespondentStatementByRespondentId(elementId);
+
+            assertThat(optionalRespondentStatementElement.isPresent()).isTrue();
+            assertThat(optionalRespondentStatementElement.get()).isEqualTo(respondentStatementElementOne);
+        }
+
+        @Test
+        void shouldReturnNullWhenRespondentIdDidNotMatch() {
+            List<Element<RespondentStatement>> respondentStatements = List.of(
+                element(RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                element(RespondentStatement.builder().respondentId(UUID.randomUUID()).build()));
+
+            CaseData caseData = CaseData.builder().respondentStatements(respondentStatements).build();
+
+            Optional<Element<RespondentStatement>> optionalRespondentStatementElement
+                = caseData.getRespondentStatementByRespondentId(elementId);
+
+            assertThat(optionalRespondentStatementElement.isEmpty()).isTrue();
+        }
+    }
+
+    @Nested
+    class GetRespondentByUUID {
+        UUID elementId = randomUUID();
+
+        @Test
+        void shouldReturnRespondentWhenIdMatches() {
+            Element<Respondent> respondentOneElement = element(elementId, Respondent.builder().build());
+
+            List<Element<Respondent>> respondents = List.of(
+                respondentOneElement,
+                element(Respondent.builder().build()));
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+            Optional<Element<Respondent>> optionalRespondentElement = caseData.getRespondentByUUID(elementId);
+
+            assertThat(optionalRespondentElement.isPresent()).isTrue();
+            assertThat(optionalRespondentElement.get()).isEqualTo(respondentOneElement);
+        }
+
+        @Test
+        void shouldReturnNullWhenIdDidNotMatch() {
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder().build()),
+                element(Respondent.builder().build()));
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+            Optional<Element<Respondent>> optionalRespondentElement = caseData.getRespondentByUUID(elementId);
+
+            assertThat(optionalRespondentElement.isEmpty()).isTrue();
         }
     }
 

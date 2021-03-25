@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
@@ -74,8 +75,37 @@ public class MigrateCaseController extends CallbackController {
             run2898(caseDetails);
         }
 
+        if ("FPLA-2871".equals(migrationId)) {
+            run2871(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
+    }
+
+    private void run2871(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if ("WR20C50015".equals(caseData.getFamilyManCaseNumber())) {
+            log.info("Attempting to remove first C2 from WR20C50015");
+            removeFirstC2(caseDetails);
+            log.info("Successfully removed C2 from WR20C50015");
+        }
+    }
+
+
+    private void removeFirstC2(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
+
+        if (isEmpty(c2DocumentBundle)) {
+            throw new IllegalArgumentException("No C2s on case");
+        }
+
+        c2DocumentBundle.remove(0);
+
+        caseDetails.getData().put("c2DocumentBundle", c2DocumentBundle);
+
     }
 
 
