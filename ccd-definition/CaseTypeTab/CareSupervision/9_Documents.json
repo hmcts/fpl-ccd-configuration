@@ -99,8 +99,18 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
+    "CaseFieldID": "respondentStatements",
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabBulkScanHeading",
-    "TabFieldDisplayOrder": 10,
+    "TabFieldDisplayOrder": 11,
     "FieldShowCondition": "scannedDocuments=\"*\""
   },
   {
@@ -111,16 +121,6 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "scannedDocuments",
-    "TabFieldDisplayOrder": 11
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 9,
-    "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 12
   },
   {
@@ -130,8 +130,18 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "documentTabApplicationHeading",
+    "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 9,
+    "CaseFieldID": "documentTabApplicationHeading",
+    "TabFieldDisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
@@ -142,7 +152,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocuments",
     "FieldShowCondition": "applicationDocuments!=\"\"",
-    "TabFieldDisplayOrder": 14
+    "TabFieldDisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
@@ -153,7 +163,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\"",
-    "TabFieldDisplayOrder": 15
+    "TabFieldDisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",

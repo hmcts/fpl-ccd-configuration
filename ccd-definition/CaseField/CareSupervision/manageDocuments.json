@@ -91,5 +91,14 @@
     "Label": "## C2 supporting documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsRespondentStatementsHeading",
+    "FieldType": "Label",
+    "Label": "## Further evidence - respondent statement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
