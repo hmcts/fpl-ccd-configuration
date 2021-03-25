@@ -64,7 +64,6 @@ public class RespondentService {
             .map(Respondent::getSolicitor)
             .map(RespondentSolicitor::getEmail)
             .filter(Objects::nonNull)
-            .filter(email -> !email.isEmpty())
             .collect(Collectors.toList());
     }
 
