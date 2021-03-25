@@ -14,16 +14,22 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Slf4j
@@ -36,6 +42,7 @@ public class RespondentController extends CallbackController {
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
     private final Time time;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -49,10 +56,30 @@ public class RespondentController extends CallbackController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        return respond(caseDetails, validate(caseDetails));
+        List<Respondent> respondentsWithLegalRep = caseData.getRespondents1()
+            .stream()
+            .map(Element::getValue)
+            .filter(respondent -> !isNull(respondent.getLegalRepresentation()) && respondent.getLegalRepresentation().equals(YES.getValue()))
+            .collect(Collectors.toList());
+
+        List<String> emails = respondentsWithLegalRep
+            .stream()
+            .map(Respondent::getSolicitor)
+            .map(RespondentSolicitor::getEmail)
+            .filter(Objects::nonNull)
+            .filter(email -> !email.isEmpty())
+            .collect(Collectors.toList());
+
+       List<String> emailErrors = validateEmailService.validate(emails, "Representative");
+       List<String> validationErrors = validate(caseDetails);
+       List<String> combinedErrors = Stream.concat(emailErrors.stream(), validationErrors.stream())
+            .collect(Collectors.toList());
+
+        return respond(caseDetails, combinedErrors);
     }
 
     @PostMapping("/about-to-submit")

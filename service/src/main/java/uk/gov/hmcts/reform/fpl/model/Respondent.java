@@ -49,8 +49,8 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     private boolean emailEnteredWhenRequired;
 
     @JsonIgnore
-    @AssertTrue(message = "Add organisation details for the respondent solicitor")
-    public boolean isOrganisationSpecifiedForRespondentSolicitor() {
+    @AssertTrue(message = "Add the details for respondent solicitors")
+    public boolean hasRequiredSolicitorOrganisationDetails() {
         if (YES.getValue().equals(legalRepresentation)) {
             //User selected yes but did not enter any details
             if (isEmpty(solicitor)) {
@@ -69,7 +69,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     }
 
     @JsonIgnore
-    @AssertTrue(message = "Enter the respondent's solicitor's email address")
+    @AssertTrue(message = "Add email addresses for respondent solicitors")
     public boolean isEmailEnteredWhenRequired() {
         if (YES.getValue().equals(legalRepresentation)) {
             return isNotEmpty(solicitor.getEmail());

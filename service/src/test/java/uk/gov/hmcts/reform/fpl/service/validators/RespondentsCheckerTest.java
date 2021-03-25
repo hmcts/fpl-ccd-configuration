@@ -86,7 +86,7 @@ class RespondentsCheckerTest {
         final boolean isCompleted = respondentsChecker.isCompleted(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-            "Add organisation details for the respondent solicitor"
+            "Add the details for respondent solicitors"
         );
         assertThat(isCompleted).isFalse();
     }
@@ -113,7 +113,7 @@ class RespondentsCheckerTest {
         final boolean isCompleted = respondentsChecker.isCompleted(caseData);
 
         assertThat(errors).containsExactlyInAnyOrder(
-            "Enter the respondent's solicitor's email address"
+            "Add email addresses for respondent solicitors"
         );
         assertThat(isCompleted).isFalse();
     }
