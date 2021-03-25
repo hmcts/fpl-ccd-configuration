@@ -57,12 +57,13 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Respondent> respondentsWithLegalRep = respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1());
-        List<String> emails = respondentService.getRespondentEmails(respondentsWithLegalRep);
+        List<Respondent> respondentsWithLegalRep = respondentService.getRespondentsWithLegalRepresentation(caseData
+            .getRespondents1());
+        List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
 
-       List<String> emailErrors = validateEmailService.validate(emails, "Representative");
-       List<String> futureDOBErrors = validate(caseDetails);
-       List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
+        List<String> emailErrors = validateEmailService.validate(emails, "Representative");
+        List<String> futureDOBErrors = validate(caseDetails);
+        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
             .collect(Collectors.toList());
 
         return respond(caseDetails, combinedValidationErrors);

@@ -53,11 +53,12 @@ public class RespondentService {
         return respondents
             .stream()
             .map(Element::getValue)
-            .filter(respondent -> !isNull(respondent.getLegalRepresentation()) && respondent.getLegalRepresentation().equals(YES.getValue()))
+            .filter(respondent -> !isNull(respondent.getLegalRepresentation()) && respondent.getLegalRepresentation()
+                .equals(YES.getValue()))
             .collect(Collectors.toList());
     }
 
-    public List<String> getRespondentEmails(List<Respondent> respondents) {
+    public List<String> getRespondentSolicitorEmails(List<Respondent> respondents) {
         return respondents
             .stream()
             .map(Respondent::getSolicitor)
