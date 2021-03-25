@@ -10,24 +10,24 @@ import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
@@ -41,9 +41,9 @@ public class DraftOrdersApprovedEventHandler {
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
     private final InboxLookupService inboxLookupService;
     private final RepresentativeNotificationService representativeNotificationService;
-    private final CoreCaseDataService coreCaseDataService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final SendDocumentService sendDocumentService;
 
     @Async
     @EventListener
@@ -129,14 +129,17 @@ public class DraftOrdersApprovedEventHandler {
 
     @Async
     @EventListener
-    public void sendDocumentToPostRepresentatives(final DraftOrdersApproved event) {
-        for (HearingOrder approvedOrder : event.getApprovedOrders()) {
-            coreCaseDataService.triggerEvent(
-                JURISDICTION,
-                CASE_TYPE,
-                event.getCaseData().getId(),
-                "internal-change-SEND_DOCUMENT",
-                Map.of("documentToBeSent", approvedOrder.getOrder()));
-        }
+    public void sendDocumentToPostRecipients(final DraftOrdersApproved event) {
+        final CaseData caseData = event.getCaseData();
+
+        final List<DocumentReference> documents = event.getApprovedOrders()
+            .stream()
+            .map(HearingOrder::getOrder)
+            .collect(
+                Collectors.toList());
+
+        final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
+
+        sendDocumentService.sendDocuments(caseData, documents, recipients);
     }
 }
