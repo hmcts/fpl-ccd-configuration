@@ -826,7 +826,7 @@ class CaseDataTest {
         void shouldBuildDynamicApplicationsBundleListFromC2DocumentsAndAdditionalApplications() {
             List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
                 element(buildC2DocumentBundle(futureDate.plusDays(2))),
-                element(buildC2DocumentBundle(futureDate.plusDays(1)))
+                element(buildC2DocumentBundle(futureDate.plusDays(3)))
             );
 
             CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
@@ -859,9 +859,9 @@ class CaseDataTest {
 
         @Test
         void shouldBuildDynamicListWithC2BundlesFromC2DocumentsAndAdditionalDocumentsBundles() {
-            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(1)));
 
-            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1))
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(2))
                 .toBuilder().id(randomUUID()).build();
 
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
@@ -885,7 +885,7 @@ class CaseDataTest {
         void shouldBuildDynamicApplicationsBundleListFromC2DocumentsAndAdditionalDocumentsBundle() {
             Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
 
-            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1))
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(3))
                 .toBuilder().id(randomUUID()).build();
 
             OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
@@ -904,10 +904,57 @@ class CaseDataTest {
                 .build();
 
             DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime()),
+                Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
+                Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime())
+            );
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicApplicationsBundlesListAndSortByApplicationNumberAndLabel() {
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(3))
+                .toBuilder().id(randomUUID()).build();
+
+            OtherApplicationsBundle otherBundle1 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            OtherApplicationsBundle otherBundle2 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            OtherApplicationsBundle otherBundle3 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C100_CHILD_ARRANGEMENTS)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            OtherApplicationsBundle otherBundle4 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle2)
+                    .otherApplicationsBundle(otherBundle1).build()),
+                element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle2).build()),
+                element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle3).build()),
+                element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle4).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(c2Bundle1))
+                .additionalApplicationsBundle(additionalBundles)
+                .build();
+
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(otherBundle4.getId(), "C1, " + otherBundle4.getUploadedDateTime()),
                 Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
                 Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime()),
-                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime())
+                Pair.of(otherBundle2.getId(), "C3, " + otherBundle2.getUploadedDateTime()),
+                Pair.of(otherBundle1.getId(), "C19, " + otherBundle1.getUploadedDateTime()),
+                Pair.of(otherBundle3.getId(), "C100, " + otherBundle3.getUploadedDateTime())
             );
+
             assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
         }
 

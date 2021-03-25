@@ -72,9 +72,9 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
             .asDynamicList(hearingBookings, null, HearingBooking::toLabel);
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
-            Pair.of(c2BundleElement.getId(), "C2, " + c2BundleElement.getValue().getUploadedDateTime()),
+            Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime()),
             Pair.of(c2Bundle.getId(), "C2, " + c2Bundle.getUploadedDateTime()),
-            Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime())
+            Pair.of(c2BundleElement.getId(), "C2, " + c2BundleElement.getValue().getUploadedDateTime())
         );
 
         DynamicList courtBundleHearingList =

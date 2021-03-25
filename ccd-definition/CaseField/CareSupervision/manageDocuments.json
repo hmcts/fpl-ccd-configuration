@@ -20,15 +20,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsSupportingC2List",
-    "FieldType": "DynamicList",
-    "Label": "Choose the relevant C2 application for this document",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "c2SupportingDocuments",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
@@ -39,28 +30,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "supportingEvidenceDocumentsTemp",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Document",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsHearingLabel",
     "FieldType": "Text",
     "Label": "Upload further evidence documents for:",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsSupportingC2Label",
-    "FieldType": "Text",
-    "Label": "Upload C2 documents for:",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -80,15 +52,6 @@
     "ID": "manageDocumentsCorrespondenceHeading",
     "FieldType": "Label",
     "Label": "## Correspondence",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageDocumentsC2Heading",
-    "FieldType": "Label",
-    "Label": "## C2 supporting documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

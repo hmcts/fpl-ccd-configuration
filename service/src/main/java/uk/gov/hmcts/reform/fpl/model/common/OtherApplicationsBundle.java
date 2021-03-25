@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -59,6 +60,12 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    @Override
+    public int getApplicationNumber() {
+        return applicationType.getApplicationNumber();
     }
 
 }

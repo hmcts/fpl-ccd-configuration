@@ -80,6 +80,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -327,7 +328,13 @@ public class CaseData {
     }
 
     public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
-        return asDynamicList(getAllApplicationsBundles(), selected, ApplicationsBundle::toLabel);
+        List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
+        applicationsBundles
+            .sort(Comparator.comparing(
+                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getApplicationNumber())
+                .thenComparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().toLabel()));
+
+        return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);
     }
 
     @JsonIgnore

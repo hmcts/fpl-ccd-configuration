@@ -48,8 +48,8 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
             element(hearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
-            element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2))),
-            element(buildC2DocumentBundle(LocalDateTime.now().plusDays(1))));
+            element(buildC2DocumentBundle(LocalDateTime.now().plusDays(1))),
+            element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2))));
 
         C2DocumentBundle c2Application = C2DocumentBundle.builder()
             .id(UUID.randomUUID()).uploadedDateTime(LocalDateTime.now().toString()).build();
@@ -79,11 +79,11 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
             .asDynamicList(hearingBookings, null, HearingBooking::toLabel);
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
+            Pair.of(c2Application.getId(), "C2, " + c2Application.getUploadedDateTime()),
             Pair.of(
                 c2DocumentBundle.get(0).getId(), "C2, " + c2DocumentBundle.get(0).getValue().getUploadedDateTime()),
             Pair.of(
                 c2DocumentBundle.get(1).getId(), "C2, " + c2DocumentBundle.get(1).getValue().getUploadedDateTime()),
-            Pair.of(c2Application.getId(), "C2, " + c2Application.getUploadedDateTime()),
             Pair.of(otherApplicationsBundle.getId(), "C17a, " + otherApplicationsBundle.getUploadedDateTime())
         );
 

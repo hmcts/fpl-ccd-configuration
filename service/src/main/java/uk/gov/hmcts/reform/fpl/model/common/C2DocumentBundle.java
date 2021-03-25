@@ -53,6 +53,12 @@ public class C2DocumentBundle implements ApplicationsBundle {
         return format("C2, %s", uploadedDateTime);
     }
 
+    @JsonIgnore
+    @Override
+    public int getApplicationNumber() {
+        return 2;
+    }
+
     @Override
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle() {
         return defaultIfNull(supportingEvidenceBundle, new ArrayList<>());

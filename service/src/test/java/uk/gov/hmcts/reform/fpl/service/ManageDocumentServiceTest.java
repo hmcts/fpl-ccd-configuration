@@ -509,12 +509,12 @@ class ManageDocumentServiceTest {
     @Test
     void shouldPopulateC2SupportingDocumentsListAndLabelWhenSelectedBundleExistsInC2DocumentBundle() {
         UUID selectedC2DocumentId = UUID.randomUUID();
-        C2DocumentBundle selectedC2Document = buildC2DocumentBundle(futureDate);
+        C2DocumentBundle selectedC2Document = buildC2DocumentBundle(futureDate.plusDays(2));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
-            element(buildC2DocumentBundle(futureDate.plusDays(2))),
+            element(buildC2DocumentBundle(futureDate.plusDays(1))),
             element(selectedC2DocumentId, selectedC2Document),
-            element(buildC2DocumentBundle(futureDate.plusDays(2)))
+            element(buildC2DocumentBundle(futureDate.plusDays(3)))
         );
 
         CaseData caseData = CaseData.builder()
@@ -556,8 +556,8 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> listAndLabel = underTest.initialiseApplicationBundlesListAndLabel(caseData);
 
-        List<Element<ApplicationsBundle>> expectedBundles = List.of(element(anotherC2DocumentId, anotherC2Document),
-            element(selectedC2DocumentId, selectedC2Document), element(otherBundle.getId(), otherBundle));
+        List<Element<ApplicationsBundle>> expectedBundles = List.of(element(otherBundle.getId(), otherBundle),
+            element(selectedC2DocumentId, selectedC2Document), element(anotherC2DocumentId, anotherC2Document));
 
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(
             expectedBundles, selectedC2DocumentId, ApplicationsBundle::toLabel);
@@ -590,7 +590,7 @@ class ManageDocumentServiceTest {
         Map<String, Object> listAndLabel = underTest.initialiseApplicationBundlesListAndLabel(caseData);
 
         List<Element<ApplicationsBundle>> expectedBundles = List.of(
-            element(anotherBundleId, c2Document), element(selectedBundleId, selectedBundle));
+            element(selectedBundleId, selectedBundle), element(anotherBundleId, c2Document));
 
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(
             expectedBundles, selectedBundleId, ApplicationsBundle::toLabel);

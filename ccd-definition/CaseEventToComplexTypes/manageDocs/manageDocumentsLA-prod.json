@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "name",
     "FieldDisplayOrder": 1,
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "notes",
     "FieldDisplayOrder": 2,
@@ -21,7 +21,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeReceived",
     "FieldDisplayOrder": 3,
@@ -30,7 +30,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "document",
     "FieldDisplayOrder": 4,
@@ -40,7 +40,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "confidentialWarningLabel",
     "FieldDisplayOrder": 5,
@@ -50,18 +50,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "confidential",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL",
-    "EventElementLabel": "Tick to restrict to HMCTS staff",
+    "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "confidentialTabLabel",
     "FieldDisplayOrder": 7,
@@ -71,21 +71,78 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "uploadedBy",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "name=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocuments",
-    "CaseEventID": "manageDocuments",
+    "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeUploaded",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "manageDocument.type=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "hearing",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "manageDocumentsCourtBundle",
+    "ListElementCode": "document",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "EventElementLabel": "Attach court bundle"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "documentType",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "documentName",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "includedInSWET",
+    "EventElementLabel": "Let us know what you are including in your SWET",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "applicationDocuments",
+    "ListElementCode": "document",
+    "EventElementLabel": "Upload a file",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
   }
 ]

@@ -55,7 +55,7 @@ class ManageDocumentsLAServiceTest {
 
         Element<C2DocumentBundle> c2Bundle = element(buildC2DocumentBundle(futureDate.plusDays(2)));
         C2DocumentBundle c2Application = C2DocumentBundle.builder().id(randomUUID())
-            .uploadedDateTime(futureDate.toString()).build();
+            .uploadedDateTime(futureDate.plusDays(3).toString()).build();
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(randomUUID())
             .applicationType(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE)
