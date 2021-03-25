@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
@@ -27,9 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Slf4j
@@ -60,26 +57,15 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Respondent> respondentsWithLegalRep = caseData.getRespondents1()
-            .stream()
-            .map(Element::getValue)
-            .filter(respondent -> !isNull(respondent.getLegalRepresentation()) && respondent.getLegalRepresentation().equals(YES.getValue()))
-            .collect(Collectors.toList());
-
-        List<String> emails = respondentsWithLegalRep
-            .stream()
-            .map(Respondent::getSolicitor)
-            .map(RespondentSolicitor::getEmail)
-            .filter(Objects::nonNull)
-            .filter(email -> !email.isEmpty())
-            .collect(Collectors.toList());
+        List<Respondent> respondentsWithLegalRep = respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1());
+        List<String> emails = respondentService.getRespondentEmails(respondentsWithLegalRep);
 
        List<String> emailErrors = validateEmailService.validate(emails, "Representative");
-       List<String> validationErrors = validate(caseDetails);
-       List<String> combinedErrors = Stream.concat(emailErrors.stream(), validationErrors.stream())
+       List<String> futureDOBErrors = validate(caseDetails);
+       List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
             .collect(Collectors.toList());
 
-        return respond(caseDetails, combinedErrors);
+        return respond(caseDetails, combinedValidationErrors);
     }
 
     @PostMapping("/about-to-submit")
