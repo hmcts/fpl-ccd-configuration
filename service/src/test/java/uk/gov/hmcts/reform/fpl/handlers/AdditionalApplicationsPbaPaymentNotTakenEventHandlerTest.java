@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {AdditionalApplicationsPbaPaymentNotTakenEventHandler.class, LookupTestConfig.class,
     HmctsAdminNotificationHandler.class})
-public class AdditionalApplicationsPbaPaymentNotTakenEventHandlerTest {
+class AdditionalApplicationsPbaPaymentNotTakenEventHandlerTest {
     private final BaseCaseNotifyData additionalApplicationsPaymentNotTakenParameters = BaseCaseNotifyData.builder()
         .caseUrl("http://fpl/case/12345")
         .build();

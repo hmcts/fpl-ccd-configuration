@@ -99,10 +99,10 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
     private void addSupplementTypes(List<String> applicationTypes, List<Element<Supplement>> supplements) {
         supplements.stream()
             .map(Element::getValue)
-            .forEach(Supplement -> {
-                String supplementName = Supplement.getName().getLabel();
-                if (SupplementType.C20_SECURE_ACCOMMODATION.equals(Supplement.getName())) {
-                    supplementName += String.format(" (%s)", Supplement.getSecureAccommodationType().getLabel());
+            .forEach(supplement -> {
+                String supplementName = supplement.getName().getLabel();
+                if (SupplementType.C20_SECURE_ACCOMMODATION.equals(supplement.getName())) {
+                    supplementName += String.format(" (%s)", supplement.getSecureAccommodationType().getLabel());
                 }
                 applicationTypes.add(supplementName);
             });

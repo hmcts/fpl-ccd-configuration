@@ -77,7 +77,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .callout("Smith, 12345, " + HEARING_CALLOUT)
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
-            .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
+            .applicationTypes(Arrays.asList("C2 (With notice) - Parental responsibility by the father",
                 "C13A - Special guardianship order",
                 "C20 - Secure accommodation (England)",
                 "C1 - Parental responsibility by the father",
@@ -98,7 +98,8 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .type(C2ApplicationType.WITH_NOTICE)
             .supplementsBundle(wrapElements(supplements))
-            .c2AdditionalOrdersRequested(Collections.singletonList(C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN))
+            .c2AdditionalOrdersRequested(Collections.singletonList(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
+            .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
             .build();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
