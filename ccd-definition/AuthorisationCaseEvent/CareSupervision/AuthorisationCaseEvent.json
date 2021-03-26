@@ -1055,16 +1055,6 @@
       {
         "UserRoles": [
           "[LABARRISTER]",
-          "[SOLICITOR]",
-          "[solicitorA]",
-          "[solicitorB]",
-          "[solicitorC]",
-          "[solicitorD]",
-          "[solicitorE]",
-          "[solicitorF]",
-          "[solicitorG]",
-          "[solicitorH]",
-          "[solicitorI]",
           "[LASOLICITOR]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
@@ -1093,6 +1083,16 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LABARRISTER]"
