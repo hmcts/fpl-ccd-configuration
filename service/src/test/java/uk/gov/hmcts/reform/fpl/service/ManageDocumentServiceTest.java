@@ -1006,7 +1006,7 @@ class ManageDocumentServiceTest {
             List<Element<RespondentStatement>> updatedRespondentStatements =
                 manageDocumentService.getUpdatedRespondentStatements(caseData);
 
-            assertThat(updatedRespondentStatements.size()).isEqualTo(0);
+            assertThat(updatedRespondentStatements).isEmpty();
         }
 
         @Test
