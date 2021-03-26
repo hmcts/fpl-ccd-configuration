@@ -37,6 +37,20 @@ const uploadC2 = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) 
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
 };
 
+const uploadOtherApplications = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
+  uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('OTHER_ORDER');
+  await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
+  uploadAdditionalApplicationsEventPage.uploadDocument(config.testFile);
+  await I.goToNextPage();
+  await uploadAdditionalApplicationsEventPage.getFeeToPay();
+  uploadAdditionalApplicationsEventPage.usePbaPayment();
+  uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
+};
+
 module.exports = {
-  createHearing, uploadC2,
+  createHearing, uploadC2, uploadOtherApplications,
 };

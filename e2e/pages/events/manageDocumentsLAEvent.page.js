@@ -7,7 +7,7 @@ module.exports = {
     documentType: {
       furtherEvidence: '#manageDocumentLA_type-FURTHER_EVIDENCE_DOCUMENTS',
       correspondence: '#manageDocumentLA_type-CORRESPONDENCE',
-      c2: '#manageDocumentLA_type-C2',
+      additionalApplications: '#manageDocumentLA_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
       courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
     },
     relatedToHearing: {
@@ -41,8 +41,8 @@ module.exports = {
     I.click(this.fields.documentType.correspondence);
   },
 
-  async selectC2SupportingDocuments() {
-    I.click(this.fields.documentType.c2);
+  async selectAdditionalApplicationsSupportingDocuments() {
+    I.click(this.fields.documentType.additionalApplications);
   },
 
   async selectCourtBundle() {
@@ -50,7 +50,14 @@ module.exports = {
   },
 
   async selectC2() {
-    I.click(this.fields.documentType.c2);
+    I.click(this.fields.documentType.additionalApplications);
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
+    I.waitForElement(this.fields.c2DocumentsList);
+    I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
+  },
+
+  async selectOtherApplication() {
+    I.click(this.fields.documentType.additionalApplications);
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields.c2DocumentsList);
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);

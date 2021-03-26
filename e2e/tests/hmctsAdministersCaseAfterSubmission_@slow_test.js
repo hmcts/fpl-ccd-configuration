@@ -133,7 +133,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
 Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectC2SupportingDocuments();
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
   await manageDocumentsEventPage.selectC2FromDropdown();
   await I.goToNextPage();
   manageDocumentsEventPage.enterDocumentName('Updated document name');
@@ -149,9 +149,9 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
 
 Scenario('HMCTS admin edits supporting evidence document on Other application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectC2SupportingDocuments();
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
   await manageDocumentsEventPage.selectC2FromDropdown();
-  await manageDocumentsEventPage.selectC2SupportingDocuments();
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
   await manageDocumentsEventPage.selectOtherApplicationFromDropdown();
   await I.goToNextPage();
   manageDocumentsEventPage.enterDocumentName('Updated document name');

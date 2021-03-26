@@ -6,7 +6,7 @@ module.exports = {
     documentType: {
       furtherEvidence: '#manageDocument_type-FURTHER_EVIDENCE_DOCUMENTS',
       correspondence: '#manageDocument_type-CORRESPONDENCE',
-      c2: '#manageDocument_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
+      additionalApplications: '#manageDocument_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
     },
     relatedToHearing: {
       yes: '#manageDocument_relatedToHearing-Yes',
@@ -28,9 +28,9 @@ module.exports = {
     I.click(this.fields.documentType.correspondence);
   },
 
-  async selectC2SupportingDocuments() {
+  async selectAdditionalApplicationsSupportingDocuments() {
     await I.runAccessibilityTest();
-    I.click(this.fields.documentType.c2);
+    I.click(this.fields.documentType.additionalApplications);
   },
 
   selectFurtherEvidenceIsRelatedToHearing() {
@@ -50,7 +50,7 @@ module.exports = {
   },
 
   async selectOtherApplicationFromDropdown() {
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(3)`);
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields.c2DocumentsList);
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
