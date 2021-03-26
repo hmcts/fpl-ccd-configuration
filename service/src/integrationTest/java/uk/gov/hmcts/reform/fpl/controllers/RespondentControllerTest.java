@@ -79,7 +79,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @Test
     void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(respondent(dateNow().plusDays(1), "Test User <e.test@test.com>"))))
+            .data(Map.of("respondents1", wrapElements(respondent(dateNow().plusDays(1),
+                "Test User <e.test@test.com>"))))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
@@ -97,7 +98,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
-        assertThat(callbackResponse.getErrors()).containsExactly("Representative 1: Enter an email address in the correct format, for example name@example.com",
+        assertThat(callbackResponse.getErrors()).containsExactly("Representative 1: Enter an email address "
+                + "in the correct format, for example name@example.com",
             "Representative 2: Enter an email address in the correct format, for example name@example.com");
     }
 
