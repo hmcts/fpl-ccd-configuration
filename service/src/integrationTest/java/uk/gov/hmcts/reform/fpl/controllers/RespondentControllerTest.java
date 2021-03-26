@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -45,45 +46,44 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(respondent(dateNow().plusDays(1)))))
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow().plusDays(1))))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", buildRespondents()))
+        CaseData caseData = CaseData.builder()
+            .respondents1(buildRespondents())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(respondent(dateNow().minusDays(1)))))
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow().minusDays(1))))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(respondent(dateNow().plusDays(1),
-                "Test User <e.test@test.com>"))))
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow().plusDays(1), "Test User <e.test@test.com>")))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(ERROR_MESSAGE,
             "Representative 1: Enter an email address in the correct format, for example name@example.com");
@@ -91,12 +91,14 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldReturnEmailAddressErrorsWhenThereAreMultipleRespondentSolicitors() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(respondent(dateNow(), "Test User <e.test@test.com>"),
-                respondent(dateNow(), "Second Test User <e.test-second@test.com>"))))
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(
+                respondent(dateNow(), "Test User <e.test@test.com>"),
+                respondent(dateNow(), "Second Test User <e.test-second@test.com>")
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).containsExactly("Representative 1: Enter an email address "
                 + "in the correct format, for example name@example.com",
@@ -105,11 +107,11 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldReturnNoEmailErrorsForRespondentSolicitorWhenValidEmail() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("respondents1", wrapElements(respondent(dateNow(), "test@test.com"))))
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow(), "test@test.com")))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
@@ -146,9 +148,9 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
+        CallbackRequest callbackRequest = callbackRequest();
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
+        CaseData initialData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         assertThat(caseData.getConfidentialRespondents())
             .containsOnly(retainConfidentialDetails(initialData.getAllRespondents().get(0)));
