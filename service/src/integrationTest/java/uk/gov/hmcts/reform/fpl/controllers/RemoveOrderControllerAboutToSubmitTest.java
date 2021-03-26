@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
@@ -298,7 +299,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRemoveDraftCaseManagementOrderAndRemoveHearingAssociation() {
+    void shouldRemoveDraftCaseManagementOrderFromHearingOrderBundleDraftsAndRemoveHearingAssociation() {
         UUID removedOrderId = UUID.randomUUID();
         UUID additionalOrderId = UUID.randomUUID();
         UUID hearingOrderBundleId = UUID.randomUUID();
@@ -337,6 +338,48 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
                 element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build())
             )).build())
         ));
+
+        assertNull(unlinkedHearing.getCaseManagementOrderId());
+    }
+
+    @Test
+    void shouldRemoveDraftCaseManagementOrderFromDraftCaseManagementOrdersAndRemoveHearingAssociation() {
+        UUID removedOrderId = UUID.randomUUID();
+        UUID additionalOrderId = UUID.randomUUID();
+
+        Element<HearingOrder> orderToBeRemoved = element(removedOrderId, HearingOrder.builder()
+            .status(DRAFT)
+            .type(HearingOrderType.DRAFT_CMO)
+            .build());
+
+        List<Element<HearingOrder>> caseManagementOrders = newArrayList(
+            orderToBeRemoved,
+            element(additionalOrderId, HearingOrder.builder().status(DRAFT).build()));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(HearingBooking.builder()
+                .caseManagementOrderId(removedOrderId)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(caseManagementOrders)
+            .hearingDetails(hearingBookings)
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseData = extractCaseData(response);
+        HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
+
+        Element<HearingOrder> expectedHearingOrderElement = element(additionalOrderId, HearingOrder.builder()
+            .title("Draft CMO from advocates' meeting")
+            .type(DRAFT_CMO)
+            .status(DRAFT).build());
+
+        assertThat(responseData.getDraftUploadedCMOs()).isEqualTo(newArrayList(expectedHearingOrderElement));
 
         assertNull(unlinkedHearing.getCaseManagementOrderId());
     }

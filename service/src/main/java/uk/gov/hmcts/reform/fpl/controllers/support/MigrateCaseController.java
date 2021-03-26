@@ -52,6 +52,10 @@ public class MigrateCaseController extends CallbackController {
             run2871(caseDetails);
         }
 
+        if ("FPLA-2885".equals(migrationId)) {
+            run2885(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -142,5 +146,29 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().put("c2DocumentBundle", c2DocumentBundle);
 
+    }
+
+    private void run2885(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (isEmpty(caseData.getCancelledHearingDetails())) {
+            throw new IllegalArgumentException("Case does not contain cancelled hearing bookings");
+        }
+
+        caseData.getCancelledHearingDetails().forEach(hearingBookingElement -> {
+            switch (hearingBookingElement.getValue().getCancellationReason()) {
+                case "OT8":
+                    hearingBookingElement.getValue().setCancellationReason("IN1");
+                    break;
+                case "OT9":
+                    hearingBookingElement.getValue().setCancellationReason("OT8");
+                    break;
+                case "OT10":
+                    hearingBookingElement.getValue().setCancellationReason("OT9");
+                    break;
+            }
+        });
+
+        caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
     }
 }
