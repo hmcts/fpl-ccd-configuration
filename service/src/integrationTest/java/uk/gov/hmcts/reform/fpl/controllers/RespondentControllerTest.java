@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -75,6 +77,43 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("respondents1", wrapElements(respondent(dateNow().plusDays(1), "Test User <e.test@test.com>"))))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(ERROR_MESSAGE,
+            "Representative 1: Enter an email address in the correct format, for example name@example.com");
+    }
+
+    @Test
+    void shouldReturnEmailAddressErrorsWhenThereAreMultipleRespondentSolicitors() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("respondents1", wrapElements(respondent(dateNow(), "Test User <e.test@test.com>"),
+                respondent(dateNow(), "Second Test User <e.test-second@test.com>"))))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+        assertThat(callbackResponse.getErrors()).containsExactly("Representative 1: Enter an email address in the correct format, for example name@example.com",
+            "Representative 2: Enter an email address in the correct format, for example name@example.com");
+    }
+
+    @Test
+    void shouldReturnNoEmailErrorsForRespondentSolicitorWhenValidEmail() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("respondents1", wrapElements(respondent(dateNow(), "test@test.com"))))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+
+    @Test
     void shouldPersistRepresentativeAssociation() {
         List<Element<UUID>> association = List.of(element(UUID.randomUUID()));
         Element<Respondent> oldRespondent = element(respondent(dateNow()));
@@ -124,6 +163,18 @@ class RespondentControllerTest extends AbstractCallbackTest {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(dateOfBirth)
+                .build())
+            .build();
+    }
+
+    private Respondent respondent(LocalDate dateOfBirth, String email) {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(dateOfBirth)
+                .build())
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(email)
                 .build())
             .build();
     }
