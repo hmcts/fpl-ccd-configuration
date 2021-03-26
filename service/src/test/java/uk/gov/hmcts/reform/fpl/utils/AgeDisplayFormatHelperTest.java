@@ -23,10 +23,8 @@ class AgeDisplayFormatHelperTest {
 
     @Test
     void shouldThrowExceptionWhenInputIsInFuture() {
-        LocalDate dateOfBirth = NOW.plusDays(1);
-        assertThatThrownBy(() -> formatAgeDisplay(dateOfBirth))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Date of birth cannot be in future");
+        String age = formatAgeDisplay(NOW.plusDays(1));
+        assertThat(age).isEqualTo("0 years old");
     }
 
     @Test
