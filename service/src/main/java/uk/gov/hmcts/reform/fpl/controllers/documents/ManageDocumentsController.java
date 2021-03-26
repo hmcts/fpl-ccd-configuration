@@ -113,8 +113,6 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentService.baseEventData(caseData));
-
         List<Element<SupportingEvidenceBundle>> supportingEvidence = caseData.getSupportingEvidenceDocumentsTemp();
         List<String> errors = supportingEvidenceValidatorService.validate(supportingEvidence);
 
