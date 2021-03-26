@@ -261,58 +261,65 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LBTH",
+    "ListElement": "London Borough of Tower Hamlets",
+    "DisplayOrder": 38
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBC",
     "ListElement": "Luton Borough Council",
-    "DisplayOrder": 38
+    "DisplayOrder": 39
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MWC",
     "ListElement": "Medway Council",
-    "DisplayOrder": 39
+    "DisplayOrder": 40
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MTC",
     "ListElement": "Merthyr Tydfil CBC",
-    "DisplayOrder": 40
+    "DisplayOrder": 41
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MDB",
     "ListElement": "Middlesbrough Council",
-    "DisplayOrder": 41
+    "DisplayOrder": 42
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "MKC",
     "ListElement": "Milton Keynes Council",
-    "DisplayOrder": 42
+    "DisplayOrder": 43
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NPT",
     "ListElement": "Neath & Port Talbot County Council",
-    "DisplayOrder": 43
+    "DisplayOrder": 44
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NCC",
     "ListElement": "Newcastle City Council",
-    "DisplayOrder": 44
+    "DisplayOrder": 45
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NELC",
     "ListElement": "North East Lincolnshire Council",
-    "DisplayOrder": 45
+    "DisplayOrder": 46
   },
   {
     "LiveFrom": "01/01/2017",
