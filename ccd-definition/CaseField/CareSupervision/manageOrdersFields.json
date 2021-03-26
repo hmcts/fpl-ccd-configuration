@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrderType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrderType",
+    "Label": "Type of order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderTempQuestions",
+    "FieldType": "OrderTempQuestions",
+    "Label": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrderQuestion1",
+    "FieldType": "Text",
+    "Label": "Question 1",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrderQuestion2",
+    "FieldType": "Text",
+    "Label": "Question 2",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrderQuestion3",
+    "FieldType": "Text",
+    "Label": "Question 3",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
