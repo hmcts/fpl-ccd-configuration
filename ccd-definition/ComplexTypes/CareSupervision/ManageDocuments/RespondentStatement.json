@@ -25,5 +25,25 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "ElementLabel": "Documents",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "supportingEvidenceLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "supportingEvidenceNC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
