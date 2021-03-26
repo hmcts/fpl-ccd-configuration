@@ -206,6 +206,40 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
+    void submittedEventShouldNotNotifyAdminWhenPbaPaymentIsNull() throws Exception {
+        final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("additionalApplicationType", List.of(C2_ORDER))
+            .put("additionalApplicationsBundle", wrapElements(
+                AdditionalApplicationsBundle.builder()
+                    .pbaPayment(null)
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .type(WITH_NOTICE)
+                        .supplementsBundle(new ArrayList<>())
+                        .usePbaPayment(NO.getValue())
+                        .build())))
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationClient, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verifyNoInteractions(paymentService);
+    }
+
+    @Test
     void shouldMakePaymentWhenAmountToPayWasDisplayedFor() {
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())

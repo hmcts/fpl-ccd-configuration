@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +53,35 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             getAdditionalApplicationsUploadedTemplateParameters();
+
+        AdditionalApplicationsUploadedTemplate actualParameters = additionalApplicationsUploadedEmailContentProvider
+            .getNotifyData(caseData);
+
+        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithGivenCaseDetailsWhenRequestingC2WithParentalResponsibility() {
+        CaseData caseData = buildCaseData().toBuilder()
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().c2DocumentBundle(
+                C2DocumentBundle.builder()
+                    .type(C2ApplicationType.WITH_NOTICE)
+                    .c2AdditionalOrdersRequested(Collections.singletonList(
+                        C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY
+                    ))
+                    .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
+                    .supplementsBundle(new ArrayList<>())
+                    .build()).build())).build();
+
+        AdditionalApplicationsUploadedTemplate expectedParameters =
+            AdditionalApplicationsUploadedTemplate.builder()
+                .callout("Smith, 12345, " + HEARING_CALLOUT)
+                .respondentLastName("Smith")
+                .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
+                .applicationTypes(Collections.singletonList("C2 (With notice) - Parental responsibility by the father"))
+                .build();
+
+
         AdditionalApplicationsUploadedTemplate actualParameters = additionalApplicationsUploadedEmailContentProvider
             .getNotifyData(caseData);
 
@@ -77,7 +107,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .callout("Smith, 12345, " + HEARING_CALLOUT)
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
-            .applicationTypes(Arrays.asList("C2 (With notice) - Parental responsibility by the father",
+            .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
                 "C13A - Special guardianship order",
                 "C20 - Secure accommodation (England)",
                 "C1 - Parental responsibility by the father",
@@ -98,7 +128,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
             .type(C2ApplicationType.WITH_NOTICE)
             .supplementsBundle(wrapElements(supplements))
-            .c2AdditionalOrdersRequested(Collections.singletonList(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
+            .c2AdditionalOrdersRequested(Collections.singletonList(C2AdditionalOrdersRequested.APPOINTMENT_OF_GUARDIAN))
             .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
             .build();
 
