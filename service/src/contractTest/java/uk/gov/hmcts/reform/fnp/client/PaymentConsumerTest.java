@@ -78,7 +78,6 @@ public class PaymentConsumerTest {
             .accountNumber("PBA123")
             .amount(BigDecimal.TEN)
             .caseReference("caseRef")
-            .caseType("caseType")
             .ccdCaseNumber(String.valueOf(CASE_ID))
             .currency(Currency.GBP)
             .customerReference("customerRef")
