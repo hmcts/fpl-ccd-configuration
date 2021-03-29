@@ -173,6 +173,18 @@ module.exports = function () {
       return `${selector}//*[contains(@class,"complex-panel-simple-field") and .//th/span[text()="${fieldName}"]]`;
     },
 
+    organisationTabFieldSelector(pathToField) {
+      let path = [].concat(pathToField);
+      let fieldName = path.splice(-1, 1)[0];
+      let selector = '//mat-tab-body';
+
+      path.forEach(step => {
+        selector = `${selector}//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${step}"]]]`;
+      }, this);
+
+      return `${selector}//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
+    },
+
     seeInTab(pathToField, fieldValue) {
       const fieldSelector = this.tabFieldSelector(pathToField);
 
@@ -186,7 +198,7 @@ module.exports = function () {
     },
 
     seeOrganisationInTab(pathToField, fieldValue) {
-      const fieldSelector = `//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${pathToField[0]}"]]]//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${pathToField[1]}"]]]//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${pathToField[2]}:"]]`;
+      const fieldSelector = this.organisationTabFieldSelector(pathToField);
 
       if (Array.isArray(fieldValue)) {
         fieldValue.forEach((value, index) => {
