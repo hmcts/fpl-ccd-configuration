@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.removeorder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.exceptions.CMONotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -58,28 +57,40 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
     public void remove(CaseData caseData, CaseDetailsMap data, UUID removedOrderId, RemovableOrder removableOrder) {
         HearingOrder caseManagementOrder = (HearingOrder) removableOrder;
 
-        Optional<Element<HearingOrdersBundle>> optionalHearingOrderBundle
-            = caseData.getHearingOrderBundleThatContainsOrder(removedOrderId);
+        if (isEmpty(caseData.getHearingOrdersBundlesDrafts())) {
 
-        if (optionalHearingOrderBundle.isEmpty()) {
-            throw new IllegalStateException(format("Failed to find hearing order bundle that contains order %s",
-                removedOrderId));
+            Optional<Element<HearingOrder>> hearingOrderElement = caseData.getDraftUploadedCMOWithId(removedOrderId);
+
+            if (hearingOrderElement.isEmpty()) {
+                throw new IllegalStateException(format("Failed to find hearing order that contains order %s",
+                    removedOrderId));
+            }
+
+            removeDraftCaseManagementOrder(caseData, data, hearingOrderElement.get());
+        } else {
+            Optional<Element<HearingOrdersBundle>> optionalHearingOrderBundle
+                = caseData.getHearingOrderBundleThatContainsOrder(removedOrderId);
+
+            if (optionalHearingOrderBundle.isEmpty()) {
+                throw new IllegalStateException(format("Failed to find hearing order bundle that contains order %s",
+                    removedOrderId));
+            }
+
+            Element<HearingOrdersBundle> selectedHearingOrderBundle = optionalHearingOrderBundle.get();
+            Element<HearingOrder> cmoElement = element(removedOrderId, caseManagementOrder);
+
+            selectedHearingOrderBundle.getValue().getOrders().remove(cmoElement);
+            caseData.getDraftUploadedCMOs().remove(cmoElement);
+
+            updateHearingOrderBundlesDrafts.update(
+                data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
+
+            data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
+            data.putIfNotEmpty(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
         }
-
-        Element<HearingOrdersBundle> selectedHearingOrderBundle = optionalHearingOrderBundle.get();
-        Element<HearingOrder> cmoElement = element(removedOrderId, caseManagementOrder);
-
-        selectedHearingOrderBundle.getValue().getOrders().remove(cmoElement);
-        caseData.getDraftUploadedCMOs().remove(cmoElement);
-
-        updateHearingOrderBundlesDrafts.update(
-            data, caseData.getHearingOrdersBundlesDrafts(), selectedHearingOrderBundle);
-
-        data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
-        data.putIfNotEmpty(DRAFT_UPLOADED_CMOS, caseData.getDraftUploadedCMOs());
     }
 
-    public void removeDraftCaseManagementOrder(CaseData caseData, CaseDetails data,
+    public void removeDraftCaseManagementOrder(CaseData caseData, CaseDetailsMap data,
                                                Element<HearingOrder> cmoElement) {
         List<Element<HearingOrder>> draftUploadedCMOs = caseData.getDraftUploadedCMOs();
 
@@ -88,12 +99,12 @@ public class DraftCMORemovalAction implements OrderRemovalAction {
         }
 
         if (isEmpty(draftUploadedCMOs)) {
-            data.getData().remove(DRAFT_UPLOADED_CMOS);
+            data.remove(DRAFT_UPLOADED_CMOS);
         } else {
-            data.getData().put(DRAFT_UPLOADED_CMOS, draftUploadedCMOs);
+            data.put(DRAFT_UPLOADED_CMOS, draftUploadedCMOs);
         }
 
-        data.getData().put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
-        data.getData().put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
+        data.put("hearingOrdersBundlesDrafts", draftOrderService.migrateCmoDraftToOrdersBundles(caseData));
+        data.put("hearingDetails", updateCmoHearing.removeHearingLinkedToCMO(caseData, cmoElement));
     }
 }
