@@ -186,9 +186,7 @@ module.exports = function () {
     },
 
     seeOrganisationInTab(pathToField, fieldValue) {
-      let path = [].concat(pathToField);
-      let fieldName = path.splice(-1, 1)[0];
-      const fieldSelector = `//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${path[0]}"]]]//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${path[1]}"]]]//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
+      const fieldSelector = `//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${pathToField[0]}"]]]//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${pathToField[1]}"]]]//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${pathToField[2]}:"]]`;
 
       if (Array.isArray(fieldValue)) {
         fieldValue.forEach((value, index) => {
