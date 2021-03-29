@@ -17,14 +17,17 @@ import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
@@ -40,6 +43,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static java.util.Map.entry;
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -54,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 @ExtendWith({MockitoExtension.class})
@@ -67,6 +72,8 @@ class MessageJudgeServiceTest {
     private static final String MESSAGE_RECIPIENT = "recipient@fpla.com";
     private static final String C2_FILE_NAME = "c2.doc";
     private static final String C2_SUPPORTING_DOCUMENT_FILE_NAME = "c2_supporting.doc";
+    private static final String OTHER_FILE_NAME = "other.doc";
+    private static final String OTHER_SUPPORTING_DOCUMENT_FILE_NAME = "other_supporting.doc";
     private static final UUID SELECTED_DYNAMIC_LIST_ITEM_ID = UUID.randomUUID();
     private static final UUID NEW_ELEMENT_ID = UUID.randomUUID();
 
@@ -139,6 +146,61 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    void shouldInitialiseCaseFieldsWhenAdditionalApplicationDocumentsAndJudicialMessagesExist() {
+        UUID uuid = randomUUID();
+
+        List<Element<JudicialMessage>> judicialMessages = List.of(
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("01 Dec 2020")
+                .build()),
+            element(JudicialMessage.builder()
+                .latestMessage("some note")
+                .messageHistory("some history")
+                .dateSent("02 Dec 2020")
+                .build())
+        );
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .id(uuid)
+                    .uploadedDateTime("01 Dec 2020")
+                    .author("Some author")
+                    .build())
+                .build())
+        );
+
+        CaseData caseData = CaseData.builder()
+            .judicialMessages(judicialMessages)
+            .additionalApplicationsBundle(additionalApplicationsBundle)
+            .build();
+
+        Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
+            Pair.of(uuid, "C2, 01 Dec 2020")
+        );
+
+        DynamicList expectedJudicialDynamicList = buildDynamicList(
+            Pair.of(judicialMessages.get(0).getId(), "01 Dec 2020"),
+            Pair.of(judicialMessages.get(1).getId(), "02 Dec 2020")
+        );
+
+        Map<String, Object> expectedData = Map.of(
+            "hasAdditionalApplications", "Yes",
+            "hasJudicialMessages", "Yes",
+            "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
+            "judicialMessageDynamicList", expectedJudicialDynamicList,
+            "judicialMessageMetaData", JudicialMessageMetaData.builder()
+                .sender(COURT_EMAIL)
+                .recipient(EMPTY).build());
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
     void shouldInitialiseC2DocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(element(C2DocumentBundle.builder()
             .uploadedDateTime("01 Dec 2020")
@@ -168,7 +230,42 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldInitialiseJudicialFieldsOnlyWhenC2DocumentsDoNotExist() {
+    void shouldInitialiseAdditionalApplicationDocumentFieldsOnlyWhenJudicialMessagesDoNotExist() {
+        UUID uuid = randomUUID();
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = List.of(element(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .id(uuid)
+                    .uploadedDateTime("01 Dec 2020")
+                    .author("Some author")
+                    .build())
+                .build())
+        );
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(additionalApplicationsBundle)
+            .build();
+
+        Map<String, Object> data = messageJudgeService.initialiseCaseFields(caseData);
+
+        DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
+            Pair.of(uuid, "C2, 01 Dec 2020")
+        );
+
+        Map<String, Object> expectedData = Map.of(
+            "hasAdditionalApplications", "Yes",
+            "additionalApplicationsDynamicList", expectedAdditionalApplicationsDynamicList,
+            "judicialMessageMetaData", JudicialMessageMetaData.builder()
+                .sender(COURT_EMAIL)
+                .recipient(EMPTY).build()
+        );
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
+    void shouldInitialiseJudicialFieldsOnlyWhenDocumentsDoNotExist() {
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
                 .latestMessage("some note")
@@ -205,7 +302,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldInitialiseJudicialMessagesWithEmailAddressesWhenC2DocumentsDoNotExist() {
+    void shouldInitialiseJudicialMessagesWithEmailAddressesWhenDocumentsDoNotExist() {
         List<Element<JudicialMessage>> judicialMessages = List.of(
             element(JudicialMessage.builder()
                 .latestMessage("some note")
@@ -245,7 +342,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldPopulateOnlyEmailAddressesWhenC2DocumentsDoNotExist() {
+    void shouldPopulateOnlyEmailAddressesWhenDocumentsDoNotExist() {
         assertThat(messageJudgeService.initialiseCaseFields(CaseData.builder().build()))
             .containsExactly(
                 entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
@@ -329,6 +426,64 @@ class MessageJudgeServiceTest {
     }
 
     @Test
+    void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenApplicationHasBeenSelected() {
+        UUID c2DocumentBundleId = UUID.randomUUID();
+
+        OtherApplicationsBundle selectedOtherDocumentBundle = OtherApplicationsBundle.builder()
+            .id(SELECTED_DYNAMIC_LIST_ITEM_ID)
+            .uploadedDateTime("1 January 2021, 12:00pm")
+            .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+            .document(DocumentReference.builder()
+                .filename(OTHER_FILE_NAME)
+                .build())
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(OTHER_SUPPORTING_DOCUMENT_FILE_NAME)
+                        .build())
+                    .build())))
+            .build();
+
+        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+            .id(c2DocumentBundleId)
+            .uploadedDateTime("2 January 2021, 12:00pm")
+            .document(DocumentReference.builder()
+                .filename(C2_FILE_NAME)
+                .build())
+            .build();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .otherApplicationsBundle(selectedOtherDocumentBundle)
+            .c2DocumentBundle(c2DocumentBundle)
+            .build();
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .additionalApplicationsDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+            .build();
+
+        String expectedRelatedDocumentsLabel = OTHER_FILE_NAME + "\n" + OTHER_SUPPORTING_DOCUMENT_FILE_NAME;
+
+        assertThat(messageJudgeService.populateNewMessageFields(caseData))
+            .extracting("relatedDocumentsLabel", "additionalApplicationsDynamicList")
+            .containsExactly(
+                expectedRelatedDocumentsLabel,
+                buildDynamicList(1,
+                    Pair.of(c2DocumentBundleId, "C2, 2 January 2021, 12:00pm"),
+                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
+                )
+            );
+    }
+
+    @Test
     void shouldReturnEmptyMapWhenC2DocumentHasNotBeenSelected() {
         C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
             .document(DocumentReference.builder()
@@ -351,6 +506,43 @@ class MessageJudgeServiceTest {
                         .build())
                     .build())
             ))
+            .build();
+
+        assertThat(messageJudgeService.populateNewMessageFields(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldReturnEmptyMapWhenAdditionalApplicationDocumentHasNotBeenSelected() {
+        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
+            .document(DocumentReference.builder()
+                .filename(C2_FILE_NAME)
+                .build())
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+                        .build())
+                    .build())))
+            .build();
+
+        C2DocumentBundle notSelectedC2DocumentBundle = C2DocumentBundle.builder()
+            .id(randomUUID())
+            .document(DocumentReference.builder()
+                .filename("other_c2.doc")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(
+                wrapElements(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(selectedC2DocumentBundle)
+                        .build(),
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(notSelectedC2DocumentBundle)
+                        .build()
+                )
+            )
             .build();
 
         assertThat(messageJudgeService.populateNewMessageFields(caseData)).isEmpty();
@@ -496,7 +688,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldAppendNewJudicialMessageToJudicialMessageListWhenC2DocumentNotSelected() {
+    void shouldAppendNewJudicialMessageToJudicialMessageListWhenDocumentNotSelected() {
         JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
             .subject(MESSAGE_REQUESTED_BY)
             .sender(MESSAGE_SENDER)
@@ -578,6 +770,59 @@ class MessageJudgeServiceTest {
         List<Element<DocumentReference>> relatedDocuments = newMessage.getRelatedDocuments();
 
         assertThat(newMessage.getIsRelatedToC2()).isEqualTo(YES);
+        assertThat(newMessage.getRelatedDocumentFileNames()).isEqualTo(
+            selectedC2DocumentBundle.getAllC2DocumentFileNames()
+        );
+        assertThat(relatedDocuments.get(0).getValue()).isEqualTo(mainC2DocumentReference);
+        assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
+    }
+
+    @Test
+    void shouldAppendNewJudicialMessageToJudicialMessageListWhenAdditionalApplicationDocumentHasBeenSelected() {
+        JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
+            .recipient(MESSAGE_RECIPIENT)
+            .build();
+
+        DocumentReference mainC2DocumentReference = DocumentReference.builder()
+            .filename(C2_FILE_NAME)
+            .build();
+
+        DocumentReference supportingC2DocumentReference = DocumentReference.builder()
+            .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+            .build();
+
+        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
+            .id(SELECTED_DYNAMIC_LIST_ITEM_ID)
+            .document(mainC2DocumentReference)
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(supportingC2DocumentReference)
+                    .build())))
+            .build();
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageNote(MESSAGE_NOTE)
+            .judicialMessageMetaData(judicialMessageMetaData)
+            .additionalApplicationsDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(selectedC2DocumentBundle)
+                .build()))
+            .build();
+
+        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
+
+        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        JudicialMessage newMessage = updatedMessages.get(0).getValue();
+        List<Element<DocumentReference>> relatedDocuments = newMessage.getRelatedDocuments();
+
         assertThat(newMessage.getRelatedDocumentFileNames()).isEqualTo(
             selectedC2DocumentBundle.getAllC2DocumentFileNames()
         );

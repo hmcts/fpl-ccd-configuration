@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "hasC2Applications",
+    "ID": "hasAdditionalApplications",
     "Label": " ",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
@@ -11,8 +11,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "isMessageRegardingC2",
-    "Label": "Is it about a C2 Application?",
+    "ID": "isMessageRegardingAdditionalApplications",
+    "Label": "Is it about an Application?",
     "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -20,9 +20,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c2DynamicList",
+    "ID": "additionalApplicationsDynamicList",
     "Label": "Which application?",
     "FieldType": "DynamicList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "selectedApplication",
+    "Label": " ",
+    "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

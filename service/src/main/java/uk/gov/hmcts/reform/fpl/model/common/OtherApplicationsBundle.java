@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -35,7 +38,7 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     private final List<Element<Supplement>> supplementsBundle;
 
     public String toLabel() {
-        return format("%s, %s", applicationType.getType(), uploadedDateTime);
+        return format("%s, %s", applicationType.getLabel(), uploadedDateTime);
     }
 
     @Override
@@ -61,4 +64,46 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
             .collect(Collectors.toList());
     }
 
+    @JsonIgnore
+    public String getAllDocumentFileNames() {
+        String fileName = "";
+
+        if (document != null) {
+            fileName = document.getFilename();
+        }
+
+        String stringBuilder = fileName + "\n" + getSupportingEvidenceFileNames();
+        return stringBuilder.trim();
+    }
+
+    @JsonIgnore
+    public List<Element<DocumentReference>> getAllDocumentReferences() {
+        List<Element<DocumentReference>> documentReferences = new ArrayList<>();
+
+        if (document != null) {
+            documentReferences.add(element(document));
+        }
+
+        documentReferences.addAll(getSupportingEvidenceBundleReferences());
+
+        return documentReferences;
+    }
+
+    @JsonIgnore
+    private String getSupportingEvidenceFileNames() {
+        return getSupportingEvidenceBundle().stream()
+            .map(Element::getValue)
+            .map(SupportingEvidenceBundle::getDocument)
+            .map(DocumentReference::getFilename)
+            .collect(Collectors.joining("\n"));
+    }
+
+    @JsonIgnore
+    private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
+        return getSupportingEvidenceBundle().stream()
+            .map(Element::getValue)
+            .map(SupportingEvidenceBundle::getDocument)
+            .map(ElementUtils::element)
+            .collect(Collectors.toList());
+    }
 }

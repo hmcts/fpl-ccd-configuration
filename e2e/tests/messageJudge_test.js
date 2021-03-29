@@ -14,8 +14,8 @@ BeforeSuite(async ({I}) => {
 Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
-  messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToC2();
-  await messageJudgeOrLegalAdviserEventPage.selectC2();
+  messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToAdditionalApplication();
+  await messageJudgeOrLegalAdviserEventPage.selectAdditionalApplication();
   messageJudgeOrLegalAdviserEventPage.enterRecipientEmail('recipient@fpla.com');
   messageJudgeOrLegalAdviserEventPage.enterSubject('Subject 1');
   messageJudgeOrLegalAdviserEventPage.enterUrgency('High');
@@ -78,7 +78,7 @@ Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLe
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
-  messageJudgeOrLegalAdviserEventPage.selectMessageNotRelatedToC2();
+  messageJudgeOrLegalAdviserEventPage.selectMessageNotRelatedToAdditionalApplication();
   messageJudgeOrLegalAdviserEventPage.enterSubject('Judge subject');
   await I.goToNextPage();
 

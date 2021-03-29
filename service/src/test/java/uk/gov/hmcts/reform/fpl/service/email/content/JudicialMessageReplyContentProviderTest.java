@@ -20,6 +20,7 @@ import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -50,6 +51,7 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
             .recipient("paulStuart@fpla.com")
             .sender("robertDunlop@fpla.com")
             .urgency("Needed asap")
+            .applicationType("C2 (With notice)")
             .build();
 
         JudicialMessageReplyTemplate expectedTemplate = JudicialMessageReplyTemplate.builder()
@@ -57,6 +59,8 @@ class JudicialMessageReplyContentProviderTest extends AbstractEmailContentProvid
             .callout("^Smith, 12345, " + HEARING_CALLOUT)
             .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
+            .hasApplication(YES.getValue())
+            .applicationType("C2 (With notice)")
             .build();
 
         assertThat(judicialMessageReplyContentProvider.buildJudicialMessageReplyTemplate(caseData, judicialMessage))

@@ -1,0 +1,138 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "sender",
+    "FieldType": "Email",
+    "ElementLabel": "From",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "recipient",
+    "FieldType": "Email",
+    "ElementLabel": "Sent to",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "dateSent",
+    "FieldType": "Text",
+    "ElementLabel": "Date sent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "updatedTime",
+    "FieldType": "DateTime",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dateSent=\"DO_NOT_SHOW\"",
+    "Comment": "Used to sort messages by date (latest first)"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "urgency",
+    "FieldType": "Text",
+    "ElementLabel": "Urgency",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "urgency!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "requestedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Message subject",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "replyFrom",
+    "FieldType": "Email",
+    "ElementLabel": "Sender's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "replyTo",
+    "FieldType": "Email",
+    "ElementLabel": "Recipient's email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "latestMessage",
+    "FieldType": "TextArea",
+    "ElementLabel": "Message",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status!=\"CLOSED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "JudicialMessageStatus",
+    "ElementLabel": "Status",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "applicationType",
+    "FieldType": "Text",
+    "ElementLabel": "Application",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "relatedDocuments",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Document",
+    "ElementLabel": "Related documents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "relatedDocumentFileNames",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "isReplying",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "messageHistory",
+    "FieldType": "TextArea",
+    "ElementLabel": "Message history",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "status=\"CLOSED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "closeMessageLabel",
+    "FieldType": "Label",
+    "ElementLabel": "This message will now be marked as closed",
+    "SecurityClassification": "Public"
+  }
+]

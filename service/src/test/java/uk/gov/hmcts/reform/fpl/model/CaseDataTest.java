@@ -722,8 +722,7 @@ class CaseDataTest {
             assertThat(caseData.hasApplicationBundles()).isTrue();
         }
 
-        @ParameterizedTest
-        @NullAndEmptySource
+        @Test
         void shouldReturnFalseIfC2DocumentBundleIsNullOrEmpty() {
             CaseData caseData = CaseData.builder().build();
             assertThat(caseData.hasApplicationBundles()).isFalse();

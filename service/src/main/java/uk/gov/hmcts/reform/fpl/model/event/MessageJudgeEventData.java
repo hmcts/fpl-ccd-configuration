@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class MessageJudgeEventData {
     Object c2DynamicList;
+    Object additionalApplicationsDynamicList;
     Object judicialMessageDynamicList;
     String judicialMessageNote;
     JudicialMessageMetaData judicialMessageMetaData;
@@ -23,9 +24,10 @@ public class MessageJudgeEventData {
 
     public static String[] transientFields() {
         return new String[] {
-            "hasC2Applications", "isMessageRegardingC2", "c2DynamicList", "relatedDocumentsLabel", "nextHearingLabel",
-            "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList", "messageJudgeOption",
-            "judicialMessageReply", "hasJudicialMessages"
+            "hasC2Applications", "isMessageRegardingC2", "c2DynamicList", "hasAdditionalApplications",
+            "isMessageRegardingAdditionalApplications", "additionalApplicationsDynamicList", "relatedDocumentsLabel",
+            "nextHearingLabel", "judicialMessageMetaData", "judicialMessageNote", "judicialMessageDynamicList",
+            "messageJudgeOption", "judicialMessageReply", "hasJudicialMessages"
         };
     }
 

@@ -39,6 +39,14 @@ public class JudicialMessageContentProvider extends AbstractEmailContentProvider
             templateBuilder.urgency("");
         }
 
+        if (isNotEmpty(judicialMessage.getApplicationType())) {
+            templateBuilder.hasApplication(YES.getValue());
+            templateBuilder.applicationType(judicialMessage.getApplicationType());
+        } else {
+            templateBuilder.hasApplication(NO.getValue());
+            templateBuilder.applicationType("");
+        }
+
         return templateBuilder.build();
     }
 }
