@@ -1390,14 +1390,11 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicRespondentStatementListFromRespondents() {
             List<Element<Respondent>> respondents = createRespondents();
-
             CaseData caseData = CaseData.builder().respondents1(respondents).build();
-            IncrementalInteger i = new IncrementalInteger(1);
 
             DynamicList expectedDynamicList = ElementUtils
                 .asDynamicList(respondents, null,
-                    respondent -> String.format("Respondent %d statements - %s",
-                        i.getAndIncrement(), respondent.getParty().getFullName()));
+                    respondent -> respondent.getParty().getFullName());
 
             assertThat(caseData.buildRespondentStatementDynamicList())
                 .isEqualTo(expectedDynamicList);
@@ -1424,12 +1421,10 @@ class CaseDataTest {
                     .build()));
 
             CaseData caseData = CaseData.builder().respondents1(respondents).build();
-            IncrementalInteger i = new IncrementalInteger(1);
 
             DynamicList expectedDynamicList = ElementUtils
                 .asDynamicList(respondents, null,
-                    respondent -> String.format("Respondent %d statements - %s",
-                        i.getAndIncrement(), respondent.getParty().getFullName()));
+                    respondent -> respondent.getParty().getFullName());
 
             assertThat(caseData.buildRespondentStatementDynamicList()).isEqualTo(expectedDynamicList);
         }
@@ -1473,7 +1468,7 @@ class CaseDataTest {
     }
 
     @Nested
-    class GetRespondentByUUID {
+    class FindRespondent {
         UUID elementId = randomUUID();
 
         @Test
@@ -1485,7 +1480,7 @@ class CaseDataTest {
                 element(Respondent.builder().build()));
 
             CaseData caseData = CaseData.builder().respondents1(respondents).build();
-            Optional<Element<Respondent>> optionalRespondentElement = caseData.getRespondentByUUID(elementId);
+            Optional<Element<Respondent>> optionalRespondentElement = caseData.findRespondent(elementId);
 
             assertThat(optionalRespondentElement).isPresent();
             assertThat(optionalRespondentElement).contains(respondentOneElement);
@@ -1498,7 +1493,7 @@ class CaseDataTest {
                 element(Respondent.builder().build()));
 
             CaseData caseData = CaseData.builder().respondents1(respondents).build();
-            Optional<Element<Respondent>> optionalRespondentElement = caseData.getRespondentByUUID(elementId);
+            Optional<Element<Respondent>> optionalRespondentElement = caseData.findRespondent(elementId);
 
             assertThat(optionalRespondentElement).isNotPresent();
         }

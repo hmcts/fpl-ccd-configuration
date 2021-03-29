@@ -265,7 +265,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         UUID respondentStatementId = UUID.randomUUID();
         UUID supportingEvidenceBundleId = UUID.randomUUID();
 
-        DynamicList respondentStatementDynamicList = DynamicList.builder()
+        DynamicList respondentStatementList = DynamicList.builder()
             .value(DynamicListElement.builder()
                 .code(respondentOneId)
                 .build())
@@ -290,7 +290,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
                     .build()),
                 element(Respondent.builder().build())))
             .supportingEvidenceDocumentsTemp(updatedBundle)
-            .respondentStatementDynamicList(respondentStatementDynamicList)
+            .respondentStatementList(respondentStatementList)
             .applicationDocuments(applicationDocuments)
             .respondentStatements(newArrayList(
                 element(respondentStatementId, RespondentStatement.builder()
@@ -324,7 +324,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
-        assertThat(caseData.getRespondentStatementDynamicList()).isNull();
+        assertThat(caseData.getRespondentStatementList()).isNull();
     }
 
     private HearingBooking buildFinalHearingBooking() {

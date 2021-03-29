@@ -851,7 +851,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentStatements",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -989,7 +989,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "respondentStatementDynamicList",
+    "CaseFieldID": "respondentStatementList",
     "UserRole": "[LAMANAGING]",
     "CRUD": "CRU"
   },

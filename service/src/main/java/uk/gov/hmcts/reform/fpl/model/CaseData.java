@@ -148,11 +148,8 @@ public class CaseData {
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
     public DynamicList buildRespondentStatementDynamicList(UUID selected) {
-        IncrementalInteger i = new IncrementalInteger(1);
-
         return asDynamicList(getAllRespondents(), selected,
-            respondent -> String.format("Respondent %d statements - %s",
-                i.getAndIncrement(), respondent.getParty().getFullName()));
+            respondent -> respondent.getParty().getFullName());
     }
 
     public DynamicList buildRespondentStatementDynamicList() {
@@ -431,8 +428,8 @@ public class CaseData {
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 
-    public Optional<Element<Respondent>> getRespondentByUUID(UUID elementId) {
-        return findElement(elementId, getAllRespondents());
+    public Optional<Element<Respondent>> findRespondent(UUID id) {
+        return findElement(id, getAllRespondents());
     }
 
     public Optional<Applicant> findApplicant(int seqNo) {
@@ -516,7 +513,7 @@ public class CaseData {
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
     private final Object courtBundleHearingList;
-    private final Object respondentStatementDynamicList;
+    private final Object respondentStatementList;
 
     private final CourtBundle manageDocumentsCourtBundle;
     private final List<Element<CourtBundle>> courtBundleList;

@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
-import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -213,7 +212,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
-            .respondentStatementDynamicList(selectedRespondentId)
+            .respondentStatementList(selectedRespondentId)
             .manageDocumentsRelatedToHearing(YES.getValue())
             .manageDocumentSubtypeListLA(RESPONDENT_STATEMENT)
             .respondentStatements(List.of(
@@ -228,15 +227,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
 
-        IncrementalInteger i = new IncrementalInteger(1);
-
         DynamicList expectedRespondentStatementList = ElementUtils
             .asDynamicList(respondents, selectedRespondentId,
-                respondent -> String.format("Respondent %d statements - %s",
-                    i.getAndIncrement(), respondent.getParty().getFullName()));
+                respondent -> respondent.getParty().getFullName());
 
         DynamicList respondentDynamicList
-            = mapper.convertValue(responseData.getRespondentStatementDynamicList(), DynamicList.class);
+            = mapper.convertValue(responseData.getRespondentStatementList(), DynamicList.class);
 
         assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);

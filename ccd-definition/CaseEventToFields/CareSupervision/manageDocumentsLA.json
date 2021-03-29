@@ -108,7 +108,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageDocumentsLA",
-    "CaseFieldID": "respondentStatementDynamicList",
+    "CaseFieldID": "respondentStatementList",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
     "PageID": "FurtherEvidenceType",

@@ -57,14 +57,14 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS LA uploads respondent statement', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
+Scenario('LA uploads respondent statement', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectFurtherEvidence();
   await I.goToNextPage();
   await manageDocumentsLAEventPage.selectRespondentStatement();
-  await manageDocumentsLAEventPage.selectRespondent();
+  await manageDocumentsLAEventPage.selectRespondent('Joe Bloggs');
   await I.goToNextPage();
   await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.completeEvent('Save and continue');

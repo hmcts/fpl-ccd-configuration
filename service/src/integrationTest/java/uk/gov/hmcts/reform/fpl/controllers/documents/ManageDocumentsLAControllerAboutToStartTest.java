@@ -83,11 +83,9 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
             .asDynamicList(c2DocumentBundle, null, documentBundle ->
                 documentBundle.toLabel(documentCount.getAndIncrement()));
 
-        IncrementalInteger respondentCount = new IncrementalInteger(1);
         DynamicList expectedRespondentStatementList = ElementUtils
             .asDynamicList(respondents, null,
-                respondent -> String.format("Respondent %d statements - %s",
-                    respondentCount.getAndIncrement(), respondent.getParty().getFullName()));
+                respondent -> respondent.getParty().getFullName());
 
         DynamicList courtBundleHearingList =
             mapper.convertValue(response.getData().get(COURT_BUNDLE_HEARING_LIST_KEY), DynamicList.class);
@@ -95,7 +93,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
         DynamicList c2DocumentDynamicList =
             mapper.convertValue(response.getData().get(SUPPORTING_C2_LIST_KEY), DynamicList.class);
 
-        DynamicList respondentStatementDynamicList =
+        DynamicList respondentStatementList =
             mapper.convertValue(response.getData().get(RESPONDENT_STATEMENT_LIST_KEY), DynamicList.class);
 
         ManageDocumentLA actualManageDocument =
@@ -109,7 +107,7 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
         assertThat(courtBundleHearingList).isEqualTo(expectedHearingDynamicList);
         assertThat(c2DocumentDynamicList).isEqualTo(expectedC2DocumentsDynamicList);
         assertThat(actualManageDocument).isEqualTo(expectedManageDocument);
-        assertThat(respondentStatementDynamicList).isEqualTo(expectedRespondentStatementList);
+        assertThat(respondentStatementList).isEqualTo(expectedRespondentStatementList);
     }
 
     private HearingBooking buildHearing(LocalDateTime startDate) {

@@ -868,7 +868,8 @@ class ManageDocumentServiceTest {
             List<Element<SupportingEvidenceBundle>> actualBundle
                 = manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
 
-            assertThat(actualBundle.get(0).getValue()).isEqualTo(SupportingEvidenceBundle.builder().build());
+            assertThat(actualBundle).extracting(Element::getValue)
+                .containsExactly(SupportingEvidenceBundle.builder().build());
         }
 
         @Test
@@ -878,7 +879,8 @@ class ManageDocumentServiceTest {
             List<Element<SupportingEvidenceBundle>> actualBundle
                 = manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
 
-            assertThat(actualBundle.get(0).getValue()).isEqualTo(SupportingEvidenceBundle.builder().build());
+            assertThat(actualBundle).extracting(Element::getValue)
+                .containsExactly(SupportingEvidenceBundle.builder().build());
         }
     }
 
@@ -891,7 +893,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldUpdateExistingRespondentStatementsWithNewBundle() {
-            DynamicList respondentStatementDynamicList = buildRespondentStatementDynamicList();
+            DynamicList respondentStatementList = buildRespondentStatementList();
             List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
 
             CaseData caseData = CaseData.builder()
@@ -904,7 +906,7 @@ class ManageDocumentServiceTest {
                         .build()),
                     element(Respondent.builder().build())))
                 .supportingEvidenceDocumentsTemp(updatedBundle)
-                .respondentStatementDynamicList(respondentStatementDynamicList)
+                .respondentStatementList(respondentStatementList)
                 .respondentStatements(newArrayList(
                     element(respondentStatementId, RespondentStatement.builder()
                         .respondentId(respondentOneId)
@@ -918,20 +920,18 @@ class ManageDocumentServiceTest {
             List<Element<RespondentStatement>> updatedRespondentStatements =
                 manageDocumentService.getUpdatedRespondentStatements(caseData);
 
-            assertThat(updatedRespondentStatements.size()).isEqualTo(1);
-
-            assertThat(updatedRespondentStatements).isEqualTo(List.of(
+            assertThat(updatedRespondentStatements).containsExactly(
                 element(respondentStatementId, RespondentStatement.builder()
                     .respondentId(respondentOneId)
                     .respondentName("David Stevenson")
                     .supportingEvidenceBundle(updatedBundle)
-                    .build())));
+                    .build()));
         }
 
         @Test
         void shouldAddNewEntryToRespondentStatementsWhenRespondentStatementDoesNotExist() {
             UUID respondentStatementId = UUID.randomUUID();
-            DynamicList respondentStatementDynamicList = buildRespondentStatementDynamicList();
+            DynamicList respondentStatementList = buildRespondentStatementList();
             List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
 
             List<Element<RespondentStatement>> respondentStatements = new ArrayList<>();
@@ -953,7 +953,7 @@ class ManageDocumentServiceTest {
                     element(Respondent.builder().build()),
                     element(Respondent.builder().build())))
                 .supportingEvidenceDocumentsTemp(updatedBundle)
-                .respondentStatementDynamicList(respondentStatementDynamicList)
+                .respondentStatementList(respondentStatementList)
                 .respondentStatements(respondentStatements)
                 .build();
 
@@ -980,7 +980,7 @@ class ManageDocumentServiceTest {
         void shouldRemoveRespondentStatementEntryWhenUpdatingExistingWithEmptySupportingEvidence() {
             List<Element<SupportingEvidenceBundle>> updatedBundle = List.of();
 
-            DynamicList respondentStatementDynamicList = buildRespondentStatementDynamicList();
+            DynamicList respondentStatementList = buildRespondentStatementList();
 
             CaseData caseData = CaseData.builder()
                 .respondents1(List.of(
@@ -992,7 +992,7 @@ class ManageDocumentServiceTest {
                         .build()),
                     element(Respondent.builder().build())))
                 .supportingEvidenceDocumentsTemp(updatedBundle)
-                .respondentStatementDynamicList(respondentStatementDynamicList)
+                .respondentStatementList(respondentStatementList)
                 .respondentStatements(newArrayList(
                     element(respondentStatementId, RespondentStatement.builder()
                         .respondentId(respondentOneId)
@@ -1011,7 +1011,7 @@ class ManageDocumentServiceTest {
 
         @Test
         void shouldThrowAnErrorWhenRespondentCannotBeFound() {
-            DynamicList respondentStatementDynamicList = buildRespondentStatementDynamicList();
+            DynamicList respondentStatementList = buildRespondentStatementList();
 
             CaseData caseData = CaseData.builder()
                 .respondents1(List.of(
@@ -1023,7 +1023,7 @@ class ManageDocumentServiceTest {
                         .build()),
                     element(Respondent.builder().build()),
                     element(Respondent.builder().build())))
-                .respondentStatementDynamicList(respondentStatementDynamicList)
+                .respondentStatementList(respondentStatementList)
                 .build();
 
             assertThatThrownBy(() -> manageDocumentService.getUpdatedRespondentStatements(caseData))
@@ -1039,7 +1039,7 @@ class ManageDocumentServiceTest {
                     .build()));
         }
 
-        private DynamicList buildRespondentStatementDynamicList() {
+        private DynamicList buildRespondentStatementList() {
             return DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(respondentOneId)
@@ -1068,16 +1068,16 @@ class ManageDocumentServiceTest {
                 .build())
             .listItems(List.of(DynamicListElement.builder()
                 .code(selectedRespondentId)
-                .label("Respondent 1")
+                .label("Joe Bloggs")
                 .build(),
                 DynamicListElement.builder()
                     .code(additionalRespondentId)
-                    .label("Respondent 2")
+                    .label("Paul Smith")
                     .build()
                 ))
             .build();
 
-        CaseData caseData = CaseData.builder().respondentStatementDynamicList(dynamicList).build();
+        CaseData caseData = CaseData.builder().respondentStatementList(dynamicList).build();
 
         assertThat(manageDocumentService.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
     }

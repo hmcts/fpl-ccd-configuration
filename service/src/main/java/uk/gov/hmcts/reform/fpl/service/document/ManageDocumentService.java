@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -283,23 +284,20 @@ public class ManageDocumentService {
 
     public List<Element<SupportingEvidenceBundle>> getRespondentStatementFurtherEvidenceCollection(CaseData caseData,
                                                                                                    UUID id) {
-        Optional<Element<RespondentStatement>> respondentStatement = caseData.getRespondentStatementByRespondentId(id);
-
-        return respondentStatement.isPresent() ? respondentStatement.get().getValue().getSupportingEvidenceBundle()
-            : defaultSupportingEvidences();
+        return caseData.getRespondentStatementByRespondentId(id)
+            .map(Element::getValue)
+            .map(RespondentStatement::getSupportingEvidenceBundle)
+            .orElse(defaultSupportingEvidences());
     }
 
     public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData) {
         List<Element<RespondentStatement>> respondentStatementDocuments = caseData.getRespondentStatements();
-
         UUID selectedRespondentId = getSelectedRespondentId(caseData);
+        String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
+        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getSupportingEvidenceDocumentsTemp();
 
         Optional<Element<RespondentStatement>> optionalRespondentStatement
             = caseData.getRespondentStatementByRespondentId(selectedRespondentId);
-
-        String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
-
-        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getSupportingEvidenceDocumentsTemp();
 
         if (optionalRespondentStatement.isEmpty()) {
             respondentStatementDocuments.add(element(
@@ -330,7 +328,7 @@ public class ManageDocumentService {
     }
 
     public UUID getSelectedRespondentId(CaseData caseData) {
-        return getDynamicListSelectedValue(caseData.getRespondentStatementDynamicList(), mapper);
+        return getDynamicListSelectedValue(caseData.getRespondentStatementList(), mapper);
     }
 
     // Separate collection based on idam role (only show users their own documents)
@@ -390,12 +388,10 @@ public class ManageDocumentService {
     }
 
     private String getRespondentFullName(CaseData caseData, UUID respondentId) {
-        Optional<Element<Respondent>> optionalRespondentElement = caseData.getRespondentByUUID(respondentId);
-
-        if (optionalRespondentElement.isPresent()) {
-            return optionalRespondentElement.get().getValue().getParty().getFullName();
-        } else {
-            throw new RespondentNotFoundException(respondentId);
-        }
+        return caseData.findRespondent(respondentId)
+            .map(Element::getValue)
+            .map(Respondent::getParty)
+            .map(RespondentParty::getFullName)
+            .orElseThrow(() -> new RespondentNotFoundException(respondentId));
     }
 }

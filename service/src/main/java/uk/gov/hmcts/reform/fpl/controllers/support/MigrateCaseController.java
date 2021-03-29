@@ -1,4 +1,3 @@
-
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import io.swagger.annotations.Api;

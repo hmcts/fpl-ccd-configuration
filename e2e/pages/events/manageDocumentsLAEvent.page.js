@@ -19,7 +19,7 @@ module.exports = {
       respondentStatement: '#manageDocumentSubtypeListLA-RESPONDENT_STATEMENT',
       otherDocuments: '#manageDocumentSubtypeListLA-OTHER',
     },
-    respondentList: '#respondentStatementDynamicList',
+    respondentStatementList: '#respondentStatementList',
     hearingList: '#manageDocumentsHearingList',
     courtBundleHearingList: '#courtBundleHearingList',
     courtBundleDocument: '#manageDocumentsCourtBundle_document',
@@ -37,14 +37,12 @@ module.exports = {
     I.click(this.fields.subtype.otherDocuments);
   },
 
-  async selectRespondentStatement() {
+  selectRespondentStatement() {
     I.click(this.fields.subtype.respondentStatement);
   },
 
-  async selectRespondent() {
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.respondentList} option:nth-child(2)`);
-    I.waitForElement(this.fields.respondentList);
-    I.selectOption(this.fields.respondentList, dropdownLabel);
+  async selectRespondent(respondentName) {
+    I.selectOption(this.fields.respondentStatementList, respondentName);
   },
 
   async selectCorrespondence() {
