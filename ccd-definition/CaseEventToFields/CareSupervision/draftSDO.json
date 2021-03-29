@@ -59,7 +59,7 @@
     "PageID": "judgeAndLegalAdvisor",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageShowCondition": "sdoRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
+    "PageShowCondition": "sdoRouter=\"SERVICE\" OR sdoRouter=\"UPLOAD\""
   },
   {
     "LiveFrom": "01/01/2017",
