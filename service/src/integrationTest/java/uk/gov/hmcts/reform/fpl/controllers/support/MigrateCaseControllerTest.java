@@ -374,6 +374,106 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @Nested
+    class Fpla2885 {
+        String migrationId = "FPLA-2885";
+        UUID idOne = UUID.randomUUID();
+        UUID idTwo = UUID.randomUUID();
+        UUID idThree = UUID.randomUUID();
+        UUID idFour = UUID.randomUUID();
+
+        @Test
+        void shouldMigrateExpectedListElementCodes() {
+            Element<HearingBooking> hearingOne
+                = element(idOne, hearingBookingWithCancellationReason("OT8"));
+
+            Element<HearingBooking> hearingTwo
+                = element(idTwo, hearingBookingWithCancellationReason("OT9"));
+
+            Element<HearingBooking> hearingThree
+                = element(idThree, hearingBookingWithCancellationReason("OT10"));
+
+            Element<HearingBooking> hearingFour
+                = element(idFour, hearingBookingWithCancellationReason("OT7"));
+
+            List<Element<HearingBooking>> cancelledHearingBookings = List.of(
+                hearingOne, hearingTwo, hearingThree, hearingFour);
+
+            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getCancelledHearingDetails()).containsExactly(
+                element(idOne, hearingBookingWithCancellationReason("IN1")),
+                element(idTwo, hearingBookingWithCancellationReason("OT8")),
+                element(idThree, hearingBookingWithCancellationReason("OT9")),
+                element(idFour, hearingBookingWithCancellationReason("OT7"))
+            );
+        }
+
+        @Test
+        void shouldNotUpdateListElementCodesWhenMigrationIsNotRequired() {
+            Element<HearingBooking> hearingOne
+                = element(idOne, hearingBookingWithCancellationReason("OT1"));
+
+            Element<HearingBooking> hearingTwo
+                = element(idTwo, hearingBookingWithCancellationReason("OT3"));
+
+            List<Element<HearingBooking>> cancelledHearingBookings = List.of(hearingOne, hearingTwo);
+
+            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(cancelledHearingBookings);
+        }
+
+        @Test
+        void shouldNotChangeCaseIfNotExpectedMigrationId() {
+            String incorrectMigrationId = "FPLA-2222";
+
+            Element<HearingBooking> hearingOne
+                = element(idOne, hearingBookingWithCancellationReason("OT8"));
+
+            Element<HearingBooking> hearingTwo
+                = element(idTwo, hearingBookingWithCancellationReason("OT9"));
+
+            Element<HearingBooking> hearingThree
+                = element(idThree, hearingBookingWithCancellationReason("OT10"));
+
+            Element<HearingBooking> hearingFour
+                = element(idFour, hearingBookingWithCancellationReason("OT7"));
+
+            List<Element<HearingBooking>> cancelledHearingBookings = List.of(
+                hearingOne, hearingTwo, hearingThree, hearingFour);
+
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId, cancelledHearingBookings);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(cancelledHearingBookings);
+        }
+
+        @Test
+        void shouldThrowAnErrorIfCaseDoesNotContainCancelledHearingBookings() {
+            CaseDetails caseDetails = caseDetails(migrationId, null);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Case does not contain cancelled hearing bookings");
+        }
+
+        private HearingBooking hearingBookingWithCancellationReason(String reasonCode) {
+            return HearingBooking.builder().cancellationReason(reasonCode).build();
+        }
+
+        private CaseDetails caseDetails(String migrationId, List<Element<HearingBooking>> cancelledHearings) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .cancelledHearingDetails(cancelledHearings)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+    }
+
     private C2DocumentBundle createC2DocumentBundle() {
         return C2DocumentBundle.builder().build();
     }
