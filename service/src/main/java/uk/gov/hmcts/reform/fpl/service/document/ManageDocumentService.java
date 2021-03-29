@@ -296,32 +296,22 @@ public class ManageDocumentService {
         String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
         List<Element<SupportingEvidenceBundle>> newBundle = caseData.getSupportingEvidenceDocumentsTemp();
 
-        Optional<Element<RespondentStatement>> optionalRespondentStatement
-            = caseData.getRespondentStatementByRespondentId(selectedRespondentId);
-
-        if (optionalRespondentStatement.isEmpty()) {
-            respondentStatementDocuments.add(element(
-                RespondentStatement.builder()
+        Element<RespondentStatement> respondentStatement
+            = caseData.getRespondentStatementByRespondentId(selectedRespondentId)
+            .orElseGet(() -> {
+                Element<RespondentStatement> newRespondentStatement = element(RespondentStatement.builder()
                     .respondentId(selectedRespondentId)
                     .respondentName(respondentFullName)
-                    .supportingEvidenceBundle(newBundle)
-                    .build()));
+                    .build());
+
+                respondentStatementDocuments.add(newRespondentStatement);
+                return newRespondentStatement;
+            });
+
+        if (newBundle.isEmpty()) {
+            respondentStatementDocuments.remove(respondentStatement);
         } else {
-            List<Element<RespondentStatement>> statementsToBeRemoved = new ArrayList<>();
-
-            for (Element<RespondentStatement> element : respondentStatementDocuments) {
-                if (element.getValue().getRespondentId().equals(
-                    optionalRespondentStatement.get().getValue().getRespondentId())) {
-
-                    if (isEmpty(newBundle)) {
-                        statementsToBeRemoved.add(element);
-                    } else {
-                        element.getValue().setSupportingEvidenceBundle(newBundle);
-                    }
-                }
-            }
-
-            respondentStatementDocuments.removeAll(statementsToBeRemoved);
+            respondentStatement.getValue().setSupportingEvidenceBundle(newBundle);
         }
 
         return respondentStatementDocuments;
