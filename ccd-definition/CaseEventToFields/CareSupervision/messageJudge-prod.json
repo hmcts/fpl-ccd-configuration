@@ -40,7 +40,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
-    "CaseFieldID": "hasC2Application",
+    "CaseFieldID": "hasC2Applications",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "NewMessageMetaData",
@@ -60,7 +60,7 @@
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "PageShowCondition": "messageJudgeOption!=\"REPLY\"",
-    "FieldShowCondition": "hasC2Application=\"Yes\""
+    "FieldShowCondition": "hasC2Applications=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
