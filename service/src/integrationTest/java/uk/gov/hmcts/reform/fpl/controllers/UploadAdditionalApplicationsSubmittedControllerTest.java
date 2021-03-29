@@ -41,6 +41,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -118,7 +121,8 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyWhenAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle() throws Exception {
+    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsBundleDoesNotHaveC2DocumentBundle()
+        throws Exception {
         final Map<String, Object> caseData = ImmutableMap.of(
             "caseLocalAuthority",
             LOCAL_AUTHORITY_1_CODE,
@@ -143,7 +147,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyAdminWhenWhenAdditionalApplicationsAreUsingPbaPayment() throws Exception {
+    void submittedEventShouldNotifyAdminWhenWhenAdditionalApplicationsAreNotUsingPbaPayment() throws Exception {
         final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonNotificationParameters())
             .putAll(buildAdditionalApplicationsBundle(NO))
@@ -170,7 +174,7 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     }
 
     @Test
-    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsAreUsingPbaPaymentAndCtscToggleIsEnabled()
+    void submittedEventShouldNotifyCtscAdminWhenAdditionalApplicationsAreNotUsingPbaPaymentAndCtscToggleIsEnabled()
         throws Exception {
         postSubmittedEvent(buildCaseDetails(YES, NO));
 
@@ -199,6 +203,40 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
             anyMap(),
             anyString()
         );
+    }
+
+    @Test
+    void submittedEventShouldNotNotifyAdminWhenPbaPaymentIsNull() throws Exception {
+        final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonNotificationParameters())
+            .put("additionalApplicationType", List.of(C2_ORDER))
+            .put("additionalApplicationsBundle", wrapElements(
+                AdditionalApplicationsBundle.builder()
+                    .pbaPayment(null)
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .type(WITH_NOTICE)
+                        .supplementsBundle(new ArrayList<>())
+                        .usePbaPayment(NO.getValue())
+                        .build())))
+            .build();
+
+        postSubmittedEvent(createCase(caseData));
+
+        verify(notificationClient, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "admin@family-court.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verify(notificationClient, never()).sendEmail(
+            INTERLOCUTORY_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE,
+            "FamilyPublicLaw+ctsc@gmail.com",
+            expectedPbaPaymentNotTakenNotificationParams(),
+            NOTIFICATION_REFERENCE
+        );
+
+        verifyNoInteractions(paymentService);
     }
 
     @Test
