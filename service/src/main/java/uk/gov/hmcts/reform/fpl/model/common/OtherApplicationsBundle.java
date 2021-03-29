@@ -64,8 +64,8 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
 
     @JsonIgnore
     @Override
-    public int getApplicationNumber() {
-        return applicationType.getApplicationNumber();
+    public int getSortOrder() {
+        return applicationType.getSortOrder();
     }
 
 }

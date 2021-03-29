@@ -20,5 +20,5 @@ public enum OtherApplicationType {
     C100_CHILD_ARRANGEMENTS("C100", 100);
 
     private final String type;
-    private final int applicationNumber;
+    private final int sortOrder;
 }

@@ -55,7 +55,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
 
     @JsonIgnore
     @Override
-    public int getApplicationNumber() {
+    public int getSortOrder() {
         return 2;
     }
 

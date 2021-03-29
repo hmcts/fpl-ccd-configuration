@@ -331,7 +331,7 @@ public class CaseData {
         List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
         applicationsBundles
             .sort(Comparator.comparing(
-                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getApplicationNumber())
+                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
                 .thenComparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().toLabel()));
 
         return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);

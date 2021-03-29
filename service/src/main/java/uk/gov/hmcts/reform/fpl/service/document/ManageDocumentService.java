@@ -117,13 +117,12 @@ public class ManageDocumentService {
         UUID selectedBundleId = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
         List<Element<ApplicationsBundle>> applicationsBundles = caseData.getAllApplicationsBundles();
 
-        for (Element<ApplicationsBundle> applicationsBundle : applicationsBundles) {
-            if (applicationsBundle.getId().equals(selectedBundleId)) {
-                listAndLabel.put(SUPPORTING_C2_LABEL, applicationsBundle.getValue().toLabel());
-                break;
-            }
-        }
+        Element<ApplicationsBundle> selectedBundle = applicationsBundles.stream()
+            .filter(bundle -> selectedBundleId.equals(bundle.getId()))
+            .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                "No application bundle found for the selected bundle id, " + selectedBundleId.toString()));
 
+        listAndLabel.put(SUPPORTING_C2_LABEL, selectedBundle.getValue().toLabel());
         listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildApplicationBundlesDynamicList(selectedBundleId));
 
         return listAndLabel;
@@ -267,7 +266,7 @@ public class ManageDocumentService {
                     caseData.getSupportingEvidenceDocumentsTemp());
 
                 c2DocumentBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
-            } else if (!isNull(otherApplicationsBundle) && selectedBundleId.equals(otherApplicationsBundle.getId())) {
+            } else if (selectedBundleId.equals(otherApplicationsBundle.getId())) {
 
                 List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
                     otherApplicationsBundle.getSupportingEvidenceBundle(),

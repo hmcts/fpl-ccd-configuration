@@ -200,7 +200,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
+    void shouldReturnEmptyEvidenceBundleWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
             .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
             .build();
@@ -247,7 +247,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
+            underTest.getFurtherEvidenceCollection(caseData, true, null);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
     }
@@ -280,7 +280,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
+            underTest.getFurtherEvidenceCollection(caseData, true, null);
 
         assertThat(furtherDocumentBundleCollection).containsExactly(adminEvidence);
     }
@@ -306,6 +306,20 @@ class ManageDocumentServiceTest {
 
         assertThat(underTest.getFurtherEvidenceCollection(caseData, true, emptyList()))
             .extracting(Element::getValue)
+            .containsExactly(SupportingEvidenceBundle.builder().build());
+    }
+
+    @Test
+    void shouldReturnEmptyEvidenceCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
+        CaseData caseData = CaseData.builder()
+            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
+            .furtherEvidenceDocuments(emptyList())
+            .build();
+
+        List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
+            underTest.getFurtherEvidenceCollection(caseData, false, null);
+
+        assertThat(unwrapElements(furtherDocumentBundleCollection))
             .containsExactly(SupportingEvidenceBundle.builder().build());
     }
 
@@ -601,6 +615,25 @@ class ManageDocumentServiceTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenSelectedApplicationBundleIsNotFound() {
+        UUID selectedBundleId = randomUUID();
+
+        AdditionalApplicationsBundle additionApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1)))
+            .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(wrapElements(additionApplicationsBundle))
+            .manageDocumentsSupportingC2List(buildDynamicList(selectedBundleId))
+            .build();
+
+        assertThatThrownBy(() -> underTest.initialiseApplicationBundlesListAndLabel(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(String.format("No application bundle found for the selected bundle id, %s", selectedBundleId));
+    }
+
+    @Test
     void shouldGetSelectedC2DocumentEvidenceBundleWhenParentC2SelectedFromDynamicList() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
@@ -716,8 +749,8 @@ class ManageDocumentServiceTest {
 
     @Test
     void shouldReturnUpdatedC2DocumentBundleWithUpdatedSupportingEvidenceEntry() {
-        UUID selectedC2DocumentId = UUID.randomUUID();
-        UUID anotherC2DocumentId = UUID.randomUUID();
+        UUID selectedC2DocumentId = randomUUID();
+        UUID anotherC2DocumentId = randomUUID();
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
 

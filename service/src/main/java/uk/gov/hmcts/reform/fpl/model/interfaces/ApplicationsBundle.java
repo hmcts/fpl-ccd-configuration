@@ -4,5 +4,5 @@ public interface ApplicationsBundle extends ConfidentialBundle {
 
     String toLabel();
 
-    int getApplicationNumber();
+    int getSortOrder();
 }
