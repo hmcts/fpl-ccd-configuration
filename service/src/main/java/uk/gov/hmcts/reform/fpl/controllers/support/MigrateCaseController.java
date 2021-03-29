@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -22,8 +23,10 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
@@ -85,7 +88,7 @@ public class MigrateCaseController extends CallbackController {
 
             List<Element<SupportingEvidenceBundle>> supportingDocumentsToBeRemoved = supportingDocuments.stream()
                 .filter(doc -> documentToBeRemoved.contains(doc.getValue().getName()))
-                .collect(Collectors.toList());
+                .collect(toList());
 
             if (supportingDocumentsToBeRemoved.size() != 2) {
                 throw new IllegalStateException(
@@ -95,6 +98,31 @@ public class MigrateCaseController extends CallbackController {
             supportingDocuments.removeAll(supportingDocumentsToBeRemoved);
 
             caseDetails.getData().put("sealedCMOs", caseData.getSealedCMOs());
+
+            List<UUID> documentsToBeRemovedIds = supportingDocumentsToBeRemoved.stream()
+                .map(Element::getId)
+                .collect(toList());
+
+            List<Element<HearingFurtherEvidenceBundle>> evidenceBundles = caseData.getHearingFurtherEvidenceDocuments();
+
+            List<Element<HearingFurtherEvidenceBundle>> hearingBundles = evidenceBundles.stream()
+                .filter(bundle -> bundle.getValue().getSupportingEvidenceBundle().stream()
+                    .anyMatch(doc -> documentsToBeRemovedIds.contains(doc.getId())))
+                .collect(Collectors.toList());
+
+            if (hearingBundles.size() > 1) {
+                throw new IllegalStateException(
+                    "Expected 1 hearing bundle with documents to be removed, found " + hearingBundles.size());
+            }
+
+            if (hearingBundles.size() == 1) {
+                hearingBundles.get(0).getValue().getSupportingEvidenceBundle()
+                    .removeIf(doc -> documentsToBeRemovedIds.contains(doc.getId()));
+                caseDetails.getData().put("hearingFurtherEvidenceDocuments", evidenceBundles);
+            } else {
+                log.info("No hearing bundle with supporting documents to be removed");
+            }
+
         } else {
             throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
         }
