@@ -185,16 +185,11 @@ module.exports = function () {
       }
     },
 
-    seeOrganisationInTab(fieldValue) {
-      const fieldSelector = '//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Respondents 1"]]]//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Representative"]]]//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="Name:"]]';
-
-      if (Array.isArray(fieldValue)) {
-        fieldValue.forEach((value, index) => {
-          this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
-        });
-      } else {
-        this.seeElement(locate(fieldSelector).withText(fieldValue));
-      }
+    seeOrganisationInTab(pathToField, fieldValue) {
+      let path = [].concat(pathToField);
+      let fieldName = path.splice(-1, 1)[0];
+      const fieldSelector = `//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${path[0]}"]]]//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="${path[1]}"]]]//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
+      this.seeElement(locate(fieldSelector).withText(fieldValue));
     },
 
     seeTextInTab (pathToField) {
