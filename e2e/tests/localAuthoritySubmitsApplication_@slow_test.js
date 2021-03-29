@@ -245,7 +245,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Give details, including assessment outcomes and referrals to health services'], 'mock reason');
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s last name'], respondents[0].solicitor.lastName);
   I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
-  I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'],'Swansea City Council');
+  I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], 'Swansea City Council');
   I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Address'], solicitor.address);
   I.seeInTab(['Respondents 1', 'Managing office', 'Building and Street'], respondents[0].solicitor.address.buildingAndStreet.lineOne);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 2'], respondents[0].solicitor.address.buildingAndStreet.lineTwo);
