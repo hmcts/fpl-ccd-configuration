@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -393,6 +394,53 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage("Expected 2 documents to be removed, found 1");
         }
 
+
+        @Test
+        void shouldThrowsExceptionWhenunexpectedNumberOfHearingBundlesToBeRemoved() {
+            Element<SupportingEvidenceBundle> supportingDoc1 = element(SupportingEvidenceBundle.builder()
+                .name("Draft Placement Order")
+                .document(testDocumentReference())
+                .build());
+
+            Element<SupportingEvidenceBundle> supportingDoc2 = element(SupportingEvidenceBundle.builder()
+                .name("Final Placement Order")
+                .document(testDocumentReference())
+                .build());
+
+            Element<HearingOrder> hearingOrder1 = element(HearingOrder.builder().build());
+            Element<HearingOrder> hearingOrder2 = element(HearingOrder.builder().build());
+            Element<HearingOrder> hearingOrder3 = element(HearingOrder.builder()
+                .supportingDocs(List.of(supportingDoc1, supportingDoc2))
+                .build());
+
+            Element<HearingOrder> expectedHearingOrder3 = element(hearingOrder3.getId(),
+                hearingOrder3.getValue().toBuilder()
+                    .supportingDocs(List.of(supportingDoc1))
+                    .build());
+
+            Element<HearingFurtherEvidenceBundle> bundle = element(HearingFurtherEvidenceBundle.builder()
+                .hearingName("Test 1")
+                .supportingEvidenceBundle(List.of(supportingDoc1, supportingDoc2))
+                .build());
+
+            Element<HearingFurtherEvidenceBundle> bundle2 = element(HearingFurtherEvidenceBundle.builder()
+                .hearingName("Test 1")
+                .supportingEvidenceBundle(List.of(supportingDoc1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(familyManNumber)
+                .sealedCMOs(List.of(hearingOrder1, hearingOrder2, hearingOrder3))
+                .hearingFurtherEvidenceDocuments(List.of(bundle, bundle2))
+                .build();
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseData);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Expected 1 hearing bundle with documents to be removed, found 2");
+        }
+
         @Test
         void shouldRemoveRequiredDocuments() {
 
@@ -422,14 +470,31 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .supportingDocs(List.of(supportingDoc1))
                     .build());
 
-            CaseDetails caseData = caseDetails(migrationId, familyManNumber,
-                List.of(hearingOrder1, hearingOrder2, hearingOrder3));
+            Element<HearingFurtherEvidenceBundle> bundle = element(HearingFurtherEvidenceBundle.builder()
+                .hearingName("Test 1")
+                .supportingEvidenceBundle(List.of(supportingDoc1, supportingDoc2, supportingDoc3))
+                .build());
 
-            CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+            Element<HearingFurtherEvidenceBundle> expectedBundle = element(bundle.getId(), bundle.getValue().toBuilder()
+                .supportingEvidenceBundle(List.of(supportingDoc1))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(familyManNumber)
+                .sealedCMOs(List.of(hearingOrder1, hearingOrder2, hearingOrder3))
+                .hearingFurtherEvidenceDocuments(List.of(bundle))
+                .build();
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseData);
+
+            CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(updatedCaseData.getSealedCMOs().get(0)).isEqualTo(hearingOrder1);
             assertThat(updatedCaseData.getSealedCMOs().get(1)).isEqualTo(hearingOrder2);
             assertThat(updatedCaseData.getSealedCMOs().get(2)).isEqualTo(expectedHearingOrder3);
+
+            assertThat(updatedCaseData.getHearingFurtherEvidenceDocuments())
+                .containsExactly(expectedBundle);
         }
 
         private CaseDetails caseDetails(String migrationId,
@@ -439,6 +504,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .familyManCaseNumber(familyManCaseNumber)
                 .sealedCMOs(sealedCmos)
                 .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+
+        private CaseDetails caseDetails(String migrationId,
+                                        CaseData caseData) {
+            CaseDetails caseDetails = asCaseDetails(caseData);
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
