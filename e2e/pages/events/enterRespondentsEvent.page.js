@@ -29,6 +29,7 @@ module.exports = {
         firstName: `#respondents1_${index}_solicitor_firstName`,
         lastName: `#respondents1_${index}_solicitor_lastName`,
         email: `#respondents1_${index}_solicitor_email`,
+        address: `#respondents1_${index}_solicitor_regionalOfficeAddress_regionalOfficeAddress`,
       },
       contactDetailsHidden: (option) => {
         return {
@@ -110,6 +111,10 @@ module.exports = {
       await within(this.fields(elementIndex).solicitor, () => {
         I.fillField('//input[@id="search-org-text"]', respondent.solicitor.organisation);
         I.click('//*[@id="organisation-table"]/caption/h3[text()="Swansea City Council"]/../../tbody//a');
+      });
+
+      await within(this.fields(elementIndex).solicitor.address, () => {
+        postcodeLookup.enterAddressManually(respondent.solicitor.address);
       });
     }
   },
