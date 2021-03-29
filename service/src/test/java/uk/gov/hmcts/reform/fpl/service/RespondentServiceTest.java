@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -67,6 +71,29 @@ class RespondentServiceTest {
         assertThat(updated.get(1).getValue().getRepresentedBy()).isNullOrEmpty();
     }
 
+    @Test
+    void shouldGetRespondentsWithLegalRepresentation() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(buildRespondent(YES.getValue(), "email-1@test.com"),
+                buildRespondent(NO.getValue(), "email-2@test.com")))
+            .build();
+
+        List<Respondent> respondentsWithLegalRepresentation = service.getRespondentsWithLegalRepresentation(caseData
+            .getRespondents1());
+
+        assertThat(respondentsWithLegalRepresentation).size().isEqualTo(1);
+    }
+
+    @Test
+    void shouldGetRespondentSolicitorEmails() {
+        List<Respondent> respondents = List.of(buildRespondent(YES.getValue(), "email-1@test.com"),
+            buildRespondent(YES.getValue(), "email-2@test.com"));
+
+        List<String> respondentSolicitorEmails = service.getRespondentSolicitorEmails(respondents);
+
+        assertThat(respondentSolicitorEmails).containsExactlyInAnyOrder("email-1@test.com", "email-2@test.com");
+    }
+
     private List<Element<Respondent>> respondents() {
         return wrapElements(respondent("James", "Daniels"), respondent("Bob", "Martyn"));
     }
@@ -82,6 +109,23 @@ class RespondentServiceTest {
                 .lastName(lastName)
                 .build())
             .representedBy(representedBy)
+            .build();
+    }
+
+    private Respondent buildRespondent(String value, String email) {
+        return Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName("Test respondent")
+                .build())
+            .legalRepresentation(value)
+            .solicitor(buildRespondentSolicitor(email))
+            .build();
+    }
+
+    private RespondentSolicitor buildRespondentSolicitor(String email) {
+        return RespondentSolicitor.builder()
+            .firstName("Test respondent solicitor")
+            .email(email)
             .build();
     }
 

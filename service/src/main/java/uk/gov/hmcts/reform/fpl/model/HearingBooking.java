@@ -68,7 +68,7 @@ public class HearingBooking {
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
     private final PreviousHearingVenue previousHearingVenue;
-    private final String cancellationReason;
+    private String cancellationReason;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());

@@ -246,7 +246,6 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s first name'], respondents[0].solicitor.firstName);
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s last name'], respondents[0].solicitor.lastName);
   I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
-  I.seeInTab(['Respondents 1', 'Representative'], 'Organisation'); // might work?
 
   I.seeInTab(['Respondents 2', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 2', 'Party', 'Last name'], respondents[1].lastName);

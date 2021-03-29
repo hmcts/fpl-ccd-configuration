@@ -20,7 +20,7 @@ class RespondentTest {
                 .legalRepresentation(NO.getValue())
                 .build();
 
-            assertTrue(respondent.isOrganisationSpecifiedForRespondentSolicitor());
+            assertTrue(respondent.hasRequiredSolicitorOrganisationDetails());
         }
 
         @Test
@@ -29,7 +29,7 @@ class RespondentTest {
                 .legalRepresentation(YES.getValue())
                 .build();
 
-            assertFalse(respondent.isOrganisationSpecifiedForRespondentSolicitor());
+            assertFalse(respondent.hasRequiredSolicitorOrganisationDetails());
         }
 
         @Test
@@ -39,7 +39,7 @@ class RespondentTest {
                 .solicitor(RespondentSolicitor.builder().firstName("Paul").build())
                 .build();
 
-            assertFalse(respondent.isOrganisationSpecifiedForRespondentSolicitor());
+            assertFalse(respondent.hasRequiredSolicitorOrganisationDetails());
         }
 
         @Test
@@ -52,7 +52,7 @@ class RespondentTest {
                     .build())
                 .build();
 
-            assertTrue(respondent.isOrganisationSpecifiedForRespondentSolicitor());
+            assertTrue(respondent.hasRequiredSolicitorOrganisationDetails());
         }
 
         @Test
@@ -65,7 +65,7 @@ class RespondentTest {
                     .build())
                 .build();
 
-            assertTrue(respondent.isOrganisationSpecifiedForRespondentSolicitor());
+            assertTrue(respondent.hasRequiredSolicitorOrganisationDetails());
         }
     }
 

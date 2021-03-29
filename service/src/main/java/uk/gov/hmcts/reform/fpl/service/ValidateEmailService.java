@@ -14,6 +14,7 @@ import static org.apache.logging.log4j.util.Strings.isEmpty;
 public class ValidateEmailService {
     private static final String ERROR_MESSAGE = "Enter an email address in the correct format,"
         + " for example name@example.com";
+    private static final List<String> OPTIONAL_KEYS = List.of("Applicant", "Representative");
 
     public List<String> validate(List<String> emailAddresses, String key) {
         List<String> validationErrors = new ArrayList<>();
@@ -49,7 +50,7 @@ public class ValidateEmailService {
     }
 
     private boolean emailIsOptional(String key) {
-        return key.equals("Applicant");
+        return OPTIONAL_KEYS.contains(key);
     }
 
     public boolean isValid(String email) {
