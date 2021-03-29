@@ -251,6 +251,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Managing office', 'Town or City'], respondents[0].solicitor.address.town);
   I.seeInTab(['Respondents 1', 'Managing office', 'Postcode/Zipcode'], respondents[0].solicitor.address.postcode);
   I.seeInTab(['Respondents 1', 'Managing office', 'Country'], respondents[0].solicitor.address.country);
+  I.seeOrganisationInTab('Swansea City Council');
 
   I.seeInTab(['Respondents 2', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 2', 'Party', 'Last name'], respondents[1].lastName);

@@ -185,6 +185,18 @@ module.exports = function () {
       }
     },
 
+    seeOrganisationInTab(fieldValue) {
+      const fieldSelector = '//mat-tab-body//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Respondents 1"]]]//*[@class="complex-panel" and .//*[@class="complex-panel-title" and .//*[text()="Representative"]]]//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="Name:"]]';
+
+      if (Array.isArray(fieldValue)) {
+        fieldValue.forEach((value, index) => {
+          this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
+        });
+      } else {
+        this.seeElement(locate(fieldSelector).withText(fieldValue));
+      }
+    },
+
     seeTextInTab (pathToField) {
       const fieldSelector = this.tabFieldSelector(pathToField);
       this.seeElement(locate(fieldSelector));
