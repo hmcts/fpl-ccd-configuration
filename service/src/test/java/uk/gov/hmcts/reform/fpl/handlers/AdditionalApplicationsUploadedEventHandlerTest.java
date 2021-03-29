@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -70,8 +69,6 @@ class AdditionalApplicationsUploadedEventHandlerTest {
 
     @Autowired
     private AdditionalApplicationsUploadedEventHandler additionalApplicationsUploadedEventHandler;
-
-    private C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().build();
 
     final String subjectLine = "Lastname, SACCCCCCCC5676576567";
     AdditionalApplicationsUploadedTemplate additionalApplicationsParameters =

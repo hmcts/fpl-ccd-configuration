@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -43,13 +44,13 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
         OtherApplicationsBundle otherDocumentBundle = additionalApplicationsBundle.getOtherApplicationsBundle();
 
-        getC2DocumentBundleApplicationTypes(applicationTypes, c2DocumentBundle);
-        getOtherApplicationsBundleApplicationTypes(applicationTypes, otherDocumentBundle);
+        addC2DocumentBundleApplicationTypes(applicationTypes, c2DocumentBundle);
+        addOtherApplicationsBundleApplicationTypes(applicationTypes, otherDocumentBundle);
 
         return applicationTypes;
     }
 
-    private void getC2DocumentBundleApplicationTypes(List<String> applicationTypes, C2DocumentBundle c2DocumentBundle) {
+    private void addC2DocumentBundleApplicationTypes(List<String> applicationTypes, C2DocumentBundle c2DocumentBundle) {
         if (c2DocumentBundle == null) {
             return;
         }
@@ -57,8 +58,6 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         String c2Type = String.format("C2 (%s)", c2DocumentBundle.getType().getLabel());
         List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested =
             c2DocumentBundle.getC2AdditionalOrdersRequested();
-
-
 
         if (isNotEmpty(c2AdditionalOrdersRequested)) {
             List<String> c2AdditionalOrdersRequestedLabels = new ArrayList<>();
@@ -75,19 +74,10 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         }
 
         applicationTypes.add(c2Type);
-
-        c2DocumentBundle.getSupplementsBundle().stream()
-            .map(Element::getValue)
-            .forEach(Supplement -> {
-                String supplementName = Supplement.getName().getLabel();
-                if (SupplementType.C20_SECURE_ACCOMMODATION.equals(Supplement.getName())) {
-                    supplementName += String.format(" (%s)", Supplement.getSecureAccommodationType().getLabel());
-                }
-                applicationTypes.add(supplementName);
-            });
+        addSupplementTypes(applicationTypes, c2DocumentBundle.getSupplementsBundle());
     }
 
-    private void getOtherApplicationsBundleApplicationTypes(List<String> applicationTypes,
+    private void addOtherApplicationsBundleApplicationTypes(List<String> applicationTypes,
                                                             OtherApplicationsBundle otherDocumentBundle) {
         if (otherDocumentBundle == null) {
             return;
@@ -102,12 +92,16 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
             applicationTypes.add(otherDocumentBundle.getApplicationType().getLabel());
         }
 
-        otherDocumentBundle.getSupplementsBundle().stream()
+        addSupplementTypes(applicationTypes, otherDocumentBundle.getSupplementsBundle());
+    }
+
+    private void addSupplementTypes(List<String> applicationTypes, List<Element<Supplement>> supplements) {
+        supplements.stream()
             .map(Element::getValue)
-            .forEach(Supplement -> {
-                String supplementName = Supplement.getName().getLabel();
-                if (SupplementType.C20_SECURE_ACCOMMODATION.equals(Supplement.getName())) {
-                    supplementName += String.format(" (%s)", Supplement.getSecureAccommodationType().getLabel());
+            .forEach(supplement -> {
+                String supplementName = supplement.getName().getLabel();
+                if (SupplementType.C20_SECURE_ACCOMMODATION.equals(supplement.getName())) {
+                    supplementName += String.format(" (%s)", supplement.getSecureAccommodationType().getLabel());
                 }
                 applicationTypes.add(supplementName);
             });
