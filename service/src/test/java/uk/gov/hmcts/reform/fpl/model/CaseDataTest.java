@@ -826,7 +826,7 @@ class CaseDataTest {
             DynamicList expectedDynamicList = buildDynamicList(
                 Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
                 Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime()),
-                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime())
+                Pair.of(otherBundle.getId(), "C1 - Parental responsibility, " + otherBundle.getUploadedDateTime())
             );
             assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
         }
