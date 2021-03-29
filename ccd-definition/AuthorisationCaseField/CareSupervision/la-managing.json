@@ -844,7 +844,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
     "UserRole": "[LAMANAGING]",
-    "CRUD": "R"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
