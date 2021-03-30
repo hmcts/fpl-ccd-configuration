@@ -74,6 +74,7 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
         }
 
         applicationTypes.add(c2Type);
+
         addSupplementTypes(applicationTypes, c2DocumentBundle.getSupplementsBundle());
     }
 
