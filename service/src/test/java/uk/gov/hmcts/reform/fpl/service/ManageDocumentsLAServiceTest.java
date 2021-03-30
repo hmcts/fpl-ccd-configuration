@@ -86,8 +86,7 @@ class ManageDocumentsLAServiceTest {
         IncrementalInteger i = new IncrementalInteger(1);
         DynamicList expectedRespondentStatementList = ElementUtils
             .asDynamicList(respondents, null,
-                respondent -> String.format("Respondent %d statements - %s",
-                    i.getAndIncrement(), respondent.getParty().getFullName()));
+                respondent -> respondent.getParty().getFullName());
 
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
