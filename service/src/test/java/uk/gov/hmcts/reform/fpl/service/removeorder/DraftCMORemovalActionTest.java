@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -302,6 +301,38 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
+    void shouldRemoveCaseManagementOrderWhenPresentOnDraftCaseManagementOrdersOnly() {
+        HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(
+                element(TO_REMOVE_ORDER_ID, draftCMO),
+                element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)))
+            .hearingDetails(newArrayList(
+                element(HEARING_ID, hearing(TO_REMOVE_ORDER_ID)),
+                element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID))
+            )).build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
+
+        List<Element<HearingBooking>> updatedHearings = List.of(
+            element(HEARING_ID, hearing(null)),
+            element(ANOTHER_HEARING_ID, hearing(ANOTHER_CASE_MANAGEMENT_ORDER_ID)));
+
+        when(updateCMOHearing.removeHearingLinkedToCMO(caseData, element(TO_REMOVE_ORDER_ID, draftCMO)))
+            .thenReturn(updatedHearings);
+
+        underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO);
+
+        Map<String, List<?>> expectedData = Map.of(
+            "hearingDetails", updatedHearings,
+            "draftUploadedCMOs", newArrayList(element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO))
+        );
+
+        assertThat(caseDetailsMap).containsAllEntriesOf(expectedData);
+    }
+
+    @Test
     void shouldRemoveHearingAssociationWithARemovedCaseManagementOrder() {
         HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
 
@@ -356,6 +387,23 @@ class DraftCMORemovalActionTest {
     }
 
     @Test
+    void shouldThrowAnExceptionIfDraftUploadedCMOContainingRemovedCMOCannotBeFound() {
+        HearingOrder draftCMO = HearingOrder.builder().type(DRAFT_CMO).build();
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(newArrayList(
+                element(ANOTHER_DRAFT_CASE_MANAGEMENT_ORDER_ID, draftCMO)))
+            .build();
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder().data(Map.of()).build());
+
+        assertThatThrownBy(() -> underTest.remove(caseData, caseDetailsMap, TO_REMOVE_ORDER_ID, draftCMO))
+            .usingRecursiveComparison()
+            .isEqualTo(new IllegalStateException(format("Failed to find hearing order that contains order %s",
+                TO_REMOVE_ORDER_ID)));
+    }
+
+    @Test
     void shouldRemoveDraftCaseManagementOrderAndUnlinkHearing() {
         DocumentReference order = testDocumentReference();
         Element<HearingOrder> orderToBeRemoved = element(TO_REMOVE_ORDER_ID, cmo(testDocumentReference()));
@@ -384,8 +432,11 @@ class DraftCMORemovalActionTest {
         when(updateCMOHearing.removeHearingLinkedToCMO(caseData, orderToBeRemoved))
             .thenReturn(updatedHearings);
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        underTest.removeDraftCaseManagementOrder(caseData, caseDetails, orderToBeRemoved);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
+
+        underTest.removeDraftCaseManagementOrder(caseData, caseDetailsMap, orderToBeRemoved);
 
         Map<String, List<?>> expectedData = Map.of(
             "hearingDetails", updatedHearings,
@@ -393,7 +444,7 @@ class DraftCMORemovalActionTest {
             "hearingOrdersBundlesDrafts", ordersBundle
         );
 
-        assertThat(caseDetails.getData()).isEqualTo(expectedData);
+        assertThat(caseDetailsMap).isEqualTo(expectedData);
     }
 
     @Test
@@ -420,10 +471,13 @@ class DraftCMORemovalActionTest {
         when(draftOrderService.migrateCmoDraftToOrdersBundles(caseData)).thenReturn(ordersBundle);
         when(updateCMOHearing.removeHearingLinkedToCMO(caseData, cmoToRemove)).thenReturn(updatedHearings);
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        underTest.removeDraftCaseManagementOrder(caseData, caseDetails, cmoToRemove);
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        assertThat(caseDetails.getData()).isEqualTo(Map.of(
+        underTest.removeDraftCaseManagementOrder(caseData, caseDetailsMap, cmoToRemove);
+
+        assertThat(caseDetailsMap).isEqualTo(Map.of(
             "hearingDetails", updatedHearings,
             "hearingOrdersBundlesDrafts", ordersBundle
             )
@@ -440,9 +494,11 @@ class DraftCMORemovalActionTest {
             .draftUploadedCMOs(newArrayList(element(TO_REMOVE_ORDER_ID, cmo())))
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(CaseDetails.builder()
+            .data(Map.of())
+            .build());
 
-        assertThatThrownBy(() -> underTest.removeDraftCaseManagementOrder(caseData, caseDetails, removedOrder))
+        assertThatThrownBy(() -> underTest.removeDraftCaseManagementOrder(caseData, caseDetailsMap, removedOrder))
             .isInstanceOf(CMONotFoundException.class)
             .hasMessage("Failed to find draft case management order");
     }

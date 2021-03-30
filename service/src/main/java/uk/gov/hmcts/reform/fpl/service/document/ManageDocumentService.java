@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -140,10 +142,15 @@ public class ManageDocumentService {
                 Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, bundles);
 
                 if (bundle.isPresent()) {
-                    return getUserSpecificSupportingEvidences(bundle.get().getValue().getSupportingEvidenceBundle());
+                    List<Element<SupportingEvidenceBundle>> evidenceBundle
+                        = bundle.get().getValue().getSupportingEvidenceBundle();
+
+                    setDefaultEvidenceType(evidenceBundle);
+                    return getUserSpecificSupportingEvidences(evidenceBundle);
                 }
             }
-        } else if (unrelatedEvidence != null) {
+        } else if (isNotEmpty(unrelatedEvidence)) {
+            setDefaultEvidenceType(unrelatedEvidence);
             return unrelatedEvidence;
         }
 
@@ -335,6 +342,13 @@ public class ManageDocumentService {
             .collect(Collectors.toList());
 
         return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
+    }
+
+    private void setDefaultEvidenceType(List<Element<SupportingEvidenceBundle>> unrelatedEvidence) {
+        unrelatedEvidence.stream()
+            .map(Element::getValue)
+            .filter(bundle -> bundle.getType() == null)
+            .forEach(bundle -> bundle.setType(OTHER_REPORTS));
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(

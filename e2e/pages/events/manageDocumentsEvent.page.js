@@ -71,22 +71,37 @@ module.exports = {
     I.attachFile(this.fields.supportingDocuments(index).document, document);
   },
 
+  async selectFurtherEvidenceType(type, index = 0) {
+    switch (type) {
+      case 'Expert reports':
+        I.checkOption(this.fields.supportingDocuments(index).type.expert);
+        break;
+      case 'Other reports':
+        I.checkOption(this.fields.supportingDocuments(index).type.other);
+        break;
+      default:
+        throw new Error(`Unsupported further evidence type ${type}`);
+    }
+  },
+
   async selectConfidential(index = 0) {
     I.click(this.fields.supportingDocuments(index).confidential);
   },
 
-  async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
+  async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
+    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
+    if(selectEvidenceType) {
+      this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
+    }
   },
 
-  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument) {
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
     const index = await I.getActiveElementIndex();
-    this.enterDocumentName(supportingEvidenceDocument.name, index);
-    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    this.uploadDocument(supportingEvidenceDocument.document, index);
+    await this.uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType);
     this.selectConfidential(index);
   },
 };
