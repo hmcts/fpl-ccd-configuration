@@ -324,9 +324,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NFK",
+    "ListElement": "Norfolk County Council",
+    "DisplayOrder": 47
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NELC",
     "ListElement": "North East Lincolnshire Council",
-    "DisplayOrder": 47
+    "DisplayOrder": 48
   },
   {
     "LiveFrom": "01/01/2017",
