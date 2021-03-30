@@ -915,6 +915,29 @@ class ManageDocumentServiceTest {
     }
 
     @Test
+    void shouldNotUpdateAdditionalApplicationsBundlesWhenSelectedApplicationBundleDoesNotExist() {
+        UUID selectedBundleId = UUID.randomUUID();
+
+        List<Element<AdditionalApplicationsBundle>> applicationsBundles = wrapElements(
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
+                .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
+                .build());
+
+        DynamicList applicationBundlesDynamicList = buildDynamicList(selectedBundleId);
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationsBundle(applicationsBundles)
+            .manageDocumentsSupportingC2List(applicationBundlesDynamicList)
+            .c2SupportingDocuments(buildSupportingEvidenceBundle(futureDate))
+            .build();
+
+        Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
+
+        assertThat(updatedBundles.get(ADDITIONAL_APPLICATIONS_BUNDLE_KEY)).isEqualTo(applicationsBundles);
+    }
+
+    @Test
     void shouldUpdatePreviousSupportingEvidenceWhenFurtherEvidenceIsAssociatedWithAHearingAndNewDocumentHasBeenAdded() {
         SupportingEvidenceBundle previousSupportingEvidenceBundle = SupportingEvidenceBundle.builder()
             .dateTimeUploaded(futureDate)
