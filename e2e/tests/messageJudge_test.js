@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const mandatoryWithC2DocumentBundle = require('../fixtures/caseData/mandatoryWithC2DocumentBundle.json');
+const mandatoryWithAdditionalApplicationsBundle = require('../fixtures/caseData/mandatoryWithAdditionalApplicationsBundle.json');
 
 let caseId;
 let message = 'Some note';
@@ -8,7 +8,7 @@ let reply = 'This is a reply';
 Feature('Message judge or legal adviser');
 
 BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatoryWithC2DocumentBundle);
+  caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle);
 });
 
 Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {

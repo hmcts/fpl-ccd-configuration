@@ -426,7 +426,7 @@ class MessageJudgeServiceTest {
     }
 
     @Test
-    void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenApplicationHasBeenSelected() {
+    void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenOtherApplicationSelected() {
         UUID c2DocumentBundleId = UUID.randomUUID();
 
         OtherApplicationsBundle selectedOtherDocumentBundle = OtherApplicationsBundle.builder()
@@ -479,6 +479,64 @@ class MessageJudgeServiceTest {
                 buildDynamicList(1,
                     Pair.of(c2DocumentBundleId, "C2, 2 January 2021, 12:00pm"),
                     Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
+                )
+            );
+    }
+
+    @Test
+    void shouldRebuildAdditionalApplicationDynamicListAndFormatDocumentsCorrectlyWhenC2ApplicationSelected() {
+        UUID otherDocumentBundleId = UUID.randomUUID();
+
+        OtherApplicationsBundle selectedOtherDocumentBundle = OtherApplicationsBundle.builder()
+            .id(otherDocumentBundleId)
+            .uploadedDateTime("1 January 2021, 12:00pm")
+            .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+            .document(DocumentReference.builder()
+                .filename(OTHER_FILE_NAME)
+                .build())
+            .build();
+
+        C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+            .id(SELECTED_DYNAMIC_LIST_ITEM_ID)
+            .uploadedDateTime("2 January 2021, 12:00pm")
+            .document(DocumentReference.builder()
+                .filename(C2_FILE_NAME)
+                .build())
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+                        .build())
+                    .build())))
+            .build();
+
+        AdditionalApplicationsBundle additionalApplicationsBundle = AdditionalApplicationsBundle.builder()
+            .otherApplicationsBundle(selectedOtherDocumentBundle)
+            .c2DocumentBundle(c2DocumentBundle)
+            .build();
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .additionalApplicationsDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
+            .build();
+
+        String expectedRelatedDocumentsLabel = C2_FILE_NAME + "\n" + C2_SUPPORTING_DOCUMENT_FILE_NAME;
+
+        assertThat(messageJudgeService.populateNewMessageFields(caseData))
+            .extracting("relatedDocumentsLabel", "additionalApplicationsDynamicList")
+            .containsExactly(
+                expectedRelatedDocumentsLabel,
+                buildDynamicList(0,
+                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C2, 2 January 2021, 12:00pm"),
+                    Pair.of(otherDocumentBundleId, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
                 )
             );
     }
@@ -825,6 +883,60 @@ class MessageJudgeServiceTest {
 
         assertThat(newMessage.getRelatedDocumentFileNames()).isEqualTo(
             selectedC2DocumentBundle.getAllC2DocumentFileNames()
+        );
+        assertThat(relatedDocuments.get(0).getValue()).isEqualTo(mainC2DocumentReference);
+        assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
+    }
+
+    @Test
+    void shouldAppendNewJudicialMessageToJudicialMessageListWhenOtherApplicationDocumentHasBeenSelected() {
+        JudicialMessageMetaData judicialMessageMetaData = JudicialMessageMetaData.builder()
+            .recipient(MESSAGE_RECIPIENT)
+            .build();
+
+        DocumentReference mainC2DocumentReference = DocumentReference.builder()
+            .filename(C2_FILE_NAME)
+            .build();
+
+        DocumentReference supportingC2DocumentReference = DocumentReference.builder()
+            .filename(C2_SUPPORTING_DOCUMENT_FILE_NAME)
+            .build();
+
+        OtherApplicationsBundle selectedOtherApplicationBundle = OtherApplicationsBundle.builder()
+            .id(SELECTED_DYNAMIC_LIST_ITEM_ID)
+            .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+            .document(mainC2DocumentReference)
+            .supportingEvidenceBundle(List.of(
+                element(SupportingEvidenceBundle.builder()
+                    .document(supportingC2DocumentReference)
+                    .build())))
+            .build();
+
+        MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
+            .judicialMessageNote(MESSAGE_NOTE)
+            .judicialMessageMetaData(judicialMessageMetaData)
+            .additionalApplicationsDynamicList(DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(SELECTED_DYNAMIC_LIST_ITEM_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .messageJudgeEventData(messageJudgeEventData)
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .otherApplicationsBundle(selectedOtherApplicationBundle)
+                .build()))
+            .build();
+
+        when(userService.getUserEmail()).thenReturn(MESSAGE_SENDER);
+
+        List<Element<JudicialMessage>> updatedMessages = messageJudgeService.addNewJudicialMessage(caseData);
+        JudicialMessage newMessage = updatedMessages.get(0).getValue();
+        List<Element<DocumentReference>> relatedDocuments = newMessage.getRelatedDocuments();
+
+        assertThat(newMessage.getRelatedDocumentFileNames()).isEqualTo(
+            selectedOtherApplicationBundle.getAllDocumentFileNames()
         );
         assertThat(relatedDocuments.get(0).getValue()).isEqualTo(mainC2DocumentReference);
         assertThat(relatedDocuments.get(1).getValue()).isEqualTo(supportingC2DocumentReference);
