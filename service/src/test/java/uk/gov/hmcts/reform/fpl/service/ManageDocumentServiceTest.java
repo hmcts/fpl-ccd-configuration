@@ -938,7 +938,7 @@ class ManageDocumentServiceTest {
 
         Map<String, Object> updatedBundles = underTest.buildFinalApplicationBundleSupportingDocuments(caseData);
 
-        assertThat(updatedBundles.get(ADDITIONAL_APPLICATIONS_BUNDLE_KEY)).isEqualTo(applicationsBundles);
+        assertThat(updatedBundles).containsEntry(ADDITIONAL_APPLICATIONS_BUNDLE_KEY, applicationsBundles);
     }
 
     @Test

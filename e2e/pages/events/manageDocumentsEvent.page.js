@@ -43,14 +43,8 @@ module.exports = {
     I.selectOption(this.fields.hearingList, `Case management hearing, ${hearingDate}`);
   },
 
-  async selectC2FromDropdown() {
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
-    I.waitForElement(this.fields.c2DocumentsList);
-    I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
-  },
-
-  async selectOtherApplicationFromDropdown() {
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
+  async selectApplicationBundleFromDropdown(index) {
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(${index})`);
     I.waitForElement(this.fields.c2DocumentsList);
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },

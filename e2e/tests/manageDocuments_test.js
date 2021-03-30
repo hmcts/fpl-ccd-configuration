@@ -104,7 +104,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
-  await manageDocumentsEventPage.selectC2FromDropdown();
+  await manageDocumentsEventPage.selectApplicationBundleFromDropdown(2);
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
@@ -126,7 +126,7 @@ Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectAdditionalApplicationsSupportingDocuments();
-  await manageDocumentsLAEventPage.selectC2();
+  await manageDocumentsLAEventPage.selectApplicationBundleFromDropdown(2);
   await I.goToNextPage();
   await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
   await I.addAnotherElementToCollection();
@@ -155,7 +155,7 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
-  await manageDocumentsEventPage.selectOtherApplicationFromDropdown();
+  await manageDocumentsEventPage.selectApplicationBundleFromDropdown(2);
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
@@ -177,7 +177,7 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
   await manageDocumentsLAEventPage.selectAdditionalApplicationsSupportingDocuments();
-  await manageDocumentsLAEventPage.selectOtherApplication();
+  await manageDocumentsLAEventPage.selectApplicationBundleFromDropdown(2);
   await I.goToNextPage();
   await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
   await I.addAnotherElementToCollection();

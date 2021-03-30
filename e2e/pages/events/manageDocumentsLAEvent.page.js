@@ -47,16 +47,8 @@ module.exports = {
     I.click(this.fields.documentType.courtBundle);
   },
 
-  async selectC2() {
-    I.click(this.fields.documentType.additionalApplications);
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
-    I.waitForElement(this.fields.c2DocumentsList);
-    I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
-  },
-
-  async selectOtherApplication() {
-    I.click(this.fields.documentType.additionalApplications);
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
+  async selectApplicationBundleFromDropdown(index) {
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(${index})`);
     I.waitForElement(this.fields.c2DocumentsList);
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
