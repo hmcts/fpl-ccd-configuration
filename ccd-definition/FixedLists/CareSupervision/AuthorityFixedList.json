@@ -492,16 +492,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "SUF",
+    "ListElement": "Suffolk County Council",
+    "DisplayOrder": 84
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "GSCC",
     "ListElement": "Surrey County Council",
-    "DisplayOrder": 84
+    "DisplayOrder": 85
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SA",
     "ListElement": "Swansea City Council",
-    "DisplayOrder": 85
+    "DisplayOrder": 86
   },
   {
     "LiveFrom": "01/01/2017",
