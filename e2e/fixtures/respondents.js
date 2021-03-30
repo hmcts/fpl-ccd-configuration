@@ -26,6 +26,16 @@ module.exports = [
       lastName: 'Smith',
       email: 'adam@smith.com',
       organisation: 'Swansea',
+      organisationAddress: {
+        buildingAndStreet: {
+          lineOne: 'Flat 1, Swansea Apartments',
+          lineTwo: 'Swansea Central Square 11',
+          lineThree: '40 Fleet street',
+        },
+        town: 'Swansea',
+        city: 'Swansea',
+        postcode: 'CR0 2GE',
+      },
       address: {
         buildingAndStreet: {
           lineOne: 'Flat 2',
