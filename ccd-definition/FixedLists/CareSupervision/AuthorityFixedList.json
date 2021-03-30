@@ -604,6 +604,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "WRX",
+    "ListElement": "Wrexham County Borough Council",
+    "DisplayOrder": 107
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "YCC",
     "ListElement": "York City Council",
     "DisplayOrder": 110
