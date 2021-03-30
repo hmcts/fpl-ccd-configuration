@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -191,8 +192,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseData, false,
-                List.of(element(SupportingEvidenceBundle.builder().build())));
+            manageDocumentService.getFurtherEvidenceCollection(caseData, false, null);
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = supportingEvidenceBundleCollection.get(0).getValue();
 
@@ -213,6 +213,7 @@ class ManageDocumentServiceTest {
             manageDocumentService.getFurtherEvidenceCollection(caseData, false, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
+        assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
     @Test
@@ -235,6 +236,7 @@ class ManageDocumentServiceTest {
             manageDocumentService.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
+        assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
     @Test
@@ -768,7 +770,7 @@ class ManageDocumentServiceTest {
                     .supportingEvidenceBundle(Arrays.asList())
                     .build()),
                 element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
-                     .hearingName("Case Management hearing 2")
+                    .hearingName("Case Management hearing 2")
                     .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                     .build()))))
             .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
