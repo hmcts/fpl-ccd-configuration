@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
@@ -177,6 +178,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
             .uploadedBy("HMCTS")
+            .type(GUARDIAN_REPORTS)
             .build());
     }
 
