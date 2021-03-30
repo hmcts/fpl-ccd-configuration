@@ -226,7 +226,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyEvidenceBundleWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
+    void shouldReturnEvidenceBundleWithDefaultTypeWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
             .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
             .build();
@@ -238,7 +238,8 @@ class ManageDocumentServiceTest {
         SupportingEvidenceBundle firstSupportingEvidenceBundle = supportingEvidenceBundleCollection.get(0).getValue();
 
         assertThat(supportingEvidenceBundleCollection).isNotEmpty();
-        assertThat(firstSupportingEvidenceBundle).isEqualTo(SupportingEvidenceBundle.builder().build());
+        assertThat(firstSupportingEvidenceBundle).isEqualTo(
+            SupportingEvidenceBundle.builder().type(OTHER_REPORTS).build());
     }
 
     @Test
