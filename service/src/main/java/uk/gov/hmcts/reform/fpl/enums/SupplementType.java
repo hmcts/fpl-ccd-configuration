@@ -13,5 +13,5 @@ public enum SupplementType {
     C18_RECOVERY_ORDER("C18 - Recovery order"),
     C20_SECURE_ACCOMMODATION("C20 - Secure accommodation");
 
-    private final String name;
+    private final String label;
 }

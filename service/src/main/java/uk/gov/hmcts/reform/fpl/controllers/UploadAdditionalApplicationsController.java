@@ -13,9 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
-import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.events.C2PbaPaymentNotTakenEvent;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsPbaPaymentNotTakenEvent;
+import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
@@ -112,21 +111,11 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         final PBAPayment pbaPayment = lastBundle.getPbaPayment();
 
-        if (hasC2Order(caseData)) {
-            C2DocumentBundle c2DocumentBundle = lastBundle.getC2DocumentBundle();
-
-            c2DocumentBundle.toBuilder()
-                .usePbaPayment(pbaPayment.getUsePbaPayment())
-                .pbaNumber(pbaPayment.getPbaNumber())
-                .clientCode(pbaPayment.getClientCode())
-                .fileReference(pbaPayment.getFileReference()).build();
-
-            publishEvent(new C2UploadedEvent(caseData, c2DocumentBundle));
-        }
+        publishEvent(new AdditionalApplicationsUploadedEvent(caseData));
 
         if (isNotPaidByPba(pbaPayment)) {
             log.info("Payment for case {} not taken due to user decision", caseDetails.getId());
-            publishEvent(new C2PbaPaymentNotTakenEvent(caseData));
+            publishEvent(new AdditionalApplicationsPbaPaymentNotTakenEvent(caseData));
         } else {
             if (amountToPayShownToUser(caseDetails)) {
                 try {
@@ -142,10 +131,6 @@ public class UploadAdditionalApplicationsController extends CallbackController {
                 publishEvent(new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
             }
         }
-    }
-
-    private boolean hasC2Order(CaseData caseData) {
-        return caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER);
     }
 
     private boolean amountToPayShownToUser(CaseDetails caseDetails) {
