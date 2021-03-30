@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -117,9 +119,11 @@ class ManageDocumentServiceTest {
             .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument);
     }
 
-    @Test
-    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData() {
-        CaseData caseData = CaseData.builder().build();
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotPopulateHearingListOrC2DocumentListWhenHearingAndC2DocumentsAreNotPresentOnCaseData(
+        List<Element<HearingBooking>> hearingDetails) {
+        CaseData caseData = CaseData.builder().hearingDetails(hearingDetails).build();
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(NO.getValue())
             .hasC2s(NO.getValue())
@@ -158,6 +162,27 @@ class ManageDocumentServiceTest {
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, "manageDocumentsHearingLabel")
             .containsExactly(expectedDynamicList, selectedHearingBooking.toLabel());
+    }
+
+    @Test
+    void shouldReturnEmptyHearingListAndLabelWhenTheFurtherEvidenceDocumentsAreNotRelatedToHearings() {
+        UUID selectHearingId = randomUUID();
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(createHearingBooking(futureDate.plusDays(1), futureDate.plusDays(3))),
+            element(createHearingBooking(futureDate, futureDate.plusDays(2)))
+        );
+
+        CaseData caseData = CaseData.builder()
+            .manageDocumentsHearingList(selectHearingId.toString())
+            .hearingDetails(hearingBookings)
+            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
+            .build();
+
+        Map<String, Object> listAndLabel = underTest.initialiseHearingListAndLabel(
+            caseData, caseData.getManageDocument().isDocumentRelatedToHearing());
+
+        assertThat(listAndLabel).isEmpty();
     }
 
     @Test
