@@ -71,7 +71,7 @@
     "ID": "JudicialMessage",
     "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
-    "ElementLabel": "Message",
+    "ElementLabel": "Latest message",
     "SecurityClassification": "Public",
     "FieldShowCondition": "status!=\"CLOSED\""
   },

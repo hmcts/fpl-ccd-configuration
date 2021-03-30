@@ -725,13 +725,14 @@ class MessageJudgeServiceTest {
     @SuppressWarnings("unchecked")
     void shouldUpdateExistingJudicialMessageWhenReplying() {
         String messageReply = "Reply to message";
-        String dateSent = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
+        String originalSentDate = formatLocalDateTimeBaseUsingFormat(time.now().minusDays(1), DATE_TIME_AT);
 
-        MessageJudgeEventData messageJudgeEventData = buildMessageEventData(messageReply, dateSent, true);
+        MessageJudgeEventData messageJudgeEventData
+            = buildMessageEventData(messageReply, originalSentDate, true);
 
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
-            .judicialMessages(List.of(element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent))))
+            .judicialMessages(List.of(element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(originalSentDate))))
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
@@ -754,7 +755,7 @@ class MessageJudgeServiceTest {
                 .status(OPEN)
                 .latestMessage(messageReply)
                 .messageHistory(formattedMessageHistory)
-                .dateSent(dateSent)
+                .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
                 .build()
         );
 

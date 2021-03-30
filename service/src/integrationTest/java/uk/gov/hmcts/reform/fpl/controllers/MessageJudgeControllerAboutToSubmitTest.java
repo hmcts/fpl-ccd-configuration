@@ -94,10 +94,11 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldUpdateExistingJudicialMessageAndSortIntoExistingJudicialMessageListWhenReplying() {
-        String dateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
+        String originalDateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
+            .judicialMessageDynamicList(buildDynamicList(0,
+                Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, originalDateSent)))
             .judicialMessageReply(JudicialMessage.builder()
                 .isReplying(YesNo.YES.getValue())
                 .latestMessage(REPLY)
@@ -110,7 +111,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .judicialMessages(List.of(
-                element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent, MESSAGE))))
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(originalDateSent, MESSAGE))))
             .build();
 
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
@@ -122,7 +123,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .latestMessage(REPLY)
             .messageHistory(String.format("%s - %s", SENDER, MESSAGE) + "\n \n"
                 + String.format("%s - %s", MESSAGE_RECIPIENT, REPLY))
-            .dateSent(dateSent)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
