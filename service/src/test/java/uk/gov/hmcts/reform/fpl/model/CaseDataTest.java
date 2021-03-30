@@ -1448,8 +1448,7 @@ class CaseDataTest {
             Optional<Element<RespondentStatement>> optionalRespondentStatementElement
                 = caseData.getRespondentStatementByRespondentId(elementId);
 
-            assertThat(optionalRespondentStatementElement).isPresent();
-            assertThat(optionalRespondentStatementElement).contains(respondentStatementElementOne);
+            assertThat(optionalRespondentStatementElement).isPresent().contains(respondentStatementElementOne);
         }
 
         @Test
@@ -1482,8 +1481,7 @@ class CaseDataTest {
             CaseData caseData = CaseData.builder().respondents1(respondents).build();
             Optional<Element<Respondent>> optionalRespondentElement = caseData.findRespondent(elementId);
 
-            assertThat(optionalRespondentElement).isPresent();
-            assertThat(optionalRespondentElement).contains(respondentOneElement);
+            assertThat(optionalRespondentElement).isPresent().contains(respondentOneElement);
         }
 
         @Test
