@@ -10,14 +10,19 @@ import uk.gov.hmcts.reform.fpl.controllers.orders.ApproveDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.SendLetterService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
@@ -31,7 +36,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
@@ -66,7 +70,10 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final DocumentReference orderDocument = testDocumentReference();
+    private static final String UPDATE_CASE_SUMMARY_EVENT = "internal-update-case-summary";
+    private static final String FAMILY_MAN_CASE_NUMBER = "FM001";
+    private static final DocumentReference orderDocumentCmo = testDocumentReference("cmo.pdf");
+    private static final DocumentReference orderDocumentC21 = testDocumentReference("c21.pdf");
 
     @MockBean
     private NotificationClient notificationClient;
@@ -76,6 +83,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private SendLetterService sendLetters;
 
     ApproveDraftOrdersControllerSubmittedTest() {
         super("approve-draft-orders");
@@ -97,9 +107,9 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendCMOIssuedNotificationsIfJudgeApproves() {
-        given(documentDownloadService.downloadDocument(orderDocument.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED);
+        HearingOrder caseManagementOrder = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
 
         CaseDetails caseDetails = buildCaseDetails(caseManagementOrder);
 
@@ -155,12 +165,15 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendDraftOrdersIssuedNotificationsIfJudgeApprovesMultipleOrders() {
-        given(documentDownloadService.downloadDocument(orderDocument.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentCmo.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
+        given(documentDownloadService.downloadDocument(orderDocumentC21.getBinaryUrl())).willReturn(DOCUMENT_CONTENT);
 
-        HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED);
-        HearingOrder c21 = buildOrder(C21, APPROVED);
+        HearingOrder cmo = buildOrder(AGREED_CMO, APPROVED, orderDocumentCmo);
+        HearingOrder c21 = buildOrder(C21, APPROVED, orderDocumentC21);
 
         CaseDetails caseDetails = buildCaseDetails(cmo, c21);
+
+        final List<Recipient> recipients = List.of(createRespondentParty());
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -202,26 +215,35 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
                 eq(NOTIFICATION_REFERENCE)
             );
 
-            verify(coreCaseDataService, times(2)).triggerEvent(JURISDICTION,
-                CASE_TYPE,
-                CASE_ID,
-                SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", cmo.getOrder())
+            verify(coreCaseDataService).triggerEvent(eq(JURISDICTION),
+                eq(CASE_TYPE),
+                eq(CASE_ID),
+                eq(UPDATE_CASE_SUMMARY_EVENT),
+                anyMap()
             );
 
-            verify(coreCaseDataService, times(2)).triggerEvent(JURISDICTION,
-                CASE_TYPE,
+            verify(sendLetters).send(
+                cmo.getOrder(),
+                recipients,
                 CASE_ID,
-                SEND_DOCUMENT_EVENT,
-                Map.of("documentToBeSent", c21.getOrder()));
+                FAMILY_MAN_CASE_NUMBER
+            );
+
+            verify(sendLetters).send(
+                c21.getOrder(),
+                recipients,
+                CASE_ID,
+                FAMILY_MAN_CASE_NUMBER
+            );
 
             verifyNoMoreInteractions(notificationClient);
+            verifyNoMoreInteractions(sendLetters);
         });
     }
 
     @Test
     void shouldSendCMORejectedNotificationIfJudgeRequestedChanges() {
-        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED));
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo));
         caseDetails.setId(CASE_ID);
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
@@ -240,7 +262,8 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
     @Test
     void shouldSendDraftOrdersRejectedNotificationIfJudgeRequestedChangesOnMultipleOrders() {
-        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED), buildOrder(C21, RETURNED));
+        CaseDetails caseDetails = buildCaseDetails(buildOrder(AGREED_CMO, RETURNED, orderDocumentCmo),
+            buildOrder(C21, RETURNED, orderDocumentC21));
         caseDetails.setId(CASE_ID);
 
         CallbackRequest callbackRequest = CallbackRequest.builder().caseDetails(caseDetails).build();
@@ -263,10 +286,12 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = asCaseDetails(CaseData.builder()
             .representatives(createRepresentatives())
+            .respondents1(createNonRepresentedRespondents())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .ordersToBeSent(wrapElements(caseManagementOrders))
             .lastHearingOrderDraftsHearingId(hearingId)
             .hearingDetails(List.of(element(hearingId, hearing(cmoId))))
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .build());
 
         caseDetails.setId(CASE_ID);
@@ -275,7 +300,7 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
         return caseDetails;
     }
 
-    private HearingOrder buildOrder(HearingOrderType type, CMOStatus status) {
+    private HearingOrder buildOrder(HearingOrderType type, CMOStatus status, DocumentReference orderDocument) {
         return HearingOrder.builder()
             .type(type)
             .status(status)
@@ -306,5 +331,22 @@ class ApproveDraftOrdersControllerSubmittedTest extends AbstractCallbackTest {
             .fullName("Charlie Brown")
             .servingPreferences(EMAIL)
             .build());
+    }
+
+    private static List<Element<Respondent>> createNonRepresentedRespondents() {
+        return wrapElements(
+            Respondent.builder().party(createRespondentParty()).build()
+        );
+    }
+
+    private static RespondentParty createRespondentParty() {
+        return RespondentParty.builder()
+            .firstName("John")
+            .lastName("Smith")
+            .address(Address.builder()
+                .addressLine1("Somewhere over the rainbow")
+                .postcode("RA1 9BW")
+                .build())
+            .build();
     }
 }
