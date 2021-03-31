@@ -45,7 +45,7 @@
     "ListElementCode": "type",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "manageDocumentLA.type=\"FURTHER_EVIDENCE_DOCUMENTS\""
+    "FieldShowCondition": "manageDocumentLA.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeListLA!=\"RESPONDENT_STATEMENT\""
   },
   {
     "LiveFrom": "01/01/2017",
