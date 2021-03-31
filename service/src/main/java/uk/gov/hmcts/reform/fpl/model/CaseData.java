@@ -153,6 +153,15 @@ public class CaseData {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
+    public DynamicList buildRespondentStatementDynamicList(UUID selected) {
+        return asDynamicList(getAllRespondents(), selected,
+            respondent -> respondent.getParty().getFullName());
+    }
+
+    public DynamicList buildRespondentStatementDynamicList() {
+        return buildRespondentStatementDynamicList(null);
+    }
+
     private final Proceeding proceeding;
 
     @NotNull(message = "Add the applicant's solicitor's details")
@@ -483,6 +492,10 @@ public class CaseData {
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 
+    public Optional<Element<Respondent>> findRespondent(UUID id) {
+        return findElement(id, getAllRespondents());
+    }
+
     public Optional<Applicant> findApplicant(int seqNo) {
         if (isEmpty(applicants) || applicants.size() <= seqNo) {
             return empty();
@@ -559,9 +572,12 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+
+    private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
     private final Object courtBundleHearingList;
+    private final Object respondentStatementList;
 
     private final CourtBundle manageDocumentsCourtBundle;
     private final List<Element<CourtBundle>> courtBundleList;
@@ -580,6 +596,16 @@ public class CaseData {
 
     public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
         return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<RespondentStatement>> getRespondentStatements() {
+        return defaultIfNull(respondentStatements, new ArrayList<>());
+    }
+
+    public Optional<Element<RespondentStatement>> getRespondentStatementByRespondentId(UUID id) {
+        return getRespondentStatements().stream()
+            .filter(respondentStatement -> respondentStatement.getValue().getRespondentId().equals(id))
+            .findAny();
     }
 
     public boolean documentBundleContainsHearingId(UUID hearingId) {

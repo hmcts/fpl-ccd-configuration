@@ -48,6 +48,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentStatementList",
+    "FieldType": "DynamicList",
+    "Label": "Select respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsRelatedToHearing",
     "FieldType": "YesOrNo",
     "Label": "Does the evidence document relate to a hearing?",

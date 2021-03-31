@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
@@ -32,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_STATEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -48,7 +52,7 @@ class ManageDocumentsLAServiceTest {
     private final LocalDateTime futureDate = time.now().plusDays(1);
 
     @Test
-    void shouldPopulateFieldsWhenHearingAndAdditionalApplicationBundlesArePresentOnCaseData() {
+    void shouldPopulateFieldsWhenAllExpectedFieldsArePresentOnCaseData() {
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6)))
         );
@@ -61,12 +65,29 @@ class ManageDocumentsLAServiceTest {
             .applicationType(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE)
             .uploadedDateTime(futureDate.toString()).build();
 
+        List<Element<Respondent>> respondents = List.of(
+            element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Sam")
+                    .lastName("Wilson")
+                    .relationshipToChild("Father")
+                    .build())
+                .build()),
+            element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Megan")
+                    .lastName("Hannah")
+                    .relationshipToChild("Mother")
+                    .build())
+                .build()));
+
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(c2Bundle))
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(c2Application)
                 .otherApplicationsBundle(otherApplicationsBundle).build()))
             .hearingDetails(hearingBookings)
+            .respondents1(respondents)
             .build();
 
         DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
@@ -77,6 +98,10 @@ class ManageDocumentsLAServiceTest {
             Pair.of(otherApplicationsBundle.getId(), "C19, " + otherApplicationsBundle.getUploadedDateTime())
         );
 
+        DynamicList expectedRespondentStatementList = ElementUtils
+            .asDynamicList(respondents, null,
+                respondent -> respondent.getParty().getFullName());
+
         ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
@@ -85,8 +110,10 @@ class ManageDocumentsLAServiceTest {
         Map<String, Object> listAndLabel = manageDocumentLAService.initialiseManageDocumentLAEvent(caseData);
 
         assertThat(listAndLabel)
-            .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
-            .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument);
+            .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY,
+                RESPONDENT_STATEMENT_LIST_KEY)
+            .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument,
+                expectedRespondentStatementList);
     }
 
     @Test
@@ -102,6 +129,21 @@ class ManageDocumentsLAServiceTest {
         assertThat(listAndLabel)
             .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(null, null, expectedManageDocument);
+    }
+
+    @Test
+    void shouldNotPopulateRespondentStatementListWhenRespondentsAreNotPresentOnCaseData() {
+        CaseData caseData = CaseData.builder().build();
+        ManageDocumentLA expectedManageDocument = ManageDocumentLA.builder()
+            .hasHearings(NO.getValue())
+            .hasC2s(NO.getValue())
+            .build();
+
+        Map<String, Object> listAndLabel = manageDocumentLAService.initialiseManageDocumentLAEvent(caseData);
+
+        assertThat(listAndLabel)
+            .extracting(RESPONDENT_STATEMENT_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
+            .containsExactly(null, expectedManageDocument);
     }
 
     @Test

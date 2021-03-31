@@ -17,6 +17,7 @@ public enum OtherApplicationType {
     C17_EDUCATION_SUPERVISION_ORDER("C17 - Education supervision order (ESO)", 17),
     C17A_EXTENSION_OF_ESO("C17a - Variation or extension of ESO", 17),
     C19_WARRANT_TO_ASSISTANCE("C19 - Warrant of assistance", 19),
+    C63_DECLARATION_OF_PARENTAGE("C63 - Declaration of parentage", 63),
     C100_CHILD_ARRANGEMENTS("C100 - Child arrangements, prohibited steps or specific issue", 100);
 
     private final String label;
