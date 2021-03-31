@@ -22,11 +22,11 @@ public enum CaseRole {
     private final String formattedName;
 
     CaseRole() {
-        this.formattedName = String.format("[%s]", name());
+        this.formattedName = formatName(name());
     }
 
-    CaseRole(String formattedName) {
-        this.formattedName = formattedName;
+    CaseRole(String name) {
+        this.formattedName = formatName(name);
     }
 
     public String formattedName() {
@@ -35,5 +35,9 @@ public enum CaseRole {
 
     public static CaseRole from(String name) {
         return CaseRole.valueOf(name.replaceAll("[\\[\\]]", "").replace("solicitor", "SOLICITOR_"));
+    }
+
+    private static String formatName(String name) {
+        return String.format("[%s]", name);
     }
 }
