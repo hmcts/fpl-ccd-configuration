@@ -436,44 +436,51 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "RBC",
+    "ListElement": "Rochdale Borough Council",
+    "DisplayOrder": 71
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SMC",
     "ListElement": "Sandwell Metropolitan Council",
-    "DisplayOrder": 71
+    "DisplayOrder": 72
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SHR",
     "ListElement": "Shropshire Borough Council",
-    "DisplayOrder": 72
+    "DisplayOrder": 73
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SOL",
     "ListElement": "Solihull Metropolitan Borough Council",
-    "DisplayOrder": 73
+    "DisplayOrder": 74
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SOC",
     "ListElement": "Somerset County Council",
-    "DisplayOrder": 74
+    "DisplayOrder": 75
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SGL",
     "ListElement": "South Gloucestershire Council",
-    "DisplayOrder": 75
+    "DisplayOrder": 76
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
-    "DisplayOrder": 76
+    "DisplayOrder": 77
   },
   {
     "LiveFrom": "01/01/2017",
