@@ -2,15 +2,11 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "ListElementCode": "hearingName",
+    "CaseFieldID": "respondentStatements",
+    "ListElementCode": "respondentName",
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
           "[LASOLICITOR]",
           "[LABARRISTER]",
           "[EPSMANAGING]",
@@ -20,6 +16,10 @@
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]",
@@ -32,7 +32,37 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "CaseFieldID": "respondentStatements",
+    "ListElementCode": "respondentId",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "[LASOLICITOR]",
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
+        ],
+        "CRUD": "CRUD"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-magistrate",
+          "[CAFCASSSOLICITOR]",
+          "[BARRISTER]",
+          "[SOLICITOR]",
+          "caseworker-publiclaw-cafcass"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentStatements",
     "ListElementCode": "supportingEvidenceBundle",
     "AccessControl": [
       {
@@ -42,7 +72,7 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate"
         ],
-        "CRUD": "CRUD"
+        "CRUD": "R"
       },
       {
         "UserRoles": [
@@ -68,7 +98,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "CaseFieldID": "respondentStatements",
     "ListElementCode": "supportingEvidenceLA",
     "AccessControl": [
       {
@@ -91,12 +121,7 @@
       },
       {
         "UserRoles": [
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "R"
-      },
-      {
-        "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]"
@@ -109,7 +134,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingFurtherEvidenceDocuments",
+    "CaseFieldID": "respondentStatements",
     "ListElementCode": "supportingEvidenceNC",
     "AccessControl": [
       {
@@ -126,18 +151,12 @@
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-cafcass",
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]"
         ],
         "CRUD": "R"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-cafcass"
-        ],
-        "CRUD": "U",
-        "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
       }
     ]
   }
