@@ -107,9 +107,9 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   manageDocumentsEventPage.selectHearing(formatHearingDate(hearingStartDate));
   await I.goToNextPage();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0], true);
   await I.addAnotherElementToCollection();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1], true);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 
@@ -118,7 +118,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   manageDocumentsEventPage.selectHearing('1 January 2060');
   await I.goToNextPage();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0], true);
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 

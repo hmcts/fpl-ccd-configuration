@@ -35,7 +35,7 @@ module "key-vault" {
   tenant_id               = var.tenant_id
   object_id               = var.jenkins_AAD_objectId
   resource_group_name     = azurerm_resource_group.rg.name
-  product_group_object_id = "bb778c38-9e7a-4d03-8dad-4fe0b207e8a3"
+  product_group_name      = "dcd_group_fpl_v2"
   common_tags             = var.common_tags
 
   #aks migration

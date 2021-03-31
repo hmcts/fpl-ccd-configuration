@@ -42,7 +42,7 @@ class CafcassEmailContentProviderSDOIssuedTest extends AbstractEmailContentProvi
             .documentLink(generateAttachedDocumentLink(APPLICATION_BINARY)
                 .map(JSONObject::toMap)
                 .orElse(null))
-            .callout("^Smith, 12345, hearing 1 Jan 2020")
+            .callout("Smith, 12345, hearing 1 Jan 2020")
             .build();
 
         NotifyData actualParameters = contentProviderSDOIssued.getNotifyData(caseData);

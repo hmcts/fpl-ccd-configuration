@@ -12,12 +12,14 @@ import uk.gov.hmcts.reform.fpl.handlers.cmo.DraftOrdersApprovedEventHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -25,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,11 +39,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
@@ -51,9 +51,12 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepres
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 @ExtendWith(SpringExtension.class)
 class DraftOrdersApprovedEventHandlerTest {
+    @Mock
+    private SendDocumentService sendDocumentService;
 
     @Mock
     private HmctsAdminNotificationHandler adminNotificationHandler;
@@ -72,9 +75,6 @@ class DraftOrdersApprovedEventHandlerTest {
 
     @Mock
     private ReviewDraftOrdersEmailContentProvider reviewDraftOrdersEmailContentProvider;
-
-    @Mock
-    private CoreCaseDataService coreCaseDataService;
 
     @InjectMocks
     private DraftOrdersApprovedEventHandler draftOrdersApprovedEventHandler;
@@ -200,33 +200,40 @@ class DraftOrdersApprovedEventHandlerTest {
     }
 
     @Test
-    void shouldSendOrderDocumentToRepresentatives() {
+    void shouldSendOrderDocumentToRecipients() {
         final HearingOrder hearingOrder1 = hearingOrder();
         final HearingOrder hearingOrder2 = hearingOrder();
+
+        final Representative representative = Representative.builder()
+            .fullName("Postal Rep")
+            .servingPreferences(POST)
+            .address(testAddress())
+            .build();
+
+        final RespondentParty respondent = RespondentParty.builder()
+            .firstName("Postal")
+            .lastName("Person")
+            .address(testAddress())
+            .build();
 
         final List<HearingOrder> orders = List.of(hearingOrder1, hearingOrder2);
 
         final CaseData caseData = CaseData.builder()
             .id(RandomUtils.nextLong())
+            .representatives(wrapElements(representative))
+            .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
             .build();
 
-        draftOrdersApprovedEventHandler.sendDocumentToPostRepresentatives(new DraftOrdersApproved(caseData, orders));
+        given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
 
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            caseData.getId(),
-            "internal-change-SEND_DOCUMENT",
-            Map.of("documentToBeSent", hearingOrder1.getOrder()));
+        draftOrdersApprovedEventHandler.sendDocumentToPostRecipients(new DraftOrdersApproved(caseData, orders));
 
-        verify(coreCaseDataService).triggerEvent(
-            JURISDICTION,
-            CASE_TYPE,
-            caseData.getId(),
-            "internal-change-SEND_DOCUMENT",
-            Map.of("documentToBeSent", hearingOrder2.getOrder()));
+        verify(sendDocumentService).getStandardRecipients(caseData);
 
-        verifyNoMoreInteractions(coreCaseDataService);
+        verify(sendDocumentService).sendDocuments(caseData,
+            List.of(hearingOrder1.getOrder(), hearingOrder2.getOrder()), List.of(representative, respondent));
+
+        verifyNoMoreInteractions(sendDocumentService);
     }
 
     private HearingOrder hearingOrder() {

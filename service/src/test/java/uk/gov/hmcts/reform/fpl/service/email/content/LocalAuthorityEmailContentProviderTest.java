@@ -30,7 +30,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .hearingDate("1 January 2020")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .callout("^Smith, 12345, hearing 1 Jan 2020")
+            .callout("Smith, 12345, hearing 1 Jan 2020")
             .build();
 
         NotifyData actualData = localAuthorityEmailContentProvider
@@ -49,7 +49,7 @@ class LocalAuthorityEmailContentProviderTest extends AbstractEmailContentProvide
             .leadRespondentsName("Smith")
             .reference(CASE_REFERENCE)
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .callout("^Smith")
+            .callout("Smith")
             .build();
 
         SDONotifyData actualData = localAuthorityEmailContentProvider
