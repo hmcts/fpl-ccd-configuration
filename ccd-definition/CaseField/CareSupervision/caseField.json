@@ -671,7 +671,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "temporaryC2Document",
-    "Label": "Upload C2",
+    "Label": "C2 application",
     "FieldType": "C2DocumentBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -682,6 +682,34 @@
     "ID": "c2ApplicationType",
     "Label": "Upload C2",
     "FieldType": "C2ApplicationTypeSelection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "temporaryOtherApplicationsBundle",
+    "Label": "Other applications",
+    "FieldType": "OtherApplicationsBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "temporaryPbaPayment",
+    "Label": " ",
+    "FieldType": "PBAPayment",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "additionalApplicationsBundle",
+    "Label": "Additional applications",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "AdditionalApplicationsBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -1523,6 +1551,44 @@
     "Label": "Outsourcing type",
     "FieldType": "FixedList",
     "FieldTypeParameter": "CaseOutsourcingType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "additionalApplicationType",
+    "Label": "What are you applying for?",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "AdditionalApplicationType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "additionalApplicationsLabel",
+    "Label": "Use this feature to upload applications for additional orders. You might need to upload additional forms, depending on your application type.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "paymentDetailsLabel",
+    "Label": "## Add payment details",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c2Type",
+    "Label": "What type of C2 application?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "C2ApplicationType",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

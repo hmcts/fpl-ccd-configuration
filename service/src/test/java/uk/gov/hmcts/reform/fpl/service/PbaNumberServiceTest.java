@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -52,6 +55,87 @@ class PbaNumberServiceTest {
         var updatedC2DocumentBundle = pbaNumberService.update(testDocumentBundle);
 
         assertThat(updatedC2DocumentBundle).isEqualTo(expectedUpdatedDocumentBundle);
+    }
+
+    @Test
+    void shouldUpdatePbaNumberToIncludePrefix() {
+        String pbaNumber = "1234567";
+
+        String updatedPbaNumber = pbaNumberService.update(pbaNumber);
+
+        assertThat(updatedPbaNumber).isEqualTo("PBA1234567");
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnNullWhenEmptyPbaNumber(String pbaNumber) {
+        assertThat(pbaNumberService.update(pbaNumber)).isNull();
+    }
+
+    @Test
+    void shouldUpdatePbaPaymentPbaNumberToIncludePrefix() {
+        String pbaNumber = "1234567";
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber(pbaNumber).build();
+
+        PBAPayment updatedPbaNumber = pbaNumberService.updatePBAPayment(pbaPayment);
+
+        assertThat(updatedPbaNumber).isEqualTo(PBAPayment.builder().pbaNumber("PBA1234567").build());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldUpdatePbaPaymentPbaNumberToIncludePrefix(String pbaNumber) {
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber(pbaNumber).build();
+
+        PBAPayment updatedPbaNumber = pbaNumberService.updatePBAPayment(pbaPayment);
+
+        assertThat(updatedPbaNumber).isNull();
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenPBAPaymentHasValidPbaNumber() {
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber("PBA1234567").build();
+        List<String> errors = pbaNumberService.validate(pbaPayment);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenPBAPaymentHasInvalidPbaNumber() {
+        PBAPayment pbaPayment = PBAPayment.builder().pbaNumber("1").build();
+        List<String> errors = pbaNumberService.validate(pbaPayment);
+
+        assertThat(errors).containsExactly(VALIDATION_ERROR_MESSAGE);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnEmptyListWhenPBAPaymentHasNullPbaNumber(String pbaNumber) {
+        assertThat(pbaNumberService.validate(PBAPayment.builder().pbaNumber(pbaNumber).build())).isEmpty();
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenValidPbaNumber() {
+        String pbaNumber = "PBA1234567";
+
+        List<String> errors = pbaNumberService.validate(pbaNumber);
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnErrorWhenInvalidPbaNumber() {
+        String pbaNumber = "1";
+
+        List<String> errors = pbaNumberService.validate(pbaNumber);
+
+        assertThat(errors).containsExactly(VALIDATION_ERROR_MESSAGE);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnEmptyListWhenPbaNumberIsNull(String pbaNumber) {
+        assertThat(pbaNumberService.validate(pbaNumber)).isEmpty();
     }
 
     @Test
