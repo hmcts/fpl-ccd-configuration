@@ -51,22 +51,29 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingCancellationReasons-Other",
-    "ListElementCode": "OT8",
+    "ListElementCode": "IN1",
     "ListElement": "Immigration and international difficulties",
     "DisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingCancellationReasons-Other",
-    "ListElementCode": "OT9",
+    "ListElementCode": "OT8",
     "ListElement": "Severe weather",
     "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingCancellationReasons-Other",
-    "ListElementCode": "OT10",
+    "ListElementCode": "OT9",
     "ListElement": "Industrial action",
     "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-Other",
+    "ListElementCode": "OT10",
+    "ListElement": "Covid 19",
+    "DisplayOrder": 11
   }
 ]
