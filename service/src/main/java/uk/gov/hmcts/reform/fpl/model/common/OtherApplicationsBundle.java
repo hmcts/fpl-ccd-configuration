@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
@@ -36,7 +37,8 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     private final List<Element<Supplement>> supplementsBundle;
 
     public String toLabel() {
-        return format("%s, %s", applicationType.getType(), uploadedDateTime);
+        return format("%s, %s",
+            StringUtils.substringBefore(applicationType.getLabel(), " "), uploadedDateTime);
     }
 
     @Override
