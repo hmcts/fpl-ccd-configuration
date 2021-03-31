@@ -1,7 +1,7 @@
 const config = require('../config.js');
 
 module.exports = {
-  name: 'C2 supporting document',
+  name: 'Supporting document',
   notes: 'This is a note about supporting doc',
   date : {
     day: 1,

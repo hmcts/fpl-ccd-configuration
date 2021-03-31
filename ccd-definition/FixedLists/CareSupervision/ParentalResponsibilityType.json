@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentalResponsibilityType",
+    "ListElementCode": "PR_BY_FATHER",
+    "ListElement": "Parental responsibility by the father",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentalResponsibilityType",
+    "ListElementCode": "PR_BY_SECOND_FEMALE_PARENT",
+    "ListElement": "Parental responsibility by second female parent",
+    "DisplayOrder": 2
+  }
+]
