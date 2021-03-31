@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'java'
-  id 'org.owasp.dependencycheck' version '6.1.2' apply true
+  id 'org.owasp.dependencycheck' version '6.1.4' apply true
 }
 
 allprojects {
