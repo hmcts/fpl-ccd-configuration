@@ -12,7 +12,9 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CRUD"
       },
@@ -45,7 +47,9 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CUD"
       },
@@ -79,7 +83,9 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CRUD"
       },
@@ -112,7 +118,9 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CUD"
       },
