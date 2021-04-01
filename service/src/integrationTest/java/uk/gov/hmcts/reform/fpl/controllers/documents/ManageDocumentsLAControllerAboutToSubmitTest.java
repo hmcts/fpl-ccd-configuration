@@ -15,6 +15,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -27,10 +30,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
@@ -250,6 +255,68 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertExpectedFieldsAreRemoved(responseData);
     }
 
+    @Test
+    void shouldPopulateRespondentStatementsCollection() {
+        List<Element<ApplicationDocument>> applicationDocuments = buildApplicationDocuments();
+        List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
+
+        UUID respondentOneId = UUID.randomUUID();
+        UUID respondentTwoId = UUID.randomUUID();
+        UUID respondentStatementId = UUID.randomUUID();
+        UUID supportingEvidenceBundleId = UUID.randomUUID();
+
+        DynamicList respondentStatementList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(respondentOneId)
+                .build())
+            .listItems(List.of(
+                DynamicListElement.builder()
+                    .code(respondentOneId)
+                    .label("Respondent 1")
+                    .build(),
+                DynamicListElement.builder()
+                    .code(respondentTwoId)
+                    .label("Respondent 2")
+                    .build()
+            )).build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
+                element(respondentOneId, Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("David")
+                        .lastName("Stevenson")
+                        .build())
+                    .build()),
+                element(Respondent.builder().build())))
+            .supportingEvidenceDocumentsTemp(updatedBundle)
+            .respondentStatementList(respondentStatementList)
+            .applicationDocuments(applicationDocuments)
+            .respondentStatements(newArrayList(
+                element(respondentStatementId, RespondentStatement.builder()
+                    .respondentId(respondentOneId)
+                    .supportingEvidenceBundle(newArrayList(
+                        element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())
+                    ))
+                    .respondentName("David Stevenson")
+                    .build())))
+            .manageDocumentLA(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
+            .manageDocumentSubtypeListLA(RESPONDENT_STATEMENT)
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+
+        assertThat(responseData.getRespondentStatements()).isEqualTo(newArrayList(
+            element(respondentStatementId, RespondentStatement.builder()
+                .respondentId(respondentOneId)
+                .supportingEvidenceBundle(updatedBundle)
+                .respondentName("David Stevenson")
+                .build()))
+        );
+
+        assertExpectedFieldsAreRemoved(responseData);
+    }
+
     private void assertExpectedFieldsAreRemoved(CaseData caseData) {
         assertThat(caseData.getSupportingEvidenceDocumentsTemp()).isEmpty();
         assertThat(caseData.getManageDocumentLA()).isNull();
@@ -257,6 +324,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat(caseData.getC2SupportingDocuments()).isNull();
         assertThat(caseData.getManageDocumentsHearingList()).isNull();
         assertThat(caseData.getManageDocumentsSupportingC2List()).isNull();
+        assertThat(caseData.getRespondentStatementList()).isNull();
     }
 
     private HearingBooking buildFinalHearingBooking() {
@@ -284,6 +352,14 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .dateTimeUploaded(localDateTime)
             .uploadedBy(USER)
             .build());
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle(UUID elementId) {
+        return List.of(element(elementId,
+            SupportingEvidenceBundle.builder()
+                .name("Test name")
+                .uploadedBy("Test uploaded by")
+                .build()));
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {

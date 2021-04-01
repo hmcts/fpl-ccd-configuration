@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_CHANGE_SURNAME_OR_REMOVE_FROM_JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_TERMINATION_OF_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C63_DECLARATION_OF_PARENTAGE;
 
 public enum FeeType {
     // Names should match OrderType enum names exactly
@@ -53,7 +54,8 @@ public enum FeeType {
     APPOINTMENT_OF_GUARDIAN,
     PARENTAL_RESPONSIBILITY_FATHER,
     PARENTAL_RESPONSIBILITY_FEMALE_PARENT,
-    SECURE_ACCOMMODATION_WALES;
+    SECURE_ACCOMMODATION_WALES,
+    DECLARATION_OF_PARENTAGE;
 
     private static final Map<OrderType, FeeType> orderToFeeMap = Map.of(
         OrderType.CARE_ORDER, CARE_ORDER,
@@ -80,7 +82,8 @@ public enum FeeType {
         C17_EDUCATION_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER,
         C17A_EXTENSION_OF_ESO, ESO_EXTENSION,
         C19_WARRANT_TO_ASSISTANCE, WARRANT_OF_ASSISTANCE,
-        C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS);
+        C100_CHILD_ARRANGEMENTS, CHILD_ARRANGEMENTS,
+        C63_DECLARATION_OF_PARENTAGE, DECLARATION_OF_PARENTAGE);
 
     private static final Map<C2AdditionalOrdersRequested, FeeType> c2AdditionalOrdersToFeesMap = Map.of(
         CHANGE_SURNAME_OR_REMOVE_JURISDICTION, CHANGE_SURNAME,

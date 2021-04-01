@@ -4,11 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -31,7 +36,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -57,35 +61,29 @@ public class ManageDocumentService {
     public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
 
-    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData) {
-        Map<String, Object> listAndLabel = new HashMap<>();
-        String hasHearings;
-        String hasC2s;
+    public Map<String, Object> baseEventData(CaseData caseData) {
+        Map<String, Object> eventData = new HashMap<>();
 
-        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
-            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+        YesNo hasHearings = YesNo.from(isNotEmpty(caseData.getHearingDetails()));
+        YesNo hasC2s = YesNo.from(caseData.hasC2DocumentBundle());
 
-            hasHearings = YES.getValue();
-        } else {
-            hasHearings = NO.getValue();
-        }
-
-        //If toggle not on, replicate old behaviour (always show C2 list, even if empty)
-        if (caseData.hasC2DocumentBundle()) {
-            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
-            hasC2s = YES.getValue();
-        } else {
-            hasC2s = NO.getValue();
-        }
-
-        ManageDocument manageDocument = ManageDocument.builder()
-            .hasHearings(hasHearings)
-            .hasC2s(hasC2s)
+        ManageDocument manageDocument = defaultIfNull(caseData.getManageDocument(), ManageDocument.builder().build())
+            .toBuilder()
+            .hasHearings(hasHearings.getValue())
+            .hasC2s(hasC2s.getValue())
             .build();
 
-        listAndLabel.put(MANAGE_DOCUMENT_KEY, manageDocument);
+        eventData.put(MANAGE_DOCUMENT_KEY, manageDocument);
 
-        return listAndLabel;
+        if (hasHearings == YES) {
+            eventData.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+        }
+
+        if (hasC2s == YES) {
+            eventData.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+        }
+
+        return eventData;
     }
 
     public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData, boolean relatedToHearing) {
@@ -278,6 +276,45 @@ public class ManageDocumentService {
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
+    public List<Element<SupportingEvidenceBundle>> getRespondentStatementFurtherEvidenceCollection(CaseData caseData,
+                                                                                                   UUID id) {
+        return caseData.getRespondentStatementByRespondentId(id)
+            .map(Element::getValue)
+            .map(RespondentStatement::getSupportingEvidenceBundle)
+            .orElse(defaultSupportingEvidences());
+    }
+
+    public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData) {
+        List<Element<RespondentStatement>> respondentStatementDocuments = caseData.getRespondentStatements();
+        UUID selectedRespondentId = getSelectedRespondentId(caseData);
+        String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
+        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getSupportingEvidenceDocumentsTemp();
+
+        Element<RespondentStatement> respondentStatement
+            = caseData.getRespondentStatementByRespondentId(selectedRespondentId)
+            .orElseGet(() -> {
+                Element<RespondentStatement> newRespondentStatement = element(RespondentStatement.builder()
+                    .respondentId(selectedRespondentId)
+                    .respondentName(respondentFullName)
+                    .build());
+
+                respondentStatementDocuments.add(newRespondentStatement);
+                return newRespondentStatement;
+            });
+
+        if (newBundle.isEmpty()) {
+            respondentStatementDocuments.remove(respondentStatement);
+        } else {
+            respondentStatement.getValue().setSupportingEvidenceBundle(newBundle);
+        }
+
+        return respondentStatementDocuments;
+    }
+
+    public UUID getSelectedRespondentId(CaseData caseData) {
+        return getDynamicListSelectedValue(caseData.getRespondentStatementList(), mapper);
+    }
+
     // Separate collection based on idam role (only show users their own documents)
     private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
         List<Element<SupportingEvidenceBundle>> bundles) {
@@ -332,5 +369,13 @@ public class ManageDocumentService {
             LocalDateTime date2 = defaultIfNull(ele2.getValue().getDateTimeUploaded(), LocalDateTime.MAX);
             return date1.compareTo(date2);
         });
+    }
+
+    private String getRespondentFullName(CaseData caseData, UUID respondentId) {
+        return caseData.findRespondent(respondentId)
+            .map(Element::getValue)
+            .map(Respondent::getParty)
+            .map(RespondentParty::getFullName)
+            .orElseThrow(() -> new RespondentNotFoundException(respondentId));
     }
 }
