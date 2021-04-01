@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,23 +94,5 @@ public class C2DocumentBundle implements ApplicationsBundle {
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
 
         return documentReferences;
-    }
-
-    @JsonIgnore
-    private String getSupportingEvidenceFileNames() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(DocumentReference::getFilename)
-            .collect(Collectors.joining("\n"));
-    }
-
-    @JsonIgnore
-    private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList());
     }
 }
