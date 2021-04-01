@@ -31,6 +31,12 @@ public class CaseAccessService {
     private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
 
+    //TO-DO remove once FPLA-2946 migration is done
+    public void grantCaseRoleToUsers(Long caseId, Set<String> userIds, CaseRole caseRole) {
+        grantCaseAccess(caseId, userIds, caseRole);
+        log.info("Users {} granted {} to case {}", userIds, caseRole, caseId);
+    }
+
     public void grantCaseRoleToUser(Long caseId, String userId, CaseRole caseRole) {
         grantCaseAccess(caseId, Set.of(userId), caseRole);
         log.info("User {} granted {} to case {}", userId, caseRole, caseId);
