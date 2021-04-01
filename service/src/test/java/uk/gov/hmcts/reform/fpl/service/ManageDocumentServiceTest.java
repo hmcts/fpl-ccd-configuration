@@ -102,7 +102,7 @@ class ManageDocumentServiceTest {
             .hasC2s(YES.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
@@ -117,7 +117,7 @@ class ManageDocumentServiceTest {
             .hasC2s(NO.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
