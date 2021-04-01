@@ -85,6 +85,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         DynamicList hearingList = mapper.convertValue(responseData.getManageDocumentsHearingList(), DynamicList.class);
 
         assertThat(hearingList).isEqualTo(expectedDynamicList);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(FURTHER_EVIDENCE_DOCUMENTS)
+            .hasHearings("Yes")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -100,6 +106,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getCorrespondenceDocumentsLA()).isEqualTo(correspondenceDocuments);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(CORRESPONDENCE)
+            .hasHearings("No")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -131,6 +143,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(COURT_BUNDLE)
+            .hasHearings("Yes")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -156,6 +174,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
+            .hasHearings("No")
+            .hasC2s("Yes")
+            .build());
     }
 
     @Test

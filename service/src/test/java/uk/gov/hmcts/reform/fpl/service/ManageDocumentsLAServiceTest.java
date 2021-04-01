@@ -107,7 +107,7 @@ class ManageDocumentsLAServiceTest {
             .hasC2s(YES.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentLAService.initialiseManageDocumentLAEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY,
@@ -124,7 +124,7 @@ class ManageDocumentsLAServiceTest {
             .hasC2s(NO.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentLAService.initialiseManageDocumentLAEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
@@ -139,7 +139,7 @@ class ManageDocumentsLAServiceTest {
             .hasC2s(NO.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentLAService.initialiseManageDocumentLAEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(RESPONDENT_STATEMENT_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)

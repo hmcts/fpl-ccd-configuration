@@ -70,7 +70,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentLAService.initialiseManageDocumentLAEvent(caseData));
+        caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
 
         return respond(caseDetails);
     }
@@ -81,6 +81,8 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
+
+        caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
 
         switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
