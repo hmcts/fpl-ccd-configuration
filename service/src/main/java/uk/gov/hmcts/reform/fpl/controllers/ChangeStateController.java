@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,32 +10,37 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.ChangeCaseStateService;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.MigrateStateGroup;
 
-import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.State.FINAL_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
 @RequestMapping("/callback/change-state")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ChangeStateController extends CallbackController {
-
-    private static final String LABEL_CONTENT = "Do you want to change the case state to %s?";
+    private final ChangeCaseStateService changeCaseStateService;
+    private final ValidateGroupService validateGroupService;
 
     @PostMapping("/about-to-start")
     public CallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put(
-            "nextStateLabelContent",
-            String.format(LABEL_CONTENT, nextState(caseData).getLabel().toLowerCase())
-        );
+        caseDetails.getData().putAll(changeCaseStateService.initialiseEventFields(caseData));
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/mid-event")
+    public CallbackResponse handleMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        return respond(caseDetails, validateGroupService.validateGroup(caseData, MigrateStateGroup.class));
     }
 
     @PostMapping("/about-to-submit")
@@ -41,23 +48,9 @@ public class ChangeStateController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (YesNo.fromString(caseData.getConfirmChangeState()) == YesNo.YES) {
-            caseDetails.getData().put("state", nextState(caseData));
-        }
-
-        removeTemporaryFields(caseDetails, "confirmChangeState", "nextStateLabelContent");
+        caseDetails.getData().putAll(changeCaseStateService.updateCaseState(caseData));
+        removeTemporaryFields(caseDetails, "confirmChangeState", "nextStateLabelContent", "closedStateRadioList");
 
         return respond(caseDetails);
-    }
-
-    private State nextState(CaseData caseData) {
-        switch (caseData.getState()) {
-            case CASE_MANAGEMENT:
-                return FINAL_HEARING;
-            case FINAL_HEARING:
-                return CASE_MANAGEMENT;
-            default:
-                throw new IllegalStateException("Should not be able to change from: " + caseData.getState());
-        }
     }
 }

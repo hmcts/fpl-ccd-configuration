@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +22,7 @@ class RequestDataTest {
     private static final String CACHED_AUTH_TOKEN = "Cached bearer token";
     private static final String USER_ID = "example.gov.uk";
     private static final String CACHED_USER_ID = "cached.gov.uk";
+    private static final Set<String> CACHED_USER_ROLES = Set.of("role1", "role2");
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -42,12 +44,49 @@ class RequestDataTest {
             when(httpServletRequest.getHeader("user-id")).thenReturn(USER_ID);
             assertThat(requestData.userId()).isEqualTo(USER_ID);
         }
+
+        @Test
+        void shouldReturnEmptySetOfUserRolesIfHeaderNotPresent() {
+            when(httpServletRequest.getHeader("user-roles")).thenReturn(null);
+            assertThat(requestData.userRoles()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptySetOfUserRolesIfHeaderIsEmpty() {
+            when(httpServletRequest.getHeader("user-roles")).thenReturn("");
+            assertThat(requestData.userRoles()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptySetOfUserRolesIfHeaderIsBlank() {
+            when(httpServletRequest.getHeader("user-roles")).thenReturn(" ");
+            assertThat(requestData.userRoles()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnUserRolesIfSingleRolePresent() {
+            when(httpServletRequest.getHeader("user-roles")).thenReturn("role1");
+            assertThat(requestData.userRoles()).containsExactly("role1");
+        }
+
+        @Test
+        void shouldReturnAllUserRoles() {
+            when(httpServletRequest.getHeader("user-roles")).thenReturn("role1,role2");
+            assertThat(requestData.userRoles()).containsExactly("role1", "role2");
+        }
+
+        @Test
+        void shouldReturnNormalisedUserRoles() {
+            when(httpServletRequest.getHeader("user-roles")).thenReturn(" role1 , role2");
+            assertThat(requestData.userRoles()).containsExactly("role1", "role2");
+        }
     }
 
     @Nested
     class CachedRequestData {
 
-        final SimpleRequestData cachedRequestData = new SimpleRequestData(CACHED_AUTH_TOKEN, CACHED_USER_ID);
+        final SimpleRequestData cachedRequestData = new SimpleRequestData(CACHED_AUTH_TOKEN, CACHED_USER_ID,
+            CACHED_USER_ROLES);
 
         @BeforeEach
         void setup() {
@@ -68,6 +107,12 @@ class RequestDataTest {
         @Test
         void shouldReturnUserIdFromCache() {
             assertThat(requestData.userId()).isEqualTo(CACHED_USER_ID);
+            verifyNoInteractions(httpServletRequest);
+        }
+
+        @Test
+        void shouldReturnUserRolesFromCache() {
+            assertThat(requestData.userRoles()).isEqualTo(CACHED_USER_ROLES);
             verifyNoInteractions(httpServletRequest);
         }
     }

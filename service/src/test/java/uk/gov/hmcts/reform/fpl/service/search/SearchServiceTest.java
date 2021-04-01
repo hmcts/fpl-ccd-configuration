@@ -6,14 +6,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.BooleanQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.ESQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MatchQuery;
+import uk.gov.hmcts.reform.fpl.utils.elasticsearch.MustNot;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,14 +25,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.NON_EXTENSIBLE;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class})
+@ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
 
-    @Autowired
-    Time time;
+    private static final List<CaseDetails> EXPECTED_CASES = List.of(CaseDetails.builder().id(nextLong()).build());
+    private static final SearchResult SEARCH_RESULT = SearchResult.builder().total(1).cases(EXPECTED_CASES).build();
 
     @Captor
     private ArgumentCaptor<String> queryCaptor;
@@ -46,22 +46,57 @@ class SearchServiceTest {
     @Test
     void shouldSearchCasesByDateProperty() {
         String property = "a.b";
-        LocalDate date = time.now().toLocalDate();
+        LocalDate date = LocalDate.now();
 
-        List<CaseDetails> expectedCases = List.of(CaseDetails.builder().id(nextLong()).build());
-
-        when(coreCaseDataService.searchCases(any(), any())).thenReturn(expectedCases);
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
 
         List<CaseDetails> casesFound = searchService.search(property, date);
 
-        assertThat(casesFound).isEqualTo(expectedCases);
+        String expectedQuery = format("{\"size\": 1000,"
+                + " \"query\":{\"range\":{\"%s\":{\"lt\":\"%sT00:00\",\"gte\":\"%sT00:00\"}}}}",
+            property, date.plusDays(1), date);
+
+        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
 
         verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
 
-        String expectedQuery = format("{\"query\":{\"range\":{\"%s\":{\"lt\":\"%sT00:00\",\"gte\":\"%sT00:00\"}}}}",
-            property, date.plusDays(1), date);
-
-        JSONAssert.assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+        assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
     }
 
+    @Test
+    void shouldSearchCasesWhenGivenESQuery() {
+        ESQuery query = BooleanQuery.builder()
+            .mustNot(MustNot.builder().clauses(List.of(MatchQuery.of("a", "b"))).build())
+            .build();
+
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
+
+        List<CaseDetails> casesFound = searchService.search(query, 15, 0);
+
+        String expectedQuery = "{\"size\":15,\"from\":0,\"query\":{\"bool\":{\"must_not\":[{\"match\":{\"a\":{"
+            + "\"query\":\"b\"}}}]}}}";
+
+        assertThat(casesFound).isEqualTo(EXPECTED_CASES);
+
+        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
+
+        assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+    }
+
+    @Test
+    void shouldReturnTheNumberOfCasesFound() {
+        ESQuery query = MatchQuery.of("a", "b");
+
+        when(coreCaseDataService.searchCases(any(), any())).thenReturn(SEARCH_RESULT);
+
+        int numberOfCases = searchService.searchResultsSize(query);
+
+        String expectedQuery = "{\"size\": 1,\"from\": 0,\"query\": {\"match\": {\"a\":{\"query\": \"b\"}}}}";
+
+        assertThat(numberOfCases).isEqualTo(1);
+
+        verify(coreCaseDataService).searchCases(eq("CARE_SUPERVISION_EPO"), queryCaptor.capture());
+
+        assertEquals(queryCaptor.getValue(), expectedQuery, NON_EXTENSIBLE);
+    }
 }

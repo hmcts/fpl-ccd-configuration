@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
@@ -39,8 +41,8 @@ public class CallbackResponseLogger implements ResponseBodyAdvice<AboutToStartOr
                 log.info(String.format(
                     "Callback(%s) ended with errors=%s warnings=%s",
                     request.getURI().getPath(),
-                    body.getErrors(),
-                    body.getWarnings()));
+                    defaultIfNull(body.getErrors(), emptyList()),
+                    defaultIfNull(body.getWarnings(), emptyList())));
             }
         } catch (Exception e) {
             log.warn("Can not log case details", e);

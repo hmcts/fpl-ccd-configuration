@@ -5,10 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.exceptions.EmailFailedSendException;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import javax.mail.internet.MimeMessage;
 
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
 
 @ExtendWith(SpringExtension.class)
-public class EmailServiceTest {
+class EmailServiceTest {
     private static final String FAMILY_MAN_CASE_NUMBER = randomAlphabetic(12);
     private static final String EMAIL_TO = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
@@ -33,7 +34,7 @@ public class EmailServiceTest {
     private static final byte[] EMAIL_ATTACHMENT_CONTENT = "1, 2, 3, 4, 5, 6".getBytes();
 
     @Mock
-    private JavaMailSenderImpl javaMailSender;
+    private JavaMailSender javaMailSender;
 
     @Mock
     private MimeMessage mimeMessage;
@@ -41,7 +42,7 @@ public class EmailServiceTest {
     private EmailService emailService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         emailService = new EmailService(javaMailSender);
         given(javaMailSender.createMimeMessage()).willReturn(mimeMessage);
     }

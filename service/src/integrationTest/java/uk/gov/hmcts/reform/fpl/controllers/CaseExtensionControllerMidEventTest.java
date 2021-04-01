@@ -4,19 +4,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseExtensionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseExtensionControllerMidEventTest extends AbstractControllerTest {
+class CaseExtensionControllerMidEventTest extends AbstractCallbackTest {
 
     CaseExtensionControllerMidEventTest() {
         super("case-extension");
@@ -29,11 +26,11 @@ class CaseExtensionControllerMidEventTest extends AbstractControllerTest {
     void shouldPopulateExtensionDateLabelWith8WeekExtensionDate() {
         LocalDate caseCompletionDate = LocalDate.of(2030, 11, 12);
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("caseCompletionDate", caseCompletionDate))
+        CaseData caseData = CaseData.builder()
+            .caseCompletionDate(caseCompletionDate)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getData().get("extensionDateEightWeeks")).isEqualTo("7 January 2031");
     }

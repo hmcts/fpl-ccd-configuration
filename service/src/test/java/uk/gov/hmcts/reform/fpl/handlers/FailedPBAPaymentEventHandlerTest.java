@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest.builder;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(SpringExtension.class)
@@ -56,7 +57,11 @@ class FailedPBAPaymentEventHandlerTest {
 
         given(requestData.authorisation()).willReturn(AUTH_TOKEN);
 
-        given(inboxLookupService.getRecipients(caseData))
+        given(inboxLookupService.getRecipients(
+            builder()
+                .caseData(caseData)
+                .excludeLegalRepresentatives(true)
+                .build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
     }
 
@@ -66,10 +71,10 @@ class FailedPBAPaymentEventHandlerTest {
             .applicationType(C110A_APPLICATION.getType())
             .build();
 
-        given(failedPBAPaymentContentProvider.buildLANotificationParameters(C110A_APPLICATION))
+        given(failedPBAPaymentContentProvider.getLocalAuthorityNotifyData(C110A_APPLICATION))
             .willReturn(expectedParameters);
 
-        failedPBAPaymentEventHandler.sendFailedPBAPaymentEmailToLocalAuthority(
+        failedPBAPaymentEventHandler.notifyLocalAuthority(
             new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
 
         verify(notificationService).sendEmail(
@@ -86,17 +91,17 @@ class FailedPBAPaymentEventHandlerTest {
             .caseUrl("caseUrl")
             .build();
 
-        given(failedPBAPaymentContentProvider.buildCtscNotificationParameters(caseData, C2_APPLICATION))
+        given(failedPBAPaymentContentProvider.getCtscNotifyData(caseData, C2_APPLICATION))
             .willReturn(expectedParameters);
 
-        failedPBAPaymentEventHandler.sendFailedPBAPaymentEmailToCTSC(
+        failedPBAPaymentEventHandler.notifyCTSC(
             new FailedPBAPaymentEvent(caseData, C2_APPLICATION));
 
         verify(notificationService).sendEmail(
             APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC,
             CTSC_INBOX,
             expectedParameters,
-            caseData.getId().toString());
+            caseData.getId());
     }
 
 }

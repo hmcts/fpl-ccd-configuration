@@ -51,6 +51,7 @@ module.exports = {
   },
 
   async getFeeToPay(){
+    await I.runAccessibilityTest();
     return money.parse(await I.grabTextFrom('ccd-read-money-gbp-field'));
   },
 };

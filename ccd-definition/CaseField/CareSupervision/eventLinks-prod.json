@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "uploadC2Link",
+    "FieldType": "Label",
+    "Label": "[Upload a new C2 application](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadC2)",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

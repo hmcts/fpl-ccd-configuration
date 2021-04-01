@@ -16,9 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -84,8 +83,6 @@ class CaseEventHandlerTest {
 
         caseEventHandler.handleCaseDataChange(caseDataChanged);
 
-        verify(taskListService, never()).getTasksForOpenCase(any());
-        verify(taskListRenderer, never()).render(any());
-        verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
+        verifyNoInteractions(taskListService, taskListRenderer, coreCaseDataService);
     }
 }

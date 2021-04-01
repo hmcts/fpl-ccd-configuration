@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Placement;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -117,13 +116,12 @@ public class PlacementController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        sendNotificationForNewPlacementOrder(callbackRequest, caseDetails, caseData, caseDataBefore);
+        sendNotificationForNewPlacementOrder(caseDetails, caseData, caseDataBefore);
         sendNotificationForNewNoticeOfPlacementOrder(caseData, caseDataBefore);
         triggerSendDocumentEventForUpdatedPlacementOrderDocuments(caseDetails, caseData, caseDataBefore);
     }
 
-    private void sendNotificationForNewPlacementOrder(CallbackRequest callbackRequest,
-                                                      CaseDetails caseDetails,
+    private void sendNotificationForNewPlacementOrder(CaseDetails caseDetails,
                                                       CaseData caseData,
                                                       CaseData caseDataBefore) {
         UUID childId = getSelectedChildId(caseDetails, caseData);
@@ -140,9 +138,7 @@ public class PlacementController extends CallbackController {
     private void sendNotificationForNewNoticeOfPlacementOrder(CaseData caseData, CaseData caseDataBefore) {
         placementService.getUpdatedDocuments(caseData, caseDataBefore, NOTICE_OF_PLACEMENT_ORDER)
             .stream()
-            .map(DocumentReference::getBinaryUrl)
-            .map(documentDownloadService::downloadDocument)
-            .map(documentContents -> new NoticeOfPlacementOrderUploadedEvent(caseData, documentContents))
+            .map(documentReference -> new NoticeOfPlacementOrderUploadedEvent(caseData, documentReference))
             .forEach(this::publishEvent);
     }
 
@@ -168,7 +164,7 @@ public class PlacementController extends CallbackController {
         if (childrenList instanceof String) {
             return UUID.fromString(childrenList.toString());
         }
-        return mapper.convertValue(childrenList, DynamicList.class).getValueCode();
+        return mapper.convertValue(childrenList, DynamicList.class).getValueCodeAsUUID();
     }
 
     private boolean isUpdatedPlacement(Placement previousPlacement, Placement newPlacement) {

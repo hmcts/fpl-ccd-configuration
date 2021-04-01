@@ -1,5 +1,3 @@
-/*global process*/
-
 const defaultPassword = 'Password12';
 
 module.exports = {
@@ -26,6 +24,24 @@ module.exports = {
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'siva@hillingdon.gov.uk',
     surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserOne: {
+    email: 'raghu@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'raghu@wiltshire.gov.uk',
+    surname: '(local-authority)',
+  },
+  wiltshireLocalAuthorityUserTwo: {
+    email: 'sam@wiltshire.gov.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+    forename: 'sam@wiltshire.gov.uk',
+    surname: '(local-authority)',
+  },
+  localAuthorityBarristerUserOne: {
+    email: 'la-barrister@mailnesia.com',
+    password: process.env.LA_BARRISTER_USER_PASSWORD || defaultPassword,
+    forename: 'la-barrister@mailnesia.com',
+    surname: '(local-authority-barrister)',
   },
   hmctsAdminUser: {
     email: 'hmcts-admin@example.com',
@@ -63,11 +79,23 @@ module.exports = {
     email: process.env.HMCTS_USER_USERNAME,
     password: process.env.HMCTS_USER_PASSWORD,
   },
+  privateSolicitorOne: {
+    email: 'solicitor1@solicitors.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+  },
+  privateSolicitorTwo: {
+    email: 'solicitor2@solicitors.uk',
+    password: process.env.LA_USER_PASSWORD || defaultPassword,
+  },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
+  baseUrl: process.env.URL || 'http://localhost:3333',
   fplServiceUrl: process.env.CASE_SERVICE_URL || 'http://localhost:4000',
   idamApiUrl: process.env.IDAM_API_URL || 'http://localhost:5000',
   dmStoreUrl: process.env.DM_STORE_URL || 'http://dm-store:8080',
   mockedPayment: (process.env.MOCKED_PAYMENTS || 'true').toLowerCase() === 'true',
+  ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
+  TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
+  TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
   definition: {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
@@ -80,7 +108,7 @@ module.exports = {
     enterHearingNeeded: 'Hearing urgency',
     enterChildren: 'Child\'s details',
     enterRespondents: 'Respondents\' details',
-    enterApplicant: 'Your organisation\'s details',
+    enterApplicant: 'Applicant\'s details',
     enterOthers: 'Other people in the case',
     enterGrounds: 'Grounds for the application',
     enterRiskAndHarmToChildren: 'Risk and harm to children',
@@ -94,10 +122,14 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
-    uploadCMO: 'Send agreed CMO to judge',
-    reviewAgreedCmo: 'Review agreed CMO',
+    uploadCMO: 'Upload draft orders',
+    approveOrders: 'Approve orders',
     allocatedJudge: 'Allocated Judge',
     extend26WeekTimeline: 'Extend 26-week timeline',
+    manageLegalRepresentatives: 'Manage legal representatives',
+    addApplicationDocuments: 'Application documents',
+    manageDocumentsLA: 'Manage documents',
+    messageJudge: 'Send and reply to messages',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -110,12 +142,12 @@ module.exports = {
     amendOtherProceedings: 'Other proceedings',
     amendAttendingHearing: 'Attending the hearing',
     amendRepresentatives: 'Manage representatives',
-    addHearingBookingDetails: 'Add hearing details',
+    manageHearings: 'Manage hearings',
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Add the gatekeeping order',
-    createOrder: 'Create an order',
+    createOrder: 'Create or upload an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
     bulkScan: 'Attach scanned docs',
@@ -124,6 +156,7 @@ module.exports = {
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
     manageDocuments: 'Manage documents',
+    uploadAdditionalApplications: 'Upload additional applications',
   },
   superUserActions: {
     removeOrder: 'Remove an order',

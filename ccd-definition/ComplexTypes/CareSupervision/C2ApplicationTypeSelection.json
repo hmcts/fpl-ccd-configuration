@@ -5,7 +5,7 @@
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
-    "ElementLabel": "What kind of application are you making?",
+    "ElementLabel": "What type of C2 application?",
     "SecurityClassification": "Public"
   }
 ]

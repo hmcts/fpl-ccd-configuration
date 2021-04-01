@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
@@ -27,7 +27,7 @@ public class PartyAddedToCaseEventHandler {
     private final RepresentativeService representativeService;
 
     @EventListener
-    public void sendEmailToPartiesAddedToCase(final PartyAddedToCaseEvent event) {
+    public void notifyParties(final PartyAddedToCaseEvent event) {
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -36,14 +36,14 @@ public class PartyAddedToCaseEventHandler {
         List<Representative> representativesServedByEmail = representativeService.getUpdatedRepresentatives(
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
 
-        Map<String, Object> servedByEmailParameters = partyAddedToCaseContentProvider
+        NotifyData servedByEmailParameters = partyAddedToCaseContentProvider
             .getPartyAddedToCaseNotificationParameters(caseData, EMAIL);
 
         representativeNotificationService.sendToUpdatedRepresentatives(
             PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
             servedByEmailParameters, caseData, representativesServedByEmail);
 
-        Map<String, Object> servedByDigitalServiceParameters = partyAddedToCaseContentProvider
+        NotifyData servedByDigitalServiceParameters = partyAddedToCaseContentProvider
             .getPartyAddedToCaseNotificationParameters(caseData, DIGITAL_SERVICE);
 
         representativeNotificationService.sendToUpdatedRepresentatives(

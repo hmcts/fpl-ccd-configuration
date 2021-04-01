@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -14,19 +12,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -35,19 +28,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTest {
+class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     private static final String USER_NAME = "HMCTS";
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference document = testDocumentReference();
-
-    @MockBean
-    private IdamClient idamClient;
-
-    @MockBean
-    private RequestData requestData;
 
     @Autowired
     private Time time;
@@ -58,9 +44,8 @@ class UploadC2DocumentsAboutToSubmitControllerTest extends AbstractControllerTes
 
     @BeforeEach
     void before() {
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name(USER_NAME).build());
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
-        given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        givenCurrentUserWithName(USER_NAME);
+        givenCurrentUser(createUserDetailsWithHmctsRole());
     }
 
     @Test

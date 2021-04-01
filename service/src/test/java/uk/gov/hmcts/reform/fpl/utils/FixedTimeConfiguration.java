@@ -5,19 +5,42 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import javax.validation.ClockProvider;
 
 @Configuration
 @Import(TestConfiguration.class)
 public class FixedTimeConfiguration {
-    public static final LocalDateTime NOW = ZonedDateTime.now().toLocalDateTime();
+    private static final ZonedDateTime NOW = ZonedDateTime.now();
+
+    @Bean
+    public ClockProvider fixedClockProvider() {
+        return () -> Clock.fixed(NOW.toInstant(), NOW.getZone());
+    }
 
     @Bean
     @Primary
     public Time stoppedTime() {
-        return () -> NOW;
+        return NOW::toLocalDateTime;
     }
+
+    public Time fixedDateTime(LocalDateTime fixed) {
+        return () -> fixed;
+    }
+
+    @Bean
+    public LocalValidatorFactoryBean localValidatorFactoryBean() {
+        return new LocalValidatorFactoryBean() {
+            @Override
+            protected void postProcessConfiguration(javax.validation.Configuration<?> configuration) {
+                configuration.clockProvider(fixedClockProvider());
+            }
+        };
+    }
+
 }

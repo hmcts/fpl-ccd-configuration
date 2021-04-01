@@ -1,0 +1,12 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "SentDocumentsTab",
+    "TabLabel": "Documents sent to parties",
+    "TabDisplayOrder": 18,
+    "CaseFieldID": "documentsSentToParties",
+    "TabFieldDisplayOrder": 1
+  }
+]

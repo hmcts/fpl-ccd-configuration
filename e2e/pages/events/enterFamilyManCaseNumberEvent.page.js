@@ -6,7 +6,8 @@ module.exports = {
     caseId: '#familyManCaseNumber',
   },
 
-  enterCaseID(caseId) {
+  async enterCaseID(caseId) {
+    await I.runAccessibilityTest();
     I.fillField(this.fields.caseId, caseId);
   },
 };

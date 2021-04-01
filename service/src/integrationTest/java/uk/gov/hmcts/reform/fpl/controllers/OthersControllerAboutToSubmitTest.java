@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -22,10 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(OthersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class OthersControllerAboutToSubmitTest extends AbstractControllerTest {
+class OthersControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     OthersControllerAboutToSubmitTest() {
         super("enter-others");

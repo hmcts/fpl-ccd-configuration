@@ -4,7 +4,7 @@ public class AboutToStartOrSubmitCallbackException extends RuntimeException {
 
     private final String userMessage;
 
-    AboutToStartOrSubmitCallbackException(String userMessage, String message) {
+    protected AboutToStartOrSubmitCallbackException(String userMessage, String message) {
         super(message);
         this.userMessage = userMessage;
     }

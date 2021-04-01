@@ -13,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-public class StatementOfServiceServiceTest {
+class StatementOfServiceServiceTest {
 
     private final StatementOfServiceService service = new StatementOfServiceService();
 

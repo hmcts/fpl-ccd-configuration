@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -39,6 +40,12 @@ public class PbaNumberHelper {
     public static Optional<String> getNonEmptyPbaNumber(C2DocumentBundle c2DocumentBundle) {
         return Optional.ofNullable(c2DocumentBundle)
             .map(C2DocumentBundle::getPbaNumber)
+            .filter(StringUtils::isNotEmpty);
+    }
+
+    public static Optional<String> getPBAPaymentWithNonEmptyPbaNumber(PBAPayment pbaPayment) {
+        return Optional.ofNullable(pbaPayment)
+            .map(PBAPayment::getPbaNumber)
             .filter(StringUtils::isNotEmpty);
     }
 

@@ -1,0 +1,130 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "applicationType",
+    "EventElementLabel": "Select application",
+    "FieldDisplayOrder": "1",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "parentalResponsibilityType",
+    "EventElementLabel": "Who's seeking parental responsibility?",
+    "FieldDisplayOrder": "2",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryOtherApplicationsBundle.applicationType=\"C1_PARENTAL_RESPONSIBILITY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "document",
+    "EventElementLabel": "Upload application",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "EventElementLabel": "Supplements",
+    "ListElementCode": "supplementsBundle",
+    "FieldDisplayOrder": "4",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.name",
+    "FieldDisplayOrder": "5",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.secureAccommodationType",
+    "EventElementLabel": "Which jurisdiction?",
+    "FieldDisplayOrder": "6",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryOtherApplicationsBundle.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle.notes",
+    "FieldDisplayOrder": "7",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "EventElementLabel": "Upload document",
+    "ListElementCode": "supplementsBundle.document",
+    "FieldDisplayOrder": "8",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "EventElementLabel": "Supporting Documents",
+    "ListElementCode": "supportingEvidenceBundle",
+    "FieldDisplayOrder": "9",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "EventElementLabel": "File name",
+    "ListElementCode": "supportingEvidenceBundle.name",
+    "FieldDisplayOrder": "10",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle.notes",
+    "FieldDisplayOrder": "11",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle.dateTimeReceived",
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherDocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle.document",
+    "EventElementLabel": "Upload document",
+    "FieldDisplayOrder": "12",
+    "DisplayContext": "MANDATORY"
+  }
+]

@@ -1,5 +1,10 @@
-/* global process */
 const recorder = require('codeceptjs').recorder;
+const lodash = require('lodash');
+const retryableErrors = [
+  'Execution context was destroyed',
+  'Node is either not visible or not an HTMLElement',
+  'Node is detached from document',
+  'net::ERR_ABORTED'];
 
 module.exports = class HooksHelpers extends Helper {
   _test(test) {
@@ -13,13 +18,19 @@ module.exports = class HooksHelpers extends Helper {
     recorder.retry({
       retries: 10,
       minTimeout: 1000,
-      when: err => err.message.indexOf('Execution context was destroyed') > -1,
+      when: err => lodash.some(retryableErrors, retryableError => err.message.indexOf(retryableError) > -1),
     });
   }
 
+  _beforeStep() {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    return helper.waitForInvisible('xuilib-loading-spinner', 20);
+  }
+
   _afterStep(step) {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
     if (step.name === 'attachFile') {
-      return this.helpers['Puppeteer'].wait(2); // in seconds; time needed for document store to store uploaded files
+      return helper.wait(2); // in seconds; time needed for document store to store uploaded files
     }
   }
 };

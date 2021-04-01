@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HasContactDirectionValidatorTest extends AbstractValidationTest {
+class HasContactDirectionValidatorTest extends AbstractValidationTest {
 
     private static final String ERROR_MESSAGE = "Enter the contact's full name";
 
@@ -56,6 +56,6 @@ public class HasContactDirectionValidatorTest extends AbstractValidationTest {
 
         List<String> errorMessages = validate(applicantParty);
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 }

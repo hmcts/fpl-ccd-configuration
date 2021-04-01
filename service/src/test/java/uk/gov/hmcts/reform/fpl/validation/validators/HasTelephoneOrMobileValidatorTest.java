@@ -23,7 +23,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
 
         List<String> errorMessages = validate(applicantParty);
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
@@ -36,7 +36,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
 
         List<String> errorMessages = validate(applicantParty);
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
@@ -52,7 +52,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
 
         List<String> errorMessages = validate(applicantParty);
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
@@ -68,7 +68,7 @@ class HasTelephoneOrMobileValidatorTest extends AbstractValidationTest {
 
         List<String> errorMessages = validate(applicantParty);
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isNotEmpty().doesNotContain(ERROR_MESSAGE);
     }
 
     @Test

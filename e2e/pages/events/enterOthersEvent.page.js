@@ -33,6 +33,7 @@ module.exports = {
   async enterOtherDetails(other) {
     const elementIndex = await this.getActiveElementIndex();
 
+    await I.runAccessibilityTest();
     I.fillField(this.fields(elementIndex).name, other.name);
     I.click(this.fields(elementIndex).DOB.day);
     I.fillField(this.fields(elementIndex).DOB.day, other.DOB.day);
@@ -40,8 +41,7 @@ module.exports = {
     I.fillField(this.fields(elementIndex).DOB.year, other.DOB.year);
     I.selectOption(this.fields(elementIndex).gender, other.gender);
     I.fillField(this.fields(elementIndex).birthPlace, other.birthPlace);
-    within(this.fields(elementIndex).address, () => {
-      //XXX postcode lookup
+    await within(this.fields(elementIndex).address, () => {
       postcodeLookup.enterAddressManually(other.address);
     });
     I.fillField(this.fields(elementIndex).telephoneNumber, other.telephoneNumber);
@@ -49,7 +49,6 @@ module.exports = {
 
   async enterRelationshipToChild(childInformation) {
     const elementIndex = await this.getActiveElementIndex();
-
     I.fillField(this.fields(elementIndex).relationshipToChild, childInformation);
   },
 
@@ -83,11 +82,11 @@ module.exports = {
   },
 
   async getActiveElementIndex() {
-    const count = await I.grabNumberOfVisibleElements('//button[text()="Remove"]');
-    if (count === 0) {
+    const count = await I.getActiveElementIndex();
+    if (count === -1) {
       return 'firstOther';
     } else {
-      return `additionalOthers_${count - 1}`;
+      return `additionalOthers_${count}`;
     }
   },
 };

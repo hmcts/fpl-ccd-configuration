@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
@@ -13,10 +12,9 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(OtherProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class OtherProceedingsControllerTest extends AbstractControllerTest {
+class OtherProceedingsControllerTest extends AbstractCallbackTest {
 
     private static final String ERROR_MESSAGE = "You must say if there are any other proceedings relevant to this case";
 

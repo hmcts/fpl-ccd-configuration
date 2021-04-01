@@ -10,11 +10,13 @@ module.exports = {
     note: '#returnApplication_note',
   },
 
-  selectApplicationIncorrect() {
+  async selectApplicationIncorrect() {
     I.checkOption(this.fields.rejectionReasons.incorrect);
+    await I.runAccessibilityTest();
   },
 
-  enterRejectionNote(note = 'PBA number is incorrect') {
+  async enterRejectionNote(note = 'PBA number is incorrect') {
+    await I.runAccessibilityTest();
     I.fillField(this.fields.note, note);
   },
 };

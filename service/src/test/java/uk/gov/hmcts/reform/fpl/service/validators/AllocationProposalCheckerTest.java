@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {AllocationProposalChecker.class, LocalValidatorFactoryBean.class})
@@ -20,60 +22,131 @@ class AllocationProposalCheckerTest {
     @Autowired
     private AllocationProposalChecker allocationProposalChecker;
 
-    @Test
-    void shouldReturnErrorWhenNoAllocationProposalHasBeenAdded() {
-        final CaseData caseData = CaseData.builder().build();
+    @Nested
+    class Validate {
 
-        final List<String> errors = allocationProposalChecker.validate(caseData);
-        final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+        @Test
+        void shouldReturnErrorWhenNoAllocationProposalHasBeenAdded() {
+            final CaseData caseData = CaseData.builder().build();
 
-        assertThat(errors).contains("Add the allocation proposal");
-        assertThat(isCompleted).isFalse();
-    }
+            final List<String> errors = allocationProposalChecker.validate(caseData);
 
-    @Test
-    void shouldReturnErrorWhenNoAllocationProposalDetails() {
-        final Allocation allocation = Allocation.builder().build();
-        final CaseData caseData = CaseData.builder()
+            assertThat(errors).contains("Add the allocation proposal");
+        }
+
+        @Test
+        void shouldReturnErrorWhenNoAllocationProposalDetails() {
+            final Allocation allocation = Allocation.builder().build();
+            final CaseData caseData = CaseData.builder()
                 .allocationProposal(allocation)
                 .build();
 
-        final List<String> errors = allocationProposalChecker.validate(caseData);
-        final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+            final List<String> errors = allocationProposalChecker.validate(caseData);
 
-        assertThat(errors).contains("Enter an allocation proposal");
-        assertThat(isCompleted).isFalse();
-    }
+            assertThat(errors).contains("Enter an allocation proposal");
+        }
 
-    @Test
-    void shouldReturnErrorWhenAllocationProposalIsBlank() {
-        final Allocation allocation = Allocation.builder()
+        @Test
+        void shouldReturnErrorWhenAllocationProposalIsBlank() {
+            final Allocation allocation = Allocation.builder()
                 .proposal("")
                 .build();
-        final CaseData caseData = CaseData.builder()
+            final CaseData caseData = CaseData.builder()
                 .allocationProposal(allocation)
                 .build();
 
-        final List<String> errors = allocationProposalChecker.validate(caseData);
-        final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+            final List<String> errors = allocationProposalChecker.validate(caseData);
 
-        assertThat(errors).contains("Enter an allocation proposal");
-        assertThat(isCompleted).isFalse();
+            assertThat(errors).contains("Enter an allocation proposal");
+        }
+
+        @Test
+        void shouldReturnEmptyErrorsWhenAllocationProposalIsPresent() {
+            final Allocation allocation = Allocation.builder()
+                .proposal("Circuit Judge")
+                .build();
+            final CaseData caseData = CaseData.builder()
+                .allocationProposal(allocation)
+                .build();
+
+            final List<String> errors = allocationProposalChecker.validate(caseData);
+
+            assertThat(errors).isEmpty();
+        }
+    }
+
+    @Nested
+    class IsCompleted {
+
+        @Test
+        void shouldNotBeCompletedWhenNoAllocationProposalHasBeenAdded() {
+            final CaseData caseData = CaseData.builder().build();
+
+            final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+
+            assertThat(isCompleted).isFalse();
+        }
+
+        @Test
+        void shouldNotBeCompletedWhenNoAllocationProposalDetails() {
+            final Allocation allocation = Allocation.builder().build();
+            final CaseData caseData = CaseData.builder()
+                .allocationProposal(allocation)
+                .build();
+
+            final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+
+            assertThat(isCompleted).isFalse();
+        }
+
+        @Test
+        void shouldNotBeCompletedWhenAllocationProposalIsBlank() {
+            final Allocation allocation = Allocation.builder()
+                .proposal("")
+                .proposalReason("Proposal Reason")
+                .build();
+            final CaseData caseData = CaseData.builder()
+                .allocationProposal(allocation)
+                .build();
+
+            final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+
+            assertThat(isCompleted).isFalse();
+        }
+
+        @Test
+        void shouldNotBeCompletedWhenAllocationProposalIsPresent() {
+            final Allocation allocation = Allocation.builder()
+                .proposal("Circuit Judge")
+                .build();
+            final CaseData caseData = CaseData.builder()
+                .allocationProposal(allocation)
+                .build();
+
+            final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+
+            assertThat(isCompleted).isFalse();
+        }
+
+        @Test
+        void shouldBeCompletedWhenAllocationProposalAndReasonIsPresent() {
+            final Allocation allocation = Allocation.builder()
+                .proposal("Circuit Judge")
+                .proposalReason("Proposal Reason")
+                .build();
+            final CaseData caseData = CaseData.builder()
+                .allocationProposal(allocation)
+                .build();
+
+            final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
+
+            assertThat(isCompleted).isTrue();
+        }
     }
 
     @Test
-    void shouldReturnEmptyErrorsWhenAllocationProposalIsPresent() {
-        final Allocation allocation = Allocation.builder()
-                .proposal("Circuit Judge")
-                .build();
-        final CaseData caseData = CaseData.builder()
-                .allocationProposal(allocation)
-                .build();
-
-        final List<String> errors = allocationProposalChecker.validate(caseData);
-        final boolean isCompleted = allocationProposalChecker.isCompleted(caseData);
-
-        assertThat(errors).isEmpty();
-        assertThat(isCompleted).isTrue();
+    void testCompletedState() {
+        assertThat(allocationProposalChecker.completedState()).isEqualTo(COMPLETED_FINISHED);
     }
+
 }

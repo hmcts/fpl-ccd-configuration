@@ -50,7 +50,7 @@ class DirectionsTest {
 
             Stream.of(DirectionAssignee.values())
                 .filter(assignee -> assignee != LOCAL_AUTHORITY && assignee != COURT)
-                .forEach(assignee -> assertThat(mapping.get(assignee)).isEqualTo(emptyList()));
+                .forEach(assignee -> assertThat(mapping).containsEntry(assignee, emptyList()));
         }
 
         @Test
@@ -58,7 +58,7 @@ class DirectionsTest {
             Map<DirectionAssignee, List<Element<Direction>>> mapping = getAssigneeToDirectionMapping(emptyList());
 
             Stream.of(DirectionAssignee.values())
-                .forEach(assignee -> assertThat(mapping.get(assignee)).isEqualTo(emptyList()));
+                .forEach(assignee -> assertThat(mapping).containsEntry(assignee, emptyList()));
         }
 
         private void assertKeyContainsCorrectDirection(DirectionAssignee court,

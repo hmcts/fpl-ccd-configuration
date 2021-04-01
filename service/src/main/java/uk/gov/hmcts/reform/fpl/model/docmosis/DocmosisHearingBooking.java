@@ -5,9 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisHearingBooking {
+    private final String hearingType;
     private final String hearingDate;
     private final String hearingVenue;
     private final String preHearingAttendance;

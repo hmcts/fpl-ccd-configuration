@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.config;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +12,7 @@ class LocalAuthorityCodeLookupConfigurationTest {
 
     private static final String CONFIG = String.format("%s=>%s", LOCAL_AUTHORITY_EMAIL_DOMAIN, LOCAL_AUTHORITY_CODE);
 
-    private LocalAuthorityCodeLookupConfiguration configuration = new LocalAuthorityCodeLookupConfiguration(CONFIG);
+    private LocalAuthorityCodeLookupConfiguration underTest = new LocalAuthorityCodeLookupConfiguration(CONFIG);
 
     @Test
     void shouldThrowNullPointerExceptionUponInitialisationWhenMappingValueIsEmpty() {
@@ -24,23 +23,19 @@ class LocalAuthorityCodeLookupConfigurationTest {
 
     @Test
     void shouldThrowNullPointerExceptionWhenLocalAuthorityEmailDomainIsNull() {
-        Assertions.assertThatThrownBy(() -> configuration.getLocalAuthorityCode(null))
+        Assertions.assertThatThrownBy(() -> underTest.getLocalAuthorityCode(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Email domain cannot be null");
     }
 
     @Test
-    void shouldThrowUnknownLocalAuthorityDomainExceptionWhenLocalAuthorityEmailDomainDoesNotExist() {
-        Assertions.assertThatThrownBy(() -> configuration.getLocalAuthorityCode("fake@example.com"))
-            .isInstanceOf(UnknownLocalAuthorityDomainException.class)
-            .hasMessage("fake@example.com not found");
+    void shouldReturnEmptyLocalAuthorityCodeIdNoLocalAuthorityWithGivenDomain() {
+        assertThat(underTest.getLocalAuthorityCode("fake@example.com")).isEmpty();
     }
 
     @Test
     void shouldReturnLocalAuthorityCodeWhenLocalAuthorityEmailDomainExists() {
-        String localAuthorityCode = configuration.getLocalAuthorityCode(LOCAL_AUTHORITY_EMAIL_DOMAIN);
-
-        assertThat(localAuthorityCode).isEqualTo(LOCAL_AUTHORITY_CODE);
+        assertThat(underTest.getLocalAuthorityCode(LOCAL_AUTHORITY_EMAIL_DOMAIN)).contains(LOCAL_AUTHORITY_CODE);
     }
 
 }

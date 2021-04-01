@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "respondentName",
+    "FieldType": "Text",
+    "ElementLabel": "Respondent",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "respondentId",
+    "FieldType": "Text",
+    "ElementLabel": "Id of the respondent for this respondent statement",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "respondentName=\"DO NOT SHOW\"",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "supportingEvidenceBundle",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "supportingEvidenceLA",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentStatement",
+    "ListElementCode": "supportingEvidenceNC",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "ElementLabel": "Documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

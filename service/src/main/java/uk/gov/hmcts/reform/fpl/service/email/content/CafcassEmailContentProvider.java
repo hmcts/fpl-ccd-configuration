@@ -17,7 +17,7 @@ public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
 
     public SubmitCaseCafcassTemplate buildCafcassSubmissionNotification(CaseData caseData) {
 
-        SubmitCaseCafcassTemplate template = buildNotifyTemplate(new SubmitCaseCafcassTemplate(),
+        SubmitCaseCafcassTemplate template = buildNotifyTemplate(SubmitCaseCafcassTemplate.builder().build(),
             caseData.getId(), caseData.getOrders(), caseData.getHearing(), caseData.getRespondents1());
 
         template.setCafcass(cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getName());

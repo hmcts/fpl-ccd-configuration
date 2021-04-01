@@ -6,8 +6,9 @@ module.exports = {
     list: '#removableOrderList',
   },
 
-  selectOrderToRemove(option) {
+  async selectOrderToRemove(option) {
     I.waitForElement(this.fields.list);
+    await I.runAccessibilityTest();
     I.selectOption(this.fields.list, option);
   },
 

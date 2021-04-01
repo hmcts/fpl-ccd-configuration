@@ -25,4 +25,11 @@ class SelectorTest {
         selector.setNumberOfOptions(6);
         assertThat(selector.getCount()).isEqualTo("123456");
     }
+
+    @Test
+    void shouldSetAStringWithLowerAndUpperLimitInAscendingOrderWhenNumberOfOptionsIsPositive() {
+        selector.setNumberOfOptions(3, 6);
+        assertThat(selector.getCount()).isEqualTo("3456");
+    }
+
 }

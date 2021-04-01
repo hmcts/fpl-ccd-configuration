@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedCMOTemplate;
-import uk.gov.hmcts.reform.fpl.model.order.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -26,9 +26,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class, EmailNotificationHelper.class,
     FixedTimeConfiguration.class, CaseConverter.class})
@@ -44,66 +44,66 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
+        IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
+            .respondentLastName("lastName")
+            .familyManCaseNumber("11")
+            .digitalPreference("No")
+            .hearing("test hearing, 20th June")
+            .caseUrl("")
+            .documentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
+                .map(JSONObject::toMap)
+                .orElse(null))
+            .build();
 
-        expectedTemplate.setRespondentLastName("lastName");
-        expectedTemplate.setFamilyManCaseNumber("11");
-        expectedTemplate.setDigitalPreference("No");
-        expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setCaseUrl("");
-        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
-            .map(JSONObject::toMap)
-            .orElse(null));
-
-        assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
-            createCase(), cmo, EMAIL))
-            .isEqualToComparingFieldByField(expectedTemplate);
+        assertThat(
+            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(createCase(), cmo, EMAIL))
+            .usingRecursiveComparison()
+            .isEqualTo(expectedTemplate);
     }
 
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithPopulatedCaseUrl() {
         given(documentDownloadService.downloadDocument(anyString())).willReturn(TestDataHelper.DOCUMENT_CONTENT);
 
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
 
-        IssuedCMOTemplate expectedTemplate = new IssuedCMOTemplate();
-
-        expectedTemplate.setRespondentLastName("lastName");
-        expectedTemplate.setFamilyManCaseNumber("11");
-        expectedTemplate.setDigitalPreference("Yes");
-        expectedTemplate.setCaseUrl("http://fake-url/cases/case-details/" + CASE_REFERENCE);
-        expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setDocumentLink(generateAttachedDocumentLink(TestDataHelper.DOCUMENT_CONTENT)
-            .map(JSONObject::toMap)
-            .orElse(null));
+        IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
+            .respondentLastName("lastName")
+            .familyManCaseNumber("11")
+            .digitalPreference("Yes")
+            .hearing("test hearing, 20th June")
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
+            .documentLink(DOC_URL)
+            .build();
 
         assertThat(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
             createCase(), cmo, DIGITAL_SERVICE))
-            .isEqualToComparingFieldByField(expectedTemplate);
+            .usingRecursiveComparison()
+            .isEqualTo(expectedTemplate);
     }
 
     @Test
     void shouldBuildCMORejectedByJudgeNotificationExpectedParameters() {
-        final CaseManagementOrder cmo = buildCmo();
+        final HearingOrder cmo = buildCmo();
         cmo.setRequestedChanges("change it");
 
-        RejectedCMOTemplate expectedTemplate = new RejectedCMOTemplate();
-
-        expectedTemplate.setRequestedChanges("change it");
-        expectedTemplate.setHearing("test hearing, 20th June");
-        expectedTemplate.setCaseUrl(caseUrl(CASE_REFERENCE));
-        expectedTemplate.setRespondentLastName("lastName");
-        expectedTemplate.setFamilyManCaseNumber("11");
+        RejectedCMOTemplate expectedTemplate = RejectedCMOTemplate.builder()
+            .requestedChanges("change it")
+            .hearing("test hearing, 20th June")
+            .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
+            .respondentLastName("lastName")
+            .familyManCaseNumber("11")
+            .build();
 
         assertThat(caseManagementOrderEmailContentProvider
-            .buildCMORejectedByJudgeNotificationParameters(createCase(), cmo)).isEqualToComparingFieldByField(
-            expectedTemplate);
+            .buildCMORejectedByJudgeNotificationParameters(createCase(), cmo))
+            .usingRecursiveComparison().isEqualTo(expectedTemplate);
     }
 
-    private CaseManagementOrder buildCmo() {
-        return CaseManagementOrder.builder()
-            .order(testDocumentReference())
+    private HearingOrder buildCmo() {
+        return HearingOrder.builder()
+            .order(testDocument)
             .hearing("Test hearing, 20th June").build();
     }
 

@@ -68,12 +68,23 @@ class RepresentativesServiceTest {
     @Mock
     private RepresentativeCaseRoleService representativesCaseRoleService;
 
+    @Mock
+    private ValidateEmailService validateEmailService;
+
     @InjectMocks
     private RepresentativeService representativesService;
+
+    private static final String VALID_EMAIL = "test@test.com";
+    private static final String INVALID_EMAIL = "<John Doe> test@test.com";
 
     @BeforeEach
     private void init() {
         when(requestData.authorisation()).thenReturn(authorisation);
+        when(validateEmailService.isValid(VALID_EMAIL)).thenReturn(true);
+        when(validateEmailService.isValid(INVALID_EMAIL)).thenReturn(false);
+        when(validateEmailService.validate(VALID_EMAIL)).thenReturn(Optional.of(""));
+        when(validateEmailService.validate(INVALID_EMAIL))
+            .thenReturn(Optional.of("Enter an email address in the correct format, for example name@example.com"));
     }
 
     @AfterEach
@@ -177,6 +188,23 @@ class RepresentativesServiceTest {
     }
 
     @Test
+    void shouldValidateEmailWhenServingPreferenceIsEmail() {
+        Representative representative = Representative.builder()
+            .fullName("John Smith")
+            .positionInACase("Position")
+            .role(LA_LEGAL_REPRESENTATIVE)
+            .servingPreferences(EMAIL)
+            .email(INVALID_EMAIL)
+            .build();
+
+        CaseData caseData = caseWithRepresentatives(representative);
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
+
+        assertThat(validationErrors).containsExactly("Enter an email address in the correct format,"
+            + " for example name@example.com for Representative");
+    }
+
+    @Test
     void shouldValidateAddressPresenceWhenServingPreferenceIsPost() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
@@ -240,11 +268,29 @@ class RepresentativesServiceTest {
     }
 
     @Test
+    void shouldValidateEmailWhenServingPreferenceIsDigitalService() {
+        Representative representative = Representative.builder()
+            .fullName("John Smith")
+            .positionInACase("Solicitor")
+            .role(LA_LEGAL_REPRESENTATIVE)
+            .servingPreferences(DIGITAL_SERVICE)
+            .email(INVALID_EMAIL)
+            .build();
+
+        CaseData caseData = caseWithRepresentatives(representative);
+
+        List<String> validationErrors = representativesService.validateRepresentatives(caseData);
+
+        assertThat(validationErrors).containsExactly("Enter an email address in the correct format,"
+            + " for example name@example.com for Representative");
+    }
+
+    @Test
     void shouldValidateAccountExistenceWhenServingPreferenceIsDigitalService() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
             .positionInACase("Solicitor")
-            .email("test@hmcts.net")
+            .email(VALID_EMAIL)
             .role(LA_LEGAL_REPRESENTATIVE)
             .servingPreferences(DIGITAL_SERVICE)
             .build();
@@ -266,7 +312,7 @@ class RepresentativesServiceTest {
         Representative representative = Representative.builder()
             .fullName("John Smith")
             .positionInACase("Solicitor")
-            .email("test@hmcts.net")
+            .email(VALID_EMAIL)
             .role(LA_LEGAL_REPRESENTATIVE)
             .servingPreferences(EMAIL)
             .build();

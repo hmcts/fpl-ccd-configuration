@@ -1,4 +1,5 @@
 const { I } = inject();
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: {
@@ -27,12 +28,18 @@ module.exports = {
       other: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-OTHER'}),
       directionsDetails: '#orders_emergencyProtectionOrderDirectionDetails',
     },
-
+    epoTypes: {
+      preventRemoval: 'Prevent removal from an address',
+      removeToAccommodation: 'Remove to accommodation',
+    },
+    removalAddress: '#orders_address_address',
+    excluded: '#orders_excluded',
     directions: '#orders_directions-Yes',
     directionsDetails: '#orders_directionDetails',
   },
 
-  checkCareOrder() {
+  async checkCareOrder() {
+    await I.runAccessibilityTest();
     I.checkOption(this.fields.orderType.careOrder);
   },
 
@@ -116,4 +123,17 @@ module.exports = {
     I.click(this.fields.directions);
   },
 
+  selectPreventRemovalFromAddressEPOType() {
+    I.click(this.fields.epoTypes.preventRemoval);
+  },
+
+  async enterAddress(address) {
+    await within(this.fields.removalAddress, () => {
+      postcodeLookup.enterAddressManually(address);
+    });
+  },
+
+  enterWhoIsExcluded(excluded) {
+    I.fillField(this.fields.excluded, excluded);
+  },
 };

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,20 +9,21 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.Constants;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.docmosis.BlankOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CareOrderGenerationService;
@@ -41,8 +42,12 @@ import uk.gov.hmcts.reform.fpl.service.docmosis.DischargeCareOrderGenerationServ
 import uk.gov.hmcts.reform.fpl.service.docmosis.EPOGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.SupervisionOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +57,8 @@ import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -60,6 +66,7 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.SPECIFIC_TIME_NAMED_DATE;
@@ -75,15 +82,15 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdvi
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    FixedTimeConfiguration.class, GeneratedOrderService.class, JacksonAutoConfiguration.class, LookupTestConfig.class
+    FixedTimeConfiguration.class, GeneratedOrderService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
+    DischargeCareOrderService.class, ChildrenService.class, DocumentUploadHelper.class
 })
 class GeneratedOrderServiceTest {
-    private static final List<Element<Child>> CHILDREN = List.of(testChild(), testChild());
 
-    @Autowired
-    private Time time;
     @MockBean
-    private ChildrenService childrenService;
+    private RequestData requestData;
+    @MockBean
+    private IdamClient idamClient;
     @MockBean
     private BlankOrderGenerationService blankOrderGenerationService;
     @MockBean
@@ -94,13 +101,15 @@ class GeneratedOrderServiceTest {
     private EPOGenerationService epoGenerationService;
     @MockBean
     private DischargeCareOrderGenerationService dischargeCareOrderGenerationService;
-    @MockBean
-    private DischargeCareOrderService dischargeCareOrderService;
 
     @Autowired
-    @InjectMocks
+    private Time time;
+    @Autowired
     private GeneratedOrderService service;
-    private DocumentReference testDocumentReference = testDocumentReference();
+
+    private static final DocumentReference testDocumentReference = testDocumentReference();
+    private static final List<Element<Child>> CHILDREN_WITH_FINAL = List.of(childWithFinalOrderIssuedValue("Yes"));
+    private static final List<Element<Child>> CHILDREN_WITHOUT_FINAL = List.of(childWithFinalOrderIssuedValue("No"));
 
     @Nested
     class C21Tests {
@@ -144,37 +153,24 @@ class GeneratedOrderServiceTest {
     @Nested
     class ShowCloseCasePage {
 
-        @BeforeEach
-        void init() {
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(true);
-        }
-
         @ParameterizedTest
         @ArgumentsSource(GeneratedCareOrderProvider.class)
         void shouldReturnFalseWhenNotAllChildrenHaveFinalOrder(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(false);
-            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN, true)).isFalse();
-        }
-
-        @ParameterizedTest
-        @ArgumentsSource(GeneratedCareOrderProvider.class)
-        void shouldReturnFalseWhenClosingCaseIsNotEnabled(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(true);
-            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN, false)).isFalse();
+            assertThat(service.showCloseCase(
+                orderTypeAndDocument(type, subtype), CHILDREN_WITHOUT_FINAL)
+            ).isFalse();
         }
 
         @ParameterizedTest
         @ArgumentsSource(NotCloseableGeneratedCareOrderProvider.class)
         void shouldReturnFalseWhenOrderIsCloseable(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(true);
-            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN, true)).isFalse();
+            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL)).isFalse();
         }
 
         @ParameterizedTest
         @ArgumentsSource(CloseableGeneratedCareOrderProvider.class)
         void shouldReturnTrueWhenOrderIsCloseable(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(true);
-            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN, true)).isTrue();
+            assertThat(service.showCloseCase(orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL)).isTrue();
         }
 
     }
@@ -209,9 +205,9 @@ class GeneratedOrderServiceTest {
         void shouldNotAllowFinalOrderWhenAllChildrenHaveFinalOrderIssuedAndOrderIsClosable(
             GeneratedOrderType type, GeneratedOrderSubtype subtype) {
 
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(true);
-
-            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(orderTypeAndDocument(type, subtype), CHILDREN);
+            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(
+                orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL
+            );
 
             assertThat(isFinalOrderAllowed).isFalse();
         }
@@ -221,9 +217,9 @@ class GeneratedOrderServiceTest {
         void shouldAllowFinalOrderWhenNotEveryChildHasFinalOrderIssuedAndOrderIsClosable(
             GeneratedOrderType type, GeneratedOrderSubtype subtype) {
 
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(false);
-
-            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(orderTypeAndDocument(type, subtype), CHILDREN);
+            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(
+                orderTypeAndDocument(type, subtype), CHILDREN_WITHOUT_FINAL
+            );
 
             assertThat(isFinalOrderAllowed).isTrue();
         }
@@ -233,9 +229,9 @@ class GeneratedOrderServiceTest {
         void shouldAllowFinalOrderWhenOrderIsNotClosableAndNotEveryChildHasFinalOrderIssued(
             GeneratedOrderType type, GeneratedOrderSubtype subtype) {
 
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(false);
-
-            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(orderTypeAndDocument(type, subtype), CHILDREN);
+            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(
+                orderTypeAndDocument(type, subtype), CHILDREN_WITHOUT_FINAL
+            );
 
             assertThat(isFinalOrderAllowed).isTrue();
         }
@@ -245,9 +241,9 @@ class GeneratedOrderServiceTest {
         void shouldAllowFinalOrderWhenOrderIsNotClosableAndAllChildrenHaveFinalOrderIssued(
             GeneratedOrderType type, GeneratedOrderSubtype subtype) {
 
-            when(childrenService.allChildrenHaveFinalOrder(CHILDREN)).thenReturn(true);
-
-            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(orderTypeAndDocument(type, subtype), CHILDREN);
+            boolean isFinalOrderAllowed = service.isFinalOrderAllowed(
+                orderTypeAndDocument(type, subtype), CHILDREN_WITH_FINAL
+            );
 
             assertThat(isFinalOrderAllowed).isTrue();
         }
@@ -282,7 +278,8 @@ class GeneratedOrderServiceTest {
         final GeneratedOrder builtOrder = service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor,
             caseData);
 
-        assertThat(builtOrder.getExpiryDate()).isEqualTo("End of the proceedings");
+        assertThat(builtOrder.getExpiryDate())
+            .isEqualTo("At the end of the proceedings, or until a further order is made");
     }
 
     @ParameterizedTest
@@ -340,21 +337,51 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
+    void shouldBuildOrderWithUploadedInformationWhenUploadedTypeSelected() {
+        given(requestData.authorisation()).willReturn(Constants.USER_AUTH_TOKEN);
+        given(idamClient.getUserDetails(Constants.USER_AUTH_TOKEN)).willReturn(
+            UserDetails.builder()
+                .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+                .build()
+        );
+
+        OrderTypeAndDocument typeAndDocument = orderTypeAndDocument(
+            UploadedOrderType.OTHER, "other order", "description"
+        );
+        CaseData caseData = caseData().dateOfIssue(LocalDate.of(2019, 12, 12)).build();
+
+        GeneratedOrder builtOrder = service.buildCompleteOrder(typeAndDocument, null, caseData);
+
+        GeneratedOrder expectedOrder = GeneratedOrder.builder()
+            .type("other order")
+            .uploadedOrderDescription("description")
+            .uploader("HMCTS")
+            .date(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE))
+            .dateOfIssue("12 December 2019")
+            .document(testDocumentReference)
+            .build();
+
+        assertThat(builtOrder).isEqualTo(expectedOrder);
+    }
+
+    @Test
     void shouldEnhanceOrder() {
+        final List<Element<Child>> children = List.of(testChild(), testChild());
         final OrderTypeAndDocument orderTypeAndDocument = orderTypeAndDocument(CARE_ORDER, FINAL);
         final JudgeAndLegalAdvisor judgeAndLegalAdvisor = testJudgeAndLegalAdviser();
-        final CaseData caseData = caseData().build();
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(CHILDREN);
+        final CaseData caseData = caseData()
+            .children1(children)
+            .orderAppliesToAllChildren("Yes")
+            .build();
 
         GeneratedOrder builtOrder = service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData);
 
         assertThat(builtOrder.getDateOfIssue()).isEqualTo(formatLocalDateToString(time.now().toLocalDate(), DATE));
         assertThat(builtOrder.getDate()).isEqualTo(formatLocalDateTimeBaseUsingFormat(time.now(), TIME_DATE));
         assertThat(builtOrder.getType()).isEqualTo("Final care order");
-        assertThat(builtOrder.getCourtName()).isEqualTo("Family Court");
+        assertThat(builtOrder.getCourtName()).isEqualTo(DEFAULT_LA_COURT);
         assertThat(builtOrder.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
-        assertThat(builtOrder.getChildren()).isEqualTo(CHILDREN);
+        assertThat(builtOrder.getChildren()).isEqualTo(children);
     }
 
     @Test
@@ -371,7 +398,7 @@ class GeneratedOrderServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("fileNameSource")
+    @ArgumentsSource(FileNamesProvider.class)
     void shouldGenerateCorrectFileNameGivenOrderType(GeneratedOrderType type,
                                                      GeneratedOrderSubtype subtype,
                                                      String expected) {
@@ -467,30 +494,30 @@ class GeneratedOrderServiceTest {
         assertThat(data).containsOnlyKeys("DO NOT REMOVE");
     }
 
-    private static Stream<Arguments> fileNameSource() {
-        return Stream.of(
-            Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
-            Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
-            Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
-            Arguments.of(DISCHARGE_OF_CARE_ORDER, null, "discharge_of_care_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
-            Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
-            Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
-            Arguments.of(CARE_ORDER, null, "care_order.pdf")
-        );
-    }
-
-    private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
+    private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, GeneratedOrderSubtype subtype,
+                                                      UploadedOrderType uploadedType, String orderName,
+                                                      String orderDescription) {
         return OrderTypeAndDocument.builder()
             .type(type)
             .subtype(subtype)
             .document(testDocumentReference)
+            .uploadedOrderType(uploadedType)
+            .orderDescription(orderDescription)
+            .orderName(orderName)
             .build();
     }
 
+    private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type, GeneratedOrderSubtype subtype) {
+        return orderTypeAndDocument(type, subtype, null, null, null);
+    }
+
+    private OrderTypeAndDocument orderTypeAndDocument(UploadedOrderType uploadedType, String orderName,
+                                                      String orderDescription) {
+        return orderTypeAndDocument(UPLOAD, null, uploadedType, orderName, orderDescription);
+    }
+
     private OrderTypeAndDocument orderTypeAndDocument(GeneratedOrderType type) {
-        return orderTypeAndDocument(type, null);
+        return orderTypeAndDocument(type, null, null, null, null);
     }
 
     private CaseData.CaseDataBuilder caseData() {
@@ -502,7 +529,7 @@ class GeneratedOrderServiceTest {
             .dateOfIssue(time.now().toLocalDate())
             .orderMonths(null)
             .interimEndDate(null)
-            .caseLocalAuthority("example");
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE);
     }
 
     private GeneratedOrder.GeneratedOrderBuilder order() {
@@ -510,6 +537,29 @@ class GeneratedOrderServiceTest {
             .title(null)
             .details("Some details")
             .document(testDocumentReference);
+    }
+
+    private static Element<Child> childWithFinalOrderIssuedValue(String finalOrderValue) {
+        Element<Child> child = testChild();
+        child.getValue().setFinalOrderIssued(finalOrderValue);
+        return child;
+    }
+
+    private static class FileNamesProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of(BLANK_ORDER, null, "blank_order_c21.pdf"),
+                Arguments.of(CARE_ORDER, INTERIM, "interim_care_order.pdf"),
+                Arguments.of(CARE_ORDER, FINAL, "final_care_order.pdf"),
+                Arguments.of(DISCHARGE_OF_CARE_ORDER, null, "discharge_of_care_order.pdf"),
+                Arguments.of(SUPERVISION_ORDER, INTERIM, "interim_supervision_order.pdf"),
+                Arguments.of(SUPERVISION_ORDER, FINAL, "final_supervision_order.pdf"),
+                Arguments.of(EMERGENCY_PROTECTION_ORDER, null, "emergency_protection_order.pdf"),
+                Arguments.of(SUPERVISION_ORDER, null, "supervision_order.pdf"),
+                Arguments.of(CARE_ORDER, null, "care_order.pdf")
+            );
+        }
     }
 
     private static class NotCloseableGeneratedCareOrderProvider implements ArgumentsProvider {

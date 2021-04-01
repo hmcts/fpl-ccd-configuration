@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseNameChecker.class, LocalValidatorFactoryBean.class})
@@ -44,5 +45,10 @@ class CaseNameCheckerTest {
 
         assertThat(errors).isEmpty();
         assertThat(isCompleted).isTrue();
+    }
+
+    @Test
+    void testCompletedState() {
+        assertThat(caseNameChecker.completedState()).isEqualTo(COMPLETED_FINISHED);
     }
 }

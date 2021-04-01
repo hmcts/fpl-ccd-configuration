@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fnp.model.payment;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreditAccountPaymentRequest {
     @ToString.Exclude
     @JsonProperty("account_number")
@@ -38,4 +40,6 @@ public class CreditAccountPaymentRequest {
     private String siteId;
     @JsonProperty("fees")
     private List<FeeDto> fees;
+    @JsonProperty("case_type")
+    private String caseType;
 }

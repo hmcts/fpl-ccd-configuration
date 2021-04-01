@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.robotics.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
-import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import static java.util.Set.of;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;

@@ -70,7 +70,7 @@ class OthersCheckerIsStartedTest {
     private static Stream<Arguments> nonEmptyOthers() {
         return Stream.of(
                 Other.builder().name("Test").build(),
-                Other.builder().DOB("01-01-2010").build(),
+                Other.builder().dateOfBirth("01-01-2010").build(),
                 Other.builder().gender("Male").build(),
                 Other.builder().birthPlace("London").build(),
                 Other.builder().childInformation("Test").build(),
@@ -93,7 +93,7 @@ class OthersCheckerIsStartedTest {
                 Others.builder().firstOther(Other.builder().build()).build(),
                 Others.builder().firstOther(Other.builder()
                         .name("")
-                        .DOB("")
+                        .dateOfBirth("")
                         .gender("")
                         .birthPlace("")
                         .childInformation("")

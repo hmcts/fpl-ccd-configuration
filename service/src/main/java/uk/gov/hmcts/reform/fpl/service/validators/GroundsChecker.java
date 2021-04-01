@@ -5,12 +5,14 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.util.List;
 import javax.validation.groups.Default;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED_FINISHED;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.anyNonEmpty;
 
 @Component
@@ -41,6 +43,11 @@ public class GroundsChecker extends PropertiesChecker {
 
     private static boolean isEPOGroundsStarted(GroundsForEPO grounds) {
         return isNotEmpty(grounds) && isNotEmpty(grounds.getReason());
+    }
+
+    @Override
+    public TaskState completedState() {
+        return COMPLETED_FINISHED;
     }
 
 }

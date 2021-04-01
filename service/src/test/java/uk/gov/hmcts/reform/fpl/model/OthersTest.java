@@ -10,10 +10,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testOther;
 
-public class OthersTest {
+class OthersTest {
 
     @Test
-    public void shouldReturnDefaultOthersWhenListOfOthersIsEmpty() {
+    void shouldReturnDefaultOthersWhenListOfOthersIsEmpty() {
         final List<Element<Other>> othersList = emptyList();
         final Others actualOthers = Others.from(othersList);
         final Others expectedOthers = Others.builder()
@@ -25,7 +25,7 @@ public class OthersTest {
     }
 
     @Test
-    public void shouldReturnDefaultOthersWhenListOfOthersIsNull() {
+    void shouldReturnDefaultOthersWhenListOfOthersIsNull() {
         final List<Element<Other>> othersList = null;
         final Others actualOthers = Others.from(othersList);
         final Others expectedOthers = Others.builder()
@@ -37,7 +37,7 @@ public class OthersTest {
     }
 
     @Test
-    public void shouldReturnOthersWhenSingleOtherPresent() {
+    void shouldReturnOthersWhenSingleOtherPresent() {
         final Other other = testOther();
         final List<Element<Other>> othersList = wrapElements(other);
         final Others actualOthers = Others.from(othersList);
@@ -50,7 +50,7 @@ public class OthersTest {
     }
 
     @Test
-    public void shouldReturnOthersWhenMultipleOthersPresent() {
+    void shouldReturnOthersWhenMultipleOthersPresent() {
         final Other other1 = testOther();
         final Other other2 = testOther();
 

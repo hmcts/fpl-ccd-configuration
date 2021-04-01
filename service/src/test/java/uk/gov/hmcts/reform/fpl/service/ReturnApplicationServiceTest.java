@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -17,37 +13,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ReturnedApplicationReasons.INCOMPLETE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {FixedTimeConfiguration.class, ReturnApplicationService.class})
 class ReturnApplicationServiceTest {
 
-    @Autowired
-    private Time time;
-
-    @Autowired
-    private ReturnApplicationService service;
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final ReturnApplicationService service = new ReturnApplicationService(time);
 
     @Test
     void shouldUpdateReturnedApplicationPropertiesWithFormattedDates() {
         LocalDate now = time.now().toLocalDate();
         String expectedDate = formatLocalDateToString(now, "d MMMM YYYY");
+        DocumentReference applicationDocument = buildApplicationDocument("mock_document.pdf");
 
         ReturnApplication returnApplication = service.updateReturnApplication(buildReturnedApplication(),
-            buildDocumentReference(), now);
+            applicationDocument, now);
 
-        DocumentReference documentReference = returnApplication.getDocument();
+        ReturnApplication expectedApplication = ReturnApplication.builder()
+            .reason(List.of(INCOMPLETE))
+            .note("Missing child details")
+            .document(applicationDocument)
+            .submittedDate(expectedDate)
+            .returnedDate(expectedDate)
+            .build();
 
-        assertThat(returnApplication.getReason()).isEqualTo(List.of(INCOMPLETE));
-        assertThat(returnApplication.getNote()).isEqualTo("Missing child details");
-        assertThat(returnApplication.getSubmittedDate()).isEqualTo(expectedDate);
-        assertThat(returnApplication.getReturnedDate()).isEqualTo(expectedDate);
-        assertThat(documentReference.getFilename()).isEqualTo("mock_document.pdf");
+        assertThat(returnApplication).isEqualTo(expectedApplication);
     }
 
     @Test
     void shouldAppendReturnedToDocumentFileNameExcludingExtension() {
-        String updatedFileName = service.appendReturnedToFileName("mock_document.pdf");
-        assertThat(updatedFileName).isEqualTo("mock_document_returned.pdf");
+        DocumentReference file = buildApplicationDocument("mock_document.pdf");
+        service.appendReturnedToFileName(file);
+        DocumentReference expectedFile = buildApplicationDocument("mock_document_returned.pdf");
+        assertThat(file).isEqualTo(expectedFile);
     }
 
     private ReturnApplication buildReturnedApplication() {
@@ -57,9 +53,9 @@ class ReturnApplicationServiceTest {
             .build();
     }
 
-    private DocumentReference buildDocumentReference() {
+    private DocumentReference buildApplicationDocument(String filename) {
         return DocumentReference.builder()
-            .filename("mock_document.pdf")
+            .filename(filename)
             .build();
     }
 }

@@ -1,0 +1,11 @@
+ccd configuration:
+  - any: ['ccd-definition/**/*']
+
+docmosis:
+  - any: ['docker/docmosis/templates/*']
+
+onboarding:
+  - all: ['ccd-definition/FixedLists/CareSupervision/AuthorityFixedList*']
+
+workflow:
+  - any: ['.github/**/*']

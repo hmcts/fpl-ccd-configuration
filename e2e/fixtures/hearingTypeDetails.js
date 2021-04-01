@@ -2,6 +2,7 @@ module.exports = [
   {
     caseManagement: 'Case management',
     venue: 'Aberdeen Tribunal Hearing Centre',
+    presence: 'In person',
     startDate: {
       second: '00',
       minute: '15',
@@ -28,6 +29,7 @@ module.exports = [
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Reed',
       legalAdvisorName: 'Rupert Robert',
+      judgeEmail: 'reed@example.com',
     },
     additionalNotes: 'please make sure that you attend this...',
     sendNoticeOfHearing: 'Yes',
@@ -45,6 +47,7 @@ module.exports = [
       postcode: 'CR0 2GE',
       country: 'United Kingdom',
     },
+    presence: 'Remote',
     startDate: {
       second: '00',
       minute: '00',
@@ -74,5 +77,19 @@ module.exports = [
       legalAdvisorName: 'Peter Parker',
     },
     sendNoticeOfHearing: 'No',
+  },
+  {
+    startDate: {
+      hour: '11',
+      day: '11',
+      month: '01',
+      year: '2060',
+    },
+    endDate: {
+      hour: '14',
+      day: '11',
+      month: '01',
+      year: '2060',
+    },
   },
 ];

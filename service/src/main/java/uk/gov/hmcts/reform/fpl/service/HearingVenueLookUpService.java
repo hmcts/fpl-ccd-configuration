@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.joining;
 @Slf4j
 @Service
 public class HearingVenueLookUpService {
+    public static final String HEARING_VENUE_ID_OTHER = "OTHER";
 
     private final ObjectMapper objectMapper;
     private List<HearingVenue> hearingVenues;
@@ -39,11 +40,11 @@ public class HearingVenueLookUpService {
     }
 
     public HearingVenue getHearingVenue(final HearingBooking hearingBooking) {
-        if (!"OTHER".equals(hearingBooking.getVenue())) {
+        if (!HEARING_VENUE_ID_OTHER.equals(hearingBooking.getVenue())) {
             return getHearingVenue(hearingBooking.getVenue());
         } else {
             return HearingVenue.builder()
-                .hearingVenueId("OTHER")
+                .hearingVenueId(HEARING_VENUE_ID_OTHER)
                 .venue("Other")
                 .address(hearingBooking.getVenueCustomAddress())
                 .build();
@@ -55,6 +56,15 @@ public class HearingVenueLookUpService {
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
             .orElse(HearingVenue.builder().build());
+    }
+
+    public String getVenueId(final String venueAsString) {
+        for (HearingVenue hearingVenue : hearingVenues) {
+            if (venueAsString.equalsIgnoreCase(buildHearingVenue(hearingVenue))) {
+                return hearingVenue.getHearingVenueId();
+            }
+        }
+        return HEARING_VENUE_ID_OTHER;
     }
 
     public String buildHearingVenue(final HearingVenue hearingVenue) {

@@ -8,11 +8,10 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
-import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,10 +20,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(AddCaseNumberController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class AddCaseNumberControllerSubmittedTest extends AbstractControllerTest {
+class AddCaseNumberControllerSubmittedTest extends AbstractCallbackTest {
 
     AddCaseNumberControllerSubmittedTest() {
         super("add-case-number");

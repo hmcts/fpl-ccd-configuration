@@ -1,0 +1,11 @@
+ [
+   {
+     "LiveFrom": "01/01/2017",
+     "CaseTypeID": "CARE_SUPERVISION_EPO",
+     "ID": "migrationId",
+     "Label": " ",
+     "FieldType": "Text",
+     "SecurityClassification": "Public",
+     "Comment": "To be used to allow multiple migration actions to be performed simultaneously"
+   }
+ ]

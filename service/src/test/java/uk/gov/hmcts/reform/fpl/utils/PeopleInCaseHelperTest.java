@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -61,7 +62,7 @@ class PeopleInCaseHelperTest {
     @Test
     void shouldReturnEmptyStringWhenNoRespondents() {
 
-        String respondentName = getFirstRespondentLastName(null);
+        String respondentName = getFirstRespondentLastName(CaseData.builder().build());
         assertThat(respondentName).isEmpty();
     }
 

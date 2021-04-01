@@ -1,24 +1,29 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
@@ -28,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +54,16 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_CAFCASS_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_INBOX;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -67,19 +77,20 @@ import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
+class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String HMCTS_ADMIN_EMAIL = "admin@family-court.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
+    private static final String LA_EMAIL = "FamilyPublicLaw+PublicLawEmail@gmail.com";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
-    private static final String SURVEY_LINK = "https://www.smartsurvey.co"
-        + ".uk/s/preview/FamilyPublicLaw/44945E4F1F8CBEE3E10D79A4CED903";
+    private static final String SURVEY_LINK = "https://fake.survey.url";
     private static final Long CASE_ID = nextLong();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
+    @Autowired
+    protected ObjectMapper mapper;
 
     @MockBean
     private PaymentService paymentService;
@@ -104,11 +115,17 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
-        Map<String, Object> expectedHmctsParameters = getExpectedHmctsParameters(true);
-        Map<String, Object> completeCafcassParameters = getExpectedCafcassParameters(true);
+        final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(true), new TypeReference<>() {
+            });
+
+        final Map<String, Object> completeCafcassParameters = mapper.convertValue(
+            getExpectedCafcassParameters(true), new TypeReference<>() {
+            });
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
+        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("testUrl").build());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -128,6 +145,20 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
         verifyTaskListUpdated(CASE_ID);
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
+
+    }
+
+    @Test
+    void shouldUpdateTheCaseManagementSummary() {
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
+
+        postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
+
+        verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
+            eq("internal-update-case-summary"), anyMap());
     }
 
     @Test
@@ -138,7 +169,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
+        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            });
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -165,7 +198,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
 
         postSubmittedEvent(callbackRequest);
 
-        Map<String, Object> expectedIncompleteHmctsParameters = getExpectedHmctsParameters(false);
+        Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
+            getExpectedHmctsParameters(false), new TypeReference<>() {
+            });
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -182,6 +217,25 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                 expectedIncompleteHmctsParameters,
                 NOTIFICATION_REFERENCE
             ));
+    }
+
+    @Test
+    void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() {
+        CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationName("Third party").build())
+                .build())
+            .caseLocalAuthority("example")
+            .id(CASE_ID)
+            .build();
+
+        CallbackRequest callbackRequest = buildCallbackRequest(asCaseDetails(caseData), OPEN);
+
+        postSubmittedEvent(callbackRequest);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(OUTSOURCED_CASE_TEMPLATE), eq(LA_EMAIL),
+            anyMap(), eq(NOTIFICATION_REFERENCE)));
     }
 
     @Test
@@ -220,7 +274,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_1_INBOX,
                 Map.of("applicationType", "C110a"),
                 NOTIFICATION_REFERENCE);
 
@@ -242,7 +296,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_1_INBOX,
                 Map.of("applicationType", "C110a"),
                 NOTIFICATION_REFERENCE);
 
@@ -265,7 +319,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
                 APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA,
-                "local-authority@local-authority.com",
+                LOCAL_AUTHORITY_1_INBOX,
                 Map.of("applicationType", "C110a"),
                 NOTIFICATION_REFERENCE);
 
@@ -361,7 +415,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
         return CaseDetails.builder()
             .id(CASE_ID)
             .data(new HashMap<>(Map.of(
-                "submittedForm", TestDataHelper.testDocumentReference(),
+                "submittedForm", DocumentReference.builder().binaryUrl("testUrl").build(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))
@@ -371,35 +425,43 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
                     .emergencyProtectionOrderDirections(List.of(CONTACT_WITH_NAMED_PERSON))
                     .orderType(List.of(EMERGENCY_PROTECTION_ORDER))
                     .build(),
-                "caseLocalAuthority", "example",
-                "sendToCtsc", enableCtsc.getValue()
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                "sendToCtsc", enableCtsc.getValue(),
+                "dateSubmitted", LocalDate.of(2020, 1, 1)
             ))).build();
     }
 
-    private Map<String, Object> getExpectedHmctsParameters(boolean completed) {
+    private SubmitCaseHmctsTemplate getExpectedHmctsParameters(boolean completed) {
         SubmitCaseHmctsTemplate submitCaseHmctsTemplate;
 
         if (completed) {
-            submitCaseHmctsTemplate = getCompleteParameters(new SubmitCaseHmctsTemplate());
+            submitCaseHmctsTemplate = getCompleteParameters(SubmitCaseHmctsTemplate.builder().build());
         } else {
-            submitCaseHmctsTemplate = getIncompleteParameters(new SubmitCaseHmctsTemplate());
+            submitCaseHmctsTemplate = getIncompleteParameters(SubmitCaseHmctsTemplate.builder().build());
         }
 
         submitCaseHmctsTemplate.setCourt(DEFAULT_LA_COURT);
-        return submitCaseHmctsTemplate.toMap(mapper);
+        return submitCaseHmctsTemplate;
     }
 
     private Map<String, Object> getExpectedCafcassParameters(boolean completed) {
         SubmitCaseCafcassTemplate submitCaseCafcassTemplate;
 
+        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
+        JSONObject jsonFileObject = new JSONObject()
+            .put("file", fileContent)
+            .put("is_csv", false);
+
         if (completed) {
-            submitCaseCafcassTemplate = getCompleteParameters(new SubmitCaseCafcassTemplate());
+            submitCaseCafcassTemplate = getCompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         } else {
-            submitCaseCafcassTemplate = getIncompleteParameters(new SubmitCaseCafcassTemplate());
+            submitCaseCafcassTemplate = getIncompleteParameters(SubmitCaseCafcassTemplate.builder().build());
         }
 
         submitCaseCafcassTemplate.setCafcass(DEFAULT_CAFCASS_COURT);
-        return submitCaseCafcassTemplate.toMap(mapper);
+        submitCaseCafcassTemplate.setDocumentLink(jsonFileObject.toMap());
+        return mapper.convertValue(submitCaseCafcassTemplate, new TypeReference<>() {
+        });
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
@@ -427,18 +489,13 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
     }
 
     private <T extends SharedNotifyTemplate> void setSharedTemplateParameters(T template) {
-        String fileContent = new String(Base64.encodeBase64(DOCUMENT_CONTENT), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject()
-            .put("file", fileContent)
-            .put("is_csv", false);
-
-        template.setLocalAuthority("Example Local Authority");
+        template.setLocalAuthority(LOCAL_AUTHORITY_1_NAME);
         template.setReference(CASE_ID.toString());
         template.setCaseUrl(String.format("http://fake-url/cases/case-details/%s", CASE_ID));
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        template.setDocumentLink(jsonFileObject.toMap());
+        template.setDocumentLink("testUrl");
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {

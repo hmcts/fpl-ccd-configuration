@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.TO_FOLLOW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentWithStatus;
 
 @ExtendWith(SpringExtension.class)
-public class HasAttachedDocumentValidatorTest {
+class HasAttachedDocumentValidatorTest {
     private Validator validator;
     private ValidateGroupService validateGroupService;
 
@@ -41,27 +41,27 @@ public class HasAttachedDocumentValidatorTest {
     void shouldNotReturnAnErrorWhenStatusIsAttachedAndDocumentIsAttached() {
         Document document = createDocumentWithStatus(ATTACHED);
         List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isEmpty();
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDocumentIsAttachedWithoutStatus() {
         Document document = createDocumentWithStatus(null);
         List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isEmpty();
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDocumentIsNotAttached() {
         Document document = Document.builder().build();
         List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isEmpty();
     }
 
     @Test
     void shouldNotReturnAnErrorWhenDocumentStatusIsNotAttached() {
         Document document = createDocumentWithStatus(TO_FOLLOW);
         List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).isEmpty();
     }
 }

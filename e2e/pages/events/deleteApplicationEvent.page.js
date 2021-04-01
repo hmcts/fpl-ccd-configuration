@@ -6,7 +6,8 @@ module.exports = {
     deleteCheckbox: '#deletionConsent-Delete',
   },
 
-  tickDeletionConsent() {
+  async tickDeletionConsent() {
     I.checkOption(this.fields.deleteCheckbox);
+    await I.runAccessibilityTest();
   },
 };

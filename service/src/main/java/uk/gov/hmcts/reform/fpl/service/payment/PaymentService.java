@@ -1,26 +1,24 @@
 package uk.gov.hmcts.reform.fpl.service.payment;
 
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.fnp.client.PaymentApi;
-import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.model.payment.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.math.BigDecimal;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Currency.GBP;
 import static uk.gov.hmcts.reform.fnp.model.payment.enums.Service.FPL;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 
 @Service
 @Slf4j
@@ -30,21 +28,20 @@ public class PaymentService {
     public static final String BLANK_PARAMETER_VALUE = "Not provided";
 
     private final FeeService feeService;
-    private final PaymentApi paymentApi;
-    private final AuthTokenGenerator authTokenGenerator;
-    private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
+    private final PaymentClient paymentClient;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final String siteId;
 
     @Autowired
-    public PaymentService(FeeService feeService, PaymentApi paymentApi, AuthTokenGenerator authTokenGenerator,
-                          RequestData requestData,
+    public PaymentService(FeeService feeService,
+                          FeatureToggleService featureToggleService,
+                          PaymentClient paymentClient,
                           LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                           @Value("${payment.site_id}") String siteId) {
         this.feeService = feeService;
-        this.paymentApi = paymentApi;
-        this.authTokenGenerator = authTokenGenerator;
-        this.requestData = requestData;
+        this.featureToggleService = featureToggleService;
+        this.paymentClient = paymentClient;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.siteId = siteId;
     }
@@ -64,7 +61,7 @@ public class PaymentService {
                 localAuthorityName,
                 feesData);
 
-            callPaymentsApi(paymentRequest);
+            paymentClient.callPaymentsApi(paymentRequest);
         }
     }
 
@@ -85,7 +82,23 @@ public class PaymentService {
             localAuthorityName,
             feesData);
 
-        callPaymentsApi(paymentRequest);
+        paymentClient.callPaymentsApi(paymentRequest);
+    }
+
+    public void makePaymentForAdditionalApplications(Long caseId, CaseData caseData, FeesData feesData) {
+        final PBAPayment pbaPayment = caseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment();
+
+        String localAuthorityName =
+            localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseData.getCaseLocalAuthority());
+
+        CreditAccountPaymentRequest paymentRequest = getCreditAccountPaymentRequest(caseId,
+            pbaPayment.getPbaNumber(),
+            defaultIfBlank(pbaPayment.getClientCode(), BLANK_PARAMETER_VALUE),
+            defaultIfBlank(pbaPayment.getFileReference(), BLANK_PARAMETER_VALUE),
+            localAuthorityName,
+            feesData);
+
+        paymentClient.callPaymentsApi(paymentRequest);
     }
 
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(Long caseId, String pbaNumber,
@@ -93,7 +106,7 @@ public class PaymentService {
                                                                        String customerReference,
                                                                        String localAuthorityName,
                                                                        FeesData feesData) {
-        return CreditAccountPaymentRequest.builder()
+        CreditAccountPaymentRequest.CreditAccountPaymentRequestBuilder builder = CreditAccountPaymentRequest.builder()
             .accountNumber(pbaNumber)
             .amount(feesData.getTotalAmount())
             .caseReference(caseReference)
@@ -103,21 +116,14 @@ public class PaymentService {
             .description(String.format(DESCRIPTION_TEMPLATE, caseId))
             .organisationName(localAuthorityName)
             .service(FPL)
-            .siteId(siteId)
-            .fees(feesData.getFees())
-            .build();
-    }
+            .fees(feesData.getFees());
 
-    private void callPaymentsApi(CreditAccountPaymentRequest creditAccountPaymentRequest) {
-        try {
-            paymentApi.createCreditAccountPayment(requestData.authorisation(),
-                authTokenGenerator.generate(),
-                creditAccountPaymentRequest);
-        } catch (FeignException ex) {
-            log.error("Payments response error for {}\n\tstatus: {} => message: \"{}\"",
-                creditAccountPaymentRequest, ex.status(), ex.contentUTF8(), ex);
-
-            throw new PaymentsApiException(ex.contentUTF8(), ex);
+        if (featureToggleService.isFeeAndPayCaseTypeEnabled()) {
+            builder.caseType(CASE_TYPE);
+        } else {
+            builder.siteId(siteId);
         }
+
+        return builder.build();
     }
 }

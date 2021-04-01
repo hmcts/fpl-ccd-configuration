@@ -1,21 +1,54 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-
-import java.util.stream.Stream;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 
 class OrderTypeAndDocumentTest {
+
+    @Nested
+    class GetTypeLabel {
+        @ParameterizedTest
+        @EnumSource(value = GeneratedOrderType.class, names = {"UPLOAD"}, mode = EnumSource.Mode.EXCLUDE)
+        void shouldPullLabelOfNonUploadableType(GeneratedOrderType orderType) {
+            OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
+                .type(orderType)
+                .build();
+
+            assertThat(typeAndDocument.getTypeLabel()).isEqualTo(orderType.getLabel());
+        }
+
+        @Test
+        void shouldUseUploadedOrderTypeWhenTypeUploadAndUploadedTypeIsNotOther() {
+            UploadedOrderType uploadedOrderType = UploadedOrderType.C30;
+            OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
+                .type(UPLOAD)
+                .uploadedOrderType(uploadedOrderType)
+                .build();
+
+            assertThat(typeAndDocument.getTypeLabel()).isEqualTo(uploadedOrderType.getFullLabel());
+        }
+
+        @Test
+        void shouldUseOrderNameWhenTypeIsUploadAndUploadedTypeIsOther() {
+            String orderName = "some order";
+            OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
+                .type(UPLOAD)
+                .uploadedOrderType(UploadedOrderType.OTHER)
+                .orderName(orderName)
+                .build();
+
+            assertThat(typeAndDocument.getTypeLabel()).isEqualTo(orderName);
+        }
+    }
 
     @Nested
     class IsCloseableOrder {
@@ -25,7 +58,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnFalse(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(false);
+            assertThat(typeAndDoc.isClosable()).isFalse();
         }
 
         @ParameterizedTest
@@ -33,7 +66,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnTrue(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(true);
+            assertThat(typeAndDoc.isClosable()).isTrue();
         }
 
         @ParameterizedTest
@@ -41,7 +74,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnTrueWhenOrderIsFinal(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).subtype(FINAL).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(true);
+            assertThat(typeAndDoc.isClosable()).isTrue();
         }
 
         @ParameterizedTest
@@ -49,15 +82,7 @@ class OrderTypeAndDocumentTest {
         void shouldReturnFalseWhenOrderIsInterim(GeneratedOrderType orderType) {
             OrderTypeAndDocument typeAndDoc = OrderTypeAndDocument.builder().type(orderType).subtype(INTERIM).build();
 
-            assertThat(typeAndDoc.isClosable()).isEqualTo(false);
+            assertThat(typeAndDoc.isClosable()).isFalse();
         }
-    }
-
-    private static Stream<Arguments> typeSource() {
-        return Stream.of(
-            Arguments.of(BLANK_ORDER, "Blank order (C21)"),
-            Arguments.of(CARE_ORDER, "Care order"),
-            Arguments.of(SUPERVISION_ORDER, "Supervision order")
-        );
     }
 }

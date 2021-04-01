@@ -20,62 +20,82 @@ module.exports = {
     },
   },
 
-  async selectFurtherEvidence() {
+  selectFurtherEvidence() {
     I.click(this.fields.documentType.furtherEvidence);
   },
 
-  async selectCorrespondence() {
+  selectCorrespondence() {
     I.click(this.fields.documentType.correspondence);
   },
 
   async selectC2SupportingDocuments() {
+    await I.runAccessibilityTest();
     I.click(this.fields.documentType.c2);
   },
 
-  async selectFurtherEvidenceIsRelatedToHearing() {
+  selectFurtherEvidenceIsRelatedToHearing() {
     I.waitForElement(this.fields.relatedToHearing.yes);
     I.click(this.fields.relatedToHearing.yes);
   },
 
-  async selectHearing(hearingDate) {
+  selectHearing(hearingDate) {
     I.waitForElement(this.fields.hearingList);
     I.selectOption(this.fields.hearingList, `Case management hearing, ${hearingDate}`);
   },
 
-  async select2FromDropdown() {
+  async selectC2FromDropdown() {
     const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
     I.waitForElement(this.fields.c2DocumentsList);
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
 
-  async enterDocumentName(documentName) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields.supportingDocuments(elementIndex).name, documentName);
+  enterDocumentName(documentName, index = 0) {
+    I.fillField(this.fields.supportingDocuments(index).name, documentName);
   },
 
-  async enterDocumentNotes(notes) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillField(this.fields.supportingDocuments(elementIndex).notes, notes);
+  enterDocumentNotes(notes, index = 0) {
+    I.fillField(this.fields.supportingDocuments(index).notes, notes);
   },
 
-  async enterDateAndTimeReceived(dateAndTime) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.fillDateAndTime(dateAndTime, this.fields.supportingDocuments(elementIndex).dateAndTime);
+  async enterDateAndTimeReceived(dateAndTime, index = 0) {
+    await I.fillDateAndTime(dateAndTime, this.fields.supportingDocuments(index).dateAndTime);
   },
 
-  async uploadDocument(document) {
-    const elementIndex = await this.getActiveElementIndex();
-    I.attachFile(this.fields.supportingDocuments(elementIndex).document, document);
+  uploadDocument(document, index = 0) {
+    I.attachFile(this.fields.supportingDocuments(index).document, document);
   },
 
-  async uploadSupportingEvidenceDocument(supportingEvidenceDocument) {
-    await this.enterDocumentName(supportingEvidenceDocument.name);
-    await this.enterDocumentNotes(supportingEvidenceDocument.notes);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
-    await this.uploadDocument(supportingEvidenceDocument.document);
+  async selectFurtherEvidenceType(type, index = 0) {
+    switch (type) {
+      case 'Expert reports':
+        I.checkOption(this.fields.supportingDocuments(index).type.expert);
+        break;
+      case 'Other reports':
+        I.checkOption(this.fields.supportingDocuments(index).type.other);
+        break;
+      default:
+        throw new Error(`Unsupported further evidence type ${type}`);
+    }
   },
 
-  async getActiveElementIndex() {
-    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
+  async selectConfidential(index = 0) {
+    I.click(this.fields.supportingDocuments(index).confidential);
+  },
+
+  async uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
+    const index = await I.getActiveElementIndex();
+    this.enterDocumentName(supportingEvidenceDocument.name, index);
+    this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
+    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
+    this.uploadDocument(supportingEvidenceDocument.document, index);
+    if(selectEvidenceType) {
+      this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
+    }
+  },
+
+  async uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType = false) {
+    const index = await I.getActiveElementIndex();
+    await this.uploadSupportingEvidenceDocument(supportingEvidenceDocument, selectEvidenceType);
+    this.selectConfidential(index);
   },
 };

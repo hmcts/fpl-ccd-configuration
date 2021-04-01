@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,25 +8,28 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.service.email.NotificationServiceTest.ENV;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {NotificationService.class, JacksonAutoConfiguration.class})
-@TestPropertySource(properties = {"fpl.env=" + ENV })
+@TestPropertySource(properties = {"fpl.env=" + ENV})
 class NotificationServiceTest {
-    public static final String TEST_RECIPIENT_EMAIL = "test@example.com";
-    public static final String REFERENCE = "12345L";
-    public static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
-    public static final String ENV = "TEST_ENV";
+
+    static final String ENV = "TEST_ENV";
+    private static final String TEST_RECIPIENT_EMAIL_1 = "test1@example.com";
+    private static final String TEST_RECIPIENT_EMAIL_2 = "test2@example.com";
+    private static final String REFERENCE = "12345L";
+    private static final String TEMPLATE_ID = PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
     private static final String NOTIFICATION_REFERENCE = String.format("%s/%s", ENV, REFERENCE);
 
     @MockBean
@@ -36,20 +38,42 @@ class NotificationServiceTest {
     @Autowired
     private NotificationService notificationService;
 
+    private static final NotifyData EMAIL_PERSONALISATION = BaseCaseNotifyData.builder()
+        .respondentLastName("Smith")
+        .caseUrl("http://fake-url")
+        .build();
+
+    private static final Map<String, Object> EXPECTED_EMAIL_PERSONALISATION = Map.of(
+        "respondentLastName", "Smith",
+        "caseUrl", "http://fake-url");
+
     @Test
-    void shouldSendNotificationSuccessfullyWhenDataValid() throws NotificationClientException {
-        Map<String, Object> templatePreference = getDefaultForPartyAddedToCaseByEmailTemplate();
+    void shouldSendEmailToSingleRecipient() throws NotificationClientException {
+        notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL_1, EMAIL_PERSONALISATION, REFERENCE);
 
-        notificationService.sendEmail(TEMPLATE_ID, TEST_RECIPIENT_EMAIL, templatePreference, REFERENCE);
-
-        verify(notificationClient).sendEmail(eq(PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE),
-            eq(TEST_RECIPIENT_EMAIL), eq(templatePreference), eq(NOTIFICATION_REFERENCE));
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEST_RECIPIENT_EMAIL_1,
+            EXPECTED_EMAIL_PERSONALISATION,
+            NOTIFICATION_REFERENCE);
     }
 
-    private static Map<String, Object> getDefaultForPartyAddedToCaseByEmailTemplate() {
-        return ImmutableMap.<String, Object>builder()
-            .put("firstRespondentLastName", "John Snow")
-            .put("familyManCaseNumber", UUID.randomUUID())
-            .build();
+    @Test
+    void shouldSendEmailsToMultipleRecipients() throws NotificationClientException {
+        notificationService.sendEmail(TEMPLATE_ID, Set.of(TEST_RECIPIENT_EMAIL_1, TEST_RECIPIENT_EMAIL_2),
+            EMAIL_PERSONALISATION, REFERENCE);
+
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEST_RECIPIENT_EMAIL_1,
+            EXPECTED_EMAIL_PERSONALISATION,
+            NOTIFICATION_REFERENCE);
+
+        verify(notificationClient).sendEmail(
+            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+            TEST_RECIPIENT_EMAIL_2,
+            EXPECTED_EMAIL_PERSONALISATION,
+            NOTIFICATION_REFERENCE);
     }
+
 }

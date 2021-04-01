@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentSubtypeListLA",
+    "ListElementCode": "APPLICATION_DOCUMENTS",
+    "ListElement": "Further application documents - for example the SWET or care plan",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentSubtypeListLA",
+    "ListElementCode": "RESPONDENT_STATEMENT",
+    "ListElement": "Respondent statement",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentSubtypeListLA",
+    "ListElementCode": "OTHER",
+    "ListElement": "Any other document",
+    "DisplayOrder": 3
+  }
+]

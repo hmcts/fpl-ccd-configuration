@@ -10,5 +10,17 @@
     "ID": "AuthorityFixedListSharedStorage",
     "ListElementCode": "Leicestershire",
     "ListElement": "Leicestershire Local Authority"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedListSharedStorage",
+    "ListElementCode": "Stockton-on-Tees",
+    "ListElement": "Stockton-on-Tees Borough Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedListSharedStorage",
+    "ListElementCode": "Darlington",
+    "ListElement": "Darlington Borough Council"
   }
 ]

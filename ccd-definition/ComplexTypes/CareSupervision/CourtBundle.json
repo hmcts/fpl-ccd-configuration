@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CourtBundle",
+    "ListElementCode": "hearing",
+    "FieldType": "Text",
+    "ElementLabel": "Court bundle for",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload a file",

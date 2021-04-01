@@ -67,6 +67,13 @@ public class FeeService {
             .build();
     }
 
+    public FeesData getFeesDataForAdditionalApplications(List<FeeType> applicationsFeeTypes) {
+        return Optional.of(applicationsFeeTypes)
+            .map(this::getFees)
+            .map(this::buildFeesDataFromFeeResponses)
+            .orElse(FeesData.builder().totalAmount(BigDecimal.ZERO).build());
+    }
+
     private FeeResponse makeRequest(FeeType feeType) {
         FeeParameters parameters = feesConfig.getFeeParametersByFeeType(feeType);
         try {

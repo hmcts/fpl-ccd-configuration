@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,11 +26,13 @@ import java.util.Objects;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
+@Slf4j
 @Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController extends CallbackController {
+    private static final String RESPONDENTS_KEY = "respondents1";
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
     private final Time time;
@@ -39,7 +42,7 @@ public class RespondentController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("respondents1", confidentialDetailsService.prepareCollection(
+        caseDetails.getData().put(RESPONDENTS_KEY, confidentialDetailsService.prepareCollection(
             caseData.getAllRespondents(), caseData.getConfidentialRespondents(), expandCollection()));
 
         return respond(caseDetails);
@@ -52,23 +55,22 @@ public class RespondentController extends CallbackController {
         return respond(caseDetails, validate(caseDetails));
     }
 
-    @PostMapping("persist-representatives/mid-event")
-    public AboutToStartOrSubmitCallbackResponse persistRepresentatives(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().put("respondents1",
-            respondentService.setPersistRepresentativeFlag(caseData.getRespondents1()));
-
-        return respond(caseDetails);
-    }
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         confidentialDetailsService.addConfidentialDetailsToCase(caseDetails, caseData.getAllRespondents(), RESPONDENT);
+
+        caseData = getCaseData(caseDetails);
+
+        // can either do before or after but have to update case details manually either way as if there is no
+        // confidential info then caseDetails won't be updated in the confidential details method and as such just
+        // passing the updated list to the method won't work
+        caseDetails.getData().put(RESPONDENTS_KEY, respondentService.persistRepresentativesRelationship(
+            caseData.getAllRespondents(), caseDataBefore.getAllRespondents()
+        ));
 
         return respond(caseDetails);
     }

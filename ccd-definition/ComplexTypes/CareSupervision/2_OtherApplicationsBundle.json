@@ -1,0 +1,89 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "applicationType",
+    "FieldType": "FixedList",
+    "ElementLabel": "Application type",
+    "FieldTypeParameter": "OtherApplicationType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "parentalResponsibilityType",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Who's seeking parental responsibility?",
+    "FieldTypeParameter": "ParentalResponsibilityType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "uploadedDateTime",
+    "FieldType": "Text",
+    "ElementLabel": "Date and time of upload",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "author",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "supplementsBundle",
+    "ElementLabel": "Supplements",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Supplement",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceBundle",
+    "ElementLabel": "Supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceLA",
+    "ElementLabel": "Supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
+    "ListElementCode": "supportingEvidenceNC",
+    "ElementLabel": "Supporting documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "SupportingEvidenceBundle",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

@@ -11,31 +11,26 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.DocumentsValidatorService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentsService;
-
-import java.util.List;
+import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 
 @Api
 @RestController
 @RequestMapping("/callback/upload-documents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadDocumentsController extends CallbackController {
-    private final DocumentsValidatorService documentsValidatorService;
-    private final UploadDocumentsService uploadDocumentsService;
+    private final ApplicationDocumentsService applicationDocumentsService;
 
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        List<String> errors = documentsValidatorService.validateDocuments(caseData);
+        CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
 
-        if (errors.isEmpty()) {
-            CaseData caseDataBefore = getCaseDataBefore(callbackrequest);
-            caseDetails.getData().putAll(uploadDocumentsService.updateCaseDocuments(caseData, caseDataBefore));
-        }
+        caseDetails.getData().putAll(applicationDocumentsService.updateApplicationDocuments(
+            caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()));
 
-        return respond(caseDetails, errors);
+        return respond(caseDetails);
     }
 }
+

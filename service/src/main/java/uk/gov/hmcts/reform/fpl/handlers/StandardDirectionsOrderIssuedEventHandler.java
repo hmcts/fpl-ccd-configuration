@@ -8,9 +8,8 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForSDO;
-import uk.gov.hmcts.reform.fpl.model.notify.sdo.CTSCTemplateForSDO;
+import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
+import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -19,13 +18,10 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 import uk.gov.hmcts.reform.fpl.service.email.content.StandardDirectionOrderIssuedEmailContentProvider;
 
 import java.util.Collection;
-import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.AllocatedJudgeNotificationType.SDO;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -40,56 +36,39 @@ public class StandardDirectionsOrderIssuedEventHandler {
     private final FeatureToggleService featureToggleService;
 
     @EventListener
-    public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyCafcass(StandardDirectionsOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
-        Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
-            .buildCafcassStandardDirectionOrderIssuedNotification(caseData);
-        String email = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        NotifyData parameters = cafcassEmailContentProviderSDOIssued.getNotifyData(caseData);
+        String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
+
+        notificationService
+            .sendEmail(SDO_AND_NOP_ISSUED_CAFCASS, recipient, parameters, caseData.getId());
     }
 
     @EventListener
-    public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyLocalAuthority(StandardDirectionsOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
-        Map<String, Object> parameters = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseData);
-        Collection<String> emails = inboxLookupService.getRecipients(caseData);
 
-        notificationService.sendEmail(
-            STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, emails, parameters, caseData.getId().toString());
+        NotifyData notifyData = localAuthorityEmailContentProvider
+            .buildStandardDirectionOrderIssuedNotification(caseData);
+
+        Collection<String> emails = inboxLookupService.getRecipients(
+            LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()
+        );
+
+        notificationService.sendEmail(SDO_AND_NOP_ISSUED_LA, emails, notifyData, caseData.getId().toString());
     }
 
     @EventListener
-    public void notifyAllocatedJudgeOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+    public void notifyCTSC(StandardDirectionsOrderIssuedEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (featureToggleService.isAllocatedJudgeNotificationEnabled(SDO)
-            && hasJudgeEmail(caseData.getStandardDirectionOrder())) {
-            AllocatedJudgeTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
-                .buildNotificationParametersForAllocatedJudge(caseData);
-
-            String email = caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor().getJudgeEmailAddress();
-
-            notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_JUDGE_TEMPLATE, email, parameters,
-                caseData.getId().toString());
-        }
-    }
-
-    @EventListener
-    public void notifyCTSCOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        CaseData caseData = event.getCaseData();
-        CTSCTemplateForSDO parameters = standardDirectionOrderIssuedEmailContentProvider
+        NotifyData notifyData = standardDirectionOrderIssuedEmailContentProvider
             .buildNotificationParametersForCTSC(caseData);
-        String email = ctscEmailLookupConfiguration.getEmail();
+        String recipient = ctscEmailLookupConfiguration.getEmail();
 
-        notificationService.sendEmail(STANDARD_DIRECTION_ORDER_ISSUED_CTSC_TEMPLATE, email, parameters,
-            caseData.getId().toString());
+        notificationService.sendEmail(SDO_AND_NOP_ISSUED_CTSC, recipient, notifyData, caseData.getId());
     }
 
-    private boolean hasJudgeEmail(StandardDirectionOrder standardDirectionOrder) {
-        return isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor())
-            && isNotEmpty(standardDirectionOrder.getJudgeAndLegalAdvisor().getJudgeEmailAddress());
-    }
 }

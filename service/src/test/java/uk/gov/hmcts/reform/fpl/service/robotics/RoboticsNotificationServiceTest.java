@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.Applicant;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
-import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.service.email.EmailService;
 
 import java.io.IOException;
 import java.time.LocalDate;

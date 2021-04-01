@@ -24,9 +24,36 @@
     "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "uploadedOrderType",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "orderName",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "orderDescription",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "document",
     "EventElementLabel": "Order document",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "document=\"DO_NOT_SHOW\""
   },

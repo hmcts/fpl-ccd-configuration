@@ -12,11 +12,15 @@ class DynamicListTest {
     private static final String LABEL = "PLACEHOLDER";
 
     private static final UUID UUID = fromString("d733b442-1b70-4abb-87b6-47e406d2e32a");
-    private static final DynamicListElement VALUE = DynamicListElement.builder().code(UUID).label(LABEL).build();
 
     @Test
     void shouldReturnValuesLabelWhenValueIsPopulated() {
-        final String label = DynamicList.builder().value(VALUE).build().getValueLabel();
+        final DynamicListElement element = DynamicListElement.builder()
+            .code(UUID)
+            .label(LABEL)
+            .build();
+
+        final String label = DynamicList.builder().value(element).build().getValueLabel();
         assertThat(label).isEqualTo(LABEL);
     }
 
@@ -28,13 +32,32 @@ class DynamicListTest {
 
     @Test
     void shouldReturnValuesCodeWhenValueIsPopulated() {
-        final UUID code = DynamicList.builder().value(VALUE).build().getValueCode();
-        assertThat(code).isEqualTo(UUID);
+        final DynamicListElement element = DynamicListElement.builder()
+            .code(UUID)
+            .label(LABEL)
+            .build();
+
+        final DynamicList dynamicList = DynamicList.builder().value(element).build();
+
+        assertThat(dynamicList.getValueCode()).isEqualTo(UUID.toString());
+        assertThat(dynamicList.getValueCodeAsUUID()).isEqualTo(UUID);
     }
 
     @Test
     void shouldReturnNullCodeWhenValueIsNull() {
-        final UUID code = DynamicList.builder().value(null).build().getValueCode();
-        assertThat(code).isNull();
+        final DynamicList dynamicList = DynamicList.builder().value(null).build();
+        assertThat(dynamicList.getValueCode()).isNull();
+        assertThat(dynamicList.getValueCodeAsUUID()).isNull();
     }
+
+    @Test
+    void shouldAcceptNonUUIDCode() {
+        final DynamicListElement element = DynamicListElement.builder()
+            .code("Test string")
+            .label(LABEL)
+            .build();
+        final DynamicList dynamicList = DynamicList.builder().value(element).build();
+        assertThat(dynamicList.getValueCode()).isEqualTo("Test string");
+    }
+
 }

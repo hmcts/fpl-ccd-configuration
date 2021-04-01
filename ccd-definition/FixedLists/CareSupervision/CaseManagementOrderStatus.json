@@ -19,5 +19,12 @@
     "ListElementCode": "APPROVED",
     "ListElement": "Approved",
     "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderStatus",
+    "ListElementCode": "DRAFT",
+    "ListElement": "Draft order, to review before hearing",
+    "DisplayOrder": 4
   }
 ]

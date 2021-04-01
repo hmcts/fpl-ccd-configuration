@@ -6,25 +6,13 @@ module.exports = {
       direction: {
         title: `#${party}_${index}_directionType`,
         description: `#${party}_${index}_directionText`,
-        dueDate: {
-          day: `#${party}_${index}_dateToBeCompletedBy-day`,
-          month: `#${party}_${index}_dateToBeCompletedBy-month`,
-          year: `#${party}_${index}_dateToBeCompletedBy-year`,
-          hour: `#${party}_${index}_dateToBeCompletedBy-hour`,
-          minute: `#${party}_${index}_dateToBeCompletedBy-minute`,
-          second: `#${party}_${index}_dateToBeCompletedBy-second`,
-        },
+        dueDate: `#${party}_${index}_dateToBeCompletedBy`,
       },
     };
   },
 
-  enterDate(party, dueDate, index = 0) {
-    I.fillField(this.fields(party, index).direction.dueDate.day, dueDate.day);
-    I.fillField(this.fields(party, index).direction.dueDate.month, dueDate.month);
-    I.fillField(this.fields(party, index).direction.dueDate.year, dueDate.year);
-    I.fillField(this.fields(party, index).direction.dueDate.hour, dueDate.hour);
-    I.fillField(this.fields(party, index).direction.dueDate.minute, dueDate.minute);
-    I.fillField(this.fields(party, index).direction.dueDate.second, dueDate.second);
+  async enterDate(party, dueDate, index = 0) {
+    await I.fillDateAndTime(dueDate, this.fields(party, index).direction.dueDate);
   },
 
   enterTitleAndDescription(party, title = '', description = '', index = 0) {

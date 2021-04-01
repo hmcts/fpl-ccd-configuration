@@ -1,21 +1,22 @@
-const { I } = inject();
+const {I} = inject();
 
 module.exports = {
 
   fields: {
     timeFrame: {
       radioGroup: '#hearing_timeFrame',
-      sameDay: 'Same day',
+      sameDay: '#hearing_timeFrame-Same\\ day',
       reason: '#hearing_reason',
     },
 
     hearingType: {
       radioGroup: '#hearing_type',
-      contestedICO: 'Contested interim care order',
+      contestedICO: '#hearing_type-Contested\\ interim\\ care\\ order',
+      reason: '#hearing_type_GiveReason',
     },
 
     noticeWithoutHearing: {
-      yes: '#hearing_withoutNotice-Yes',
+      no: '#hearing_withoutNotice-No',
     },
 
     reducedNoticeHearing: {
@@ -23,25 +24,23 @@ module.exports = {
     },
 
     respondentsAware: {
-      yes: '#hearing_respondentsAware-Yes',
+      no: '#hearing_respondentsAware-No',
     },
   },
 
-  enterTimeFrame(reason = 'test reason') {
-    within(this.fields.timeFrame.radioGroup, () => {
-      I.click(locate('label').withText(this.fields.timeFrame.sameDay));
-    });
+  async enterTimeFrame(reason = 'test reason') {
+    I.click(this.fields.timeFrame.sameDay);
+    await I.runAccessibilityTest();
     I.fillField(this.fields.timeFrame.reason, reason);
   },
 
-  enterHearingType() {
-    within(this.fields.hearingType.radioGroup, () => {
-      I.click(locate('label').withText(this.fields.hearingType.contestedICO));
-    });
+  enterHearingType(reason = 'test reason') {
+    I.click(this.fields.hearingType.contestedICO);
+    I.fillField(this.fields.hearingType.reason, reason);
   },
 
   enterWithoutNoticeHearing() {
-    I.click(this.fields.noticeWithoutHearing.yes);
+    I.click(this.fields.noticeWithoutHearing.no);
   },
 
   enterReducedHearing() {
@@ -49,6 +48,6 @@ module.exports = {
   },
 
   enterRespondentsAware() {
-    I.click(this.fields.respondentsAware.yes);
+    I.click(this.fields.respondentsAware.no);
   },
 };

@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {OrderValidationService.class, LocalValidatorFactoryBean.class,
     FixedTimeConfiguration.class})
-public class OrderValidationServiceTest {
+class OrderValidationServiceTest {
 
     @Autowired
     private Time time;

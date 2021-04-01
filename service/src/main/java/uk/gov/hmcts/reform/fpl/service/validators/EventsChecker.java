@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -12,10 +13,10 @@ import javax.annotation.PostConstruct;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
+import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
 import static uk.gov.hmcts.reform.fpl.enums.Event.COURT_SERVICES;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.FACTORS_AFFECTING_PARENTING;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.OTHER_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.RISK_AND_HARM;
 import static uk.gov.hmcts.reform.fpl.enums.Event.SUBMIT_APPLICATION;
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_AVAILABLE;
 
 @Service
 public class EventsChecker {
@@ -56,9 +58,6 @@ public class EventsChecker {
     private AllocationProposalChecker allocationProposalChecker;
 
     @Autowired
-    private DocumentsChecker documentsChecker;
-
-    @Autowired
     private CaseSubmissionChecker caseSubmissionChecker;
 
     @Autowired
@@ -79,6 +78,9 @@ public class EventsChecker {
     @Autowired
     private FactorsAffectingParentingChecker factorsAffectingParentingChecker;
 
+    @Autowired
+    private ApplicationDocumentChecker applicationDocumentChecker;
+
     private final EnumMap<Event, EventChecker> eventCheckers = new EnumMap<>(Event.class);
 
     @PostConstruct
@@ -91,7 +93,6 @@ public class EventsChecker {
         eventCheckers.put(GROUNDS, groundsChecker);
         eventCheckers.put(ORGANISATION_DETAILS, organisationDetailsChecker);
         eventCheckers.put(ALLOCATION_PROPOSAL, allocationProposalChecker);
-        eventCheckers.put(DOCUMENTS, documentsChecker);
         eventCheckers.put(RISK_AND_HARM, riskAndHarmChecker);
         eventCheckers.put(FACTORS_AFFECTING_PARENTING, factorsAffectingParentingChecker);
         eventCheckers.put(OTHER_PROCEEDINGS, proceedingsChecker);
@@ -101,7 +102,12 @@ public class EventsChecker {
         eventCheckers.put(SUBMIT_APPLICATION, caseSubmissionChecker);
     }
 
+    private void addCheckersBasedOnToggle() {
+        eventCheckers.put(APPLICATION_DOCUMENTS, applicationDocumentChecker);
+    }
+
     public List<String> validate(Event event, CaseData caseData) {
+        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.validate(caseData))
                 .orElse(emptyList());
@@ -113,6 +119,12 @@ public class EventsChecker {
                 .orElse(false);
     }
 
+    public TaskState completedState(Event event) {
+        return ofNullable(eventCheckers.get(event))
+            .map(EventChecker::completedState)
+            .orElse(NOT_AVAILABLE);
+    }
+
     public boolean isInProgress(Event event, CaseData caseData) {
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.isStarted(caseData))
@@ -120,6 +132,7 @@ public class EventsChecker {
     }
 
     public boolean isAvailable(Event event, CaseData caseData) {
+        addCheckersBasedOnToggle();
         return ofNullable(eventCheckers.get(event))
                 .map(validator -> validator.isAvailable(caseData))
                 .orElse(true);

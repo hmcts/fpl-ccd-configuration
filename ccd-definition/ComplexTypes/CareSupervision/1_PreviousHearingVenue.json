@@ -1,0 +1,37 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PreviousHearingVenue",
+    "ListElementCode": "previousVenue",
+    "FieldType": "Text",
+    "ElementLabel": "Last court",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PreviousHearingVenue",
+    "ListElementCode": "usePreviousVenue",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Use this court for this hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PreviousHearingVenue",
+    "ListElementCode": "newVenue",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HearingVenue",
+    "ElementLabel": "Court",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "usePreviousVenue=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PreviousHearingVenue",
+    "ListElementCode": "newVenueCustomAddress",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Court address",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "usePreviousVenue=\"No\" AND newVenue=\"OTHER\""
+  }
+]

@@ -17,6 +17,7 @@ import java.time.format.FormatStyle;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.HEARINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -30,7 +31,7 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
     public NoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
         CaseData caseData,
         HearingBooking hearingBooking,
-        RepresentativeServingPreferences representativeServingPreferences) {
+        RepresentativeServingPreferences servingPreference) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
 
         return NoticeOfHearingTemplate.builder()
@@ -39,12 +40,12 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .caseUrl(getCaseUrl(caseData.getId()))
-            .documentLink(linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
+            .documentLink(servingPreference == DIGITAL_SERVICE ? getDocumentUrl(hearingBooking.getNoticeOfHearing())
+                : linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
-            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
-            .digitalPreference(representativeServingPreferences == DIGITAL_SERVICE ? "Yes" : "No")
-            .caseUrl(representativeServingPreferences == DIGITAL_SERVICE ? getCaseUrl(caseData.getId()) : "")
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .digitalPreference(servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
+            .caseUrl(servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId(), HEARINGS) : "")
             .build();
     }
 

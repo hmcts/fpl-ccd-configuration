@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -32,6 +33,10 @@ public class PeopleInCaseHelper {
         return getFirstRespondentParty(respondents)
             .map(RespondentParty::getLastName)
             .orElse("");
+    }
+
+    public static String getFirstRespondentLastName(CaseData caseData) {
+        return getFirstRespondentLastName(caseData.getAllRespondents());
     }
 
     public static String getFirstRespondentFullName(List<Element<Respondent>> respondents) {

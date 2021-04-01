@@ -5,17 +5,17 @@ locals {
 module "fpl-action-group" {
   source                 = "git@github.com:hmcts/cnp-module-action-group"
   location               = "global"
-  env                    = "${var.env}"
-  resourcegroup_name     = "${local.alert_resource_group_name}"
+  env                    = var.env
+  resourcegroup_name     = local.alert_resource_group_name
   action_group_name      = "${var.product}-support"
   short_name             = "${var.product}-support"
   email_receiver_name    = "FPL Support Mailing List"
-  email_receiver_address = "${data.azurerm_key_vault_secret.fpl_support_email_secret.value}"
+  email_receiver_address = data.azurerm_key_vault_secret.fpl_support_email_secret.value
 }
 
 module "fpl-performance-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = "${var.appinsights_location}"
+  location                   = var.appinsights_location
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-performance"
   alert_desc                 = "Requests that took longer than 1 seconds to complete"
@@ -27,13 +27,13 @@ module "fpl-performance-alert" {
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 2
-  resourcegroup_name         = "${local.alert_resource_group_name}"
-  enabled                    = "${var.enable_alerts}"
+  resourcegroup_name         = local.alert_resource_group_name
+  enabled                    = var.enable_alerts
 }
 
 module "fpl-exceptions-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = "${var.appinsights_location}"
+  location                   = var.appinsights_location
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-exceptions"
   alert_desc                 = "All exceptions within FPL"
@@ -45,13 +45,13 @@ module "fpl-exceptions-alert" {
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 0
-  resourcegroup_name         = "${local.alert_resource_group_name}"
-  enabled                    = "${var.enable_alerts}"
+  resourcegroup_name         = local.alert_resource_group_name
+  enabled                    = var.enable_alerts
 }
 
 module "fpl-health-failure-alert" {
   source                     = "git@github.com:hmcts/cnp-module-metric-alert"
-  location                   = "${var.appinsights_location}"
+  location                   = var.appinsights_location
   app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
   alert_name                 = "${var.product}-health-failure"
   alert_desc                 = "Failed health requests"
@@ -63,6 +63,42 @@ module "fpl-health-failure-alert" {
   action_group_name          = "${var.product}-support"
   trigger_threshold_operator = "GreaterThan"
   trigger_threshold          = 3
-  resourcegroup_name         = "${local.alert_resource_group_name}"
-  enabled                    = "${var.enable_alerts}"
+  resourcegroup_name         = local.alert_resource_group_name
+  enabled                    = var.enable_alerts
+}
+
+module "fpl-upcoming-hearings-job-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = var.appinsights_location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  alert_name                 = "${var.product}-upcoming-hearings-job-failure"
+  alert_desc                 = "Failed 'Upcoming hearings' scheduled job"
+  app_insights_query         = "traces | where message contains \"Job 'Upcoming hearings' finished\" | count"
+  custom_email_subject       = "Alert: Upcoming hearings job failure"
+  frequency_in_minutes       = 1440
+  time_window_in_minutes     = 1440
+  severity_level             = "3"
+  action_group_name          = "${var.product}-support"
+  trigger_threshold_operator = "Equal"
+  trigger_threshold          = 0
+  resourcegroup_name         = local.alert_resource_group_name
+  enabled                    = var.enable_alerts
+}
+
+module "fpl-summary-tab-job-alert" {
+  source                     = "git@github.com:hmcts/cnp-module-metric-alert"
+  location                   = var.appinsights_location
+  app_insights_name          = "${var.product}-${var.component}-appinsights-${var.env}"
+  alert_name                 = "${var.product}-summary-tab-job-failure"
+  alert_desc                 = "Failed 'Summary tab' scheduled job"
+  app_insights_query         = "traces | where message contains \"Job 'Summary tab' finished\" | count"
+  custom_email_subject       = "Alert: 'Summary tab' job failure"
+  frequency_in_minutes       = 1440
+  time_window_in_minutes     = 1440
+  severity_level             = "3"
+  action_group_name          = "${var.product}-support"
+  trigger_threshold_operator = "Equal"
+  trigger_threshold          = 0
+  resourcegroup_name         = local.alert_resource_group_name
+  enabled                    = var.enable_alerts
 }

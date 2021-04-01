@@ -98,10 +98,6 @@ Custom configuration parameters:
 |idam.client.secret|SECRET|Secret portion of OAuth 2 flow.|
 |auth.idam.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with IDAM |
 |auth.provider.service.client.baseUrl|ENV|Configuration required by auth-checker-library to communicate with s2s auth service|
-|spring.mail.host|ENV|Mail server host used for robotics (non Gov notify emails)|
-|spring.mail.port|ENV|Port of the mail server|
-|spring.mail.properties.mail.smtp.starttls.enable|ENV|Is mail TLS enabled|
-|spring.mail.properties.mail.smtp.ssl.trust|ENV|TLS mail config|
 |spring.security.enabled|ENV|Indicates if spring security should be enabled|
 |spring.security.oauth2.resourceserver.jwt.issuer-uri|ENV|Expected IDAM issuer-uri|
 |spring.security.oauth2.resourceserver.jwt.jwk-set-uri|ENV|Expected IDAM jwk-set-uri|
@@ -110,15 +106,20 @@ Custom configuration parameters:
 |docmosis.tornado.key|SECRET|Docmosis Tornado (document generation service) API key|
 |document_management.url|ENV|URL for service responsible for storing documents|
 |notify.api_key|SECRET|Gov notify API Key for sending emails|
-|gateway.url|ENV|URL for CCD gateway, currently used to prepare URL leading directly to the document, used in notifications|
 |rd_professional.api.url|ENV|URL for Professional Reference Data service|
 |send-letter.url|ENV|URL for service delivering Bulk Print functionality|
+|send-grid.host|ENV|SendGrid host|
+|send-grid.port|ENV|SendGrid port|
+|send-grid.api_key|SECRET|SendGrid API key|
 |ccd.ui.base.url|ENV|URL for CCD Web UI, used in notifications|
 |fpl.local_authority_email_to_code.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_name.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_hmcts_court.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_cafcass.mapping|SECRET|Explained below.|
 |fpl.local_authority_code_to_shared_inbox.mapping|SECRET|Explained below.|
+|fpl.local_authority_code_to_org_id.mapping|SECRET|Explained below.|
+|fpl.eps_to_local_authorities.mapping|SECRET|Explained below.|
+|fpl.mla_to_local_authorities.mapping|SECRET|Explained below.|
 |fpl.local_authority_fallback_inbox|SECRET|Fallback notification inbox when the system cannot determine where the LA notification should be delivered|
 |fpl.system_update.username|SECRET|System user username, used for automated state transitions and data modifications|
 |fpl.system_update.password|SECRET|System user password, used for automated state transitions and data modifications|
@@ -183,6 +184,32 @@ FPL_LOCAL_AUTHORITY_CODE_TO_SHARED_INBOX_MAPPING:
 EX=>local-authority@local-authority.com
 ```
 
+### Local Authority code to org id (fpl.local_authority_code_to_org_id.mapping)
+Maps local authority fpl code to organisation id in PRD
+
+Example:
+```
+EX=>ORGEX2;EX2=>ORGEX2
+```
+
+### External private solicitors to local authorities (fpl.eps_to_local_authorities.mapping)
+Maps external solicitors organisation PRD id to list of local authorities codes. 
+If external organisation has this mapping then users can create cases on behalf of specified local authorities.
+
+Example:
+```
+ORGEXT1=>LA1,LA2;ORGEXT2=>LA1,LA3
+```
+
+### Managing local authority to local authorities (fpl.mla_to_local_authorities.mapping)
+Maps local authority PRD id to list of local authorities codes. 
+If local authority has this mapping then users can create cases on behalf of specified local authorities.
+
+Example:
+```
+ORGLA3=>LA1,LA2;ORGLA2=>LA1,LA3
+```
+
 ## Feature Toggle
 
 For local development feature toggle will use default flag values defined in `FeatureToggleService.java`.
@@ -217,7 +244,6 @@ ld:
 Your key will be added on first `FeatureToggleService` call and will be available on LaunchDarkly panel in Users tab.
 You will be able to set your own flag values there without affecting other environments.
 
-
 ### Scheduler
 
 In order to enable quartz scheduler
@@ -228,3 +254,11 @@ Upcoming hearing jobs can be configured with environment variables
 UPCOMING_HEARINGS_CRON[default 0 0 2 ? * MON-FRI] - quartz expression, e.g 0/30 * * ? * MON-FRI
 UPCOMING_HEARINGS_DAYS[default 2] - number of working days notification is sent before hearing
 Elastic search must be enable in ccd-docker for Upcoming hearings job to work
+
+### Emails
+
+Emails to Robotics are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*. 
+On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/ 
+
+
+Emails to users are sent via gov.notify

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,9 +7,9 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedEPOKey;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey;
@@ -18,6 +17,8 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.InterimOrderKey;
 import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.enums.UploadedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -34,11 +35,11 @@ import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,8 +51,8 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -74,10 +75,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testEmail;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdviser;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
+class GeneratedOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private Document document;
 
@@ -86,9 +86,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     GeneratedOrderControllerAboutToSubmitTest() {
         super("create-order");
@@ -101,7 +98,6 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(testDocmosisDocument(TestDataHelper.DOCUMENT_CONTENT));
         given(uploadDocumentService.uploadPDF(any(), any())).willReturn(document);
-        given(featureToggleService.isCloseCaseEnabled()).willReturn(true);
     }
 
     @Test
@@ -112,7 +108,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
             .build();
 
-        final CaseData caseData = commonCaseData(BLANK_ORDER, null, false)
+        final CaseData caseData = commonCaseData(BLANK_ORDER, false)
             .order(order)
             .build();
 
@@ -183,7 +179,8 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
-        final String expiryDate = subtype == INTERIM ? "End of the proceedings" : null;
+        final String expiryDate = subtype == INTERIM
+            ? "At the end of the proceedings, or until a further order is made" : null;
         final GeneratedOrder expectedCareOrder = commonExpectedOrder(format("%s care order", subtype.getLabel()))
             .expiryDate(expiryDate)
             .children(expectedChildren(caseData))
@@ -202,7 +199,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
         final AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         final GeneratedOrder expectedSupervisionOrder = commonExpectedOrder("Interim supervision order")
-            .expiryDate("End of the proceedings")
+            .expiryDate("At the end of the proceedings, or until a further order is made")
             .children(expectedChildren(caseData))
             .build();
 
@@ -226,6 +223,29 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             .build();
 
         assertOrderInUpdatedCase(response, expectedSupervisionOrder);
+    }
+
+    @Test
+    void shouldAddUploadedOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() {
+        givenCurrentUser(UserDetails.builder()
+            .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+            .build());
+
+        final CaseData caseData = commonCaseData(UploadedOrderType.C27)
+            .orderAppliesToAllChildren("Yes")
+            .dateOfIssue(dateNow())
+            .uploadedOrder(expectedDocument())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        GeneratedOrder expectedUploadedOrder = commonExpectedOrder(UploadedOrderType.C27.getFullLabel())
+            .courtName(null)
+            .judgeAndLegalAdvisor(null)
+            .uploader("HMCTS")
+            .build();
+
+        assertOrderInUpdatedCase(response, expectedUploadedOrder);
     }
 
     @Test
@@ -296,7 +316,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldNotSetFinalOrderIssuedForBlankOrder() {
-        final CaseData caseData = commonCaseData(BLANK_ORDER, null, false)
+        final CaseData caseData = commonCaseData(BLANK_ORDER, false)
             .orderAppliesToAllChildren("Yes")
             .order(GeneratedOrder.builder()
                 .title("Example Order")
@@ -312,12 +332,15 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldSetFinalOrderIssuedForEmergencyProtectionOrder() {
-        final CaseData caseData = commonCaseData(EMERGENCY_PROTECTION_ORDER, null, false)
+        final CaseData caseData = commonCaseData(EMERGENCY_PROTECTION_ORDER, false)
+            .dateOfIssue(null)
+            .dateAndTimeOfIssue(now())
             .orderAppliesToAllChildren("Yes")
             .epoChildren(EPOChildren.builder().descriptionNeeded("No").build())
             .epoType(EPOType.PREVENT_REMOVAL)
             .epoPhrase(EPOPhrase.builder().includePhrase("PHRASE").build())
-            .epoEndDate(now())
+            .epoEndDate(now().plusDays(5))
+            .epoExclusionRequirementType(EPOExclusionRequirementType.NO_TO_EXCLUSION)
             .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -327,14 +350,19 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     @Test
-    void shouldNotUpdateChildrenWhenFeatureIsNotEnabled() {
-        given(featureToggleService.isCloseCaseEnabled()).willReturn(false);
+    void shouldSetFinalOrderIssuedForUploadedEducationSupervisionOrder() {
+        givenCurrentUser(UserDetails.builder()
+            .roles(UserRole.HMCTS_ADMIN.getRoleNames())
+            .build());
 
-        final CaseData caseData = commonCaseData(CARE_ORDER, FINAL, false).build();
+        CaseData caseData = commonCaseData(UploadedOrderType.C37)
+            .orderAppliesToAllChildren("Yes")
+            .build();
 
         final CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
-        assertThat(updatedCaseData.getAllChildren()).isEqualTo(caseData.getAllChildren());
+        assertThat(updatedCaseData.getAllChildren()).extracting(element -> element.getValue().getFinalOrderIssued())
+            .containsOnly("Yes");
     }
 
     private JudgeAndLegalAdvisor buildJudgeAndLegalAdvisor(YesNo useAllocatedJudge) {
@@ -344,7 +372,23 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
     }
 
     private CaseData.CaseDataBuilder commonCaseData(GeneratedOrderType orderType,
+                                                    boolean allocatedJudge) {
+        return commonCaseData(orderType, null, null, allocatedJudge);
+    }
+
+    private CaseData.CaseDataBuilder commonCaseData(GeneratedOrderType orderType,
                                                     GeneratedOrderSubtype subtype,
+                                                    boolean allocatedJudge) {
+        return commonCaseData(orderType, subtype, null, allocatedJudge);
+    }
+
+    private CaseData.CaseDataBuilder commonCaseData(UploadedOrderType uploadedOrderType) {
+        return commonCaseData(GeneratedOrderType.UPLOAD, null, uploadedOrderType, false);
+    }
+
+    private CaseData.CaseDataBuilder commonCaseData(GeneratedOrderType orderType,
+                                                    GeneratedOrderSubtype subtype,
+                                                    UploadedOrderType uploadedOrderType,
                                                     boolean allocatedJudge) {
 
         ChildParty child1 = testChildParty().toBuilder().fathersName("Smith").build();
@@ -355,6 +399,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
             OrderTypeAndDocument.builder()
                 .type(orderType)
                 .subtype(subtype)
+                .uploadedOrderType(uploadedOrderType)
                 .document(DocumentReference.builder().build())
                 .build())
             .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor(YesNo.from(allocatedJudge)))
@@ -363,7 +408,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
                 .map(party -> Child.builder().party(party).build())
                 .map(ElementUtils::element)
                 .collect(toList()))
-            .caseLocalAuthority(DEFAULT_LA)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateOfIssue(dateNow());
     }
 
@@ -397,11 +442,9 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractControllerTest {
 
         assertThat(response.getData()).doesNotContainKeys(keys.toArray(String[]::new));
 
-        List<Element<GeneratedOrder>> orders = mapper.convertValue(response.getData().get("orderCollection"),
-            new TypeReference<>() {
-            });
+        CaseData caseData = extractCaseData(response);
 
-        assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
+        assertThat(caseData.getOrderCollection().get(0).getValue()).isEqualTo(expectedOrder);
     }
 
     private List<Element<Child>> expectedChildren(CaseData caseData) {

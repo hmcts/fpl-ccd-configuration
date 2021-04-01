@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,17 +8,21 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.Map;
 
+import static com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap.of;
 import static org.apache.commons.lang3.RandomUtils.nextLong;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -97,4 +102,29 @@ class CaseConverterTest {
         assertThat(actualCaseData).isNull();
     }
 
+    @Test
+    void shouldConvertObjectToMap() {
+        DocumentReference document = DocumentReference.builder()
+            .binaryUrl("testBinaryUrl")
+            .filename("testFilename")
+            .url("testUrl")
+            .build();
+
+        Map<String, Object> expectedMap = of(
+            "binaryUrl", "testBinaryUrl",
+            "filename", "testFilename",
+            "url", "testUrl");
+
+        when(objectMapper.convertValue(any(), ArgumentMatchers.<TypeReference<Map<String, Object>>>any()))
+            .thenReturn(expectedMap);
+
+        Map<String, Object> actualData = caseConverter.toMap(document);
+
+        assertThat(actualData).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldReturnNullIfObjectIsNull() {
+        assertThat(caseConverter.toMap(null)).isNull();
+    }
 }

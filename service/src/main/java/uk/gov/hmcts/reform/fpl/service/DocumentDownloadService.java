@@ -33,12 +33,14 @@ public class DocumentDownloadService {
     public byte[] downloadDocument(final String documentUrlString) {
         final String userRoles = join(",", idamClient.getUserInfo(requestData.authorisation()).getRoles());
 
+        log.info("Download document {} by user {} with roles {}", documentUrlString, requestData.userId(), userRoles);
+
         ResponseEntity<Resource> documentDownloadResponse =
             documentDownloadClient.downloadBinary(requestData.authorisation(),
-            authTokenGenerator.generate(),
-            userRoles,
-            requestData.userId(),
-            URI.create(documentUrlString).getPath());
+                authTokenGenerator.generate(),
+                userRoles,
+                requestData.userId(),
+                URI.create(documentUrlString).getPath());
 
         if (isNotEmpty(documentDownloadResponse) && HttpStatus.OK == documentDownloadResponse.getStatusCode()) {
             return Optional.of(documentDownloadResponse)

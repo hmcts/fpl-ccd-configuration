@@ -18,8 +18,9 @@ module.exports = {
     },
   },
 
-  completeAlcoholOrDrugAbuse() {
+  async completeAlcoholOrDrugAbuse() {
     I.click(this.fields.alcoholOrDrugAbuse.yes);
+    await I.runAccessibilityTest();
     I.fillField(this.fields.alcoholOrDrugAbuse.reason, 'mock reason');
   },
 

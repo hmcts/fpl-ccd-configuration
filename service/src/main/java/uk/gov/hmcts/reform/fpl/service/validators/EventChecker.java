@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.tasklist.TaskState;
 
 import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.COMPLETED;
 
 public interface EventChecker {
 
@@ -16,5 +19,9 @@ public interface EventChecker {
 
     default boolean isAvailable(CaseData caseData) {
         return true;
+    }
+
+    default TaskState completedState() {
+        return COMPLETED;
     }
 }

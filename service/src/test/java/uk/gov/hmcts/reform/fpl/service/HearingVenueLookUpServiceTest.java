@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class})
-public class HearingVenueLookUpServiceTest {
+class HearingVenueLookUpServiceTest {
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
@@ -160,5 +160,16 @@ public class HearingVenueLookUpServiceTest {
 
             assertThat(actualFormattedHearingVenue).isEqualTo(expectedFormattedHearingVenue);
         }
+    }
+
+    @Test
+    void shouldReturnVenueIdWhenValidVenueProvided() {
+        assertThat(hearingVenueLookUpService.getVenueId(
+            "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")).isEqualTo("Venue");
+    }
+
+    @Test
+    void shouldReturnOtherWhenNoVenueFound() {
+        assertThat(hearingVenueLookUpService.getVenueId("Custom House, Custom Street")).isEqualTo("OTHER");
     }
 }

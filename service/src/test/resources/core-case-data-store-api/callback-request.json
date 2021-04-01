@@ -26,7 +26,7 @@
           }
         }
       ],
-      "caseLocalAuthority": "${localAuthority:-example}",
+      "caseLocalAuthority": "${localAuthority:-test1}",
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
@@ -55,7 +55,17 @@
         ],
         "emergencyProtectionOrderDirections": [
           "CONTACT_WITH_NAMED_PERSON"
-        ]
+        ],
+        "epoType": "PREVENT_REMOVAL",
+        "address": {
+          "County": "Co.test",
+          "Country": "United Kingdom",
+          "PostCode": "BT35 HBN",
+          "PostTown": "Belfast",
+          "AddressLine1": "45 Ethel Street",
+          "AddressLine2": "Lisburn Road",
+          "AddressLine3": "South Belfast"
+        }
       },
       "groundsForEPO": {
         "reason": [
@@ -519,6 +529,31 @@
           }
         }
       ],
+      "additionalApplicationType": [
+        "C2_ORDER"
+      ],
+      "additionalApplicationsBundle": [
+        {
+          "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
+          "value": {
+            "c2DocumentBundle": {
+              "document": {
+                "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+                "document_filename": "file.pdf"
+              },
+              "description": "C2 document one"
+            },
+            "pbaPayment": {
+              "pbaNumber": "PBA1234567",
+              "usePbaPayment": "Yes"
+            },
+            "author": "HMCTS",
+            "description": "C2 document one",
+            "type": "WITH_NOTICE"
+          }
+        }
+      ],
       "c2ApplicationType": {
         "type": "WITH_NOTICE"
       },
@@ -555,11 +590,11 @@
               "AddressLine2": "Tooley road",
               "AddressLine3": "Tooley"
             },
-            "email": "fred@flinstone.com"
-          },
-          "telephoneNumber": "0717171717",
-          "servingPreferences": "DIGITAL_SERVICE",
-          "role": "CAFCASS_GUARDIAN"
+            "email": "fred@flinstone.com",
+            "servingPreferences": "DIGITAL_SERVICE",
+            "role": "CAFCASS_GUARDIAN",
+            "telephoneNumber": "0717171717"
+          }
         },
         {
           "id": "e3d297db-0a82-4c1a-a31b-ff9fcd4164a1",
@@ -575,11 +610,11 @@
               "AddressLine2": "Tooley road",
               "AddressLine3": "Tooley"
             },
-            "email": "barney@rubble.com"
-          },
-          "telephoneNumber": "0717171718",
-          "servingPreferences": "EMAIL",
-          "role": "CAFCASS_SOLICITOR"
+            "email": "barney@rubble.com",
+            "telephoneNumber": "0717171718",
+            "servingPreferences": "EMAIL",
+            "role": "CAFCASS_SOLICITOR"
+          }
         }
       ],
       "hearingDetails": [
@@ -665,7 +700,24 @@
           "useAllocatedJudge": null,
           "allocatedJudgeLabel": null
         }
-      }
+      },
+      "applicationDocuments": [
+        {
+          "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
+          "value": {
+            "document": {
+              "document_url": "http://dm-store:8080/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
+              "document_filename": "solicitor-role-tech.docx",
+              "document_binary_url": "http://dm-store:8080/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
+            },
+            "uploadedBy": null,
+            "documentName": null,
+            "documentType": "THRESHOLD",
+            "includedInSWET": null,
+            "dateTimeUploaded": null
+          }
+        }
+      ]
     }
   },
   "case_details_before": {

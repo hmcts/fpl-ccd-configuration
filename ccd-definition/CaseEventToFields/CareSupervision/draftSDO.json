@@ -58,8 +58,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "judgeAndLegalAdvisor",
     "PageDisplayOrder": 3,
-    "PageColumnNumber": 1,
-    "PageShowCondition": "sdoRouter=\"SERVICE\" OR useServiceRoute=\"YES\""
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
@@ -327,5 +326,18 @@
     "CaseEventFieldLabel": " ",
     "PageDisplayOrder": 12,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "noticeOfProceedings",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "noticeOfProceedingsSDO",
+    "CaseEventFieldLabel": " ",
+    "PageDisplayOrder": 13,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
   }
 ]

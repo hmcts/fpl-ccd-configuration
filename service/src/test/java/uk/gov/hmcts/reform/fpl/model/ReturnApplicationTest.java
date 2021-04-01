@@ -27,7 +27,7 @@ class ReturnApplicationTest {
     @Test
     void shouldReturnAnEmptyStringWhenNoReturnReasonsAreProvided() {
         ReturnApplication returnApplication = ReturnApplication.builder().build();
-        assertThat(returnApplication.getFormattedReturnReasons()).isEqualTo("");
+        assertThat(returnApplication.getFormattedReturnReasons()).isEmpty();
     }
 
     private ReturnApplication buildReturnApplication(ReturnedApplicationReasons... reasons) {

@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-public class DocumentDownloadServiceTest {
+class DocumentDownloadServiceTest {
 
     private static final String AUTH_TOKEN = "token";
     private static final String SERVICE_AUTH_TOKEN = "service-token";
@@ -59,7 +59,7 @@ public class DocumentDownloadServiceTest {
     void setup() {
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")
-            .roles(CAFCASS.getRoles())
+            .roles(CAFCASS.getRoleNames())
             .uid(USER_ID)
             .build();
 
@@ -87,17 +87,16 @@ public class DocumentDownloadServiceTest {
             .willReturn(expectedResponse.getBody());
 
         given(documentDownloadClient.downloadBinary(anyString(), anyString(),
-            eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
+            eq(join(",", CAFCASS.getRoleNames())), anyString(), anyString()))
             .willReturn(resourceResponseEntity);
 
         byte[] documentContents = documentDownloadService.downloadDocument(document.links.binary.href);
 
-        assertThat(documentContents).isNotEmpty();
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
 
         verify(documentDownloadClient).downloadBinary(AUTH_TOKEN,
             SERVICE_AUTH_TOKEN,
-            join(",", CAFCASS.getRoles()),
+            join(",", CAFCASS.getRoleNames()),
             USER_ID,
             "/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary");
     }

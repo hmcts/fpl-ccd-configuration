@@ -28,10 +28,11 @@ module.exports = {
     otherDocumentsTitle_2: '#documents_socialWorkOther_1_documentTitle',
   },
 
-  selectSocialWorkChronologyToFollow() {
+  async selectSocialWorkChronologyToFollow() {
     within(this.fields.socialWorkChronologyStatus, () => {
       I.click(locate('label').withText('To follow'));
     });
+    await I.runAccessibilityTest();
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
   },
 

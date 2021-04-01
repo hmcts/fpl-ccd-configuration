@@ -1,0 +1,79 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA1",
+    "ListElement": "No/poor pre-proceedings preparation by LA, other than (core) social work assessment of the family",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA2",
+    "ListElement": "No friends/family identified before the hearing by LA",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA3",
+    "ListElement": "No/poor kinship assessments by LA",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA4",
+    "ListElement": "No expert instructed by LA",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA5",
+    "ListElement": "No/poor/late (core) social work assessment of the family by LA",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA6",
+    "ListElement": "New social work report/assessment required following a change in circumstances",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA7",
+    "ListElement": "No timetable for the child",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA8",
+    "ListElement": "New/alternative care plan",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA9",
+    "ListElement": "Placement order proceedings delay",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA10",
+    "ListElement": "No/poor placement evidence by LA",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-LocalAuthority",
+    "ListElementCode": "LA11",
+    "ListElement": "No threshold document",
+    "DisplayOrder": 11
+  }
+]

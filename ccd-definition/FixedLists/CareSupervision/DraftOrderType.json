@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DraftOrderType",
+    "ListElementCode": "AGREED_CMO",
+    "ListElement": "Agreed CMO discussed at hearing",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DraftOrderType",
+    "ListElementCode": "DRAFT_CMO",
+    "ListElement": "Draft CMO from advocates' meeting",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DraftOrderType",
+    "ListElementCode": "C21",
+    "ListElement": "Draft order",
+    "DisplayOrder": 3
+  }
+]

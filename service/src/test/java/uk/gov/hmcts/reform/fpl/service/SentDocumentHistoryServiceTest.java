@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-public class SentDocumentHistoryServiceTest {
+class SentDocumentHistoryServiceTest {
 
     private static final String PARTY_1 = "John Smith";
     private static final String PARTY_2 = "Alex Green";
@@ -21,7 +21,7 @@ public class SentDocumentHistoryServiceTest {
     SentDocumentHistoryService sentDocumentHistoryService = new SentDocumentHistoryService();
 
     @Test
-    public void shouldCreateHistoricalRecordIfAbsent() {
+    void shouldCreateHistoricalRecordIfAbsent() {
         SentDocument documentSentToParty1 = sentDocument(PARTY_1);
         SentDocument documentSentToParty2 = sentDocument(PARTY_2);
 
@@ -43,7 +43,7 @@ public class SentDocumentHistoryServiceTest {
     }
 
     @Test
-    public void shouldCreateHistoricalRecordWithMultipleDocuments() {
+    void shouldCreateHistoricalRecordWithMultipleDocuments() {
         SentDocument document1SentToParty = sentDocument(PARTY_1);
         SentDocument document2SentToParty = sentDocument(PARTY_1);
 
@@ -61,7 +61,7 @@ public class SentDocumentHistoryServiceTest {
     }
 
     @Test
-    public void shouldUpdateHistoricalRecordIfPresent() {
+    void shouldUpdateHistoricalRecordIfPresent() {
         SentDocument document1SentToParty1 = sentDocument(PARTY_1);
         SentDocument document2SentToParty1 = sentDocument(PARTY_1);
         SentDocument document1SentToParty2 = sentDocument(PARTY_2);

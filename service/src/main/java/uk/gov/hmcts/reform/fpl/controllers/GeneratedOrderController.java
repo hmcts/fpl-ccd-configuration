@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,21 +28,21 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
-import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.epoordergroup.EPOAddressGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.CARE_ORDER_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.MULTIPLE_CARE_ORDER_LABEL;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderKey.SINGLE_CARE_ORDER_LABEL;
@@ -57,30 +55,25 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.CloseCaseReason.FINAL_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
-@Slf4j
 @Api
 @RestController
 @RequestMapping("/callback/create-order")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GeneratedOrderController extends CallbackController {
 
+    private final Time time;
     private final GeneratedOrderService service;
     private final ValidateGroupService validateGroupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final GatewayConfiguration gatewayConfiguration;
-    private final CoreCaseDataService coreCaseDataService;
     private final ChildrenService childrenService;
     private final DischargeCareOrderService dischargeCareOrder;
-    private final DocumentDownloadService documentDownloadService;
-    private final FeatureToggleService featureToggleService;
-    private final Time time;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -94,6 +87,7 @@ public class GeneratedOrderController extends CallbackController {
             data.put("pageShow", caseData.getAllChildren().size() <= 1 ? "No" : "Yes");
 
             data.put("dateOfIssue", time.now().toLocalDate());
+            data.put("dateAndTimeOfIssue", time.now().toLocalDate().atStartOfDay());
 
             if (caseData.getAllocatedJudge() != null) {
                 data.put("judgeAndLegalAdvisor", setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
@@ -181,14 +175,25 @@ public class GeneratedOrderController extends CallbackController {
      This mid event is called after:
       • Inputting Judge + LA
       • Adding further directions
+      • Uploading an order
     */
     @PostMapping("/generate-document/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-
         OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
+
+        JudgeAndLegalAdvisor tempJudge = caseData.getJudgeAndLegalAdvisor();
+
+        if (!orderTypeAndDocument.isUploaded() && caseData.hasSelectedTemporaryJudge(tempJudge)) {
+            Optional<String> error = validateEmailService.validate(tempJudge.getJudgeEmailAddress());
+
+            if (!error.isEmpty()) {
+                return respond(caseDetails, List.of(error.get()));
+            }
+        }
+
         FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
         List<Element<Child>> children;
 
@@ -199,8 +204,7 @@ public class GeneratedOrderController extends CallbackController {
         }
 
         // If can display close case, set the flag in order to show the close case page
-        if (service.showCloseCase(orderTypeAndDocument, children, featureToggleService.isCloseCaseEnabled())) {
-
+        if (service.showCloseCase(orderTypeAndDocument, children)) {
             data.put("showCloseCaseFromOrderPage", YES);
             data.put("close_case_label", CloseCaseController.LABEL);
         } else {
@@ -211,11 +215,35 @@ public class GeneratedOrderController extends CallbackController {
             Document document = getDocument(caseData, DRAFT);
 
             //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-            data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
-                orderTypeAndDocument, document));
+            data.put("orderTypeAndDocument", service.buildOrderTypeAndDocument(orderTypeAndDocument, document));
+        } else if (orderTypeAndDocument.isUploaded()) {
+            // check yo order
+            data.putAll(Map.of(
+                "readOnlyFamilyManCaseNumber", caseData.getFamilyManCaseNumber(),
+                "readOnlyChildren", childrenService.getSelectedChildren(caseData).stream()
+                    .map(child -> child.getValue().getParty().getFullName())
+                    .collect(joining("\n")),
+                "readOnlyOrder", caseData.getUploadedOrder()
+            ));
         }
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/populate-epo-parameters/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEventEPOExclusionRequirement(
+        @RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
+
+        final List<String> errors = validateGroupService.validateGroup(caseData, EPOAddressGroup.class);
+
+        data.put("epoWhoIsExcluded", caseData.getOrders().getExcluded());
+        data.put("epoType", caseData.getOrders().getEpoType());
+        data.put("epoRemovalAddress", caseData.getOrders().getAddress());
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -224,30 +252,31 @@ public class GeneratedOrderController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
-            caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge());
-
-        Document document = getDocument(caseData, SEALED);
-
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+        OrderTypeAndDocument typeAndDocument = caseData.getOrderTypeAndDocument();
 
-        OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(caseData
-            .getOrderTypeAndDocument(), document);
+        if (!typeAndDocument.isUploaded()) {
+            JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+                caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()
+            );
 
-        removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+            Document document = getDocument(caseData, SEALED);
 
-        orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
+            OrderTypeAndDocument orderTypeAndDocument = service.buildOrderTypeAndDocument(typeAndDocument, document);
+
+            removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
+
+            orders.add(element(service.buildCompleteOrder(orderTypeAndDocument, judgeAndLegalAdvisor, caseData)));
+        } else {
+            typeAndDocument.setDocument(caseData.getUploadedOrder());
+
+            orders.add(element(service.buildCompleteOrder(typeAndDocument, null, caseData)));
+        }
 
         data.put("orderCollection", orders);
 
-        if (featureToggleService.isCloseCaseEnabled() && caseData.getOrderTypeAndDocument().isClosable()) {
-            List<Element<Child>> updatedChildren = childrenService.updateFinalOrderIssued(
-                caseData.getOrderTypeAndDocument().getType(),
-                caseData.getAllChildren(),
-                caseData.getOrderAppliesToAllChildren(),
-                caseData.getChildSelector(),
-                caseData.getRemainingChildIndex());
-            data.put("children1", updatedChildren);
+        if (typeAndDocument.isClosable()) {
+            data.put("children1", getUpdatedChildren(caseData));
         }
 
         if (caseData.isClosedFromOrder()) {
@@ -270,18 +299,7 @@ public class GeneratedOrderController extends CallbackController {
         DocumentReference mostRecentUploadedDocument = service.getMostRecentUploadedOrderDocument(
             caseData.getOrderCollection());
 
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change-SEND_DOCUMENT",
-            Map.of("documentToBeSent", mostRecentUploadedDocument)
-        );
-        publishEvent(new GeneratedOrderEvent(caseData,
-            concatUrlAndMostRecentUploadedDocumentPath(
-                gatewayConfiguration.getUrl(),
-                mostRecentUploadedDocument.getBinaryUrl()),
-            documentDownloadService.downloadDocument(mostRecentUploadedDocument.getBinaryUrl())));
+        publishEvent(new GeneratedOrderEvent(caseData, mostRecentUploadedDocument));
     }
 
     private JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge) {
@@ -303,7 +321,6 @@ public class GeneratedOrderController extends CallbackController {
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
             orderTemplateData, typeAndDoc.getDocmosisTemplate());
 
-
         Document document = uploadDocumentService.uploadPDF(docmosisDocument.getBytes(),
             service.generateOrderDocumentFileName(typeAndDoc.getType(), typeAndDoc.getSubtype()));
 
@@ -315,8 +332,12 @@ public class GeneratedOrderController extends CallbackController {
     }
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
-        return childrenService.updateFinalOrderIssued(caseData.getOrderTypeAndDocument().getType(),
-            caseData.getAllChildren(), caseData.getOrderAppliesToAllChildren(), caseData.getChildSelector(),
-            caseData.getRemainingChildIndex());
+        return childrenService.updateFinalOrderIssued(
+            caseData.getOrderTypeAndDocument(),
+            caseData.getAllChildren(),
+            caseData.getOrderAppliesToAllChildren(),
+            caseData.getChildSelector(),
+            caseData.getRemainingChildIndex()
+        );
     }
 }

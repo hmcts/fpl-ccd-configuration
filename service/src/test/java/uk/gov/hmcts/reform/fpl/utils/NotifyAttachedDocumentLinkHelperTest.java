@@ -11,21 +11,23 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.apache.commons.lang3.RandomUtils.nextBytes;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static uk.gov.hmcts.reform.fpl.utils.NotifyAttachedDocumentLinkHelper.generateAttachedDocumentLink;
 
-public class NotifyAttachedDocumentLinkHelperTest {
+class NotifyAttachedDocumentLinkHelperTest {
     @Test
     void shouldGenerateAttachedDocumentLinkSuccessfully() {
-        byte[] documentContentstAsByte = nextBytes(20);
-        String documentContent = new String(Base64.encodeBase64(documentContentstAsByte), ISO_8859_1);
+        byte[] documentContentsAsByte = nextBytes(20);
+        String documentContent = new String(Base64.encodeBase64(documentContentsAsByte), ISO_8859_1);
 
         JSONObject expectedDocumentLink = new JSONObject()
             .put("file", documentContent)
             .put("is_csv", false);
 
-        Optional<JSONObject> generatedDocumentLink = generateAttachedDocumentLink(documentContentstAsByte);
+        Optional<JSONObject> generatedDocumentLink = generateAttachedDocumentLink(documentContentsAsByte);
+        assertThat(generatedDocumentLink).isPresent();
         assertEquals(generatedDocumentLink.get(), expectedDocumentLink, true);
     }
 

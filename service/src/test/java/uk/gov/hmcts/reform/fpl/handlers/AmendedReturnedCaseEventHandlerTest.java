@@ -67,7 +67,7 @@ class AmendedReturnedCaseEventHandlerTest {
             AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE,
             expectedEmail,
             expectedTemplate,
-            caseData.getId().toString());
+            caseData.getId());
 
         verify(returnedCaseContentProvider).parametersWithCaseUrl(caseData);
         verify(adminNotificationHandler).getHmctsAdminEmail(caseData);
@@ -95,7 +95,7 @@ class AmendedReturnedCaseEventHandlerTest {
             AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE,
             expectedEmail,
             expectedTemplate,
-            caseData.getId().toString());
+            caseData.getId());
 
         verify(returnedCaseContentProvider).parametersWithApplicationLink(caseData);
         verify(cafcassLookupConfiguration).getCafcass(localAuthority);

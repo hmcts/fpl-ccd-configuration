@@ -29,11 +29,9 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisApplicant;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisFactorsParenting;
@@ -53,12 +51,16 @@ import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType.CHILD_WHEREABOUTS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.HOSPITAL_SOON_TO_BE_DISCHARGED;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.REMOVED_BY_POLICE_POWER_ENDS;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.VOLUNTARILY_SECTION_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.DRAFT_WATERMARK;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.enums.EPOType.REMOVE_TO_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -76,9 +78,13 @@ class CaseSubmissionGenerationServiceTest {
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
     private static final String AUTH_TOKEN = "Bearer token";
+    private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
 
     @MockBean
     private IdamClient idamClient;
+
+    @MockBean
+    private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     @MockBean
     private RequestData requestData;
@@ -101,7 +107,12 @@ class CaseSubmissionGenerationServiceTest {
     @Test
     void shouldReturnExpectedTemplateDataWithCourtSealWhenAllDataPresent() {
         DocmosisCaseSubmission returnedCaseSubmission = templateDataGenerationService.getTemplateData(givenCaseData);
-        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(expectedDocmosisCaseSubmission());
+
+        DocmosisCaseSubmission updatedCaseSubmission = expectedDocmosisCaseSubmission().toBuilder()
+            .annexDocuments(null)
+            .build();
+
+        assertThat(returnedCaseSubmission).isEqualToComparingFieldByField(updatedCaseSubmission);
     }
 
     @Test
@@ -180,12 +191,14 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .epoType(REMOVE_TO_ACCOMMODATION)
                     .build())
                 .build();
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Remove to accommodation\n"
                 + "Information on the whereabouts of the child\n"
                 + "Authorisation for entry of premises\n"
                 + "Authorisation to search for another child on the premises\n"
@@ -198,6 +211,7 @@ class CaseSubmissionGenerationServiceTest {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .orders(givenCaseData.getOrders().toBuilder()
                     .emergencyProtectionOrders(of(CHILD_WHEREABOUTS))
+                    .epoType(REMOVE_TO_ACCOMMODATION)
                     .emergencyProtectionOrderDetails("emergency protection order details")
                     .build())
                 .build();
@@ -205,8 +219,41 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Remove to accommodation\n"
                 + "Information on the whereabouts of the child\n"
                 + "emergency protection order details";
+            assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
+        }
+
+        @Test
+        void shouldIncludeAddressWhenPreventRemovalEPOTypeSelected() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(givenCaseData.getOrders().toBuilder()
+                    .emergencyProtectionOrders(of(EmergencyProtectionOrdersType.values()))
+                    .epoType(PREVENT_REMOVAL)
+                    .address(Address.builder()
+                        .addressLine1("45")
+                        .addressLine2("Ethel Street")
+                        .postcode("BT7H3B")
+                        .postTown("Lisburn Road")
+                        .country("United Kingdom")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedOrdersNeeded = "Emergency protection order\n"
+                + "Prevent removal from an address\n"
+                + "45\n"
+                + "Ethel Street\n"
+                + "Lisburn Road\n"
+                + "BT7H3B\n"
+                + "United Kingdom\n"
+                + "Information on the whereabouts of the child\n"
+                + "Authorisation for entry of premises\n"
+                + "Authorisation to search for another child on the premises\n"
+                + "Other order under section 48 of the Children Act 1989";
             assertThat(caseSubmission.getOrdersNeeded()).isEqualTo(expectedOrdersNeeded);
         }
     }
@@ -224,7 +271,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("");
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEmpty();
         }
 
         @Test
@@ -238,7 +285,7 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
-            assertThat(caseSubmission.getGroundsForEPOReason()).isEqualTo("");
+            assertThat(caseSubmission.getGroundsForEPOReason()).isEmpty();
         }
 
         @Test
@@ -412,6 +459,22 @@ class CaseSubmissionGenerationServiceTest {
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
 
             String expectedDirectionsNeeded = "directions\ndirection  details";
+            assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
+        }
+
+        @Test
+        void shouldIncludeEPOExcludedWhenEntered() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .orders(Orders.builder()
+                    .directions("directions")
+                    .directionDetails("direction details")
+                    .excluded("John Doe")
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            String expectedDirectionsNeeded = "John Doe excluded\ndirections\ndirection details";
             assertThat(caseSubmission.getDirectionsNeeded()).isEqualTo(expectedDirectionsNeeded);
         }
     }
@@ -866,11 +929,27 @@ class CaseSubmissionGenerationServiceTest {
         }
 
         @Test
+        void shouldReturnOtherPartyDOBAsDefaultStringWhenDOBIsEmpty() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .others(Others.builder()
+                    .firstOther(Other.builder()
+                        .dateOfBirth("")
+                        .build())
+                    .build())
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+
+            assertThat(caseSubmission.getOthers()).hasSize(1);
+            assertThat(caseSubmission.getOthers().get(0).getDateOfBirth()).isEqualTo("-");
+        }
+
+        @Test
         void shouldReturnOtherPartyFormattedDOBAsWhenDOBIsGiven() {
             CaseData updatedCaseData = givenCaseData.toBuilder()
                 .others(Others.builder()
                     .firstOther(Other.builder()
-                        .DOB("1999-02-02")
+                        .dateOfBirth("1999-02-02")
                         .build())
                     .build())
                 .build();
@@ -955,94 +1034,13 @@ class CaseSubmissionGenerationServiceTest {
         }
     }
 
-    @Nested
-    class DocmosisCaseSubmissionFormatAnnexDocumentDisplayTest {
+    @Test
+    void shouldBuildExpectedDocmosisAnnexDocumentsWhenApplicationDocumentsIncludeAnnexDocumentTypes() {
+        when(annexGenerator.generate(givenCaseData)).thenReturn(DOCMOSIS_ANNEX_DOCUMENTS);
 
-        @Test
-        void shouldReturnEmptyWhenDocumentIsNotAvailable() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(null)
-                .build();
+        DocmosisCaseSubmission actual = templateDataGenerationService.getTemplateData(givenCaseData);
 
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("-");
-        }
-
-        @Test
-        void shouldReturnEmptyWhenDocumentStatusIsEmpty() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(Document.builder()
-                    .documentStatus("")
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("-");
-        }
-
-        @Test
-        void shouldReturnStatusWhenDocumentStatusIsAvailable() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(Document.builder()
-                    .documentStatus("Attached")
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology()).isEqualTo("Attached");
-        }
-
-        @Test
-        void shouldReturnStatusAndReasonWhenDocumentStatusIsOtherThanAttached() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .socialWorkChronologyDocument(Document.builder()
-                    .documentStatus("To follow")
-                    .statusReason("Documents not uploaded")
-                    .build())
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getSocialWorkChronology())
-                .isEqualTo("To follow\nDocuments not uploaded");
-        }
-
-        @Test
-        void shouldReturnDocumentTitleOrDefaultValueForAdditionalAnnexDocuments() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .otherSocialWorkDocuments(wrapElements(DocumentSocialWorkOther.builder()
-                        .documentTitle("Additional Doc 1")
-                        .typeOfDocument(DocumentReference.builder()
-                            .url("/test.doc")
-                            .build())
-                        .build(),
-                    DocumentSocialWorkOther.builder()
-                        .documentTitle("Additional Doc 2")
-                        .typeOfDocument(DocumentReference.builder()
-                            .url("/test.doc")
-                            .build())
-                        .build(),
-                    DocumentSocialWorkOther.builder()
-                        .documentTitle("")
-                        .typeOfDocument(DocumentReference.builder()
-                            .url("/test.doc")
-                            .build())
-                        .build()
-                ))
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-
-            assertThat(caseSubmission.getAnnexDocuments().getOthers()).hasSize(3);
-            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(0).getDocumentTitle())
-                .isEqualTo("Additional Doc 1");
-            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(1).getDocumentTitle())
-                .isEqualTo("Additional Doc 2");
-            assertThat(caseSubmission.getAnnexDocuments().getOthers().get(2).getDocumentTitle()).isEqualTo("-");
-        }
+        assertThat(actual.getAnnexDocuments()).isEqualTo(DOCMOSIS_ANNEX_DOCUMENTS);
     }
 
     @Nested

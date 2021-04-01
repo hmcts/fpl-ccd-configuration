@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentPr
 
 import java.time.format.FormatStyle;
 
+import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.HEARINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -18,18 +19,16 @@ public class NoticeOfProceedingsEmailContentProvider extends AbstractEmailConten
 
     public AllocatedJudgeTemplateForNoticeOfProceedings buildAllocatedJudgeNotification(CaseData caseData) {
 
-        AllocatedJudgeTemplateForNoticeOfProceedings allocatedJudgeTemplate
-            = new AllocatedJudgeTemplateForNoticeOfProceedings();
+        return AllocatedJudgeTemplateForNoticeOfProceedings.builder()
 
-        allocatedJudgeTemplate.setFamilyManCaseNumber(caseData.getFamilyManCaseNumber());
-        allocatedJudgeTemplate.setRespondentLastName(getFirstRespondentLastName(caseData.getRespondents1()));
-        allocatedJudgeTemplate.setHearingDate(getHearingBookingStartDate(caseData));
-        allocatedJudgeTemplate.setCaseUrl(getCaseUrl(caseData.getId()));
-        allocatedJudgeTemplate.setJudgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
-            .getJudgeOrMagistrateTitle());
-        allocatedJudgeTemplate.setJudgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName());
-
-        return allocatedJudgeTemplate;
+            .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .hearingDate(getHearingBookingStartDate(caseData))
+            .caseUrl(getCaseUrl(caseData.getId(), HEARINGS))
+            .judgeTitle(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()
+                .getJudgeOrMagistrateTitle())
+            .judgeName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor().getJudgeName())
+            .build();
     }
 
     private String getHearingBookingStartDate(CaseData caseData) {

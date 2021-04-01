@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.validators;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -15,10 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.EIGHT_WEEK_EXTENSION;
 import static uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime.OTHER_EXTENSION;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(CaseExtensionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
+class CaseExtensionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     CaseExtensionControllerAboutToSubmitTest() {
         super("case-extension");
@@ -58,7 +56,7 @@ class CaseExtensionControllerAboutToSubmitTest extends AbstractControllerTest {
 
     @Test
     void shouldPopulateCaseCompletionDateWhenSubmittingWith8WeekExtension() {
-        LocalDate dateSubmitted = LocalDate.of(2030,11,11);
+        LocalDate dateSubmitted = LocalDate.of(2030, 11, 11);
         LocalDate eightWeekExtensionDate = dateSubmitted.plusWeeks(8);
 
         CaseDetails caseDetails = CaseDetails.builder()

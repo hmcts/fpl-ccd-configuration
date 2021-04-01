@@ -36,7 +36,7 @@ public class UpcomingHearingsFinder implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
         final String jobName = jobExecutionContext.getJobDetail().getKey().getName();
-        log.info("Job {} started", jobName);
+        log.info("Job '{}' started", jobName);
 
         LocalDate baseDate = jobExecutionContext.getScheduledFireTime().toInstant().atZone(UTC).toLocalDate();
 

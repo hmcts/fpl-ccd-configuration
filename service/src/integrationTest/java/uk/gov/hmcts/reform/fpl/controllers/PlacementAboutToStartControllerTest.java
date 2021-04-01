@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
@@ -23,10 +22,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testPlacement;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(PlacementController.class)
 @OverrideAutoConfiguration(enabled = true)
-class PlacementAboutToStartControllerTest extends AbstractControllerTest {
+class PlacementAboutToStartControllerTest extends AbstractCallbackTest {
 
     PlacementAboutToStartControllerTest() {
         super("placement");

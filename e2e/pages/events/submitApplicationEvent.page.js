@@ -8,7 +8,8 @@ module.exports = {
     consentCheckbox: '#submissionConsent-agree',
   },
 
-  giveConsent() {
+  async giveConsent() {
+    await I.runAccessibilityTest();
     I.checkOption(this.fields.consentCheckbox);
   },
 

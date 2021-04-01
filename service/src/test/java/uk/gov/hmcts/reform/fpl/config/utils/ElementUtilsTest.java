@@ -25,7 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListValueCode;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -47,7 +48,7 @@ public class ElementUtilsTest {
         @Test
         void shouldReturnUuidWhenStringIsPassed() {
             UUID testId = UUID.randomUUID();
-            UUID valueCode = getDynamicListValueCode(testId.toString(), mapper);
+            UUID valueCode = getDynamicListSelectedValue(testId.toString(), mapper);
 
             assertThat(valueCode).isEqualTo(testId);
         }
@@ -68,7 +69,7 @@ public class ElementUtilsTest {
                 )
             );
 
-            UUID valueCode = getDynamicListValueCode(dynamicListAsMap, mapper);
+            UUID valueCode = getDynamicListSelectedValue(dynamicListAsMap, mapper);
 
             assertThat(valueCode).isEqualTo(selectedID);
         }
@@ -229,6 +230,50 @@ public class ElementUtilsTest {
         @Test
         void shouldNotFindNullElement() {
             assertThat(findElement(null, null)).isNotPresent();
+        }
+    }
+
+    @Nested
+    class FindElements {
+
+        @Test
+        void shouldFindAllElements() {
+            Element<String> element1 = Element.<String>builder().id(randomUUID()).value("A").build();
+            Element<String> element2 = Element.<String>builder().id(randomUUID()).value("B").build();
+            Element<String> element3 = Element.<String>builder().id(randomUUID()).value("B").build();
+            Element<String> element4 = Element.<String>builder().id(randomUUID()).value("C").build();
+            List<Element<String>> elements = List.of(element1, element2, element3, element4);
+
+            assertThat(findElements("B", elements)).containsExactlyInAnyOrder(element2, element3);
+        }
+
+        @Test
+        void shouldFindAllNullElements() {
+            Element<String> element1 = Element.<String>builder().id(UUID.randomUUID()).build();
+            Element<String> element2 = Element.<String>builder().id(UUID.randomUUID()).value("A").build();
+            Element<String> element3 = Element.<String>builder().id(UUID.randomUUID()).build();
+            List<Element<String>> elements = List.of(element1, element2, element3);
+
+            assertThat(findElements(null, elements)).containsExactly(element1, element3);
+        }
+
+        @Test
+        void shouldNotFindNonExistingElement() {
+            Element<String> element1 = Element.<String>builder().id(randomUUID()).value("A").build();
+            Element<String> element2 = Element.<String>builder().id(randomUUID()).value("B").build();
+            List<Element<String>> elements = List.of(element1, element2);
+
+            assertThat(findElements("C", elements)).isEmpty();
+        }
+
+        @Test
+        void shouldNotFindElementInEmptyList() {
+            assertThat(findElements("A", emptyList())).isEmpty();
+        }
+
+        @Test
+        void shouldNotFindElementInNullList() {
+            assertThat(findElements("A", null)).isEmpty();
         }
     }
 

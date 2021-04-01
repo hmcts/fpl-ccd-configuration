@@ -4,7 +4,6 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -22,10 +21,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RepresentativeAboutToStartControllerTest extends AbstractControllerTest {
+class RepresentativeAboutToStartControllerTest extends AbstractCallbackTest {
 
     RepresentativeAboutToStartControllerTest() {
         super("manage-representatives");

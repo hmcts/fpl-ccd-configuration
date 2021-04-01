@@ -6,11 +6,11 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
 @Service
 public class RespondentService {
@@ -32,12 +32,16 @@ public class RespondentService {
         return sb.toString();
     }
 
-    public List<Element<Respondent>> setPersistRepresentativeFlag(List<Element<Respondent>> respondents) {
-        return respondents.stream()
-            .map(element -> {
-                element.getValue().setPersistRepresentedBy(YES.getValue());
-                return element;
-            }).collect(Collectors.toList());
+    public List<Element<Respondent>> persistRepresentativesRelationship(List<Element<Respondent>> newRespondents,
+                                                                        List<Element<Respondent>> oldRespondents) {
+        oldRespondents.forEach(respondentElement -> {
+            Optional<Element<Respondent>> respondentOptional = findElement(respondentElement.getId(), newRespondents);
+            respondentOptional.ifPresent(respondent ->
+                respondent.getValue().setRepresentedBy(respondentElement.getValue().getRepresentedBy())
+            );
+        });
+
+        return newRespondents;
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {

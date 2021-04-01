@@ -12,7 +12,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.concatUrlAndMostRecentUploadedDocumentPath;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusOf;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusSet;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
@@ -45,33 +44,12 @@ class DocumentsHelperTest {
 
     @Test
     void shouldReturnTrueIfDocumentHasBinaries() {
-        assertThat(hasDocumentUploaded(document(true))).isEqualTo(true);
+        assertThat(hasDocumentUploaded(document(true))).isTrue();
     }
 
     @Test
     void shouldReturnFalseIfDocumentHasNotBinaries() {
-        assertThat(hasDocumentUploaded(document(false))).isEqualTo(false);
-    }
-
-    @Test
-    void shouldConcatUrlAndDocumentPath() {
-        String invalidMostRecentDocumentLink = "http://dm-store:8080/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary";
-        String url = "http://fake-url";
-
-        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(url, invalidMostRecentDocumentLink);
-
-        assertThat(documentUrl).isEqualTo("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary");
-    }
-
-
-    @Test
-    void shouldCatchExceptionAndReturnEmptyStringWhenDocumentLinkIsNotInCorrectFormat() {
-        String invalidMostRecentDocumentLink = "http://dm-store:8080/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary^";
-        String url = "http://fake-url";
-
-        String documentUrl = concatUrlAndMostRecentUploadedDocumentPath(url, invalidMostRecentDocumentLink);
-
-        assertThat(documentUrl).isEmpty();
+        assertThat(hasDocumentUploaded(document(false))).isFalse();
     }
 
     @Test

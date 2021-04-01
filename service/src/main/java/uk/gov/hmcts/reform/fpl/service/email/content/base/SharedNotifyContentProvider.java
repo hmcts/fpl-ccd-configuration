@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.base;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;

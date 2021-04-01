@@ -10,7 +10,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CHILDREN;
-import static uk.gov.hmcts.reform.fpl.enums.Event.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.HEARING_URGENCY;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
@@ -25,7 +24,6 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
             ORDERS_SOUGHT,
             HEARING_URGENCY,
             GROUNDS,
-            DOCUMENTS,
             ORGANISATION_DETAILS,
             CHILDREN,
             RESPONDENTS,
