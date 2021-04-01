@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -47,6 +48,24 @@ public class RespondentService {
         });
 
         return newRespondents;
+    }
+
+    //If user entered details that were subsequently hidden after change of mind, remove them
+    public List<Element<Respondent>> removeHiddenFields(List<Element<Respondent>> respondents) {
+        respondents.forEach(respondentElement -> {
+            Respondent respondent = respondentElement.getValue();
+
+            if (YesNo.NO.getValue().equals(respondent.getLegalRepresentation())) {
+                respondent.setSolicitor(null);
+            } else if (isNotEmpty(respondent.getSolicitor().getOrganisation())
+                && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
+                respondent.getSolicitor().setUnregisteredOrganisation(null);
+            } else {
+                respondent.getSolicitor().setRegionalOfficeAddress(null);
+            }
+        });
+
+        return respondents;
     }
 
     public List<Respondent> getRespondentsWithLegalRepresentation(List<Element<Respondent>> respondents) {

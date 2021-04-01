@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -92,6 +95,46 @@ class RespondentServiceTest {
         List<String> respondentSolicitorEmails = service.getRespondentSolicitorEmails(respondents);
 
         assertThat(respondentSolicitorEmails).containsExactlyInAnyOrder("email-1@test.com", "email-2@test.com");
+    }
+
+    @Test
+    void shouldRemoveSolicitorDetailsWhenRespondentDoesNotNeedRepresentation() {
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+            .legalRepresentation(NO.getValue())
+            .solicitor(RespondentSolicitor.builder().firstName("Steven").build())
+            .build()));
+
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
+        assertThat(updatedRespondents.get(0).getValue().getSolicitor()).isNull();
+    }
+
+    @Test
+    void shouldRemoveUnregisteredOrganisationDetailsWhenOrganisationSelected() {
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Steven")
+                .organisation(Organisation.builder().organisationID("test id").build())
+                .unregisteredOrganisation(UnregisteredOrganisation.builder().name("this should be removed").build())
+                .build())
+            .build()));
+
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
+        assertThat(updatedRespondents.get(0).getValue().getSolicitor().getUnregisteredOrganisation()).isNull();
+    }
+
+    @Test
+    void shouldRemoveRegionalOfficeWhenOrganisationNotSelected() {
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Steven")
+                .regionalOfficeAddress(Address.builder().addressLine1("this should be removed").build())
+                .build())
+            .build()));
+
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
+        assertThat(updatedRespondents.get(0).getValue().getSolicitor().getRegionalOfficeAddress()).isNull();
     }
 
     private List<Element<Respondent>> respondents() {
