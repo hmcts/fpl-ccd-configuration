@@ -25,7 +25,6 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -69,41 +68,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage("Unexpected FMN test");
         }
 
-        @Test
-        void shouldThrowExceptionWhenUnexpectedLocalAuthority() {
-            CaseData caseData = CaseData.builder()
-                .id(10L)
-                .familyManCaseNumber(familyManNumber)
-                .caseLocalAuthority("SA")
-                .caseLocalAuthorityName("Swanse County Council")
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(migrationId, caseData)))
-                .getRootCause()
-                .hasMessage("Expected local authority WSC, but got SA");
-        }
-
-        @Test
-        void shouldTransferCase() {
-            CaseData caseData = CaseData.builder()
-                .id(10L)
-                .familyManCaseNumber(familyManNumber)
-                .caseLocalAuthority("WSC")
-                .caseLocalAuthorityName("Worcestershire County Council")
-                .localAuthorityPolicy(organisationPolicy("QRI841X", "Worcestershire County Council", LASOLICITOR))
-                .build();
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails(migrationId, caseData)));
-
-            assertThat(extractedCaseData.getCaseLocalAuthority())
-                .isEqualTo("DEV");
-
-            assertThat(extractedCaseData.getCaseLocalAuthorityName())
-                .isEqualTo("Devon County Council");
-
-            assertThat(extractedCaseData.getLocalAuthorityPolicy())
-                .isEqualTo(organisationPolicy("ZBGD22I", "Devon County Council", LASOLICITOR));
-        }
 
         @Test
         void shouldGrantCaseAccess() {
@@ -112,7 +76,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .familyManCaseNumber(familyManNumber)
                 .build();
 
-            postSubmittedEvent(caseDetails(migrationId, caseData));
+            postAboutToSubmitEvent(caseDetails(migrationId, caseData));
 
             Mockito.verify(caseAccessService).grantCaseRoleToUsers(
                 caseData.getId(),
