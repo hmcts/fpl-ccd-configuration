@@ -60,9 +60,7 @@ public class ManageDocumentsController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(
-            manageDocumentService.initialiseManageDocumentEvent(caseData)
-        );
+        caseDetails.getData().putAll(manageDocumentService.baseEventData(caseData));
 
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
 
@@ -75,6 +73,8 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
+
+        caseDetails.getData().putAll(manageDocumentService.baseEventData(caseData));
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
