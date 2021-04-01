@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +32,14 @@ public class LocalAuthorityService {
     private final LocalAuthorityIdLookupConfiguration idsConfig;
     private final LocalAuthorityCodeLookupConfiguration codesConfig;
     private final LocalAuthorityNameLookupConfiguration namesConfig;
+    private final OrganisationService organisationService;
 
     public Optional<String> getLocalAuthorityCode() {
         UserInfo userInfo = idam.getUserInfo(requestData.authorisation());
         String email = userInfo.getSub();
         String domain = extractEmailDomain(email);
 
-        return codesConfig.getLocalAuthorityCode(domain);
+        return codesConfig.getLocalAuthorityCode(domain).or(this::getLocalAuthorityFromOrganisation);
     }
 
     public String getLocalAuthorityName(String localAuthorityCode) {
@@ -60,6 +62,12 @@ public class LocalAuthorityService {
                 .name(getLocalAuthorityName(localAuthorityCode))
                 .build())
             .collect(Collectors.toList());
+    }
+
+    private Optional<String> getLocalAuthorityFromOrganisation() {
+        return organisationService.findOrganisation()
+            .map(Organisation::getOrganisationIdentifier)
+            .map(orgId -> idsConfig.getLocalAuthorityCode(orgId).orElse(null));
     }
 
     private List<String> getOutsourcingLocalAuthoritiesCodes(String organisationId, OutsourcingType type) {
