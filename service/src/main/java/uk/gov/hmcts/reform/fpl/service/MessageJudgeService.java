@@ -48,15 +48,15 @@ public class MessageJudgeService {
     private final ObjectMapper mapper;
     private final UserService userService;
     private final CtscEmailLookupConfiguration ctscEmailLookupConfiguration;
-    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (hasAdditionalApplicationDocuments(caseData)) {
+        if (hasAdditionalApplicationDocuments(caseData) || hasC2Documents(caseData)) {
             data.put("hasAdditionalApplications", YES.getValue());
             data.put("additionalApplicationsDynamicList", caseData.buildApplicationBundlesDynamicList());
-        } else if (hasC2Documents(caseData)) {
+        }
+        if (hasC2Documents(caseData)) {
             data.put("hasC2Applications", YES.getValue());
             data.put("c2DynamicList", caseData.buildC2DocumentDynamicList());
         }
@@ -331,7 +331,7 @@ public class MessageJudgeService {
     }
 
     private boolean hasSelectedAdditionalApplication(CaseData caseData) {
-        return hasAdditionalApplicationDocuments(caseData)
+        return (hasAdditionalApplicationDocuments(caseData) || hasC2Documents(caseData))
             && caseData.getMessageJudgeEventData().getAdditionalApplicationsDynamicList() != null;
     }
 

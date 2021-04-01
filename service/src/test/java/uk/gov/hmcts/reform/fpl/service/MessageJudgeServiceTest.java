@@ -142,7 +142,7 @@ class MessageJudgeServiceTest {
                 .sender(COURT_EMAIL)
                 .recipient(EMPTY).build());
 
-        assertThat(data).isEqualTo(expectedData);
+        assertThat(data).containsAllEntriesOf(expectedData);
     }
 
     @Test
@@ -226,7 +226,7 @@ class MessageJudgeServiceTest {
                 .recipient(EMPTY).build()
         );
 
-        assertThat(data).isEqualTo(expectedData);
+        assertThat(data).containsAllEntriesOf(expectedData);
     }
 
     @Test
