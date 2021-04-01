@@ -38,9 +38,9 @@ public class OrderDocumentGenerator {
     public DocmosisDocument generate(Order orderType, CaseDetails caseDetails) {
         SingleOrderDocumentParameterGenerator documentTemplateGenerator = typeToGenerator.get(orderType);
         DocmosisParameters docmosisParameters = documentTemplateGenerator.generate(caseDetails);
-        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            objectMapper.convertValue(docmosisParameters, new TypeReference<Map<String, Object>>() {}),
-            documentTemplateGenerator.template());
-        return docmosisDocument;
+        Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {});
+        return docmosisDocumentGeneratorService.generateDocmosisDocument(
+            templateData, documentTemplateGenerator.template()
+        );
     }
 }

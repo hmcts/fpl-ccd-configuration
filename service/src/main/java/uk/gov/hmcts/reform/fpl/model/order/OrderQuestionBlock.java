@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
+@Getter
+@RequiredArgsConstructor
 public enum OrderQuestionBlock {
     APPROVER("approver", "Approver", OrderSection.SECTION_2,
         List.of("judgeAndLegalAdvisor")),
@@ -17,28 +22,4 @@ public enum OrderQuestionBlock {
     private final String question;
     private final OrderSection section;
     private final List<String> dataFields;
-
-    OrderQuestionBlock(String showHideField, String question, OrderSection section, List<String> dataFields) {
-        this.showHideField = showHideField;
-        this.question = question;
-        this.section = section;
-        this.dataFields = dataFields;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public OrderSection getSection() {
-        return section;
-    }
-
-
-    public String getShowHideField() {
-        return showHideField;
-    }
-
-    public List<String> getDataFields() {
-        return dataFields;
-    }
 }
