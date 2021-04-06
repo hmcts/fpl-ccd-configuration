@@ -19,7 +19,7 @@ public class DraftOrderPreviewSectionPrePopulator implements OrderSectionPrePopu
 
     @Override
     public OrderSection accept() {
-        return OrderSection.SECTION_4;
+        return OrderSection.REVIEW;
     }
 
     @Override

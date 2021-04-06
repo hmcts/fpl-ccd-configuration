@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
@@ -25,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.OrderValidator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Api
 @RestController
@@ -39,17 +40,6 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final OrderSectionLifeCycle sectionLifeCycle;
-
-    @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
-
-        // TODO: 01/04/2021 can probs be removed
-
-        return respond(caseDetails, List.of());
-    }
 
     @PostMapping("/section-1/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
@@ -81,11 +71,11 @@ public class ManageOrdersController extends CallbackController {
 
         List<String> errors = orderValidator.validate(order, currentSection, caseDetails);
 
-        Optional<OrderSection> nextSection = sectionLifeCycle.calculateNextSection(currentSection, order);
+        OrderSection nextSection = sectionLifeCycle.calculateNextSection(currentSection, order);
 
         data.putAll(
-            errors.isEmpty() && nextSection.isPresent()
-                ? orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection.get(), caseData, caseDetails) :
+            errors.isEmpty()
+                ? orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData, caseDetails) :
                 Collections.emptyMap()
         );
 
@@ -115,8 +105,10 @@ public class ManageOrdersController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
-        // TODO: 01/04/2021 check if any notifications need to be sent out as part of this story
+        // TODO: 06/04/2021 get this correctly
+        DocumentReference order = DocumentReference.builder().build();
 
+        publishEvent(new GeneratedOrderEvent(caseData, order));
     }
 
 }
