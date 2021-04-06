@@ -801,4 +801,15 @@ public class CaseData {
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;
     }
+
+    private final RespondentSolicitorOrganisation respondent1;
+    private final RespondentSolicitorOrganisation respondent2;
+    private final RespondentSolicitorOrganisation respondent3;
+    private final RespondentSolicitorOrganisation respondent4;
+    private final RespondentSolicitorOrganisation respondent5;
+    private final RespondentSolicitorOrganisation respondent6;
+    private final RespondentSolicitorOrganisation respondent7;
+    private final RespondentSolicitorOrganisation respondent8;
+    private final RespondentSolicitorOrganisation respondent9;
+    private final RespondentSolicitorOrganisation respondent10;
 }

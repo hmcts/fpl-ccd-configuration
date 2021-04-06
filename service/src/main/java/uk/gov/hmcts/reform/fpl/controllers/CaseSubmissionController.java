@@ -121,6 +121,10 @@ public class CaseSubmissionController extends CallbackController {
                 .put("document_binary_url", document.links.binary.href)
                 .put("document_filename", document.originalDocumentName)
                 .build());
+
+            if (featureToggleService.hasRSOCaseAccess()) {
+                caseDetails = caseSubmissionService.setRespondentSolicitorOrganisations(caseDetails);
+            }
         }
 
         return respond(caseDetails, errors);

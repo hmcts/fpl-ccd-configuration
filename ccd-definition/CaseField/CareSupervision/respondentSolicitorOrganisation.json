@@ -1,0 +1,92 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent1",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent2",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent3",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent4",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent5",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent6",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent7",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent8",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent9",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondent10",
+    "Label": " ",
+    "FieldType": "RespondentSolicitorOrganisation",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

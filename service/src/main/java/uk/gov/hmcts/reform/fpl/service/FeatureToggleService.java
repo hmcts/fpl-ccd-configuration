@@ -67,6 +67,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
+    public boolean hasRSOCaseAccess() {
+        return ldClient.boolVariation("rso-case-access", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

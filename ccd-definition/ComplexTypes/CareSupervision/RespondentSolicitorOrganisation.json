@@ -1,0 +1,34 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitorOrganisation",
+    "ListElementCode": "respondentId",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitorOrganisation",
+    "ListElementCode": "party",
+    "FieldType": "RespondentParty",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitorOrganisation",
+    "ListElementCode": "solicitor",
+    "FieldType": "RespondentSolicitor",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitorOrganisation",
+    "ListElementCode": "organisationPolicy",
+    "FieldType": "OrganisationPolicy",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  }
+]
