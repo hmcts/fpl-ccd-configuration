@@ -5,13 +5,13 @@ provider "azurerm" {
 }
 
 data "azurerm_key_vault" "docmosis_vault" {
-  provider = "azurerm.docmosis"
+  provider = azurerm.docmosis
   name = var.docmosis_vault
   resource_group_name = var.docmosis_resource_group
 }
 
 data "azurerm_key_vault_secret" "docmosis-api-key" {
-  provider = "azurerm.docmosis"
+  provider = azurerm.docmosis
   name         = "docmosis-api-key"
   key_vault_id = data.azurerm_key_vault.docmosis_vault.id
 }
