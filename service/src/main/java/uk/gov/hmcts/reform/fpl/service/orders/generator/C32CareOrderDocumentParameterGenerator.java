@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.BaseDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
+@Component
 public class C32CareOrderDocumentParameterGenerator implements SingleOrderDocumentParameterGenerator {
     @Override
     public Order accept() {
