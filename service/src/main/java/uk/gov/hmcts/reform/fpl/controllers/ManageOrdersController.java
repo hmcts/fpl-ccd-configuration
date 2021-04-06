@@ -17,14 +17,15 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderDocumentGenerator;
-import uk.gov.hmcts.reform.fpl.service.orders.OrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderSectionLifeCycle;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderValidator;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Api
 @RestController
@@ -36,7 +37,7 @@ public class ManageOrdersController extends CallbackController {
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
     private final OrderDocumentGenerator orderDocumentGenerator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
-    private final OrderPrePopulator orderPrePopulator;
+    private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final OrderSectionLifeCycle sectionLifeCycle;
 
     @PostMapping("/about-to-start")
@@ -59,8 +60,10 @@ public class ManageOrdersController extends CallbackController {
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
-        data.putAll(
-            orderPrePopulator.prePopulate(order, order.getQuestions().get(0).getSection(), caseData, caseDetails));
+        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(order,
+            order.getQuestions().get(0).getSection(),
+            caseData,
+            caseDetails));
 
         return respond(caseDetails);
     }
@@ -75,27 +78,16 @@ public class ManageOrdersController extends CallbackController {
         Order order = Order.valueOf((String) data.get("manageOrdersType"));
 
         OrderSection currentSection = OrderSection.from(section);
-        OrderSection nextSection = sectionLifeCycle.calculateNextSection(currentSection, order);
 
-        List<String> errors = new ArrayList<>();
+        List<String> errors = orderValidator.validate(order, currentSection, caseDetails);
 
-        if (currentSection.shouldValidate()) {
-            errors = orderValidator.validate(order, currentSection, caseDetails);
-        }
+        Optional<OrderSection> nextSection = sectionLifeCycle.calculateNextSection(currentSection, order);
 
-        if (errors.isEmpty()) {
-            if (nextSection != null) {
-                if (nextSection.shouldPrePopulate()) {
-                    data.putAll(orderPrePopulator.prePopulate(order, nextSection, caseData, caseDetails));
-                }
-            } else {
-                // next section is null that means that we have reached the end and want to generate the draft order
-                // TODO: 01/04/2021 generate draft order in some way
-                DocmosisDocument draftOrder = orderDocumentGenerator.generate(order, caseDetails);
-
-                // add to case details to display as draft
-            }
-        }
+        data.putAll(
+            errors.isEmpty() && nextSection.isPresent()
+                ? orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection.get(), caseData, caseDetails) :
+                Collections.emptyMap()
+        );
 
         return respond(caseDetails, errors);
     }
