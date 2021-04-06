@@ -79,7 +79,7 @@ class RepresentativeCaseRoleServiceTest {
             .email("representative@test.com")
             .build();
 
-        Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+        Representative updatedRepresentative = originalRepresentative.toBuilder()
             .email("updated-representative@test.com")
             .build();
 
@@ -93,6 +93,24 @@ class RepresentativeCaseRoleServiceTest {
     }
 
     @Test
+    void shouldReturnEmptyCaseRoleUpdatesWhenRepresentativeEmailChangesButRepresentSameEmail() {
+        Representative originalRepresentative = Representative.builder()
+            .servingPreferences(DIGITAL_SERVICE)
+            .role(REPRESENTING_RESPONDENT_1)
+            .email("representative@test.com")
+            .build();
+
+        Representative updatedRepresentative = originalRepresentative.toBuilder()
+            .email("Representative@Test.com")
+            .build();
+
+        assertCaseRoleUpdates(
+            List.of(updatedRepresentative),
+            List.of(originalRepresentative),
+            emptyMap());
+    }
+
+    @Test
     void shouldReturnCaseRoleUpdatesWhenRepresentativeRoleAndEmailChanged() {
         Representative originalRepresentative = Representative.builder()
             .servingPreferences(DIGITAL_SERVICE)
@@ -100,7 +118,7 @@ class RepresentativeCaseRoleServiceTest {
             .email("representative@test.com")
             .build();
 
-        Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+        Representative updatedRepresentative = originalRepresentative.toBuilder()
             .role(LA_LEGAL_REPRESENTATIVE)
             .email("updated-representative@test.com")
             .build();
@@ -163,11 +181,11 @@ class RepresentativeCaseRoleServiceTest {
             .email("C@test.com")
             .build();
 
-        Representative updatedRepresentativeB = fromRepresentative(originalRepresentativeB)
+        Representative updatedRepresentativeB = originalRepresentativeB.toBuilder()
             .role(LA_LEGAL_REPRESENTATIVE)
             .build();
 
-        Representative updatedRepresentativeC = fromRepresentative(originalRepresentativeC)
+        Representative updatedRepresentativeC = originalRepresentativeC.toBuilder()
             .build();
 
         Representative newRepresentativeD = Representative.builder()
@@ -197,7 +215,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .role(LA_LEGAL_REPRESENTATIVE)
                 .build();
 
@@ -215,7 +233,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .role(CAFCASS_GUARDIAN)
                 .build();
 
@@ -235,7 +253,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .role(CAFCASS_SOLICITOR)
                 .build();
 
@@ -253,7 +271,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .role(REPRESENTING_PERSON_1)
                 .build();
 
@@ -276,7 +294,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .servingPreferences(EMAIL)
                 .build();
 
@@ -294,7 +312,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .servingPreferences(POST)
                 .build();
 
@@ -312,7 +330,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(EMAIL)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
 
@@ -329,7 +347,7 @@ class RepresentativeCaseRoleServiceTest {
                 .servingPreferences(POST)
                 .build();
 
-            Representative updatedRepresentative = fromRepresentative(originalRepresentative)
+            Representative updatedRepresentative = originalRepresentative.toBuilder()
                 .email("representative@test.com")
                 .servingPreferences(DIGITAL_SERVICE)
                 .build();
@@ -350,14 +368,5 @@ class RepresentativeCaseRoleServiceTest {
         assertThat(actualUpdates).isEqualTo(expectedUpdates);
     }
 
-    private Representative.RepresentativeBuilder fromRepresentative(Representative representative) {
-        return Representative.builder()
-            .fullName(representative.getFullName())
-            .positionInACase(representative.getPositionInACase())
-            .email(representative.getEmail())
-            .address(representative.getAddress())
-            .telephoneNumber(representative.getTelephoneNumber())
-            .servingPreferences(representative.getServingPreferences())
-            .role(representative.getRole());
-    }
+
 }
