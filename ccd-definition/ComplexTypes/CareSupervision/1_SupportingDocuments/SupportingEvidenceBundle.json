@@ -79,5 +79,17 @@
     "FieldShowCondition": "confidential CONTAINS \"CONFIDENTIAL\"",
     "Searchable": "N",
     "Comment": "Used to identify documents as confidential in tab view only. Does not display in event."
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SupportingEvidenceBundle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "FurtherEvidenceType",
+    "ElementLabel": "Choose a further evidence document type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "confidential=\"DO_NOT_SHOW\"",
+    "Searchable": "N",
+    "Comment": "Not shown in tab"
   }
 ]

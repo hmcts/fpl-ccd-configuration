@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -38,11 +39,15 @@ public class ManageDocumentLAService {
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
+    public static final String RESPONDENT_STATEMENT_LIST_KEY = "respondentStatementList";
 
-    public Map<String, Object> initialiseManageDocumentLAEvent(CaseData caseData) {
+    public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-        ManageDocumentLA manageDocument = ManageDocumentLA.builder()
+
+        ManageDocumentLA manageDocument = defaultIfNull(caseData.getManageDocumentLA(),
+            ManageDocumentLA.builder().build())
+            .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
             .hasC2s(YesNo.from(caseData.hasC2DocumentBundle()).getValue())
             .build();
@@ -55,6 +60,10 @@ public class ManageDocumentLAService {
 
         if (caseData.hasC2DocumentBundle()) {
             listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+        }
+
+        if (isNotEmpty(caseData.getAllRespondents())) {
+            listAndLabel.put(RESPONDENT_STATEMENT_LIST_KEY, caseData.buildRespondentStatementDynamicList());
         }
 
         return listAndLabel;

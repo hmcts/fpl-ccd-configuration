@@ -42,10 +42,20 @@
     "ID": "ManageDocuments",
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
-    "ListElementCode": "confidentialWarningLabel",
+    "ListElementCode": "type",
     "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "manageDocumentLA.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeListLA!=\"RESPONDENT_STATEMENT\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocuments",
+    "CaseEventID": "manageDocumentsLA",
+    "CaseFieldID": "supportingEvidenceDocumentsTemp",
+    "ListElementCode": "confidentialWarningLabel",
+    "FieldDisplayOrder": 6,
     "DisplayContext": "READONLY",
-    "EventElementLabel": "<div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>"
+    "EventElementLabel": "<br /><div class='govuk-warning-text'><span class='govuk-warning-text__icon' aria-hidden='true'>!</span><strong class='govuk-warning-text__text'>Check if documents are confidential</strong></div><br>"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -53,7 +63,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "confidential",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL",
     "EventElementLabel": "Tick to restrict to the LA, Cafcass and HMCTS staff",
     "FieldShowCondition": "name!=\"SHOW_IN_EVENT_ONLY\""
@@ -64,7 +74,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "confidentialTabLabel",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "name=\"DO_NOT_SHOW\""
   },
@@ -74,7 +84,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "uploadedBy",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
   },
@@ -84,7 +94,7 @@
     "CaseEventID": "manageDocumentsLA",
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeUploaded",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "READONLY",
     "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
   },

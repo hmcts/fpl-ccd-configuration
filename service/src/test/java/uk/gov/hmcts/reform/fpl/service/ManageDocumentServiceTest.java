@@ -2,12 +2,17 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -29,6 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -95,7 +102,7 @@ class ManageDocumentServiceTest {
             .hasC2s(YES.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
@@ -110,7 +117,7 @@ class ManageDocumentServiceTest {
             .hasC2s(NO.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = manageDocumentService.initialiseManageDocumentEvent(caseData);
+        Map<String, Object> listAndLabel = manageDocumentService.baseEventData(caseData);
 
         assertThat(listAndLabel)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
@@ -191,8 +198,7 @@ class ManageDocumentServiceTest {
             .build();
 
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
-            manageDocumentService.getFurtherEvidenceCollection(caseData, false,
-                List.of(element(SupportingEvidenceBundle.builder().build())));
+            manageDocumentService.getFurtherEvidenceCollection(caseData, false, null);
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = supportingEvidenceBundleCollection.get(0).getValue();
 
@@ -213,6 +219,7 @@ class ManageDocumentServiceTest {
             manageDocumentService.getFurtherEvidenceCollection(caseData, false, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
+        assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
     @Test
@@ -235,6 +242,7 @@ class ManageDocumentServiceTest {
             manageDocumentService.getFurtherEvidenceCollection(caseData, true, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
+        assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
     }
 
     @Test
@@ -768,7 +776,7 @@ class ManageDocumentServiceTest {
                     .supportingEvidenceBundle(Arrays.asList())
                     .build()),
                 element(hearingIdTwo, HearingFurtherEvidenceBundle.builder()
-                     .hearingName("Case Management hearing 2")
+                    .hearingName("Case Management hearing 2")
                     .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                     .build()))))
             .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
@@ -811,6 +819,267 @@ class ManageDocumentServiceTest {
         assertThat(hearingFurtherEvidenceBundleCollection).size().isEqualTo(2);
         assertThat(hearingFurtherEvidenceBundleCollection.get(0).getValue().getHearingName())
             .isEqualTo("Case Management hearing 1");
+    }
+
+    @Nested
+    class GetRespondentStatementFurtherEvidenceCollection {
+        UUID selectedRespondentId = UUID.randomUUID();
+
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleOne = List.of(
+            element(SupportingEvidenceBundle.builder().build()));
+
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleTwo = List.of(
+            element(SupportingEvidenceBundle.builder().build()));
+
+        @Test
+        void shouldGetRespondentStatementsSupportingEvidenceDocumentsWithMatchingRespondentId() {
+            CaseData caseData = CaseData.builder()
+                .respondentStatements(List.of(
+                    element(RespondentStatement.builder()
+                        .respondentId(UUID.randomUUID())
+                        .supportingEvidenceBundle(supportingEvidenceBundleOne)
+                        .build()),
+                    element(RespondentStatement.builder()
+                        .respondentId(selectedRespondentId)
+                        .supportingEvidenceBundle(supportingEvidenceBundleTwo)
+                        .build())))
+                .build();
+
+            List<Element<SupportingEvidenceBundle>> actualBundle
+                = manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
+
+            assertThat(actualBundle).isEqualTo(supportingEvidenceBundleTwo);
+        }
+
+        @Test
+        void shouldReturnEmptySupportingEvidenceDocumentsWhenRespondentStatementsDoNotHaveExpectedRespondentId() {
+            CaseData caseData = CaseData.builder()
+                .respondentStatements(List.of(
+                    element(RespondentStatement.builder()
+                        .respondentId(UUID.randomUUID())
+                        .supportingEvidenceBundle(supportingEvidenceBundleOne)
+                        .build()),
+                    element(RespondentStatement.builder()
+                        .respondentId(UUID.randomUUID())
+                        .supportingEvidenceBundle(supportingEvidenceBundleTwo)
+                        .build())))
+                .build();
+
+            List<Element<SupportingEvidenceBundle>> actualBundle
+                = manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
+
+            assertThat(actualBundle).extracting(Element::getValue)
+                .containsExactly(SupportingEvidenceBundle.builder().build());
+        }
+
+        @Test
+        void shouldReturnEmptySupportingEvidenceDocumentsWhenCaseDoesNotContainRespondentStatements() {
+            CaseData caseData = CaseData.builder().build();
+
+            List<Element<SupportingEvidenceBundle>> actualBundle
+                = manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
+
+            assertThat(actualBundle).extracting(Element::getValue)
+                .containsExactly(SupportingEvidenceBundle.builder().build());
+        }
+    }
+
+    @Nested
+    class GetUpdatedRespondentStatements {
+        UUID respondentOneId = UUID.randomUUID();
+        UUID respondentTwoId = UUID.randomUUID();
+        UUID respondentStatementId = UUID.randomUUID();
+        UUID supportingEvidenceBundleId = UUID.randomUUID();
+
+        @Test
+        void shouldUpdateExistingRespondentStatementsWithNewBundle() {
+            DynamicList respondentStatementList = buildRespondentStatementList();
+            List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(
+                    element(respondentOneId, Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .firstName("David")
+                            .lastName("Stevenson")
+                            .build())
+                        .build()),
+                    element(Respondent.builder().build())))
+                .supportingEvidenceDocumentsTemp(updatedBundle)
+                .respondentStatementList(respondentStatementList)
+                .respondentStatements(newArrayList(
+                    element(respondentStatementId, RespondentStatement.builder()
+                        .respondentId(respondentOneId)
+                        .supportingEvidenceBundle(newArrayList(
+                            element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())
+                        ))
+                        .respondentName("David Stevenson")
+                        .build())))
+                .build();
+
+            List<Element<RespondentStatement>> updatedRespondentStatements =
+                manageDocumentService.getUpdatedRespondentStatements(caseData);
+
+            assertThat(updatedRespondentStatements).containsExactly(
+                element(respondentStatementId, RespondentStatement.builder()
+                    .respondentId(respondentOneId)
+                    .respondentName("David Stevenson")
+                    .supportingEvidenceBundle(updatedBundle)
+                    .build()));
+        }
+
+        @Test
+        void shouldAddNewEntryToRespondentStatementsWhenRespondentStatementDoesNotExist() {
+            UUID respondentStatementId = UUID.randomUUID();
+            DynamicList respondentStatementList = buildRespondentStatementList();
+            List<Element<SupportingEvidenceBundle>> updatedBundle = buildSupportingEvidenceBundle();
+
+            List<Element<RespondentStatement>> respondentStatements = new ArrayList<>();
+
+            respondentStatements.add(element(respondentStatementId, RespondentStatement.builder()
+                .respondentId(respondentTwoId)
+                .supportingEvidenceBundle(List.of(
+                    element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())))
+                .build()));
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(
+                    element(respondentOneId, Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .firstName("Sam")
+                            .lastName("Watson")
+                            .build())
+                        .build()),
+                    element(Respondent.builder().build()),
+                    element(Respondent.builder().build())))
+                .supportingEvidenceDocumentsTemp(updatedBundle)
+                .respondentStatementList(respondentStatementList)
+                .respondentStatements(respondentStatements)
+                .build();
+
+            List<Element<RespondentStatement>> updatedRespondentStatements =
+                manageDocumentService.getUpdatedRespondentStatements(caseData);
+
+            assertThat(updatedRespondentStatements.size()).isEqualTo(2);
+
+            Element<RespondentStatement> firstRespondentStatement = updatedRespondentStatements.get(0);
+            Element<RespondentStatement> secondRespondentStatement = updatedRespondentStatements.get(1);
+
+            assertThat(firstRespondentStatement).isEqualTo(element(respondentStatementId, RespondentStatement.builder()
+                    .respondentId(respondentTwoId)
+                    .supportingEvidenceBundle(List.of(
+                        element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())
+                    )).build()));
+
+            assertThat(secondRespondentStatement.getValue().getRespondentId()).isEqualTo(respondentOneId);
+            assertThat(secondRespondentStatement.getValue().getRespondentName()).isEqualTo("Sam Watson");
+            assertThat(secondRespondentStatement.getValue().getSupportingEvidenceBundle()).isEqualTo(updatedBundle);
+        }
+
+        @Test
+        void shouldRemoveRespondentStatementEntryWhenUpdatingExistingWithEmptySupportingEvidence() {
+            List<Element<SupportingEvidenceBundle>> updatedBundle = List.of();
+
+            DynamicList respondentStatementList = buildRespondentStatementList();
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(
+                    element(respondentOneId, Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .firstName("David")
+                            .lastName("Stevenson")
+                            .build())
+                        .build()),
+                    element(Respondent.builder().build())))
+                .supportingEvidenceDocumentsTemp(updatedBundle)
+                .respondentStatementList(respondentStatementList)
+                .respondentStatements(newArrayList(
+                    element(respondentStatementId, RespondentStatement.builder()
+                        .respondentId(respondentOneId)
+                        .supportingEvidenceBundle(List.of(
+                            element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())
+                        ))
+                        .respondentName("David Stevenson")
+                        .build())))
+                .build();
+
+            List<Element<RespondentStatement>> updatedRespondentStatements =
+                manageDocumentService.getUpdatedRespondentStatements(caseData);
+
+            assertThat(updatedRespondentStatements).isEmpty();
+        }
+
+        @Test
+        void shouldThrowAnErrorWhenRespondentCannotBeFound() {
+            DynamicList respondentStatementList = buildRespondentStatementList();
+
+            CaseData caseData = CaseData.builder()
+                .respondents1(List.of(
+                    element(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .firstName("Sam")
+                            .lastName("Watson")
+                            .build())
+                        .build()),
+                    element(Respondent.builder().build()),
+                    element(Respondent.builder().build())))
+                .respondentStatementList(respondentStatementList)
+                .build();
+
+            assertThatThrownBy(() -> manageDocumentService.getUpdatedRespondentStatements(caseData))
+                .isInstanceOf(RespondentNotFoundException.class)
+                .hasMessage(String.format("Respondent with id %s not found", respondentOneId));
+        }
+
+        private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
+            return List.of(element(supportingEvidenceBundleId,
+                SupportingEvidenceBundle.builder()
+                    .name("Test name")
+                    .uploadedBy("Test uploaded by")
+                    .build()));
+        }
+
+        private DynamicList buildRespondentStatementList() {
+            return DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(respondentOneId)
+                    .build())
+                .listItems(List.of(
+                    DynamicListElement.builder()
+                        .code(respondentOneId)
+                        .label("Respondent 1")
+                        .build(),
+                    DynamicListElement.builder()
+                        .code(respondentTwoId)
+                        .label("Respondent 2")
+                        .build()
+                )).build();
+        }
+    }
+
+    @Test
+    void shouldGetSelectedRespondentIdFromDynamicList() {
+        UUID selectedRespondentId = randomUUID();
+        UUID additionalRespondentId = randomUUID();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(selectedRespondentId)
+                .build())
+            .listItems(List.of(DynamicListElement.builder()
+                .code(selectedRespondentId)
+                .label("Joe Bloggs")
+                .build(),
+                DynamicListElement.builder()
+                    .code(additionalRespondentId)
+                    .label("Paul Smith")
+                    .build()
+                ))
+            .build();
+
+        CaseData caseData = CaseData.builder().respondentStatementList(dynamicList).build();
+
+        assertThat(manageDocumentService.getSelectedRespondentId(caseData)).isEqualTo(selectedRespondentId);
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

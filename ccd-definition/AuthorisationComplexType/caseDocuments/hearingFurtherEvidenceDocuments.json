@@ -12,7 +12,9 @@
           "caseworker-publiclaw-judiciary",
           "caseworker-publiclaw-magistrate",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CRUD"
       },
@@ -21,6 +23,16 @@
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
+          "[solicitorJ]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
@@ -45,7 +57,9 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CUD"
       },
@@ -54,6 +68,16 @@
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
+          "[solicitorJ]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U",
@@ -79,7 +103,9 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CRUD"
       },
@@ -93,7 +119,17 @@
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
+          "[solicitorJ]"
         ],
         "CRUD": "U",
         "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
@@ -112,7 +148,9 @@
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary",
           "[LASOLICITOR]",
-          "[LABARRISTER]"
+          "[LABARRISTER]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CUD"
       },
@@ -120,7 +158,17 @@
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
+          "[solicitorJ]"
         ],
         "CRUD": "R"
       },
