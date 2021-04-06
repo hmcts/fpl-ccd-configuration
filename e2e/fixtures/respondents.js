@@ -87,7 +87,7 @@ module.exports = [
       lastName: 'Bear',
       email: 'rupert@bear.com',
       unregisteredOrganisation: {
-        name: 'Swansea Local Branch',
+        name: 'Swansea Managing Office',
         address: {
           lookupOption: 'The Tower, Trawler Rd, Maritime Quarter, Swansea',
           buildingAndStreet: {
