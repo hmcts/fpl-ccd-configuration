@@ -6,7 +6,7 @@
     "CaseFieldID": "manageOrdersType",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "OrdersType",
+    "PageID": "OrderSelection",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
