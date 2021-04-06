@@ -699,6 +699,15 @@
       {
         "UserRoles": [
           "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
           "[CAFCASSSOLICITOR]"
         ],
         "CRUD": "CR"
