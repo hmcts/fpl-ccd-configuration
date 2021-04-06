@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders;
+package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;

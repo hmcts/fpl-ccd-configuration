@@ -18,11 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.OrderDocumentGenerator;
-import uk.gov.hmcts.reform.fpl.service.orders.OrderSectionAndQuestionsPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderSectionLifeCycle;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.OrderValidator;
+import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.Collections;
 import java.util.List;

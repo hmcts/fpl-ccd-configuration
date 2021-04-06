@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders;
+package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
 import java.util.Map;

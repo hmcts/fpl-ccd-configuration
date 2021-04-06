@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders;
+package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

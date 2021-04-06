@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.orders;
+package uk.gov.hmcts.reform.fpl.service.orders.docmosis;
 
 import lombok.Builder;
 import lombok.Value;
