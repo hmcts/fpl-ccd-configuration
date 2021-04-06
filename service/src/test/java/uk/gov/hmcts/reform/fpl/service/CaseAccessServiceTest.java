@@ -176,6 +176,29 @@ class CaseAccessServiceTest {
         }
     }
 
+
+    @Nested
+    class UsersAccess {
+
+        @Test
+        void shouldGrantAccessToUsers() {
+            final CaseRole caseRole = EPSMANAGING;
+
+            Set<String> userIds = Set.of(USER_1_ID, USER_2_ID);
+
+            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+
+            final AddCaseAssignedUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(CASE_ID, userIds, null, caseRole);
+
+
+            caseRoleService.grantCaseRoleToUsers(CASE_ID, userIds, caseRole);
+
+            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+        }
+    }
+
     private AddCaseAssignedUserRolesRequest buildAssignmentRequest(Long caseId, Set<String> userIds, String orgId,
                                                                    CaseRole caseRole) {
         final List<CaseAssignedUserRoleWithOrganisation> caseAssignedRoles = userIds.stream()

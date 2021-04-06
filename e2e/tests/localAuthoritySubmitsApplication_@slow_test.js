@@ -284,9 +284,11 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeInTab(['Applicants 1', 'Party', 'Customer reference'], applicant.customerReference);
   I.seeInTab(['Applicants 1', 'Address', 'Building and Street'], applicant.address.buildingAndStreet.lineOne);
   I.seeInTab(['Applicants 1', 'Address', 'Address Line 2'], applicant.address.buildingAndStreet.lineTwo);
+  I.seeInTab(['Applicants 1', 'Address', 'Address Line 3'], applicant.address.buildingAndStreet.lineThree);
   I.seeInTab(['Applicants 1', 'Address', 'Town or City'], applicant.address.town);
   I.seeInTab(['Applicants 1', 'Address', 'County'], applicant.address.county);
   I.seeInTab(['Applicants 1', 'Address', 'Postcode/Zipcode'], applicant.address.postcode);
+  I.seeInTab(['Applicants 1', 'Address', 'Country'], applicant.address.country);
   I.seeInTab(['Applicants 1', 'Telephone number', 'Telephone number'], applicant.telephoneNumber);
   I.seeInTab(['Applicants 1', 'Telephone number', 'Name of person to contact'], applicant.nameOfPersonToContact);
   I.seeInTab(['Applicants 1', 'Job title'], applicant.jobTitle);
