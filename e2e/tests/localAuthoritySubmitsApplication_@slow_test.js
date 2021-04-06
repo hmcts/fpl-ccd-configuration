@@ -218,11 +218,20 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
   await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[0]);
+  await enterRespondentsEventPage.enterRegisteredOrganisation(respondents[0]);
+
   await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
   await enterRespondentsEventPage.enterRepresentationDetails('No');
+
+  await I.addAnotherElementToCollection();
+  await enterRespondentsEventPage.enterRespondent(respondents[2]);
+  await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
+  await enterRespondentsEventPage.enterLitigationIssues('No');
+  await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[2]);
+  await enterRespondentsEventPage.enterUnregisteredOrganisation(respondents[2]);
 
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
@@ -255,6 +264,17 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 2', 'Do you need contact details hidden from other parties?'], 'Yes');
   I.seeInTab(['Respondents 2', 'Give reason'], 'mock reason');
   I.seeInTab(['Respondents 2', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');
+
+  I.seeInTab(['Respondents 3', 'Party', 'First name'], respondents[2].firstName);
+  I.seeInTab(['Respondents 3', 'Party', 'Last name'], respondents[2].lastName);
+  I.seeInTab(['Respondents 3', 'Party', 'Date of birth'], '4 Apr 1978');
+  I.seeInTab(['Respondents 3', 'Party', 'Gender'], respondents[2].gender);
+  I.seeInTab(['Respondents 3', 'What is the respondent\'s relationship to the child or children in this case?'], respondents[2].relationshipToChild);
+  I.seeInTab(['Respondents 3', 'Do you need contact details hidden from other parties?'], 'No');
+  I.seeInTab(['Respondents 3', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');
+  I.seeInTab(['Respondents 3', 'Representative', 'Representative\'s first name'], respondents[2].solicitor.firstName);
+  I.seeInTab(['Respondents 3', 'Representative', 'Representative\'s last name'], respondents[2].solicitor.lastName);
+  I.seeInTab(['Respondents 3', 'Representative', 'Email address'], respondents[2].solicitor.email);
 
   caseViewPage.selectTab(caseViewPage.tabs.confidential);
   I.seeInTab(['Respondents 1', 'Party', 'First name'], respondents[1].firstName);

@@ -29,6 +29,11 @@ module.exports = {
         firstName: `#respondents1_${index}_solicitor_firstName`,
         lastName: `#respondents1_${index}_solicitor_lastName`,
         email: `#respondents1_${index}_solicitor_email`,
+        regionalOfficeAddress: `#respondents1_${index}_solicitor_regionalOfficeAddress_regionalOfficeAddress`,
+        unregisteredOrganisation: {
+          name: `#respondents1_${index}_solicitor_unregisteredOrganisation_name`,
+          address: `#respondents1_${index}_solicitor_unregisteredOrganisation_address_address`,
+        },
       },
       contactDetailsHidden: (option) => {
         return {
@@ -106,11 +111,28 @@ module.exports = {
       I.fillField(this.fields(elementIndex).solicitor.firstName, respondent.solicitor.firstName);
       I.fillField(this.fields(elementIndex).solicitor.lastName, respondent.solicitor.lastName);
       I.fillField(this.fields(elementIndex).solicitor.email, respondent.solicitor.email);
-
-      await within(this.fields(elementIndex).solicitor, () => {
-        I.fillField('//input[@id="search-org-text"]', respondent.solicitor.organisation);
-        I.click('//*[@id="organisation-table"]/caption/h3[text()="Swansea City Council"]/../../tbody//a');
-      });
     }
   },
+
+  async enterRegisteredOrganisation(respondent) {
+    const elementIndex = await I.getActiveElementIndex();
+
+    await within(this.fields(elementIndex).solicitor, () => {
+      I.fillField('//input[@id="search-org-text"]', respondent.solicitor.organisation);
+      I.click('//*[@id="organisation-table"]/caption/h3[text()="Swansea City Council"]/../../tbody//a');
+    });
+
+    await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, () => {
+      postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
+    })
+  },
+
+  async enterUnregisteredOrganisation(respondent) {
+    const elementIndex = await I.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).solicitor.unregisteredOrganisation.name, respondent.solicitor.unregisteredOrganisation.name);
+    await within(this.fields(elementIndex).solicitor.unregisteredOrganisation.address, () => {
+      postcodeLookup.enterAddressManually(respondent.solicitor.unregisteredOrganisation.address);
+    });
+  }
 };
