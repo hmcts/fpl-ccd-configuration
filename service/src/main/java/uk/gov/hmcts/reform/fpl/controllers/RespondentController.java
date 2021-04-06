@@ -18,10 +18,13 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
@@ -36,6 +39,7 @@ public class RespondentController extends CallbackController {
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
     private final Time time;
+    private final ValidateEmailService validateEmailService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -49,10 +53,21 @@ public class RespondentController extends CallbackController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
 
-        return respond(caseDetails, validate(caseDetails));
+        List<Respondent> respondentsWithLegalRep = respondentService.getRespondentsWithLegalRepresentation(caseData
+            .getRespondents1());
+        List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
+
+        List<String> emailErrors = validateEmailService.validate(emails, "Representative");
+        List<String> futureDOBErrors = validate(caseDetails);
+        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
+            .collect(Collectors.toList());
+
+        caseDetails.getData().put("respondents1", respondentService.removeHiddenFields(caseData.getRespondents1()));
+        return respond(caseDetails, combinedValidationErrors);
     }
 
     @PostMapping("/about-to-submit")
@@ -72,6 +87,7 @@ public class RespondentController extends CallbackController {
             caseData.getAllRespondents(), caseDataBefore.getAllRespondents()
         ));
 
+        caseDetails.getData().put("respondents1", respondentService.removeHiddenFields(caseData.getRespondents1()));
         return respond(caseDetails);
     }
 

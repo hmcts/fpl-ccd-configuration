@@ -19,7 +19,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentSolicitor",
     "ListElementCode": "email",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "ElementLabel": "Email address",
     "SecurityClassification": "Public"
   },
@@ -34,27 +34,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentSolicitor",
-    "ListElementCode": "additionalOfficeHeader",
-    "FieldType": "Label",
-    "ElementLabel": "## Add a regional office",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "organisation.OrganisationName!=\"\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentSolicitor",
-    "ListElementCode": "additionalOfficeLabel",
-    "FieldType": "Label",
-    "ElementLabel": "Add details of the organisation's other offices, if needed",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "organisation.OrganisationName!=\"\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentSolicitor",
     "ListElementCode": "regionalOfficeAddress",
     "FieldType": "AddressUK",
-    "ElementLabel": " ",
+    "ElementLabel": "Managing office",
     "SecurityClassification": "Public",
     "FieldShowCondition": "organisation.OrganisationName!=\"\""
   },
@@ -63,7 +45,7 @@
     "ID": "RespondentSolicitor",
     "ListElementCode": "unregisteredOrganisation",
     "FieldType": "UnregisteredOrganisation",
-    "ElementLabel": " ",
+    "ElementLabel": "Organisation (unregistered)",
     "SecurityClassification": "Public"
   }
 ]

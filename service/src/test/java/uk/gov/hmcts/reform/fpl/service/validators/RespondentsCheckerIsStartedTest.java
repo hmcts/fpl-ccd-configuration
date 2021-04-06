@@ -65,7 +65,6 @@ class RespondentsCheckerIsStartedTest {
                 builder().lastName("Test").build(),
                 builder().dateOfBirth(LocalDate.now()).build(),
                 builder().gender("Boy").build(),
-                builder().placeOfBirth("Test").build(),
                 builder().relationshipToChild("Test").build(),
                 builder().contactDetailsHidden("No").build(),
                 builder().litigationIssues("Test").build(),
@@ -78,7 +77,6 @@ class RespondentsCheckerIsStartedTest {
                 builder().address(Address.builder().postcode("Test").build()).build(),
                 builder().telephoneNumber(Telephone.builder().telephoneUsageType("Test").build()).build(),
                 builder().telephoneNumber(Telephone.builder().telephoneNumber("Test").build()).build(),
-                builder().telephoneNumber(Telephone.builder().contactDirection("Test").build()).build(),
                 builder().email(EmailAddress.builder().email("Test@test.com").build()).build(),
                 builder().email(EmailAddress.builder().emailUsageType("Test").build()).build())
                 .map(Arguments::of);

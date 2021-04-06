@@ -347,25 +347,8 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOfficeHeader",
-    "FieldDisplayOrder": 8,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterRespondents",
-    "CaseEventID": "enterRespondents",
-    "CaseFieldID": "respondents1",
-    "ListElementCode": "solicitor.additionalOfficeLabel",
-    "FieldDisplayOrder": 9,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "EnterRespondents",
-    "CaseEventID": "enterRespondents",
-    "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.regionalOfficeAddress",
+    "EventElementLabel": "Add the regional office managing this case",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   },
