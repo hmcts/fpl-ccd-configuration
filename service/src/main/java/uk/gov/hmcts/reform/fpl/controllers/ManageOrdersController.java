@@ -51,8 +51,7 @@ public class ManageOrdersController extends CallbackController {
     }
 
     @PostMapping("/section-1/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleFinalOrderFlagsMidEvent(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
@@ -60,21 +59,22 @@ public class ManageOrdersController extends CallbackController {
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
-        data.putAll(orderPrePopulator.prePopulate(order, order.getQuestions().get(0).getSection(), caseData, caseDetails));
+        data.putAll(
+            orderPrePopulator.prePopulate(order, order.getQuestions().get(0).getSection(), caseData, caseDetails));
 
         return respond(caseDetails);
     }
 
-    @PostMapping("/section-{sectionNumber}/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@PathVariable int sectionNumber,
-                                                                @RequestBody CallbackRequest callbackRequest) {
+    @PostMapping("/{section}/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleSectionMidEvent(@PathVariable String section,
+                                                                      @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
         Order order = Order.valueOf((String) data.get("manageOrdersType"));
 
-        OrderSection currentSection = OrderSection.valueOf("SECTION_" + sectionNumber);
+        OrderSection currentSection = OrderSection.from(section);
         OrderSection nextSection = sectionLifeCycle.calculateNextSection(currentSection, order);
 
         List<String> errors = new ArrayList<>();

@@ -19,4 +19,9 @@ public enum OrderSection {
     public boolean shouldPrePopulate() {
         return prePopulate;
     }
+
+    public static OrderSection from(final String section) {
+        final String parsed = section.toUpperCase().replace('-', '_');
+        return OrderSection.valueOf(parsed);
+    }
 }
