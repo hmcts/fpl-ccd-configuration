@@ -11,10 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 
 @Component
@@ -23,25 +21,17 @@ public class OrderDocumentGenerator {
 
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final ObjectMapper objectMapper;
-
-    private final List<SingleOrderDocumentParameterGenerator> validators = List.of(
-        new C32CareOrderDocumentParameterGenerator()
-
-    );
-
-
-    private final Map<Order, SingleOrderDocumentParameterGenerator> typeToGenerator =
-        validators.stream().collect(Collectors.toMap(
-            SingleOrderDocumentParameterGenerator::accept,
-            Function.identity()
-        ));
+    private final OrderDocumentGeneratorHolder holder;
 
     public DocmosisDocument generate(Order orderType, CaseDetails caseDetails) {
-        SingleOrderDocumentParameterGenerator documentTemplateGenerator = typeToGenerator.get(orderType);
-        DocmosisParameters docmosisParameters = documentTemplateGenerator.generate(caseDetails);
+        DocmosisParameters docmosisParameters = Optional.ofNullable(holder.getTypeToGenerator().get(orderType))
+            .map(documentTemplateGenerator -> documentTemplateGenerator.generate(caseDetails)).orElseThrow(
+                () -> new UnsupportedOperationException("Not implemented yet for order " + orderType.name())
+            );
         Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {});
+
         return docmosisDocumentGeneratorService.generateDocmosisDocument(
-            templateData, documentTemplateGenerator.template()
+            templateData, holder.getTypeToGenerator().get(orderType).template()
         );
     }
 }
