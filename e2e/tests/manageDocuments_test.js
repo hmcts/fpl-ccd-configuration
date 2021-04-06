@@ -20,9 +20,9 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
 
   manageDocumentsEventPage.selectFurtherEvidence();
   await I.goToNextPage();
-  await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0], true);
   await I.addAnotherElementToCollection();
-  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1], true);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
@@ -33,9 +33,9 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await I.goToNextPage();
   await manageDocumentsLAEventPage.selectAnyOtherDocument();
   await I.goToNextPage();
-  await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
+  await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2], true);
   await I.addAnotherElementToCollection();
-  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3]);
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3], true);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
@@ -55,6 +55,27 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
 
   assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
   assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+});
+
+Scenario('LA uploads respondent statement', async ({I, caseViewPage, manageDocumentsLAEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+
+  await manageDocumentsLAEventPage.selectFurtherEvidence();
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.selectRespondentStatement();
+  await manageDocumentsLAEventPage.selectRespondent('Joe Bloggs');
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+
+  I.seeInTab(['Respondent statements 1', 'Respondent'], 'Joe Bloggs');
+  I.seeInTab(['Respondent statements 1', 'Document name'], supportingEvidenceDocuments[0].name);
+  I.seeInTab(['Respondent statements 1', 'Notes'], supportingEvidenceDocuments[0].notes);
+  I.seeInTab(['Respondent statements 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -98,7 +119,7 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
-Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
+xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);

@@ -13,6 +13,7 @@ module.exports = [
       second: 0,
     },
     document: config.testFile,
+    type: 'Expert reports',
   },
   {
     name: 'Email with evidence attached',
@@ -26,6 +27,7 @@ module.exports = [
       second: 0,
     },
     document: config.testFile,
+    type: 'Other reports',
   },
   {
     name: 'Correspondence document',
@@ -39,6 +41,7 @@ module.exports = [
       second: 10,
     },
     document: config.testFile,
+    type: 'Expert reports',
   },
   {
     name: 'C2 supporting document',
@@ -52,5 +55,6 @@ module.exports = [
       second: 0,
     },
     document: config.testFile,
+    type: 'Other reports',
   },
 ];
