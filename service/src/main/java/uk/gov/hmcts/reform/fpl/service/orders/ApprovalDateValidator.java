@@ -9,7 +9,7 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 
 @Component
-public class QuestionBlock1OrderValidator implements QuestionBlockOrderValidator {
+public class ApprovalDateValidator implements QuestionBlockOrderValidator {
 
     @Override
     public OrderQuestionBlock accept() {
@@ -17,7 +17,7 @@ public class QuestionBlock1OrderValidator implements QuestionBlockOrderValidator
     }
 
     @Override
-    public List<String> validate(CaseDetails caseData) {
+    public List<String> validate(CaseDetails caseDetails) {
         // test
         return List.of();
     }

@@ -24,7 +24,7 @@ public class OrderSectionAndQuestionsPrePopulator {
                                            CaseData caseData, CaseDetails caseDetails) {
 
         Map<String, Object> items = Optional.ofNullable(holder.sectionBlockToPopulator().getOrDefault(orderSection,
-            null)).map(p -> p.prePopulate(caseData, caseDetails)
+            null)).map(p -> Maps.newHashMap(p.prePopulate(caseData, caseDetails))
         ).orElse(Maps.newHashMap());
 
         items.putAll(orderType.getQuestions().stream()
