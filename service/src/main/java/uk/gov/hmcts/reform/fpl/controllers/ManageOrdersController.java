@@ -18,13 +18,11 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.OrderSectionLifeCycle;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,14 +37,13 @@ public class ManageOrdersController extends CallbackController {
     private final OrderDocumentGenerator orderDocumentGenerator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
-    private final OrderSectionLifeCycle sectionLifeCycle;
 
     @PostMapping("/section-1/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-        Order order = Order.valueOf((String) data.get("manageOrdersType"));
+        Order order = caseData.getManageOrdersType();
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
@@ -65,18 +62,19 @@ public class ManageOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        Order order = Order.valueOf((String) data.get("manageOrdersType"));
+        Order order = caseData.getManageOrdersType();
 
         OrderSection currentSection = OrderSection.from(section);
 
         List<String> errors = orderValidator.validate(order, currentSection, caseDetails);
 
-        OrderSection nextSection = sectionLifeCycle.calculateNextSection(currentSection, order);
-
-        data.putAll(
-            errors.isEmpty()
-                ? orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData, caseDetails) :
-                Collections.emptyMap()
+        order.nextSection(currentSection).ifPresent(
+            nextSection -> {
+                if (errors.isEmpty()) {
+                    data.putAll(
+                        orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData, caseDetails));
+                }
+            }
         );
 
         return respond(caseDetails, errors);
@@ -89,7 +87,7 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        Order order = Order.valueOf((String) data.get("manageOrdersType"));
+        Order order = caseData.getManageOrdersType();
 
         DocmosisDocument docmosisDocument = orderDocumentGenerator.generate(order, caseDetails);
         // TODO: 01/04/2021 upload to dm store

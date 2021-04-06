@@ -15,7 +15,9 @@ public enum OrderQuestionBlock {
     WHICH_CHILDREN("whichChildren", "Which children", OrderSection.SECTION_3,
         List.of("orderAppliesToAllChildren", "children_label", "childSelector")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.SECTION_4,
-        List.of("manageOrdersFurtherDirections"));
+        List.of("manageOrdersFurtherDirections")),
+    REVIEW_DRAFT_ORDER("draftOrder", "Review draft order",OrderSection.REVIEW,
+        List.of("something"));
 
 
     private final String showHideField;
