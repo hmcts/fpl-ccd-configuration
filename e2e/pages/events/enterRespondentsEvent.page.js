@@ -124,7 +124,7 @@ module.exports = {
 
     await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, () => {
       postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
-    })
+    });
   },
 
   async enterUnregisteredOrganisation(respondent) {
@@ -134,5 +134,5 @@ module.exports = {
     await within(this.fields(elementIndex).solicitor.unregisteredOrganisation.address, () => {
       postcodeLookup.enterAddressManually(respondent.solicitor.unregisteredOrganisation.address);
     });
-  }
+  },
 };
