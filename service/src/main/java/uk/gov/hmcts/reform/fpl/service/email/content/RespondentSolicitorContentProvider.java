@@ -15,7 +15,7 @@ public class RespondentSolicitorContentProvider extends SharedNotifyContentProvi
 
     public RespondentSolicitorTemplate buildNotifyRespondentSolicitorTemplate(CaseData caseData, RespondentSolicitor representative) {
         return RespondentSolicitorTemplate.builder()
-            .representative(representative.getFirstName() + " " + representative.getLastName())
+            .representativeName(representative.getFirstName() + " " + representative.getLastName())
             .localAuthority(caseData.getCaseLocalAuthorityName())
             .build();
     }

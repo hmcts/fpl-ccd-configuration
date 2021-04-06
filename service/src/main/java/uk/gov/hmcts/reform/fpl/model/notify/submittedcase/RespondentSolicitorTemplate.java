@@ -9,6 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
 @SuperBuilder(toBuilder = true)
 @Data
 public class RespondentSolicitorTemplate extends SharedNotifyTemplate {
-    private String representative;
+    private String representativeName;
     private String localAuthority;
 }
