@@ -532,6 +532,31 @@
           }
         }
       ],
+      "additionalApplicationType": [
+        "C2_ORDER"
+      ],
+      "additionalApplicationsBundle": [
+        {
+          "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
+          "value": {
+            "c2DocumentBundle": {
+              "document": {
+                "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+                "document_filename": "file.pdf"
+              },
+              "description": "C2 document one"
+            },
+            "pbaPayment": {
+              "pbaNumber": "PBA1234567",
+              "usePbaPayment": "Yes"
+            },
+            "author": "HMCTS",
+            "description": "C2 document one",
+            "type": "WITH_NOTICE"
+          }
+        }
+      ],
       "c2ApplicationType": {
         "type": "WITH_NOTICE"
       },

@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.fpl.model.CourtBundle;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -23,7 +26,9 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.C2;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA.COURT_BUNDLE;
@@ -77,6 +82,13 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         DynamicList hearingList = mapper.convertValue(responseData.getManageDocumentsHearingList(), DynamicList.class);
 
         assertThat(hearingList).isEqualTo(expectedDynamicList);
+
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(FURTHER_EVIDENCE_DOCUMENTS)
+            .hasHearings("Yes")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -92,6 +104,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getCorrespondenceDocumentsLA()).isEqualTo(correspondenceDocuments);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(CORRESPONDENCE)
+            .hasHearings("No")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -123,6 +141,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         assertThat(responseData.getCourtBundleList()).isEqualTo(courtBundleList);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(COURT_BUNDLE)
+            .hasHearings("Yes")
+            .hasC2s("No")
+            .build());
     }
 
     @Test
@@ -148,6 +172,12 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData responseData = extractCaseData(callbackResponse);
         assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+
+        assertThat(responseData.getManageDocumentLA()).isEqualTo(ManageDocumentLA.builder()
+            .type(C2)
+            .hasHearings("No")
+            .hasC2s("Yes")
+            .build());
     }
 
     @Test
@@ -193,6 +223,47 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldInitialiseRespondentStatementCollection() {
+        UUID selectedRespondentId = randomUUID();
+        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = buildSupportingEvidenceBundle();
+
+        List<Element<Respondent>> respondents = List.of(
+            element(selectedRespondentId, Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("David")
+                    .lastName("Stevenson")
+                    .build())
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .respondentStatementList(selectedRespondentId)
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocumentSubtypeListLA(RESPONDENT_STATEMENT)
+            .respondentStatements(List.of(
+                element(RespondentStatement.builder()
+                    .respondentId(selectedRespondentId)
+                    .supportingEvidenceBundle(supportingEvidenceBundle)
+                    .build())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
+            "further-evidence-documents", USER_ROLES);
+
+        CaseData responseData = extractCaseData(callbackResponse);
+
+        DynamicList expectedRespondentStatementList = ElementUtils
+            .asDynamicList(respondents, selectedRespondentId,
+                respondent -> respondent.getParty().getFullName());
+
+        DynamicList respondentDynamicList
+            = mapper.convertValue(responseData.getRespondentStatementList(), DynamicList.class);
+
+        assertThat(respondentDynamicList).isEqualTo(expectedRespondentStatementList);
+        assertThat(responseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(supportingEvidenceBundle);
+    }
+
+    @Test
     void shouldThrowErrorWhenCourtBundleSelectedButNoHearingsFound() {
         CaseData caseData = CaseData.builder()
             .manageDocumentLA(buildManagementDocument(COURT_BUNDLE))
@@ -224,6 +295,7 @@ class ManageDocumentsLAControllerMidEventTest extends AbstractCallbackTest {
         return wrapElements(SupportingEvidenceBundle.builder()
             .name("test")
             .uploadedBy("kurt.swansea@gov.uk")
+            .type(GUARDIAN_REPORTS)
             .build());
     }
 

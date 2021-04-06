@@ -218,11 +218,20 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
   await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[0]);
+  await enterRespondentsEventPage.enterRegisteredOrganisation(respondents[0]);
+
   await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
   await enterRespondentsEventPage.enterRepresentationDetails('No');
+
+  await I.addAnotherElementToCollection();
+  await enterRespondentsEventPage.enterRespondent(respondents[2]);
+  await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
+  await enterRespondentsEventPage.enterLitigationIssues('No');
+  await enterRespondentsEventPage.enterRepresentationDetails('Yes', respondents[2]);
+  await enterRespondentsEventPage.enterUnregisteredOrganisation(respondents[2]);
 
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
@@ -248,12 +257,12 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
   I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], 'Swansea City Council');
   I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Address'], respondents[0].solicitor.organisationAddress);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Building and Street'], respondents[0].solicitor.address.buildingAndStreet.lineOne);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 2'], respondents[0].solicitor.address.buildingAndStreet.lineTwo);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 3'], respondents[0].solicitor.address.buildingAndStreet.lineThree);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Town or City'], respondents[0].solicitor.address.town);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Postcode/Zipcode'], respondents[0].solicitor.address.postcode);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Country'], respondents[0].solicitor.address.country);
+  I.seeInTab(['Respondents 1', 'Managing office', 'Building and Street'], respondents[0].solicitor.regionalOfficeAddress.buildingAndStreet.lineOne);
+  I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 2'], respondents[0].solicitor.regionalOfficeAddress.buildingAndStreet.lineTwo);
+  I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 3'], respondents[0].solicitor.regionalOfficeAddress.buildingAndStreet.lineThree);
+  I.seeInTab(['Respondents 1', 'Managing office', 'Town or City'], respondents[0].solicitor.regionalOfficeAddress.town);
+  I.seeInTab(['Respondents 1', 'Managing office', 'Postcode/Zipcode'], respondents[0].solicitor.regionalOfficeAddress.postcode);
+  I.seeInTab(['Respondents 1', 'Managing office', 'Country'], respondents[0].solicitor.regionalOfficeAddress.country);
 
   I.seeInTab(['Respondents 2', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 2', 'Party', 'Last name'], respondents[1].lastName);
@@ -263,6 +272,17 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 2', 'Do you need contact details hidden from other parties?'], 'Yes');
   I.seeInTab(['Respondents 2', 'Give reason'], 'mock reason');
   I.seeInTab(['Respondents 2', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');
+
+  I.seeInTab(['Respondents 3', 'Party', 'First name'], respondents[2].firstName);
+  I.seeInTab(['Respondents 3', 'Party', 'Last name'], respondents[2].lastName);
+  I.seeInTab(['Respondents 3', 'Party', 'Date of birth'], '4 Apr 1978');
+  I.seeInTab(['Respondents 3', 'Party', 'Gender'], respondents[2].gender);
+  I.seeInTab(['Respondents 3', 'What is the respondent\'s relationship to the child or children in this case?'], respondents[2].relationshipToChild);
+  I.seeInTab(['Respondents 3', 'Do you need contact details hidden from other parties?'], 'No');
+  I.seeInTab(['Respondents 3', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?'], 'No');
+  I.seeInTab(['Respondents 3', 'Representative', 'Representative\'s first name'], respondents[2].solicitor.firstName);
+  I.seeInTab(['Respondents 3', 'Representative', 'Representative\'s last name'], respondents[2].solicitor.lastName);
+  I.seeInTab(['Respondents 3', 'Representative', 'Email address'], respondents[2].solicitor.email);
 
   caseViewPage.selectTab(caseViewPage.tabs.confidential);
   I.seeInTab(['Respondents 1', 'Party', 'First name'], respondents[1].firstName);
@@ -294,9 +314,11 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeInTab(['Applicants 1', 'Party', 'Customer reference'], applicant.customerReference);
   I.seeInTab(['Applicants 1', 'Address', 'Building and Street'], applicant.address.buildingAndStreet.lineOne);
   I.seeInTab(['Applicants 1', 'Address', 'Address Line 2'], applicant.address.buildingAndStreet.lineTwo);
+  I.seeInTab(['Applicants 1', 'Address', 'Address Line 3'], applicant.address.buildingAndStreet.lineThree);
   I.seeInTab(['Applicants 1', 'Address', 'Town or City'], applicant.address.town);
   I.seeInTab(['Applicants 1', 'Address', 'County'], applicant.address.county);
   I.seeInTab(['Applicants 1', 'Address', 'Postcode/Zipcode'], applicant.address.postcode);
+  I.seeInTab(['Applicants 1', 'Address', 'Country'], applicant.address.country);
   I.seeInTab(['Applicants 1', 'Telephone number', 'Telephone number'], applicant.telephoneNumber);
   I.seeInTab(['Applicants 1', 'Telephone number', 'Name of person to contact'], applicant.nameOfPersonToContact);
   I.seeInTab(['Applicants 1', 'Job title'], applicant.jobTitle);

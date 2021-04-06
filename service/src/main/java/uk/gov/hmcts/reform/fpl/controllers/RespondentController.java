@@ -66,6 +66,7 @@ public class RespondentController extends CallbackController {
         List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
             .collect(Collectors.toList());
 
+        caseDetails.getData().put("respondents1", respondentService.removeHiddenFields(caseData.getRespondents1()));
         return respond(caseDetails, combinedValidationErrors);
     }
 
@@ -86,6 +87,7 @@ public class RespondentController extends CallbackController {
             caseData.getAllRespondents(), caseDataBefore.getAllRespondents()
         ));
 
+        caseDetails.getData().put("respondents1", respondentService.removeHiddenFields(caseData.getRespondents1()));
         return respond(caseDetails);
     }
 

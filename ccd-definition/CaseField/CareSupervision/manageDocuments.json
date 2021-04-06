@@ -72,7 +72,7 @@
     "Label": "## Further evidence",
     "SecurityClassification": "Public",
     "Searchable": "N",
-    "Comment": "Update label in 2768"
+    "Comment": "Update label in 2770 when new page added for admin"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -89,6 +89,15 @@
     "ID": "manageDocumentsC2Heading",
     "FieldType": "Label",
     "Label": "## C2 supporting documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsRespondentStatementsHeading",
+    "FieldType": "Label",
+    "Label": "## Further evidence - respondent statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
