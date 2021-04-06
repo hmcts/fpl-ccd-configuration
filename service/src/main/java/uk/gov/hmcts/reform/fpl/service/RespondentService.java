@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
@@ -55,13 +55,15 @@ public class RespondentService {
         respondents.forEach(respondentElement -> {
             Respondent respondent = respondentElement.getValue();
 
-            if (YesNo.NO.getValue().equals(respondent.getLegalRepresentation())) {
+            if (NO.getValue().equals(respondent.getLegalRepresentation())) {
                 respondent.setSolicitor(null);
-            } else if (isNotEmpty(respondent.getSolicitor().getOrganisation())
-                && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
-                respondent.getSolicitor().setUnregisteredOrganisation(null);
-            } else {
-                respondent.getSolicitor().setRegionalOfficeAddress(null);
+            } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
+                if (isNotEmpty(respondent.getSolicitor().getOrganisation())
+                    && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
+                    respondent.getSolicitor().setUnregisteredOrganisation(null);
+                } else {
+                    respondent.getSolicitor().setRegionalOfficeAddress(null);
+                }
             }
         });
 
