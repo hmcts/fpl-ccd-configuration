@@ -7,8 +7,8 @@ module "fpl-action-group" {
   location               = "global"
   env                    = var.env
   resourcegroup_name     = local.alert_resource_group_name
-  action_group_name      = "${var.product}-support"
-  short_name             = "${var.product}-support"
+  action_group_name      = ${var.product}-support
+  short_name             = ${var.product}-support
   email_receiver_name    = "FPL Support Mailing List"
   email_receiver_address = data.azurerm_key_vault_secret.fpl_support_email_secret.value
 }
