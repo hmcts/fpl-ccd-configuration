@@ -1,6 +1,6 @@
 provider "azurerm" {
-  features {}
   version = "=2.49.0"
+  features {}
   alias = "docmosis"
   subscription_id = var.docmosis_subscription_id
 }
