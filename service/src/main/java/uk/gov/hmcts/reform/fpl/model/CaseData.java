@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -841,14 +842,14 @@ public class CaseData {
         return judge.getJudgeTitle() != null;
     }
 
-    private final RespondentSolicitorOrganisation respondent1;
-    private final RespondentSolicitorOrganisation respondent2;
-    private final RespondentSolicitorOrganisation respondent3;
-    private final RespondentSolicitorOrganisation respondent4;
-    private final RespondentSolicitorOrganisation respondent5;
-    private final RespondentSolicitorOrganisation respondent6;
-    private final RespondentSolicitorOrganisation respondent7;
-    private final RespondentSolicitorOrganisation respondent8;
-    private final RespondentSolicitorOrganisation respondent9;
-    private final RespondentSolicitorOrganisation respondent10;
+    private final NoticeOfChangeRespondent respondent1;
+    private final NoticeOfChangeRespondent respondent2;
+    private final NoticeOfChangeRespondent respondent3;
+    private final NoticeOfChangeRespondent respondent4;
+    private final NoticeOfChangeRespondent respondent5;
+    private final NoticeOfChangeRespondent respondent6;
+    private final NoticeOfChangeRespondent respondent7;
+    private final NoticeOfChangeRespondent respondent8;
+    private final NoticeOfChangeRespondent respondent9;
+    private final NoticeOfChangeRespondent respondent10;
 }

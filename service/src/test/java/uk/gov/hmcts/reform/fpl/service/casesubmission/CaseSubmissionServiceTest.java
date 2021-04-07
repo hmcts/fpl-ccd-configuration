@@ -14,17 +14,20 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.components.RespondentConverter;
+import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeRespondentConverter;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitorOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -52,9 +55,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CaseSubmissionService.class,
     JacksonAutoConfiguration.class,
-    RespondentConverter.class})
+    NoticeOfChangeRespondentConverter.class})
 class CaseSubmissionServiceTest {
     private static final byte[] PDF = TestDataHelper.DOCUMENT_CONTENT;
+    private static final LocalDate RESPONDENT_DOB = LocalDate.now();
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
@@ -99,7 +103,7 @@ class CaseSubmissionServiceTest {
     }
 
     @Test
-    void shouldMapRespondentsToRespondentSolicitorOrganisationsWhenExisting() {
+    void shouldMapRespondentsToNoticeOfChangeRespondentsWhenExisting() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
@@ -127,34 +131,42 @@ class CaseSubmissionServiceTest {
             .party(respondentParty)
             .build();
 
+        NoticeOfChangeAnswers noticeOfChange = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Joe")
+            .respondentLastName("Bloggs")
+            .respondentDOB(RESPONDENT_DOB)
+            .applicantName("Test organisation")
+            .build();
+
         List<Element<Respondent>> respondents = List.of(
             element(respondentElementOneId, respondentOne),
             element(respondentElementTwoId, respondentTwo));
 
-        RespondentSolicitorOrganisation expectedRespondentOne = RespondentSolicitorOrganisation.builder()
+        NoticeOfChangeRespondent expectedRespondentOne = NoticeOfChangeRespondent.builder()
             .respondentId(respondentElementOneId)
-            .party(respondentParty)
-            .solicitor(respondentSolicitor)
+            .noticeOfChangeAnswers(noticeOfChange)
             .organisationPolicy(OrganisationPolicy.builder()
                 .organisation(solicitorOrganisation)
                 .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
                 .build())
             .build();
 
-        RespondentSolicitorOrganisation expectedRespondentTwo = RespondentSolicitorOrganisation.builder()
+        NoticeOfChangeRespondent expectedRespondentTwo = NoticeOfChangeRespondent.builder()
             .respondentId(respondentElementTwoId)
-            .party(respondentParty)
+            .noticeOfChangeAnswers(noticeOfChange)
             .organisationPolicy(OrganisationPolicy.builder()
                 .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
                 .build())
             .build();
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("respondents1", respondents);
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "respondents1", respondents,
+            "applicants", List.of(element(buildApplicant()))
+        ));
 
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
 
-        CaseDetails updatedCaseDetails = caseSubmissionService.setRespondentSolicitorOrganisations(caseDetails);
+        CaseDetails updatedCaseDetails = caseSubmissionService.setNoticeOfChangeRespondents(caseDetails);
 
         Assertions.assertThat(updatedCaseDetails.getData())
             .extracting("respondents1", "respondent1", "respondent2")
@@ -162,9 +174,38 @@ class CaseSubmissionServiceTest {
     }
 
     @Test
-    void shouldNotMapRespondentsToRespondentSolicitorOrganisationsWhenNotExisting() {
-        CaseDetails caseDetails = CaseDetails.builder().data(Map.of("familyManCaseNumber", "12345")).build();
-        CaseDetails updatedCaseDetails = caseSubmissionService.setRespondentSolicitorOrganisations(caseDetails);
+    void shouldNotMapRespondentsToNoticeOfChangeRespondentsWhenApplicantsDoNotExist() {
+        Respondent respondentOne = Respondent.builder()
+            .party(RespondentParty.builder().build())
+            .legalRepresentation("Yes")
+            .build();
+
+        Respondent respondentTwo = Respondent.builder()
+            .party(RespondentParty.builder().build())
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(
+            element(respondentOne),
+            element(respondentTwo));
+
+        CaseDetails caseDetails = CaseDetails.builder().data(Map.of(
+            "respondents1", respondents,
+            "familyManCaseNumber", "12345"
+        )).build();
+
+        CaseDetails updatedCaseDetails = caseSubmissionService.setNoticeOfChangeRespondents(caseDetails);
+
+        assertThat(updatedCaseDetails).isEqualTo(caseDetails);
+    }
+
+    @Test
+    void shouldNotMapRespondentsToNoticeOfChangeRespondentsWhenRespondentsDoNotExist() {
+        CaseDetails caseDetails = CaseDetails.builder().data(Map.of(
+            "applicants", List.of(element(buildApplicant())),
+            "familyManCaseNumber", "12345"
+        )).build();
+
+        CaseDetails updatedCaseDetails = caseSubmissionService.setNoticeOfChangeRespondents(caseDetails);
 
         assertThat(updatedCaseDetails).isEqualTo(caseDetails);
     }
@@ -174,7 +215,7 @@ class CaseSubmissionServiceTest {
             .firstName("Joe")
             .lastName("Bloggs")
             .relationshipToChild("Father")
-            .dateOfBirth(LocalDate.now())
+            .dateOfBirth(RESPONDENT_DOB)
             .telephoneNumber(Telephone.builder()
                 .contactDirection("By telephone")
                 .telephoneNumber("02838882333")
@@ -182,6 +223,14 @@ class CaseSubmissionServiceTest {
                 .build())
             .gender("Male")
             .placeOfBirth("Newry")
+            .build();
+    }
+
+    private Applicant buildApplicant() {
+        return Applicant.builder()
+            .party(ApplicantParty.builder()
+                .organisationName("Test organisation")
+                .build())
             .build();
     }
 }

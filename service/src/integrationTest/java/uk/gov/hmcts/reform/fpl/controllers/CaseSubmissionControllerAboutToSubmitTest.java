@@ -13,14 +13,17 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitorOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
@@ -168,7 +171,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldMapRespondentsToRespondentSolicitorOrganisationsWhenHasRSOCaseAccessIsToggledOn() {
+    void shouldMapRespondentsToNoticeOfChangeRespondentsWhenHasRSOCaseAccessIsToggledOn() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
@@ -197,13 +200,22 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .legalRepresentation("No")
             .build();
 
+        NoticeOfChangeAnswers noticeOfChange = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Joe")
+            .respondentLastName("Bloggs")
+            .respondentDOB(LocalDate.now())
+            .applicantName("Test organisation")
+            .build();
+
         List<Element<Respondent>> respondents = List.of(
             element(respondentElementOneId, respondentOne),
             element(respondentElementTwoId, respondentTwo));
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
-        data.put("respondents1", respondents);
+        Map<String, Object> data = new HashMap<>(Map.of(
+            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+            "respondents1", respondents,
+            "applicants", List.of(element(buildApplicant()))
+        ));
 
         given(featureToggleService.hasRSOCaseAccess()).willReturn(true);
 
@@ -211,19 +223,18 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        RespondentSolicitorOrganisation expectedRespondentOne = RespondentSolicitorOrganisation.builder()
+        NoticeOfChangeRespondent expectedRespondentOne = NoticeOfChangeRespondent.builder()
             .respondentId(respondentElementOneId)
-            .party(respondentParty)
-            .solicitor(respondentSolicitor)
+            .noticeOfChangeAnswers(noticeOfChange)
             .organisationPolicy(OrganisationPolicy.builder()
                 .organisation(solicitorOrganisation)
                 .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
                 .build())
             .build();
 
-        RespondentSolicitorOrganisation expectedRespondentTwo = RespondentSolicitorOrganisation.builder()
+        NoticeOfChangeRespondent expectedRespondentTwo = NoticeOfChangeRespondent.builder()
             .respondentId(respondentElementTwoId)
-            .party(respondentParty)
+            .noticeOfChangeAnswers(noticeOfChange)
             .organisationPolicy(OrganisationPolicy.builder()
                 .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
                 .build())
@@ -236,7 +247,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotMapRespondentsToRespondentSolicitorOrganisationsWhenHasRSOCaseAccessIsToggledOff() {
+    void shouldNotMapRespondentsToNoticeOfChangeRespondentsWhenHasRSOCaseAccessIsToggledOff() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
@@ -298,6 +309,14 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build())
             .gender("Male")
             .placeOfBirth("Newry")
+            .build();
+    }
+
+    private Applicant buildApplicant() {
+        return Applicant.builder()
+            .party(ApplicantParty.builder()
+                .organisationName("Test organisation")
+                .build())
             .build();
     }
 }

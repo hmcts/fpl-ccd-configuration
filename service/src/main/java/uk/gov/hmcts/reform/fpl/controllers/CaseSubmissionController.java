@@ -123,7 +123,7 @@ public class CaseSubmissionController extends CallbackController {
                 .build());
 
             if (featureToggleService.hasRSOCaseAccess()) {
-                caseDetails = caseSubmissionService.setRespondentSolicitorOrganisations(caseDetails);
+                caseDetails = caseSubmissionService.setNoticeOfChangeRespondents(caseDetails);
             }
         }
 

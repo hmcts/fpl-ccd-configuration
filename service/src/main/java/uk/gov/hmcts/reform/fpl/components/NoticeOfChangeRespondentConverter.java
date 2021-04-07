@@ -1,33 +1,38 @@
 package uk.gov.hmcts.reform.fpl.components;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitorOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class RespondentConverter {
-    private final ObjectMapper mapper;
+public class NoticeOfChangeRespondentConverter {
+    public NoticeOfChangeRespondent convert(Element<Respondent> respondentElement,
+                                            Applicant applicant,
+                                            SolicitorRole solicitorRole) {
+        RespondentParty respondentParty = respondentElement.getValue().getParty();
 
-    public RespondentSolicitorOrganisation convert(Element<Respondent> respondentElement, SolicitorRole solicitorRole) {
-        RespondentSolicitorOrganisation respondentCAA = mapper.convertValue(respondentElement.getValue(),
-            RespondentSolicitorOrganisation.class);
-
-        respondentCAA.setRespondentId(respondentElement.getId());
-
-        respondentCAA.setOrganisationPolicy(setOrganisationPolicy(
-            respondentElement.getValue().getSolicitor(), solicitorRole));
-
-        return respondentCAA;
+        return NoticeOfChangeRespondent.builder()
+            .noticeOfChangeAnswers(NoticeOfChangeAnswers.builder()
+                .respondentFirstName(respondentParty.getFirstName())
+                .respondentLastName(respondentParty.getLastName())
+                .respondentDOB(respondentParty.getDateOfBirth())
+                .applicantName(applicant.getParty().getOrganisationName())
+                .build())
+            .respondentId(respondentElement.getId())
+            .organisationPolicy(setOrganisationPolicy(respondentElement.getValue().getSolicitor(), solicitorRole))
+            .build();
     }
 
     private OrganisationPolicy setOrganisationPolicy(RespondentSolicitor respondentSolicitor,

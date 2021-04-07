@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model;
+package uk.gov.hmcts.reform.fpl.model.noticeofchange;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +10,8 @@ import java.util.UUID;
 @Data
 @Builder
 @Jacksonized
-public class RespondentSolicitorOrganisation {
+public class NoticeOfChangeRespondent {
     private UUID respondentId;
-    private final RespondentParty party;
-    private RespondentSolicitor solicitor;
+    private NoticeOfChangeAnswers noticeOfChangeAnswers;
     private OrganisationPolicy organisationPolicy;
 }

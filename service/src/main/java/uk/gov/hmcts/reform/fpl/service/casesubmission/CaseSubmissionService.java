@@ -6,14 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.components.RespondentConverter;
+import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeRespondentConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitorOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -29,7 +30,7 @@ public class CaseSubmissionService {
     private final UploadDocumentService uploadDocumentService;
     private final CaseSubmissionGenerationService documentGenerationService;
     private final ObjectMapper mapper;
-    private final RespondentConverter respondentConverter;
+    private final NoticeOfChangeRespondentConverter noticeOfChangeRespondentConverter;
 
     public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
@@ -42,17 +43,19 @@ public class CaseSubmissionService {
         return uploadDocumentService.uploadPDF(document.getBytes(), buildFileName(caseData, isDraft));
     }
 
-    public CaseDetails setRespondentSolicitorOrganisations(CaseDetails caseDetails) {
+    public CaseDetails setNoticeOfChangeRespondents(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isNotEmpty(caseData.getRespondents1())) {
+        if (isNotEmpty(caseData.getRespondents1()) && isNotEmpty(caseData.getAllApplicants())) {
+            Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
+
             for (int i = 0; i < caseData.getRespondents1().size(); i++) {
                 Element<Respondent> respondentElement = caseData.getRespondents1().get(i);
 
-                RespondentSolicitorOrganisation convertedRespondent =
-                    respondentConverter.convert(respondentElement, SolicitorRole.values()[i]);
+                NoticeOfChangeRespondent noticeOfChangeRespondent = noticeOfChangeRespondentConverter.convert(
+                    respondentElement, firstApplicant, SolicitorRole.values()[i]);
 
-                caseDetails.getData().put(String.format("respondent%d", i + 1), convertedRespondent);
+                caseDetails.getData().put(String.format("respondent%d", i + 1), noticeOfChangeRespondent);
             }
         }
 

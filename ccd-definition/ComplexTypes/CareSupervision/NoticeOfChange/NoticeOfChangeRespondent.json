@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfChangeRespondent",
+    "ListElementCode": "respondentId",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfChangeRespondent",
+    "ListElementCode": "noticeOfChangeAnswers",
+    "FieldType": "NoticeOfChangeAnswers",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfChangeRespondent",
+    "ListElementCode": "organisationPolicy",
+    "FieldType": "OrganisationPolicy",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
+  }
+]
