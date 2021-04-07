@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -43,14 +44,14 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-        Order order = caseData.getManageOrdersType();
+
+        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
-        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(order,
-            order.getQuestions().get(0).getSection(),
-            caseData,
-            caseDetails));
+        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
+            order, order.getQuestions().get(0).getSection(), caseData, caseDetails
+        ));
 
         return respond(caseDetails);
     }
@@ -62,7 +63,7 @@ public class ManageOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        Order order = caseData.getManageOrdersType();
+        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
         OrderSection currentSection = OrderSection.from(section);
 
@@ -87,9 +88,9 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        Order order = caseData.getManageOrdersType();
+        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
-        DocmosisDocument docmosisDocument = orderDocumentGenerator.generate(order, caseDetails);
+        DocmosisDocument docmosisDocument = orderDocumentGenerator.generate(order, caseDetails, OrderStatus.SEALED);
         // TODO: 01/04/2021 upload to dm store
 
         // TODO: 01/04/2021 create object to store doc and other details in
