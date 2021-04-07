@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -679,8 +681,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         UUID idThree = UUID.randomUUID();
         UUID idFour = UUID.randomUUID();
 
-        @Test
-        void shouldMigrateExpectedListElementCodes() {
+        @ParameterizedTest
+        @ValueSource(longs = {1602246223743823L, 1611588537917646L})
+        void shouldMigrateExpectedListElementCodes(Long caseId) {
             Element<HearingBooking> hearingOne
                 = element(idOne, hearingBookingWithCancellationReason("OT8"));
 
@@ -696,7 +699,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<HearingBooking>> cancelledHearingBookings = List.of(
                 hearingOne, hearingTwo, hearingThree, hearingFour);
 
-            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings, 1602246223743823L);
+            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings, caseId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getCancelledHearingDetails()).containsExactly(
