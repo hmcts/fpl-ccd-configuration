@@ -4,11 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 
 import java.util.Map;
@@ -16,12 +15,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 
-@WebMvcTest(RepresentativesController.class)
+@WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
-
-
-    private static final Long CASE_ID = 12345L;
 
     ManageOrdersMidEventControllerTest() {
         super("manage-orders");
@@ -31,16 +27,16 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void section1ShouldCorrectlySetAllDetails() {
         final CaseData caseData = CaseData.builder()
-            .manageOrdersType(Order.C32_CARE_ORDER)
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(Order.C32_CARE_ORDER).build())
             .allocatedJudge(Judge.builder()
-                .judgeLastName("Judjy")
+                .judgeLastName("Judy")
                 .judgeTitle(DISTRICT_JUDGE)
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "section-1");
 
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
 
         assertThat(callbackResponse.getData().get("orderTempQuestions")).isEqualTo(
             Map.of(
@@ -54,7 +50,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(
             JudgeAndLegalAdvisor.builder()
-                .allocatedJudgeLabel("Case assigned to: District Judge Judjy")
+                .allocatedJudgeLabel("Case assigned to: District Judge Judy")
                 .build()
         );
 
@@ -63,50 +59,36 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void section2ShouldCorrectlySetAllDetails() {
         final CaseData caseData = CaseData.builder()
-            .manageOrdersType(Order.C32_CARE_ORDER)
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(Order.C32_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "section-2");
 
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
 
     }
 
     @Test
     void section3ShouldCorrectlySetAllDetails() {
         final CaseData caseData = CaseData.builder()
-            .manageOrdersType(Order.C32_CARE_ORDER)
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(Order.C32_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "section-3");
 
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
 
     }
 
     @Test
     void sectionReviewShouldCorrectlySetAllDetails() {
         final CaseData caseData = CaseData.builder()
-            .manageOrdersType(Order.C32_CARE_ORDER)
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(Order.C32_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "review");
 
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(callbackResponse);
 
-    }
-
-    private CallbackRequest buildCallbackRequest(CaseDetails originalCaseDetails, CaseDetails caseDetails) {
-        return CallbackRequest.builder()
-            .caseDetailsBefore(originalCaseDetails)
-            .caseDetails(caseDetails)
-            .build();
-    }
-
-    private CaseDetails buildCaseData() {
-        return CaseDetails.builder()
-            .id(CASE_ID)
-            .data(Map.of())
-            .build();
     }
 }

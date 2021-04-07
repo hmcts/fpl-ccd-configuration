@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.orders.docmosis.BaseDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -18,18 +19,21 @@ class C32CareOrderDocumentParameterGeneratorTest {
     }
 
     @Test
-    void generate() {
-        assertThat(underTest.generate(CaseDetails.builder().build())).isEqualTo(
-            BaseDocmosisParameters.builder()
-                .title("title 1")
-                .whatever("whatever")
-                .build()
+    void generateDraft() {
+        assertThat(underTest.generate(CaseData.builder().build(), OrderStatus.DRAFT)).isEqualTo(
+            C32CareOrderDocmosisParameters.builder().build()
+        );
+    }
+
+    @Test
+    void generateSealed() {
+        assertThat(underTest.generate(CaseData.builder().build(), OrderStatus.SEALED)).isEqualTo(
+            C32CareOrderDocmosisParameters.builder().build()
         );
     }
 
     @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER);
-
     }
 }
