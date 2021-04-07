@@ -67,7 +67,7 @@ public class LocalAuthorityService {
     private Optional<String> getLocalAuthorityFromOrganisation() {
         return organisationService.findOrganisation()
             .map(Organisation::getOrganisationIdentifier)
-            .map(orgId -> idsConfig.getLocalAuthorityCode(orgId).orElse(null));
+            .flatMap(idsConfig::getLocalAuthorityCode);
     }
 
     private List<String> getOutsourcingLocalAuthoritiesCodes(String organisationId, OutsourcingType type) {
