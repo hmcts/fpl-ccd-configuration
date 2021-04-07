@@ -86,7 +86,6 @@ module.exports = {
     const index = await I.getActiveElementIndex();
     this.enterDocumentName(supportingEvidenceDocument.name, index);
     this.enterDocumentNotes(supportingEvidenceDocument.notes, index);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date, index);
     this.uploadDocument(supportingEvidenceDocument.document, index);
     if(selectEvidenceType) {
       this.selectFurtherEvidenceType(supportingEvidenceDocument.type, index);
