@@ -283,6 +283,13 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 3', 'Representative', 'Representative\'s first name'], respondents[2].solicitor.firstName);
   I.seeInTab(['Respondents 3', 'Representative', 'Representative\'s last name'], respondents[2].solicitor.lastName);
   I.seeInTab(['Respondents 3', 'Representative', 'Email address'], respondents[2].solicitor.email);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation name'], respondents[2].solicitor.unregisteredOrganisation.name);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Building and Street'], respondents[2].solicitor.unregisteredOrganisation.address.buildingAndStreet.lineOne);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Address Line 2'], respondents[2].solicitor.unregisteredOrganisation.address.buildingAndStreet.lineTwo);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Address Line 3'], respondents[2].solicitor.unregisteredOrganisation.address.buildingAndStreet.lineThree);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Town or City'], respondents[2].solicitor.unregisteredOrganisation.address.town);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Postcode/Zipcode'], respondents[2].solicitor.unregisteredOrganisation.address.postcode);
+  I.seeInTab(['Respondents 3', 'Representative', 'Organisation (unregistered)', 'Organisation address', 'Country'], respondents[2].solicitor.unregisteredOrganisation.address.country);
 
   caseViewPage.selectTab(caseViewPage.tabs.confidential);
   I.seeInTab(['Respondents 1', 'Party', 'First name'], respondents[1].firstName);
