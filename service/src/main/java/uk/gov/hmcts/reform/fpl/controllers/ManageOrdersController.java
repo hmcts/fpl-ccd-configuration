@@ -90,7 +90,7 @@ public class ManageOrdersController extends CallbackController {
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
-        DocmosisDocument docmosisDocument = orderDocumentGenerator.generate(order, caseDetails, OrderStatus.SEALED);
+        DocmosisDocument docmosisDocument = orderDocumentGenerator.generate(order, caseData, OrderStatus.SEALED);
         // TODO: 01/04/2021 upload to dm store
 
         // TODO: 01/04/2021 create object to store doc and other details in
