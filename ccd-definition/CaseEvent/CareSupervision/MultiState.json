@@ -8,7 +8,6 @@
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migrate-case/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migrate-case/submitted",
     "Comment": "Event is triggered by running migration tool - callback modifies the data."
   },
   {
