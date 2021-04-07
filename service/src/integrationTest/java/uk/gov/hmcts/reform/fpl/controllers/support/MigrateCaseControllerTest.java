@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -23,9 +23,13 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -40,6 +44,88 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     MigrateCaseControllerTest() {
         super("migrate-case");
+    }
+
+
+    @Nested
+    class Fpla2960 {
+        String familyManNumber = "YO21C50001";
+        String migrationId = "FPLA-2960";
+        String userId = "d81bba10-dba7-4a2e-8bb8-b372407c1fba";
+        UUID elementId = UUID.fromString("f2b1e4ee-287e-4257-9413-8f61d61af27f");
+        Long caseId = 10L;
+
+        @Test
+        void shouldThrowExceptionWhenUnexpectedFamilyManNumber() {
+            CaseData caseData = CaseData.builder()
+                .familyManCaseNumber("test")
+                .build();
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseData);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Unexpected FMN test");
+
+            verify(caseAccessService, never()).revokeCaseRoleFromUser(any(), any(), any());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenNoLegalRepresentatives() {
+            CaseData caseData = CaseData.builder()
+                .familyManCaseNumber(familyManNumber)
+                .legalRepresentatives(null)
+                .build();
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseData);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Empty list of legal representatives");
+
+            verify(caseAccessService, never()).revokeCaseRoleFromUser(any(), any(), any());
+        }
+
+        @Test
+        void shouldRemoveLegalRepresentative() {
+
+            Element<LegalRepresentative> legalRepresentative1 = element(randomUUID(),
+                LegalRepresentative.builder()
+                    .email("test1@test.com")
+                    .build());
+
+            Element<LegalRepresentative> legalRepresentative2 = element(elementId,
+                LegalRepresentative.builder()
+                    .email("test2@test.com")
+                    .build());
+
+            Element<LegalRepresentative> legalRepresentative3 = element(randomUUID(),
+                LegalRepresentative.builder()
+                    .email("test3@test.com")
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .id(caseId)
+                .familyManCaseNumber(familyManNumber)
+                .legalRepresentatives(List.of(legalRepresentative1, legalRepresentative2, legalRepresentative3))
+                .build();
+
+            CaseDetails caseDetails = caseDetails(migrationId, caseData);
+
+            CaseData updatedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(updatedCaseData.getLegalRepresentatives())
+                .containsExactly(legalRepresentative1, legalRepresentative3);
+
+            verify(caseAccessService).revokeCaseRoleFromUser(caseId, userId, LABARRISTER);
+        }
+
+        private CaseDetails caseDetails(String migrationId, CaseData caseData) {
+            CaseDetails caseDetails = asCaseDetails(caseData);
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
     }
 
     @Nested
@@ -69,41 +155,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage("Unexpected FMN test");
         }
 
-        @Test
-        void shouldThrowExceptionWhenUnexpectedLocalAuthority() {
-            CaseData caseData = CaseData.builder()
-                .id(10L)
-                .familyManCaseNumber(familyManNumber)
-                .caseLocalAuthority("SA")
-                .caseLocalAuthorityName("Swanse County Council")
-                .build();
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(migrationId, caseData)))
-                .getRootCause()
-                .hasMessage("Expected local authority WSC, but got SA");
-        }
-
-        @Test
-        void shouldTransferCase() {
-            CaseData caseData = CaseData.builder()
-                .id(10L)
-                .familyManCaseNumber(familyManNumber)
-                .caseLocalAuthority("WSC")
-                .caseLocalAuthorityName("Worcestershire County Council")
-                .localAuthorityPolicy(organisationPolicy("QRI841X", "Worcestershire County Council", LASOLICITOR))
-                .build();
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails(migrationId, caseData)));
-
-            assertThat(extractedCaseData.getCaseLocalAuthority())
-                .isEqualTo("DEV");
-
-            assertThat(extractedCaseData.getCaseLocalAuthorityName())
-                .isEqualTo("Devon County Council");
-
-            assertThat(extractedCaseData.getLocalAuthorityPolicy())
-                .isEqualTo(organisationPolicy("ZBGD22I", "Devon County Council", LASOLICITOR));
-        }
 
         @Test
         void shouldGrantCaseAccess() {
@@ -112,9 +163,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .familyManCaseNumber(familyManNumber)
                 .build();
 
-            postSubmittedEvent(caseDetails(migrationId, caseData));
+            postAboutToSubmitEvent(caseDetails(migrationId, caseData));
 
-            Mockito.verify(caseAccessService).grantCaseRoleToUsers(
+            verify(caseAccessService).grantCaseRoleToUsers(
                 caseData.getId(),
                 Set.of(
                     "be3f6712-b01f-49d6-892a-7b00bdb24f5f",
@@ -154,8 +205,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     class Fpla2774 {
         String familyManNumber = "NE21C50007";
         String migrationId = "FPLA-2774";
-        UUID hearingIdOne = UUID.randomUUID();
-        UUID hearingIdTwo = UUID.randomUUID();
+        UUID hearingIdOne = randomUUID();
+        UUID hearingIdTwo = randomUUID();
         HearingBooking hearingBooking = HearingBooking.builder().build();
 
         @Test
@@ -241,8 +292,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldRemoveSecondC2DocumentBundle() {
-            UUID elementIdOne = UUID.randomUUID();
-            UUID elementIdTwo = UUID.randomUUID();
+            UUID elementIdOne = randomUUID();
+            UUID elementIdTwo = randomUUID();
 
             Element<C2DocumentBundle> c2DocumentBundleElementOne = element(elementIdOne,
                 C2DocumentBundle.builder().build());
@@ -262,8 +313,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
             String incorrectMigrationId = "FPLA-1111";
 
-            UUID elementIdOne = UUID.randomUUID();
-            UUID elementIdTwo = UUID.randomUUID();
+            UUID elementIdOne = randomUUID();
+            UUID elementIdTwo = randomUUID();
 
             Element<C2DocumentBundle> c2DocumentBundleElementOne = element(elementIdOne,
                 C2DocumentBundle.builder().build());
@@ -317,12 +368,12 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     class Fpla2872 {
         String familyManNumber = "NE20C50023";
         String migrationId = "FPLA-2872";
-        UUID elementIdOne = UUID.randomUUID();
-        UUID elementIdTwo = UUID.randomUUID();
-        UUID elementIdThree = UUID.randomUUID();
-        UUID elementIdFour = UUID.randomUUID();
-        UUID elementIdFive = UUID.randomUUID();
-        UUID elementIdSix = UUID.randomUUID();
+        UUID elementIdOne = randomUUID();
+        UUID elementIdTwo = randomUUID();
+        UUID elementIdThree = randomUUID();
+        UUID elementIdFour = randomUUID();
+        UUID elementIdFive = randomUUID();
+        UUID elementIdSix = randomUUID();
 
         @Test
         void shouldRemoveExpectedC2DocumentBundlesFromCase() {
@@ -691,10 +742,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @Nested
     class Fpla2885 {
         String migrationId = "FPLA-2885";
-        UUID idOne = UUID.randomUUID();
-        UUID idTwo = UUID.randomUUID();
-        UUID idThree = UUID.randomUUID();
-        UUID idFour = UUID.randomUUID();
+        UUID idOne = randomUUID();
+        UUID idTwo = randomUUID();
+        UUID idThree = randomUUID();
+        UUID idFour = randomUUID();
 
         @Test
         void shouldMigrateExpectedListElementCodes() {
