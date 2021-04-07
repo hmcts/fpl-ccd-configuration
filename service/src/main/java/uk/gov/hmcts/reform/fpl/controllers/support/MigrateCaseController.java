@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LABARRISTER;
 
 @Api
 @RestController
@@ -80,10 +82,45 @@ public class MigrateCaseController extends CallbackController {
             run2946(caseDetails);
         }
 
+        if ("FPLA-2960".equals(migrationId)) {
+            run2960(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
+
+    private void run2960(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        String familyManNumber = "YO21C50001";
+        String userId = "d81bba10-dba7-4a2e-8bb8-b372407c1fba";
+        UUID elementId = UUID.fromString("f2b1e4ee-287e-4257-9413-8f61d61af27f");
+
+        if (familyManNumber.equals(caseData.getFamilyManCaseNumber())) {
+            List<Element<LegalRepresentative>> legalRepresentatives = caseData.getLegalRepresentatives();
+
+            if (isEmpty(legalRepresentatives)) {
+                throw new IllegalStateException("Empty list of legal representatives");
+            }
+
+            List<Element<LegalRepresentative>> toBeRemoved = legalRepresentatives.stream()
+                .filter(e -> e.getId().equals(elementId))
+                .collect(toList());
+
+            log.info("Migration FPLA-2960. Number of legal representatives to be removed: " + toBeRemoved.size());
+
+            boolean removed = legalRepresentatives.removeAll(toBeRemoved);
+
+            if (removed) {
+                caseAccessService.revokeCaseRoleFromUser(caseData.getId(), userId, LABARRISTER);
+            }
+
+            caseDetails.getData().put("legalRepresentatives", legalRepresentatives);
+        } else {
+            throw new IllegalStateException(FMN_ERROR_MESSAGE + caseData.getFamilyManCaseNumber());
+        }
+    }
 
     private void run2946(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
