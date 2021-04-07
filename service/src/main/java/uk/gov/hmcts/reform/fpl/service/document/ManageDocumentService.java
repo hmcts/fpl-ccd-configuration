@@ -269,7 +269,7 @@ public class ManageDocumentService {
                     caseData.getSupportingEvidenceDocumentsTemp());
 
                 c2DocumentBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
-            } else if (selectedBundleId.equals(otherApplicationsBundle.getId())) {
+            } else if (!isNull(otherApplicationsBundle) && selectedBundleId.equals(otherApplicationsBundle.getId())) {
 
                 List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
                     otherApplicationsBundle.getSupportingEvidenceBundle(),

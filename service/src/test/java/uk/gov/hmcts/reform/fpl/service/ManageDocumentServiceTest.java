@@ -817,7 +817,7 @@ class ManageDocumentServiceTest {
     }
 
     @Test
-    void shouldReturnUpdatedC2DocumentBundleInAdditionalApplictaionsBundleWithUpdatedSupportingEvidenceEntry() {
+    void shouldReturnUpdatedC2DocumentBundleInAdditionalApplicationsBundleWithUpdatedSupportingEvidenceEntry() {
         UUID selectedC2BundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
 
