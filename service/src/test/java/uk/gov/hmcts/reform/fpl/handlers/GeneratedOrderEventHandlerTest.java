@@ -15,10 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
@@ -37,7 +35,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -46,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -60,9 +56,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
     IssuedOrderAdminNotificationHandler.class, RepresentativeNotificationService.class,
     HmctsAdminNotificationHandler.class, SendDocumentService.class})
 class GeneratedOrderEventHandlerTest {
-
-    @MockBean
-    private GeneratedOrderService generatedOrderService;
 
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
@@ -135,46 +128,6 @@ class GeneratedOrderEventHandlerTest {
             getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true),
             getExpectedEmailRepresentativesForAddingPartiesToCase(),
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
-    }
-
-    @Test
-    void shouldNotifyAllocatedJudgeOnOrderIssued() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeEmailAddress("judge@gmail.com")
-            .build();
-
-        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
-            .willReturn(expectedJudgeAndLegalAdvisor);
-
-        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
-
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
-            .willReturn(expectedParameters);
-
-        generatedOrderEventHandler.notifyAllocatedJudge(event);
-
-        verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE,
-            ALLOCATED_JUDGE_EMAIL_ADDRESS,
-            expectedParameters,
-            caseData.getId());
-    }
-
-    @Test
-    void shouldNotNotifyAllocatedJudgeOnOrderIssuedWithNoJudge() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
-
-        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
-            .willReturn(expectedJudgeAndLegalAdvisor);
-
-        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
-
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
-            .willReturn(expectedParameters);
-
-        generatedOrderEventHandler.notifyAllocatedJudge(event);
-
-        verifyNoInteractions(notificationService);
     }
 
     @Test
