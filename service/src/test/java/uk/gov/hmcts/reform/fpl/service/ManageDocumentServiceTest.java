@@ -931,6 +931,10 @@ class ManageDocumentServiceTest {
         List<Element<AdditionalApplicationsBundle>> applicationsBundles = wrapElements(
             AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
+                .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
+                .build(),
+            AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
                 .build());
 
         DynamicList applicationBundlesDynamicList = buildDynamicList(selectedBundleId);
