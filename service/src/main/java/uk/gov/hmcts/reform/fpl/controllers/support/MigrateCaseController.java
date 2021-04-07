@@ -246,7 +246,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2947(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if( List.of(1602246223743823L, 1611588537917646L).contains(caseData.getId()) ) {
+        if (List.of(1602246223743823L, 1611588537917646L).contains(caseData.getId())) {
             if (isEmpty(caseData.getCancelledHearingDetails())) {
                 throw new IllegalArgumentException("Case does not contain cancelled hearing bookings");
             }
