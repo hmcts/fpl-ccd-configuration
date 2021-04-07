@@ -23,6 +23,15 @@
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "R"
@@ -58,6 +67,15 @@
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
           "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]",
           "caseworker-publiclaw-cafcass"
         ],
         "CRUD": "U",
@@ -99,7 +117,16 @@
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]"
         ],
         "CRUD": "U",
         "Comment": "Effectively hide it from the ui, cannot set to no perms so am using u as a placeholder"
@@ -128,7 +155,16 @@
         "UserRoles": [
           "[CAFCASSSOLICITOR]",
           "[BARRISTER]",
-          "[SOLICITOR]"
+          "[SOLICITOR]",
+          "[solicitorA]",
+          "[solicitorB]",
+          "[solicitorC]",
+          "[solicitorD]",
+          "[solicitorE]",
+          "[solicitorF]",
+          "[solicitorG]",
+          "[solicitorH]",
+          "[solicitorI]"
         ],
         "CRUD": "R"
       },
