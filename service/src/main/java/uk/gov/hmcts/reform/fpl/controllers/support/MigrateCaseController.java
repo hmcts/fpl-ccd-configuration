@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseAccessService;
 
+import java.util.List;
+
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Api
@@ -35,6 +37,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2885".equals(migrationId)) {
             run2885(caseDetails);
+        }
+
+        if ("FPLA-2947".equals(migrationId)) {
+            run2947(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -61,6 +67,32 @@ public class MigrateCaseController extends CallbackController {
                     break;
             }
         });
+
+        caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
+    }
+
+    private void run2947(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (List.of(1602246223743823L, 1611588537917646L).contains(caseData.getId())) {
+            if (isEmpty(caseData.getCancelledHearingDetails())) {
+                throw new IllegalArgumentException("Case does not contain cancelled hearing bookings");
+            }
+
+            caseData.getCancelledHearingDetails().forEach(hearingBookingElement -> {
+                switch (hearingBookingElement.getValue().getCancellationReason()) {
+                    case "OT8":
+                        hearingBookingElement.getValue().setCancellationReason("IN1");
+                        break;
+                    case "OT9":
+                        hearingBookingElement.getValue().setCancellationReason("OT8");
+                        break;
+                    case "OT10":
+                        hearingBookingElement.getValue().setCancellationReason("OT9");
+                        break;
+                }
+            });
+        }
 
         caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
     }
