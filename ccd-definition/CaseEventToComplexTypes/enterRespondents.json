@@ -290,6 +290,7 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
+    "EventElementLabel": "Address",
     "ListElementCode": "solicitor.unregisteredOrganisation.address",
     "DisplayContext": "OPTIONAL"
   },
