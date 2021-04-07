@@ -1,31 +1,46 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.model.RespondentParty.builder;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class})
 class RespondentsCheckerIsStartedTest {
 
-    @InjectMocks
+    @Autowired
     private RespondentsChecker respondentsChecker;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @BeforeEach
+    void featureToggleMock() {
+        given(featureToggleService.isRespondentJourneyEnabled()).willReturn(true);
+    }
 
     @ParameterizedTest
     @MethodSource("emptyRespondents")
@@ -38,7 +53,7 @@ class RespondentsCheckerIsStartedTest {
     }
 
     @Test
-    void shouldReturnTrueWhenMoreThanOneChildrenProvided() {
+    void shouldReturnTrueWhenMoreThanOneRespondentProvided() {
         final CaseData caseData = CaseData.builder()
                 .respondents1(wrapElements(Respondent.builder().build(), Respondent.builder().build()))
                 .build();
@@ -118,6 +133,7 @@ class RespondentsCheckerIsStartedTest {
                                         .telephoneNumber("")
                                         .build())
                                 .build())
+                        .legalRepresentation("")
                         .build())
                 .map(Arguments::of);
     }
