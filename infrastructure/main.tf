@@ -5,14 +5,14 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = var.product+var.component+var.env
+  name     = "${var.product}-${var.component}-${var.env}"
   location = var.location
 
   tags = var.common_tags
 }
 
 resource "azurerm_application_insights" "appinsights" {
-  name                = var.product+var.component + "-appinsights-" +var.env
+  name                = "${var.product}-${var.component}-appinsights-${var.env}"
   location            = var.appinsights_location
   resource_group_name = azurerm_resource_group.rg.name
   application_type    = "web"
@@ -29,7 +29,7 @@ resource "azurerm_key_vault_secret" "AZURE_APPINSGHTS_KEY" {
 
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
-  name                    = "fpl-"+var.env
+  name                    = "fpl-${var.env}"
   product                 = var.product
   env                     = var.env
   tenant_id               = var.tenant_id
@@ -44,7 +44,7 @@ module "key-vault" {
 
 module "fpl-scheduler-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = var.product+var.component
+  product            = "${var.product}-${var.component}"
   location           = var.location_db
   env                = var.env
   database_name      = "fpl_scheduler"
@@ -57,7 +57,7 @@ module "fpl-scheduler-db" {
 }
 
 data "azurerm_key_vault_secret" "fpl_support_email_secret" {
-  name      = var.product + "-support-email"
+  name      = "${var.product}-support-email"
   key_vault_id = module.key-vault.key_vault_id
 }
 
