@@ -54,18 +54,18 @@ public class MigrateCaseController extends CallbackController {
             caseData.getCancelledHearingDetails().stream()
                 .filter(hearingBookingElement -> hearingBookingElement.getValue().getCancellationReason() != null)
                 .forEach(hearingBookingElement -> {
-                switch (hearingBookingElement.getValue().getCancellationReason()) {
-                    case "OT8":
-                        hearingBookingElement.getValue().setCancellationReason("IN1");
-                        break;
-                    case "OT9":
-                        hearingBookingElement.getValue().setCancellationReason("OT8");
-                        break;
-                    case "OT10":
-                        hearingBookingElement.getValue().setCancellationReason("OT9");
-                        break;
-                }
-            });
+                    switch (hearingBookingElement.getValue().getCancellationReason()) {
+                        case "OT8":
+                            hearingBookingElement.getValue().setCancellationReason("IN1");
+                            break;
+                        case "OT9":
+                            hearingBookingElement.getValue().setCancellationReason("OT8");
+                            break;
+                        case "OT10":
+                            hearingBookingElement.getValue().setCancellationReason("OT9");
+                            break;
+                    }
+                });
         }
 
         caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
