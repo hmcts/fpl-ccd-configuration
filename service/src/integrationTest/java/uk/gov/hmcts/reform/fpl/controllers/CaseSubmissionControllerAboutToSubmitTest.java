@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -171,7 +170,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         }
     }
 
-    @Disabled
     @Test
     void shouldMapRespondentsToNoticeOfChangeRespondentsWhenHasRSOCaseAccessIsToggledOn() {
         UUID respondentElementOneId = UUID.randomUUID();
@@ -243,8 +241,8 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .build();
 
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
-        assertThat(updatedCaseData.getRespondent1()).isEqualTo(expectedRespondentOne);
-        assertThat(updatedCaseData.getRespondent2()).isEqualTo(expectedRespondentTwo);
+        assertThat(updatedCaseData.getRespondentPolicy1()).isEqualTo(expectedRespondentOne.getOrganisationPolicy());
+        assertThat(updatedCaseData.getRespondentPolicy2()).isEqualTo(expectedRespondentTwo.getOrganisationPolicy());
         assertThat(updatedCaseData.getRespondent3()).isNull();
     }
 

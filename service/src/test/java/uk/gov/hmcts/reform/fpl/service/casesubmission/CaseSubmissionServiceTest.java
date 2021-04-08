@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.casesubmission;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -47,7 +46,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.service.casesubmission.SampleCaseSubmissionTestDataHelper.expectedDocmosisCaseSubmission;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -103,7 +101,6 @@ class CaseSubmissionServiceTest {
         verify(uploadDocumentService).uploadPDF(eq(PDF), any());
     }
 
-    @Disabled
     @Test
     void shouldMapRespondentsToNoticeOfChangeRespondentsWhenExisting() {
         UUID respondentElementOneId = UUID.randomUUID();
@@ -153,14 +150,6 @@ class CaseSubmissionServiceTest {
                 .build())
             .build();
 
-        NoticeOfChangeRespondent expectedRespondentTwo = NoticeOfChangeRespondent.builder()
-            .respondentId(respondentElementTwoId)
-            .noticeOfChangeAnswers(noticeOfChange)
-            .organisationPolicy(OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
-                .build())
-            .build();
-
         Map<String, Object> data = new HashMap<>(Map.of(
             "respondents1", respondents,
             "applicants", List.of(element(buildApplicant()))
@@ -171,8 +160,8 @@ class CaseSubmissionServiceTest {
         CaseDetails updatedCaseDetails = caseSubmissionService.setNoticeOfChangeRespondents(caseDetails);
 
         Assertions.assertThat(updatedCaseDetails.getData())
-            .extracting("respondents1", "respondent1", "respondent2")
-            .containsExactly(respondents, expectedRespondentOne, expectedRespondentTwo);
+            .extracting("respondents1", "respondentPolicy1")
+            .containsExactly(respondents, expectedRespondentOne.getOrganisationPolicy());
     }
 
     @Test
