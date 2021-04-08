@@ -852,4 +852,5 @@ public class CaseData {
     private final NoticeOfChangeRespondent respondent8;
     private final NoticeOfChangeRespondent respondent9;
     private final NoticeOfChangeRespondent respondent10;
+    private final OrganisationPolicy respondentPolicy1;
 }
