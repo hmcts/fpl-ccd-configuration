@@ -49,9 +49,7 @@ public class ManageOrdersController extends CallbackController {
 
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
-        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
-            order, order.getQuestions().get(0).getSection(), caseData
-        ));
+        data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(order, order.firstSection(), caseData));
 
         return respond(caseDetails);
     }

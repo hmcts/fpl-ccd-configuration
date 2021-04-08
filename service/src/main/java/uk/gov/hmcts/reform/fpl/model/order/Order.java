@@ -26,6 +26,10 @@ public enum Order {
     private final String title;
     private final String childrenAct;
 
+    public OrderSection firstSection() {
+        return this.getQuestions().get(0).getSection();
+    }
+
     public Optional<OrderSection> nextSection(OrderSection currentSection) {
         Set<OrderSection> sectionsForOrder = this.getQuestions()
             .stream()

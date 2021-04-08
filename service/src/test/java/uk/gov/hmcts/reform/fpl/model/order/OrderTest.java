@@ -17,6 +17,12 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.SECTION_4;
 class OrderTest {
 
     @ParameterizedTest
+    @MethodSource("ordersAndFirstSections")
+    void firstSection(Order order, OrderSection expectedFirstSection) {
+        assertThat(order.firstSection()).isEqualTo(expectedFirstSection);
+    }
+
+    @ParameterizedTest
     @MethodSource("sectionsWithNext")
     void testNextSection(Order order, OrderSection currentSection, Optional<OrderSection> expectedNextSection) {
         assertThat(order.nextSection(currentSection)).isEqualTo(expectedNextSection);
@@ -28,6 +34,12 @@ class OrderTest {
             Arguments.of(C32_CARE_ORDER, SECTION_3, Optional.of(SECTION_4)),
             Arguments.of(C32_CARE_ORDER, SECTION_4, Optional.of(REVIEW)),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty())
+        );
+    }
+
+    private static Stream<Arguments> ordersAndFirstSections() {
+        return Stream.of(
+            Arguments.of(C32_CARE_ORDER, SECTION_2)
         );
     }
 }
