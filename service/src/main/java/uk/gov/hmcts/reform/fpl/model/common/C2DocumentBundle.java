@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class C2DocumentBundle implements ConfidentialBundle {
-    private final C2ApplicationType type;
+    private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;
