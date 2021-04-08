@@ -84,8 +84,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "supplementsBundle",
+    "ElementLabel": "Supplements",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Supplement",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "supportingEvidenceBundle",
-    "ElementLabel": "C2 supporting documents",
+    "ElementLabel": "Supporting documents",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public"
@@ -109,6 +118,26 @@
     "FieldTypeParameter": "SupportingEvidenceBundle",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "c2AdditionalOrdersRequested",
+    "ElementLabel": "Additional orders requested",
+    "HintText": "Select all that apply",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C2AdditionalOrdersRequested",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "parentalResponsibilityType",
+    "ElementLabel": "Who's seeking parental responsibility?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ParentalResponsibilityType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
-

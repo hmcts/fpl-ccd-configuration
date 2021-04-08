@@ -19,6 +19,7 @@ plugins {
   id 'org.sonarqube' version '3.1.1'
   id 'project-report'
   id "idea"
+  id 'au.com.dius.pact' version '4.2.3'
   id 'info.solidsoft.pitest' version '1.6.0'
 }
 
@@ -49,14 +50,23 @@ sourceSets {
     resources.srcDir file('src/integrationTest/resources')
   }
 
-  smokeTest {
-    java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
-      srcDir file('src/smokeTest/java')
+    smokeTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/smokeTest/java')
+        }
+        resources.srcDir file('src/smokeTest/resources')
     }
-    resources.srcDir file('src/smokeTest/resources')
-  }
+
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contractTest/resources')
+    }
 }
 
 tasks.withType(JavaCompile) {
@@ -105,6 +115,50 @@ task runApiTests(type: Test, description: 'Runs api tests.', group: 'Verificatio
   finalizedBy aggregate
 }
 
+project.ext {
+    pacticipant = 'fpl_ccdConfiguration'
+    pacticipantVersion = getCheckedOutGitCommitHash()
+}
+
+
+task runContractTests(type: Test, description: 'Runs contract tests.', group: 'Verification') {
+    onlyIf {
+        return System.env.SKIP_CONTRACT_TESTS == null || System.env.SKIP_CONTRACT_TESTS == 'false'
+    }
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    systemProperty 'pact.rootDir', "pacts"
+    testLogging.showStandardStreams = true
+
+}
+
+task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
+    logger.lifecycle("Runs pact consumer Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+runAndPublishConsumerPactTests.dependsOn runContractTests
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+pact {
+    broker {
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+    }
+    publish {
+        pactDirectory = 'service/pacts'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
+        version = project.pacticipantVersion
+    }
+}
+
+
 def static inStrictOrder(Task... tasks) {
   for (int i = 0; i < tasks.size() - 1; i++) {
     tasks[i + 1].mustRunAfter(tasks[i])
@@ -118,6 +172,10 @@ task smoke(description: 'Runs the smoke tests.') {
 
 task functional(description: 'Runs the functional tests.') {
   dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runApiTests, runBrowserTests))
+}
+
+task contract(description: 'Runs the contract tests.') {
+    dependsOn(inStrictOrder(installDependencies, checkDependenciesIntegrity, runContractTests))
 }
 
 task runCrossBrowserTests(type: Exec, description: 'Runs ExpertUI cross brower tests.') {
@@ -195,12 +253,14 @@ def versions = [
   log4j           : '2.13.2',
   pdfbox          : '2.0.23',
   mockito         : '3.7.7',
-  serenity        : '2.3.4'
+  serenity        : '2.3.4',
+  pact_version    : '4.1.7',
+  junit_jupiter   : '5.7.1'
 ]
 
 dependencies {
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.18'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
@@ -229,7 +289,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.1'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.2'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -287,6 +347,22 @@ dependencies {
   functionalTestCompile configurations.runtime
 
   smokeTestCompile configurations.runtime
+
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+  contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+  contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
+  contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
+  contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
+  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.1'
+  contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
+  contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.7.RELEASE'
+  contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
+  contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
+  contractTestImplementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'

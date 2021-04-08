@@ -16,8 +16,10 @@ module.exports = {
     },
     subtype: {
       applicationDocuments: '#manageDocumentSubtypeListLA-APPLICATION_DOCUMENTS',
+      respondentStatement: '#manageDocumentSubtypeListLA-RESPONDENT_STATEMENT',
       otherDocuments: '#manageDocumentSubtypeListLA-OTHER',
     },
+    respondentStatementList: '#respondentStatementList',
     hearingList: '#manageDocumentsHearingList',
     courtBundleHearingList: '#courtBundleHearingList',
     courtBundleDocument: '#manageDocumentsCourtBundle_document',
@@ -33,6 +35,14 @@ module.exports = {
 
   async selectAnyOtherDocument() {
     I.click(this.fields.subtype.otherDocuments);
+  },
+
+  selectRespondentStatement() {
+    I.click(this.fields.subtype.respondentStatement);
+  },
+
+  async selectRespondent(respondentName) {
+    I.selectOption(this.fields.respondentStatementList, respondentName);
   },
 
   async selectCorrespondence() {

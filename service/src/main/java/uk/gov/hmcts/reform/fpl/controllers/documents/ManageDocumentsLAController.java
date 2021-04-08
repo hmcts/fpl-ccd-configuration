@@ -29,9 +29,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.D
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RELATED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_STATEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
@@ -69,7 +72,7 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(manageDocumentLAService.initialiseManageDocumentLAEvent(caseData));
+        caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
 
         return respond(caseDetails);
     }
@@ -80,6 +83,8 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
+
+        caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
 
         switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -118,13 +123,21 @@ public class ManageDocumentsLAController extends CallbackController {
                 caseData, YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())));
 
             List<Element<SupportingEvidenceBundle>> supportingEvidence
-                = manageDocumentService.getFurtherEvidenceCollection(
-                caseData,
+                = manageDocumentService.getFurtherEvidenceCollection(caseData,
                 YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing()),
                 caseData.getFurtherEvidenceDocumentsLA());
 
             caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);
+        } else if (RESPONDENT_STATEMENT.equals(caseData.getManageDocumentSubtypeListLA())) {
+            UUID selectedRespondentId = manageDocumentService.getSelectedRespondentId(caseData);
+
+            caseDetails.getData().put(RESPONDENT_STATEMENT_LIST_KEY,
+                caseData.buildRespondentStatementDynamicList(selectedRespondentId));
+
+            caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId));
         }
+
         return respond(caseDetails);
     }
 
@@ -139,8 +152,12 @@ public class ManageDocumentsLAController extends CallbackController {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 List<Element<SupportingEvidenceBundle>> currentBundle;
 
-                //Application documents
-                if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
+                if (RESPONDENT_STATEMENT.equals(caseData.getManageDocumentSubtypeListLA())) {
+                    caseDetailsMap.putIfNotEmpty("respondentStatements",
+                        manageDocumentService.getUpdatedRespondentStatements(caseData));
+                } else if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
+                    //Application documents
+
                     caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
                         caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
                     ));
@@ -194,7 +211,7 @@ public class ManageDocumentsLAController extends CallbackController {
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
-            COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING);
+            COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENT_STATEMENT_LIST_KEY);
 
         return respond(caseDetailsMap);
     }

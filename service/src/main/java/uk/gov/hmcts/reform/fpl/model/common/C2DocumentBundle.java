@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -25,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class C2DocumentBundle implements ConfidentialBundle {
-    private final C2ApplicationType type;
+    private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;
@@ -36,6 +39,9 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private final List<Element<Supplement>> supplementsBundle;
+    private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
+    private final ParentalResponsibilityType parentalResponsibilityType;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
