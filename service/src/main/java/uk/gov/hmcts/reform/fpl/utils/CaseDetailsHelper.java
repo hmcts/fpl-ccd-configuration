@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.base.Splitter;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 
@@ -13,10 +14,14 @@ public class CaseDetailsHelper {
         // NO OP
     }
 
+    public static boolean isCaseNumber(String caseNumber) {
+        return StringUtils.isNumeric(caseNumber) && caseNumber.length() == 16;
+    }
+
     public static String formatCCDCaseNumber(Long caseNumber) {
         String ccdCaseNumber = String.valueOf(caseNumber);
 
-        if (ccdCaseNumber.length() != 16) {
+        if (!isCaseNumber(ccdCaseNumber)) {
             throw new IllegalArgumentException("CCD Case number must be 16 digits long");
         }
 
