@@ -31,15 +31,17 @@ class OrderDocumentGeneratorTest {
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = mock(DocmosisDocument.class);
     private static final OrderStatus STATUS = DRAFT;
 
+    private final DocmosisParameterGenerator generator = mock(DocmosisParameterGenerator.class);
+
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService = mock(
         DocmosisDocumentGeneratorService.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
     private final OrderDocumentGeneratorHolder orderDocumentGeneratorHolder = mock(OrderDocumentGeneratorHolder.class);
+    private final DocmosisCommonElementDecorator decorator = mock(DocmosisCommonElementDecorator.class);
 
     private final OrderDocumentGenerator underTest = new OrderDocumentGenerator(
-        docmosisDocumentGeneratorService, objectMapper, orderDocumentGeneratorHolder
+        docmosisDocumentGeneratorService, objectMapper, orderDocumentGeneratorHolder, decorator
     );
-    private final SingleOrderDocumentParameterGenerator generator = mock(SingleOrderDocumentParameterGenerator.class);
 
     @Test
     void generateWithNoGenerator() {
@@ -53,12 +55,14 @@ class OrderDocumentGeneratorTest {
     @Test
     void generateWithGenerator() {
         when(orderDocumentGeneratorHolder.getTypeToGenerator()).thenReturn(Map.of(ORDER, generator));
-        when(generator.generate(CASE_DATA, STATUS)).thenReturn(DOCMOSIS_PARAMETERS);
+        when(generator.accept()).thenReturn(ORDER);
+        when(generator.generate(CASE_DATA)).thenReturn(DOCMOSIS_PARAMETERS);
         when(generator.template()).thenReturn(DOCMOSIS_TEMPLATE);
+        when(decorator.decorate(DOCMOSIS_PARAMETERS, CASE_DATA, STATUS, ORDER)).thenReturn(DOCMOSIS_PARAMETERS);
         when(objectMapper.convertValue(eq(DOCMOSIS_PARAMETERS),
             Mockito.<TypeReference<Map<String, Object>>>any())).thenReturn(TEMPLATE_DATA);
-        when(docmosisDocumentGeneratorService.generateDocmosisDocument(TEMPLATE_DATA, DOCMOSIS_TEMPLATE)).thenReturn(
-            DOCMOSIS_DOCUMENT);
+        when(docmosisDocumentGeneratorService.generateDocmosisDocument(TEMPLATE_DATA, DOCMOSIS_TEMPLATE))
+            .thenReturn(DOCMOSIS_DOCUMENT);
 
         assertThat(underTest.generate(ORDER, CASE_DATA, STATUS)).isEqualTo(DOCMOSIS_DOCUMENT);
     }

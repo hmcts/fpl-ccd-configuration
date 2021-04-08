@@ -16,14 +16,14 @@ public class OrderDocumentGeneratorHolder {
 
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
 
-    private Map<Order, SingleOrderDocumentParameterGenerator> typeToGenerator;
+    private Map<Order, DocmosisParameterGenerator> typeToGenerator;
 
-    public Map<Order, SingleOrderDocumentParameterGenerator> getTypeToGenerator() {
+    public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
                 c32CareOrderDocumentParameterGenerator
             ).stream().collect(Collectors.toMap(
-                SingleOrderDocumentParameterGenerator::accept,
+                DocmosisParameterGenerator::accept,
                 Function.identity()
             ));
         }
