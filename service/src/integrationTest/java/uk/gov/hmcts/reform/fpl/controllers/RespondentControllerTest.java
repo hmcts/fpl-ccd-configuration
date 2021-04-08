@@ -31,7 +31,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
         super("enter-respondents");
     }
 
-    private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
+    private static final String DOB_ERROR_MESSAGE = "Date of birth cannot be in the future";
+    private static final String SOLICITOR_NAME_ERROR_MESSAGE = "Enter a representative name";
 
     @Test
     void aboutToStartShouldPrepopulateRespondent() {
@@ -52,7 +53,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(DOB_ERROR_MESSAGE);
     }
 
     @Test
@@ -63,13 +64,61 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().minusDays(1))))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnRespondentSolicictorNameErrorWhenInvalidName() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(
+                Respondent.builder()
+                    .party(RespondentParty.builder().dateOfBirth(dateNow()).build())
+                    .legalRepresentation(YES.getValue())
+                    .solicitor(RespondentSolicitor.builder().lastName(null).build())
+                    .build())
+            ).build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+
+        assertThat(callbackResponse.getErrors()).contains(SOLICITOR_NAME_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnRespondentSolicictorNameErrorForRespondentWhenThereIsMultipleRespondents() {
+        Respondent respondent = Respondent.builder()
+            .party(RespondentParty.builder()
+                .dateOfBirth(dateNow())
+                .build())
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email("test@test.com")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent, respondent))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+
+        assertThat(callbackResponse.getErrors()).contains(SOLICITOR_NAME_ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnRespondentSolicictorNameErrorWhenValidName() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(respondent(dateNow(), "test@test.com")))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -85,7 +134,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(ERROR_MESSAGE,
+        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(DOB_ERROR_MESSAGE,
             "Representative 1: Enter an email address in the correct format, for example name@example.com");
     }
 
@@ -178,6 +227,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .build())
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
+                .lastName("Smith")
                 .email(email)
                 .build())
             .build();

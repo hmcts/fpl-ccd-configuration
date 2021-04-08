@@ -273,8 +273,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             expectedUnregisteredSolicitorParameterss, new TypeReference<>() {
             });
 
-        System.out.println(caseDetails.getData().get("localAuthorityName"));
-
         checkUntil(() ->
             verify(notificationClient).sendEmail(
                 UNREGISTERED_RESPONDENT_SOLICICTOR,

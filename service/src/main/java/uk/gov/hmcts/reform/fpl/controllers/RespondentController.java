@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Slf4j
@@ -62,8 +63,8 @@ public class RespondentController extends CallbackController {
         List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
 
         List<String> emailErrors = validateEmailService.validate(emails, "Representative");
-        List<String> futureDOBErrors = validate(caseDetails);
-        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
+        List<String> validationErrors = validate(caseDetails);
+        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), validationErrors.stream())
             .collect(Collectors.toList());
 
         return respond(caseDetails, combinedValidationErrors);
@@ -101,6 +102,13 @@ public class RespondentController extends CallbackController {
             .filter(dob -> dob.isAfter(time.now().toLocalDate()))
             .findAny()
             .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
+
+        caseData.getAllRespondents().stream()
+            .map(Element::getValue).filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation()))
+            .map(Respondent::getSolicitor)
+            .filter(solicitor -> (solicitor.getLastName() == null))
+            .findAny()
+            .ifPresent(solicitor -> errors.add("Enter a representative name"));
 
         return errors.build();
     }
