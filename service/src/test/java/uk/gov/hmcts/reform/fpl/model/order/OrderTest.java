@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.order;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -16,10 +18,15 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.SECTION_4;
 
 class OrderTest {
 
-    @ParameterizedTest
-    @MethodSource("ordersAndFirstSections")
-    void firstSection(Order order, OrderSection expectedFirstSection) {
-        assertThat(order.firstSection()).isEqualTo(expectedFirstSection);
+    @Test
+    void fileExtension() {
+        assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
+        assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
+    }
+
+    @Test
+    void firstSection() {
+        assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(SECTION_2);
     }
 
     @ParameterizedTest
@@ -34,12 +41,6 @@ class OrderTest {
             Arguments.of(C32_CARE_ORDER, SECTION_3, Optional.of(SECTION_4)),
             Arguments.of(C32_CARE_ORDER, SECTION_4, Optional.of(REVIEW)),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty())
-        );
-    }
-
-    private static Stream<Arguments> ordersAndFirstSections() {
-        return Stream.of(
-            Arguments.of(C32_CARE_ORDER, SECTION_2)
         );
     }
 }

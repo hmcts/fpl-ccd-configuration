@@ -14,18 +14,20 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 
 @Api
 @RestController
@@ -35,9 +37,9 @@ public class ManageOrdersController extends CallbackController {
 
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
-    private final OrderDocumentGenerator orderDocumentGenerator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
+    private final OrderCreationService orderCreationService;
 
     @PostMapping("/section-1/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
@@ -85,10 +87,8 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
-
-        DocmosisDocument docmosisDocument = orderDocumentGenerator.generate(order, caseData, OrderStatus.SEALED);
-        // TODO: 01/04/2021 upload to dm store
+        DocumentReference pdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
+        DocumentReference wordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
 
         // TODO: 01/04/2021 create object to store doc and other details in
 

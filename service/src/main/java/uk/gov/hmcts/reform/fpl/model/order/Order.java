@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.order;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,10 @@ public enum Order {
     private final List<OrderQuestionBlock> questions;
     private final String title;
     private final String childrenAct;
+
+    public String fileName(RenderFormat format) {
+        return String.format("%s.%s", this.name().toLowerCase(), format.getExtension());
+    }
 
     public OrderSection firstSection() {
         return this.getQuestions().get(0).getSection();

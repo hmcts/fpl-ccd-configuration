@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -25,7 +26,7 @@ public class OrderDocumentGenerator {
     private final OrderDocumentGeneratorHolder holder;
     private final DocmosisCommonElementDecorator decorator;
 
-    public DocmosisDocument generate(Order orderType, CaseData caseData, OrderStatus orderStatus) {
+    public DocmosisDocument generate(Order orderType, CaseData caseData, OrderStatus orderStatus, RenderFormat format) {
         DocmosisParameterGenerator documentGenerator = holder.getTypeToGenerator().get(orderType);
 
         DocmosisParameters docmosisParameters = Optional.ofNullable(documentGenerator)
@@ -33,15 +34,12 @@ public class OrderDocumentGenerator {
                 DocmosisParameters customParameters = generator.generate(caseData);
                 return decorator.decorate(customParameters, caseData, orderStatus, generator.accept());
             })
-            .orElseThrow(
-                () -> new UnsupportedOperationException("Not implemented yet for order " + orderType.name())
-            );
+            .orElseThrow(() -> new UnsupportedOperationException("Not implemented yet for order " + orderType.name()));
 
         Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {});
 
         return docmosisDocumentGeneratorService.generateDocmosisDocument(
-            templateData, documentGenerator.template()
+            templateData, documentGenerator.template(), format
         );
     }
-
 }
