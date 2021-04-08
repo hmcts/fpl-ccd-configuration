@@ -12,7 +12,6 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
 
     @Test
     void calculate() {
-
         assertThat(underTest.calculate()).isEqualTo(
             List.of(
                 "judgeAndLegalAdvisor",
@@ -21,7 +20,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
                 "children_label",
                 "childSelector",
                 "manageOrdersFurtherDirections",
-                "something",
+                "orderPreview",
                 "manageOrdersType",
                 "orderTempQuestions"
             )

@@ -59,7 +59,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void section2ShouldCorrectlySetAllDetails() {
         final CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(Order.C32_CARE_ORDER).build())
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(Order.C32_CARE_ORDER)
+                .manageOrdersApprovalDate(dateNow())
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "section-2");

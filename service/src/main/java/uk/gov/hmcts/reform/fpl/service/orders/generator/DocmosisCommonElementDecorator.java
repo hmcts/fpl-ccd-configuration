@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,7 +43,6 @@ public class DocmosisCommonElementDecorator {
         );
         DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLegalAdvisor =
             extractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
-
 
         return currentParameters.toBuilder()
             .orderTitle(orderType.getTitle())
