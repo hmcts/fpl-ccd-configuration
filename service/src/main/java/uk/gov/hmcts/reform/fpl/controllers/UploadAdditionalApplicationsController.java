@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C2_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -57,8 +58,10 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseData.getTemporaryC2Document().setType(caseData.getC2Type());
-        caseDetails.getData().put("temporaryC2Document", caseData.getTemporaryC2Document());
+        if (!isNull(caseData.getTemporaryC2Document())) {
+            caseData.getTemporaryC2Document().setType(caseData.getC2Type());
+            caseDetails.getData().put("temporaryC2Document", caseData.getTemporaryC2Document());
+        }
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
