@@ -10,8 +10,11 @@ import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
@@ -20,12 +23,15 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.MessageJudgeOptions.REPLY;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 
 @WebMvcTest(MessageJudgeController.class)
@@ -69,51 +75,58 @@ class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
 
     @Test
     void shouldPopulateRelatedDocumentsFieldsWhenSendingANewJudicialMessage() {
-        DocumentReference mainC2Document = DocumentReference.builder()
+        DocumentReference mainDocument = DocumentReference.builder()
             .filename("c2.doc")
             .build();
 
-        DocumentReference supportingC2Document = DocumentReference.builder()
-            .filename("additional_c2_document.doc")
+        DocumentReference supportingDocument = DocumentReference.builder()
+            .filename("supporting.doc")
             .build();
 
-        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
-            .document(mainC2Document)
-            .supportingEvidenceBundle(List.of(
-                element(SupportingEvidenceBundle.builder()
-                    .document(supportingC2Document)
-                    .build())))
+        SupportingEvidenceBundle supportingEvidenceBundle = SupportingEvidenceBundle.builder()
+            .name("Supporting evidence")
+            .document(supportingDocument)
             .build();
 
-        UUID notSelectedC2BundleId = UUID.randomUUID();
+        UUID notSelectedBundleId = randomUUID();
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles = List.of(
+            element(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .id(DYNAMIC_LIST_ITEM_ID)
+                    .uploadedDateTime("1 January 2021, 12:00pm")
+                    .document(mainDocument)
+                    .supportingEvidenceBundle(wrapElements(supportingEvidenceBundle))
+                    .build())
+                .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                    .id(notSelectedBundleId)
+                    .uploadedDateTime("1 January 2021, 12:00pm")
+                    .applicationType(C1_APPOINTMENT_OF_A_GUARDIAN)
+                    .build())
+                .build()
+            ));
+
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(MessageJudgeEventData.builder()
-                .c2DynamicList(DYNAMIC_LIST_ITEM_ID)
+                .additionalApplicationsDynamicList(DYNAMIC_LIST_ITEM_ID)
                 .build())
-            .c2DocumentBundle(List.of(
-                element(DYNAMIC_LIST_ITEM_ID, selectedC2DocumentBundle),
-                element(notSelectedC2BundleId, C2DocumentBundle.builder()
-                    .document(DocumentReference.builder()
-                        .filename("other_c2.doc")
-                        .build())
-                    .build())
-            ))
+            .additionalApplicationsBundle(additionalApplicationsBundles)
             .build();
 
-        String expectedC2Label = mainC2Document.getFilename() + "\n" + supportingC2Document.getFilename();
+        String expectedDocumentLabel = mainDocument.getFilename() + "\n" + supportingDocument.getFilename();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData));
 
         DynamicList builtDynamicList = mapper.convertValue(
-            response.getData().get("c2DynamicList"), DynamicList.class
+            response.getData().get("additionalApplicationsDynamicList"), DynamicList.class
         );
 
         DynamicList expectedDynamicList = buildDynamicList(0,
-            Pair.of(DYNAMIC_LIST_ITEM_ID, "Application 1: null"),
-            Pair.of(notSelectedC2BundleId, "Application 2: null")
+            Pair.of(DYNAMIC_LIST_ITEM_ID, "C2, 1 January 2021, 12:00pm"),
+            Pair.of(notSelectedBundleId, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
         );
 
-        assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(expectedC2Label);
+        assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(expectedDocumentLabel);
         assertThat(builtDynamicList).isEqualTo(expectedDynamicList);
     }
 

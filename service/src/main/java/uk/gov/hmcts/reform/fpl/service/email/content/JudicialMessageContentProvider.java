@@ -23,30 +23,17 @@ public class JudicialMessageContentProvider extends AbstractEmailContentProvider
 
     public NewJudicialMessageTemplate buildNewJudicialMessageTemplate(CaseData caseData,
                                                                       JudicialMessage judicialMessage) {
-        NewJudicialMessageTemplate.NewJudicialMessageTemplateBuilder<?, ?> templateBuilder
-            = NewJudicialMessageTemplate.builder()
+        return NewJudicialMessageTemplate.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
             .callout(buildCalloutWithNextHearing(caseData, time.now()))
             .sender(judicialMessage.getSender())
             .latestMessage(judicialMessage.getLatestMessage())
-            .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES));
-
-        if (isNotEmpty(judicialMessage.getUrgency())) {
-            templateBuilder.hasUrgency(YES.getValue());
-            templateBuilder.urgency(judicialMessage.getUrgency());
-        } else {
-            templateBuilder.hasUrgency(NO.getValue());
-            templateBuilder.urgency("");
-        }
-
-        if (isNotEmpty(judicialMessage.getApplicationType())) {
-            templateBuilder.hasApplication(YES.getValue());
-            templateBuilder.applicationType(judicialMessage.getApplicationType());
-        } else {
-            templateBuilder.hasApplication(NO.getValue());
-            templateBuilder.applicationType("");
-        }
-
-        return templateBuilder.build();
+            .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES))
+            .hasApplication(isNotEmpty(judicialMessage.getApplicationType()) ? YES.getValue() : NO.getValue())
+            .applicationType(
+                isNotEmpty(judicialMessage.getApplicationType()) ? judicialMessage.getApplicationType() : "")
+            .hasUrgency(isNotEmpty(judicialMessage.getUrgency()) ? YES.getValue() : NO.getValue())
+            .urgency(isNotEmpty(judicialMessage.getUrgency()) ? judicialMessage.getUrgency() : "")
+            .build();
     }
 }
