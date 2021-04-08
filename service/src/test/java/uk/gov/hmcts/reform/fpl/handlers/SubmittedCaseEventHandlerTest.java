@@ -17,12 +17,17 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.RespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
@@ -33,12 +38,15 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
 @ExtendWith(SpringExtension.class)
@@ -58,6 +66,9 @@ class SubmittedCaseEventHandlerTest {
 
     @Mock
     private CafcassEmailContentProvider cafcassEmailContentProvider;
+
+    @Mock
+    private RespondentSolicitorContentProvider respondentSolicitorContentProvider;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -108,6 +119,34 @@ class SubmittedCaseEventHandlerTest {
 
         verify(notificationService).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
+            expectedEmail,
+            expectedTemplate,
+            caseData.getId());
+    }
+
+    @Test
+    void shouldSendEmailToUnregisteredSolicitor() {
+        final String expectedEmail = "test@test.com";
+        final CaseData caseDataBefore = caseData();
+
+        final CaseData caseData = CaseData.builder().respondents1(
+            wrapElements(Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .solicitor(RespondentSolicitor.builder()
+                    .email(expectedEmail)
+                    .unregisteredOrganisation(UnregisteredOrganisation.builder().name("Unregistered Org Name").build())
+                    .build()).build())
+        ).build();
+
+        final RespondentSolicitorTemplate expectedTemplate = RespondentSolicitorTemplate.builder().build();
+        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
+        when(respondentSolicitorContentProvider.buildNotifyRespondentSolicitorTemplate(any(CaseData.class), any(
+            RespondentSolicitor.class))).thenReturn(expectedTemplate);
+
+        submittedCaseEventHandler.notifyUnregisteredSolicitors(submittedCaseEvent);
+
+        verify(notificationService).sendEmail(
+            UNREGISTERED_RESPONDENT_SOLICICTOR,
             expectedEmail,
             expectedTemplate,
             caseData.getId());
@@ -225,6 +264,7 @@ class SubmittedCaseEventHandlerTest {
         assertClass(SubmittedCaseEventHandler.class).hasAsyncMethods(
             "notifyAdmin",
             "notifyCafcass",
+            "notifyUnregisteredSolicitors",
             "makePayment");
     }
 

@@ -13,9 +13,11 @@ import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentPro
 
 public class RespondentSolicitorContentProvider extends SharedNotifyContentProvider {
 
-    public RespondentSolicitorTemplate buildNotifyRespondentSolicitorTemplate(CaseData caseData, RespondentSolicitor representative) {
+    public RespondentSolicitorTemplate buildNotifyRespondentSolicitorTemplate(CaseData caseData,
+                                                                              RespondentSolicitor representative) {
+
         return RespondentSolicitorTemplate.builder()
-            .representativeName(representative.getFirstName() + " " + representative.getLastName())
+            .representativeName(representative.getLastName())
             .localAuthority(caseData.getCaseLocalAuthorityName())
             .build();
     }
