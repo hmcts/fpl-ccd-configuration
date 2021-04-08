@@ -57,6 +57,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        caseData.getTemporaryC2Document().setType(caseData.getC2Type());
+        caseDetails.getData().put("temporaryC2Document", caseData.getTemporaryC2Document());
+
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
 
         return respond(caseDetails);
