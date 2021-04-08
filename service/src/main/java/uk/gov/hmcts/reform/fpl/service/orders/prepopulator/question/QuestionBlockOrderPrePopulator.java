@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 
@@ -10,5 +9,5 @@ public interface QuestionBlockOrderPrePopulator {
 
     OrderQuestionBlock accept();
 
-    Map<String,Object> prePopulate(CaseData caseData, CaseDetails caseDetails);
+    Map<String,Object> prePopulate(CaseData caseData);
 }

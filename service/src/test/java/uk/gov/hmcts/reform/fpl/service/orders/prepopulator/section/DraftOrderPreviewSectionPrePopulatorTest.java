@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -21,7 +20,6 @@ import static org.mockito.Mockito.when;
 class DraftOrderPreviewSectionPrePopulatorTest {
 
     private static final Order ORDER = Order.C32_CARE_ORDER;
-    private static final CaseDetails CASE_DETAILS = mock(CaseDetails.class);
     private static final byte[] DOCUMENT_DATA = {1, 2, 3, 4, 5};
     private static final DocmosisDocument DOCUMENT = new DocmosisDocument("some title", DOCUMENT_DATA);
 
@@ -45,7 +43,7 @@ class DraftOrderPreviewSectionPrePopulatorTest {
 
         when(orderDocumentGenerator.generate(ORDER, caseData, OrderStatus.DRAFT)).thenReturn(DOCUMENT);
 
-        Map<String, Object> actual = underTest.prePopulate(caseData, CASE_DETAILS);
+        Map<String, Object> actual = underTest.prePopulate(caseData);
 
         assertThat(actual).isEqualTo(Map.of());
         verify(orderDocumentGenerator).generate(ORDER, caseData, OrderStatus.DRAFT);

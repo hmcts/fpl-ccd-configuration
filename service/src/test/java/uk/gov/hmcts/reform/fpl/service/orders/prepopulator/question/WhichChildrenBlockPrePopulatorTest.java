@@ -41,7 +41,7 @@ class WhichChildrenBlockPrePopulatorTest {
         when(childrenService.getIndexesOfChildrenWithFinalOrderIssued(caseData)).thenReturn(HIDDEN_LIST);
         when(childrenService.getChildrenLabel(children, true)).thenReturn(CHILDREN_LABEL);
 
-        assertThat(underTest.prePopulate(caseData, null)).isEqualTo(
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(
             Map.of(
                 "childSelector", Selector.builder()
                     .hidden(HIDDEN_LIST)

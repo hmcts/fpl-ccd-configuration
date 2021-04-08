@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
@@ -27,8 +26,7 @@ public class DraftOrderPreviewSectionPrePopulator implements OrderSectionPrePopu
     }
 
     @Override
-    public Map<String, Object> prePopulate(CaseData caseData,
-                                           CaseDetails caseDetails) {
+    public Map<String, Object> prePopulate(CaseData caseData) {
         DocmosisDocument draftOrder = orderDocumentGenerator.generate(
             caseData.getManageOrdersEventData().getManageOrdersType(), caseData, DRAFT
         );

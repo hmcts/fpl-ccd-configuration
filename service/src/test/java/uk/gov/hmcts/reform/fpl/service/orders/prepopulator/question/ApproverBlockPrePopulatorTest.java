@@ -37,7 +37,7 @@ class ApproverBlockPrePopulatorTest {
             helper.when(() -> JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel(ALLOCATED_JUDGE)).thenReturn(
                 FORMATTED_JUDGE);
 
-            assertThat(underTest.prePopulate(caseData, null)).isEqualTo(Map.of(
+            assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of(
                 "judgeAndLegalAdvisor", Map.of(
                     "allocatedJudgeLabel", buildAllocatedJudgeLabel(ALLOCATED_JUDGE)
                 )

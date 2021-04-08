@@ -50,7 +50,7 @@ public class ManageOrdersController extends CallbackController {
         data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(order));
 
         data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
-            order, order.getQuestions().get(0).getSection(), caseData, caseDetails
+            order, order.getQuestions().get(0).getSection(), caseData
         ));
 
         return respond(caseDetails);
@@ -73,7 +73,7 @@ public class ManageOrdersController extends CallbackController {
             nextSection -> {
                 if (errors.isEmpty()) {
                     data.putAll(
-                        orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData, caseDetails));
+                        orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData));
                 }
             }
         );
