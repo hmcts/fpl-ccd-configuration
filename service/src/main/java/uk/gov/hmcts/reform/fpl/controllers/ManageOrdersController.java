@@ -67,7 +67,7 @@ public class ManageOrdersController extends CallbackController {
 
         OrderSection currentSection = OrderSection.from(section);
 
-        List<String> errors = orderValidator.validate(order, currentSection, caseDetails);
+        List<String> errors = orderValidator.validate(order, currentSection, caseData);
 
         order.nextSection(currentSection).ifPresent(
             nextSection -> {
