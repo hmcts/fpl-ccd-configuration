@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIAN
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(UploadAdditionalApplicationsController.class)
@@ -53,24 +53,24 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
     @Test
     void shouldCalculateFeeForSelectedOrderBundlesAndAddAmountToPayField() {
         C2DocumentBundle temporaryC2Document = C2DocumentBundle.builder()
-            .type(WITH_NOTICE)
-            .supplementsBundle(
-                List.of(element(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build())))
+            .supplementsBundle(wrapElements(Supplement.builder().name(C13A_SPECIAL_GUARDIANSHIP).build()))
             .build();
 
         OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
             .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
             .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
             .document(DocumentReference.builder().build())
-            .supplementsBundle(
-                List.of(element(Supplement.builder().name(C20_SECURE_ACCOMMODATION)
-                    .secureAccommodationType(SecureAccommodationType.WALES).build())))
+            .supplementsBundle(wrapElements(Supplement.builder()
+                .name(C20_SECURE_ACCOMMODATION)
+                .secureAccommodationType(SecureAccommodationType.WALES)
+                .build()))
             .build();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .temporaryOtherApplicationsBundle(temporaryOtherDocument)
             .temporaryC2Document(temporaryC2Document)
+            .c2Type(WITH_NOTICE)
             .build();
 
         List<FeeType> feeTypes = List.of(FeeType.C2_WITH_NOTICE, FeeType.SPECIAL_GUARDIANSHIP,
@@ -79,7 +79,7 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
         given(feeService.getFeesDataForAdditionalApplications(feeTypes))
             .willReturn(FeesData.builder().totalAmount(BigDecimal.TEN).build());
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(asCaseDetails(caseData), "get-fee");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
