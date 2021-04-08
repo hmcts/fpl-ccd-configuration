@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
-    private final C2ApplicationType type;
+    private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;
