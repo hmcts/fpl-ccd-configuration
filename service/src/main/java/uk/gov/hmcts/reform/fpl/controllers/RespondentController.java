@@ -35,6 +35,8 @@ import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 @RequestMapping("/callback/enter-respondents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController extends CallbackController {
+
+    private static final int MAX_RESPONDENTS = 10;
     private static final String RESPONDENTS_KEY = "respondents1";
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
@@ -62,8 +64,8 @@ public class RespondentController extends CallbackController {
         List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
 
         List<String> emailErrors = validateEmailService.validate(emails, "Representative");
-        List<String> futureDOBErrors = validate(caseDetails);
-        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), futureDOBErrors.stream())
+        List<String> respondentDetailsErrors = validate(caseDetails);
+        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), respondentDetailsErrors.stream())
             .collect(Collectors.toList());
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(caseData.getRespondents1()));
@@ -93,6 +95,10 @@ public class RespondentController extends CallbackController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getAllRespondents().size() > 10) {
+            errors.add(String.format("Maximum number of respondents is %s", MAX_RESPONDENTS));
+        }
 
         caseData.getAllRespondents().stream()
             .map(Element::getValue)

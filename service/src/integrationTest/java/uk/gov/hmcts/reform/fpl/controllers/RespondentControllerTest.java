@@ -31,7 +31,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
         super("enter-respondents");
     }
 
-    private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
+    private static final String DOB_ERROR = "Date of birth cannot be in the future";
+    private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
 
     @Test
     void aboutToStartShouldPrepopulateRespondent() {
@@ -45,6 +46,20 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    void shouldReturnMaximumRespondentErrorsWhenNumberOfRespondentsExceeds10() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(wrapElements(
+                respondent(dateNow()), respondent(dateNow()), respondent(dateNow()), respondent(dateNow()),
+                respondent(dateNow()), respondent(dateNow()), respondent(dateNow()), respondent(dateNow()),
+                respondent(dateNow()), respondent(dateNow()), respondent(dateNow()), respondent(dateNow())))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
+
+        assertThat(callbackResponse.getErrors()).contains(MAX_RESPONDENTS_ERROR);
+    }
+
+    @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().plusDays(1))))
@@ -52,7 +67,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(DOB_ERROR);
     }
 
     @Test
@@ -63,7 +78,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR);
     }
 
     @Test
@@ -85,7 +100,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(ERROR_MESSAGE,
+        assertThat(callbackResponse.getErrors()).containsExactlyInAnyOrder(DOB_ERROR,
             "Representative 1: Enter an email address in the correct format, for example name@example.com");
     }
 
@@ -115,7 +130,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
-
 
     @Test
     void shouldPersistRepresentativeAssociation() {
