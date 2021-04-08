@@ -72,8 +72,7 @@ public class ManageOrdersController extends CallbackController {
         order.nextSection(currentSection).ifPresent(
             nextSection -> {
                 if (errors.isEmpty()) {
-                    data.putAll(
-                        orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData));
+                    data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(order, nextSection, caseData));
                 }
             }
         );

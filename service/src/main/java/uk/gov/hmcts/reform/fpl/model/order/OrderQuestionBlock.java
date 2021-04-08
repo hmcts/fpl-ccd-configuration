@@ -17,7 +17,7 @@ public enum OrderQuestionBlock {
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.SECTION_4,
         List.of("manageOrdersFurtherDirections")),
     REVIEW_DRAFT_ORDER("draftOrder", "Review draft order",OrderSection.REVIEW,
-        List.of("something"));
+        List.of("orderPreview"));
 
 
     private final String showHideField;
