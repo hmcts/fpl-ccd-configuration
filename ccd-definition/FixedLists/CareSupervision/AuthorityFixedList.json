@@ -331,72 +331,79 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NWT",
+    "ListElement": "Newport City Council",
+    "DisplayOrder": 48
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NFK",
     "ListElement": "Norfolk County Council",
-    "DisplayOrder": 48
+    "DisplayOrder": 49
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NELC",
     "ListElement": "North East Lincolnshire Council",
-    "DisplayOrder": 49
+    "DisplayOrder": 50
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NLC",
     "ListElement": "North Lincolnshire Council",
-    "DisplayOrder": 50
+    "DisplayOrder": 51
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NSC",
     "ListElement": "North Somerset Council",
-    "DisplayOrder": 51
+    "DisplayOrder": 52
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NYS",
     "ListElement": "North Yorkshire County Council",
-    "DisplayOrder": 52
+    "DisplayOrder": 53
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NTH",
     "ListElement": "Northamptonshire County Council",
-    "DisplayOrder": 53
+    "DisplayOrder": 54
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NHC",
     "ListElement": "Nottingham City Council",
-    "DisplayOrder": 54
+    "DisplayOrder": 55
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "NGC",
     "ListElement": "Nottinghamshire County Council",
-    "DisplayOrder": 55
+    "DisplayOrder": 56
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "OLC",
     "ListElement": "Oldham Council",
-    "DisplayOrder": 56
+    "DisplayOrder": 57
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "OCC",
     "ListElement": "Oxfordshire County Council",
-    "DisplayOrder": 57
+    "DisplayOrder": 58
   },
   {
     "LiveFrom": "01/01/2017",
