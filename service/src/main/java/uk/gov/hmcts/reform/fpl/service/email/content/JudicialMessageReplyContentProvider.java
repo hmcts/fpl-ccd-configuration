@@ -23,21 +23,14 @@ public class JudicialMessageReplyContentProvider extends AbstractEmailContentPro
 
     public JudicialMessageReplyTemplate buildJudicialMessageReplyTemplate(CaseData caseData,
                                                                           JudicialMessage judicialMessage) {
-        JudicialMessageReplyTemplate.JudicialMessageReplyTemplateBuilder<?, ?> templateBuilder =
-            JudicialMessageReplyTemplate.builder()
-                .respondentLastName(getFirstRespondentLastName(caseData))
-                .callout(buildCalloutWithNextHearing(caseData, time.now()))
-                .latestMessage(judicialMessage.getLatestMessage())
-                .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES));
-
-        if (isNotEmpty(judicialMessage.getApplicationType())) {
-            templateBuilder.hasApplication(YES.getValue());
-            templateBuilder.applicationType(judicialMessage.getApplicationType());
-        } else {
-            templateBuilder.hasApplication(NO.getValue());
-            templateBuilder.applicationType("");
-        }
-
-        return templateBuilder.build();
+        return JudicialMessageReplyTemplate.builder()
+            .respondentLastName(getFirstRespondentLastName(caseData))
+            .callout(buildCalloutWithNextHearing(caseData, time.now()))
+            .latestMessage(judicialMessage.getLatestMessage())
+            .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES))
+            .hasApplication(isNotEmpty(judicialMessage.getApplicationType()) ? YES.getValue() : NO.getValue())
+            .applicationType(
+                isNotEmpty(judicialMessage.getApplicationType()) ? judicialMessage.getApplicationType() : "")
+            .build();
     }
 }
