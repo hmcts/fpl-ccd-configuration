@@ -55,7 +55,8 @@ public class CaseSubmissionService {
                 NoticeOfChangeRespondent noticeOfChangeRespondent = noticeOfChangeRespondentConverter.convert(
                     respondentElement, firstApplicant, SolicitorRole.values()[i]);
 
-                caseDetails.getData().put(String.format("respondentPolicy%d", i + 1), noticeOfChangeRespondent.getOrganisationPolicy());
+                caseDetails.getData().put(String.format("respondentPolicy%d", i + 1),
+                    noticeOfChangeRespondent.getOrganisationPolicy());
             }
         }
 
