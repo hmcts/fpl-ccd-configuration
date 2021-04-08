@@ -28,12 +28,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 public class C2DocumentBundle implements ApplicationsBundle {
     private final UUID id;
-    private final C2ApplicationType type;
-
-public class C2DocumentBundle implements ConfidentialBundle {
     private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
