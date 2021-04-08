@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class WhichChildrenBlockPrePopulatorTest {
 
-    private static final List<Integer> HIDDEN_LIST = List.of(1);
     private static final String CHILDREN_LABEL = "children label";
     private final ChildrenService childrenService = mock(ChildrenService.class);
 
@@ -38,14 +37,11 @@ class WhichChildrenBlockPrePopulatorTest {
             .children1(children)
             .build();
 
-        when(childrenService.getIndexesOfChildrenWithFinalOrderIssued(caseData)).thenReturn(HIDDEN_LIST);
-        when(childrenService.getChildrenLabel(children, true)).thenReturn(CHILDREN_LABEL);
+        when(childrenService.getChildrenLabel(children, false)).thenReturn(CHILDREN_LABEL);
 
         assertThat(underTest.prePopulate(caseData)).isEqualTo(
             Map.of(
-                "childSelector", Selector.builder()
-                    .hidden(HIDDEN_LIST)
-                    .build().setNumberOfOptions(2),
+                "childSelector", Selector.builder().count("12").build(),
                 "children_label", CHILDREN_LABEL
             )
         );

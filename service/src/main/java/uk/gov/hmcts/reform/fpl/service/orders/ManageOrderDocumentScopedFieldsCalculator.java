@@ -22,5 +22,4 @@ public class ManageOrderDocumentScopedFieldsCalculator {
 
         return fields;
     }
-
 }

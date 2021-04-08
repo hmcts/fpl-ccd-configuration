@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPre
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
@@ -67,8 +66,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             )
         );
 
-        verify(approverBlockPrePopulator,times(1)).accept();
-        verify(whichChildrenBlockPrePopulator,times(1)).accept();
+        verify(approverBlockPrePopulator).accept();
+        verify(whichChildrenBlockPrePopulator).accept();
     }
 
     @Test
@@ -90,6 +89,6 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             )
         );
 
-        verify(draftOrderPreviewSectionPrePopulator,times(1)).accept();
+        verify(draftOrderPreviewSectionPrePopulator).accept();
     }
 }

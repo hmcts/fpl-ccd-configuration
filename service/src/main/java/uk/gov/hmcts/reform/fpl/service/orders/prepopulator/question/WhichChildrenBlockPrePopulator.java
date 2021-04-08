@@ -27,18 +27,9 @@ public class WhichChildrenBlockPrePopulator implements QuestionBlockOrderPrePopu
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
         final Selector childSelector = newSelector(caseData.getAllChildren().size());
-
-        // Are all closable???
-        //        boolean closable = caseData.getOrderTypeAndDocument().isClosable();
-        boolean closable = true;
-
-        if (closable) {
-            childSelector.setHidden(childrenService.getIndexesOfChildrenWithFinalOrderIssued(caseData));
-        }
         return Map.of(
             "childSelector", childSelector,
-            "children_label", childrenService.getChildrenLabel(caseData.getAllChildren(), closable)
+            "children_label", childrenService.getChildrenLabel(caseData.getAllChildren(), false)
         );
-
     }
 }

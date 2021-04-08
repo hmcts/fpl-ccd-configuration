@@ -12,7 +12,6 @@ import org.mockito.quality.Strictness;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
@@ -47,7 +46,7 @@ class OrderDocumentGeneratorHolderTest {
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator
         ));
 
-        verify(c32CareOrderDocumentParameterGenerator, times(1)).accept();
+        verify(c32CareOrderDocumentParameterGenerator).accept();
     }
 
 }
