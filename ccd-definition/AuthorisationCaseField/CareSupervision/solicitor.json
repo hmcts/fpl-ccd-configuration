@@ -309,7 +309,7 @@
     "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -318,7 +318,7 @@
     "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
-    "CRUD": "R"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -392,15 +392,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "draftUploadedCMOs",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
-    ],
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoUploadType",
     "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
@@ -433,14 +424,6 @@
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "cmoSupportingDocs",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRUD",
-    "Comment": "Requires idam role otherwise cannot add to. This does not support [SOLICITOR] role"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -481,15 +464,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "uploadedCaseManagementOrder",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
-    ],
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToSend",
     "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
@@ -513,15 +487,6 @@
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "sealedCMOs",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
-    ],
-    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -563,15 +528,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "currentHearingOrderDrafts",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
-    ],
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hearingOrdersBundlesDrafts",
     "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
       "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
     ],
