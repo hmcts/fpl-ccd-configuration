@@ -26,6 +26,25 @@ module.exports = [
       lastName: 'Smith',
       email: 'adam@smith.com',
       organisation: 'Swansea',
+      organisationAddress: {
+        buildingAndStreet: {
+          lineOne: 'Flat 1, Swansea Apartments',
+          lineTwo: 'Swansea Central Square 11',
+          lineThree: '40 Fleet street',
+        },
+        town: 'Swansea',
+        city: 'Swansea',
+        postcode: 'CR0 2GE',
+      },
+      regionalOfficeAddress: {
+        buildingAndStreet: {
+          lineOne: 'Flat 15',
+          lineTwo: 'Caversham House 30-35',
+          lineThree: 'Church Road',
+        },
+        town: 'Reading',
+        postcode: 'RG4 7AA',
+      },
     },
   },
   {
@@ -50,5 +69,47 @@ module.exports = [
     telephone: '00000 000000',
     relationshipToChild: 'Uncle',
     gender: 'Male',
+  },
+  {
+    firstName: 'Paul',
+    lastName: 'Jones',
+    dob: {
+      day: '04',
+      month: '04',
+      year: '1978',
+    },
+    address: {
+      lookupOption: 'Albert Row, Oystermouth Rd, Maritime Quarter, Swansea',
+      buildingAndStreet: {
+        lineOne: 'Albert Row',
+        lineTwo: 'Oystermouth Rd',
+        lineThree: 'Maritime Quarter',
+      },
+      town: 'Swansea',
+      postcode: 'SA1 6JQ',
+      country: 'United Kingdom',
+    },
+    telephone: '00000 000000',
+    relationshipToChild: 'Uncle',
+    gender: 'Male',
+    solicitor: {
+      firstName: 'Rupert',
+      lastName: 'Bear',
+      email: 'rupert@bear.com',
+      unregisteredOrganisation: {
+        name: 'Swansea Managing Office',
+        address: {
+          lookupOption: 'The Tower, Trawler Rd, Maritime Quarter, Swansea',
+          buildingAndStreet: {
+            lineOne: 'The Tower',
+            lineTwo: 'Trawlery Rd',
+            lineThree: 'Maritime Quarter',
+          },
+          town: 'Swansea',
+          postcode: 'SA1 1JW',
+          country: 'United Kingdom',
+        },
+      },
+    },
   },
 ];

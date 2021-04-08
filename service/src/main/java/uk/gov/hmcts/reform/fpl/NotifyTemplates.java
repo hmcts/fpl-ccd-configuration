@@ -19,7 +19,6 @@ public final class NotifyTemplates {
     public static final String ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES =
         "a0f911cf-4010-4022-bf34-a183cd711b8e";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_ADMIN = "bb40930c-a583-4868-a1f6-1e398e7554d3";
-    public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE = "e8a21f19-3e51-4cdd-99cf-a32b4e5fedd4";
     public static final String ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES =
         "1827ae2d-d7c3-4094-8978-c2f77d7713fa";
     public static final String DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE = "f9ef5385-258b-4d57-84b4-4915afd3ba5e";
@@ -39,6 +38,7 @@ public final class NotifyTemplates {
         = "7d362e1e-bc87-4d63-8218-3835abecb600";
     public static final String LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE = "7f3bf6f3-64cd-4b36-ba56-6c7a676a4816";
     public static final String UPCOMING_HEARINGS_TEMPLATE = "c24308e9-cc0b-4548-8927-33c0a8a3cdb8";
+    public static final String UNDELIVERED_EMAILS_TEMPLATE = "35840c28-78b7-48c2-bd09-239598dae28b";
     public static final String APPLICATION_RETURNED_TO_THE_LA = "2d8b5486-7527-42ea-9b56-e79bfc0f6c27";
     public static final String AMENDED_APPLICATION_RETURNED_ADMIN_TEMPLATE = "7d72d10b-155f-4a27-94ad-8e8be71d1265";
     public static final String AMENDED_APPLICATION_RETURNED_CAFCASS_TEMPLATE = "d2e44b62-436c-4bb6-b3b9-afa4f2bca7b5";

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 
@@ -47,6 +48,26 @@ public class RespondentService {
         });
 
         return newRespondents;
+    }
+
+    //If user entered details that were subsequently hidden after change of mind, remove them
+    public List<Element<Respondent>> removeHiddenFields(List<Element<Respondent>> respondents) {
+        respondents.forEach(respondentElement -> {
+            Respondent respondent = respondentElement.getValue();
+
+            if (NO.getValue().equals(respondent.getLegalRepresentation())) {
+                respondent.setSolicitor(null);
+            } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
+                if (isNotEmpty(respondent.getSolicitor().getOrganisation())
+                    && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
+                    respondent.getSolicitor().setUnregisteredOrganisation(null);
+                } else {
+                    respondent.getSolicitor().setRegionalOfficeAddress(null);
+                }
+            }
+        });
+
+        return respondents;
     }
 
     public List<Respondent> getRespondentsWithLegalRepresentation(List<Element<Respondent>> respondents) {

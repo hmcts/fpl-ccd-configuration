@@ -36,6 +36,8 @@ import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 @RequestMapping("/callback/enter-respondents")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController extends CallbackController {
+
+    private static final int MAX_RESPONDENTS = 10;
     private static final String RESPONDENTS_KEY = "respondents1";
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
@@ -63,10 +65,11 @@ public class RespondentController extends CallbackController {
         List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
 
         List<String> emailErrors = validateEmailService.validate(emails, "Representative");
-        List<String> validationErrors = validate(caseDetails);
-        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), validationErrors.stream())
+        List<String> respondentDetailsErrors = validate(caseDetails);
+        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), respondentDetailsErrors.stream())
             .collect(Collectors.toList());
 
+        caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(caseData.getRespondents1()));
         return respond(caseDetails, combinedValidationErrors);
     }
 
@@ -83,16 +86,20 @@ public class RespondentController extends CallbackController {
         // can either do before or after but have to update case details manually either way as if there is no
         // confidential info then caseDetails won't be updated in the confidential details method and as such just
         // passing the updated list to the method won't work
-        caseDetails.getData().put(RESPONDENTS_KEY, respondentService.persistRepresentativesRelationship(
-            caseData.getAllRespondents(), caseDataBefore.getAllRespondents()
-        ));
+        List<Element<Respondent>> respondents = respondentService.persistRepresentativesRelationship(
+            caseData.getAllRespondents(), caseDataBefore.getAllRespondents());
 
+        caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
         return respond(caseDetails);
     }
 
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getAllRespondents().size() > 10) {
+            errors.add(String.format("Maximum number of respondents is %s", MAX_RESPONDENTS));
+        }
 
         caseData.getAllRespondents().stream()
             .map(Element::getValue)
