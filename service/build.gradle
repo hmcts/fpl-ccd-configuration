@@ -19,7 +19,7 @@ plugins {
   id 'org.sonarqube' version '3.1.1'
   id 'project-report'
   id "idea"
-  id 'au.com.dius.pact' version '4.1.0'
+  id 'au.com.dius.pact' version '4.2.3'
   id 'info.solidsoft.pitest' version '1.6.0'
 }
 
@@ -354,7 +354,7 @@ dependencies {
   contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
-  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.0'
+  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.1'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
