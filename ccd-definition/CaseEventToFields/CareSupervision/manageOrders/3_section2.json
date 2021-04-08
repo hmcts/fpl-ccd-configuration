@@ -9,6 +9,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 1,
+    "PageShowCondition": "orderTempQuestions.approver=\"YES\" OR orderTempQuestions.approvalDate=\"YES\"",
     "FieldShowCondition": "manageOrdersOperation=\"DO_NOT_SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/section-2/mid-event"
   },

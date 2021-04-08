@@ -45,5 +45,23 @@
     "Label": "Add further directions, if required",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPreviewLabel",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "## Check your order\nA preview of your order is below.\n\nCheck the details now. You can use the next page to correct any errors",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "orderPreview",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

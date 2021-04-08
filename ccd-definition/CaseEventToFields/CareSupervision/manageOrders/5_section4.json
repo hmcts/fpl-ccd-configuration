@@ -9,7 +9,7 @@
     "PageID": "section4",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.furtherDirections=\"YES\"",
+    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/section-4/mid-event",
     "ShowSummaryChangeOption": "Y"
   }

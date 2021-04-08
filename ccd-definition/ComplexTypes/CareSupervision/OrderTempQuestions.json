@@ -38,10 +38,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "draftOrder",
+    "ListElementCode": "previewOrder",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "draftOrder=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

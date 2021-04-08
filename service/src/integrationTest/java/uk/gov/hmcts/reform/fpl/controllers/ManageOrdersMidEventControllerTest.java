@@ -42,7 +42,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.of(
                 "approvalDate", "YES",
                 "approver", "YES",
-                "draftOrder", "YES",
+                "previewOrder", "YES",
                 "furtherDirections", "YES",
                 "whichChildren", "YES"
             )

@@ -26,7 +26,7 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C32_CARE_ORDER, Map.of(
                 "approvalDate","YES",
                 "approver","YES",
-                "draftOrder","YES",
+                "previewOrder","YES",
                 "furtherDirections","YES",
                 "whichChildren","YES"
             ))

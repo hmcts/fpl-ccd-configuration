@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftOrderPreviewSectionPrePopulator implements OrderSectionPrePopulator {
 
-    private static final String DRAFT_ORDER_NAME = "Preview order.pdf (opens in a new tab)";
+    private static final String DRAFT_ORDER_NAME = "Preview order.pdf";
     private static final String ORDER_PREVIEW_FIELD = "orderPreview";
 
     private final OrderDocumentGenerator orderDocumentGenerator;
