@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -842,16 +843,18 @@ public class CaseData {
         return judge.getJudgeTitle() != null;
     }
 
-    private final NoticeOfChangeRespondent respondent1;
-    private final NoticeOfChangeRespondent respondent2;
-    private final NoticeOfChangeRespondent respondent3;
-    private final NoticeOfChangeRespondent respondent4;
-    private final NoticeOfChangeRespondent respondent5;
-    private final NoticeOfChangeRespondent respondent6;
-    private final NoticeOfChangeRespondent respondent7;
-    private final NoticeOfChangeRespondent respondent8;
-    private final NoticeOfChangeRespondent respondent9;
-    private final NoticeOfChangeRespondent respondent10;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers0;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers1;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers2;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers3;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers4;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers5;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers6;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers7;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers8;
+    private final NoticeOfChangeAnswers noticeOfChangeAnswers9;
+
+    private final OrganisationPolicy respondentPolicy0;
     private final OrganisationPolicy respondentPolicy1;
     private final OrganisationPolicy respondentPolicy2;
     private final OrganisationPolicy respondentPolicy3;
@@ -861,5 +864,4 @@ public class CaseData {
     private final OrganisationPolicy respondentPolicy7;
     private final OrganisationPolicy respondentPolicy8;
     private final OrganisationPolicy respondentPolicy9;
-    private final OrganisationPolicy respondentPolicy10;
 }
