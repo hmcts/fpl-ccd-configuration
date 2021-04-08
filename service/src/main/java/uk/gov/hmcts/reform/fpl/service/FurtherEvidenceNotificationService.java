@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class FurtherEvidenceNotificationService {
     private final InboxLookupService inboxLookupService;
     private final NotificationService notificationService;
+
     private final FurtherEvidenceUploadedEmailContentProvider furtherEvidenceUploadedEmailContentProvider;
 
     public Set<String> getLocalAuthoritySolicitorEmails(CaseData caseData) {
@@ -29,21 +31,25 @@ public class FurtherEvidenceNotificationService {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
     }
 
-    public Set<String> getRespondentRepresentativeEmails(CaseData caseData) {
+    public Set<String> getRepresentativeEmails(CaseData caseData) {
         return unwrapElements(caseData.getRepresentatives()).stream()
-            .filter(rep -> RESPONDENT.equals(rep.getRole().getType()))
-            .filter(rep -> DIGITAL_SERVICE.equals(rep.getServingPreferences()))
+            .filter(FurtherEvidenceNotificationService::notifyRepresentative)
             .map(Representative::getEmail)
             .collect(Collectors.toSet());
     }
 
-    public void sendFurtherEvidenceDocumentsUploadedNotification(CaseData caseData, Set<String> recipients,
-                                                                 String sender) {
+    public void sendNotification(CaseData caseData, Set<String> recipients,
+                                 String sender) {
         if (!recipients.isEmpty()) {
             notificationService.sendEmail(FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE,
                 recipients,
                 furtherEvidenceUploadedEmailContentProvider.buildParameters(caseData, sender),
                 caseData.getId().toString());
         }
+    }
+
+    private static boolean notifyRepresentative(Representative rep) {
+        return DIGITAL_SERVICE.equals(rep.getServingPreferences())
+            && (CAFCASS.equals(rep.getRole().getType()) || RESPONDENT.equals(rep.getRole().getType()));
     }
 }
