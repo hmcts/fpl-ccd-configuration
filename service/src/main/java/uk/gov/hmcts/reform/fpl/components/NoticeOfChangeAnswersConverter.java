@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 
 @Component
-public class NoticeOfChangeRespondentConverter {
+public class NoticeOfChangeAnswersConverter {
     public NoticeOfChangeAnswers convert(Element<Respondent> respondentElement, Applicant applicant) {
         RespondentParty respondentParty = respondentElement.getValue().getParty();
 

@@ -11,20 +11,18 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Component
 public class RespondentPolicyConverter {
-    public OrganisationPolicy convert(Element<Respondent> respondentElement, SolicitorRole solicitorRole) {
-        return setOrganisationPolicy(respondentElement.getValue().getSolicitor(), solicitorRole);
-    }
+    public OrganisationPolicy generateForSubmission(Element<Respondent> respondentElement,
+                                                    SolicitorRole solicitorRole) {
+        OrganisationPolicy.OrganisationPolicyBuilder organisationPolicyBuilder = OrganisationPolicy.builder();
 
-    private OrganisationPolicy setOrganisationPolicy(RespondentSolicitor respondentSolicitor,
-                                                     SolicitorRole solicitorRole) {
-        OrganisationPolicy.OrganisationPolicyBuilder organisationPolicy = OrganisationPolicy.builder();
+        RespondentSolicitor respondentSolicitor = respondentElement.getValue().getSolicitor();
 
         if (hasOrganisation(respondentSolicitor)) {
-            organisationPolicy.organisation(respondentSolicitor.getOrganisation());
+            organisationPolicyBuilder.organisation(respondentSolicitor.getOrganisation());
         }
 
-        organisationPolicy.orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel());
-        return organisationPolicy.build();
+        organisationPolicyBuilder.orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel());
+        return organisationPolicyBuilder.build();
     }
 
     private boolean hasOrganisation(RespondentSolicitor respondentSolicitor) {

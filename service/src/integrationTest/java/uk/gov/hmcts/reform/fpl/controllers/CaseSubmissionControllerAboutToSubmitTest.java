@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
@@ -67,6 +66,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     private CaseSubmissionService caseSubmissionService;
 
     private final Document document = document();
+    private final LocalDate respondentDOB = LocalDate.now();
 
     CaseSubmissionControllerAboutToSubmitTest() {
         super("case-submission");
@@ -171,7 +171,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldMapRespondentsToNoticeOfChangeRespondentsWhenHasRSOCaseAccessIsToggledOn() {
+    void shouldMapCaseDetailsToNoticeOfChangeAnswersAndRespondentPoliciesWhenRSOCaseAccessIsToggledOn() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
@@ -200,13 +200,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .legalRepresentation("No")
             .build();
 
-        NoticeOfChangeAnswers noticeOfChange = NoticeOfChangeAnswers.builder()
-            .respondentFirstName("Joe")
-            .respondentLastName("Bloggs")
-            .respondentDOB(LocalDate.now())
-            .applicantName("Test organisation")
-            .build();
-
         List<Element<Respondent>> respondents = List.of(
             element(respondentElementOneId, respondentOne),
             element(respondentElementTwoId, respondentTwo));
@@ -223,31 +216,31 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        NoticeOfChangeRespondent expectedRespondentOne = NoticeOfChangeRespondent.builder()
-            .respondentId(respondentElementOneId)
-            .noticeOfChangeAnswers(noticeOfChange)
-            .organisationPolicy(OrganisationPolicy.builder()
-                .organisation(solicitorOrganisation)
-                .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
-                .build())
+        OrganisationPolicy expectedRespondentPolicyOne = OrganisationPolicy.builder()
+            .organisation(solicitorOrganisation)
+            .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
             .build();
 
-        NoticeOfChangeRespondent expectedRespondentTwo = NoticeOfChangeRespondent.builder()
-            .respondentId(respondentElementTwoId)
-            .noticeOfChangeAnswers(noticeOfChange)
-            .organisationPolicy(OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
-                .build())
+        OrganisationPolicy expectedRespondentPolicyTwo = OrganisationPolicy.builder()
+            .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
             .build();
 
-        assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
-        assertThat(updatedCaseData.getRespondentPolicy1()).isEqualTo(expectedRespondentOne.getOrganisationPolicy());
-        assertThat(updatedCaseData.getRespondentPolicy2()).isEqualTo(expectedRespondentTwo.getOrganisationPolicy());
-        assertThat(updatedCaseData.getRespondent3()).isNull();
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswer(0);
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswer(1);
+
+        List<Element<Respondent>> expectedUpdatedRespondents = List.of(
+            element(respondentElementOneId, respondentOne.toBuilder().policyReference(0).build()),
+            element(respondentElementTwoId, respondentTwo.toBuilder().policyReference(1).build()));
+
+        assertThat(updatedCaseData.getRespondents1()).isEqualTo(expectedUpdatedRespondents);
+        assertThat(updatedCaseData.getRespondentPolicy0()).isEqualTo(expectedRespondentPolicyOne);
+        assertThat(updatedCaseData.getRespondentPolicy1()).isEqualTo(expectedRespondentPolicyTwo);
+        assertThat(updatedCaseData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswersOne);
+        assertThat(updatedCaseData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswersTwo);
     }
 
     @Test
-    void shouldNotMapRespondentsToNoticeOfChangeRespondentsWhenHasRSOCaseAccessIsToggledOff() {
+    void shouldNotMapCaseDetailsToNoticeOfChangeAnswersAndRespondentPoliciesWhenRSOCaseAccessIsToggledOff() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
@@ -291,9 +284,10 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
-        assertThat(updatedCaseData.getRespondent1()).isNull();
-        assertThat(updatedCaseData.getRespondent2()).isNull();
-        assertThat(updatedCaseData.getRespondent3()).isNull();
+        assertThat(updatedCaseData.getRespondentPolicy0()).isNull();
+        assertThat(updatedCaseData.getRespondentPolicy1()).isNull();
+        assertThat(updatedCaseData.getNoticeOfChangeAnswers0()).isNull();
+        assertThat(updatedCaseData.getNoticeOfChangeAnswers1()).isNull();
     }
 
     private RespondentParty buildRespondentParty() {
@@ -301,7 +295,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .firstName("Joe")
             .lastName("Bloggs")
             .relationshipToChild("Father")
-            .dateOfBirth(LocalDate.now())
+            .dateOfBirth(respondentDOB)
             .telephoneNumber(Telephone.builder()
                 .contactDirection("By telephone")
                 .telephoneNumber("02838882333")
@@ -317,6 +311,16 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .party(ApplicantParty.builder()
                 .organisationName("Test organisation")
                 .build())
+            .build();
+    }
+
+    private NoticeOfChangeAnswers buildNoticeOfChangeAnswer(int policyId) {
+        return NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Joe")
+            .respondentLastName("Bloggs")
+            .respondentDOB(respondentDOB)
+            .applicantName("Test organisation")
+            .policyReference(policyId)
             .build();
     }
 }

@@ -23,5 +23,14 @@
     "ElementLabel": "Representative",
     "SecurityClassification": "Public",
     "FieldShowCondition": "legalRepresentation=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "policyReference",
+    "FieldType": "Number",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "legalRepresentation=\"DO_NOT_SHOW\""
   }
 ]

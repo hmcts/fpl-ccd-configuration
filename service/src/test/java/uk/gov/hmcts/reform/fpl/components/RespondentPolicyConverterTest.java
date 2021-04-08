@@ -7,15 +7,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeRespondent;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -26,18 +22,17 @@ import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { NoticeOfChangeRespondentConverter.class })
-class NoticeOfChangeRespondentConverterTest {
+@ContextConfiguration(classes = { RespondentPolicyConverter.class })
+class RespondentPolicyConverterTest {
     @Autowired
-    private NoticeOfChangeRespondentConverter noticeOfChangeRespondentConverter;
+    private RespondentPolicyConverter respondentPolicyConverter;
 
     private static final UUID ELEMENT_ID = UUID.randomUUID();
     private static final LocalDate RESPONDENT_DOB = LocalDate.now().minusDays(5);
 
     @Test
-    void shouldConvertRepresentedRespondentAndApplicant() {
+    void shouldConvertRepresentedRespondentToOrganisationPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
-        Applicant applicant = buildApplicant();
 
         Organisation solicitorOrganisation = Organisation.builder()
             .organisationName("Summers Inc")
@@ -57,30 +52,20 @@ class NoticeOfChangeRespondentConverterTest {
 
         Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
 
-        NoticeOfChangeRespondent expectedRespondent = NoticeOfChangeRespondent.builder()
-            .respondentId(ELEMENT_ID)
-            .noticeOfChangeAnswers(NoticeOfChangeAnswers.builder()
-                .respondentFirstName("Joe")
-                .respondentLastName("Bloggs")
-                .respondentDOB(RESPONDENT_DOB)
-                .applicantName("Test organisation")
-                .build())
-            .organisationPolicy(OrganisationPolicy.builder()
+        OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
                 .organisation(solicitorOrganisation)
                 .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
-                .build())
-            .build();
+                .build();
 
-        NoticeOfChangeRespondent actualRespondent
-            = noticeOfChangeRespondentConverter.convert(respondentElement, applicant, SOLICITORA);
+        OrganisationPolicy actualOrganisationPolicy
+            = respondentPolicyConverter.generateForSubmission(respondentElement, SOLICITORA);
 
-        assertThat(actualRespondent).isEqualTo(expectedRespondent);
+        assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
 
     @Test
-    void shouldConvertNonRepresentedRespondentAndApplicant() {
+    void shouldConvertNonRepresentedRespondentToOrganisationPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
-        Applicant applicant = buildApplicant();
 
         Respondent respondent = Respondent.builder()
             .party(respondentParty)
@@ -89,23 +74,14 @@ class NoticeOfChangeRespondentConverterTest {
 
         Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
 
-        NoticeOfChangeRespondent expectedRespondent = NoticeOfChangeRespondent.builder()
-            .respondentId(ELEMENT_ID)
-            .noticeOfChangeAnswers(NoticeOfChangeAnswers.builder()
-                .respondentFirstName("Joe")
-                .respondentLastName("Bloggs")
-                .respondentDOB(RESPONDENT_DOB)
-                .applicantName("Test organisation")
-                .build())
-            .organisationPolicy(OrganisationPolicy.builder()
+        OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
                 .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
-                .build())
-            .build();
+                .build();
 
-        NoticeOfChangeRespondent actualRespondent
-            = noticeOfChangeRespondentConverter.convert(respondentElement, applicant, SOLICITORB);
+        OrganisationPolicy actualOrganisationPolicy = respondentPolicyConverter.generateForSubmission(
+            respondentElement, SOLICITORB);
 
-        assertThat(actualRespondent).isEqualTo(expectedRespondent);
+        assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
 
     private RespondentParty buildRespondentParty() {
@@ -121,14 +97,6 @@ class NoticeOfChangeRespondentConverterTest {
                 .build())
             .gender("Male")
             .placeOfBirth("Newry")
-            .build();
-    }
-
-    private Applicant buildApplicant() {
-        return Applicant.builder()
-            .party(ApplicantParty.builder()
-                .organisationName("Test organisation")
-                .build())
             .build();
     }
 }

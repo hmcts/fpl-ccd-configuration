@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeRespondentConverter;
+import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -25,7 +25,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 public class RespondentPolicyService {
 
     private final ObjectMapper mapper;
-    private final NoticeOfChangeRespondentConverter noticeOfChangeRespondentConverter;
+    private final NoticeOfChangeAnswersConverter noticeOfChangeRespondentConverter;
     private final RespondentPolicyConverter respondentPolicyConverter;
 
     public Map<String, Object> generateForSubmission(CaseDetails caseDetails) {
@@ -44,15 +44,15 @@ public class RespondentPolicyService {
                 NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeRespondentConverter.convert(
                     respondentElement, firstApplicant);
 
-                OrganisationPolicy organisationPolicy = respondentPolicyConverter.convert(
+                OrganisationPolicy organisationPolicy = respondentPolicyConverter.generateForSubmission(
                     respondentElement, SolicitorRole.values()[i]);
 
                 data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
                 data.put(String.format("respondentPolicy%d", i), organisationPolicy);
             }
+            data.put("respondents1", caseData.getRespondents1());
         }
 
-        data.put("respondents1", caseData.getRespondents1());
         return data;
     }
 }

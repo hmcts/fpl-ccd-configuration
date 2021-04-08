@@ -34,5 +34,14 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "Searchable": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfChangeAnswers",
+    "ListElementCode": "policyReference",
+    "FieldType": "Number",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "Searchable": "Y"
   }
 ]
