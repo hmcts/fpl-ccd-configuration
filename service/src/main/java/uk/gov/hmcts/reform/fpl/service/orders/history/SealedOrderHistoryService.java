@@ -35,10 +35,9 @@ public class SealedOrderHistoryService {
     private final OrderCreationService orderCreationService;
     private final Time time;
 
-
     public Map<String, Object> generate(CaseData caseData) {
         List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
-        ManageOrdersEventData manageOrdersEventData =  caseData.getManageOrdersEventData();
+        ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
         DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
@@ -49,7 +48,7 @@ public class SealedOrderHistoryService {
             .title(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
-            .dateIssued(time.now().toLocalDate())
+            .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .childrenDescription(getChildrenForOrder(selectedChildren))
             .document(sealedPdfOrder)
@@ -61,9 +60,22 @@ public class SealedOrderHistoryService {
         return Map.of("orderCollection", pastOrders);
     }
 
+    public GeneratedOrder lastGeneratedOrder(CaseData caseData) {
+        return caseData.getOrderCollection().stream()
+            .sorted(legacyLastAndThenByDateAndTimeIssuedDesc())
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("Element not present"))
+            .getValue();
+    }
+
     private Comparator<Element<GeneratedOrder>> legacyFirstAndThenByApprovalDateAsc() {
         return Comparator.comparing(e -> e.getValue().getApprovalDate(),
             Comparator.nullsFirst(Comparator.naturalOrder()));
+    }
+
+    private Comparator<Element<GeneratedOrder>> legacyLastAndThenByDateAndTimeIssuedDesc() {
+        return Comparator.comparing(e -> e.getValue().getDateTimeIssued(),
+            Comparator.nullsLast(Comparator.reverseOrder()));
     }
 
     private String getChildrenForOrder(List<Element<Child>> selectedChildren) {

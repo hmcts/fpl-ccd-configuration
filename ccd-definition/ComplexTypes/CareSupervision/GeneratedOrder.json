@@ -73,10 +73,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
-    "ListElementCode": "dateIssued",
-    "FieldType": "Date",
-    "ElementLabel": "Date issued",
-    "FieldShowCondition": "dateIssued=\"DO_NOT_SHOW\"",
+    "ListElementCode": "dateTimeIssued",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time issued",
+    "FieldShowCondition": "dateTimeIssued=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
