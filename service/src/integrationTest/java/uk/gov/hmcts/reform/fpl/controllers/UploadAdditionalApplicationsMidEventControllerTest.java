@@ -83,7 +83,34 @@ class UploadAdditionalApplicationsMidEventControllerTest extends AbstractCallbac
 
         verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
         assertThat(response.getData())
+            .containsKey("temporaryC2Document")
             .containsEntry("amountToPay", "1000")
+            .containsEntry("displayAmountToPay", YES.getValue());
+    }
+
+    @Test
+    void shouldNotSetC2DocumentBundleWhenOnlyOtherApplicationIsSelected() {
+        OtherApplicationsBundle temporaryOtherDocument = OtherApplicationsBundle.builder()
+            .applicationType(OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN)
+            .document(DocumentReference.builder().build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .temporaryOtherApplicationsBundle(temporaryOtherDocument)
+            .build();
+
+        List<FeeType> feeTypes = List.of(FeeType.APPOINTMENT_OF_GUARDIAN);
+
+        given(feeService.getFeesDataForAdditionalApplications(feeTypes))
+            .willReturn(FeesData.builder().totalAmount(BigDecimal.ONE).build());
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "get-fee");
+
+        verify(feeService).getFeesDataForAdditionalApplications(feeTypes);
+        assertThat(response.getData())
+            .containsEntry("temporaryC2Document", null)
+            .containsEntry("amountToPay", "100")
             .containsEntry("displayAmountToPay", YES.getValue());
     }
 

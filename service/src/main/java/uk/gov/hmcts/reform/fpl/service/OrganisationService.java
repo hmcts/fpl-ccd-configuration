@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
@@ -29,6 +30,7 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
+import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.DEFAULT_CACHE;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
@@ -66,6 +68,7 @@ public class OrganisationService {
         }
     }
 
+    @Cacheable(cacheManager = "requestScopeCacheManager", cacheNames = DEFAULT_CACHE)
     public Optional<Organisation> findOrganisation() {
         try {
             return ofNullable(organisationApi.findUserOrganisation(requestData.authorisation(),

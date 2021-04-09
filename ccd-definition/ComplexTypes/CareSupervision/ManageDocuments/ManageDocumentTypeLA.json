@@ -31,7 +31,7 @@
     "ID": "ManageDocumentTypeLA",
     "ListElementCode": "hasC2s",
     "FieldType": "Text",
-    "ElementLabel": "Hidden to control display of the next field when there are no C2s",
+    "ElementLabel": "Hidden to control display of the next field when there are no C2s and Other applications",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type=\"DO NOT SHOW\""
   }
