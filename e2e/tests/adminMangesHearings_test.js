@@ -126,13 +126,11 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Uploaded by']);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Uploaded by']);
@@ -140,7 +138,6 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060');
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Uploaded by']);
