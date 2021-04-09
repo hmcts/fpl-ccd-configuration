@@ -179,9 +179,9 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveTransientFields() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
-                Map.entry("hasC2Applications", "some data"),
-                Map.entry("isMessageRegardingC2", "some data"),
-                Map.entry("c2DynamicList", "some data"),
+                Map.entry("hasAdditionalApplications", "some data"),
+                Map.entry("isMessageRegardingAdditionalApplications", "some data"),
+                Map.entry("additionalApplicationsDynamicList", "some data"),
                 Map.entry("relatedDocumentsLabel", "some data"),
                 Map.entry("nextHearingLabel", "some data"),
                 Map.entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
@@ -200,9 +200,10 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData()).doesNotContainKeys("hasC2Applications",
-            "isMessageRegardingC2",
-            "c2DynamicList",
+        assertThat(response.getData()).doesNotContainKeys(
+            "hasAdditionalApplications",
+            "isMessageRegardingAdditionalApplications",
+            "additionalApplicationsDynamicList",
             "relatedDocumentsLabel",
             "nextHearingLabel",
             "judicialMessageMetaData",
