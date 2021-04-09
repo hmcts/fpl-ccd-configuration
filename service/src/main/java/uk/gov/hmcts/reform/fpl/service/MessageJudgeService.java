@@ -251,6 +251,7 @@ public class MessageJudgeService {
                     String sender = judicialMessageReply.getReplyFrom();
 
                     JudicialMessage updatedMessage = judicialMessage.toBuilder()
+                        .dateSent(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME_AT))
                         .updatedTime(time.now())
                         .sender(sender)
                         .recipient(judicialMessageReply.getReplyTo())
