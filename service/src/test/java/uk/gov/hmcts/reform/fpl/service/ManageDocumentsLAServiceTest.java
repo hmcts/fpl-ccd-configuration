@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_STATEMENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
@@ -111,7 +111,7 @@ class ManageDocumentsLAServiceTest {
 
         assertThat(listAndLabel)
             .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY,
-                RESPONDENT_STATEMENT_LIST_KEY)
+                RESPONDENTS_LIST_KEY)
             .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument,
                 expectedRespondentStatementList);
     }
@@ -142,7 +142,7 @@ class ManageDocumentsLAServiceTest {
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
-            .extracting(RESPONDENT_STATEMENT_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
+            .extracting(RESPONDENTS_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(null, expectedManageDocument);
     }
 

@@ -1716,7 +1716,7 @@ class CaseDataTest {
                 .asDynamicList(respondents, null,
                     respondent -> respondent.getParty().getFullName());
 
-            assertThat(caseData.buildRespondentStatementDynamicList())
+            assertThat(caseData.buildRespondentDynamicList())
                 .isEqualTo(expectedDynamicList);
         }
 
@@ -1746,7 +1746,7 @@ class CaseDataTest {
                 .asDynamicList(respondents, null,
                     respondent -> respondent.getParty().getFullName());
 
-            assertThat(caseData.buildRespondentStatementDynamicList()).isEqualTo(expectedDynamicList);
+            assertThat(caseData.buildRespondentDynamicList()).isEqualTo(expectedDynamicList);
         }
     }
 
