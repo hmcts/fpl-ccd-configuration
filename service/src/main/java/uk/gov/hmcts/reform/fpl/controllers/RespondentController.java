@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Slf4j
@@ -109,13 +108,6 @@ public class RespondentController extends CallbackController {
             .filter(dob -> dob.isAfter(time.now().toLocalDate()))
             .findAny()
             .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
-
-        caseData.getAllRespondents().stream()
-            .map(Element::getValue).filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation()))
-            .map(Respondent::getSolicitor)
-            .filter(solicitor -> (solicitor.getLastName() == null))
-            .findAny()
-            .ifPresent(solicitor -> errors.add("Enter a representative name"));
 
         return errors.build();
     }

@@ -33,7 +33,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     private static final String DOB_ERROR = "Date of birth cannot be in the future";
     private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
-    private static final String SOLICITOR_NAME_ERROR_MESSAGE = "Enter a representative name";
 
     @Test
     void aboutToStartShouldPrepopulateRespondent() {
@@ -86,54 +85,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().minusDays(1))))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldReturnRespondentSolicictorNameErrorWhenInvalidName() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(
-                Respondent.builder()
-                    .party(RespondentParty.builder().dateOfBirth(dateNow()).build())
-                    .legalRepresentation(YES.getValue())
-                    .solicitor(RespondentSolicitor.builder().lastName(null).build())
-                    .build())
-            ).build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
-
-        assertThat(callbackResponse.getErrors()).contains(SOLICITOR_NAME_ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnRespondentSolicictorNameErrorForRespondentWhenThereIsMultipleRespondents() {
-        Respondent respondent = Respondent.builder()
-            .party(RespondentParty.builder()
-                .dateOfBirth(dateNow())
-                .build())
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .email("test@test.com")
-                .build())
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(respondent, respondent))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
-
-        assertThat(callbackResponse.getErrors()).contains(SOLICITOR_NAME_ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnRespondentSolicictorNameErrorWhenValidName() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(respondent(dateNow(), "test@test.com")))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
