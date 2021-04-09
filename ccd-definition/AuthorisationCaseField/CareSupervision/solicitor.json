@@ -3,8 +3,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseHistory",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -20,8 +20,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "temporaryC2Document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -29,8 +29,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2DocumentBundle",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -38,8 +38,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2ApplicationType",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -47,8 +47,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearing",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -56,8 +56,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orders",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -65,8 +65,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "internationalElement",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -74,8 +74,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "factorsParenting",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -83,8 +83,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "risks",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -92,8 +92,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal_label",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -101,8 +101,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocationProposal",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -110,8 +110,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingPreferences",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -119,8 +119,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "grounds",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -128,8 +128,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkChronology_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -137,8 +137,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkStatement_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -146,8 +146,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkAssessment_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -155,8 +155,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -164,8 +164,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -173,8 +173,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_threshold_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -182,8 +182,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_checklist_document",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -191,8 +191,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundle",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -200,8 +200,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents_label",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -209,8 +209,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "others_label",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -218,8 +218,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "placements",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -227,8 +227,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -236,8 +236,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sendToCtsc",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -245,8 +245,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "amountToPay",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -254,8 +254,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "displayAmountToPay",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   },
@@ -263,8 +263,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "RU"
   },
@@ -279,8 +279,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2SupportingDocuments",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -288,8 +288,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "orderCollection",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -297,8 +297,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sealedCMOs",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -306,8 +306,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "draftUploadedCMOs",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -315,8 +315,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrdersBundlesDrafts",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   },
@@ -324,8 +324,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "furtherEvidenceDocumentsNC",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -333,8 +333,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsNC",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -342,8 +342,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "correspondenceDocumentsLANC",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -393,8 +393,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoUploadType",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -402,8 +402,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "futureHearingsForCMO",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -411,8 +411,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadedCaseManagementOrder",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   },
@@ -420,8 +420,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "replacementCMO",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -429,8 +429,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmosSentToJudge",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -438,8 +438,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "previousCMO",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -447,8 +447,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoJudgeInfo",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -456,8 +456,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoHearingInfo",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -465,8 +465,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToSend",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -474,8 +474,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "showReplacementCMO",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -483,8 +483,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "showCMOsSentToJudge",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -492,8 +492,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "pastHearingsForCMO",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRU"
   },
@@ -501,8 +501,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrderDraftInfo",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -510,8 +510,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingOrderDraftKind",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   },
@@ -519,8 +519,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingsForHearingOrderDrafts",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   },
@@ -528,8 +528,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "currentHearingOrderDrafts",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   },
@@ -537,8 +537,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "lastHearingOrderDraftsHearingId",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "CRUD"
   }
