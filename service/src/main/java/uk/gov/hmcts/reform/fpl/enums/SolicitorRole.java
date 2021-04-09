@@ -6,16 +6,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum SolicitorRole {
-    SOLICITORA("[solicitorA]"),
-    SOLICITORB("[solicitorB]"),
-    SOLICITORC("[solicitorC]"),
-    SOLICITORD("[solicitorD]"),
-    SOLICITORE("[solicitorE]"),
-    SOLICITORF("[solicitorF]"),
-    SOLICITORG("[solicitorG]"),
-    SOLICITORH("[solicitorH]"),
-    SOLICITORI("[solicitorI]"),
-    SOLICITORJ("[solicitorJ]");
+    SOLICITORA("[SOLICITORA]"),
+    SOLICITORB("[SOLICITORB]"),
+    SOLICITORC("[SOLICITORC]"),
+    SOLICITORD("[SOLICITORD]"),
+    SOLICITORE("[SOLICITORE]"),
+    SOLICITORF("[SOLICITORF]"),
+    SOLICITORG("[SOLICITORG]"),
+    SOLICITORH("[SOLICITORH]"),
+    SOLICITORI("[SOLICITORI]"),
+    SOLICITORJ("[SOLICITORJ]");
 
     private final String caseRoleLabel;
 }

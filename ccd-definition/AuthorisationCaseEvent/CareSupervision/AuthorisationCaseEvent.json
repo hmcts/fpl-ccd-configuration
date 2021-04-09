@@ -699,16 +699,16 @@
       {
         "UserRoles": [
           "[SOLICITOR]",
-          "[solicitorA]",
-          "[solicitorB]",
-          "[solicitorC]",
-          "[solicitorD]",
-          "[solicitorE]",
-          "[solicitorF]",
-          "[solicitorG]",
-          "[solicitorH]",
-          "[solicitorI]",
-          "[solicitorJ]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
           "[CAFCASSSOLICITOR]"
         ],
         "CRUD": "CR"

@@ -38,7 +38,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorA]",
+    "ID": "[SOLICITORA]",
     "Name": "Solicitor A",
     "Description": "Solicitor A role",
     "JurisdictionID": "PUBLICLAW",
@@ -47,7 +47,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorB]",
+    "ID": "[SOLICITORB]",
     "Name": "Solicitor B",
     "Description": "Solicitor B role",
     "JurisdictionID": "PUBLICLAW",
@@ -56,7 +56,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorC]",
+    "ID": "[SOLICITORC]",
     "Name": "Solicitor C",
     "Description": "Solicitor C role",
     "JurisdictionID": "PUBLICLAW",
@@ -65,7 +65,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorD]",
+    "ID": "[SOLICITORD]",
     "Name": "Solicitor D",
     "Description": "Solicitor D role",
     "JurisdictionID": "PUBLICLAW",
@@ -74,7 +74,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorE]",
+    "ID": "[SOLICITORE]",
     "Name": "Solicitor E",
     "Description": "Solicitor E role",
     "JurisdictionID": "PUBLICLAW",
@@ -83,7 +83,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorF]",
+    "ID": "[SOLICITORF]",
     "Name": "Solicitor F",
     "Description": "Solicitor F role",
     "JurisdictionID": "PUBLICLAW",
@@ -92,7 +92,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorG]",
+    "ID": "[SOLICITORG]",
     "Name": "Solicitor G",
     "Description": "Solicitor G role",
     "JurisdictionID": "PUBLICLAW",
@@ -101,7 +101,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorH]",
+    "ID": "[SOLICITORH]",
     "Name": "Solicitor H",
     "Description": "Solicitor H role",
     "JurisdictionID": "PUBLICLAW",
@@ -110,7 +110,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorI]",
+    "ID": "[SOLICITORI]",
     "Name": "Solicitor I",
     "Description": "Solicitor I role",
     "JurisdictionID": "PUBLICLAW",
@@ -119,7 +119,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "[solicitorJ]",
+    "ID": "[SOLICITORJ]",
     "Name": "Solicitor J",
     "Description": "Solicitor J role",
     "JurisdictionID": "PUBLICLAW",
