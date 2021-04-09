@@ -501,7 +501,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
     private Map<String, Object> getExpectedRegisteredSolicitorParameters() {
         RespondentSolicitorTemplate respondentSolicitorTemplate = RespondentSolicitorTemplate.builder()
-            .representativeName("First Respondent")
+            .salutation("Dear First Respondent")
             .localAuthority(LOCAL_AUTHORITY_1_NAME)
             .build();
 

@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -22,13 +24,14 @@ public class RespondentSolicitorContentProvider extends SharedNotifyContentProvi
         CaseData caseData, RespondentSolicitor representative) {
 
         return RespondentSolicitorTemplate.builder()
-            .representativeName(getFullName(representative.getFirstName(), representative.getLastName()))
+            .salutation(getSalutation(representative.getFirstName(), representative.getLastName()))
             .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .build();
     }
 
     @JsonIgnore
-    public String getFullName(String firstName, String lastName) {
-        return String.join(" ", defaultString(firstName), defaultString(lastName));
+    public String getSalutation(String firstName, String lastName) {
+        final String representativeName = String.join(" ", defaultString(firstName), defaultString(lastName));
+        return isBlank(representativeName) ? EMPTY : "Dear " + representativeName;
     }
 }

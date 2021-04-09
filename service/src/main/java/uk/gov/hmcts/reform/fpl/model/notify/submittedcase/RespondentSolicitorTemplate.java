@@ -7,6 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 @Data
 @SuperBuilder(toBuilder = true)
 public final class RespondentSolicitorTemplate implements NotifyData {
-    private final String representativeName;
+    private final String salutation;
     private final String localAuthority;
 }

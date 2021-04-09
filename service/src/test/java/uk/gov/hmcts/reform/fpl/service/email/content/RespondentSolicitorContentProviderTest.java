@@ -52,17 +52,18 @@ class RespondentSolicitorContentProviderTest extends AbstractEmailContentProvide
     }
 
     private static Stream<Arguments> representativeNameSource() {
-        final String EXPECTED_LAST_NAME = " " + LAST_NAME;
-        final String EXPECTED_FIRST_NAME = FIRST_NAME + " ";
-        final String EXPECTED_FULL_NAME = FIRST_NAME + " " + LAST_NAME;
+        final String salutation = "Dear ";
+        final String EXPECTED_LAST_NAME = salutation + " " + LAST_NAME;
+        final String EXPECTED_FIRST_NAME = salutation + FIRST_NAME + " ";
+        final String EXPECTED_FULL_NAME = salutation + FIRST_NAME + " " + LAST_NAME;
 
         return Stream.of(
             Arguments.of(null, LAST_NAME, EXPECTED_LAST_NAME),
             Arguments.of(EMPTY, LAST_NAME, EXPECTED_LAST_NAME),
             Arguments.of(FIRST_NAME, null, EXPECTED_FIRST_NAME),
             Arguments.of(FIRST_NAME, EMPTY, EXPECTED_FIRST_NAME),
-            Arguments.of(null, null, " "),
-            Arguments.of(EMPTY, EMPTY, " "),
+            Arguments.of(null, null, ""),
+            Arguments.of(EMPTY, EMPTY, ""),
             Arguments.of(FIRST_NAME, LAST_NAME, EXPECTED_FULL_NAME)
         );
     }
@@ -70,7 +71,7 @@ class RespondentSolicitorContentProviderTest extends AbstractEmailContentProvide
     private RespondentSolicitorTemplate buildRegisteredSolicitorTemplate(String expectedFullName) {
         return RespondentSolicitorTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
-            .representativeName(expectedFullName)
+            .salutation(expectedFullName)
             .build();
     }
 }
