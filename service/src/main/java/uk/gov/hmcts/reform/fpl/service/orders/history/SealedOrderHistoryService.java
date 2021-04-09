@@ -71,7 +71,8 @@ public class SealedOrderHistoryService {
     private Comparator<Element<GeneratedOrder>> legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc() {
         Comparator<Element<GeneratedOrder>> comparingApprovalDate = Comparator.comparing(
             e -> e.getValue().getApprovalDate(), Comparator.nullsFirst(Comparator.naturalOrder()));
-        return comparingApprovalDate.thenComparing(e -> e.getValue().getDateTimeIssued());
+        return comparingApprovalDate.thenComparing(e -> e.getValue().getDateTimeIssued(),
+            Comparator.nullsFirst(Comparator.naturalOrder()));
     }
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByDateAndTimeIssuedDesc() {

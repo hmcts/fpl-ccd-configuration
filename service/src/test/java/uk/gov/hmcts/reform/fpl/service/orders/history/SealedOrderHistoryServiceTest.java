@@ -189,7 +189,8 @@ class SealedOrderHistoryServiceTest {
                 CaseData caseData = caseData()
                     .orderCollection(newArrayList(
                         ORDER_APPROVED_FOR_SAME_DAY,
-                        ORDER_APPROVED_IN_THE_FUTURE
+                        ORDER_APPROVED_IN_THE_FUTURE,
+                        ORDER_APPROVED_LEGACY
                     )).build();
                 mockDocumentUpload(caseData);
                 when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
@@ -198,6 +199,7 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
+                        ORDER_APPROVED_LEGACY,
                         ORDER_APPROVED_FOR_SAME_DAY,
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
                         ORDER_APPROVED_IN_THE_FUTURE
