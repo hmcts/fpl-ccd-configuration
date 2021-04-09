@@ -192,7 +192,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 .build())
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
-                .lastName("Smith")
                 .email(email)
                 .build())
             .build();

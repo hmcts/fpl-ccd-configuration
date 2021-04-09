@@ -9,8 +9,10 @@ import uk.gov.hmcts.reform.fpl.exceptions.JudicialMessageNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessageMetaData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -50,9 +52,9 @@ public class MessageJudgeService {
     public Map<String, Object> initialiseCaseFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        if (hasC2Documents(caseData)) {
-            data.put("hasC2Applications", YES.getValue());
-            data.put("c2DynamicList", caseData.buildC2DocumentDynamicList());
+        if (hasAdditionalApplicationDocuments(caseData) || hasC2Documents(caseData)) {
+            data.put("hasAdditionalApplications", YES.getValue());
+            data.put("additionalApplicationsDynamicList", caseData.buildApplicationBundlesDynamicList());
         }
 
         if (hasJudicialMessages(caseData)) {
@@ -67,17 +69,28 @@ public class MessageJudgeService {
 
     public Map<String, Object> populateNewMessageFields(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
+        String documentFileNames;
 
-        if (hasSelectedC2(caseData)) {
-            UUID selectedC2Id = getDynamicListSelectedValue(
-                caseData.getMessageJudgeEventData().getC2DynamicList(), mapper
+        if (hasSelectedAdditionalApplication(caseData)) {
+            UUID selectedApplicationId = getDynamicListSelectedValue(
+                caseData.getMessageJudgeEventData().getAdditionalApplicationsDynamicList(), mapper
             );
 
-            C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
-            String documentFileNames = selectedC2DocumentBundle.getAllC2DocumentFileNames();
+            ApplicationsBundle selectedApplicationBundle = caseData.getApplicationBundleByUUID(selectedApplicationId);
+
+            if (selectedApplicationBundle instanceof C2DocumentBundle) {
+                C2DocumentBundle c2DocumentBundle = (C2DocumentBundle) selectedApplicationBundle;
+                documentFileNames = c2DocumentBundle.getAllC2DocumentFileNames();
+            } else {
+                OtherApplicationsBundle otherApplicationsBundle = (OtherApplicationsBundle) selectedApplicationBundle;
+                documentFileNames = otherApplicationsBundle.getAllDocumentFileNames();
+            }
 
             data.put("relatedDocumentsLabel", documentFileNames);
-            data.put("c2DynamicList", rebuildC2DynamicList(caseData, selectedC2Id));
+            data.put("additionalApplicationsDynamicList", rebuildAdditionalApplicationsDynamicList(
+                caseData, selectedApplicationId)
+            );
+
         }
 
         return data;
@@ -147,13 +160,26 @@ public class MessageJudgeService {
             .urgency(judicialMessageMetaData.getUrgency())
             .status(OPEN);
 
-        if (hasSelectedC2(caseData)) {
-            UUID selectedC2Id = getDynamicListSelectedValue(messageJudgeEventData.getC2DynamicList(), mapper);
-            C2DocumentBundle selectedC2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2Id);
+        if (hasSelectedAdditionalApplication(caseData)) {
+            UUID selectedApplicationId =
+                getDynamicListSelectedValue(messageJudgeEventData.getAdditionalApplicationsDynamicList(),
+                    mapper);
+            ApplicationsBundle selectedApplicationBundle = caseData.getApplicationBundleByUUID(selectedApplicationId);
 
-            judicialMessageBuilder.relatedDocuments(selectedC2DocumentBundle.getAllC2DocumentReferences());
-            judicialMessageBuilder.relatedDocumentFileNames(selectedC2DocumentBundle.getAllC2DocumentFileNames());
-            judicialMessageBuilder.isRelatedToC2(YES);
+            if (selectedApplicationBundle instanceof C2DocumentBundle) {
+                C2DocumentBundle selectedC2Bundle = (C2DocumentBundle) selectedApplicationBundle;
+                judicialMessageBuilder.relatedDocuments(selectedC2Bundle.getAllC2DocumentReferences());
+                judicialMessageBuilder.relatedDocumentFileNames(selectedC2Bundle.getAllC2DocumentFileNames());
+            } else {
+                OtherApplicationsBundle selectedOtherApplicationsBundle =
+                    (OtherApplicationsBundle) selectedApplicationBundle;
+                judicialMessageBuilder.relatedDocuments(selectedOtherApplicationsBundle.getAllDocumentReferences());
+                judicialMessageBuilder.relatedDocumentFileNames(
+                    selectedOtherApplicationsBundle.getAllDocumentFileNames()
+                );
+            }
+
+            judicialMessageBuilder.applicationType(selectedApplicationBundle.toLabel());
         }
 
         judicialMessages.add(element(identityService.generateId(), judicialMessageBuilder.build()));
@@ -257,8 +283,8 @@ public class MessageJudgeService {
         return String.join("\n \n", history, formattedLatestMessage);
     }
 
-    private DynamicList rebuildC2DynamicList(CaseData caseData, UUID selectedC2Id) {
-        return caseData.buildC2DocumentDynamicList(selectedC2Id);
+    private DynamicList rebuildAdditionalApplicationsDynamicList(CaseData caseData, UUID selectedApplicationId) {
+        return caseData.buildApplicationBundlesDynamicList(selectedApplicationId);
     }
 
     private DynamicList rebuildJudicialMessageDynamicList(CaseData caseData, UUID selectedC2Id) {
@@ -269,9 +295,13 @@ public class MessageJudgeService {
         return caseData.getC2DocumentBundle() != null;
     }
 
-    private boolean hasSelectedC2(CaseData caseData) {
-        return hasC2Documents(caseData)
-            && caseData.getMessageJudgeEventData().getC2DynamicList() != null;
+    private boolean hasAdditionalApplicationDocuments(CaseData caseData) {
+        return caseData.getAdditionalApplicationsBundle() != null;
+    }
+
+    private boolean hasSelectedAdditionalApplication(CaseData caseData) {
+        return (hasAdditionalApplicationDocuments(caseData) || hasC2Documents(caseData))
+            && caseData.getMessageJudgeEventData().getAdditionalApplicationsDynamicList() != null;
     }
 
     private boolean hasJudicialMessages(CaseData caseData) {

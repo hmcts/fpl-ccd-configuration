@@ -36,7 +36,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocument.type=\"C2\" AND manageDocument.hasC2s=\"No\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocument.hasC2s=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -49,7 +49,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocument.type=\"C2\" AND manageDocument.hasC2s=\"Yes\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocument.hasC2s=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -91,7 +91,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocument.type=\"C2\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -117,7 +117,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocument.type=\"C2\" AND manageDocument.hasC2s=\"Yes\""
+    "FieldShowCondition": "manageDocument.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocument.hasC2s=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
