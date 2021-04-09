@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +40,6 @@ class RespondentPolicyServiceTest {
     @Autowired
     private RespondentPolicyService respondentPolicyService;
 
-    private final LocalDate respondentDOB = LocalDate.now();
-
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
         UUID respondentElementOneId = UUID.randomUUID();
@@ -52,7 +49,6 @@ class RespondentPolicyServiceTest {
             .firstName("Joe")
             .lastName("Bloggs")
             .relationshipToChild("Father")
-            .dateOfBirth(respondentDOB)
             .telephoneNumber(Telephone.builder()
                 .contactDirection("By telephone")
                 .telephoneNumber("02838882333")
@@ -123,7 +119,6 @@ class RespondentPolicyServiceTest {
         return NoticeOfChangeAnswers.builder()
             .respondentFirstName("Joe")
             .respondentLastName("Bloggs")
-            .respondentDOB(respondentDOB)
             .applicantName("Test organisation")
             .build();
     }

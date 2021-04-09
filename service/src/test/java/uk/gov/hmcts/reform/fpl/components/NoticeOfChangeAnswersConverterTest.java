@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +29,6 @@ class NoticeOfChangeAnswersConverterTest {
     @Test
     void shouldConvertRespondentAndApplicantToNoticeOfChangeAnswers() {
         UUID elementId = UUID.randomUUID();
-        LocalDate respondentDOB = LocalDate.now().minusDays(5);
 
         Applicant applicant = Applicant.builder()
             .party(ApplicantParty.builder()
@@ -48,7 +46,6 @@ class NoticeOfChangeAnswersConverterTest {
                 .firstName("Joe")
                 .lastName("Bloggs")
                 .relationshipToChild("Father")
-                .dateOfBirth(respondentDOB)
                 .telephoneNumber(Telephone.builder()
                     .contactDirection("By telephone")
                     .telephoneNumber("02838882333")
@@ -71,7 +68,6 @@ class NoticeOfChangeAnswersConverterTest {
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
                 .respondentFirstName("Joe")
                 .respondentLastName("Bloggs")
-                .respondentDOB(respondentDOB)
                 .applicantName("Test organisation")
                 .build();
 

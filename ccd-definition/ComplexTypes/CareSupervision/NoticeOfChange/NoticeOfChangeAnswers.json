@@ -20,15 +20,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "NoticeOfChangeAnswers",
-    "ListElementCode": "respondentDOB",
-    "FieldType": "Date",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public",
-    "Searchable": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "NoticeOfChangeAnswers",
     "ListElementCode": "applicantName",
     "FieldType": "Text",
     "ElementLabel": " ",

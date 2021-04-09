@@ -226,8 +226,11 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
             .build();
 
-        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswer(0);
-        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswer(1);
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
+            .respondentFirstName("Joe")
+            .respondentLastName("Bloggs")
+            .applicantName("Test organisation")
+            .build();
 
         RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
         NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
@@ -235,8 +238,8 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
         assertThat(respondentPolicyData.getRespondentPolicy0()).isEqualTo(expectedRespondentPolicyOne);
         assertThat(respondentPolicyData.getRespondentPolicy1()).isEqualTo(expectedRespondentPolicyTwo);
-        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswersOne);
-        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswersTwo);
+        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswers);
+        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswers);
     }
 
     @Test
@@ -314,15 +317,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .party(ApplicantParty.builder()
                 .organisationName("Test organisation")
                 .build())
-            .build();
-    }
-
-    private NoticeOfChangeAnswers buildNoticeOfChangeAnswer(int policyId) {
-        return NoticeOfChangeAnswers.builder()
-            .respondentFirstName("Joe")
-            .respondentLastName("Bloggs")
-            .respondentDOB(respondentDOB)
-            .applicantName("Test organisation")
             .build();
     }
 }
