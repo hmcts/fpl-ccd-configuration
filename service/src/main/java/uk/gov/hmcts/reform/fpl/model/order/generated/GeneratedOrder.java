@@ -36,6 +36,7 @@ public class GeneratedOrder implements RemovableOrder {
     private final String title;
     private final String details;
     private final DocumentReference document;
+    private final DocumentReference unsealedDocumentCopy;
     private final String dateOfIssue;
     private final LocalDate dateIssued;
     private final LocalDate approvalDate;

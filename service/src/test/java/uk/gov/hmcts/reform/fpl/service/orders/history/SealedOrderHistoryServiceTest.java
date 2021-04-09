@@ -4,9 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -26,6 +29,8 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
+import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -53,16 +58,20 @@ class SealedOrderHistoryServiceTest {
             .approvalDate(null)
             .build());
     private static final UUID GENERATED_ORDER_UUID = java.util.UUID.randomUUID();
+    private static final DocumentReference SEALED_PDF_DOCUMENT = mock(DocumentReference.class);
+    private static final DocumentReference PLAIN_WORD_DOCUMENT = mock(DocumentReference.class);
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
     private final IdentityService identityService = mock(IdentityService.class);
+    private final OrderCreationService orderCreationService = mock(OrderCreationService.class);
     private final Time time = mock(Time.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
+        orderCreationService,
         time
     );
 
@@ -79,6 +88,7 @@ class SealedOrderHistoryServiceTest {
         try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock = Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
             mockHelper(jalMock);
             CaseData caseData = caseData().build();
+            mockDocumentUpload(caseData);
             when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
             Map<String, Object> actual = underTest.generate(caseData);
@@ -96,6 +106,7 @@ class SealedOrderHistoryServiceTest {
         try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock = Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
             mockHelper(jalMock);
             CaseData caseData = caseData().build();
+            mockDocumentUpload(caseData);
             when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1, child1));
 
             Map<String, Object> actual = underTest.generate(caseData);
@@ -118,6 +129,7 @@ class SealedOrderHistoryServiceTest {
                 .orderCollection(newArrayList(
                     ORDER_APPROVED_IN_THE_PAST
                 )).build();
+            mockDocumentUpload(caseData);
             when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
             Map<String, Object> actual = underTest.generate(caseData);
@@ -139,6 +151,7 @@ class SealedOrderHistoryServiceTest {
                 .orderCollection(newArrayList(
                     ORDER_APPROVED_IN_THE_FUTURE
                 )).build();
+            mockDocumentUpload(caseData);
             when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
             Map<String, Object> actual = underTest.generate(caseData);
@@ -160,6 +173,7 @@ class SealedOrderHistoryServiceTest {
                 .orderCollection(newArrayList(
                     ORDER_APPROVED_LEGACY
                 )).build();
+            mockDocumentUpload(caseData);
             when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
 
             Map<String, Object> actual = underTest.generate(caseData);
@@ -173,6 +187,12 @@ class SealedOrderHistoryServiceTest {
         }
     }
 
+    private void mockDocumentUpload(CaseData caseData) {
+        when(orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF)).thenReturn(
+            SEALED_PDF_DOCUMENT);
+        when(orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD)).thenReturn(
+            PLAIN_WORD_DOCUMENT);
+    }
 
     private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrder() {
         return GeneratedOrder.builder()
@@ -182,6 +202,8 @@ class SealedOrderHistoryServiceTest {
             .children(wrapElements(child1))
             .childrenDescription(CHILD_1_FULLNAME)
             .approvalDate(APPROVAL_DATE)
+            .document(SEALED_PDF_DOCUMENT)
+            .unsealedDocumentCopy(PLAIN_WORD_DOCUMENT)
             .dateIssued(TODAY);
     }
 

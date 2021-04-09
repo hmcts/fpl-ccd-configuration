@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -26,9 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
-import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 
 @Api
 @RestController
@@ -88,11 +84,6 @@ public class ManageOrdersController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
-
-        DocumentReference pdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
-        DocumentReference wordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
-
-        // TODO: 01/04/2021 create object to store doc and other details in
 
         data.putAll(sealedOrderHistoryService.generate(caseData));
 

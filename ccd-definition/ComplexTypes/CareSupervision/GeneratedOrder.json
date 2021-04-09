@@ -56,6 +56,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "unsealedDocumentCopy",
+    "FieldType": "Document",
+    "ElementLabel": "Unsealed document copy",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "unsealedDocumentCopy=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "dateOfIssue",
     "FieldType": "Text",
     "ElementLabel": "Starts on",
