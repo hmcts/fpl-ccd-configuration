@@ -258,6 +258,12 @@ scheduler:
       description: 'Updates the summary tab'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryCaseDetails'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 3 ? * * *} # might be a longer running job
+    - name: 'Undelivered emails'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Find undelivered emails'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
+      cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 8 ? * * *}
 
 testing:
   support:

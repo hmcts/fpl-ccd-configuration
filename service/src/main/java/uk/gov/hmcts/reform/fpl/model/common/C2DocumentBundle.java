@@ -11,11 +11,11 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -27,8 +27,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class C2DocumentBundle implements ConfidentialBundle {
-    private final C2ApplicationType type;
+public class C2DocumentBundle implements ApplicationsBundle {
+    private final UUID id;
+    private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;
@@ -45,6 +46,16 @@ public class C2DocumentBundle implements ConfidentialBundle {
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
+    }
+
+    public String toLabel() {
+        return format("C2, %s", uploadedDateTime);
+    }
+
+    @JsonIgnore
+    @Override
+    public int getSortOrder() {
+        return 2;
     }
 
     @Override
@@ -89,23 +100,5 @@ public class C2DocumentBundle implements ConfidentialBundle {
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
 
         return documentReferences;
-    }
-
-    @JsonIgnore
-    private String getSupportingEvidenceFileNames() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(DocumentReference::getFilename)
-            .collect(Collectors.joining("\n"));
-    }
-
-    @JsonIgnore
-    private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList());
     }
 }
