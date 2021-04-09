@@ -19,7 +19,7 @@ plugins {
   id 'org.sonarqube' version '3.1.1'
   id 'project-report'
   id "idea"
-  id 'au.com.dius.pact' version '4.1.0'
+  id 'au.com.dius.pact' version '4.2.3'
   id 'info.solidsoft.pitest' version '1.6.0'
 }
 
@@ -289,7 +289,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.3'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
