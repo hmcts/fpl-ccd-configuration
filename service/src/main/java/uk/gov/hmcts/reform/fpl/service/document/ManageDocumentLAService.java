@@ -44,12 +44,11 @@ public class ManageDocumentLAService {
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-
         ManageDocumentLA manageDocument = defaultIfNull(caseData.getManageDocumentLA(),
             ManageDocumentLA.builder().build())
             .toBuilder()
             .hasHearings(YesNo.from(isNotEmpty(caseData.getHearingDetails())).getValue())
-            .hasC2s(YesNo.from(caseData.hasC2DocumentBundle()).getValue())
+            .hasC2s(YesNo.from(caseData.hasApplicationBundles()).getValue())
             .build();
 
         listAndLabel.put(MANAGE_DOCUMENT_LA_KEY, manageDocument);
@@ -58,8 +57,8 @@ public class ManageDocumentLAService {
             listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
         }
 
-        if (caseData.hasC2DocumentBundle()) {
-            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
+        if (caseData.hasApplicationBundles()) {
+            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildApplicationBundlesDynamicList());
         }
 
         if (isNotEmpty(caseData.getAllRespondents())) {
