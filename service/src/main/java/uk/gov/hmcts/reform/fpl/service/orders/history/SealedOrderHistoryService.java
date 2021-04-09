@@ -55,7 +55,7 @@ public class SealedOrderHistoryService {
             .unsealedDocumentCopy(plainWordOrder)
             .build()));
 
-        pastOrders.sort(legacyFirstAndThenByApprovalDateAsc());
+        pastOrders.sort(legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc());
 
         return Map.of("orderCollection", pastOrders);
     }
@@ -68,9 +68,10 @@ public class SealedOrderHistoryService {
             .getValue();
     }
 
-    private Comparator<Element<GeneratedOrder>> legacyFirstAndThenByApprovalDateAsc() {
-        return Comparator.comparing(e -> e.getValue().getApprovalDate(),
-            Comparator.nullsFirst(Comparator.naturalOrder()));
+    private Comparator<Element<GeneratedOrder>> legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc() {
+        Comparator<Element<GeneratedOrder>> comparingApprovalDate = Comparator.comparing(
+            e -> e.getValue().getApprovalDate(), Comparator.nullsFirst(Comparator.naturalOrder()));
+        return comparingApprovalDate.thenComparing(e -> e.getValue().getDateTimeIssued());
     }
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByDateAndTimeIssuedDesc() {

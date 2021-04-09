@@ -50,7 +50,7 @@
     "FieldType": "Document",
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "date=\"*\"",
+    "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\"",
     "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object"
   },
   {

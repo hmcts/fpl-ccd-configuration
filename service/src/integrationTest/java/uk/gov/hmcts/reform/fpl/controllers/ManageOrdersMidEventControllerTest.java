@@ -37,7 +37,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "order-selection");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            asCaseDetails(caseData),
+            "order-selection"
+        );
 
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
@@ -68,7 +71,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "issuing-details");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            asCaseDetails(caseData), "issuing-details"
+        );
 
         CaseData responseCaseData = extractCaseData(callbackResponse);
 
@@ -80,7 +85,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(Order.C32_CARE_ORDER).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(asCaseDetails(caseData), "children-details");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+            asCaseDetails(caseData), "children-details"
+        );
 
         CaseData responseCaseData = extractCaseData(callbackResponse);
 

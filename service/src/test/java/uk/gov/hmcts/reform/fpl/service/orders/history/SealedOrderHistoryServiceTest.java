@@ -57,6 +57,11 @@ class SealedOrderHistoryServiceTest {
         GeneratedOrder.builder()
             .approvalDate(APPROVAL_DATE.plusDays(1))
             .build());
+    private static final Element<GeneratedOrder> ORDER_APPROVED_FOR_SAME_DAY = element(UUID_1,
+        GeneratedOrder.builder()
+            .approvalDate(APPROVAL_DATE)
+            .dateTimeIssued(NOW.minusSeconds(1))
+            .build());
     private static final Element<GeneratedOrder> ORDER_APPROVED_LEGACY = element(UUID_1,
         GeneratedOrder.builder()
             .approvalDate(null)
@@ -169,6 +174,31 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
+                        ORDER_APPROVED_IN_THE_FUTURE
+                    )
+                ));
+            }
+        }
+
+        @Test
+        void generateWithPreviousOrdersWithSameApprovalDate() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData()
+                    .orderCollection(newArrayList(
+                        ORDER_APPROVED_FOR_SAME_DAY,
+                        ORDER_APPROVED_IN_THE_FUTURE
+                    )).build();
+                mockDocumentUpload(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        ORDER_APPROVED_FOR_SAME_DAY,
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
                         ORDER_APPROVED_IN_THE_FUTURE
                     )
