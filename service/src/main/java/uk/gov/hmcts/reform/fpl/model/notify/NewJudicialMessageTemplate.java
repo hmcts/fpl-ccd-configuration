@@ -13,4 +13,6 @@ public class NewJudicialMessageTemplate extends BaseCaseNotifyData {
     private final String urgency;
     private final String latestMessage;
     private final String hasUrgency;
+    private final String hasApplication;
+    private final String applicationType;
 }

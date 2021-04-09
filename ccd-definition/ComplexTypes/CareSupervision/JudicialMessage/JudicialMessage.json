@@ -105,11 +105,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudicialMessage",
-    "ListElementCode": "isRelatedToC2",
-    "FieldType": "YesOrNo",
-    "ElementLabel": " ",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+    "ListElementCode": "applicationType",
+    "FieldType": "Text",
+    "ElementLabel": "Application",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
