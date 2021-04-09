@@ -13,6 +13,8 @@ public interface ApplicationsBundle extends ConfidentialBundle {
 
     String toLabel();
 
+    int getSortOrder();
+
     @JsonIgnore
     default String getSupportingEvidenceFileNames() {
         return getSupportingEvidenceBundle().stream()

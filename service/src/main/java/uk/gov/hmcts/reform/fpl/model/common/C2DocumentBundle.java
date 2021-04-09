@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,12 @@ public class C2DocumentBundle implements ApplicationsBundle {
 
     public String toLabel() {
         return format("C2, %s", uploadedDateTime);
+    }
+
+    @JsonIgnore
+    @Override
+    public int getSortOrder() {
+        return 2;
     }
 
     @Override
