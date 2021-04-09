@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
@@ -16,9 +15,11 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -62,7 +63,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    @SpyBean
+    @MockBean
     private CaseSubmissionService caseSubmissionService;
 
     private final Document document = document();
@@ -228,15 +229,14 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswer(0);
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswer(1);
 
-        List<Element<Respondent>> expectedUpdatedRespondents = List.of(
-            element(respondentElementOneId, respondentOne.toBuilder().policyReference(0).build()),
-            element(respondentElementTwoId, respondentTwo.toBuilder().policyReference(1).build()));
+        RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
+        NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
 
-        assertThat(updatedCaseData.getRespondents1()).isEqualTo(expectedUpdatedRespondents);
-        assertThat(updatedCaseData.getRespondentPolicy0()).isEqualTo(expectedRespondentPolicyOne);
-        assertThat(updatedCaseData.getRespondentPolicy1()).isEqualTo(expectedRespondentPolicyTwo);
-        assertThat(updatedCaseData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswersOne);
-        assertThat(updatedCaseData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswersTwo);
+        assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
+        assertThat(respondentPolicyData.getRespondentPolicy0()).isEqualTo(expectedRespondentPolicyOne);
+        assertThat(respondentPolicyData.getRespondentPolicy1()).isEqualTo(expectedRespondentPolicyTwo);
+        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswersOne);
+        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswersTwo);
     }
 
     @Test
@@ -283,11 +283,14 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
+        RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
+        NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
+
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
-        assertThat(updatedCaseData.getRespondentPolicy0()).isNull();
-        assertThat(updatedCaseData.getRespondentPolicy1()).isNull();
-        assertThat(updatedCaseData.getNoticeOfChangeAnswers0()).isNull();
-        assertThat(updatedCaseData.getNoticeOfChangeAnswers1()).isNull();
+        assertThat(respondentPolicyData.getRespondentPolicy0()).isNull();
+        assertThat(respondentPolicyData.getRespondentPolicy1()).isNull();
+        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isNull();
+        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isNull();
     }
 
     private RespondentParty buildRespondentParty() {
@@ -320,7 +323,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .respondentLastName("Bloggs")
             .respondentDOB(respondentDOB)
             .applicantName("Test organisation")
-            .policyReference(policyId)
             .build();
     }
 }

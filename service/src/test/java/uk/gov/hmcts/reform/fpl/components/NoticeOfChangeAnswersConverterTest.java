@@ -44,7 +44,6 @@ class NoticeOfChangeAnswersConverterTest {
             .build();
 
         Respondent respondent = Respondent.builder()
-            .policyReference(1)
             .party(RespondentParty.builder()
                 .firstName("Joe")
                 .lastName("Bloggs")
@@ -74,11 +73,10 @@ class NoticeOfChangeAnswersConverterTest {
                 .respondentLastName("Bloggs")
                 .respondentDOB(respondentDOB)
                 .applicantName("Test organisation")
-                .policyReference(1)
                 .build();
 
         NoticeOfChangeAnswers actualNoticeOfChangeAnswer
-            = noticeOfChangeAnswersConverter.convert(respondentElement, applicant);
+            = noticeOfChangeAnswersConverter.generateForSubmission(respondentElement, applicant);
 
         assertThat(actualNoticeOfChangeAnswer).isEqualTo(expectedNoticeOfChangeAnswers);
     }

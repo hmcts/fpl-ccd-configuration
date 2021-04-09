@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
@@ -50,7 +48,19 @@ class RespondentPolicyServiceTest {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
-        RespondentParty respondentParty = buildRespondentParty();
+        RespondentParty respondentParty = RespondentParty.builder()
+            .firstName("Joe")
+            .lastName("Bloggs")
+            .relationshipToChild("Father")
+            .dateOfBirth(respondentDOB)
+            .telephoneNumber(Telephone.builder()
+                .contactDirection("By telephone")
+                .telephoneNumber("02838882333")
+                .telephoneUsageType("Personal home number")
+                .build())
+            .gender("Male")
+            .placeOfBirth("Newry")
+            .build();
 
         Organisation solicitorOrganisation = Organisation.builder()
             .organisationName("Summers Inc")
@@ -74,13 +84,15 @@ class RespondentPolicyServiceTest {
             .party(respondentParty)
             .build();
 
-        List<Element<Respondent>> respondents = List.of(
-            element(respondentElementOneId, respondentOne),
-            element(respondentElementTwoId, respondentTwo));
-
         Map<String, Object> caseData = new HashMap<>(Map.of(
-            "respondents1", respondents,
-            "applicants", List.of(element(buildApplicant()))
+            "respondents1", List.of(
+                element(respondentElementOneId, respondentOne),
+                element(respondentElementTwoId, respondentTwo)),
+            "applicants", List.of(element(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Test organisation")
+                    .build())
+                .build()))
         ));
 
         CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
@@ -99,84 +111,12 @@ class RespondentPolicyServiceTest {
             .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
             .build();
 
-        List<Element<Respondent>> expectedUpdatedRespondents = List.of(
-            element(respondentElementOneId, respondentOne.toBuilder().policyReference(0).build()),
-            element(respondentElementTwoId, respondentTwo.toBuilder().policyReference(1).build()));
-
-        Assertions.assertThat(data)
-            .extracting(
-                "respondents1",
-                "noticeOfChangeAnswers0",
-                "noticeOfChangeAnswers1",
-                "respondentPolicy0",
-                "respondentPolicy1")
-            .containsExactly(
-                expectedUpdatedRespondents,
-                expectedNoticeOfChangeAnswersOne,
-                expectedNoticeOfChangeAnswersTwo,
-                expectedOrganisationPolicyOne,
-                expectedOrganisationPolicyTwo);
-    }
-
-    @Test
-    void shouldNotMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseDataWhenApplicantDoNotExist() {
-        Respondent respondentOne = Respondent.builder()
-            .party(RespondentParty.builder().build())
-            .legalRepresentation("Yes")
-            .build();
-
-        Respondent respondentTwo = Respondent.builder()
-            .party(RespondentParty.builder().build())
-            .build();
-
-        List<Element<Respondent>> respondents = List.of(
-            element(respondentOne),
-            element(respondentTwo));
-
-        CaseDetails caseDetails = CaseDetails.builder().data(Map.of(
-            "respondents1", respondents,
-            "familyManCaseNumber", "12345"
-        )).build();
-
-        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
-
-        assertThat(data).isEmpty();
-    }
-
-    @Test
-    void shouldNotMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseDataWhenRespondentsDoNotExist() {
-        CaseDetails caseDetails = CaseDetails.builder().data(Map.of(
-            "applicants", List.of(element(buildApplicant())),
-            "familyManCaseNumber", "12345"
-        )).build();
-
-        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
-
-        assertThat(data).isEmpty();
-    }
-
-    private RespondentParty buildRespondentParty() {
-        return RespondentParty.builder()
-            .firstName("Joe")
-            .lastName("Bloggs")
-            .relationshipToChild("Father")
-            .dateOfBirth(respondentDOB)
-            .telephoneNumber(Telephone.builder()
-                .contactDirection("By telephone")
-                .telephoneNumber("02838882333")
-                .telephoneUsageType("Personal home number")
-                .build())
-            .gender("Male")
-            .placeOfBirth("Newry")
-            .build();
-    }
-
-    private Applicant buildApplicant() {
-        return Applicant.builder()
-            .party(ApplicantParty.builder()
-                .organisationName("Test organisation")
-                .build())
-            .build();
+        assertThat(data).isEqualTo(Map.of(
+            "noticeOfChangeAnswers0", expectedNoticeOfChangeAnswersOne,
+            "noticeOfChangeAnswers1", expectedNoticeOfChangeAnswersTwo,
+            "respondentPolicy0", expectedOrganisationPolicyOne,
+            "respondentPolicy1", expectedOrganisationPolicyTwo
+        ));
     }
 
     private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(int policyId) {
@@ -185,7 +125,6 @@ class RespondentPolicyServiceTest {
             .respondentLastName("Bloggs")
             .respondentDOB(respondentDOB)
             .applicantName("Test organisation")
-            .policyReference(policyId)
             .build();
     }
 }

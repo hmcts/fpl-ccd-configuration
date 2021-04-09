@@ -44,7 +44,6 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     private String legalRepresentation;
 
     private RespondentSolicitor solicitor;
-    private int policyReference;
 
     @JsonIgnore
     @AssertTrue(message = "Add the details for respondent solicitors", groups = RespondentSolicitorGroup.class)

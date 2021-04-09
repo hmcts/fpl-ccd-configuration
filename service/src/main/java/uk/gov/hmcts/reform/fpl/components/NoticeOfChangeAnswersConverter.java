@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 @Component
 public class NoticeOfChangeAnswersConverter {
-    public NoticeOfChangeAnswers convert(Element<Respondent> respondentElement, Applicant applicant) {
+    public NoticeOfChangeAnswers generateForSubmission(Element<Respondent> respondentElement, Applicant applicant) {
         RespondentParty respondentParty = respondentElement.getValue().getParty();
 
         return NoticeOfChangeAnswers.builder()
@@ -18,7 +18,6 @@ public class NoticeOfChangeAnswersConverter {
                 .respondentLastName(respondentParty.getLastName())
                 .respondentDOB(respondentParty.getDateOfBirth())
                 .applicantName(applicant.getParty().getOrganisationName())
-                .policyReference(respondentElement.getValue().getPolicyReference())
                 .build();
     }
 }

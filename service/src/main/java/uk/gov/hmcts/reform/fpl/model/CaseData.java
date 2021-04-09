@@ -42,7 +42,6 @@ import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -842,25 +841,11 @@ public class CaseData {
         return judge.getJudgeTitle() != null;
     }
 
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers0;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers1;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers2;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers3;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers4;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers5;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers6;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers7;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers8;
-    private final NoticeOfChangeAnswers noticeOfChangeAnswers9;
+    @JsonUnwrapped
+    @Builder.Default
+    private final NoticeOfChangeAnswersData noticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
 
-    private final OrganisationPolicy respondentPolicy0;
-    private final OrganisationPolicy respondentPolicy1;
-    private final OrganisationPolicy respondentPolicy2;
-    private final OrganisationPolicy respondentPolicy3;
-    private final OrganisationPolicy respondentPolicy4;
-    private final OrganisationPolicy respondentPolicy5;
-    private final OrganisationPolicy respondentPolicy6;
-    private final OrganisationPolicy respondentPolicy7;
-    private final OrganisationPolicy respondentPolicy8;
-    private final OrganisationPolicy respondentPolicy9;
+    @JsonUnwrapped
+    @Builder.Default
+    private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
 }

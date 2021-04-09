@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class NoticeOfChangeAnswers {
-    private final int policyReference;
     private final String respondentFirstName;
     private final String respondentLastName;
     private final LocalDate respondentDOB;

@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentPolicyService {
@@ -33,24 +31,19 @@ public class RespondentPolicyService {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isNotEmpty(caseData.getRespondents1()) && isNotEmpty(caseData.getAllApplicants())) {
-            Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
+        Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
 
-            for (int i = 0; i < caseData.getRespondents1().size(); i++) {
-                Element<Respondent> respondentElement = caseData.getRespondents1().get(i);
+        for (int i = 0; i < caseData.getRespondents1().size(); i++) {
+            Element<Respondent> respondentElement = caseData.getRespondents1().get(i);
 
-                respondentElement.getValue().setPolicyReference(i);
+            NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeRespondentConverter.generateForSubmission(
+                respondentElement, firstApplicant);
 
-                NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeRespondentConverter.convert(
-                    respondentElement, firstApplicant);
+            OrganisationPolicy organisationPolicy = respondentPolicyConverter.generateForSubmission(
+                respondentElement, SolicitorRole.values()[i]);
 
-                OrganisationPolicy organisationPolicy = respondentPolicyConverter.generateForSubmission(
-                    respondentElement, SolicitorRole.values()[i]);
-
-                data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
-                data.put(String.format("respondentPolicy%d", i), organisationPolicy);
-            }
-            data.put("respondents1", caseData.getRespondents1());
+            data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+            data.put(String.format("respondentPolicy%d", i), organisationPolicy);
         }
 
         return data;
