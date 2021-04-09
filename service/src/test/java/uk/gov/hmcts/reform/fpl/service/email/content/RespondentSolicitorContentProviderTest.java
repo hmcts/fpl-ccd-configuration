@@ -53,18 +53,18 @@ class RespondentSolicitorContentProviderTest extends AbstractEmailContentProvide
 
     private static Stream<Arguments> representativeNameSource() {
         final String salutation = "Dear ";
-        final String EXPECTED_LAST_NAME = salutation + " " + LAST_NAME;
-        final String EXPECTED_FIRST_NAME = salutation + FIRST_NAME + " ";
-        final String EXPECTED_FULL_NAME = salutation + FIRST_NAME + " " + LAST_NAME;
+        final String expectedLastName = salutation + " " + LAST_NAME;
+        final String expectedFirstName = salutation + FIRST_NAME + " ";
+        final String expectedFullName = salutation + FIRST_NAME + " " + LAST_NAME;
 
         return Stream.of(
-            Arguments.of(null, LAST_NAME, EXPECTED_LAST_NAME),
-            Arguments.of(EMPTY, LAST_NAME, EXPECTED_LAST_NAME),
-            Arguments.of(FIRST_NAME, null, EXPECTED_FIRST_NAME),
-            Arguments.of(FIRST_NAME, EMPTY, EXPECTED_FIRST_NAME),
+            Arguments.of(null, LAST_NAME, expectedLastName),
+            Arguments.of(EMPTY, LAST_NAME, expectedLastName),
+            Arguments.of(FIRST_NAME, null, expectedFirstName),
+            Arguments.of(FIRST_NAME, EMPTY, expectedFirstName),
             Arguments.of(null, null, ""),
             Arguments.of(EMPTY, EMPTY, ""),
-            Arguments.of(FIRST_NAME, LAST_NAME, EXPECTED_FULL_NAME)
+            Arguments.of(FIRST_NAME, LAST_NAME, expectedFullName)
         );
     }
 

@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,7 +28,9 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -47,16 +52,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
+    private static final String RESPONDENT_FIRST_NAME = "John";
     private static final String RESPONDENT_LAST_NAME = "Watson";
+
     private static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
         .lastName(RESPONDENT_LAST_NAME).build())
-        .legalRepresentation(YES.getValue())
-        .solicitor(RespondentSolicitor.builder()
-            .email("solicitor@test.com")
-            .firstName("John")
-            .lastName("Watson")
-            .organisation(Organisation.builder().organisationID("123").organisationName("Organisation1").build())
-            .build())
         .build();
 
     @Autowired
@@ -117,11 +117,22 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             );
     }
 
-    @Test
-    void notifyRegisteredSolicitor() {
+    @ParameterizedTest
+    @MethodSource("representativeNameSource")
+    void notifyRegisteredSolicitor(String firstName, String lastName, String expectedSalutation) {
+        final Respondent respondent1 = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email("solicitor@test.com")
+                .firstName(firstName)
+                .lastName(lastName)
+                .organisation(Organisation.builder().organisationID("123").organisationName("Organisation1").build())
+                .build())
+            .build();
+
         CaseData caseData = CaseData.builder()
             .id(123L)
-            .respondents1(wrapElements(RESPONDENT))
+            .respondents1(wrapElements(respondent1))
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build();
 
@@ -135,7 +146,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .hasSubject("New C110A application for your client")
             .hasBody(emailContent()
                 .start()
-                .line("Dear John Watson")
+                .line(expectedSalutation)
                 .line()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new C100A application on the Family"
                     + " Public Law (FPL) digital service.")
@@ -150,5 +161,12 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, "
                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
+    }
+
+    private static Stream<Arguments> representativeNameSource() {
+        String expectedSalutation = String.join(" ", "Dear", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME);
+        return Stream.of(
+            Arguments.of(RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME, expectedSalutation),
+            Arguments.of(null, null, EMPTY));
     }
 }
