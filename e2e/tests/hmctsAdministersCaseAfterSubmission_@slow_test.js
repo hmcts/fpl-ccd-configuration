@@ -131,22 +131,36 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'PBA Payment', 'Customer reference'], c2Payment.customerReference);
 });
 
-xScenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
+Scenario('HMCTS admin edits supporting evidence document on C2 application', async({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
-  await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.selectC2FromDropdown();
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
+  await manageDocumentsEventPage.selectApplicationBundleFromDropdown(3);
   await I.goToNextPage();
   manageDocumentsEventPage.enterDocumentName('Updated document name');
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
-  I.seeInTab(['C2 Application 1', 'Document name'], 'Updated document name');
-  I.seeInTab(['C2 Application 1', 'Notes'], 'C2 supporting document');
-  I.seeInTab(['C2 Application 1', 'Date and time received'], '1 Jan 2020, 11:00:00 AM');
-  I.seeInTab(['C2 Application 1', 'Document name'], 'This is a note about supporting doc');
-  I.seeInTab(['C2 Application 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['C2 Application 1', 'Date and time uploaded']);
-  I.seeTextInTab(['C2 Application 1', 'Uploaded by']);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Document name'], 'Updated document name');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.txt');
+});
+
+Scenario('HMCTS admin edits supporting evidence document on Other application', async({I, caseViewPage, manageDocumentsEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
+  await manageDocumentsEventPage.selectApplicationBundleFromDropdown(2);
+  await I.goToNextPage();
+  manageDocumentsEventPage.enterDocumentName('Updated document name');
+  await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Document name'], 'Updated document name');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.txt');
 });
 
 Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage, enterRepresentativesEventPage}) => {

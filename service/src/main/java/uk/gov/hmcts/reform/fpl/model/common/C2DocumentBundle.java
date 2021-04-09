@@ -11,11 +11,12 @@ import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -27,7 +28,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class C2DocumentBundle implements ConfidentialBundle {
+public class C2DocumentBundle implements ApplicationsBundle {
+    private final UUID id;
     private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
@@ -45,6 +47,16 @@ public class C2DocumentBundle implements ConfidentialBundle {
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
+    }
+
+    public String toLabel() {
+        return format("C2, %s", uploadedDateTime);
+    }
+
+    @JsonIgnore
+    @Override
+    public int getSortOrder() {
+        return 2;
     }
 
     @Override

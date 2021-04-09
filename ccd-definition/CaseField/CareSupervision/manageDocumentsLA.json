@@ -22,7 +22,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsNoC2sLabel",
     "FieldType": "Label",
-    "Label": "There are no C2s to associate supporting documents with",
+    "Label": "There are no additional applications to add documents to",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
