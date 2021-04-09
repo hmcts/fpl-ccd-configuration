@@ -2,15 +2,15 @@ const {I} = inject();
 
 module.exports = {
   fields: {
-    messageRegardingC2: {
-      yes: '#isMessageRegardingC2-Yes',
-      no: '#isMessageRegardingC2-No',
+    isMessageRegardingAdditionalApplications: {
+      yes: '#isMessageRegardingAdditionalApplications-Yes',
+      no: '#isMessageRegardingAdditionalApplications-No',
     },
     eventOptions: {
       newMessage: '#messageJudgeOption-NEW_MESSAGE',
       reply: '#messageJudgeOption-REPLY',
     },
-    c2List: '#c2DynamicList',
+    additionalApplicationsList: '#additionalApplicationsDynamicList',
     existingMessagesList: '#judicialMessageDynamicList',
     senderEmail: '#judicialMessageMetaData_sender',
     recipientEmail: '#judicialMessageMetaData_recipient',
@@ -30,19 +30,19 @@ module.exports = {
     replyTo: '#judicialMessageReply_replyTo',
   },
 
-  selectMessageRelatedToC2() {
-    I.click(this.fields.messageRegardingC2.yes);
+  selectMessageRelatedToAdditionalApplication() {
+    I.click(this.fields.isMessageRegardingAdditionalApplications.yes);
   },
 
-  selectMessageNotRelatedToC2() {
-    I.click(this.fields.messageRegardingC2.no);
+  selectMessageNotRelatedToAdditionalApplication() {
+    I.click(this.fields.isMessageRegardingAdditionalApplications.no);
   },
 
-  async selectC2() {
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2List} option:nth-child(2)`);
-    I.waitForElement(this.fields.c2List);
+  async selectAdditionalApplication() {
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.additionalApplicationsList} option:nth-child(2)`);
+    I.waitForElement(this.fields.additionalApplicationsList);
     await I.runAccessibilityTest();
-    I.selectOption(this.fields.c2List, dropdownLabel);
+    I.selectOption(this.fields.additionalApplicationsList, dropdownLabel);
   },
 
   enterRecipientEmail(email) {

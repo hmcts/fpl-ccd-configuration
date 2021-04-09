@@ -11,8 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
@@ -22,9 +24,10 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.C2;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
@@ -116,7 +119,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldInitialiseC2SupportingDocuments() {
+    void shouldInitialiseC2SupportingDocumentsWhenTheSelectedC2IsInC2DocumentsBundle() {
         UUID selectedC2DocumentId = UUID.randomUUID();
         LocalDateTime today = LocalDateTime.now();
 
@@ -129,7 +132,7 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
-            .manageDocument(buildManagementDocument(C2))
+            .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
             .manageDocumentsSupportingC2List(selectedC2DocumentId)
             .build();
 
@@ -140,20 +143,92 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
 
         assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
-            .type(C2)
+            .type(ADDITIONAL_APPLICATIONS_DOCUMENTS)
             .hasHearings("No")
             .hasC2s("Yes")
             .build());
     }
 
     @Test
+    void shouldInitialiseC2SupportingDocumentsWhenSelectedC2ExistsInAdditionalApplications() {
+        UUID selectedBundleId = UUID.randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<Element<SupportingEvidenceBundle>> c2EvidenceDocuments = buildSupportingEvidenceBundle();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(today.plusDays(2))),
+            element(buildC2DocumentBundle(today.plusDays(2))));
+
+        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
+            .id(selectedBundleId).supportingEvidenceBundle(c2EvidenceDocuments)
+            .uploadedDateTime(today.plusDays(1).toString()).build();
+
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .id(randomUUID()).applicationType(C12_WARRANT_TO_ASSIST_PERSON)
+            .uploadedDateTime(today.plusDays(1).toString()).build();
+
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(selectedC2DocumentBundle)
+                .otherApplicationsBundle(otherApplicationsBundle).build()))
+            .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
+            .manageDocumentsSupportingC2List(selectedBundleId)
+            .build();
+
+        CaseData extractedCaseData = extractCaseData(postMidEvent(
+            caseData, "initialise-manage-document-collections", USER_ROLES
+        ));
+
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+    }
+
+    @Test
+    void shouldInitialiseOtherApplicationSupportingDocumentsWhenSelectedApplicationExistsInAdditionalApplications() {
+        UUID selectedBundleId = UUID.randomUUID();
+        LocalDateTime today = LocalDateTime.now();
+
+        List<Element<SupportingEvidenceBundle>> c2EvidenceDocuments = buildSupportingEvidenceBundle();
+
+        List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+            element(buildC2DocumentBundle(today.plusDays(2))),
+            element(buildC2DocumentBundle(today.plusDays(2))));
+
+        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
+            .id(randomUUID()).uploadedDateTime(today.plusDays(1).toString()).build();
+
+        OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+            .id(selectedBundleId).applicationType(C12_WARRANT_TO_ASSIST_PERSON)
+            .supportingEvidenceBundle(c2EvidenceDocuments)
+            .uploadedDateTime(today.plusDays(1).toString()).build();
+
+        CaseData caseData = CaseData.builder()
+            .c2DocumentBundle(c2DocumentBundle)
+            .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(selectedC2DocumentBundle)
+                .otherApplicationsBundle(otherApplicationsBundle).build()))
+            .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
+            .manageDocumentsSupportingC2List(selectedBundleId)
+            .build();
+
+        CaseData extractedCaseData = extractCaseData(postMidEvent(
+            caseData, "initialise-manage-document-collections", USER_ROLES
+        ));
+
+        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(c2EvidenceDocuments);
+    }
+
+    @Test
     void shouldReturnErrorWhenNoC2sOnCaseAndUserSelectsC2SupportingDocs() {
-        CaseData caseData = CaseData.builder().manageDocument(buildManagementDocument(C2)).build();
+        CaseData caseData = CaseData.builder()
+            .manageDocument(buildManagementDocument(ADDITIONAL_APPLICATIONS_DOCUMENTS))
+            .build();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData,
             "initialise-manage-document-collections");
 
         assertThat(callbackResponse.getErrors()).containsExactly(
-            "There are no C2s to associate supporting documents with");
+            "There are no additional applications to associate supporting documents with");
     }
 
     @Test

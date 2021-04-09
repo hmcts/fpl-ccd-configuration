@@ -135,7 +135,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "c2DynamicList",
+    "CaseFieldID": "additionalApplicationsDynamicList",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },
@@ -835,7 +835,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "hasC2Applications",
+    "CaseFieldID": "hasAdditionalApplications",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },
@@ -1052,7 +1052,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "isMessageRegardingC2",
+    "CaseFieldID": "isMessageRegardingAdditionalApplications",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },
