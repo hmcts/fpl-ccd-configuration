@@ -67,6 +67,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
+    public boolean isRespondentJourneyEnabled() {
+        return ldClient.boolVariation("respondent-journey", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }
