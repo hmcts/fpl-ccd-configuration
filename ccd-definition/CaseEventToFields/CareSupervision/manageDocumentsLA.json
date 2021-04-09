@@ -49,7 +49,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentLA.type=\"C2\" AND manageDocumentLA.hasC2s=\"No\""
+    "FieldShowCondition": "manageDocumentLA.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocumentLA.hasC2s=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -62,7 +62,7 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
-    "FieldShowCondition": "manageDocumentLA.type=\"C2\" AND manageDocumentLA.hasC2s=\"Yes\""
+    "FieldShowCondition": "manageDocumentLA.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" AND manageDocumentLA.hasC2s=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -130,7 +130,7 @@
     "ShowSummaryChangeOption": "N",
     "FieldShowCondition": "manageDocumentLA.type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND manageDocumentSubtypeListLA!=\"RESPONDENT_STATEMENT\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/validate-supporting-evidence/mid-event",
-    "PageShowCondition": "manageDocumentLA.type=\"C2\" OR manageDocumentSubtypeListLA=\"OTHER\" OR  manageDocumentSubtypeListLA=\"RESPONDENT_STATEMENT\" OR manageDocumentLA.type=\"CORRESPONDENCE\""
+    "PageShowCondition": "manageDocumentLA.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\" OR manageDocumentSubtypeListLA=\"OTHER\" OR manageDocumentLA.type=\"CORRESPONDENCE\" OR  manageDocumentSubtypeListLA=\"RESPONDENT_STATEMENT\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -156,7 +156,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocumentLA.type=\"C2\""
+    "FieldShowCondition": "manageDocumentLA.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -195,7 +195,7 @@
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "manageDocumentLA.type=\"C2\""
+    "FieldShowCondition": "manageDocumentLA.type=\"ADDITIONAL_APPLICATIONS_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",

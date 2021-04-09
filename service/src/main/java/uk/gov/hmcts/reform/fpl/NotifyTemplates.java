@@ -50,8 +50,8 @@ public final class NotifyTemplates {
     public static final String TEMP_JUDGE_ALLOCATED_TO_HEARING_TEMPLATE = "eeb3a6f5-af49-48aa-a52a-a29a7be2bc38";
     public static final String CMO_REMOVAL_NOTIFICATION_TEMPLATE = "cd114602-4343-42ce-ab60-1be88b797cd2";
     public static final String SDO_REMOVAL_NOTIFICATION_TEMPLATE = "8f66e70f-e328-4a22-aa17-f52f44e69d45";
-    public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "584ec49a-977d-4c8c-97f4-c619c12b3ec5";
-    public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "3fe05823-0d6a-451e-9aff-0e61c715ed37";
+    public static final String JUDICIAL_MESSAGE_ADDED_TEMPLATE = "bf041444-5a4e-4045-878a-4833f57b7d96";
+    public static final String JUDICIAL_MESSAGE_REPLY_TEMPLATE = "e0603270-376b-4d9b-8570-7fd6f2e295ec";
     public static final String JUDGE_APPROVES_DRAFT_ORDERS = "632ea051-0ab0-447d-9d6c-54118b04a5c1";
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
