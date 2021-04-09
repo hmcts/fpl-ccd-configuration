@@ -19,13 +19,14 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILD
 @RequiredArgsConstructor
 public enum Order {
     C32_CARE_ORDER(
-        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER),
-        "Care order", "Section 31 Children Act 1989"
+        "Care order", "Section 31 Children Act 1989", "C32 - Care order",
+        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
-    private final List<OrderQuestionBlock> questions;
     private final String title;
     private final String childrenAct;
+    private final String historyTitle;
+    private final List<OrderQuestionBlock> questions;
 
     public String fileName(RenderFormat format) {
         return String.format("%s.%s", this.name().toLowerCase(), format.getExtension());

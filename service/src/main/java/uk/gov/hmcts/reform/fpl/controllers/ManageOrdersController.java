@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
@@ -39,6 +40,7 @@ public class ManageOrdersController extends CallbackController {
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
+    private final SealedOrderHistoryService sealedOrderHistoryService;
     private final OrderCreationService orderCreationService;
 
     @PostMapping("/section-1/mid-event")
@@ -91,6 +93,8 @@ public class ManageOrdersController extends CallbackController {
         DocumentReference wordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
 
         // TODO: 01/04/2021 create object to store doc and other details in
+
+        data.putAll(sealedOrderHistoryService.generate(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
 
