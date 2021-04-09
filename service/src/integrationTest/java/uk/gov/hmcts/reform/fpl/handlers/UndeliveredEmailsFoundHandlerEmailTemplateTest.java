@@ -51,7 +51,7 @@ class UndeliveredEmailsFoundHandlerEmailTemplateTest extends EmailTemplateTest {
         assertThat(response())
             .hasSubject("Email failure list")
             .hasBody(emailContent()
-                .line("In the last 24 hours, the following orders failed to send:")
+                .line("In the last 24 hours, the following emails failed to send:")
                 .line()
                 .line("To: test1@test.com")
                 .line("Subject: Subject 1")
