@@ -89,6 +89,7 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
 
         return documentReferences;
     }
+
     @JsonIgnore
     @Override
     public int getSortOrder() {

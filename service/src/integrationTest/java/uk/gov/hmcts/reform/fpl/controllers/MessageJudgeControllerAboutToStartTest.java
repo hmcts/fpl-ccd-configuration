@@ -93,8 +93,8 @@ class MessageJudgeControllerAboutToStartTest extends AbstractCallbackTest {
         );
 
         DynamicList expectedAdditionalApplicationsDynamicList = buildDynamicList(
-            Pair.of(c2DocumentBundleId, "C2, 1 January 2021, 12:00pm"),
-            Pair.of(otherApplicationsBundleId, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
+            Pair.of(otherApplicationsBundleId, "C1, 1 January 2021, 12:00pm"),
+            Pair.of(c2DocumentBundleId, "C2, 1 January 2021, 12:00pm")
         );
 
         DynamicList expectedJudicialMessageDynamicList = buildDynamicList(

@@ -121,9 +121,9 @@ class MessageJudgeControllerMidEventTest extends AbstractCallbackTest {
             response.getData().get("additionalApplicationsDynamicList"), DynamicList.class
         );
 
-        DynamicList expectedDynamicList = buildDynamicList(0,
-            Pair.of(DYNAMIC_LIST_ITEM_ID, "C2, 1 January 2021, 12:00pm"),
-            Pair.of(notSelectedBundleId, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
+        DynamicList expectedDynamicList = buildDynamicList(1,
+            Pair.of(notSelectedBundleId, "C1, 1 January 2021, 12:00pm"),
+            Pair.of(DYNAMIC_LIST_ITEM_ID, "C2, 1 January 2021, 12:00pm")
         );
 
         assertThat(response.getData().get("relatedDocumentsLabel")).isEqualTo(expectedDocumentLabel);

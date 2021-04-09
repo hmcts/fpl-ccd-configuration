@@ -350,9 +350,9 @@ class MessageJudgeServiceTest {
             .extracting("relatedDocumentsLabel", "additionalApplicationsDynamicList")
             .containsExactly(
                 expectedRelatedDocumentsLabel,
-                buildDynamicList(1,
-                    Pair.of(c2DocumentBundleId, "C2, 2 January 2021, 12:00pm"),
-                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
+                buildDynamicList(0,
+                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C1, 1 January 2021, 12:00pm"),
+                    Pair.of(c2DocumentBundleId, "C2, 2 January 2021, 12:00pm")
                 )
             );
     }
@@ -408,9 +408,9 @@ class MessageJudgeServiceTest {
             .extracting("relatedDocumentsLabel", "additionalApplicationsDynamicList")
             .containsExactly(
                 expectedRelatedDocumentsLabel,
-                buildDynamicList(0,
-                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C2, 2 January 2021, 12:00pm"),
-                    Pair.of(otherDocumentBundleId, "C1 - Appointment of a guardian, 1 January 2021, 12:00pm")
+                buildDynamicList(1,
+                    Pair.of(otherDocumentBundleId, "C1, 1 January 2021, 12:00pm"),
+                    Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "C2, 2 January 2021, 12:00pm")
                 )
             );
     }
