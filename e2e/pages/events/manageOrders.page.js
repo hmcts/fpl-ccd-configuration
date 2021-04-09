@@ -39,7 +39,7 @@ const section4 = {
 };
 
 const preview = {
-  label: '#manageOrdersPreviewLabel',
+  label: '#orderPreviewSectionHeader',
   documentName: 'Preview order.pdf',
 };
 

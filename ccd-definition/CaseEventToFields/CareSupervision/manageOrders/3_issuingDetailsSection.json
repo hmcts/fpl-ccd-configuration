@@ -5,13 +5,25 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "orderTempQuestions",
     "DisplayContext": "READONLY",
-    "PageID": "section2",
+    "PageID": "IssuingDetails",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 1,
     "PageShowCondition": "orderTempQuestions.approver=\"YES\" OR orderTempQuestions.approvalDate=\"YES\"",
     "FieldShowCondition": "manageOrdersOperation=\"DO_NOT_SHOW\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/section-2/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/issuing-details/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "issuingDetailsSectionHeader",
+    "DisplayContext": "READONLY",
+    "PageID": "IssuingDetails",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 2,
+    "ShowSummaryChangeOption": "N"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -19,12 +31,11 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "DisplayContext": "COMPLEX",
-    "PageID": "section2",
+    "PageID": "IssuingDetails",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
     "FieldShowCondition": "orderTempQuestions.approver=\"YES\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/section-2/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -33,12 +44,11 @@
     "CaseEventID": "manageOrders",
     "CaseFieldID": "manageOrdersApprovalDate",
     "DisplayContext": "MANDATORY",
-    "PageID": "section2",
+    "PageID": "IssuingDetails",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageFieldDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
     "FieldShowCondition": "orderTempQuestions.approvalDate=\"YES\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/section-2/mid-event",
     "ShowSummaryChangeOption": "Y"
   }
 ]

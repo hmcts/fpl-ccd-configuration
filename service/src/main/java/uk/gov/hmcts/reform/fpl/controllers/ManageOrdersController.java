@@ -37,7 +37,7 @@ public class ManageOrdersController extends CallbackController {
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
 
-    @PostMapping("/section-1/mid-event")
+    @PostMapping("/order-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();

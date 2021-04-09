@@ -48,19 +48,55 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersPreviewLabel",
+    "ID": "orderPreview",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Label",
-    "Label": "## Check your order\nA preview of your order is below.\n\nCheck the details now. You can use the next page to correct any errors",
+    "FieldType": "Document",
+    "Label": " ",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "orderPreview",
+    "ID": "createOrderSectionHeader",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Document",
-    "Label": " ",
+    "FieldType": "Label",
+    "Label": "## Create an order",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "issuingDetailsSectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "## Add issuing details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "childrenDetailsSectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "## Add children details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "orderDetailsSectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "## Add order details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "orderPreviewSectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "## Check your order\nA preview of your order is below.\n\nCheck the details now. You can use the next page to correct any errors",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }

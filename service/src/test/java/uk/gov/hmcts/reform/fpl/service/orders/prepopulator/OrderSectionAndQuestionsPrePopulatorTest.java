@@ -20,8 +20,8 @@ import static org.mockito.Mockito.when;
 public class OrderSectionAndQuestionsPrePopulatorTest {
 
     private static final Order ORDER = Order.C32_CARE_ORDER;
-    private static final OrderSection ORDER_SECTION = OrderSection.SECTION_1;
-    private static final OrderSection ANOTHER_ORDER_SECTION = OrderSection.SECTION_2;
+    private static final OrderSection ORDER_SECTION = OrderSection.ORDER_SELECTION;
+    private static final OrderSection ANOTHER_ORDER_SECTION = OrderSection.ISSUING_DETAILS;
     private static final CaseData CASE_DATA = mock(CaseData.class);
     private static final Map<String, Object> PRE_POPULATE_SECTION_DATA = Maps.newHashMap(
         Map.of("sectionField", "sectionValue"));
@@ -107,7 +107,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         when(whichChildreQuestionBlockPrePopulator.prePopulate(CASE_DATA)).thenReturn(
             PRE_POPULATE_WHICH_CHILDREN_DATA);
 
-        Map<String, Object> actual = underTest.prePopulate(ORDER, OrderSection.SECTION_3, CASE_DATA);
+        Map<String, Object> actual = underTest.prePopulate(ORDER, OrderSection.CHILDREN_DETAILS, CASE_DATA);
 
         assertThat(actual).isEqualTo(PRE_POPULATE_WHICH_CHILDREN_DATA);
     }
@@ -124,7 +124,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         when(anotherSectionQuestionBlockPopulator.prePopulate(CASE_DATA)).thenReturn(
             PRE_POPULATE_SOME_OTHER_DATA);
 
-        Map<String, Object> actual = underTest.prePopulate(ORDER, OrderSection.SECTION_2, CASE_DATA);
+        Map<String, Object> actual = underTest.prePopulate(ORDER, OrderSection.ISSUING_DETAILS, CASE_DATA);
 
         assertThat(actual).isEqualTo(
             Map.of(
@@ -146,7 +146,7 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         when(anotherSectionQuestionBlockPopulator.prePopulate(CASE_DATA)).thenReturn(
             PRE_POPULATE_SOME_DATA);
 
-        Assertions.assertThatThrownBy(() -> underTest.prePopulate(ORDER, OrderSection.SECTION_2, CASE_DATA))
+        Assertions.assertThatThrownBy(() -> underTest.prePopulate(ORDER, OrderSection.ISSUING_DETAILS, CASE_DATA))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Duplicate key someField (attempted merging values someFieldValue and someFieldValue)");
     }

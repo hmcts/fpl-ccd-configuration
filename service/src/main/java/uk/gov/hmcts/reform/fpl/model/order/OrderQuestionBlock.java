@@ -8,13 +8,13 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public enum OrderQuestionBlock {
-    APPROVER("approver", "Approver", OrderSection.SECTION_2,
+    APPROVER("approver", "Approver", OrderSection.ISSUING_DETAILS,
         List.of("judgeAndLegalAdvisor")),
-    APPROVAL_DATE("approvalDate", "Approval Date", OrderSection.SECTION_2,
+    APPROVAL_DATE("approvalDate", "Approval Date", OrderSection.ISSUING_DETAILS,
         List.of("manageOrdersApprovalDate")),
-    WHICH_CHILDREN("whichChildren", "Which children", OrderSection.SECTION_3,
+    WHICH_CHILDREN("whichChildren", "Which children", OrderSection.CHILDREN_DETAILS,
         List.of("orderAppliesToAllChildren", "children_label", "childSelector")),
-    FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.SECTION_4,
+    FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order",OrderSection.REVIEW,
         List.of("orderPreview"));

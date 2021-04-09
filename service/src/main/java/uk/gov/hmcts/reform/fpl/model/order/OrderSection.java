@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public enum OrderSection {
-    SECTION_1,
-    SECTION_2,
-    SECTION_3,
-    SECTION_4,
+    ORDER_SELECTION,
+    ISSUING_DETAILS,
+    CHILDREN_DETAILS,
+    ORDER_DETAILS,
     REVIEW;
 
     public static OrderSection from(final String section) {

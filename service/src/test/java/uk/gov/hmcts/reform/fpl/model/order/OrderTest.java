@@ -11,10 +11,10 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.SECTION_2;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.SECTION_3;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.SECTION_4;
 
 class OrderTest {
 
@@ -26,7 +26,7 @@ class OrderTest {
 
     @Test
     void firstSection() {
-        assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(SECTION_2);
+        assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
     }
 
     @ParameterizedTest
@@ -37,9 +37,9 @@ class OrderTest {
 
     private static Stream<Arguments> sectionsWithNext() {
         return Stream.of(
-            Arguments.of(C32_CARE_ORDER, SECTION_2, Optional.of(SECTION_3)),
-            Arguments.of(C32_CARE_ORDER, SECTION_3, Optional.of(SECTION_4)),
-            Arguments.of(C32_CARE_ORDER, SECTION_4, Optional.of(REVIEW)),
+            Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty())
         );
     }
