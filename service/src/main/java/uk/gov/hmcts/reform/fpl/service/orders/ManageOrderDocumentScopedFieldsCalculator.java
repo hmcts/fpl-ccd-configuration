@@ -17,7 +17,10 @@ public class ManageOrderDocumentScopedFieldsCalculator {
 
         fields.addAll(List.of(
             "manageOrdersType",
-            "orderTempQuestions"
+            "orderTempQuestions",
+            "childrenDetailsSectionSubHeader",
+            "issuingDetailsSectionSubHeader",
+            "orderDetailsSectionSubHeader"
         ));
 
         return fields;

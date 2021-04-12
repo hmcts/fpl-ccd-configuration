@@ -29,12 +29,25 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "judgeAndLegalAdvisor",
-    "DisplayContext": "COMPLEX",
+    "CaseFieldID": "issuingDetailsSectionSubHeader",
+    "DisplayContext": "READONLY",
     "PageID": "IssuingDetails",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 3,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "CaseEventFieldLabel": " ",
+    "DisplayContext": "COMPLEX",
+    "PageID": "IssuingDetails",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 4,
     "FieldShowCondition": "orderTempQuestions.approver=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
@@ -47,7 +60,7 @@
     "PageID": "IssuingDetails",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageFieldDisplayOrder": 4,
+    "PageFieldDisplayOrder": 5,
     "FieldShowCondition": "orderTempQuestions.approvalDate=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }

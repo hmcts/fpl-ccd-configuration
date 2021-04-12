@@ -8,7 +8,10 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
 
 import java.util.List;
@@ -20,9 +23,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderSectionAndQuestionsPrePopulatorHolder {
 
+    // Questions
     private final WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
-    private final DraftOrderPreviewSectionPrePopulator draftOrderPreviewSectionPrePopulator;
+
+    // Sections
+    private final IssuingDetailsSectionPrePopulator issuingDetailsPrePopulator;
+    private final ChildrenDetailsSectionPrePopulator childrenDetailsPrePopulator;
+    private final OrderDetailsSectionPrePopulator orderDetailsPrePopulator;
+    private final DraftOrderPreviewSectionPrePopulator draftOrderPreviewPrePopulator;
 
     private Map<OrderQuestionBlock, QuestionBlockOrderPrePopulator> blockOrderPrePopulatorMap;
     private Map<OrderSection, OrderSectionPrePopulator> sectionPrePopulatorMap;
@@ -31,6 +40,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
         if (blockOrderPrePopulatorMap != null) {
             return blockOrderPrePopulatorMap;
         }
+
         blockOrderPrePopulatorMap = List.of(
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator
@@ -38,21 +48,25 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()
         ));
+
         return blockOrderPrePopulatorMap;
     }
 
     public Map<OrderSection, OrderSectionPrePopulator> sectionBlockToPopulator() {
-
         if (sectionPrePopulatorMap != null) {
             return sectionPrePopulatorMap;
         }
 
         sectionPrePopulatorMap = List.of(
-            draftOrderPreviewSectionPrePopulator
+            issuingDetailsPrePopulator,
+            childrenDetailsPrePopulator,
+            orderDetailsPrePopulator,
+            draftOrderPreviewPrePopulator
         ).stream().collect(Collectors.toMap(
             OrderSectionPrePopulator::accept,
             Function.identity()
         ));
+
         return sectionPrePopulatorMap;
     }
 

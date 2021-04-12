@@ -17,7 +17,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
     "CaseFieldID": "orderPreview",
-    "PageFieldDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "review",
     "PageDisplayOrder": 6,
