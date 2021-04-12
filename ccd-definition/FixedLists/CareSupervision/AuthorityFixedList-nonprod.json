@@ -11,13 +11,13 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "CR",
     "ListElement": "Croydon County Council",
-    "DisplayOrder": 7
+    "DisplayOrder": 71
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "KN",
     "ListElement": "Kingston City Council",
-    "DisplayOrder": 17
+    "DisplayOrder": 150
   }
 ]
