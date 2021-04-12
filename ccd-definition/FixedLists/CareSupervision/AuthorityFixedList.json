@@ -2,9 +2,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BAR",
+    "ListElement": "Barnsley Metropolitan Borough Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BNS",
     "ListElement": "Bath & North East Somerset Council",
-    "DisplayOrder": 1
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
@@ -138,6 +145,13 @@
     "ListElementCode": "DEV",
     "ListElement": "Devon County Council",
     "DisplayOrder": 95
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DON",
+    "ListElement": "Doncaster Metropolitan Borough Council",
+    "DisplayOrder": 97
   },
   {
     "LiveFrom": "01/01/2017",
@@ -450,6 +464,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "ROT",
+    "ListElement": "Rotherham Metropolitan Borough Council",
+    "DisplayOrder": 317
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
     "DisplayOrder": 320
@@ -460,6 +481,14 @@
     "ListElementCode": "SMC",
     "ListElement": "Sandwell Metropolitan Council",
     "DisplayOrder": 325
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHF",
+    "ListElement": "Sheffield City Council",
+    "DisplayOrder": 327
   },
   {
     "LiveFrom": "01/01/2017",
