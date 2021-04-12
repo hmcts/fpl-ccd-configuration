@@ -461,6 +461,14 @@
     "ListElement": "Sandwell Metropolitan Council",
     "DisplayOrder": 325
   },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHF",
+    "ListElement": "Sheffield City Council",
+    "DisplayOrder": 327
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
