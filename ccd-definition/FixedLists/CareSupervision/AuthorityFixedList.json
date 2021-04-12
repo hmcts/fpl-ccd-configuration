@@ -450,6 +450,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "ROT",
+    "ListElement": "Rotherham Metropolitan Borough Council",
+    "DisplayOrder": 317
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
     "DisplayOrder": 320
