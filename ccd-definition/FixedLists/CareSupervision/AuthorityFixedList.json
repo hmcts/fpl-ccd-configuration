@@ -142,6 +142,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "DON",
+    "ListElement": "Doncaster Metropolitan Borough Council",
+    "DisplayOrder": 97
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DMC",
     "ListElement": "Dudley Metropolitan Borough Council",
     "DisplayOrder": 100
@@ -450,6 +457,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "ROT",
+    "ListElement": "Rotherham Metropolitan Borough Council",
+    "DisplayOrder": 317
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
     "DisplayOrder": 320
@@ -460,6 +474,14 @@
     "ListElementCode": "SMC",
     "ListElement": "Sandwell Metropolitan Council",
     "DisplayOrder": 325
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHF",
+    "ListElement": "Sheffield City Council",
+    "DisplayOrder": 327
   },
   {
     "LiveFrom": "01/01/2017",
