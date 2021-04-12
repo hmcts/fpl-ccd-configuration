@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -59,7 +60,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     private static final byte[] DOCUMENT_BINARIES = {1, 2, 3, 4, 5};
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = testDocmosisDocument(DOCUMENT_BINARIES);
     private static final Document UPLOADED_DOCUMENT = testDocument();
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.buildFromDocument(UPLOADED_DOCUMENT);
+    private static final DocumentReference DOCUMENT_REFERENCE = buildFromDocument(UPLOADED_DOCUMENT);
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
