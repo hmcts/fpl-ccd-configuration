@@ -2,9 +2,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BAR",
+    "ListElement": "Barnsley Metropolitan Borough Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BNS",
     "ListElement": "Bath & North East Somerset Council",
-    "DisplayOrder": 1
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
