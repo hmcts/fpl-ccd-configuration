@@ -4,7 +4,7 @@
     "ID": "PreviousHearingVenue",
     "ListElementCode": "previousVenue",
     "FieldType": "Text",
-    "ElementLabel": "Last hearing venue",
+    "ElementLabel": "Last court",
     "SecurityClassification": "Public"
   },
   {
@@ -12,7 +12,7 @@
     "ID": "PreviousHearingVenue",
     "ListElementCode": "usePreviousVenue",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Use this venue for this hearing?",
+    "ElementLabel": "Use this court for this hearing?",
     "SecurityClassification": "Public"
   },
   {
@@ -21,7 +21,7 @@
     "ListElementCode": "newVenue",
     "FieldType": "FixedList",
     "FieldTypeParameter": "HearingVenue",
-    "ElementLabel": "Venue",
+    "ElementLabel": "Court",
     "SecurityClassification": "Public",
     "FieldShowCondition": "usePreviousVenue=\"No\""
   },
@@ -30,7 +30,7 @@
     "ID": "PreviousHearingVenue",
     "ListElementCode": "newVenueCustomAddress",
     "FieldType": "AddressUK",
-    "ElementLabel": "Venue address",
+    "ElementLabel": "Court address",
     "SecurityClassification": "Public",
     "FieldShowCondition": "usePreviousVenue=\"No\" AND newVenue=\"OTHER\""
   }

@@ -1,14 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
@@ -35,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.time.LocalDate;
@@ -57,6 +52,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -78,6 +74,8 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_AND_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingStatus.VACATED_TO_BE_RE_LISTED;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.IN_PERSON;
+import static uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence.REMOTE;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.FUTURE_HEARING_LIST;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_EXISTING_HEARINGS_FLAG;
 import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HAS_FUTURE_HEARING_FLAG;
@@ -96,7 +94,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudgeAndLegalAdviser;
 
-@ExtendWith(MockitoExtension.class)
 class ManageHearingsServiceTest {
 
     private static final String VENUE = "31";
@@ -108,42 +105,28 @@ class ManageHearingsServiceTest {
         .addressLine1("custom")
         .addressLine2("address")
         .build();
-    private static final Document DOCUMENT = testDocument();
 
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final Document DOCUMENT = testDocument();
 
     public static final UUID RE_LISTED_HEARING_ID = randomUUID();
     public static final UUID LINKED_CMO_ID = randomUUID();
     public static final UUID HEARING_BUNDLE_ID = randomUUID();
 
-    @Mock(lenient = true)
-    private Time time;
+    private final Time time = new FixedTimeConfiguration().stoppedTime();
+    private final HearingVenueLookUpService hearingVenueLookUpService = mock(HearingVenueLookUpService.class);
+    private final NoticeOfHearingGenerationService noticeOfHearingGenerationService = mock(
+        NoticeOfHearingGenerationService.class
+    );
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService = mock(
+        DocmosisDocumentGeneratorService.class
+    );
+    private final UploadDocumentService uploadDocumentService = mock(UploadDocumentService.class);
+    private final IdentityService identityService = mock(IdentityService.class);
 
-    @Mock
-    private HearingVenueLookUpService hearingVenueLookUpService;
-
-    @Mock
-    private NoticeOfHearingGenerationService noticeOfHearingGenerationService;
-
-    @Mock
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
-
-    @Mock
-    private UploadDocumentService uploadDocumentService;
-
-    @Mock
-    private IdentityService identityService;
-
-    @Spy
-    private ObjectMapper mapper = new ObjectMapper();
-
-    @InjectMocks
-    private ManageHearingsService service;
-
-    @BeforeEach
-    void setUp() {
-        when(time.now()).thenReturn(NOW);
-    }
+    private final ManageHearingsService service = new ManageHearingsService(
+        noticeOfHearingGenerationService, docmosisDocumentGeneratorService, uploadDocumentService,
+        hearingVenueLookUpService, new ObjectMapper(), identityService, time
+    );
 
     @Nested
     class PopulatePastAndFutureHearingListsTest {
@@ -422,6 +405,7 @@ class ManageHearingsServiceTest {
             .type(CASE_MANAGEMENT)
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
+            .presence(REMOTE)
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -435,7 +419,8 @@ class ManageHearingsServiceTest {
             "hearingStartDate", startDate,
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
-            "previousHearingVenue", previousHearingVenue
+            "previousHearingVenue", previousHearingVenue,
+            "hearingPresence", REMOTE
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -453,6 +438,7 @@ class ManageHearingsServiceTest {
             .typeDetails("Fact finding")
             .venue("OTHER")
             .venueCustomAddress(VENUE_CUSTOM_ADDRESS)
+            .presence(IN_PERSON)
             .startDate(startDate)
             .endDate(endDate)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -468,7 +454,8 @@ class ManageHearingsServiceTest {
             "hearingEndDate", endDate,
             "judgeAndLegalAdvisor", judgeAndLegalAdvisor,
             "hearingVenue", "OTHER",
-            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS
+            "hearingVenueCustom", VENUE_CUSTOM_ADDRESS,
+            "hearingPresence", IN_PERSON
         );
 
         assertThat(hearingCaseFields).containsExactlyInAnyOrderEntriesOf(expectedCaseFields);
@@ -482,6 +469,7 @@ class ManageHearingsServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(VENUE)
+            .hearingPresence(IN_PERSON)
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -493,6 +481,7 @@ class ManageHearingsServiceTest {
         HearingBooking expectedHearingBooking = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .venue(VENUE)
+            .presence(IN_PERSON)
             .startDate(startDate)
             .endDate(endDate)
             .hearingJudgeLabel("Her Honour Judge Judy")
@@ -515,6 +504,7 @@ class ManageHearingsServiceTest {
 
         CaseData caseData = CaseData.builder()
             .hearingType(CASE_MANAGEMENT)
+            .hearingPresence(REMOTE)
             .hearingStartDate(startDate)
             .hearingEndDate(endDate)
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -529,6 +519,7 @@ class ManageHearingsServiceTest {
             .venue(VENUE)
             .startDate(startDate)
             .endDate(endDate)
+            .presence(REMOTE)
             .hearingJudgeLabel("Her Honour Judge Judy")
             .legalAdvisorLabel(testJudgeAndLegalAdviser().getLegalAdvisorName())
             .judgeAndLegalAdvisor(testJudgeAndLegalAdviser())
@@ -1444,7 +1435,6 @@ class ManageHearingsServiceTest {
             return asDynamicList(wrapElements(randomHearing), HearingBooking::toLabel);
         }
     }
-
 
     @Nested
     class SelectedHearing {

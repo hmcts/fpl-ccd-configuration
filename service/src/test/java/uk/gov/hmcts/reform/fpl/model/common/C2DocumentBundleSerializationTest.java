@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.SupplementType;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 
 import java.time.LocalDateTime;
@@ -57,6 +59,17 @@ class C2DocumentBundleSerializationTest {
                     .confidential(List.of("CONFIDENTIAL"))
                     .uploadedBy("uploadedBy")
                     .build())))
+            .supplementsBundle(List.of(element(UUID.fromString("dc6b2154-9e5d-480d-adca-d70b4e1f6385"),
+                Supplement.builder()
+                    .name(SupplementType.C13A_SPECIAL_GUARDIANSHIP)
+                    .dateTimeUploaded(LocalDateTime.of(2013, 9, 10, 3, 4))
+                    .document(DocumentReference.builder()
+                        .binaryUrl("binaryUrl")
+                        .filename("filename")
+                        .url("url")
+                        .build())
+                    .uploadedBy("uploadedBy")
+                    .build())))
             .build();
 
         List<Map<String, Object>> expectedBundles = List.of(Map.of(
@@ -67,6 +80,19 @@ class C2DocumentBundleSerializationTest {
                 "uploadedBy", "uploadedBy",
                 "confidentialTabLabel", "Confidential",
                 "dateTimeReceived", "2012-10-10T03:04:00",
+                "dateTimeUploaded", "2013-09-10T03:04:00",
+                "document", Map.of(
+                    "document_binary_url", "binaryUrl",
+                    "document_filename", "filename", "document_url", "url"
+                )
+            )
+        ));
+
+        List<Map<String, Object>> expectedSupplementBundle = List.of(Map.of(
+            "id", "dc6b2154-9e5d-480d-adca-d70b4e1f6385",
+            "value", Map.of(
+                "name", SupplementType.C13A_SPECIAL_GUARDIANSHIP.toString(),
+                "uploadedBy", "uploadedBy",
                 "dateTimeUploaded", "2013-09-10T03:04:00",
                 "document", Map.of(
                     "document_binary_url", "binaryUrl",
@@ -94,7 +120,8 @@ class C2DocumentBundleSerializationTest {
             entry("author", "Author"),
             entry("supportingEvidenceBundle", expectedBundles),
             entry("supportingEvidenceLA", expectedBundles),
-            entry("supportingEvidenceNC", List.of())
+            entry("supportingEvidenceNC", List.of()),
+            entry("supplementsBundle", expectedSupplementBundle)
         );
 
         Map<String, Object> serialised = objectMapper.convertValue(initial, new TypeReference<>() {});

@@ -1,28 +1,37 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.summary.SyntheticCaseSummary;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisCoverDocumentsService;
+import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -32,8 +41,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.timeout;
@@ -58,19 +69,37 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.documentSent;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.printRequest;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinary;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest {
 
     private static final long CASE_ID = 12345L;
+    private static final String FAMILY_MAN_NUMBER = "FMN1";
     private static final long ASYNC_METHOD_CALL_TIMEOUT = 10000;
     private static final String JUDGE_EMAIL = "judge@judge.com";
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+
+    private static final UUID LETTER_1_ID = randomUUID();
+    private static final UUID LETTER_2_ID = randomUUID();
+    private static final Document NOTICE_OF_HEARING_DOCUMENT = testDocument();
+    private static final Document COVERSHEET_REPRESENTATIVE = testDocument();
+    private static final Document COVERSHEET_RESPONDENT = testDocument();
+    private static final byte[] NOTICE_OF_HEARING_BINARY = testDocumentBinary();
+    private static final byte[] COVERSHEET_REPRESENTATIVE_BINARY = testDocumentBinary();
+    private static final byte[] COVERSHEET_RESPONDENT_BINARY = testDocumentBinary();
 
     private final Element<HearingBooking> hearingWithoutNotice = element(HearingBooking.builder()
         .type(CASE_MANAGEMENT)
@@ -79,6 +108,47 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
         .noticeOfHearing(null)
         .build());
 
+    private static final Element<Representative> REPRESENTATIVE_POST = element(Representative.builder()
+        .fullName("First Representative")
+        .servingPreferences(POST)
+        .address(testAddress())
+        .build());
+
+    private static final Element<Representative> REPRESENTATIVE_EMAIL = element(Representative.builder()
+        .fullName("Third Representative")
+        .servingPreferences(EMAIL)
+        .email("third@representatives.com")
+        .build());
+
+    private static final Element<Representative> REPRESENTATIVE_DIGITAL = element(Representative.builder()
+        .fullName("Second Representative")
+        .servingPreferences(DIGITAL_SERVICE)
+        .email("second@representatives.com")
+        .build());
+
+    private static final Respondent RESPONDENT_NOT_REPRESENTED = Respondent.builder()
+        .party(RespondentParty.builder()
+            .firstName("Alex")
+            .lastName("Jones")
+            .address(testAddress())
+            .build())
+        .build();
+
+    private static final Respondent RESPONDENT_REPRESENTED = Respondent.builder()
+        .party(RespondentParty.builder()
+            .firstName("George")
+            .lastName("Jones")
+            .address(testAddress())
+            .build())
+        .representedBy(wrapElements(REPRESENTATIVE_POST.getId(), REPRESENTATIVE_DIGITAL.getId()))
+        .build();
+
+    @Captor
+    private ArgumentCaptor<Map<String, Object>> caseCaptor;
+
+    @Captor
+    private ArgumentCaptor<LetterWithPdfsRequest> printRequestCaptor;
+
     @MockBean
     private BankHolidaysApi bankHolidaysApi;
 
@@ -86,16 +156,19 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     private CoreCaseDataService coreCaseDataService;
 
     @MockBean
-    private NotificationClient notificationClient;
+    private UploadDocumentService uploadDocumentService;
 
     @MockBean
     private DocumentDownloadService documentDownloadService;
 
-    @SpyBean
-    private EventService eventPublisher;
+    @MockBean
+    private DocmosisCoverDocumentsService documentService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockBean
+    private NotificationClient notificationClient;
+
+    @MockBean
+    private SendLetterApi sendLetterApi;
 
     ManageHearingsControllerSubmittedTest() {
         super("manage-hearings");
@@ -178,15 +251,17 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     @Test
     void shouldTriggerSendNoticeOfHearingEventForNewHearingWhenNoticeOfHearingPresent()
         throws NotificationClientException {
-        Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
+        final DocumentReference noticeOfHearing = testDocumentReference();
+
+        final Element<HearingBooking> hearingWithNotice = element(HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2050, 5, 20, 13, 0))
             .endDate(LocalDateTime.of(2050, 5, 20, 14, 0))
-            .noticeOfHearing(testDocumentReference())
+            .noticeOfHearing(noticeOfHearing)
             .venue("96")
             .build());
 
-        Element<HearingBooking> existingHearing = element(HearingBooking.builder()
+        final Element<HearingBooking> existingHearing = element(HearingBooking.builder()
             .type(ISSUE_RESOLUTION)
             .startDate(LocalDateTime.of(2020, 5, 20, 13, 0))
             .endDate(LocalDateTime.of(2020, 5, 20, 14, 0))
@@ -194,20 +269,42 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
             .venue("162")
             .build());
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
+        final CaseData cdb = CaseData.builder()
             .id(CASE_ID)
-            .data(buildData(List.of(hearingWithNotice, existingHearing), hearingWithNotice.getId()))
-            .state("Submitted")
-            .build();
-        CaseDetails caseDetailsBefore = CaseDetails.builder()
-            .data(buildData(List.of(existingHearing), hearingWithoutNotice.getId()))
+            .familyManCaseNumber(FAMILY_MAN_NUMBER)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .hearingDetails(List.of(existingHearing))
+            .representatives(List.of(REPRESENTATIVE_DIGITAL, REPRESENTATIVE_EMAIL, REPRESENTATIVE_POST))
+            .respondents1(wrapElements(RESPONDENT_REPRESENTED, RESPONDENT_NOT_REPRESENTED))
             .build();
 
-        given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
+        final CaseData cd = cdb.toBuilder()
+            .hearingDetails(List.of(hearingWithNotice, existingHearing))
+            .selectedHearingId(hearingWithNotice.getId())
+            .build();
 
-        postSubmittedEvent(toCallBackRequest(caseDetails, caseDetailsBefore));
+        givenFplService();
+
+        given(documentDownloadService.downloadDocument(noticeOfHearing.getBinaryUrl()))
+            .willReturn(NOTICE_OF_HEARING_BINARY);
+
+        given(sendLetterApi.sendLetter(eq(SERVICE_AUTH_TOKEN), any(LetterWithPdfsRequest.class)))
+            .willReturn(new SendLetterResponse(LETTER_1_ID))
+            .willReturn(new SendLetterResponse(LETTER_2_ID));
+
+        given(uploadDocumentService.uploadPDF(NOTICE_OF_HEARING_BINARY, noticeOfHearing.getFilename()))
+            .willReturn(NOTICE_OF_HEARING_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_REPRESENTATIVE_BINARY, "Coversheet.pdf"))
+            .willReturn(COVERSHEET_REPRESENTATIVE);
+        given(uploadDocumentService.uploadPDF(COVERSHEET_RESPONDENT_BINARY, "Coversheet.pdf"))
+            .willReturn(COVERSHEET_RESPONDENT);
+
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, REPRESENTATIVE_POST.getValue()))
+            .willReturn(testDocmosisDocument(COVERSHEET_REPRESENTATIVE_BINARY));
+        given(documentService.createCoverDocuments(FAMILY_MAN_NUMBER, CASE_ID, RESPONDENT_NOT_REPRESENTED.getParty()))
+            .willReturn(testDocmosisDocument(COVERSHEET_RESPONDENT_BINARY));
+
+        postSubmittedEvent(toCallBackRequest(cd, cdb));
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
@@ -223,15 +320,43 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
 
         verify(notificationClient, timeout(ASYNC_METHOD_CALL_TIMEOUT)).sendEmail(
             eq(NOTICE_OF_NEW_HEARING),
-            eq("abc@example.com"),
+            eq(REPRESENTATIVE_EMAIL.getValue().getEmail()),
             anyMap(),
             eq(NOTIFICATION_REFERENCE));
 
-        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).triggerEvent(JURISDICTION,
-            CASE_TYPE,
-            CASE_ID,
-            "internal-change-SEND_DOCUMENT",
-            Map.of("documentToBeSent", hearingWithNotice.getValue().getNoticeOfHearing()));
+        verify(sendLetterApi, timeout(ASYNC_METHOD_CALL_TIMEOUT).times(2)).sendLetter(
+            eq(SERVICE_AUTH_TOKEN),
+            printRequestCaptor.capture());
+
+        verify(coreCaseDataService, timeout(ASYNC_METHOD_CALL_TIMEOUT)).updateCase(
+            eq(CASE_ID), caseCaptor.capture());
+
+        LetterWithPdfsRequest expectedPrintRequest1 = printRequest(CASE_ID, noticeOfHearing,
+            COVERSHEET_REPRESENTATIVE_BINARY, NOTICE_OF_HEARING_BINARY);
+
+        LetterWithPdfsRequest expectedPrintRequest2 = printRequest(CASE_ID, noticeOfHearing,
+            COVERSHEET_RESPONDENT_BINARY, NOTICE_OF_HEARING_BINARY);
+
+        SentDocument expectedDocumentSentToRepresentative = documentSent(REPRESENTATIVE_POST.getValue(),
+            COVERSHEET_REPRESENTATIVE, NOTICE_OF_HEARING_DOCUMENT, LETTER_1_ID, now());
+
+        SentDocument expectedDocumentSentToRespondent = documentSent(RESPONDENT_NOT_REPRESENTED.getParty(),
+            COVERSHEET_RESPONDENT, NOTICE_OF_HEARING_DOCUMENT, LETTER_2_ID, now());
+
+        assertThat(printRequestCaptor.getAllValues()).usingRecursiveComparison()
+            .isEqualTo(List.of(expectedPrintRequest1, expectedPrintRequest2));
+
+        final CaseData caseUpdate = getCase(caseCaptor);
+
+        assertThat(caseUpdate.getDocumentsSentToParties()).hasSize(2);
+
+        assertThat(caseUpdate.getDocumentsSentToParties().get(0).getValue().getDocumentsSentToParty())
+            .extracting(Element::getValue)
+            .containsExactly(expectedDocumentSentToRepresentative);
+
+        assertThat(caseUpdate.getDocumentsSentToParties().get(1).getValue().getDocumentsSentToParty())
+            .extracting(Element::getValue)
+            .containsExactly(expectedDocumentSentToRespondent);
 
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
@@ -440,11 +565,11 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
     }
 
     private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDate hearingDate) {
-        return objectMapper.convertValue(
-            SyntheticCaseSummary.builder()
-                .caseSummaryHasNextHearing(hasNextHearing)
-                .caseSummaryNextHearingType(hearingType)
-                .caseSummaryNextHearingDate(hearingDate)
-                .build(), new TypeReference<>() {});
+        return caseConverter.toMap(SyntheticCaseSummary.builder()
+            .caseSummaryHasNextHearing(hasNextHearing)
+            .caseSummaryNextHearingType(hearingType)
+            .caseSummaryNextHearingDate(hearingDate)
+            .build());
     }
+
 }

@@ -66,6 +66,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CancelledHearingBooking",
+    "ListElementCode": "presence",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingPresence",
+    "ElementLabel": "In person or remote",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CancelledHearingBooking",
     "ListElementCode": "endDate",
     "FieldType": "DateTime",
     "ElementLabel": "End date and time",

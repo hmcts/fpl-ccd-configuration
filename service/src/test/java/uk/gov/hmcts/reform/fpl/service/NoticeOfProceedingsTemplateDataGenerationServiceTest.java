@@ -1,18 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
@@ -21,141 +17,122 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.FormatStyle;
 import java.util.List;
-import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, LookupTestConfig.class,
-    HearingVenueLookUpService.class, CaseDataExtractionService.class, FixedTimeConfiguration.class,
-    NoticeOfProceedingsTemplateDataGenerationService.class
-})
 class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
-    @Autowired
-    private Time time;
+    private static final String FAMILY_MAN_CASE_NUMBER = "Fam Case Num";
+    private static final List<Element<Applicant>> APPLICANTS = wrapElements(Applicant.builder()
+        .party(ApplicantParty.builder()
+            .organisationName("some organisation")
+            .build())
+        .build());
 
-    @Autowired
-    private NoticeOfProceedingsTemplateDataGenerationService noticeOfProceedingsTemplateDataGenerationService;
+    private static final HearingBooking HEARING_1 = HearingBooking.builder()
+        .startDate(LocalDateTime.of(2021, 1, 1, 14, 0, 0))
+        .build();
+    private static final HearingBooking HEARING_2 = HearingBooking.builder()
+        .startDate(LocalDateTime.of(2021, 1, 3, 14, 0, 0))
+        .build();
+    private static final List<Element<HearingBooking>> HEARINGS = wrapElements(HEARING_1, HEARING_2);
 
-    private LocalDate futureDate;
+    private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 13, 13, 13, 13));
+    private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
+    private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
+
+    private NoticeOfProceedingsTemplateDataGenerationService underTest;
 
     @BeforeEach
     void setup() {
-        futureDate = time.now().toLocalDate().plusDays(1);
+        underTest = new NoticeOfProceedingsTemplateDataGenerationService(courtLookup, extractionService, time);
+
+        when(extractionService.getHearingBookingData(HEARING_1)).thenReturn(
+            DocmosisHearingBooking.builder()
+                .hearingDate("1 January 2021")
+                .hearingTime("2:00pm - 4:30pm")
+                .hearingVenue("somewhere")
+                .preHearingAttendance("1:00pm")
+                .hearingJudgeTitleAndName("should be removed")
+                .hearingLegalAdvisorName("should also be removed")
+                .build()
+        );
     }
 
     @Test
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
+        CaseData caseData = getCaseData(
+            buildChild("Bran", "Stark"), buildChild("Sansa", "Stark"), buildChild("Jon", "Snow")
+        );
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = underTest.getTemplateData(caseData);
+
         assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
     }
 
     @Test
     void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() {
-        CaseData caseData = prepareCaseData()
-            .children1(ImmutableList.of(
-                Element.<Child>builder()
-                    .id(UUID.randomUUID())
-                    .value(Child.builder()
-                        .party(ChildParty.builder()
-                            .firstName("Bran")
-                            .lastName("Stark")
-                            .build())
-                        .build())
-                    .build()))
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
+        CaseData caseData = getCaseData(buildChild("Bran", "Stark"));
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = underTest.getTemplateData(caseData);
+
         assertThat(templateData.getChildrenNames()).isEqualTo("Bran Stark");
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
-        CaseData caseData = prepareCaseData()
-            .noticeOfProceedings(NoticeOfProceedings.builder()
-                .proceedingTypes(emptyList())
-                .build())
-            .build();
+    void shouldBuildExpectedTemplateData() {
+        CaseData caseData = getCaseData(
+            buildChild("Bran", "Stark"), buildChild("Sansa", "Stark"), buildChild("Jon", "Snow")
+        );
 
-        DocmosisNoticeOfProceeding templateData = noticeOfProceedingsTemplateDataGenerationService
-            .getTemplateData(caseData);
+        DocmosisNoticeOfProceeding templateData = underTest.getTemplateData(caseData);
 
         DocmosisNoticeOfProceeding expectedData = DocmosisNoticeOfProceeding.builder()
             .courtName("Family Court")
-            .familyManCaseNumber("123")
-            .applicantName("Bran Stark")
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .applicantName("some organisation")
             .orderTypes("Care order")
             .childrenNames("Bran Stark, Sansa Stark and Jon Snow")
             .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(formatLocalDateToString(futureDate, FormatStyle.LONG))
-                .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
-                .preHearingAttendance("8:30am")
-                .hearingTime("9:30am - 11:30am")
+                .hearingDate("1 January 2021")
+                .hearingVenue("somewhere")
+                .preHearingAttendance("1:00pm")
+                .hearingTime("2:00pm - 4:30pm")
                 .build())
-            .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
+            .todaysDate("13 March 2021")
             .crest("[userImage:crest.png]")
             .courtseal("[userImage:familycourtseal.png]")
             .build();
 
-        assertThat(templateData).isEqualToComparingFieldByField(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
-    private List<Element<HearingBooking>> createHearingBookings() {
-        return ImmutableList.of(
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(createHearingBooking(
-                    LocalDateTime.of(futureDate, LocalTime.of(9, 30)),
-                    LocalDateTime.of(futureDate, LocalTime.of(11, 30))))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(createHearingBooking(
-                    LocalDateTime.of(futureDate, LocalTime.of(12, 30)),
-                    LocalDateTime.of(futureDate, LocalTime.of(13, 30))))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(createHearingBooking(
-                    LocalDateTime.of(futureDate, LocalTime.of(15, 30)),
-                    LocalDateTime.of(futureDate, LocalTime.of(16, 0))))
-                .build()
-        );
-    }
-
-    private CaseData.CaseDataBuilder prepareCaseData() {
+    private CaseData getCaseData(Child... children) {
         return CaseData.builder()
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .familyManCaseNumber("123")
+            .children1(wrapElements(children))
+            .hearingDetails(HEARINGS)
             .orders(Orders.builder()
-                .orderType(ImmutableList.of(CARE_ORDER)).build())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
-            .children1(createPopulatedChildren(time.now().toLocalDate()));
+                .orderType(List.of(CARE_ORDER))
+                .build())
+            .applicants(APPLICANTS)
+            .build();
+    }
+
+    private Child buildChild(String firstName, String lastName) {
+        return Child.builder()
+            .party(ChildParty.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .build())
+            .build();
     }
 }

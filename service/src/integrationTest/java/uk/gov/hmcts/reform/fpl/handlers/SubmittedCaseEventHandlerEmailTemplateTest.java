@@ -92,9 +92,13 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("CCD case number: 123")
                 .line()
-                .line("You can review and share the application by signing into http://fake-url/cases/case-details/123")
+                .line("Your organisation’s case access administrator should now assign the case "
+                    + "to the relevant person.")
+                .line()
+                .line("They can view the application at https://manage-org.platform.hmcts.net")
                 .line()
                 .line("HM Courts & Tribunals Service")
+                .line()
                 .end("Do not reply to this email. If you need to contact us, "
                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );

@@ -162,6 +162,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForRespondentJourneyEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isRespondentJourneyEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("respondent-journey"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(

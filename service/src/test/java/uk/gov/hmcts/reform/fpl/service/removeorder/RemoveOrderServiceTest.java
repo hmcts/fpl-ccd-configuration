@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -53,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @ExtendWith(MockitoExtension.class)
@@ -116,21 +118,21 @@ class RemoveOrderServiceTest {
 
         List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
+        Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> agreedCMO = element(buildPastHearingOrder(AGREED_CMO));
+        Element<HearingOrder> draftOrder = element(
+            HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
 
         CaseData caseData = CaseData.builder()
             .state(state)
             .orderCollection(generatedOrders)
             .sealedCMOs(sealedCaseManagementOrders)
             .hearingOrdersBundlesDrafts(List.of(
-                element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne)).build()),
-                element(HearingOrdersBundle.builder().orders(List.of(
-                    draftCMOTwo,
-                    element(HearingOrder.builder().type(C21).build())
-                )).build()),
-                element(HearingOrdersBundle.builder().orders(List.of(agreedCMO)).build())))
+                element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne)).build()),
+                element(HearingOrdersBundle.builder().orders(
+                    newArrayList(draftCMOTwo, draftOrder)).build()),
+                element(HearingOrdersBundle.builder().orders(newArrayList(agreedCMO)).build())))
             .build();
 
         DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
@@ -149,6 +151,8 @@ class RemoveOrderServiceTest {
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
                 buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
             .build();
@@ -165,10 +169,11 @@ class RemoveOrderServiceTest {
 
         List<Element<HearingOrder>> sealedCaseManagementOrders = buildSealedCaseManagementOrders();
 
-        Element<HearingOrder> draftCMOOne = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
-        Element<HearingOrder> legacyDraftCMO = element(UUID.randomUUID(),
-            HearingOrder.builder().dateSent(NOW.minusDays(1)).build());
+        Element<HearingOrder> draftCMOOne = element(buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> draftCMOTwo = element(buildPastHearingOrder(DRAFT_CMO));
+        Element<HearingOrder> legacyDraftCMO = element(HearingOrder.builder().dateSent(NOW.minusDays(1)).build());
+        Element<HearingOrder> draftOrder =
+            element(HearingOrder.builder().type(C21).dateSent(NOW.minusDays(1)).build());
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -176,11 +181,8 @@ class RemoveOrderServiceTest {
             .sealedCMOs(sealedCaseManagementOrders)
             .draftUploadedCMOs(List.of(draftCMOTwo, legacyDraftCMO))
             .hearingOrdersBundlesDrafts(List.of(
-                element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne)).build()),
-                element(HearingOrdersBundle.builder().orders(List.of(
-                    draftCMOTwo,
-                    element(HearingOrder.builder().type(C21).build())
-                )).build())))
+                element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne)).build()),
+                element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOTwo, draftOrder)).build())))
             .build();
 
         DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
@@ -196,6 +198,8 @@ class RemoveOrderServiceTest {
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
                 buildListElement(legacyDraftCMO.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
             .build();
@@ -205,7 +209,7 @@ class RemoveOrderServiceTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("generateAllAvailableStatesSource")
-    void shouldMakeDynamicListOfDraftCMOsInAllExpectedStatesWhenHearingOrdersBundlesDraftsDoNotExist(State state) {
+    void shouldMakeDynamicListOfDraftHearingOrdersInAllExpectedStatesWhenNoHearingOrdersBundlesExist(State state) {
         List<Element<GeneratedOrder>> generatedOrders = List.of(
             element(buildOrder(BLANK_ORDER, "order 1", "15 June 2020"))
         );
@@ -214,12 +218,20 @@ class RemoveOrderServiceTest {
 
         Element<HearingOrder> draftCMO = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
         Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
+        Element<HearingOrder> draftOrder = element(UUID.randomUUID(), buildPastHearingOrder(C21));
+
+        HearingOrdersBundle bundle1 = HearingOrdersBundle.builder()
+            .orders(newArrayList(draftCMO, draftOrder)).build();
+
+        HearingOrdersBundle bundle2 = HearingOrdersBundle.builder()
+            .orders(newArrayList(agreedCMO)).build();
 
         CaseData caseData = CaseData.builder()
             .state(state)
             .orderCollection(generatedOrders)
             .sealedCMOs(sealedCaseManagementOrders)
             .draftUploadedCMOs(List.of(draftCMO, agreedCMO))
+            .hearingOrdersBundlesDrafts(wrapElements(bundle1, bundle2))
             .build();
 
         DynamicList listOfOrders = underTest.buildDynamicListOfOrders(caseData);
@@ -232,6 +244,8 @@ class RemoveOrderServiceTest {
                     format("Sealed case management order issued on %s",
                         formatLocalDateToString(NOW, "d MMMM yyyy"))),
                 buildListElement(draftCMO.getId(), format("Draft case management order sent on %s",
+                    formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
+                buildListElement(draftOrder.getId(), format("Draft order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy"))),
                 buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
                     formatLocalDateToString(NOW.minusDays(1), "d MMMM yyyy")))))
@@ -399,8 +413,8 @@ class RemoveOrderServiceTest {
     private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
-            .status(type == AGREED_CMO ? SEND_TO_JUDGE : DRAFT)
-            .dateIssued(type == AGREED_CMO ? NOW : null)
+            .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
+            .dateIssued((type == AGREED_CMO || type == C21) ? NOW : null)
             .dateSent(NOW.minusDays(1))
             .build();
     }

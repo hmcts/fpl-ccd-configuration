@@ -50,7 +50,7 @@ public class StandardDirectionOrderGenerationService extends
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
                 .directions(buildDirections(standardDirectionOrder.getDirections()))
-                .hearingBooking(dataService.getHearingBookingData(firstHearing, null))
+                .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
         if (standardDirectionOrder.isSealed()) {

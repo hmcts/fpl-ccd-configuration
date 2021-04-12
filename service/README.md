@@ -260,4 +260,5 @@ Elastic search must be enable in ccd-docker for Upcoming hearings job to work
 Emails to Robotics are sent using SMTP protocol via MTA (Mail Transfer Agent) or SendGrid depending on feature toggle *send-grid*. 
 On local environment test mailhog server is available. Sent emails can be checked at http://localhost:8025/ 
 
+
 Emails to users are sent via gov.notify

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,11 +12,14 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfHearingEmailContentProvider;
@@ -26,19 +27,22 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {SendNoticeOfHearingHandler.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
@@ -46,13 +50,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 class SendNoticeOfHearingHandlerTest {
 
     @Autowired
-    private SendNoticeOfHearingHandler sendNoticeOfHearingHandler;
-
-    @Autowired
     private Time time;
 
-    @Autowired
-    private ObjectMapper mapper;
+    @MockBean
+    private InboxLookupService inboxLookupService;
 
     @MockBean
     private NotificationService notificationService;
@@ -61,13 +62,13 @@ class SendNoticeOfHearingHandlerTest {
     private NoticeOfHearingEmailContentProvider noticeOfHearingEmailContentProvider;
 
     @MockBean
-    private InboxLookupService inboxLookupService;
-
-    @MockBean
-    private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
     private RepresentativeNotificationService representativeNotificationService;
+
+    @MockBean
+    private SendDocumentService sendDocumentService;
+
+    @Autowired
+    private SendNoticeOfHearingHandler underTest;
 
     private NoticeOfHearingTemplate noticeOfHearingTemplate = NoticeOfHearingTemplate.builder().build();
 
@@ -90,7 +91,7 @@ class SendNoticeOfHearingHandlerTest {
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build()))
             .willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        sendNoticeOfHearingHandler.notifyLocalAuthority(new SendNoticeOfHearing(caseData, hearing));
+        underTest.notifyLocalAuthority(new SendNoticeOfHearing(caseData, hearing));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
@@ -103,7 +104,7 @@ class SendNoticeOfHearingHandlerTest {
     void shouldSendNotificationToCafcassWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        sendNoticeOfHearingHandler.notifyCafcass(new SendNoticeOfHearing(caseData, hearing));
+        underTest.notifyCafcass(new SendNoticeOfHearing(caseData, hearing));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_NEW_HEARING,
@@ -116,7 +117,7 @@ class SendNoticeOfHearingHandlerTest {
     void shouldSendNotificationToRepresentativesWhenNewHearingIsAdded() {
         final CaseData caseData = caseData();
 
-        sendNoticeOfHearingHandler.notifyRepresentatives(new SendNoticeOfHearing(caseData, hearing));
+        underTest.notifyRepresentatives(new SendNoticeOfHearing(caseData, hearing));
 
         verify(representativeNotificationService)
             .sendToRepresentativesByServedPreference(
@@ -136,20 +137,38 @@ class SendNoticeOfHearingHandlerTest {
     }
 
     @Test
-    void shouldSendDocumentToRepresentativesServedByPostWhenNewHearingIsAdded() {
-        final DocumentReference noticeOfHearing = DocumentReference.builder()
-            .filename("fileName")
-            .url("www.url.com")
-            .binaryUrl("binary_url")
+    void shouldSendNoticeOfHearingToRepresentativesAndNotRepresentedRespondentsByPost() {
+        final Representative representative = Representative.builder()
+            .fullName("First Representative")
+            .servingPreferences(POST)
+            .address(testAddress())
             .build();
 
-        CaseData caseData = CaseData.builder()
-            .id(RandomUtils.nextLong())
+        final RespondentParty respondent = RespondentParty.builder()
+            .firstName("First")
+            .lastName("Respondent")
+            .address(testAddress())
             .build();
 
-        sendNoticeOfHearingHandler.sendDocumentToRepresentatives(new SendNoticeOfHearing(caseData, hearing));
+        final CaseData caseData = caseData().toBuilder()
+            .representatives(wrapElements(representative))
+            .respondents1(wrapElements(Respondent.builder().party(respondent).build()))
+            .hearingDetails(wrapElements(hearing))
+            .build();
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, caseData.getId(),
-            "internal-change-SEND_DOCUMENT", Map.of("documentToBeSent", noticeOfHearing));
+        final SendNoticeOfHearing event = new SendNoticeOfHearing(caseData, hearing);
+
+        List<Recipient> recipients = List.of(representative, respondent);
+        given(sendDocumentService.getStandardRecipients(caseData)).willReturn(recipients);
+
+        underTest.sendNoticeOfHearingByPost(event);
+
+        verify(sendDocumentService)
+            .sendDocuments(caseData, List.of(hearing.getNoticeOfHearing()), recipients);
+        verify(sendDocumentService)
+            .getStandardRecipients(caseData);
+
+        verifyNoMoreInteractions(sendDocumentService);
+        verifyNoInteractions(notificationService);
     }
 }

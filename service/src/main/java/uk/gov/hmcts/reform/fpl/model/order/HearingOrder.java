@@ -62,21 +62,25 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return type != C21;
+        return true;
     }
 
     public String asLabel() {
-        if (APPROVED.equals(status)) {
-            return format("Sealed case management order issued on %s",
-                formatLocalDateToString(dateIssued, DATE));
-        }
+        if (type == C21) {
+            return format("Draft order sent on %s", formatLocalDateToString(dateSent, DATE));
+        } else {
+            if (APPROVED.equals(status)) {
+                return format("Sealed case management order issued on %s",
+                    formatLocalDateToString(dateIssued, DATE));
+            }
 
-        if (SEND_TO_JUDGE.equals(status)) {
-            return format("Agreed case management order sent on %s",
+            if (SEND_TO_JUDGE.equals(status)) {
+                return format("Agreed case management order sent on %s",
+                    formatLocalDateToString(dateSent, DATE));
+            }
+
+            return format("Draft case management order sent on %s",
                 formatLocalDateToString(dateSent, DATE));
         }
-
-        return format("Draft case management order sent on %s",
-            formatLocalDateToString(dateSent, DATE));
     }
 }

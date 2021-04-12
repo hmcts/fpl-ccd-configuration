@@ -11,10 +11,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -34,7 +31,6 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
-    private final GeneratedOrderService generatedOrderService;
     private final Time time;
 
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
@@ -74,20 +70,6 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseData caseData) {
-
-        JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
-
-        return AllocatedJudgeTemplateForGeneratedOrder.builder()
-            .orderType(getTypeOfOrder(caseData, GENERATED_ORDER))
-            .callout(buildCalloutWithNextHearing(caseData, time.now()))
-            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .judgeTitle(judge.getJudgeOrMagistrateTitle())
-            .judgeName(judge.getJudgeName())
-            .build();
-    }
-
     private OrderIssuedNotifyData commonOrderIssuedNotifyData(
         final CaseData caseData,
         final IssuedOrderType issuedOrderType) {
@@ -98,10 +80,6 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
                 ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
-    }
-
-    private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
-        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
     }
 
     private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {

@@ -7,14 +7,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -22,9 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.Collection;
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
@@ -39,7 +36,7 @@ public class GeneratedOrderEventHandler {
     private final OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
-    private final GeneratedOrderService generatedOrderService;
+    private final SendDocumentService sendDocumentService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -53,21 +50,13 @@ public class GeneratedOrderEventHandler {
     }
 
     @EventListener
-    public void notifyAllocatedJudge(final GeneratedOrderEvent orderEvent) {
-        CaseData caseData = orderEvent.getCaseData();
+    public void sendOrderByPost(final GeneratedOrderEvent orderEvent) {
+        final CaseData caseData = orderEvent.getCaseData();
+        final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
 
-        JudgeAndLegalAdvisor mostRecentOrderJudge
-            = generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
+        final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
 
-        if (isNotEmpty(mostRecentOrderJudge.getJudgeEmailAddress())) {
-            AllocatedJudgeTemplateForGeneratedOrder parameters = orderIssuedEmailContentProvider
-                .buildAllocatedJudgeOrderIssuedNotification(caseData);
-
-            String email = mostRecentOrderJudge.getJudgeEmailAddress();
-
-            notificationService.sendEmail(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE, email, parameters,
-                caseData.getId());
-        }
+        sendDocumentService.sendDocuments(caseData, documents, recipients);
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,

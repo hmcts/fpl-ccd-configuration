@@ -111,7 +111,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "showRemoveCMOFieldsFlag!=\"Yes\""
+    "FieldShowCondition": "showRemoveCMOFieldsFlag=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -124,7 +124,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N",
-    "FieldShowCondition": "showRemoveCMOFieldsFlag!=\"Yes\""
+    "FieldShowCondition": "showRemoveCMOFieldsFlag=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",

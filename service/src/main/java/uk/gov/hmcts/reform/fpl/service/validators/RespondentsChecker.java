@@ -1,11 +1,17 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
+import java.util.ArrayList;
 import java.util.List;
+import javax.validation.groups.Default;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.allEmpty;
@@ -15,11 +21,20 @@ import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.isEm
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RespondentsChecker extends PropertiesChecker {
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public List<String> validate(CaseData caseData) {
-        return super.validate(caseData, List.of("respondents1"));
+
+        List<Class<?>> groups = new ArrayList<>();
+        groups.add(Default.class);
+
+        if (featureToggleService.isRespondentJourneyEnabled()) {
+            groups.add(RespondentSolicitorGroup.class);
+        }
+        return super.validate(caseData, List.of("respondents1"), groups.toArray(new Class[0]));
     }
 
     @Override
@@ -30,13 +45,13 @@ public class RespondentsChecker extends PropertiesChecker {
             case 0:
                 return false;
             case 1:
-                return !isEmptyRespondent(respondents.get(0));
+                return !isEmptyRespondent(respondents.get(0), featureToggleService.isRespondentJourneyEnabled());
             default:
                 return true;
         }
     }
 
-    private static boolean isEmptyRespondent(Respondent respondent) {
+    private static boolean isEmptyRespondent(Respondent respondent, boolean featureToggle) {
 
         if (isEmpty(respondent)) {
             return true;
@@ -48,18 +63,23 @@ public class RespondentsChecker extends PropertiesChecker {
             return true;
         }
 
+        List<Object> respondentPartyFields = new ArrayList<>();
+        respondentPartyFields.add(respondentParty.getFirstName());
+        respondentPartyFields.add(respondentParty.getLastName());
+        respondentPartyFields.add(respondentParty.getDateOfBirth());
+        respondentPartyFields.add(respondentParty.getGender());
+        respondentPartyFields.add(respondentParty.getRelationshipToChild());
+        respondentPartyFields.add(respondentParty.getContactDetailsHidden());
+        respondentPartyFields.add(respondentParty.getLitigationIssues());
+
+        if (featureToggle) {
+            respondentPartyFields.add(respondent.getLegalRepresentation());
+        }
+
         return isEmptyAddress(respondentParty.getAddress())
-                && isEmptyTelephone(respondentParty.getTelephoneNumber())
-                && isEmptyEmail(respondentParty.getEmail())
-                && allEmpty(
-                respondentParty.getFirstName(),
-                respondentParty.getLastName(),
-                respondentParty.getDateOfBirth(),
-                respondentParty.getGender(),
-                respondentParty.getPlaceOfBirth(),
-                respondentParty.getRelationshipToChild(),
-                respondentParty.getContactDetailsHidden(),
-                respondentParty.getLitigationIssues());
+            && isEmptyTelephone(respondentParty.getTelephoneNumber())
+            && isEmptyEmail(respondentParty.getEmail())
+            && allEmpty(respondentPartyFields.toArray(new Object[0]));
     }
 
 }

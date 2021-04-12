@@ -200,7 +200,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseLocalAuthority",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "R"
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseLocalAuthorityName",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -579,5 +586,26 @@
     "CaseFieldID": "furtherEvidenceDocumentsLANC",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsSentToParties",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "reviewDecision1",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CRUD"
   }
 ]

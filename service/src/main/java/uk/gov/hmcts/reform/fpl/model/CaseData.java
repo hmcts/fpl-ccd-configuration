@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
+import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.CaseExtensionTime;
 import uk.gov.hmcts.reform.fpl.enums.EPOExclusionRequirementType;
@@ -15,13 +16,16 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -30,12 +34,14 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -74,6 +80,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -101,6 +108,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -144,6 +152,15 @@ public class CaseData {
     @Valid
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
+
+    public DynamicList buildRespondentStatementDynamicList(UUID selected) {
+        return asDynamicList(getAllRespondents(), selected,
+            respondent -> respondent.getParty().getFullName());
+    }
+
+    public DynamicList buildRespondentStatementDynamicList() {
+        return buildRespondentStatementDynamicList(null);
+    }
 
     private final Proceeding proceeding;
 
@@ -229,6 +246,7 @@ public class CaseData {
         ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
+    private final List<Element<SentDocuments>> documentsSentToParties;
 
     @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
@@ -272,11 +290,19 @@ public class CaseData {
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
+    private final OtherApplicationsBundle temporaryOtherApplicationsBundle;
+    private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
-        return c2DocumentBundle != null && !c2DocumentBundle.isEmpty();
+        return isNotEmpty(c2DocumentBundle);
+    }
+
+    @JsonIgnore
+    public boolean hasApplicationBundles() {
+        return isNotEmpty(c2DocumentBundle) || isNotEmpty(additionalApplicationsBundle);
     }
 
     @JsonIgnore
@@ -290,11 +316,15 @@ public class CaseData {
 
     @JsonIgnore
     public C2DocumentBundle getC2DocumentBundleByUUID(UUID elementId) {
-        return c2DocumentBundle.stream()
+        return nullSafeList(c2DocumentBundle).stream()
             .filter(c2DocumentBundleElement -> c2DocumentBundleElement.getId().equals(elementId))
             .map(Element::getValue)
             .findFirst()
             .orElse(null);
+    }
+
+    public DynamicList buildC2DocumentDynamicList() {
+        return buildC2DocumentDynamicList(null);
     }
 
     public DynamicList buildC2DocumentDynamicList(UUID selected) {
@@ -302,12 +332,58 @@ public class CaseData {
         return asDynamicList(c2DocumentBundle, selected, documentBundle -> documentBundle.toLabel(i.getAndIncrement()));
     }
 
-    public DynamicList buildC2DocumentDynamicList() {
-        return buildC2DocumentDynamicList(null);
+    public DynamicList buildApplicationBundlesDynamicList() {
+        return buildApplicationBundlesDynamicList(null);
+    }
+
+    public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
+        List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
+        applicationsBundles
+            .sort(Comparator.comparing(
+                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
+                .thenComparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().toLabel()));
+
+        return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);
+    }
+
+    @JsonIgnore
+    public List<Element<ApplicationsBundle>> getAllApplicationsBundles() {
+        List<Element<ApplicationsBundle>> applicationBundles = new ArrayList<>();
+
+        ofNullable(c2DocumentBundle).ifPresent(
+            bundle -> bundle.forEach(c2 -> applicationBundles.add(element(c2.getId(), c2.getValue()))));
+
+        unwrapElements(getAdditionalApplicationsBundle()).forEach(
+            bundle -> {
+                ofNullable(bundle.getC2DocumentBundle()).ifPresent(
+                    c2 -> applicationBundles.add(element(c2.getId(), c2)));
+
+                ofNullable(bundle.getOtherApplicationsBundle()).ifPresent(
+                    otherBundle -> applicationBundles.add(element(otherBundle.getId(), otherBundle)));
+            }
+        );
+
+        return applicationBundles;
+    }
+
+    @JsonIgnore
+    public ApplicationsBundle getApplicationBundleByUUID(UUID elementId) {
+        return getAllApplicationsBundles().stream()
+            .filter(bundleElement -> bundleElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
     }
 
     private final Map<String, C2ApplicationType> c2ApplicationType;
+    private final C2ApplicationType c2Type;
     private final OrderTypeAndDocument orderTypeAndDocument;
+    private final List<AdditionalApplicationType> additionalApplicationType;
+
+    public List<AdditionalApplicationType> getAdditionalApplicationType() {
+        return defaultIfNull(additionalApplicationType, emptyList());
+    }
+
     private final FurtherDirections orderFurtherDirections;
     private final OrderExclusionClause orderExclusionClause;
     private final GeneratedOrder order;
@@ -377,7 +453,6 @@ public class CaseData {
     private final LocalDate epoExclusionStartDate;
     private final EPOExclusionRequirementType epoExclusionRequirementType;
 
-
     @JsonIgnore
     public List<Element<Proceeding>> getAllProceedings() {
         List<Element<Proceeding>> proceedings = new ArrayList<>();
@@ -415,6 +490,10 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
+
+    public Optional<Element<Respondent>> findRespondent(UUID id) {
+        return findElement(id, getAllRespondents());
     }
 
     public Optional<Applicant> findApplicant(int seqNo) {
@@ -484,6 +563,8 @@ public class CaseData {
 
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
+    private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
+    private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA; //general evidence
@@ -491,9 +572,12 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+
+    private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
     private final Object manageDocumentsSupportingC2List;
     private final Object courtBundleHearingList;
+    private final Object respondentStatementList;
 
     private final CourtBundle manageDocumentsCourtBundle;
     private final List<Element<CourtBundle>> courtBundleList;
@@ -512,6 +596,16 @@ public class CaseData {
 
     public List<Element<HearingFurtherEvidenceBundle>> getHearingFurtherEvidenceDocuments() {
         return defaultIfNull(hearingFurtherEvidenceDocuments, new ArrayList<>());
+    }
+
+    public List<Element<RespondentStatement>> getRespondentStatements() {
+        return defaultIfNull(respondentStatements, new ArrayList<>());
+    }
+
+    public Optional<Element<RespondentStatement>> getRespondentStatementByRespondentId(UUID id) {
+        return getRespondentStatements().stream()
+            .filter(respondentStatement -> respondentStatement.getValue().getRespondentId().equals(id))
+            .findAny();
     }
 
     public boolean documentBundleContainsHearingId(UUID hearingId) {
@@ -623,12 +717,12 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Element<HearingOrder>> getHearingOrderDraftCMOs() {
+    public List<Element<HearingOrder>> getOrdersFromHearingOrderDraftsBundles() {
         if (hearingOrdersBundlesDrafts != null) {
             return hearingOrdersBundlesDrafts.stream()
                 .map(Element::getValue)
                 .flatMap((HearingOrdersBundle hearingOrdersBundle)
-                    -> hearingOrdersBundle.getCaseManagementOrders().stream())
+                    -> hearingOrdersBundle.getOrders().stream())
                 .collect(toList());
         }
 
@@ -638,7 +732,7 @@ public class CaseData {
     public Optional<Element<HearingOrdersBundle>> getHearingOrderBundleThatContainsOrder(UUID orderId) {
         return nullSafeList(hearingOrdersBundlesDrafts).stream()
             .filter(hearingOrdersBundleElement
-                -> hearingOrdersBundleElement.getValue().getCaseManagementOrders().stream()
+                -> hearingOrdersBundleElement.getValue().getOrders().stream()
                 .anyMatch(orderElement -> orderElement.getId().equals(orderId)))
             .findFirst();
     }
@@ -744,6 +838,7 @@ public class CaseData {
     private final Object toReListHearingDateList;
     private final String hasExistingHearings;
     private final UUID selectedHearingId;
+    private final HearingPresence hearingPresence;
 
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingDatesGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingDatesGroup.class)

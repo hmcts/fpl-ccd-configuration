@@ -103,7 +103,7 @@ class C2UploadedEmailContentProviderTest extends AbstractEmailContentProviderTes
 
     private C2UploadedTemplate getC2UploadedTemplateParameters() {
         return C2UploadedTemplate.builder()
-            .callout("^Smith, 12345, " + HEARING_CALLOUT)
+            .callout("Smith, 12345, " + HEARING_CALLOUT)
             .respondentLastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, C2))
             .documentUrl("http://fake-url/documents/b28f859b-7521-4c84-9057-47e56afd773f/binary")

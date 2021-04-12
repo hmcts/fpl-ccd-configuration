@@ -252,6 +252,10 @@ public abstract class AbstractCallbackTest extends AbstractTest {
             .build();
     }
 
+    protected CallbackRequest toCallBackRequest(CaseData caseData, CaseData caseDataBefore) {
+        return toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore));
+    }
+
     private AboutToStartOrSubmitCallbackResponse postEvent(String path, byte[] data, int expectedStatus,
                                                            String... userRoles) {
         return postEvent(path, data, expectedStatus, AboutToStartOrSubmitCallbackResponse.class, userRoles);

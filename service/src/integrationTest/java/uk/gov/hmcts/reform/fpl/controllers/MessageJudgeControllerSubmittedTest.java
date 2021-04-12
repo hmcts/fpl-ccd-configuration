@@ -87,6 +87,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             "sender", "sender@fpla.com",
             "urgency", "High",
             "hasUrgency", "Yes",
+            "hasApplication", "No",
+            "applicationType", "",
             "latestMessage", MESSAGE
         );
 
@@ -136,6 +138,8 @@ class MessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
             "respondentLastName", "Davidson",
             "caseUrl", "http://fake-url/cases/case-details/12345#Judicial%20messages",
             "callout", "^Davidson",
+            "hasApplication", "No",
+            "applicationType", "",
             "latestMessage", REPLY
         );
 

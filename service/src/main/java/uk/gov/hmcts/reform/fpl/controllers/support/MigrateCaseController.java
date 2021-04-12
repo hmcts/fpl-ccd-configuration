@@ -13,12 +13,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
-import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import java.util.List;
+
+import static com.google.common.collect.Iterables.isEmpty;
 
 @Api
 @RestController
@@ -27,99 +27,47 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final ConfidentialDocumentsSplitter splitter;
-    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2724".equals(migrationId)) {
-            run2724(caseDetails);
-        }
-
-        if ("FPLA-2705".equals(migrationId)) {
-            run2705(caseDetails);
-        }
-
-        if ("FPLA-2706".equals(migrationId)) {
-            run2706(caseDetails);
-        }
-
-        if ("FPLA-2715".equals(migrationId)) {
-            run2715(caseDetails);
-        }
-
-        if ("FPLA-2740".equals(migrationId)) {
-            run2740(caseDetails);
+        if ("FPLA-2947".equals(migrationId)) {
+            run2947(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2715(CaseDetails caseDetails) {
+    private void run2947(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
+        if (List.of(1602246223743823L, 1611588537917646L).contains(caseData.getId())) {
+            List<Element<HearingBooking>> cancelledHearingDetails = caseData.getCancelledHearingDetails();
 
-    private void run2740(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+            if (cancelledHearingDetails == null || isEmpty(cancelledHearingDetails)) {
+                throw new IllegalArgumentException("Case does not contain cancelled hearing bookings");
+            }
 
-        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstCaseNotes(caseDetails);
-        }
-    }
-
-    private void run2706(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("CF20C50049".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void run2724(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("WR20C50007".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void run2705(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (isEmpty(caseData.getDraftUploadedCMOs())) {
-            throw new IllegalArgumentException("No draft case management orders in the case");
+            caseData.getCancelledHearingDetails().stream()
+                .filter(hearingBookingElement -> hearingBookingElement.getValue().getCancellationReason() != null)
+                .forEach(hearingBookingElement -> {
+                    switch (hearingBookingElement.getValue().getCancellationReason()) {
+                        case "OT8":
+                            hearingBookingElement.getValue().setCancellationReason("IN1");
+                            break;
+                        case "OT9":
+                            hearingBookingElement.getValue().setCancellationReason("OT8");
+                            break;
+                        case "OT10":
+                            hearingBookingElement.getValue().setCancellationReason("OT9");
+                            break;
+                    }
+                });
         }
 
-        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
-
-        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
-    }
-
-    private void removeFirstCaseNotes(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
-            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
-                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
-        }
-
-        caseData.getCaseNotes().remove(0);
-        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
+        caseDetails.getData().put("cancelledHearingDetails", caseData.getCancelledHearingDetails());
     }
 }

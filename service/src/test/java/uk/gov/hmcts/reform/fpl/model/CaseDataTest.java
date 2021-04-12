@@ -8,11 +8,15 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
@@ -31,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.String.format;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,12 +55,14 @@ import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.FINAL;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.ISSUE_RESOLUTION;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C17A_EXTENSION_OF_ESO;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
@@ -681,6 +688,320 @@ class CaseDataTest {
     }
 
     @Nested
+    class HasApplicationBundles {
+
+        @Test
+        void shouldReturnTrueIfC2DocumentBundleIsPresentOnCaseDataAndNotEmpty() {
+            List<Element<C2DocumentBundle>> c2DocumentBundles = List.of(
+                element(C2DocumentBundle.builder().build()),
+                element(C2DocumentBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundles).build();
+
+            assertThat(caseData.hasApplicationBundles()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueWhenAdditionalApplicationsBundlesExist() {
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(
+                element(AdditionalApplicationsBundle.builder().build()),
+                element(AdditionalApplicationsBundle.builder().build()));
+
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(additionalApplications)
+                .build();
+
+            assertThat(caseData.hasApplicationBundles()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueWhenC2DocumentsBundleAndAdditionalApplicationsBundlesExist() {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().build()))
+                .c2DocumentBundle(wrapElements(C2DocumentBundle.builder().build()))
+                .build();
+
+            assertThat(caseData.hasApplicationBundles()).isTrue();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFalseIfC2DocumentBundleIsNullOrEmpty(
+            List<Element<C2DocumentBundle>> c2Bundles) {
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2Bundles).build();
+            assertThat(caseData.hasApplicationBundles()).isFalse();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFalseWhenCaseDataDoesNotHaveAdditionalApplicationsBundle(
+            List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles) {
+            CaseData caseData = CaseData.builder()
+                .additionalApplicationsBundle(additionalApplicationsBundles)
+                .build();
+
+            assertThat(caseData.hasApplicationBundles()).isFalse();
+        }
+    }
+
+    @Nested
+    class GetApplicationBundleByUUID {
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatchesWithTheC2DocumentBundlesCollection() {
+            UUID selectedId = randomUUID();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder().author("Test").build();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(
+                    element(selectedId, c2DocumentBundle),
+                    element(C2DocumentBundle.builder().build())))
+                .additionalApplicationsBundle(List.of(element(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder().id(randomUUID()).build())
+                        .build()
+                )))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(selectedId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnC2DocumentBundleWhenIdMatchesWithTheAdditionalApplicationsBundlesCollection() {
+            UUID selectedId = randomUUID();
+            String uploadedTime = now().toString();
+            C2DocumentBundle c2DocumentBundle = C2DocumentBundle.builder()
+                .id(selectedId).author("Test").build();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder().uploadedDateTime(uploadedTime).build())))
+                .additionalApplicationsBundle(List.of(element(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(c2DocumentBundle)
+                        .otherApplicationsBundle(OtherApplicationsBundle.builder()
+                            .applicationType(C17A_EXTENSION_OF_ESO).id(randomUUID()).build())
+                        .build())))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(selectedId)).isEqualTo(c2DocumentBundle);
+        }
+
+        @Test
+        void shouldReturnOtherApplicationBundleWhenIdMatchesWithTheAdditionalApplicationsBundlesCollection() {
+            UUID selectedId = randomUUID();
+            OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
+                .id(selectedId).author("Test").build();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(element(C2DocumentBundle.builder().build())))
+                .additionalApplicationsBundle(List.of(element(
+                    AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder().id(randomUUID()).build())
+                        .otherApplicationsBundle(otherApplicationsBundle)
+                        .build())))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(selectedId)).isEqualTo(otherApplicationsBundle);
+        }
+
+        @Test
+        void shouldReturnNullWhenIdDoNotMatchWithC2DocumentsBundlesAndAdditionalApplicationsBundle() {
+            UUID elementId = randomUUID();
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(
+                    element(C2DocumentBundle.builder().build()), element(C2DocumentBundle.builder().build())))
+                .additionalApplicationsBundle(List.of(
+                    element(AdditionalApplicationsBundle.builder()
+                        .c2DocumentBundle(C2DocumentBundle.builder().id(randomUUID()).build())
+                        .otherApplicationsBundle(OtherApplicationsBundle.builder().id(randomUUID()).build())
+                        .build())))
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(elementId)).isNull();
+        }
+    }
+
+    @Nested
+    class BuildApplicationBundlesDynamicList {
+        @Test
+        void shouldBuildDynamicApplicationsBundleListFromC2DocumentsAndAdditionalApplications() {
+            List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
+                element(buildC2DocumentBundle(futureDate.plusDays(2))),
+                element(buildC2DocumentBundle(futureDate.plusDays(3)))
+            );
+
+            CaseData caseData = CaseData.builder().c2DocumentBundle(c2DocumentBundle).build();
+            DynamicList expectedDynamicList = ElementUtils.asDynamicList(
+                c2DocumentBundle, null, bundle -> format("C2, %s", bundle.getUploadedDateTime()));
+
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicListWithC2DocumentsInAdditionalApplicationsBundle() {
+            C2DocumentBundle c2Bundle1 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1))
+                .toBuilder().id(randomUUID()).build();
+
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(2))
+                .toBuilder().id(randomUUID()).build();
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(
+                element(AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle1).build()),
+                element(AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle2).build()));
+
+            CaseData caseData = CaseData.builder().additionalApplicationsBundle(additionalBundles).build();
+
+            DynamicList expectedDynamicList = ElementUtils.asDynamicList(
+                List.of(element(c2Bundle1.getId(), c2Bundle1), element(c2Bundle2.getId(), c2Bundle2)),
+                null, bundle -> format("C2, %s", bundle.getUploadedDateTime()));
+
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicListWithC2BundlesFromC2DocumentsAndAdditionalDocumentsBundles() {
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(1)));
+
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(2))
+                .toBuilder().id(randomUUID()).build();
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(c2Bundle2)
+                    .build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(c2Bundle1))
+                .additionalApplicationsBundle(additionalBundles)
+                .build();
+
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
+                Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime())
+            );
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicApplicationsBundleListFromC2DocumentsAndAdditionalDocumentsBundle() {
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(3))
+                .toBuilder().id(randomUUID()).build();
+
+            OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(c2Bundle2)
+                    .otherApplicationsBundle(otherBundle)
+                    .build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(c2Bundle1))
+                .additionalApplicationsBundle(additionalBundles)
+                .build();
+
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime()),
+                Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
+                Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime())
+            );
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicApplicationsBundlesListAndSortByApplicationNumberAndLabel() {
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(3))
+                .toBuilder().id(randomUUID()).build();
+
+            OtherApplicationsBundle otherBundle1 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            OtherApplicationsBundle otherBundle2 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            OtherApplicationsBundle otherBundle3 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C100_CHILD_ARRANGEMENTS)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            OtherApplicationsBundle otherBundle4 = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
+                AdditionalApplicationsBundle.builder().c2DocumentBundle(c2Bundle2)
+                    .otherApplicationsBundle(otherBundle1).build()),
+                element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle2).build()),
+                element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle3).build()),
+                element(AdditionalApplicationsBundle.builder().otherApplicationsBundle(otherBundle4).build()));
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(c2Bundle1))
+                .additionalApplicationsBundle(additionalBundles)
+                .build();
+
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(otherBundle4.getId(), "C1, " + otherBundle4.getUploadedDateTime()),
+                Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
+                Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime()),
+                Pair.of(otherBundle2.getId(), "C3, " + otherBundle2.getUploadedDateTime()),
+                Pair.of(otherBundle1.getId(), "C19, " + otherBundle1.getUploadedDateTime()),
+                Pair.of(otherBundle3.getId(), "C100, " + otherBundle3.getUploadedDateTime())
+            );
+
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildEmptyDynamicListWhenC2DocumentsAndAdditionalApplicationsBundlesDoNotExist() {
+            CaseData caseData = CaseData.builder().build();
+            assertThat(caseData.buildApplicationBundlesDynamicList()).isEqualTo(
+                DynamicList.builder().value(DynamicListElement.builder().build()).listItems(List.of()).build());
+        }
+
+        @Test
+        void shouldGetTheSelectedBundleFromTheC2AndAdditionalApplicationsDynamicList() {
+            Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
+
+            C2DocumentBundle c2Bundle2 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1))
+                .toBuilder().id(randomUUID()).build();
+
+            OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
+                .applicationType(OtherApplicationType.C1_PARENTAL_RESPONSIBILITY)
+                .id(randomUUID()).uploadedDateTime(futureDate.plusDays(1).toString()).build();
+
+            List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(c2Bundle2)
+                    .otherApplicationsBundle(otherBundle)
+                    .build()));
+
+            DynamicList expectedDynamicList = buildDynamicList(
+                Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
+                Pair.of(c2Bundle2.getId(), "C2, " + c2Bundle2.getUploadedDateTime()),
+                Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime())
+            );
+
+            CaseData caseData = CaseData.builder()
+                .c2DocumentBundle(List.of(c2Bundle1))
+                .additionalApplicationsBundle(additionalBundles)
+                .manageDocumentsSupportingC2List(expectedDynamicList)
+                .build();
+
+            assertThat(caseData.getApplicationBundleByUUID(c2Bundle1.getId())).isEqualTo(c2Bundle1.getValue());
+            assertThat(caseData.getApplicationBundleByUUID(c2Bundle2.getId())).isEqualTo(c2Bundle2);
+            assertThat(caseData.getApplicationBundleByUUID(otherBundle.getId())).isEqualTo(otherBundle);
+        }
+    }
+
+    @Nested
     class GetPastAndTodayHearings {
 
         @Test
@@ -1235,44 +1556,29 @@ class CaseDataTest {
     }
 
     @Nested
-    class GetHearingOrderDraftCMOs {
+    class GetHearingOrdersBundlesDraftOrders {
         @Test
         void shouldReturnAListOfDraftCaseManagementOrdersWhenExistingWithinHearingOrderBundleDrafts() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
             Element<HearingOrder> draftCMOTwo = element(randomUUID(), buildHearingOrder(AGREED_CMO));
             Element<HearingOrder> draftCMOThree = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
+            Element<HearingOrder> draftOrder = element(buildHearingOrder(C21));
 
             CaseData caseData = CaseData.builder()
                 .hearingOrdersBundlesDrafts(List.of(
-                    element(HearingOrdersBundle.builder().orders(List.of(draftCMOOne, draftCMOTwo)).build()),
-                    element(HearingOrdersBundle.builder().orders(List.of(
-                        draftCMOThree,
-                        element(buildHearingOrder(C21))
-                    )).build())))
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOOne, draftCMOTwo)).build()),
+                    element(HearingOrdersBundle.builder().orders(newArrayList(draftCMOThree, draftOrder)).build())))
                 .build();
 
-            assertThat(caseData.getHearingOrderDraftCMOs()).isEqualTo(List.of(draftCMOOne, draftCMOTwo, draftCMOThree));
-        }
-
-        @Test
-        void shouldReturnAnEmptyListWhenHearingOrderBundlesWithDraftCMOsDoNotExist() {
-            CaseData caseData = CaseData.builder()
-                .hearingOrdersBundlesDrafts(List.of(
-                    element(HearingOrdersBundle.builder().orders(List.of(
-                        element(buildHearingOrder(C21)))).build()),
-                    element(HearingOrdersBundle.builder().orders(List.of(
-                        element(buildHearingOrder(C21))
-                    )).build())))
-                .build();
-
-            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+            assertThat(caseData.getOrdersFromHearingOrderDraftsBundles()).isEqualTo(
+                List.of(draftCMOOne, draftCMOTwo, draftCMOThree, draftOrder));
         }
 
         @Test
         void shouldReturnAnEmptyListIfHearingOrderBundlesDoNotExist() {
             CaseData caseData = CaseData.builder().build();
 
-            assertThat(caseData.getHearingOrderDraftCMOs()).isEmpty();
+            assertThat(caseData.getOrdersFromHearingOrderDraftsBundles()).isEmpty();
         }
     }
 
@@ -1321,11 +1627,11 @@ class CaseDataTest {
     @Nested
     class GetHearingOrderBundleThatContainsOrder {
         @Test
-        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedOrder() {
+        void shouldReturnHearingOrderBundleWhenBundleContainsExpectedCaseManagementOrder() {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
-                .orders(List.of(
+                .orders(newArrayList(
                     draftCMOOne,
                     element(buildHearingOrder(C21))))
                 .build());
@@ -1347,6 +1653,28 @@ class CaseDataTest {
         }
 
         @Test
+        void shouldReturnHearingOrdersBundleWhenBundleContainsExpectedDraftOrder() {
+            Element<HearingOrder> draftOrder = element(buildHearingOrder(C21));
+
+            Element<HearingOrdersBundle> hearingOrdersBundleOne = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(newArrayList(element(buildHearingOrder(DRAFT_CMO)), element(buildHearingOrder(C21))))
+                .build());
+
+            Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
+                .orders(newArrayList(element(buildHearingOrder(DRAFT_CMO)), draftOrder))
+                .build());
+
+            CaseData caseData = CaseData.builder()
+                .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundleOne, hearingOrdersBundleTwo))
+                .build();
+
+            Optional<Element<HearingOrdersBundle>> matchingHearingOrderBundle =
+                caseData.getHearingOrderBundleThatContainsOrder(draftOrder.getId());
+
+            assertThat(matchingHearingOrderBundle).isPresent().contains(hearingOrdersBundleTwo);
+        }
+
+        @Test
         void shouldReturnEmptyWhenHearingOrdersBundlesDraftsIsNull() {
             CaseData caseData = CaseData.builder().build();
 
@@ -1361,7 +1689,7 @@ class CaseDataTest {
             Element<HearingOrder> draftCMOOne = element(randomUUID(), buildHearingOrder(DRAFT_CMO));
 
             Element<HearingOrdersBundle> hearingOrdersBundleTwo = element(randomUUID(), HearingOrdersBundle.builder()
-                .orders(List.of(
+                .orders(newArrayList(
                     element(HearingOrder.builder().type(DRAFT_CMO).build()),
                     element(HearingOrder.builder().type(C21).build())))
                 .build());
@@ -1377,11 +1705,127 @@ class CaseDataTest {
         }
     }
 
+    @Nested
+    class BuildRespondentStatementDynamicList {
+        @Test
+        void shouldBuildDynamicRespondentStatementListFromRespondents() {
+            List<Element<Respondent>> respondents = createRespondents();
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(respondents, null,
+                    respondent -> respondent.getParty().getFullName());
+
+            assertThat(caseData.buildRespondentStatementDynamicList())
+                .isEqualTo(expectedDynamicList);
+        }
+
+        @Test
+        void shouldBuildDynamicRespondentStatementListWithSelectorPropertyFromRespondents() {
+            UUID selectedRespondentId = randomUUID();
+
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Sam")
+                        .lastName("Wilson")
+                        .relationshipToChild("Father")
+                        .build())
+                    .build()),
+                element(selectedRespondentId, Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("Megan")
+                        .lastName("Hannah")
+                        .relationshipToChild("Mother")
+                        .build())
+                    .build()));
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+
+            DynamicList expectedDynamicList = ElementUtils
+                .asDynamicList(respondents, null,
+                    respondent -> respondent.getParty().getFullName());
+
+            assertThat(caseData.buildRespondentStatementDynamicList()).isEqualTo(expectedDynamicList);
+        }
+    }
+
+    @Nested
+    class GetRespondentStatementByRespondentId {
+        UUID elementId = randomUUID();
+
+        @Test
+        void shouldReturnRespondentStatementWhenRespondentIdMatches() {
+            Element<RespondentStatement> respondentStatementElementOne
+                = element(RespondentStatement.builder().respondentId(elementId).build());
+
+            List<Element<RespondentStatement>> respondentStatements = List.of(
+                respondentStatementElementOne,
+                element(RespondentStatement.builder().build()));
+
+            CaseData caseData = CaseData.builder().respondentStatements(respondentStatements).build();
+
+            Optional<Element<RespondentStatement>> optionalRespondentStatementElement
+                = caseData.getRespondentStatementByRespondentId(elementId);
+
+            assertThat(optionalRespondentStatementElement).isPresent().contains(respondentStatementElementOne);
+        }
+
+        @Test
+        void shouldReturnNullWhenRespondentIdDidNotMatch() {
+            List<Element<RespondentStatement>> respondentStatements = List.of(
+                element(RespondentStatement.builder().respondentId(UUID.randomUUID()).build()),
+                element(RespondentStatement.builder().respondentId(UUID.randomUUID()).build()));
+
+            CaseData caseData = CaseData.builder().respondentStatements(respondentStatements).build();
+
+            Optional<Element<RespondentStatement>> optionalRespondentStatementElement
+                = caseData.getRespondentStatementByRespondentId(elementId);
+
+            assertThat(optionalRespondentStatementElement).isNotPresent();
+        }
+    }
+
+    @Nested
+    class FindRespondent {
+        UUID elementId = randomUUID();
+
+        @Test
+        void shouldReturnRespondentWhenIdMatches() {
+            Element<Respondent> respondentOneElement = element(elementId, Respondent.builder().build());
+
+            List<Element<Respondent>> respondents = List.of(
+                respondentOneElement,
+                element(Respondent.builder().build()));
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+            Optional<Element<Respondent>> optionalRespondentElement = caseData.findRespondent(elementId);
+
+            assertThat(optionalRespondentElement).isPresent().contains(respondentOneElement);
+        }
+
+        @Test
+        void shouldReturnNullWhenIdDidNotMatch() {
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder().build()),
+                element(Respondent.builder().build()));
+
+            CaseData caseData = CaseData.builder().respondents1(respondents).build();
+            Optional<Element<Respondent>> optionalRespondentElement = caseData.findRespondent(elementId);
+
+            assertThat(optionalRespondentElement).isNotPresent();
+        }
+    }
+
     private HearingOrder buildHearingOrder(HearingOrderType type) {
         return HearingOrder.builder().type(type).build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(UUID bundleId, LocalDateTime dateTime) {
+        return C2DocumentBundle.builder().id(bundleId).uploadedDateTime(dateTime.toString()).build();
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import javax.validation.ClockProvider;
 
@@ -26,6 +27,10 @@ public class FixedTimeConfiguration {
     @Primary
     public Time stoppedTime() {
         return NOW::toLocalDateTime;
+    }
+
+    public Time fixedDateTime(LocalDateTime fixed) {
+        return () -> fixed;
     }
 
     @Bean

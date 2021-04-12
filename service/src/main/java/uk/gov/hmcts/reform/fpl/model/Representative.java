@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 @Data
 @Builder
 @AllArgsConstructor
-public class Representative {
+public class Representative implements Recipient {
 
     private final String fullName;
 

@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 class CaseAccessServiceTest {
 
     private static final Long CASE_ID = 0L;
+    private static final String CREATOR_ID = "0";
     private static final String USER_1_ID = "1";
     private static final String USER_2_ID = "2";
     private static final String LOCAL_AUTHORITY = "LA1";
@@ -84,6 +85,7 @@ class CaseAccessServiceTest {
             final CaseRole caseRole = LASOLICITOR;
 
             final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(CREATOR_ID);
             localAuthorityUsers.add(USER_1_ID);
             localAuthorityUsers.add(USER_2_ID);
 
@@ -99,7 +101,35 @@ class CaseAccessServiceTest {
             final AddCaseAssignedUserRolesRequest assignmentRequest = buildAssignmentRequest(CASE_ID,
                 localAuthorityUsers, organisation.getOrganisationIdentifier(), caseRole);
 
-            caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, caseRole);
+            caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, caseRole);
+
+            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
+        }
+
+        @Test
+        void shouldGrantAccessToAllUsersWithinSameOrganisationIncludingCreator() {
+            final CaseRole caseRole = LASOLICITOR;
+
+            final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(USER_1_ID);
+            localAuthorityUsers.add(USER_2_ID);
+
+            final Set<String> expectedUsers = new TreeSet<>(localAuthorityUsers);
+            expectedUsers.add(CREATOR_ID);
+
+            final Organisation organisation = Organisation.builder()
+                .organisationIdentifier(randomAlphanumeric(5))
+                .build();
+
+            when(organisationService.findUserIdsInSameOrganisation(LOCAL_AUTHORITY)).thenReturn(localAuthorityUsers);
+            when(organisationService.findOrganisation()).thenReturn(Optional.of(organisation));
+            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+
+            final AddCaseAssignedUserRolesRequest assignmentRequest = buildAssignmentRequest(CASE_ID,
+                expectedUsers, organisation.getOrganisationIdentifier(), caseRole);
+
+            caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, caseRole);
 
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
@@ -109,6 +139,7 @@ class CaseAccessServiceTest {
             final CaseRole caseRole = LASOLICITOR;
 
             final Set<String> localAuthorityUsers = new TreeSet<>();
+            localAuthorityUsers.add(CREATOR_ID);
             localAuthorityUsers.add(USER_1_ID);
             localAuthorityUsers.add(USER_2_ID);
 
@@ -120,7 +151,7 @@ class CaseAccessServiceTest {
             final AddCaseAssignedUserRolesRequest assignmentRequest =
                 buildAssignmentRequest(CASE_ID, localAuthorityUsers, null, caseRole);
 
-            caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, caseRole);
+            caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, caseRole);
 
             verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
@@ -135,7 +166,7 @@ class CaseAccessServiceTest {
                 new GrantCaseAccessException(CASE_ID, LOCAL_AUTHORITY, LASOLICITOR, fetchUsersException);
 
             final GrantCaseAccessException actualException = assertThrows(GrantCaseAccessException.class,
-                () -> caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, LOCAL_AUTHORITY, LASOLICITOR));
+                () -> caseRoleService.grantCaseRoleToLocalAuthority(CASE_ID, CREATOR_ID, LOCAL_AUTHORITY, LASOLICITOR));
 
             assertThat(actualException).isEqualTo(expectedException);
         }
@@ -173,6 +204,29 @@ class CaseAccessServiceTest {
 
             verify(caseAccessDataStoreApi)
                 .removeCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, caseAssignedUserRolesRequest);
+        }
+    }
+
+
+    @Nested
+    class UsersAccess {
+
+        @Test
+        void shouldGrantAccessToUsers() {
+            final CaseRole caseRole = EPSMANAGING;
+
+            Set<String> userIds = Set.of(USER_1_ID, USER_2_ID);
+
+            when(caseAccessDataStoreApi.addCaseUserRoles(any(), any(), any()))
+                .thenReturn(AddCaseAssignedUserRolesResponse.builder().status("Granted").build());
+
+            final AddCaseAssignedUserRolesRequest assignmentRequest =
+                buildAssignmentRequest(CASE_ID, userIds, null, caseRole);
+
+
+            caseRoleService.grantCaseRoleToUsers(CASE_ID, userIds, caseRole);
+
+            verify(caseAccessDataStoreApi).addCaseUserRoles(AUTH_TOKEN, SERVICE_AUTH_TOKEN, assignmentRequest);
         }
     }
 

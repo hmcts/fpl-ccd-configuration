@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,8 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
@@ -48,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final String REASON = "The order was removed because the order was removed";
     private static final UUID SDO_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    public static final UUID REMOVED_ORDER_ID = UUID.randomUUID();
 
     @MockBean
     private IdentityService identityService;
@@ -190,11 +196,9 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldRemoveSealedCaseManagementOrderAndRemoveHearingAssociation() {
-        UUID removedOrderId = UUID.randomUUID();
-
-        Element<HearingOrder> caseManagementOrder1 = element(removedOrderId, HearingOrder.builder()
+        Element<HearingOrder> caseManagementOrder1 = element(REMOVED_ORDER_ID, HearingOrder.builder()
             .status(APPROVED)
-            .type(HearingOrderType.AGREED_CMO)
+            .type(AGREED_CMO)
             .build());
 
         List<Element<HearingOrder>> caseManagementOrders = List.of(
@@ -203,14 +207,14 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(HearingBooking.builder()
-                .caseManagementOrderId(removedOrderId)
+                .caseManagementOrderId(REMOVED_ORDER_ID)
                 .build()));
 
         CaseData caseData = CaseData.builder()
             .sealedCMOs(caseManagementOrders)
             .hearingDetails(hearingBookings)
             .removableOrderList(DynamicList.builder()
-                .value(buildListElement(removedOrderId, "Sealed case management order issued on 15 June 2020"))
+                .value(buildListElement(REMOVED_ORDER_ID, "Sealed case management order issued on 15 June 2020"))
                 .build())
             .build();
 
@@ -222,6 +226,39 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(hiddenCMOs).hasSize(1).first().isEqualTo(caseManagementOrder1);
         assertNull(unlinkedHearing.getCaseManagementOrderId());
+    }
+
+    @Test
+    void shouldRemoveDraftOrderFromTheHearingOrdersDraftBundles() {
+        Element<HearingOrder> draftOrder = element(REMOVED_ORDER_ID, HearingOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .type(C21)
+            .dateSent(LocalDate.of(2020, 6, 15))
+            .build());
+
+        Element<HearingOrder> draftCMO = element(
+            HearingOrder.builder().type(AGREED_CMO).status(SEND_TO_JUDGE).build());
+
+        Element<HearingOrdersBundle> hearingOrdersBundle = element(HearingOrdersBundle.builder()
+            .orders(newArrayList(draftOrder, draftCMO))
+            .build());
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(HearingBooking.builder().build())))
+            .hearingOrdersBundlesDrafts(List.of(hearingOrdersBundle))
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(REMOVED_ORDER_ID, "Draft order sent on 15 June 2020"))
+                .build())
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        Element<HearingOrdersBundle> expectedHearingOrderBundle = element(hearingOrdersBundle.getId(),
+            HearingOrdersBundle.builder().orders(newArrayList(draftCMO)).build());
+
+        assertThat(responseData.getHearingOrdersBundlesDrafts())
+            .hasSize(1)
+            .first().isEqualTo(expectedHearingOrderBundle);
     }
 
     @Test
@@ -262,7 +299,7 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldRemoveDraftCaseManagementOrderAndRemoveHearingAssociation() {
+    void shouldRemoveDraftCaseManagementOrderFromHearingOrderBundleDraftsAndRemoveHearingAssociation() {
         UUID removedOrderId = UUID.randomUUID();
         UUID additionalOrderId = UUID.randomUUID();
         UUID hearingOrderBundleId = UUID.randomUUID();
@@ -301,6 +338,48 @@ class RemoveOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
                 element(additionalOrderId, HearingOrder.builder().type(HearingOrderType.DRAFT_CMO).build())
             )).build())
         ));
+
+        assertNull(unlinkedHearing.getCaseManagementOrderId());
+    }
+
+    @Test
+    void shouldRemoveDraftCaseManagementOrderFromDraftCaseManagementOrdersAndRemoveHearingAssociation() {
+        UUID removedOrderId = UUID.randomUUID();
+        UUID additionalOrderId = UUID.randomUUID();
+
+        Element<HearingOrder> orderToBeRemoved = element(removedOrderId, HearingOrder.builder()
+            .status(DRAFT)
+            .type(HearingOrderType.DRAFT_CMO)
+            .build());
+
+        List<Element<HearingOrder>> caseManagementOrders = newArrayList(
+            orderToBeRemoved,
+            element(additionalOrderId, HearingOrder.builder().status(DRAFT).build()));
+
+        List<Element<HearingBooking>> hearingBookings = List.of(
+            element(HearingBooking.builder()
+                .caseManagementOrderId(removedOrderId)
+                .build()));
+
+        CaseData caseData = CaseData.builder()
+            .draftUploadedCMOs(caseManagementOrders)
+            .hearingDetails(hearingBookings)
+            .removableOrderList(DynamicList.builder()
+                .value(buildListElement(removedOrderId, "Draft case management order - 15 June 2020"))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
+
+        CaseData responseData = extractCaseData(response);
+        HearingBooking unlinkedHearing = responseData.getHearingDetails().get(0).getValue();
+
+        Element<HearingOrder> expectedHearingOrderElement = element(additionalOrderId, HearingOrder.builder()
+            .title("Draft CMO from advocates' meeting")
+            .type(DRAFT_CMO)
+            .status(DRAFT).build());
+
+        assertThat(responseData.getDraftUploadedCMOs()).isEqualTo(newArrayList(expectedHearingOrderElement));
 
         assertNull(unlinkedHearing.getCaseManagementOrderId());
     }

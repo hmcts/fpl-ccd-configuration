@@ -1197,6 +1197,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentStatements",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "c2SupportingDocuments",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
@@ -1310,6 +1317,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsRespondentStatementsHeading",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "manageDocumentsCourtBundleNoHearingsLabel",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "R"
@@ -1339,6 +1353,27 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "courtBundleHearingList",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondentStatementList",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentSubtypeListLA",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "manageDocumentsRelatedToHearing",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
@@ -1502,5 +1537,47 @@
     "CaseFieldID": "correspondenceDocumentsLANC",
     "UserRole": "[LASOLICITOR]",
     "CRUD": "CU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationType",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2Type",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryOtherApplicationsBundle",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryPbaPayment",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "additionalApplicationsBundle",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsSentToParties",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
   }
 ]

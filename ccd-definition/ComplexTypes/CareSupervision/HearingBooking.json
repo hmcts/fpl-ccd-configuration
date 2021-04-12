@@ -26,7 +26,7 @@
     "ListElementCode": "venue",
     "FieldType": "FixedList",
     "FieldTypeParameter": "HearingVenue",
-    "ElementLabel": "Venue",
+    "ElementLabel": "Court",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -44,7 +44,17 @@
     "ID": "HearingBooking",
     "ListElementCode": "venueCustomAddress",
     "FieldType": "AddressUK",
-    "ElementLabel": "Venue address",
+    "ElementLabel": "Court address",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "presence",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingPresence",
+    "ElementLabel": "In person or remote",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
