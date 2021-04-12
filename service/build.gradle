@@ -19,7 +19,7 @@ plugins {
   id 'org.sonarqube' version '3.1.1'
   id 'project-report'
   id "idea"
-  id 'au.com.dius.pact' version '4.2.3'
+  id 'au.com.dius.pact' version '4.2.4'
   id 'info.solidsoft.pitest' version '1.6.0'
 }
 
