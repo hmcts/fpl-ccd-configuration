@@ -122,7 +122,7 @@ public class SubmittedCaseEventHandler {
 
         respondentSolicitors.forEach(recipient -> {
             RespondentSolicitorTemplate notifyData =
-                respondentSolicitorContentProvider.buildNotifyRespondentSolicitorTemplate(caseData, recipient);
+                respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, recipient);
 
             notificationService.sendEmail(UNREGISTERED_RESPONDENT_SOLICICTOR,
                 recipient.getEmail(),

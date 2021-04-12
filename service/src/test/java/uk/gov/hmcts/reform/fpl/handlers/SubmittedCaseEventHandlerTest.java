@@ -140,7 +140,7 @@ class SubmittedCaseEventHandlerTest {
 
         final RespondentSolicitorTemplate expectedTemplate = RespondentSolicitorTemplate.builder().build();
         final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
-        when(respondentSolicitorContentProvider.buildNotifyRespondentSolicitorTemplate(any(CaseData.class), any(
+        when(respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(any(CaseData.class), any(
             RespondentSolicitor.class))).thenReturn(expectedTemplate);
 
         submittedCaseEventHandler.notifyUnregisteredSolicitors(submittedCaseEvent);
