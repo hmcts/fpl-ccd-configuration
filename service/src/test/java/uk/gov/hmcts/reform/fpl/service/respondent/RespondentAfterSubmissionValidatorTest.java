@@ -35,11 +35,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of());
-
     }
 
     @Test
-    void testIfRespondentIfNewAddedIfNotExisting() {
+    void testIfNewRespondentAddedToEmpty() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -49,11 +48,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of());
-
     }
 
     @Test
-    void testIfRespondentIfNewAddedIfNotExistingNull() {
+    void testIfNewRespondentAddedToNull() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -67,7 +65,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentIfNewAddedIfExisting() {
+    void testIfNewRespondentAddedToExisting() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1), element(UUID_2, RESPONDENT_2)))
@@ -81,7 +79,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentIfRemoved() {
+    void testIfRespondentIsRemoved() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -91,11 +89,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Removing an existing respondent is not allowed"));
-
     }
 
     @Test
-    void testIfRespondentChangedSolicitorOrganisation() {
+    void testIfSolicitorOrganisationModified() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2))))
@@ -109,7 +106,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentDeletedSolicitorOrganisation() {
+    void testIfSolicitorOrganisationDeleted() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(null))))
@@ -123,13 +120,13 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentChangedSolicitorOrganisationWithMultipleRespondents() {
+    void testIfSolicitorOrganisationChangedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
                     element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
                     element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_2))
-                    ))
+                ))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(
@@ -143,7 +140,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentChangedMultipleSolicitorOrganisationWithMultipleRespondents() {
+    void testIfMultipleSolicitorOrganisationChangedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
@@ -166,7 +163,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentDeletedSolicitorOrganisationWithMultipleRespondents() {
+    void testIfSolicitorOrganisationDeletedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
@@ -186,7 +183,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfRespondentDeletedMultipleSolicitorOrganisationWithMultipleRespondents() {
+    void testIfMultipleSolicitorOrganisationDeletedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(

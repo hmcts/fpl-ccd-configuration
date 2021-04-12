@@ -16,10 +16,7 @@ public class RespondentsUpdatedEventHandler {
     @Async
     @EventListener
     public void notifyX(final RespondentsUpdated event) {
-          //  todo call service from aliveni& soorya
-
-
+        //todo call service from aliveni & soorya
     }
-
 
 }

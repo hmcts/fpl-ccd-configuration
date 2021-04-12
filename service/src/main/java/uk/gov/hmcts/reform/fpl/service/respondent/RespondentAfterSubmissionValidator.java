@@ -52,7 +52,6 @@ public class RespondentAfterSubmissionValidator {
             }
         }
 
-
         return errors.build();
     }
 
@@ -79,6 +78,5 @@ public class RespondentAfterSubmissionValidator {
             .map(Element::getId)
             .collect(Collectors.toSet());
     }
-
 
 }
