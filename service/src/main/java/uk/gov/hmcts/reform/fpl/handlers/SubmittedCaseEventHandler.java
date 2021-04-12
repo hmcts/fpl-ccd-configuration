@@ -106,25 +106,29 @@ public class SubmittedCaseEventHandler {
 
         CaseData caseData = event.getCaseData();
 
-        List<RespondentSolicitor> respondentSolicitors = new ArrayList<>();
-        List<Respondent> respondents = respondentService.getRespondentsWithLegalRepresentation(caseData
-            .getRespondents1());
+        List<RespondentSolicitor> unregisteredSolicitors = new ArrayList<>();
+        List<Respondent> respondentsWithLegalRepresentation = respondentService.getRespondentsWithLegalRepresentation(
+            caseData
+                .getRespondents1());
 
-        respondents.forEach(respondent -> {
+        respondentsWithLegalRepresentation.forEach(respondent -> {
             RespondentSolicitor respondentSolicitor = respondent.getSolicitor();
             UnregisteredOrganisation unregisteredOrganisation = respondentSolicitor.getUnregisteredOrganisation();
 
-            if (isNotEmpty(unregisteredOrganisation.getName())
-                || !isEmptyAddress(unregisteredOrganisation.getAddress())) {
-                respondentSolicitors.add(respondentSolicitor);
+            if (unregisteredOrganisation != null) {
+                if (isNotEmpty(unregisteredOrganisation.getName())
+                    || !isEmptyAddress(unregisteredOrganisation.getAddress())) {
+                    unregisteredSolicitors.add(respondentSolicitor);
+                }
             }
         });
 
-        respondentSolicitors.forEach(recipient -> {
+        unregisteredSolicitors.forEach(recipient -> {
             RespondentSolicitorTemplate notifyData =
                 respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, recipient);
 
-            notificationService.sendEmail(UNREGISTERED_RESPONDENT_SOLICICTOR,
+            notificationService.sendEmail(
+                UNREGISTERED_RESPONDENT_SOLICICTOR,
                 recipient.getEmail(),
                 notifyData,
                 caseData.getId());
