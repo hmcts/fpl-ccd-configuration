@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -57,7 +59,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
 
-    private static final byte[] DOCUMENT_BINARIES = {1, 2, 3, 4, 5};
+    private static final byte[] DOCUMENT_BINARIES = testDocumentBinaries();
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = testDocmosisDocument(DOCUMENT_BINARIES);
     private static final Document UPLOADED_DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_REFERENCE = buildFromDocument(UPLOADED_DOCUMENT);
@@ -173,7 +175,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void orderDetailsShouldPrepopulateNextSectionDetails() {
         CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("test1")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .children1(CHILDREN)
             .orderAppliesToAllChildren("Yes")

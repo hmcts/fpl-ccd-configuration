@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
@@ -42,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -55,8 +57,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
 
-    private static final byte[] DOCUMENT_PDF_BINARIES = {1, 2, 3, 4, 5};
-    private static final byte[] DOCUMENT_WORD_BINARIES = {6, 7, 8, 9, 0};
+    private static final byte[] DOCUMENT_PDF_BINARIES = testDocumentBinaries();
+    private static final byte[] DOCUMENT_WORD_BINARIES = testDocumentBinaries();
     private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES);
     private static final DocmosisDocument DOCMOSIS_WORD_DOCUMENT = testDocmosisDocument(DOCUMENT_WORD_BINARIES);
     private static final Document UPLOADED_PDF_DOCUMENT = testDocument();
@@ -141,7 +143,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     private CaseData buildCaseData() {
         return CaseData.builder()
-            .caseLocalAuthority("test1")
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("CASE_NUMBER")
             .children1(CHILDREN)
             .orderAppliesToAllChildren("Yes")
