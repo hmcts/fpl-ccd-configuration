@@ -22,10 +22,11 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
                 "manageOrdersFurtherDirections",
                 "orderPreview",
                 "manageOrdersType",
-                "orderTempQuestions"
+                "orderTempQuestions",
+                "issuingDetailsSectionSubHeader",
+                "childrenDetailsSectionSubHeader",
+                "orderDetailsSectionSubHeader"
             )
         );
-
-
     }
 }
