@@ -3,7 +3,7 @@ const config = require('../config');
 Feature('Case outsourcing');
 
 Scenario('Private solicitor creates case on behalf of local authority ', async ({I, caseListPage}) => {
-  const localAuthority = 'Swansea City Council';
+  const localAuthority = 'FPLA team';
   const caseName = `On behalf of ${localAuthority}`;
 
   const caseId = await I.logInAndCreateCase(config.privateSolicitorOne, caseName, localAuthority);
@@ -16,7 +16,7 @@ Scenario('Private solicitor creates case on behalf of local authority ', async (
   I.see('No cases found.');
 });
 
-Scenario('Local authority creates case on behalf of other local authority', async ({I, caseListPage}) => {
+xScenario('Local authority creates case on behalf of other local authority', async ({I, caseListPage}) => {
   const localAuthority = 'Swansea City Council';
   const caseName = `On behalf of ${localAuthority}`;
 
@@ -30,13 +30,15 @@ Scenario('Local authority creates case on behalf of other local authority', asyn
   I.see('No cases found.');
 });
 
+
+//Changed LA for ITHC as wiltshire doesn't exist there
 Scenario('Local authority creates case for its own', async ({I, caseListPage}) => {
-  const localAuthority = 'Wiltshire County Council';
+  const localAuthority = 'London Borough Hillingdon';
   const caseName = `${localAuthority} case`;
 
-  const caseId = await I.logInAndCreateCase(config.wiltshireLocalAuthorityUserOne, caseName, localAuthority);
+  const caseId = await I.logInAndCreateCase(config.hillingdonLocalAuthorityUserOne, caseName, localAuthority);
   await caseListPage.verifyCaseIsShareable(caseId);
 
-  await I.signIn(config.wiltshireLocalAuthorityUserTwo);
+  await I.signIn(config.hillingdonLocalAuthorityUserOne);
   await caseListPage.verifyCaseIsShareable(caseId);
 });

@@ -1,26 +1,25 @@
 const defaultPassword = 'Password12';
-
 module.exports = {
   swanseaLocalAuthorityUserOne: {
-    email: 'kurt@swansea.gov.uk',
+    email: 'fpla.user.solicitor1.ithc@mailinator.com',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'kurt@swansea.gov.uk',
     surname: '(local-authority)',
   },
   swanseaLocalAuthorityUserTwo: {
-    email: 'damian@swansea.gov.uk',
+    email: 'fpla.user.solicitor2.ithc@mailinator.com',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'damian@swansea.gov.uk',
     surname: '(local-authority)',
   },
   hillingdonLocalAuthorityUserOne: {
-    email: 'sam@hillingdon.gov.uk',
+    email: 'fpla.user.solicitor2.ithc@mailnesia.com',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'sam@hillingdon.gov.uk',
     surname: '(local-authority)',
   },
   hillingdonLocalAuthorityUserTwo: {
-    email: 'siva@hillingdon.gov.uk',
+    email: 'fpla.user.solicitor2.ithc@mailnesia.com',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
     forename: 'siva@hillingdon.gov.uk',
     surname: '(local-authority)',
@@ -44,31 +43,31 @@ module.exports = {
     surname: '(local-authority-barrister)',
   },
   hmctsAdminUser: {
-    email: 'hmcts-admin@example.com',
-    password: process.env.CA_USER_PASSWORD || defaultPassword,
+    email: 'fpl-court-admin@hmcts.net',
+    password: '_7AqkjTR9VUa',
   },
   hmctsSuperUser: {
-    email: 'hmcts-superuser@mailnesia.com',
-    password: process.env.SUPER_USER_PASSWORD || defaultPassword,
+    email: 'fpl-superuser@mailinator.com',
+    password: 'Password123!',
   },
   cafcassUser: {
-    email: 'cafcass@example.com',
-    password: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
+    email: 'fpl-cafcass@hmcts.net',
+    password: 'f!w8nJu*m2s5',
   },
   gateKeeperUser: {
-    email: 'gatekeeper-only@mailnesia.com',
-    password: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
+    email: 'fpl-gatekeeper@hmcts.net',
+    password: 'QUv**7TUbznk',
   },
   judicaryUser: {
-    email: 'judiciary-only@mailnesia.com',
-    password: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
+    email: 'fpl-judiciary@hmcts.net',
+    password: '7q$UQkz2ZJz7',
   },
   magistrateUser: {
-    email: 'magistrate@mailnesia.com',
-    password: process.env.MAGISTRATE_USER_PASSWORD || defaultPassword,
+    email: 'fpl-magistrate@mailinator.com',
+    password: 'Password123!',
   },
   systemUpdateUser: {
-    email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpl-system-update@mailnesia.com',
+    email: process.env.SYSTEM_UPDATE_USER_USERNAME || 'fpla.user.solicitor1.ithc@mailinator.com',
     password: process.env.SYSTEM_UPDATE_USER_PASSWORD || defaultPassword,
   },
   smokeTestUser: {
@@ -80,11 +79,11 @@ module.exports = {
     password: process.env.HMCTS_USER_PASSWORD,
   },
   privateSolicitorOne: {
-    email: 'solicitor1@solicitors.uk',
+    email: 'fpla.user.solicitor1.ithc@mailnesia.com',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
   },
   privateSolicitorTwo: {
-    email: 'solicitor2@solicitors.uk',
+    email: 'fpla.user.solicitor2.ithc@mailnesia.com',
     password: process.env.LA_USER_PASSWORD || defaultPassword,
   },
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
@@ -98,7 +97,7 @@ module.exports = {
   TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
   definition: {
     jurisdiction: 'PUBLICLAW',
-    jurisdictionFullDesc: 'Public Law',
+    jurisdictionFullDesc: 'Family Public Law',
     caseType: 'CARE_SUPERVISION_EPO',
     caseTypeFullDesc: 'Care, supervision and EPOs',
   },

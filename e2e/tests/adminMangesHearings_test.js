@@ -264,8 +264,7 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
 });
 
 Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  hearingStartDate = moment().subtract(10,'m').toDate();
-  hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
+  const date = new Date('July 4 1776 12:30');
 
   const correctedHearingStartDate = moment().subtract(10,'m').toDate();
   const correctedHearingEndDate = moment(correctedHearingStartDate).add(5,'m').toDate();
@@ -274,7 +273,7 @@ Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearing
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
 
-  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate, presence: hearingDetails[0].presence});
+  await manageHearingsEventPage.enterHearingDetails({startDate: date, endDate: hearingEndDate, presence: hearingDetails[0].presence});
   manageHearingsEventPage.selectPreviousVenue();
   await I.goToNextPage();
 

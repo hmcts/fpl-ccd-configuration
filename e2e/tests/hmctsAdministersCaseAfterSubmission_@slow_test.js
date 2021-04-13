@@ -19,7 +19,7 @@ const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWit
 
 let caseId;
 
-Feature('Case administration after submission');
+Feature('tester');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);
@@ -60,7 +60,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing, summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage, paymentHistoryPage}) => {
+Scenario('HMCTS admin uploads additional applications to the case', async ({I, caseViewPage, uploadAdditionalApplicationsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('OTHER_ORDER');
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
@@ -78,15 +78,12 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
   await I.goToNextPage();
-  const feeToPay = await uploadAdditionalApplicationsEventPage.getFeeToPay();
+  //add fee check back in
   uploadAdditionalApplicationsEventPage.usePbaPayment();
   uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
 
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
-
-  caseViewPage.selectTab(caseViewPage.tabs.paymentHistory);
-  await paymentHistoryPage.checkPayment(feeToPay, c2Payment.pbaNumber);
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
