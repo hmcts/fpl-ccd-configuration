@@ -896,4 +896,12 @@ public class CaseData {
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;
     }
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final NoticeOfChangeAnswersData noticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
 }
