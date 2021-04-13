@@ -2,9 +2,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BAR",
+    "ListElement": "Barnsley Metropolitan Borough Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BNS",
     "ListElement": "Bath & North East Somerset Council",
-    "DisplayOrder": 1
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
@@ -23,15 +30,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "BCP",
-    "ListElement": "Bournemouth, Christchurch and Poole Council",
+    "ListElementCode": "BOL",
+    "ListElement": "Bolton Metropolitan Borough Council",
     "DisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "BOL",
-    "ListElement": "Bolton Metropolitan Borough Council",
+    "ListElementCode": "BCP",
+    "ListElement": "Bournemouth, Christchurch and Poole Council",
     "DisplayOrder": 20
   },
   {
@@ -142,6 +149,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "DON",
+    "ListElement": "Doncaster Metropolitan Borough Council",
+    "DisplayOrder": 97
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DMC",
     "ListElement": "Dudley Metropolitan Borough Council",
     "DisplayOrder": 100
@@ -208,6 +222,13 @@
     "ListElementCode": "HCC",
     "ListElement": "Hertfordshire County Council",
     "DisplayOrder": 145
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "IOA",
+    "ListElement": "Isle of Anglesey County Council",
+    "DisplayOrder": 147
   },
   {
     "LiveFrom": "01/01/2017",
@@ -450,6 +471,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "ROT",
+    "ListElement": "Rotherham Metropolitan Borough Council",
+    "DisplayOrder": 317
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "SAL",
     "ListElement": "Salford City Council",
     "DisplayOrder": 320
@@ -460,6 +488,14 @@
     "ListElementCode": "SMC",
     "ListElement": "Sandwell Metropolitan Council",
     "DisplayOrder": 325
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHF",
+    "ListElement": "Sheffield City Council",
+    "DisplayOrder": 327
   },
   {
     "LiveFrom": "01/01/2017",
@@ -487,14 +523,14 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "SGL",
     "ListElement": "South Gloucestershire Council",
-    "DisplayOrder": 245
+    "DisplayOrder": 345
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
-    "DisplayOrder": 250
+    "DisplayOrder": 350
   },
   {
     "LiveFrom": "01/01/2017",
