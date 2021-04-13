@@ -52,8 +52,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeTitle",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -62,8 +62,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "otherTitle",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -72,8 +72,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeLastName",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
@@ -82,8 +82,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allocatedJudge",
     "ListElementCode": "judgeFullName",
-    "UserRoles": ["[SOLICITOR]", "[solicitorA]", "[solicitorB]", "[solicitorC]", "[solicitorD]",
-      "[solicitorE]", "[solicitorF]", "[solicitorG]", "[solicitorH]", "[solicitorI]"
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
     "CRUD": "R"
   },
