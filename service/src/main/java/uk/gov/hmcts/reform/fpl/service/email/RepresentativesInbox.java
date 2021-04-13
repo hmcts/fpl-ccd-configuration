@@ -24,6 +24,10 @@ public class RepresentativesInbox {
     private final FeatureToggleService featureToggleService;
 
     public Set<String> getEmailsByPreference(CaseData caseData, RepresentativeServingPreferences preference) {
+        if (preference.equals(RepresentativeServingPreferences.POST)) {
+            throw new IllegalArgumentException("Preference should not be POST");
+        }
+
         LinkedHashSet<String> emails = caseData.getRepresentativesByServedPreference(preference)
             .stream()
             .map(Representative::getEmail)

@@ -26,9 +26,6 @@ public class RepresentativeNotificationService {
                                                         final String templateId,
                                                         final NotifyData notifyData,
                                                         final CaseData caseData) {
-        if (servedPreference.equals(RepresentativeServingPreferences.POST)) {
-            throw new IllegalArgumentException("Preference should not be POST");
-        }
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, servedPreference);
         sendNotificationToRepresentatives(caseData.getId(), notifyData, emailRepresentatives, templateId);
     }

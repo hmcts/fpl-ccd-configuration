@@ -12,10 +12,12 @@ import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class RepresentativesInboxTest {
@@ -33,6 +35,14 @@ class RepresentativesInboxTest {
     @BeforeEach
     void setUp() {
         when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
+    }
+
+    @Test
+    void testRepresentativesByPOSTIsNotAccepted() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThrows(IllegalArgumentException.class,
+            () -> underTest.getEmailsByPreference(caseData, POST));
     }
 
     @Test
