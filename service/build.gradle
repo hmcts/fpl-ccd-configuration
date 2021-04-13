@@ -3,7 +3,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.2")
   }
 }
 
@@ -284,7 +284,7 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.3.0'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.3.1'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
