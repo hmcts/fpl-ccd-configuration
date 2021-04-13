@@ -66,15 +66,7 @@ module.exports = {
     }
   },
 
-  async setRepresentativeEmail(elementIndex, email) {
+  setRepresentativeEmail(elementIndex, email) {
     I.fillField(this.fields(elementIndex).representative.email, email);
-  },
-
-  async setDigitalServingPreferences(elementIndex) {
-    I.checkOption(this.fields(elementIndex).representative.servingPreferences.digitalService);
-  },
-
-  async setRepresentativeRole(elementIndex, role) {
-    I.selectOption(this.fields(elementIndex).representative.role, role);
   },
 };
