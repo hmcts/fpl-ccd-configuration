@@ -81,7 +81,6 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .applicationTypes(Collections.singletonList("C2 (With notice) - Parental responsibility by the father"))
                 .build();
 
-
         AdditionalApplicationsUploadedTemplate actualParameters = additionalApplicationsUploadedEmailContentProvider
             .getNotifyData(caseData);
 

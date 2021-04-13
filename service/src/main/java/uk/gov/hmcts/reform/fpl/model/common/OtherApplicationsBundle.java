@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Data
 @Builder(toBuilder = true)
@@ -62,6 +63,31 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
         return getSupportingEvidenceBundle().stream()
             .filter(doc -> !doc.getValue().isConfidentialDocument())
             .collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public String getAllDocumentFileNames() {
+        String fileName = "";
+
+        if (document != null) {
+            fileName = document.getFilename();
+        }
+
+        String stringBuilder = fileName + "\n" + getSupportingEvidenceFileNames();
+        return stringBuilder.trim();
+    }
+
+    @JsonIgnore
+    public List<Element<DocumentReference>> getAllDocumentReferences() {
+        List<Element<DocumentReference>> documentReferences = new ArrayList<>();
+
+        if (document != null) {
+            documentReferences.add(element(document));
+        }
+
+        documentReferences.addAll(getSupportingEvidenceBundleReferences());
+
+        return documentReferences;
     }
 
     @JsonIgnore
