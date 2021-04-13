@@ -53,8 +53,8 @@ class RespondentSolicitorContentProviderTest extends AbstractEmailContentProvide
 
     private static Stream<Arguments> representativeNameSource() {
         final String salutation = "Dear ";
-        final String expectedLastName = salutation + " " + LAST_NAME;
-        final String expectedFirstName = salutation + FIRST_NAME + " ";
+        final String expectedLastName = salutation + LAST_NAME;
+        final String expectedFirstName = salutation + FIRST_NAME;
         final String expectedFullName = salutation + FIRST_NAME + " " + LAST_NAME;
 
         return Stream.of(
