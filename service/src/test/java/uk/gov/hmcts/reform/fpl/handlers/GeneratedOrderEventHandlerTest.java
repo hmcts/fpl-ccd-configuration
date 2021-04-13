@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -156,8 +158,8 @@ class GeneratedOrderEventHandlerTest {
 
         verify(orderIssuedEmailContentProvider, never()).getNotifyDataWithoutCaseUrl(any(), any(), any());
 
-        //verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
-        //    any(), any(), any(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES));
+        verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
+            any(), any(), anySet(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES));
     }
 
     @Test
