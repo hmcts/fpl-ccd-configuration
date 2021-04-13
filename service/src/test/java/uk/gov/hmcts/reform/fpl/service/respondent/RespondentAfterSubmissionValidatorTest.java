@@ -25,7 +25,7 @@ class RespondentAfterSubmissionValidatorTest {
     private final RespondentAfterSubmissionValidator underTest = new RespondentAfterSubmissionValidator();
 
     @Test
-    void testIfRespondentDidNotChange() {
+    void shouldNotReturnErrorWhenNoChanges() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -38,7 +38,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfNewRespondentAddedToEmpty() {
+    void shouldNotReturnErrorWhenNewRespondentAddedToEmpty() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -51,7 +51,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfNewRespondentAddedToNull() {
+    void shouldNotReturnErrorWhenNewRespondentAddedToNull() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -61,11 +61,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of());
-
     }
 
     @Test
-    void testIfNewRespondentAddedToExisting() {
+    void shouldNotReturnErrorWhenNewRespondentAddedToExisting() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1), element(UUID_2, RESPONDENT_2)))
@@ -75,11 +74,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of());
-
     }
 
     @Test
-    void testIfRespondentIsRemoved() {
+    void shouldReturnErrorWhenRespondentRemoved() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
@@ -92,7 +90,20 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void testIfSolicitorOrganisationModified() {
+    void shouldNotReturnErrorWhenSolicitorOrganisationAdded() {
+        List<String> actual = underTest.validate(
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1))))
+                .build(),
+            CaseData.builder()
+                .respondents1(List.of())
+                .build());
+
+        assertThat(actual).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldReturnErrorWhenSolicitorOrganisationModified() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2))))
@@ -102,11 +113,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
-
     }
 
     @Test
-    void testIfSolicitorOrganisationDeleted() {
+    void shouldReturnErrorWhenSolicitorOrganisationDeleted() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(null))))
@@ -116,11 +126,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
-
     }
 
     @Test
-    void testIfSolicitorOrganisationChangedWithMultipleRespondents() {
+    void shouldReturnErrorWhenSolicitorOrganisationChangedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
@@ -136,11 +145,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 2 is not allowed"));
-
     }
 
     @Test
-    void testIfMultipleSolicitorOrganisationChangedWithMultipleRespondents() {
+    void shouldReturnErrorsWhenMultipleSolicitorOrganisationChangedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
@@ -159,11 +167,10 @@ class RespondentAfterSubmissionValidatorTest {
             "Change of organisation for respondent 1 is not allowed",
             "Change of organisation for respondent 2 is not allowed"
         ));
-
     }
 
     @Test
-    void testIfSolicitorOrganisationDeletedWithMultipleRespondents() {
+    void shouldReturnErrorWhenSolicitorOrganisationDeletedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
@@ -179,11 +186,10 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 2 is not allowed"));
-
     }
 
     @Test
-    void testIfMultipleSolicitorOrganisationDeletedWithMultipleRespondents() {
+    void shouldReturnErrorsWhenMultipleSolicitorOrganisationDeletedWithMultipleRespondents() {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(

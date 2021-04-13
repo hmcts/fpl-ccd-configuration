@@ -37,16 +37,16 @@ public class RespondentAfterSubmissionValidator {
             errors.add("Removing an existing respondent is not allowed");
         }
 
-        Map<UUID, Respondent> currentRespondents = getIdToRepondent(caseData.getRespondents1());
+        Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getRespondents1());
 
-        Map<UUID, Respondent> previousRespondents = getIdToRepondent(nullSafeList(caseDataBefore.getRespondents1()));
+        Map<UUID, Respondent> previousRespondents = getIdRespondentMap(nullSafeList(caseDataBefore.getRespondents1()));
 
         List<Map.Entry<UUID, Respondent>> currentRespondentsList = new ArrayList<>(currentRespondents.entrySet());
 
         for (int i = 0; i < currentRespondents.size(); i++) {
             Map.Entry<UUID, Respondent> e = currentRespondentsList.get(i);
             if (!Objects.equals(getOrganisationID(e.getValue()),
-                getOrganisationID(previousRespondents.getOrDefault(e.getKey(), null)))) {
+                getOrganisationID(previousRespondents.getOrDefault(e.getKey(), e.getValue())))) {
 
                 errors.add(String.format("Change of organisation for respondent %d is not allowed", i + 1));
             }
@@ -55,20 +55,17 @@ public class RespondentAfterSubmissionValidator {
         return errors.build();
     }
 
-    private Map<UUID, Respondent> getIdToRepondent(List<Element<Respondent>> elements) {
+    private Map<UUID, Respondent> getIdRespondentMap(List<Element<Respondent>> elements) {
         return elements
             .stream()
             .collect(Collectors.toMap(Element::getId, Element::getValue, (val1, val2) -> val1, LinkedHashMap::new));
     }
 
     private Optional<String> getOrganisationID(Respondent value) {
-        return
-            ofNullable(value).flatMap(respondent ->
-                ofNullable(respondent.getSolicitor()).flatMap(
-                    solicitor -> ofNullable(solicitor.getOrganisation()).map(
-                        Organisation::getOrganisationID
-                    )
-                )
+        return ofNullable(value)
+            .flatMap(respondent -> ofNullable(respondent.getSolicitor())
+                .flatMap(solicitor -> ofNullable(solicitor.getOrganisation())
+                    .map(Organisation::getOrganisationID))
             );
     }
 

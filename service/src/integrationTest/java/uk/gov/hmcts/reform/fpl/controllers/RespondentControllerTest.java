@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class RespondentControllerTest extends AbstractCallbackTest {
 
     private static final String SOLICITOR_ORG_ID = "Organisation ID";
-    public static final String SOLICITOR_EMAIL = "solicitor@email.com";
+    private static final String SOLICITOR_EMAIL = "solicitor@email.com";
 
     RespondentControllerTest() {
         super("enter-respondents");
