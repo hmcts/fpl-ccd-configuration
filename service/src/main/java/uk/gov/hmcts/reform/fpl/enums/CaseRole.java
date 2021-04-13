@@ -6,16 +6,16 @@ public enum CaseRole {
     EPSMANAGING,
     LAMANAGING,
     SOLICITOR,
-    SOLICITOR_A("SOLICITORA"),
-    SOLICITOR_B("SOLICITORB"),
-    SOLICITOR_C("SOLICITORC"),
-    SOLICITOR_D("SOLICITORD"),
-    SOLICITOR_E("SOLICITORE"),
-    SOLICITOR_F("SOLICITORF"),
-    SOLICITOR_G("SOLICITORG"),
-    SOLICITOR_H("SOLICITORH"),
-    SOLICITOR_I("SOLICITORI"),
-    SOLICITOR_J("SOLICITORJ"),
+    SOLICITORA,
+    SOLICITORB,
+    SOLICITORC,
+    SOLICITORD,
+    SOLICITORE,
+    SOLICITORF,
+    SOLICITORG,
+    SOLICITORH,
+    SOLICITORI,
+    SOLICITORJ,
     LABARRISTER,
     BARRISTER,
     CAFCASSSOLICITOR;
@@ -26,16 +26,12 @@ public enum CaseRole {
         this.formattedName = formatName(name());
     }
 
-    CaseRole(String name) {
-        this.formattedName = formatName(name);
-    }
-
     public String formattedName() {
         return formattedName;
     }
 
     public static CaseRole from(String name) {
-        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", "").replace("solicitor", "SOLICITOR_"));
+        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", "").replace("SOLICITOR", "SOLICITOR"));
     }
 
     private static String formatName(String name) {
