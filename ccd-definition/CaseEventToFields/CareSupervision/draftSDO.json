@@ -58,8 +58,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "judgeAndLegalAdvisor",
     "PageDisplayOrder": 3,
-    "PageColumnNumber": 1,
-    "PageShowCondition": "sdoRouter=\"SERVICE\" OR sdoRouter=\"UPLOAD\""
+    "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",

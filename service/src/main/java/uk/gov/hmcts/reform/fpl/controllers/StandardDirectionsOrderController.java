@@ -94,8 +94,6 @@ public class StandardDirectionsOrderController extends CallbackController {
                 case UPLOAD:
                     data.put("currentSDO", standardDirectionOrder.getOrderDoc());
                     data.put("useUploadRoute", YES);
-                    data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
-
                     break;
                 case SERVICE:
                     data.put(DATE_OF_ISSUE_KEY, sdoService.generateDateOfIssue(standardDirectionOrder));
@@ -104,6 +102,8 @@ public class StandardDirectionsOrderController extends CallbackController {
                 default:
                     throw new IllegalStateException("Unexpected value: " + sdoRouter);
             }
+
+            data.put(JUDGE_AND_LEGAL_ADVISOR_KEY, sdoService.getJudgeAndLegalAdvisorFromSDO(caseData));
         }
 
         return respond(caseDetails);
