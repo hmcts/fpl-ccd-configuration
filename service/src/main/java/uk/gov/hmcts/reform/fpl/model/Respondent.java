@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -24,6 +23,7 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -92,7 +92,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     public boolean hasOrganisationRegistered() {
         return Optional.ofNullable(getSolicitor()).flatMap(
             solicitor -> Optional.ofNullable(solicitor.getOrganisation()).map(
-                organisation -> StringUtils.isNotBlank(organisation.getOrganisationID())
+                organisation -> isNotBlank(organisation.getOrganisationID())
             )
         ).orElse(false);
     }
