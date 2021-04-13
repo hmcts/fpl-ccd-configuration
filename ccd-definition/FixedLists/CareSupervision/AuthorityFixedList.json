@@ -30,15 +30,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "BCP",
-    "ListElement": "Bournemouth, Christchurch and Poole Council",
+    "ListElementCode": "BOL",
+    "ListElement": "Bolton Metropolitan Borough Council",
     "DisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "BOL",
-    "ListElement": "Bolton Metropolitan Borough Council",
+    "ListElementCode": "BCP",
+    "ListElement": "Bournemouth, Christchurch and Poole Council",
     "DisplayOrder": 20
   },
   {
@@ -222,6 +222,13 @@
     "ListElementCode": "HCC",
     "ListElement": "Hertfordshire County Council",
     "DisplayOrder": 145
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "IOA",
+    "ListElement": "Isle of Anglesey County Council",
+    "DisplayOrder": 147
   },
   {
     "LiveFrom": "01/01/2017",
@@ -516,14 +523,14 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "SGL",
     "ListElement": "South Gloucestershire Council",
-    "DisplayOrder": 245
+    "DisplayOrder": 345
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SCC",
     "ListElement": "Southampton City Council",
-    "DisplayOrder": 250
+    "DisplayOrder": 350
   },
   {
     "LiveFrom": "01/01/2017",

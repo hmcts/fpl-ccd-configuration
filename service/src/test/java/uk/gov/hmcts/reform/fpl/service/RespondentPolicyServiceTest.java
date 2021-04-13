@@ -93,7 +93,7 @@ class RespondentPolicyServiceTest {
 
         CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
 
-        Map<String, Object> data = respondentPolicyService.generate(caseDetails);
+        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
 
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(0);
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(1);
