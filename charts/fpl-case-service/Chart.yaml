@@ -1,14 +1,14 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.14
+version: 1.12.15
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
     email: fpl-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.4.4
+    version: 3.4.5
     repository: '@hmctspublic'
   - name: ccd
     version: 4.3.5
