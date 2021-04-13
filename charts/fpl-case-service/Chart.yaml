@@ -8,7 +8,7 @@ maintainers:
     email: fpl-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.4.4
+    version: 3.4.5
     repository: '@hmctspublic'
   - name: ccd
     version: 4.3.5
