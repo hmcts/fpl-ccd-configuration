@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -92,7 +93,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
         underTest.notifyManagedLA(new SubmittedCaseEvent(caseData, caseDataBefore));
 
         assertThat(response())
-            .hasSubject("Urgent application – same day hearing, Watson")
+            .hasSubject("Urgent application – same day hearing, " + RESPONDENT_LAST_NAME)
             .hasBody(emailContent()
                 .start()
                 .line("Third party org has made a new application for:")
@@ -101,7 +102,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("Hearing date requested: same day")
                 .line()
-                .line("Respondent's surname: Watson")
+                .line("Respondent's surname: " + RESPONDENT_LAST_NAME)
                 .line()
                 .line("CCD case number: 123")
                 .line()
@@ -109,6 +110,61 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                     + "to the relevant person.")
                 .line()
                 .line("They can view the application at https://manage-org.platform.hmcts.net")
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, "
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("representativeNameSource")
+    void notifyUnregisteredSolicitors(String firstName, String lastName, String expectedSalutation) {
+        Respondent respondent = RESPONDENT.toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email("RespondentSolicitor@test.com")
+                .unregisteredOrganisation(UnregisteredOrganisation.builder().name("Unregistered Org Name").build())
+                .build()
+            ).build();
+
+        CaseData caseData = CaseData.builder()
+            .id(123L)
+            .respondents1(wrapElements(respondent))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .state(OPEN)
+            .build();
+
+        underTest.notifyUnregisteredSolicitors(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        assertThat(response())
+            .hasSubject("New C110A application for your client")
+            .hasBody(emailContent()
+                .start()
+                .line(expectedSalutation)
+                .line()
+                .line(LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family Public Law digital "
+                    + "service.")
+                .line()
+                .line("They’ve given your details as a respondent’s legal representative.")
+                .line()
+                .line("Legal representatives must be registered to use the service.")
+                .line()
+                .line("After you’ve registered, you’ll be able to:")
+                .line()
+                .list("access relevant case files")
+                .list("upload your own statements and reports")
+                .list("make applications in the case, for example C2")
+                .line()
+                .line("You can register at https://manage-org.platform.hmcts.net/register-org/register")
+                .line()
+                .line("You’ll need your organisation’s Pay By Account (PBA) details.")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
@@ -148,7 +204,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .start()
                 .line(expectedSalutation)
                 .line()
-                .line(LOCAL_AUTHORITY_NAME + " has made a new C100A application on the Family"
+                .line(LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family"
                     + " Public Law (FPL) digital service.")
                 .line()
                 .line("They’ve given your details as a respondent’s legal representative.")

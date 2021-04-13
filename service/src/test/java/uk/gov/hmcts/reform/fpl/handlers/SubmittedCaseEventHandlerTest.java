@@ -44,10 +44,12 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -123,6 +125,34 @@ class SubmittedCaseEventHandlerTest {
 
         verify(notificationService).sendEmail(
             CAFCASS_SUBMISSION_TEMPLATE,
+            expectedEmail,
+            expectedTemplate,
+            caseData.getId());
+    }
+
+    @Test
+    void shouldSendEmailToUnregisteredSolicitor() {
+        final String expectedEmail = "test@test.com";
+        final CaseData caseDataBefore = caseData();
+
+        final CaseData caseData = CaseData.builder().respondents1(
+            wrapElements(Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .solicitor(RespondentSolicitor.builder()
+                    .email(expectedEmail)
+                    .unregisteredOrganisation(UnregisteredOrganisation.builder().name("Unregistered Org Name").build())
+                    .build()).build())
+        ).build();
+
+        final RespondentSolicitorTemplate expectedTemplate = RespondentSolicitorTemplate.builder().build();
+        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
+        when(respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(any(CaseData.class), any(
+            RespondentSolicitor.class))).thenReturn(expectedTemplate);
+
+        submittedCaseEventHandler.notifyUnregisteredSolicitors(submittedCaseEvent);
+
+        verify(notificationService).sendEmail(
+            UNREGISTERED_RESPONDENT_SOLICICTOR,
             expectedEmail,
             expectedTemplate,
             caseData.getId());
@@ -404,6 +434,7 @@ class SubmittedCaseEventHandlerTest {
             "notifyAdmin",
             "notifyCafcass",
             "makePayment",
+            "notifyUnregisteredSolicitors",
             "notifyRegisteredRespondentSolicitors");
     }
 
