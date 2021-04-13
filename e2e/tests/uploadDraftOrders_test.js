@@ -82,12 +82,13 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
 
 Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+
+  const representative = representatives.servedByDigitalService;
+
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
-
-  await enterRepresentativesEventPage.setRepresentativeEmail(0, config.privateSolicitorOne.email);
-  await enterRepresentativesEventPage.setDigitalServingPreferences(0);
-  await enterRepresentativesEventPage.setRepresentativeRole(0, representatives.servedByDigitalService.role);
-
+  await I.addAnotherElementToCollection('Representatives');
+  await enterRepresentativesEventPage.enterRepresentative(representative);
+  await enterRepresentativesEventPage.setRepresentativeEmail(1, config.privateSolicitorOne.email);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
