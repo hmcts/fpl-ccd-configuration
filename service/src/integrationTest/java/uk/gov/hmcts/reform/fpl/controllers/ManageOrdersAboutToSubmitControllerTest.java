@@ -124,6 +124,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         // dummy data set for the front end that is dirtying case data
         caseDetails.getData().putAll(Map.of(
+            "manageOrdersOperation", "CREATE",
             "orderTempQuestions", Map.of("holderObject", "forQuestionConditions"),
             "issuingDetailsSectionSubHeader", "some heading",
             "childrenDetailsSectionSubHeader", "some heading",
@@ -137,7 +138,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(response.getData()).doesNotContainKeys(
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
             "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
-            "issuingDetailsSectionSubHeader", "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader"
+            "issuingDetailsSectionSubHeader", "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
+            "manageOrdersOperation"
         );
     }
 
