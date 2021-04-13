@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -84,6 +86,15 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
         return hiddenValue.equals("Yes");
+    }
+
+    @JsonIgnore
+    public boolean hasOrganisationRegistered() {
+        return Optional.ofNullable(getSolicitor()).flatMap(
+            solicitor -> Optional.ofNullable(solicitor.getOrganisation()).map(
+                organisation -> StringUtils.isNotBlank(organisation.getOrganisationID())
+            )
+        ).orElse(false);
     }
 
     @Override
