@@ -6,15 +6,12 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
-import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -32,11 +29,6 @@ public class DraftOrderPreviewSectionPrePopulator implements OrderSectionPrePopu
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
         DocumentReference orderPreview = orderCreationService.createOrderDocument(caseData, DRAFT, PDF);
-
-        Selector oldSelector = defaultIfNull(caseData.getChildSelector(), Selector.builder().build());
-        Selector regeneratedSelector = newSelector(caseData.getAllChildren().size());
-        regeneratedSelector.setSelected(oldSelector.getSelected());
-
-        return Map.of(ORDER_PREVIEW_FIELD, orderPreview, "childSelector", regeneratedSelector);
+        return Map.of(ORDER_PREVIEW_FIELD, orderPreview);
     }
 }
