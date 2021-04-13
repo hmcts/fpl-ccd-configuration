@@ -58,6 +58,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         .party(ChildParty.builder().firstName("first2").lastName("last2").build())
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
+    private static final Selector CHILD_SELECTOR = Selector.builder().selected(List.of(1,2)).build();
+    private static final Selector UNSELECTED_SELECTOR = Selector.newSelector(2);
+    private static final Selector REGENERATED_SELECTOR = Selector.builder().count("12").selected(List.of(1,2)).build();
 
     private static final byte[] DOCUMENT_BINARIES = testDocumentBinaries();
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = testDocmosisDocument(DOCUMENT_BINARIES);
@@ -151,7 +154,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void childrenDetailsShouldReturnErrorWhenNoChildrenSelected() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("No")
-            .childSelector(Selector.newSelector(2))
+            .childSelector(UNSELECTED_SELECTOR)
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
             .build();
 
@@ -163,13 +166,18 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void childrenDetailsShouldPrepopulateNextSectionDetails() {
         CaseData caseData = CaseData.builder()
-            .orderAppliesToAllChildren("Yes")
+            .children1(CHILDREN)
+            .orderAppliesToAllChildren("No")
+            .childSelector(CHILD_SELECTOR)
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
 
+        CaseData responseCaseData = extractCaseData(response);
+
         assertThat(response.getData().get("orderDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
+        assertThat(responseCaseData.getChildSelector()).isEqualTo(REGENERATED_SELECTOR);
     }
 
     @Test
@@ -194,9 +202,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
+        CaseData responseCaseData = extractCaseData(response);
+
         Map<String, String> mappedDocument = mapper.convertValue(DOCUMENT_REFERENCE, new TypeReference<>() {});
 
         assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
+        assertThat(responseCaseData.getChildSelector()).isEqualTo(UNSELECTED_SELECTOR);
     }
 
     @Test
