@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClient;
@@ -29,6 +30,8 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -258,8 +261,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
                 .email(SOLICITOR_EMAIL)
-                .organisation(Organisation.builder()
-                    .organisationID(SOLICITOR_ORG_ID)
+                .unregisteredOrganisation(UnregisteredOrganisation.builder()
+                    .name("Unregistered Org")
                     .build())
                 .build())
             .build();
@@ -267,12 +270,13 @@ class RespondentControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_ID))
             .respondents1(wrapElements(respondentWithRepresentative))
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
 
         postSubmittedEvent(caseData);
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq("TBA"),
+            eq(UNREGISTERED_RESPONDENT_SOLICICTOR),
             eq(SOLICITOR_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)

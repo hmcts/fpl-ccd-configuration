@@ -82,7 +82,7 @@ public class RespondentController extends CallbackController {
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
         if (!OPEN.equals(caseData.getState()) && featureToggleService.hasRSOCaseAccess()) {
-            caseDetails.getData().putAll(respondentPolicyService.generate(caseDetails));
+            caseDetails.getData().putAll(respondentPolicyService.generateForSubmission(caseDetails));
         }
         return respond(caseDetails);
     }
@@ -95,6 +95,5 @@ public class RespondentController extends CallbackController {
 
         publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
     }
-
 
 }

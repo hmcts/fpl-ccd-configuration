@@ -262,7 +262,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("respondents1", wrapElements(respondent));
-        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -296,7 +295,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("respondents1", wrapElements(respondent));
-        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
