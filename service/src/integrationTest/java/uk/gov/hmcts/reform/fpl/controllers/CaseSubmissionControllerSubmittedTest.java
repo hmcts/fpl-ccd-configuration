@@ -22,9 +22,13 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -64,6 +68,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -75,6 +80,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @WebMvcTest(CaseSubmissionController.class)
@@ -84,6 +90,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String CAFCASS_EMAIL = "cafcass@cafcass.com";
     private static final String CTSC_EMAIL = "FamilyPublicLaw+ctsc@gmail.com";
     private static final String LA_EMAIL = "FamilyPublicLaw+PublicLawEmail@gmail.com";
+    private static final String SOLICITOR_EMAIL = "solicitor@email.com";
+    private static final String SOLICITOR_FIRST_NAME = "John";
+    private static final String SOLICITOR_LAST_NAME = "Smith";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://fake.survey.url";
     private static final Long CASE_ID = nextLong();
@@ -236,6 +245,77 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         checkUntil(() -> verify(notificationClient).sendEmail(
             eq(OUTSOURCED_CASE_TEMPLATE), eq(LA_EMAIL),
             anyMap(), eq(NOTIFICATION_REFERENCE)));
+    }
+
+    @Test
+    void shouldNotifyUnregisteredSolicitorWhenUnregisteredOrganisationDetailsProvided() {
+        Respondent respondent = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName(SOLICITOR_FIRST_NAME)
+                .lastName(SOLICITOR_LAST_NAME)
+                .email(SOLICITOR_EMAIL)
+                .unregisteredOrganisation(UnregisteredOrganisation.builder()
+                    .name("Unregistered Org Name")
+                    .build())
+                .build()).build();
+
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
+        caseDetails.getData().put("respondents1", wrapElements(respondent));
+        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
+
+        postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
+
+        String expectedSalutation = String.format("Dear %s %s", SOLICITOR_FIRST_NAME, SOLICITOR_LAST_NAME);
+
+        Map<String, Object> expectedUnregisteredSolicitorParameters = mapper.convertValue(
+            RespondentSolicitorTemplate.builder()
+                .salutation(expectedSalutation)
+                .localAuthority(LOCAL_AUTHORITY_1_NAME)
+                .build(),
+            new TypeReference<>() {});
+
+        checkUntil(() ->
+            verify(notificationClient).sendEmail(
+                UNREGISTERED_RESPONDENT_SOLICICTOR,
+                SOLICITOR_EMAIL,
+                expectedUnregisteredSolicitorParameters,
+                NOTIFICATION_REFERENCE
+            ));
+    }
+
+    @Test
+    void shouldNotNotifyUnregisteredSolicitorWhenUnregisteredOrganisationDetailsNotProvided() {
+        Respondent respondent = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName(SOLICITOR_FIRST_NAME)
+                .lastName(SOLICITOR_LAST_NAME)
+                .email(SOLICITOR_EMAIL)
+                .build()).build();
+
+        CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
+        caseDetails.getData().put("respondents1", wrapElements(respondent));
+        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
+
+        postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
+
+        String expectedSalutation = String.format("Dear %s %s", SOLICITOR_FIRST_NAME, SOLICITOR_LAST_NAME);
+
+        Map<String, Object> expectedUnregisteredSolicitorParameters = mapper.convertValue(
+            RespondentSolicitorTemplate.builder()
+                .salutation(expectedSalutation)
+                .localAuthority(LOCAL_AUTHORITY_1_NAME)
+                .build(),
+            new TypeReference<>() {});
+
+        checkUntil(() ->
+            verify(notificationClient, never()).sendEmail(
+                UNREGISTERED_RESPONDENT_SOLICICTOR,
+                SOLICITOR_EMAIL,
+                expectedUnregisteredSolicitorParameters,
+                NOTIFICATION_REFERENCE
+            ));
     }
 
     @Test
