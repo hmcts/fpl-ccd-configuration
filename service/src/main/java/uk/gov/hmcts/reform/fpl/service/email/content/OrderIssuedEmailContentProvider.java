@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -32,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
     private final Time time;
+    private final OrderIssuedEmailContentProviderTypeOfOrderCalculator typeCalculator;
 
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final DocumentReference orderDocument,
@@ -75,22 +74,11 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
         final IssuedOrderType issuedOrderType) {
         return OrderIssuedNotifyData.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
-            .orderType(getTypeOfOrder(caseData, issuedOrderType))
+            .orderType(typeCalculator.getTypeOfOrder(caseData, issuedOrderType))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
             .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
                 ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
-    }
-
-    private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
-        String orderType;
-        if (issuedOrderType == GENERATED_ORDER) {
-            orderType = Iterables.getLast(caseData.getOrderCollection()).getValue().getType();
-        } else {
-            orderType = issuedOrderType.getLabel();
-        }
-
-        return orderType.toLowerCase();
     }
 
 }
