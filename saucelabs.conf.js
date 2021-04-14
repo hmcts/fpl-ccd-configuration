@@ -12,7 +12,7 @@ const defaultSauceOptions = {
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
   windowSize: '1600x900',
-  tags: ['FPL']
+  tags: ['FPL'],
 };
 
 function merge(intoObject, fromObject) {
@@ -29,7 +29,7 @@ function getBrowserConfig(browserGroup) {
       );
       browserConfig.push({
         browser: candidateCapabilities.browserName,
-        capabilities: candidateCapabilities
+        capabilities: candidateCapabilities,
       });
     } else {
       console.error('ERROR: supportedBrowsers.js is empty or incorrectly defined');
@@ -51,10 +51,10 @@ const setupConfig = {
       host: 'ondemand.eu-central-1.saucelabs.com',
       port: 80,
       region: 'eu',
-      capabilities: {}
+      capabilities: {},
     },
     SauceLabsReportingHelper: {
-      require: './e2e/helpers/SauceLabsReportingHelper.js'
+      require: './e2e/helpers/SauceLabsReportingHelper.js',
     },
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',
@@ -65,16 +65,19 @@ const setupConfig = {
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
+    TabAssertions: {
+      require: './e2e/helpers/tab_assertions_helper.js',
+    },
   },
   plugins: {
     retryFailedStep: {
       enabled: true,
-      retries: 2
+      retries: 2,
     },
     autoDelay: {
       enabled: true,
-      delayAfter: 2000
-    }
+      delayAfter: 2000,
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -136,11 +139,11 @@ const setupConfig = {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
         stdout: '-',
-        options: {steps: true}
+        options: {steps: true},
       },
       'mocha-junit-reporter': {
         stdout: '-',
-        options: {mochaFile: `${testConfig.TestOutputDir}/result.xml`}
+        options: {mochaFile: `${testConfig.TestOutputDir}/result.xml`},
       },
       mochawesome: {
         stdout: testConfig.TestOutputDir + '/console.log',
@@ -148,26 +151,26 @@ const setupConfig = {
           reportDir: testConfig.TestOutputDir,
           reportName: 'index',
           reportTitle: 'Crossbrowser results',
-          inlineAssets: true
-        }
-      }
-    }
+          inlineAssets: true,
+        },
+      },
+    },
   },
   multiple: {
     microsoft: {
-      browsers: getBrowserConfig('microsoft')
+      browsers: getBrowserConfig('microsoft'),
     },
     chrome: {
-      browsers: getBrowserConfig('chrome')
+      browsers: getBrowserConfig('chrome'),
     },
     firefox: {
-      browsers: getBrowserConfig('firefox')
+      browsers: getBrowserConfig('firefox'),
     },
     safari: {
-      browsers: getBrowserConfig('safari')
+      browsers: getBrowserConfig('safari'),
     }
   },
-  name: 'FPLA FrontEnd Cross-Browser Tests'
+  name: 'FPLA FrontEnd Cross-Browser Tests',
 };
 
 exports.config = setupConfig;
