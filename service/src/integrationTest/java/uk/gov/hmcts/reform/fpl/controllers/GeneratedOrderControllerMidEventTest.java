@@ -637,6 +637,7 @@ class GeneratedOrderControllerMidEventTest extends AbstractCallbackTest {
         private CaseData.CaseDataBuilder generateDefaultValues(CaseData.CaseDataBuilder builder) {
             builder.caseLocalAuthority(LOCAL_AUTHORITY_1_CODE);
             builder.familyManCaseNumber("SACCCCCCCC5676576567");
+            builder.id(1234123412341234L);
             return builder.judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
         }
 
