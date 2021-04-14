@@ -34,13 +34,13 @@ public class RepresentativesInbox {
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
-
         if (featureToggleService.hasRSOCaseAccess()) {
             emails.addAll(
                 nullSafeList(caseData.getRespondents1()).stream()
-                    .filter(r -> (preference == RepresentativeServingPreferences.DIGITAL_SERVICE) == r.getValue()
-                        .hasOrganisationRegistered())
-                    .map(r -> Optional.ofNullable(r.getValue().getSolicitor())
+                    .filter(respondent ->
+                        (preference == RepresentativeServingPreferences.DIGITAL_SERVICE)
+                            == respondent.getValue().hasOrganisationRegistered())
+                    .map(respondent -> Optional.ofNullable(respondent.getValue().getSolicitor())
                         .map(RespondentSolicitor::getEmail).orElse(null))
                     .filter(StringUtils::isNotBlank)
                     .collect(Collectors.toCollection(LinkedHashSet::new))
@@ -49,5 +49,4 @@ public class RepresentativesInbox {
 
         return emails;
     }
-
 }
