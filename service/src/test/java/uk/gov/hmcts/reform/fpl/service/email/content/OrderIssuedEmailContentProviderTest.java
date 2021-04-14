@@ -2,13 +2,18 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -35,18 +40,25 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class})
+    EmailNotificationHelper.class, FixedTimeConfiguration.class,
+    OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class, IdentityService.class})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData caseData = createCase();
 
     @Autowired
-    private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
+    private OrderIssuedEmailContentProvider underTest;
+
+    @MockBean
+    private ChildrenService childrenService;
+
+    @MockBean
+    private OrderCreationService orderCreationService;
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         NotifyData expectedParameters = getExpectedParameters(BLANK_ORDER.getLabel(), true);
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
+        NotifyData actualParameters = underTest.getNotifyDataWithCaseUrl(
             caseData, testDocument, GENERATED_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
@@ -57,7 +69,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
 
         NotifyData expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
+        NotifyData actualParameters = underTest.getNotifyDataWithoutCaseUrl(
             caseData, testDocumentReference(), GENERATED_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
@@ -67,7 +79,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     void shouldBuildNoticeOfPlacementOrderParameters() {
         NotifyData expectedParameters = getExpectedParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
+        NotifyData actualParameters = underTest.getNotifyDataWithCaseUrl(
             caseData, testDocument, NOTICE_OF_PLACEMENT_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
@@ -86,7 +98,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         NotifyData expectedParameters = getExpectedCMOParameters(CMO.getLabel());
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataForCMO(
+        NotifyData actualParameters = underTest.getNotifyDataForCMO(
             data, testDocument, CMO);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
