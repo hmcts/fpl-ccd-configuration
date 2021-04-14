@@ -15,7 +15,6 @@ function tabFieldSelector(pathToField) {
 
   });
   return `${selector}//*[contains(@class,"complex-panel-simple-field") and .//th/span[text()="${fieldName}"]]`;
-
 }
 
 function organisationTabFieldSelector(pathToField) {
@@ -29,7 +28,6 @@ function organisationTabFieldSelector(pathToField) {
 
   return `${selector}//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
 }
-
 
 class TabAssertions extends Helper {
 
@@ -59,6 +57,18 @@ class TabAssertions extends Helper {
     } else {
       helper.seeElement(locate(fieldSelector).withText(fieldValue));
     }
+  }
+
+  seeTextInTab (pathToField) {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+
+    const fieldSelector = tabFieldSelector(pathToField);
+    helper.seeElement(locate(fieldSelector));
+  }
+
+  dontSeeInTab(pathToField) {
+    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
+    helper.dontSeeElement(locate(tabFieldSelector(pathToField)));
   }
 }
 
