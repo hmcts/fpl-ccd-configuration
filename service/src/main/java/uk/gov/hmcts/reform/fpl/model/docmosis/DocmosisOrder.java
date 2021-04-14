@@ -9,6 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -33,7 +34,8 @@ public class DocmosisOrder implements DocmosisData {
         Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
 
         if (isNotEmpty(directions)) {
-            map.putAll(directions.stream().collect(groupingBy(direction -> direction.assignee.getValue())));
+            map.putAll(directions.stream().filter(direction -> direction.assignee != null)
+                .collect(groupingBy(direction -> direction.assignee.getValue())));
         }
 
         map.remove("directions");
