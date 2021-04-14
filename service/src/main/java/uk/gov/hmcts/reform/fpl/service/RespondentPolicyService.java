@@ -26,7 +26,7 @@ public class RespondentPolicyService {
     private final NoticeOfChangeAnswersConverter noticeOfChangeRespondentConverter;
     private final RespondentPolicyConverter respondentPolicyConverter;
 
-    public Map<String, Object> generateForSubmission(CaseDetails caseDetails) {
+    public Map<String, Object> generate(CaseDetails caseDetails) {
         Map<String, Object> data = new HashMap<>();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
