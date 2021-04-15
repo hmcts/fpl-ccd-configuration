@@ -7,10 +7,8 @@ module.exports = {
     applicantName: '#applicantName',
     respondentFirstName: '#firstName',
     respondentLastName: '#lastName',
-    checkboxGroup: {
-      affirmation: '#affirmation',
-      notifyEveryParty: '#notifyEveryParty',
-    },
+    confirmNoC: '#affirmation',
+    notifyEveryParty: '#notifyEveryParty',
   },
 
   navigate(){
@@ -31,7 +29,7 @@ module.exports = {
   },
 
   confirmNoticeOfChange() {
-    I.checkOption(this.fields.checkboxGroup.affirmation);
-    I.checkOption(this.fields.checkboxGroup.notifyEveryParty);
+    I.checkOption(this.fields.confirmNoC);
+    I.checkOption(this.fields.notifyEveryParty);
   },
 };
