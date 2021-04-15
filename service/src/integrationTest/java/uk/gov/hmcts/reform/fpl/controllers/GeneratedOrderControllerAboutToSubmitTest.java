@@ -404,6 +404,7 @@ class GeneratedOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build())
             .judgeAndLegalAdvisor(buildJudgeAndLegalAdvisor(YesNo.from(allocatedJudge)))
             .familyManCaseNumber("12345L")
+            .id(1234123412341234L)
             .children1(Stream.of(child1, child2, child3)
                 .map(party -> Child.builder().party(party).build())
                 .map(ElementUtils::element)
