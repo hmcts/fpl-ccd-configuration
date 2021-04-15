@@ -134,6 +134,7 @@ const setupConfig = {
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
     addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
+    manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
   },
   mocha: {
     reporterOptions: {
@@ -168,7 +169,7 @@ const setupConfig = {
     },
     safari: {
       browsers: getBrowserConfig('safari'),
-    }
+    },
   },
   name: 'FPLA FrontEnd Cross-Browser Tests',
 };
