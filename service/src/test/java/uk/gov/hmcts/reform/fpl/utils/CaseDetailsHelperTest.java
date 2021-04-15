@@ -18,7 +18,6 @@ import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInGatekeepingState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
@@ -27,37 +26,43 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFie
 class CaseDetailsHelperTest {
     private static final String EXCEPTION_MESSAGE = "CCD Case number must be 16 digits long";
 
-    @Test
-    void shouldFormatCaseNumberWhen16DigitsProvided() {
-        String formattedCaseNumber = formatCCDCaseNumber(1234123412341234L);
-        assertThat(formattedCaseNumber).isEqualTo("1234-1234-1234-1234");
-    }
+    private final CaseDetailsHelper underTest = new CaseDetailsHelper();
 
-    @Test
-    void shouldThrowAnExceptionIfCaseNumberExceeds16Digits() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            formatCCDCaseNumber(12341234123412341L);
-        });
+    @Nested
+    class FormatCCDCaseNumber {
 
-        assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
-    }
+        @Test
+        void shouldFormatCaseNumberWhen16DigitsProvided() {
+            String formattedCaseNumber = underTest.formatCCDCaseNumber(1234123412341234L);
+            assertThat(formattedCaseNumber).isEqualTo("1234-1234-1234-1234");
+        }
 
-    @Test
-    void shouldThrowAnExceptionIfCaseNumberIsLessThan16Digits() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            formatCCDCaseNumber(123412341234123L);
-        });
+        @Test
+        void shouldThrowAnExceptionIfCaseNumberExceeds16Digits() {
+            Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                underTest.formatCCDCaseNumber(12341234123412341L);
+            });
 
-        assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
-    }
+            assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
+        }
 
-    @Test
-    void shouldThrowAnExceptionIfCaseNumberIsNull() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            formatCCDCaseNumber(null);
-        });
+        @Test
+        void shouldThrowAnExceptionIfCaseNumberIsLessThan16Digits() {
+            Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                underTest.formatCCDCaseNumber(123412341234123L);
+            });
 
-        assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
+            assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseNumberIsNull() {
+            Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+                underTest.formatCCDCaseNumber(null);
+            });
+
+            assertThat(exception.getMessage()).isEqualTo(EXCEPTION_MESSAGE);
+        }
     }
 
     @Nested
