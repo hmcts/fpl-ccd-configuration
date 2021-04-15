@@ -5,8 +5,8 @@ module.exports = {
   fields: {
     caseRefSearch: '#caseRef',
     applicantName: '#applicantName',
-    respondentFirstName: '#firstName',
-    respondentLastName: '#lastName',
+    respondentFirstName: '#respondentFirstName',
+    respondentLastName: '#respondentLastName',
     confirmNoC: '#affirmation',
     notifyEveryParty: '#notifyEveryParty',
   },
