@@ -70,9 +70,6 @@ public class SendDocumentService {
         recipients.addAll(getRepresentativesServedByPost(caseData));
         recipients.addAll(getNotRepresentedRespondents(caseData));
 
-        List<Recipient> testRecip = getNotRepresentedRespondents(caseData);
-        System.out.println("Returned recip are" + testRecip.get(0).getFullName());
-
         return recipients;
     }
 
@@ -82,16 +79,9 @@ public class SendDocumentService {
 
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
         return unwrapElements(caseData.getRespondents1()).stream()
-            .filter(respondent -> isNotRepresented(respondent))
+            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy()) && !hasLegalRepresentation(respondent))
             .map(Respondent::getParty)
             .collect(toList());
-    }
-
-    private boolean isNotRepresented(Respondent respondent) {
-        System.out.println("The respondent is" + respondent.getParty().getFullName());
-        boolean areRepresented = ObjectUtils.isEmpty(respondent.getRepresentedBy()) || !hasLegalRepresentation(respondent);
-        System.out.println("And he is represented:" + areRepresented);
-        return areRepresented;
     }
 
     private boolean hasLegalRepresentation(Respondent respondent) {
