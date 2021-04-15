@@ -894,10 +894,10 @@ devtools-protocol@^0.0.863986:
   resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.863986.tgz#a9f1b13daeb1dba671580e59f3a8aa9cb0c921c8"
   integrity sha512-WMf5KuRLsLwJMp9JdawSvoEpxZPqyyNeOZ3YR8QF8lE9IVHbbpdWeuXV22SJxPUemFeznvVlwSBeQz91nL+41A==
 
-devtools@7.4.2:
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/devtools/-/devtools-7.4.2.tgz#84608382fb188640872bd778db09ab611ad21e4f"
-  integrity sha512-CdYC03Op+5vl1SVdS/3p0gja3P30cRBb8nYQ480sFCciebJRaDBT/LmRiPKgANr+azANqVoDCOlRnYg73T1ulw==
+devtools@7.4.5:
+  version "7.4.5"
+  resolved "https://registry.yarnpkg.com/devtools/-/devtools-7.4.5.tgz#f302a5036f96b242c74d00d030cdcd90cd77fd86"
+  integrity sha512-D0RUjKLwFuEN0O9KXuhXD9M/BvxYh4xVNipt4+cgJ45sX2NBGt0x+XUnlk2zkbiPzgcxeFiUt55U8CfpMVFLcg==
   dependencies:
     "@wdio/config" "7.4.2"
     "@wdio/logger" "7.4.2"
@@ -3222,10 +3222,10 @@ webdriver@7.4.2:
     got "^11.0.2"
     lodash.merge "^4.6.1"
 
-webdriverio@^7.4.2:
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-7.4.2.tgz#36cc1a0b7f7033c1ccb0c7d89a4c4a756c48530a"
-  integrity sha512-ZGT1L7ulPQKavCuAt+7mz5ggpYtQCwWo+BCh1KxQwTnq5HMayRo0S87m/nxtrD7bNBNylnlFhMevACSh13U7Ag==
+webdriverio@^7.4.5:
+  version "7.4.5"
+  resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-7.4.5.tgz#24e122b764668a4e728d16fdcf0c0f1468880a9a"
+  integrity sha512-hVXoTgfXz4NAfeprHn60nC2R8zQUyyvF1xavYWoAIxOzZC8HDI27T5E83baN1QUsO8+pyLi0dB5CndsADLo/Kw==
   dependencies:
     "@types/aria-query" "^4.2.1"
     "@wdio/config" "7.4.2"
@@ -3239,7 +3239,7 @@ webdriverio@^7.4.2:
     atob "^2.1.2"
     css-shorthand-properties "^1.1.1"
     css-value "^0.0.1"
-    devtools "7.4.2"
+    devtools "7.4.5"
     devtools-protocol "^0.0.863986"
     fs-extra "^9.0.1"
     get-port "^5.1.1"

@@ -10,6 +10,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "orderType",
+    "FieldType": "Text",
+    "ElementLabel": "Type of order",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderType=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Order title",
@@ -41,8 +50,17 @@
     "FieldType": "Document",
     "ElementLabel": "Order document",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "date=\"*\"",
+    "FieldShowCondition": "date=\"*\" OR dateTimeIssued=\"*\"",
     "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "unsealedDocumentCopy",
+    "FieldType": "Document",
+    "ElementLabel": "Unsealed document copy",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "unsealedDocumentCopy=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -50,6 +68,23 @@
     "ListElementCode": "dateOfIssue",
     "FieldType": "Text",
     "ElementLabel": "Starts on",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "dateTimeIssued",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time issued",
+    "FieldShowCondition": "dateTimeIssued=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "approvalDate",
+    "FieldType": "Date",
+    "ElementLabel": "Approval date",
     "SecurityClassification": "Public"
   },
   {
@@ -110,6 +145,14 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "childrenDescription",
+    "FieldType": "Text",
+    "ElementLabel": "Children",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",

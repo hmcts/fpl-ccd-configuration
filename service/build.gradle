@@ -3,7 +3,10 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.4")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
+      exclude group: 'com.vladsch.flexmark'
+    }
   }
 }
 
@@ -19,7 +22,6 @@ plugins {
   id 'org.sonarqube' version '3.1.1'
   id 'project-report'
   id "idea"
-  id 'au.com.dius.pact' version '4.2.3'
   id 'info.solidsoft.pitest' version '1.6.0'
 }
 
@@ -27,6 +29,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: 'au.com.dius.pact'
 
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
