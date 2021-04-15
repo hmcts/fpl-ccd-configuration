@@ -71,7 +71,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createCaseDataMap(buildTestDirections())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-                .build())
+                .build())DocmosisStandardDirectionOrderTest
             .id(CASE_NUMBER)
             .build();
 
