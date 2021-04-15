@@ -32,6 +32,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -162,11 +164,13 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
         C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
             .id(selectedBundleId).supportingEvidenceBundle(c2EvidenceDocuments)
-            .uploadedDateTime(today.plusDays(1).toString()).build();
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(today.plusDays(1), DATE_TIME))
+            .build();
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(randomUUID()).applicationType(C12_WARRANT_TO_ASSIST_PERSON)
-            .uploadedDateTime(today.plusDays(1).toString()).build();
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(today.plusDays(1), DATE_TIME))
+            .build();
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
@@ -195,13 +199,13 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
             element(buildC2DocumentBundle(today.plusDays(2))),
             element(buildC2DocumentBundle(today.plusDays(2))));
 
-        C2DocumentBundle selectedC2DocumentBundle = C2DocumentBundle.builder()
-            .id(randomUUID()).uploadedDateTime(today.plusDays(1).toString()).build();
+        C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(today.plusDays(1));
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(selectedBundleId).applicationType(C12_WARRANT_TO_ASSIST_PERSON)
             .supportingEvidenceBundle(c2EvidenceDocuments)
-            .uploadedDateTime(today.plusDays(1).toString()).build();
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(today.plusDays(1), DATE_TIME))
+            .build();
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(c2DocumentBundle)
@@ -277,7 +281,10 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+        return C2DocumentBundle.builder()
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {

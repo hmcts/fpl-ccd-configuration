@@ -34,6 +34,8 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.C
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_STATEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -50,14 +52,14 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
             element(buildHearing(LocalDateTime.of(2020, 3, 15, 20, 20))),
             element(buildHearing(LocalDateTime.of(2020, 3, 16, 10, 10))));
 
-        Element<C2DocumentBundle> c2BundleElement = element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2)));
+        LocalDateTime now = LocalDateTime.now();
+        Element<C2DocumentBundle> c2BundleElement = element(buildC2DocumentBundle(now.plusDays(2)));
 
-        C2DocumentBundle c2Bundle = C2DocumentBundle.builder().id(UUID.randomUUID())
-            .uploadedDateTime(LocalDateTime.now().plusDays(1).toString()).build();
+        C2DocumentBundle c2Bundle = buildC2DocumentBundle(now.plusDays(1));
 
         OtherApplicationsBundle otherBundle = OtherApplicationsBundle.builder()
             .id(UUID.randomUUID()).applicationType(OtherApplicationType.C1_WITH_SUPPLEMENT)
-            .uploadedDateTime(LocalDateTime.now().plusDays(1).toString()).build();
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(now.plusDays(1), DATE_TIME)).build();
 
         List<Element<Respondent>> respondents = List.of(
             element(Respondent.builder()
@@ -93,8 +95,8 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
             Pair.of(otherBundle.getId(), "C1, " + otherBundle.getUploadedDateTime()),
-            Pair.of(c2Bundle.getId(), "C2, " + c2Bundle.getUploadedDateTime()),
-            Pair.of(c2BundleElement.getId(), "C2, " + c2BundleElement.getValue().getUploadedDateTime())
+            Pair.of(c2BundleElement.getId(), "C2, " + c2BundleElement.getValue().getUploadedDateTime()),
+            Pair.of(c2Bundle.getId(), "C2, " + c2Bundle.getUploadedDateTime())
         );
 
         DynamicList expectedRespondentStatementList = ElementUtils
@@ -136,6 +138,9 @@ class ManageDocumentsLAControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+        return C2DocumentBundle.builder()
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .build();
     }
 }

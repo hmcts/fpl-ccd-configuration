@@ -31,6 +31,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -51,8 +53,7 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
             element(buildC2DocumentBundle(LocalDateTime.now().plusDays(1))),
             element(buildC2DocumentBundle(LocalDateTime.now().plusDays(2))));
 
-        C2DocumentBundle c2Application = C2DocumentBundle.builder()
-            .id(UUID.randomUUID()).uploadedDateTime(LocalDateTime.now().toString()).build();
+        C2DocumentBundle c2Application = buildC2DocumentBundle(LocalDateTime.now());
 
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(UUID.randomUUID()).applicationType(OtherApplicationType.C17A_EXTENSION_OF_ESO)
@@ -79,11 +80,11 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
             .asDynamicList(hearingBookings, null, HearingBooking::toLabel);
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
-            Pair.of(c2Application.getId(), "C2, " + c2Application.getUploadedDateTime()),
-            Pair.of(
-                c2DocumentBundle.get(0).getId(), "C2, " + c2DocumentBundle.get(0).getValue().getUploadedDateTime()),
             Pair.of(
                 c2DocumentBundle.get(1).getId(), "C2, " + c2DocumentBundle.get(1).getValue().getUploadedDateTime()),
+            Pair.of(
+                c2DocumentBundle.get(0).getId(), "C2, " + c2DocumentBundle.get(0).getValue().getUploadedDateTime()),
+            Pair.of(c2Application.getId(), "C2, " + c2Application.getUploadedDateTime()),
             Pair.of(otherApplicationsBundle.getId(), "C17a, " + otherApplicationsBundle.getUploadedDateTime())
         );
 
@@ -119,6 +120,9 @@ class ManageDocumentsControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+        return C2DocumentBundle.builder()
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .build();
     }
 }

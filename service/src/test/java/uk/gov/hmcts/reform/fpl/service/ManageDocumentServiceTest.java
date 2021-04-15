@@ -60,6 +60,8 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MAN
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -87,7 +89,7 @@ class ManageDocumentServiceTest {
     @Test
     void shouldPopulateFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
         Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
-        C2DocumentBundle c2ApplicationBundle1 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(3));
+        C2DocumentBundle c2ApplicationBundle1 = buildC2DocumentBundle(futureDate.plusDays(3));
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationBundle(
             randomUUID(), OtherApplicationType.C100_CHILD_ARRANGEMENTS, futureDate.plusDays(3));
 
@@ -107,8 +109,8 @@ class ManageDocumentServiceTest {
             .build();
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
-            Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
             Pair.of(c2ApplicationBundle1.getId(), "C2, " + c2ApplicationBundle1.getUploadedDateTime()),
+            Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
             Pair.of(otherApplicationsBundle.getId(), "C100, " + otherApplicationsBundle.getUploadedDateTime())
         );
 
@@ -561,9 +563,9 @@ class ManageDocumentServiceTest {
         C2DocumentBundle selectedC2Document = buildC2DocumentBundle(futureDate.plusDays(2));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
-            element(buildC2DocumentBundle(futureDate.plusDays(1))),
+            element(buildC2DocumentBundle(futureDate.plusDays(3))),
             element(selectedC2DocumentId, selectedC2Document),
-            element(buildC2DocumentBundle(futureDate.plusDays(3)))
+            element(buildC2DocumentBundle(futureDate.plusDays(1)))
         );
 
         CaseData caseData = CaseData.builder()
@@ -606,7 +608,7 @@ class ManageDocumentServiceTest {
         Map<String, Object> listAndLabel = underTest.initialiseApplicationBundlesListAndLabel(caseData);
 
         List<Element<ApplicationsBundle>> expectedBundles = List.of(element(otherBundle.getId(), otherBundle),
-            element(selectedC2DocumentId, selectedC2Document), element(anotherC2DocumentId, anotherC2Document));
+            element(anotherC2DocumentId, anotherC2Document), element(selectedC2DocumentId, selectedC2Document));
 
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(
             expectedBundles, selectedC2DocumentId, ApplicationsBundle::toLabel);
@@ -622,9 +624,8 @@ class ManageDocumentServiceTest {
         UUID anotherBundleId = UUID.randomUUID();
 
         C2DocumentBundle c2Document = buildC2DocumentBundle(anotherBundleId, futureDate.plusDays(1));
-        OtherApplicationsBundle selectedBundle = OtherApplicationsBundle.builder().id(selectedBundleId)
-            .uploadedDateTime(futureDate.toString())
-            .applicationType(C1_WITH_SUPPLEMENT).build();
+        OtherApplicationsBundle selectedBundle
+            = buildOtherApplicationBundle(selectedBundleId, C1_WITH_SUPPLEMENT, futureDate);
 
         AdditionalApplicationsBundle additionApplicationsBundle = AdditionalApplicationsBundle.builder()
             .c2DocumentBundle(c2Document)
@@ -654,7 +655,7 @@ class ManageDocumentServiceTest {
         UUID selectedBundleId = randomUUID();
 
         AdditionalApplicationsBundle additionApplicationsBundle = AdditionalApplicationsBundle.builder()
-            .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1)))
+            .c2DocumentBundle(buildC2DocumentBundle(futureDate.plusDays(1)))
             .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
             .build();
 
@@ -789,7 +790,7 @@ class ManageDocumentServiceTest {
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle c2Bundle = C2DocumentBundle.builder().uploadedDateTime(futureDate.toString()).build();
+        C2DocumentBundle c2Bundle = buildC2DocumentBundle(futureDate);
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
             element(anotherC2DocumentId, c2Bundle),
@@ -821,7 +822,7 @@ class ManageDocumentServiceTest {
         UUID selectedC2BundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle c2Bundle = C2DocumentBundle.builder().uploadedDateTime(futureDate.toString()).build();
+        C2DocumentBundle c2Bundle = buildC2DocumentBundle(futureDate);
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(element(c2Bundle));
 
         C2DocumentBundle selectedC2Application = buildC2DocumentBundle(selectedC2BundleId, futureDate.plusDays(2));
@@ -857,7 +858,7 @@ class ManageDocumentServiceTest {
         UUID selectedBundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle c2ApplicationBundle = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(2));
+        C2DocumentBundle c2ApplicationBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationBundle(
             selectedBundleId, C1_WITH_SUPPLEMENT, futureDate);
 
@@ -930,11 +931,11 @@ class ManageDocumentServiceTest {
 
         List<Element<AdditionalApplicationsBundle>> applicationsBundles = wrapElements(
             AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
+                .c2DocumentBundle(buildC2DocumentBundle(futureDate))
                 .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
                 .build(),
             AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
+                .c2DocumentBundle(buildC2DocumentBundle(futureDate))
                 .build());
 
         DynamicList applicationBundlesDynamicList = buildDynamicList(selectedBundleId);
@@ -1418,12 +1419,15 @@ class ManageDocumentServiceTest {
             .build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
-        return buildC2DocumentBundle(null, dateTime);
+    private C2DocumentBundle buildC2DocumentBundle(UUID id, LocalDateTime dateTime) {
+        return buildC2DocumentBundle(dateTime).toBuilder().id(id).build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(UUID id, LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().id(id).uploadedDateTime(dateTime.toString()).build();
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder()
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime, List<Element<SupportingEvidenceBundle>>
@@ -1436,7 +1440,10 @@ class ManageDocumentServiceTest {
     private OtherApplicationsBundle buildOtherApplicationBundle(
         UUID id, OtherApplicationType type, LocalDateTime time) {
         return OtherApplicationsBundle.builder()
-            .id(id).applicationType(type).uploadedDateTime(time.toString()).build();
+            .id(id)
+            .applicationType(type)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time, DATE_TIME))
+            .build();
     }
 
     private DynamicList buildDynamicList(UUID selectedId) {
