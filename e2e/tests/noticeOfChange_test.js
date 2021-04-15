@@ -5,12 +5,15 @@ let caseId;
 
 Feature('Notice of change');
 
-Scenario('Private solicitor obtains case access through NoC', async ({I, caseListPage, noticeOfChangePage}) => {
+BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);
+});
+
+Scenario('Private solicitor obtains case access through NoC', async ({I, caseListPage, noticeOfChangePage}) => {
   await I.signIn(config.privateSolicitorOne);
   I.navigateToCaseList();
   caseListPage.searchForCasesWithId(caseId);
-  I.see('No cases found');
+  I.dontSeeCaseInSearchResult(caseId);
   noticeOfChangePage.navigate();
   noticeOfChangePage.enterCaseReference(caseId);
   await I.retryUntilExists(() => I.click('Continue'), noticeOfChangePage.fields.applicantName);
@@ -22,5 +25,5 @@ Scenario('Private solicitor obtains case access through NoC', async ({I, caseLis
   I.see('Notice of change successful');
   I.navigateToCaseList();
   caseListPage.searchForCasesWithId(caseId);
-  I.dontSee('No cases found');
+  I.seeCaseInSearchResult(caseId);
 });

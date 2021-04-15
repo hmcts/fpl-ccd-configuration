@@ -234,26 +234,18 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswers);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswers);
 
-        assertThat(respondentPolicyData.getRespondentPolicy0()).isEqualTo(expectedRespondentPolicyOne);
-
-        assertThat(respondentPolicyData.getRespondentPolicy1()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORB));
-        assertThat(respondentPolicyData.getRespondentPolicy2()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORC));
-        assertThat(respondentPolicyData.getRespondentPolicy3()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORD));
-        assertThat(respondentPolicyData.getRespondentPolicy4()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORE));
-        assertThat(respondentPolicyData.getRespondentPolicy5()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORF));
-        assertThat(respondentPolicyData.getRespondentPolicy6()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORG));
-        assertThat(respondentPolicyData.getRespondentPolicy7()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORH));
-        assertThat(respondentPolicyData.getRespondentPolicy8()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORI));
-        assertThat(respondentPolicyData.getRespondentPolicy9()).isEqualTo(
-            buildOrganisationPolicy(SolicitorRole.SOLICITORJ));
+        assertThat(respondentPolicyData).isEqualTo(RespondentPolicyData.builder()
+            .respondentPolicy0(expectedRespondentPolicyOne)
+            .respondentPolicy1(buildOrganisationPolicy(SolicitorRole.SOLICITORB))
+            .respondentPolicy2(buildOrganisationPolicy(SolicitorRole.SOLICITORC))
+            .respondentPolicy3(buildOrganisationPolicy(SolicitorRole.SOLICITORD))
+            .respondentPolicy4(buildOrganisationPolicy(SolicitorRole.SOLICITORE))
+            .respondentPolicy5(buildOrganisationPolicy(SolicitorRole.SOLICITORF))
+            .respondentPolicy6(buildOrganisationPolicy(SolicitorRole.SOLICITORG))
+            .respondentPolicy7(buildOrganisationPolicy(SolicitorRole.SOLICITORH))
+            .respondentPolicy8(buildOrganisationPolicy(SolicitorRole.SOLICITORI))
+            .respondentPolicy9(buildOrganisationPolicy(SolicitorRole.SOLICITORJ))
+            .build());
     }
 
     @Test
