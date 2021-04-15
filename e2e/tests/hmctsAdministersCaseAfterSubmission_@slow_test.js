@@ -97,12 +97,12 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Which jurisdiction?'], 'England');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Notes'], 'This is a note about supplement');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Document name'], 'Supporting document');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Additional orders requested'], 'Parental responsibility');
@@ -116,12 +116,12 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Which jurisdiction?'], 'England');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Notes'], 'This is a note about supplement');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Document name'], 'Supporting document');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.txt');
 
@@ -142,7 +142,7 @@ Scenario('HMCTS admin edits supporting evidence document on C2 application', asy
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Document name'], 'Updated document name');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'File'], 'mockFile.txt');
 });
@@ -158,7 +158,7 @@ Scenario('HMCTS admin edits supporting evidence document on Other application', 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Document name'], 'Updated document name');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
+  I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'File'], 'mockFile.txt');
 });
