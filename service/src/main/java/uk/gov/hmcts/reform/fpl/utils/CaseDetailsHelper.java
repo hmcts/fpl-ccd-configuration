@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.State;
 
@@ -9,16 +10,14 @@ import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 
+@Component
 public class CaseDetailsHelper {
-    private CaseDetailsHelper() {
-        // NO OP
-    }
 
     public static boolean isCaseNumber(String caseNumber) {
         return StringUtils.isNumeric(caseNumber) && caseNumber.length() == 16;
     }
 
-    public static String formatCCDCaseNumber(Long caseNumber) {
+    public String formatCCDCaseNumber(Long caseNumber) {
         String ccdCaseNumber = String.valueOf(caseNumber);
 
         if (!isCaseNumber(ccdCaseNumber)) {
