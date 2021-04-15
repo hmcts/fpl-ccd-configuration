@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -32,6 +33,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CaseDataExtractionService caseDataExtractionService;
+    private final CaseDetailsHelper caseDetailsHelper;
     private final Time time;
 
     @Override
@@ -41,6 +43,7 @@ public class NoticeOfProceedingsTemplateDataGenerationService
         return DocmosisNoticeOfProceeding.builder()
             .courtName(getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .applicantName(getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
