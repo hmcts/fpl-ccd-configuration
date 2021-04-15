@@ -32,7 +32,7 @@ class RespondentPolicyConverterTest {
     private static final Organisation EMPTY_ORG = Organisation.builder().build();
 
     @Test
-    void shouldReturnRespondentPolicyWithOrganisationSetWhenRespondentHasOrganisation() {
+    void shouldConvertRespondentSolicitorWithOrganisationToRespondentPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
 
         Organisation solicitorOrganisation = Organisation.builder()
@@ -65,7 +65,7 @@ class RespondentPolicyConverterTest {
     }
 
     @Test
-    void shouldReturnRespondentPolicyWithoutOrganisationSetWhenRespondentHasNoOrganisation() {
+    void shouldConvertRespondentSolicitorWithoutOrganisationToRespondentPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
 
         Respondent respondent = Respondent.builder()
@@ -92,7 +92,7 @@ class RespondentPolicyConverterTest {
     }
 
     @Test
-    void shouldReturnOrganisationPolicyWithAssignedRole() {
+    void shouldSetOrgPolicyWhenNoRespondentHasBeenProvided() {
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
             .organisation(EMPTY_ORG)
             .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
