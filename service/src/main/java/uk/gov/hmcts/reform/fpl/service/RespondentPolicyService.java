@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,16 +34,25 @@ public class RespondentPolicyService {
 
         Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
 
-        for (int i = 0; i < caseData.getRespondents1().size(); i++) {
-            Element<Respondent> respondentElement = caseData.getRespondents1().get(i);
+        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        int numOfRespondents = respondents.size();
 
-            NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeRespondentConverter.generateForSubmission(
-                respondentElement, firstApplicant);
+        for (int i = 0; i < 10; i++) {
+            OrganisationPolicy organisationPolicy;
+            SolicitorRole solicitorRole = SolicitorRole.values()[i];
 
-            OrganisationPolicy organisationPolicy = respondentPolicyConverter.generateForSubmission(
-                respondentElement, SolicitorRole.values()[i]);
+            if (i < numOfRespondents) {
+                Element<Respondent> respondentElement = respondents.get(i);
+                organisationPolicy = respondentPolicyConverter.generateForSubmission(solicitorRole, respondentElement);
 
-            data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+                NoticeOfChangeAnswers noticeOfChangeAnswer
+                    = noticeOfChangeRespondentConverter.generateForSubmission(respondentElement, firstApplicant);
+
+                data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+            } else {
+                organisationPolicy = respondentPolicyConverter.generateForSubmission(solicitorRole);
+            }
+
             data.put(String.format("respondentPolicy%d", i), organisationPolicy);
         }
 

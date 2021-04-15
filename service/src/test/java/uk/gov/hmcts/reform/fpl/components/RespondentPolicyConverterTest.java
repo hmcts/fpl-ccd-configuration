@@ -29,9 +29,10 @@ class RespondentPolicyConverterTest {
 
     private static final UUID ELEMENT_ID = UUID.randomUUID();
     private static final LocalDate RESPONDENT_DOB = LocalDate.now().minusDays(5);
+    private static final Organisation EMPTY_ORG = Organisation.builder().build();
 
     @Test
-    void shouldConvertRepresentedRespondentToOrganisationPolicy() {
+    void shouldReturnRespondentPolicyWithOrganisationSetWhenRespondentHasOrganisation() {
         RespondentParty respondentParty = buildRespondentParty();
 
         Organisation solicitorOrganisation = Organisation.builder()
@@ -58,28 +59,46 @@ class RespondentPolicyConverterTest {
                 .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(respondentElement, SOLICITORA);
+            = respondentPolicyConverter.generateForSubmission(SOLICITORA, respondentElement);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
 
     @Test
-    void shouldConvertNonRepresentedRespondentToOrganisationPolicy() {
+    void shouldReturnRespondentPolicyWithoutOrganisationSetWhenRespondentHasNoOrganisation() {
         RespondentParty respondentParty = buildRespondentParty();
 
         Respondent respondent = Respondent.builder()
             .party(respondentParty)
-            .legalRepresentation("No")
+            .legalRepresentation("Yes")
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Ben")
+                .lastName("Summers")
+                .email("bensummers@gmail.com")
+                .build())
             .build();
 
         Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
 
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
-                .build();
+            .organisation(EMPTY_ORG)
+            .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
+            .build();
 
-        OrganisationPolicy actualOrganisationPolicy = respondentPolicyConverter.generateForSubmission(
-            respondentElement, SOLICITORB);
+        OrganisationPolicy actualOrganisationPolicy
+            = respondentPolicyConverter.generateForSubmission(SOLICITORA, respondentElement);
+
+        assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
+    }
+
+    @Test
+    void shouldReturnOrganisationPolicyWithAssignedRole() {
+        OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
+            .organisation(EMPTY_ORG)
+            .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
+            .build();
+
+        OrganisationPolicy actualOrganisationPolicy = respondentPolicyConverter.generateForSubmission(SOLICITORB);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }

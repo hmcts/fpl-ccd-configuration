@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.components;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -11,18 +12,23 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Component
 public class RespondentPolicyConverter {
-    public OrganisationPolicy generateForSubmission(Element<Respondent> respondentElement,
-                                                    SolicitorRole solicitorRole) {
-        OrganisationPolicy.OrganisationPolicyBuilder organisationPolicyBuilder = OrganisationPolicy.builder();
+    public OrganisationPolicy generateForSubmission(SolicitorRole solicitorRole) {
+        return OrganisationPolicy.builder()
+            .organisation(Organisation.builder().build())
+            .orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel())
+            .build();
+    }
 
+    public OrganisationPolicy generateForSubmission(SolicitorRole solicitorRole,
+                                                    Element<Respondent> respondentElement) {
+        OrganisationPolicy organisationPolicy = generateForSubmission(solicitorRole);
         RespondentSolicitor respondentSolicitor = respondentElement.getValue().getSolicitor();
 
         if (hasOrganisation(respondentSolicitor)) {
-            organisationPolicyBuilder.organisation(respondentSolicitor.getOrganisation());
+            organisationPolicy.setOrganisation(respondentSolicitor.getOrganisation());
         }
 
-        organisationPolicyBuilder.orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel());
-        return organisationPolicyBuilder.build();
+        return organisationPolicy;
     }
 
     private boolean hasOrganisation(RespondentSolicitor respondentSolicitor) {

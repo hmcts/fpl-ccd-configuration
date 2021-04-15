@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -25,8 +26,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -100,19 +99,30 @@ class RespondentPolicyServiceTest {
 
         OrganisationPolicy expectedOrganisationPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
-            .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
+            .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
             .build();
 
-        OrganisationPolicy expectedOrganisationPolicyTwo = OrganisationPolicy.builder()
-            .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
-            .build();
-
-        assertThat(data).isEqualTo(Map.of(
+        Map<String, Object> expectedNoticeOfChangeAnswers = Map.of(
             "noticeOfChangeAnswers0", expectedNoticeOfChangeAnswersOne,
-            "noticeOfChangeAnswers1", expectedNoticeOfChangeAnswersTwo,
+            "noticeOfChangeAnswers1", expectedNoticeOfChangeAnswersTwo);
+
+        Map<String, Object> expectedRespondentPolicies = Map.of(
             "respondentPolicy0", expectedOrganisationPolicyOne,
-            "respondentPolicy1", expectedOrganisationPolicyTwo
-        ));
+            "respondentPolicy1", buildOrganisationPolicy(SolicitorRole.SOLICITORB),
+            "respondentPolicy2", buildOrganisationPolicy(SolicitorRole.SOLICITORC),
+            "respondentPolicy3", buildOrganisationPolicy(SolicitorRole.SOLICITORD),
+            "respondentPolicy4", buildOrganisationPolicy(SolicitorRole.SOLICITORE),
+            "respondentPolicy5", buildOrganisationPolicy(SolicitorRole.SOLICITORF),
+            "respondentPolicy6", buildOrganisationPolicy(SolicitorRole.SOLICITORG),
+            "respondentPolicy7", buildOrganisationPolicy(SolicitorRole.SOLICITORH),
+            "respondentPolicy8", buildOrganisationPolicy(SolicitorRole.SOLICITORI),
+            "respondentPolicy9", buildOrganisationPolicy(SolicitorRole.SOLICITORJ));
+
+        Map<String, Object> expectedData = new HashMap<>();
+        expectedData.putAll(expectedNoticeOfChangeAnswers);
+        expectedData.putAll(expectedRespondentPolicies);
+
+        assertThat(data).isEqualTo(expectedData);
     }
 
     private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(int policyId) {
@@ -120,6 +130,13 @@ class RespondentPolicyServiceTest {
             .respondentFirstName("Joe")
             .respondentLastName("Bloggs")
             .applicantName("Test organisation")
+            .build();
+    }
+
+    private OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {
+        return OrganisationPolicy.builder()
+            .organisation(Organisation.builder().build())
+            .orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel())
             .build();
     }
 }
