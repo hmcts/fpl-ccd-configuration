@@ -1,5 +1,3 @@
-/* global process */
-
 require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
@@ -65,7 +63,7 @@ exports.config = {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
     GenerateReportHelper: {
-      require: './e2e/helpers/generate_report_helper.js'
+      require: './e2e/helpers/generate_report_helper.js',
     },
   },
   include: {
@@ -125,6 +123,7 @@ exports.config = {
     addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
     uploadAdditionalApplicationsEventPage: './e2e/pages/events/uploadAdditionalApplicationsEvent.page.js',
+    manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
   },
   plugins: {
     autoDelay: {
