@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -14,9 +16,11 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 public class RespondentService {
@@ -59,7 +63,7 @@ public class RespondentService {
                 respondent.setSolicitor(null);
             } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
                 if (isNotEmpty(respondent.getSolicitor().getOrganisation())
-                    && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
+                    && ObjectUtils.isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
                     respondent.getSolicitor().setUnregisteredOrganisation(null);
                 } else {
                     respondent.getSolicitor().setRegionalOfficeAddress(null);
@@ -93,5 +97,42 @@ public class RespondentService {
         String lastName = defaultIfNull(respondentParty.getLastName(), "");
 
         return String.format("%s %s", firstName, lastName);
+    }
+
+    public List<RespondentSolicitor> getRegisteredSolicitors(List<Element<Respondent>> respondents) {
+        return unwrapElements(respondents)
+            .stream()
+            .filter(this::isRegisteredSolicitor)
+            .map(Respondent::getSolicitor)
+            .collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<RespondentSolicitor> getUnregisteredSolicitors(List<Element<Respondent>> respondents) {
+        return unwrapElements(respondents)
+            .stream()
+            .filter(this::isUnregisteredSolicitor)
+            .map(Respondent::getSolicitor)
+            .collect(Collectors.toUnmodifiableList());
+    }
+
+    private boolean isRegisteredSolicitor(Respondent respondent) {
+        return StringUtils.equals(respondent.getLegalRepresentation(), YES.getValue())
+            && !isNull(respondent.getSolicitor())
+            && isNotEmpty(respondent.getSolicitor().getEmail())
+            && !isNull(respondent.getSolicitor().getOrganisation())
+            && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID());
+    }
+
+    private boolean isUnregisteredSolicitor(Respondent respondent) {
+        return StringUtils.equals(respondent.getLegalRepresentation(), YES.getValue())
+            && !isNull(respondent.getSolicitor())
+            && isNotEmpty(respondent.getSolicitor().getEmail())
+            && !isNull(respondent.getSolicitor().getUnregisteredOrganisation())
+            && hasUnregisteredOrganisation(respondent);
+    }
+
+    private boolean hasUnregisteredOrganisation(Respondent respondent) {
+        return isNotEmpty(respondent.getSolicitor().getUnregisteredOrganisation().getName())
+            || isNotEmpty(respondent.getSolicitor().getUnregisteredOrganisation().getAddress());
     }
 }

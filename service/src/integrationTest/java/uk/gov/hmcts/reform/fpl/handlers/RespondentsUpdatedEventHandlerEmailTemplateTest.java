@@ -6,8 +6,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
+import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -47,6 +49,52 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
 
     @Autowired
     private RespondentsUpdatedEventHandler underTest;
+
+    @ParameterizedTest
+    @MethodSource("representativeNameSource")
+    void notifyRegisteredSolicitor(String firstName, String lastName, String expectedSalutation) {
+        final Respondent respondent1 = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email("solicitor@test.com")
+                .firstName(firstName)
+                .lastName(lastName)
+                .organisation(Organisation.builder().organisationID("123").organisationName("Organisation1").build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(123L)
+            .respondents1(wrapElements(respondent1))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .state(OPEN)
+            .build();
+
+        underTest.notifyRegisteredRespondentSolicitors(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        assertThat(response())
+            .hasSubject("New C110A application for your client")
+            .hasBody(emailContent()
+                .start()
+                .line(expectedSalutation)
+                .line()
+                .line(LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family"
+                    + " Public Law (FPL) digital service.")
+                .line()
+                .line("They’ve given your details as a respondent’s legal representative.")
+                .line()
+                .line(
+                    "You should now ask your organisation's FPL case access administrator to assign the case to you.")
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, "
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+            );
+    }
 
     @ParameterizedTest
     @MethodSource("representativeNameSource")

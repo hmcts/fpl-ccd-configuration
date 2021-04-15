@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
@@ -37,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     NotificationService.class,
     OutsourcedCaseContentProvider.class,
     RespondentSolicitorContentProvider.class,
-    LocalAuthorityNameLookupConfiguration.class,
     CaseUrlService.class,
     ObjectMapper.class,
 })

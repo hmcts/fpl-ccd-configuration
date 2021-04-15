@@ -91,6 +91,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest extends AbstractCallbackTes
         return CaseData.builder()
             .caseLocalAuthority(LA_NAME)
             .familyManCaseNumber("SW123123")
+            .id(1234123412341234L)
             .noticeOfProceedings(NoticeOfProceedings.builder()
                 .proceedingTypes(List.of(NOTICE_OF_PROCEEDINGS_FOR_PARTIES))
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
