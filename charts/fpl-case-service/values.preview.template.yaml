@@ -238,7 +238,6 @@ aac-manage-case-assignment:
     keyVaults:
       aac:
         secrets:
-          - AppInsightsInstrumentationKey
           - aac-manage-case-s2s-secret
           - idam-mca-client-secret
           - idam-mca-system-user-username
