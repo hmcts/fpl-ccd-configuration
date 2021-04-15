@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,9 @@ public abstract class GeneratedOrderTemplateDataGeneration
 
     @Autowired
     private ChildrenService childrenService;
+
+    @Autowired
+    private CaseDetailsHelper caseDetailsHelper;
 
     abstract DocmosisGeneratedOrder populateCustomOrderFields(CaseData caseData);
 
@@ -75,6 +79,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
         return docmosisGeneratedOrderBuilder
             .orderType(orderType)
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
             .courtName(caseDataExtractionService.getCourtName(caseData.getCaseLocalAuthority()))
             .dateOfIssue(dateOfIssue)
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)

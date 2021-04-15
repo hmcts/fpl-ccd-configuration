@@ -157,6 +157,7 @@ module.exports = {
     returnApplication: 'Return application',
     manageDocuments: 'Manage documents',
     uploadAdditionalApplications: 'Upload additional applications',
+    manageOrders: 'Manage orders',
   },
   superUserActions: {
     removeOrder: 'Remove an order',
