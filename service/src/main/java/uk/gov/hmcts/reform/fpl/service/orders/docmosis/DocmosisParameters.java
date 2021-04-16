@@ -19,6 +19,7 @@ public abstract class DocmosisParameters {
     String orderTitle;
     String childrenAct;
     String familyManCaseNumber;
+    String ccdCaseNumber;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormatterHelper.DATE)
     LocalDate dateOfIssue;
     DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
