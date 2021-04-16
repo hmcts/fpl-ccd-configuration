@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.respondent;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class RespondentAfterSubmissionValidatorTest {
@@ -87,6 +89,27 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Removing an existing respondent is not allowed"));
+    }
+
+    @Test
+    void shouldNotReturnErrorWhenRepresentationAddedToExistingRespondent() {
+        Respondent updatedRespondent = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+            .organisation(Organisation.builder()
+                .organisationID(ORGANISATION_ID_1)
+                .build())
+            .build()).build();
+
+        List<String> actual = underTest.validate(
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, updatedRespondent)))
+                .build(),
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
+                .build());
+
+        assertThat(actual).isEqualTo(List.of());
     }
 
     @Test

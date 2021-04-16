@@ -89,7 +89,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @JsonIgnore
     public boolean hasRegisteredOrganisation() {
         return Optional.ofNullable(getSolicitor()).flatMap(
-            solicitor -> Optional.ofNullable(solicitor.getOrganisation()).map(
+            respondentSolicitor -> Optional.ofNullable(respondentSolicitor.getOrganisation()).map(
                 organisation -> isNotBlank(organisation.getOrganisationID())
             )
         ).orElse(false);
@@ -98,7 +98,7 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @JsonIgnore
     public boolean hasUnregisteredOrganisation() {
         return Optional.ofNullable(getSolicitor()).flatMap(
-            solicitor -> Optional.ofNullable(solicitor.getUnregisteredOrganisation()).map(
+            respondentSolicitor -> Optional.ofNullable(respondentSolicitor.getUnregisteredOrganisation()).map(
                 organisation -> isNotBlank(organisation.getName())
             )
         ).orElse(false);

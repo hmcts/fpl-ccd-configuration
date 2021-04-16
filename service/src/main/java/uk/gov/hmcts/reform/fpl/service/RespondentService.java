@@ -61,7 +61,7 @@ public class RespondentService {
                 respondent.setSolicitor(null);
             } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
                 if (isNotEmpty(respondent.getSolicitor().getOrganisation())
-                    && ObjectUtils.isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
+                    && isNotEmpty(respondent.getSolicitor().getOrganisation().getOrganisationID())) {
                     respondent.getSolicitor().setUnregisteredOrganisation(null);
                 } else {
                     respondent.getSolicitor().setRegionalOfficeAddress(null);

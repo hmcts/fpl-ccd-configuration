@@ -124,6 +124,26 @@ class RespondentServiceTest {
     }
 
     @Test
+    void shouldNotRemoveUnregisteredOrganisationDetailsWhenNoOrganisationIdSelected() {
+        UnregisteredOrganisation unregisteredOrg = UnregisteredOrganisation.builder()
+            .name("this should not be removed")
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Steven")
+                .organisation(Organisation.builder().build())
+                .unregisteredOrganisation(unregisteredOrg)
+                .build())
+            .build()));
+
+        List<Element<Respondent>> updatedRespondents = service.removeHiddenFields(respondents);
+        assertThat(updatedRespondents.get(0).getValue().getSolicitor().getUnregisteredOrganisation())
+            .isEqualTo(unregisteredOrg);
+    }
+
+    @Test
     void shouldRemoveRegionalOfficeWhenOrganisationNotSelected() {
         List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
             .legalRepresentation(YES.getValue())
