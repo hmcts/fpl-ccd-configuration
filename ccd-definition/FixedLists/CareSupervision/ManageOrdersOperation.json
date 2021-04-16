@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersOperation",
+    "ListElementCode": "CREATE",
+    "ListElement": "Create an order",
+    "DisplayOrder": 1
+  }
+]
