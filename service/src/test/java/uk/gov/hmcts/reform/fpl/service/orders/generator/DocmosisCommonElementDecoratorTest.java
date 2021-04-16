@@ -162,6 +162,7 @@ class DocmosisCommonElementDecoratorTest {
         expectedCommonBlankOrderParameters() {
         return C21BlankOrderDocmosisParameters.builder()
             .familyManCaseNumber(FAM_MAN_CASE_NUM)
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .childrenAct("Section 31 Children Act 1989")
             .judgeAndLegalAdvisor(DOCMOSIS_JUDGE)
             .courtName(COURT_NAME)
