@@ -11,7 +11,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +31,8 @@ public class RespondentValidator {
     private final ValidateEmailService validateEmailService;
     private final RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
     private final FeatureToggleService featureToggleService;
+    private final ValidateGroupService validateGroupService;
+
     private final Time time;
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
@@ -45,6 +49,7 @@ public class RespondentValidator {
 
         if (featureToggleService.hasRSOCaseAccess() && caseData.getState() != OPEN) {
             errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore));
+            errors.addAll(validateGroupService.validateGroup(caseData, RespondentSolicitorGroup.class));
         }
 
         return errors.build();

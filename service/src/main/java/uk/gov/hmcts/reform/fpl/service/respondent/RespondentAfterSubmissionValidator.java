@@ -44,9 +44,12 @@ public class RespondentAfterSubmissionValidator {
         List<Map.Entry<UUID, Respondent>> currentRespondentsList = new ArrayList<>(currentRespondents.entrySet());
 
         for (int i = 0; i < currentRespondents.size(); i++) {
-            Map.Entry<UUID, Respondent> e = currentRespondentsList.get(i);
-            if (!Objects.equals(getOrganisationID(e.getValue()),
-                getOrganisationID(previousRespondents.getOrDefault(e.getKey(), e.getValue())))) {
+            Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
+            Respondent current = currentRespondentsList.get(i).getValue();
+            Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
+
+            if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
+                && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
 
                 errors.add(String.format("Change of organisation for respondent %d is not allowed", i + 1));
             }
@@ -66,6 +69,12 @@ public class RespondentAfterSubmissionValidator {
             .flatMap(respondent -> ofNullable(respondent.getSolicitor())
                 .flatMap(solicitor -> ofNullable(solicitor.getOrganisation())
                     .map(Organisation::getOrganisationID))
+            );
+    }
+
+    private Optional<String> getLegalRepresentation(Respondent value) {
+        return ofNullable(value)
+            .flatMap(respondent -> ofNullable(respondent.getLegalRepresentation())
             );
     }
 

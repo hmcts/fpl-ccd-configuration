@@ -137,6 +137,74 @@ class RespondentServiceTest {
         assertThat(updatedRespondents.get(0).getValue().getSolicitor().getRegionalOfficeAddress()).isNull();
     }
 
+    @Test
+    void shouldReturnRegisteredSolicitors() {
+        RespondentSolicitor registeredSolicitor1 = RespondentSolicitor.builder()
+            .firstName("Steven")
+            .organisation(Organisation.builder().organisationID("Organisation ID").build())
+            .build();
+
+        RespondentSolicitor registeredSolicitor2 = RespondentSolicitor.builder()
+            .firstName("Andrew")
+            .organisation(Organisation.builder().organisationID("Organisation ID").build())
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .solicitor(registeredSolicitor1)
+                .build()),
+            element(Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .solicitor(registeredSolicitor2)
+                .build()));
+
+        List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
+
+        assertThat(registeredSolicitors).containsExactly(registeredSolicitor1, registeredSolicitor2);
+    }
+
+    @Test
+    void shouldReturnUnregisteredSolicitors() {
+        RespondentSolicitor unregisteredSolicitor1 = RespondentSolicitor.builder()
+            .firstName("Steven")
+            .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
+            .build();
+
+        RespondentSolicitor unregisteredSolicitor2 = RespondentSolicitor.builder()
+            .firstName("Andrew")
+            .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
+            .build();
+
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .solicitor(unregisteredSolicitor1)
+                .build()),
+            element(Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .solicitor(unregisteredSolicitor2)
+                .build()));
+
+        List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
+
+        assertThat(unregisteredSolicitors).containsExactly(unregisteredSolicitor1, unregisteredSolicitor2);
+    }
+
+    @Test
+    void shouldReturnEmptyWhenNoLegalRepresentation() {
+        List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
+                .legalRepresentation(NO.getValue())
+                .build()),
+            element(Respondent.builder()
+                .legalRepresentation(NO.getValue())
+                .build()));
+
+        List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
+        List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
+
+        assertThat(registeredSolicitors).isEmpty();
+        assertThat(unregisteredSolicitors).isEmpty();
+    }
+
     private List<Element<Respondent>> respondents() {
         return wrapElements(respondent("James", "Daniels"), respondent("Bob", "Martyn"));
     }
@@ -155,12 +223,12 @@ class RespondentServiceTest {
             .build();
     }
 
-    private Respondent buildRespondent(String value, String email) {
+    private Respondent buildRespondent(String legalRepresentation, String email) {
         return Respondent.builder()
             .party(RespondentParty.builder()
                 .firstName("Test respondent")
                 .build())
-            .legalRepresentation(value)
+            .legalRepresentation(legalRepresentation)
             .solicitor(buildRespondentSolicitor(email))
             .build();
     }
