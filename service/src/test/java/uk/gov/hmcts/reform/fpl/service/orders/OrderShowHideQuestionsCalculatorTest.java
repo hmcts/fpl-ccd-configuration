@@ -24,11 +24,12 @@ class OrderShowHideQuestionsCalculatorTest {
     private static Stream<Arguments> orderWithExpectedMap() {
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, Map.of(
-                "approvalDate","YES",
-                "approver","YES",
-                "previewOrder","YES",
-                "furtherDirections","YES",
-                "whichChildren","YES"
+                "approvalDate", "YES",
+                "approver", "YES",
+                "previewOrder", "YES",
+                "furtherDirections", "YES",
+                "orderDetails", "NO",
+                "whichChildren", "YES"
             ))
 
         );

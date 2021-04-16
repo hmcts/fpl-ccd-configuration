@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,18 +24,23 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
 
+    @Mock
+    private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
+
     @InjectMocks
     private OrderDocumentGeneratorHolder underTest;
 
 
     @BeforeEach
     void setUp() {
+        when(c21BlankOrderDocumentParameterGenerator.accept()).thenCallRealMethod();
         when(c32CareOrderDocumentParameterGenerator.accept()).thenCallRealMethod();
     }
 
     @Test
     void blockToValidator() {
         assertThat(underTest.getTypeToGenerator()).isEqualTo(Map.of(
+            C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator,
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator
         ));
     }
@@ -43,6 +49,7 @@ class OrderDocumentGeneratorHolderTest {
     void blockToValidatorCached() {
         underTest.getTypeToGenerator();
         assertThat(underTest.getTypeToGenerator()).isEqualTo(Map.of(
+            C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator,
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator
         ));
 

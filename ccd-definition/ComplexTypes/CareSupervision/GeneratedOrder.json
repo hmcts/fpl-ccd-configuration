@@ -4,7 +4,7 @@
     "ID": "GeneratedOrder",
     "ListElementCode": "type",
     "FieldType": "Text",
-    "ElementLabel": "Type of order",
+    "ElementLabel": "Order type",
     "SecurityClassification": "Public"
   },
   {

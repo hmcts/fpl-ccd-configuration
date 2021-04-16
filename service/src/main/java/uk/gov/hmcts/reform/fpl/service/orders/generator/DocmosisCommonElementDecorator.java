@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
@@ -45,7 +46,7 @@ public class DocmosisCommonElementDecorator {
             extractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
         return currentParameters.toBuilder()
-            .orderTitle(orderType.getTitle())
+            .orderTitle(orderType == Order.C21_BLANK_ORDER ? getBlankOrderTitle(caseData) : orderType.getTitle())
             .childrenAct(orderType.getChildrenAct())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
@@ -56,5 +57,11 @@ public class DocmosisCommonElementDecorator {
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
             .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue() : null)
             .build();
+    }
+
+    private String getBlankOrderTitle(CaseData caseData) {
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+        String orderTitle = eventData.getManageOrdersTitle();
+        return isBlank(orderTitle) ? null : orderTitle;
     }
 }
