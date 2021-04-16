@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,22 +39,21 @@ public class RespondentPolicyService {
         int numOfRespondents = respondents.size();
 
         for (int i = 0; i < 10; i++) {
-            OrganisationPolicy organisationPolicy;
             SolicitorRole solicitorRole = SolicitorRole.values()[i];
 
-            if (i < numOfRespondents) {
-                Element<Respondent> respondentElement = respondents.get(i);
-                organisationPolicy = respondentPolicyConverter.generateForSubmission(solicitorRole, respondentElement);
+            Optional<Element<Respondent>> respondentElement
+                = (i < numOfRespondents) ? Optional.of(respondents.get(i)) : Optional.empty();
 
-                NoticeOfChangeAnswers noticeOfChangeAnswer
-                    = noticeOfChangeRespondentConverter.generateForSubmission(respondentElement, firstApplicant);
-
-                data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
-            } else {
-                organisationPolicy = respondentPolicyConverter.generateForSubmission(solicitorRole);
-            }
+            OrganisationPolicy organisationPolicy
+                = respondentPolicyConverter.generateForSubmission(solicitorRole, respondentElement);
 
             data.put(String.format("respondentPolicy%d", i), organisationPolicy);
+
+            if (respondentElement.isPresent()) {
+                NoticeOfChangeAnswers noticeOfChangeAnswer
+                    = noticeOfChangeRespondentConverter.generateForSubmission(respondentElement.get(), firstApplicant);
+                data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+            }
         }
 
         return data;

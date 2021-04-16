@@ -39,9 +39,14 @@ class RespondentPolicyServiceTest {
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
-        RespondentParty respondentParty = RespondentParty.builder()
+        RespondentParty respondentPartyOne = RespondentParty.builder()
             .firstName("Joe")
             .lastName("Bloggs")
+            .build();
+
+        RespondentParty respondentPartyTwo = RespondentParty.builder()
+            .firstName("Sam")
+            .lastName("Smith")
             .build();
 
         Organisation solicitorOrganisation = Organisation.builder()
@@ -57,12 +62,12 @@ class RespondentPolicyServiceTest {
             .build();
 
         Respondent respondentOne = Respondent.builder()
-            .party(respondentParty)
+            .party(respondentPartyOne)
             .legalRepresentation("Yes")
             .solicitor(respondentSolicitor)
             .build();
 
-        Respondent respondentTwo = Respondent.builder().party(respondentParty).build();
+        Respondent respondentTwo = Respondent.builder().party(respondentPartyTwo).build();
 
         Map<String, Object> caseData = new HashMap<>(Map.of(
             "respondents1", List.of(
@@ -79,8 +84,8 @@ class RespondentPolicyServiceTest {
 
         Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
 
-        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(0);
-        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(1);
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
+        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
 
         OrganisationPolicy expectedOrganisationPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
@@ -110,10 +115,39 @@ class RespondentPolicyServiceTest {
         assertThat(data).isEqualTo(expectedData);
     }
 
-    private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(int policyId) {
+    @Test
+    void shouldBuildRespondentPolicyFromEmptyCase() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "applicants", List.of(element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Test organisation")
+                        .build())
+                    .build())),
+                "respondents1", List.of()
+            ))
+            .build();
+
+        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
+
+        assertThat(data).isEqualTo(Map.of(
+            "respondentPolicy0", buildOrganisationPolicy(SolicitorRole.SOLICITORA),
+            "respondentPolicy1", buildOrganisationPolicy(SolicitorRole.SOLICITORB),
+            "respondentPolicy2", buildOrganisationPolicy(SolicitorRole.SOLICITORC),
+            "respondentPolicy3", buildOrganisationPolicy(SolicitorRole.SOLICITORD),
+            "respondentPolicy4", buildOrganisationPolicy(SolicitorRole.SOLICITORE),
+            "respondentPolicy5", buildOrganisationPolicy(SolicitorRole.SOLICITORF),
+            "respondentPolicy6", buildOrganisationPolicy(SolicitorRole.SOLICITORG),
+            "respondentPolicy7", buildOrganisationPolicy(SolicitorRole.SOLICITORH),
+            "respondentPolicy8", buildOrganisationPolicy(SolicitorRole.SOLICITORI),
+            "respondentPolicy9", buildOrganisationPolicy(SolicitorRole.SOLICITORJ)
+        ));
+    }
+
+    private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {
         return NoticeOfChangeAnswers.builder()
-            .respondentFirstName("Joe")
-            .respondentLastName("Bloggs")
+            .respondentFirstName(respondentParty.getFirstName())
+            .respondentLastName(respondentParty.getLastName())
             .applicantName("Test organisation")
             .build();
     }

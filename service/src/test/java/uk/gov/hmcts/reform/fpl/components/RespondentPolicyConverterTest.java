@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +52,7 @@ class RespondentPolicyConverterTest {
                 .build())
             .build();
 
-        Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
+        Optional<Element<Respondent>> optionalRespondentElement = Optional.of(element(ELEMENT_ID, respondent));
 
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
                 .organisation(solicitorOrganisation)
@@ -59,7 +60,7 @@ class RespondentPolicyConverterTest {
                 .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(SOLICITORA, respondentElement);
+            = respondentPolicyConverter.generateForSubmission(SOLICITORA, optionalRespondentElement);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
@@ -78,7 +79,7 @@ class RespondentPolicyConverterTest {
                 .build())
             .build();
 
-        Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
+        Optional<Element<Respondent>> optionalRespondentElement = Optional.of(element(ELEMENT_ID, respondent));
 
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
             .organisation(EMPTY_ORG)
@@ -86,7 +87,7 @@ class RespondentPolicyConverterTest {
             .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(SOLICITORA, respondentElement);
+            = respondentPolicyConverter.generateForSubmission(SOLICITORA, optionalRespondentElement);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
@@ -98,7 +99,8 @@ class RespondentPolicyConverterTest {
             .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
             .build();
 
-        OrganisationPolicy actualOrganisationPolicy = respondentPolicyConverter.generateForSubmission(SOLICITORB);
+        OrganisationPolicy actualOrganisationPolicy
+            = respondentPolicyConverter.generateForSubmission(SOLICITORB, Optional.empty());
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
