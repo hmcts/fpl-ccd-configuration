@@ -67,8 +67,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
@@ -81,10 +79,16 @@ class CaseDataTest {
     private static final String EXCLUSION_CLAUSE = "exclusionClause";
     private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
 
-    private final Time time = new FixedTimeConfiguration().stoppedTime();
     private final UUID cmoID = randomUUID();
+
+    private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2020, 12, 5, 15, 0, 0));
+    private final String formattedTime = "5 December 2020, 3:00pm";
+
     private final LocalDateTime futureDate = time.now().plusDays(1);
+    private final String formattedFutureDate = "6 December 2020, 3:00pm";
+
     private final LocalDateTime pastDate = time.now().minusDays(1);
+    private final String formattedPastDate = "4 December 2020, 3:00pm";
 
     @Test
     void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
@@ -829,13 +833,16 @@ class CaseDataTest {
 
     @Nested
     class BuildApplicationBundlesDynamicList {
-        Element<C2DocumentBundle> pastC2Element = buildC2WithFormattedDate(pastDate);
-        Element<C2DocumentBundle> presentC2Element = buildC2WithFormattedDate(time.now());
-        Element<C2DocumentBundle> futureC2Element = buildC2WithFormattedDate(futureDate);
+        private Element<C2DocumentBundle> pastC2Element = buildC2WithFormattedDate(formattedPastDate);
+        private Element<C2DocumentBundle> presentC2Element = buildC2WithFormattedDate(formattedTime);
+        private Element<C2DocumentBundle> futureC2Element = buildC2WithFormattedDate(formattedFutureDate);
 
-        C2DocumentBundle pastC2Bundle = buildC2WithFormattedDate(pastDate.minusMonths(5)).getValue();
-        C2DocumentBundle presentC2Bundle = buildC2WithFormattedDate(time.now().plusDays(1)).getValue();
-        C2DocumentBundle futureC2Bundle = buildC2WithFormattedDate(pastDate.plusMonths(5)).getValue();
+        private String july2020 = "4 July 2020, 3:00pm";
+        private String may2021 = "6 May 2021, 3:00pm";
+
+        private C2DocumentBundle pastC2Bundle = buildC2WithFormattedDate(july2020).getValue();
+        private C2DocumentBundle presentC2Bundle = buildC2WithFormattedDate(formattedTime).getValue();
+        private C2DocumentBundle futureC2Bundle = buildC2WithFormattedDate(may2021).getValue();
 
         @Test
         void shouldBuildDynamicListFromC2Documents() {
@@ -890,7 +897,7 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicListFromC2DocumentsAndC2DocumentsPlusOtherWithinAdditionalDocumentsBundles() {
             OtherApplicationsBundle otherBundle = buildOtherApplicationBundle(
-                C1_PARENTAL_RESPONSIBILITY, futureDate);
+                C1_PARENTAL_RESPONSIBILITY, formattedFutureDate);
 
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
                 AdditionalApplicationsBundle.builder()
@@ -914,16 +921,16 @@ class CaseDataTest {
         @Test
         void shouldBuildDynamicApplicationsBundlesListAndSortByApplicationNumberAndLabel() {
             OtherApplicationsBundle otherBundle1 = buildOtherApplicationBundle(
-                C19_WARRANT_TO_ASSISTANCE, futureDate);
+                C19_WARRANT_TO_ASSISTANCE, formattedFutureDate);
 
             OtherApplicationsBundle otherBundle2 = buildOtherApplicationBundle(
-                C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD, futureDate);
+                C3_SEARCH_TAKE_CHARGE_AND_DELIVERY_OF_A_CHILD, formattedFutureDate);
 
             OtherApplicationsBundle otherBundle3 = buildOtherApplicationBundle(
-                C100_CHILD_ARRANGEMENTS, futureDate);
+                C100_CHILD_ARRANGEMENTS, formattedFutureDate);
 
             OtherApplicationsBundle otherBundle4 = buildOtherApplicationBundle(
-                C1_WITH_SUPPLEMENT, futureDate);
+                C1_WITH_SUPPLEMENT, formattedFutureDate);
 
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
                 AdditionalApplicationsBundle.builder().c2DocumentBundle(pastC2Bundle)
@@ -959,7 +966,7 @@ class CaseDataTest {
         @Test
         void shouldGetTheSelectedBundleFromTheC2AndAdditionalApplicationsDynamicList() {
             OtherApplicationsBundle otherBundle = buildOtherApplicationBundle(
-                C1_PARENTAL_RESPONSIBILITY, futureDate);
+                C1_PARENTAL_RESPONSIBILITY, formattedFutureDate);
 
             List<Element<AdditionalApplicationsBundle>> additionalBundles = List.of(element(
                 AdditionalApplicationsBundle.builder()
@@ -1002,13 +1009,13 @@ class CaseDataTest {
         @Test
         void shouldSortByApplicationTypeThenDateWithinFullyPopulatedApplicationBundle() {
             OtherApplicationsBundle pastOther = buildOtherApplicationBundle(
-                C1_PARENTAL_RESPONSIBILITY, futureDate.minusMonths(3));
+                C1_PARENTAL_RESPONSIBILITY, "6 September 2020, 3:00pm");
 
             OtherApplicationsBundle presentOther = buildOtherApplicationBundle(
-                C19_WARRANT_TO_ASSISTANCE, futureDate);
+                C19_WARRANT_TO_ASSISTANCE, formattedFutureDate);
 
             OtherApplicationsBundle futureOther = buildOtherApplicationBundle(
-                C1_PARENTAL_RESPONSIBILITY, futureDate.plusMonths(3));
+                C1_PARENTAL_RESPONSIBILITY, "6 March 2021, 3:00pm");
 
             Element<AdditionalApplicationsBundle> pastBundle = element(
                 AdditionalApplicationsBundle.builder()
@@ -1036,8 +1043,8 @@ class CaseDataTest {
                 Pair.of(pastOther.getId(), "C1, " + pastOther.getUploadedDateTime()),
                 Pair.of(futureC2Bundle.getId(), "C2, " + futureC2Bundle.getUploadedDateTime()),
                 Pair.of(futureC2Element.getId(), "C2, " + futureC2Element.getValue().getUploadedDateTime()),
-                Pair.of(presentC2Bundle.getId(), "C2, " + presentC2Bundle.getUploadedDateTime()),
                 Pair.of(presentC2Element.getId(), "C2, " + presentC2Element.getValue().getUploadedDateTime()),
+                Pair.of(presentC2Bundle.getId(), "C2, " + presentC2Bundle.getUploadedDateTime()),
                 Pair.of(pastC2Element.getId(), "C2, " + pastC2Element.getValue().getUploadedDateTime()),
                 Pair.of(pastC2Bundle.getId(), "C2, " + pastC2Bundle.getUploadedDateTime()),
                 Pair.of(presentOther.getId(), "C19, " + presentOther.getUploadedDateTime())
@@ -1052,10 +1059,11 @@ class CaseDataTest {
         }
 
         private OtherApplicationsBundle buildOtherApplicationBundle(OtherApplicationType type,
-                                                                    LocalDateTime dateTime) {
+                                                                    String formattedDateTime) {
             return OtherApplicationsBundle.builder()
                 .applicationType(type)
-                .id(randomUUID()).uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+                .id(randomUUID())
+                .uploadedDateTime(formattedDateTime)
                 .build();
         }
     }
@@ -1884,14 +1892,10 @@ class CaseDataTest {
         return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(UUID bundleId, LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().id(bundleId).uploadedDateTime(dateTime.toString()).build();
-    }
-
-    private Element<C2DocumentBundle> buildC2WithFormattedDate(LocalDateTime dateTime) {
+    private Element<C2DocumentBundle> buildC2WithFormattedDate(String formattedDateTime) {
         return element(C2DocumentBundle.builder()
             .id(randomUUID())
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .uploadedDateTime(formattedDateTime)
             .build());
     }
 }

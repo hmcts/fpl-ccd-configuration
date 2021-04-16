@@ -341,12 +341,14 @@ public class CaseData {
 
     public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
         List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
-        applicationsBundles
-            .sort(Comparator.comparing(
-                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
-                .thenComparing(Comparator.comparing((Element<ApplicationsBundle> bundle) ->
-                    parseLocalDateTimeFromStringUsingFormat(bundle.getValue().getUploadedDateTime(), DATE_TIME))
-                    .reversed()));
+
+        Comparator<Element<ApplicationsBundle>> reverseChronological = comparing((Element<ApplicationsBundle> bundle) ->
+            parseLocalDateTimeFromStringUsingFormat(bundle.getValue().getUploadedDateTime(), DATE_TIME))
+            .reversed();
+
+        applicationsBundles.sort(Comparator
+            .comparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
+            .thenComparing(reverseChronological));
 
         return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);
     }
