@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -43,16 +44,21 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         .startDate(LocalDateTime.of(2021, 1, 3, 14, 0, 0))
         .build();
     private static final List<Element<HearingBooking>> HEARINGS = wrapElements(HEARING_1, HEARING_2);
+    private static final long CASE_NUMBER = 1234123412341234L;
+    private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 13, 13, 13, 13));
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
     private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
+    private final CaseDetailsHelper caseDetailsHelper = mock(
+        CaseDetailsHelper.class);
 
     private NoticeOfProceedingsTemplateDataGenerationService underTest;
 
     @BeforeEach
     void setup() {
-        underTest = new NoticeOfProceedingsTemplateDataGenerationService(courtLookup, extractionService, time);
+        underTest = new NoticeOfProceedingsTemplateDataGenerationService(
+            courtLookup, extractionService, caseDetailsHelper, time);
 
         when(extractionService.getHearingBookingData(HEARING_1)).thenReturn(
             DocmosisHearingBooking.builder()
@@ -64,6 +70,8 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                 .hearingLegalAdvisorName("should also be removed")
                 .build()
         );
+        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
+
     }
 
     @Test
@@ -97,6 +105,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
         DocmosisNoticeOfProceeding expectedData = DocmosisNoticeOfProceeding.builder()
             .courtName("Family Court")
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .applicantName("some organisation")
             .orderTypes("Care order")
             .childrenNames("Bran Stark, Sansa Stark and Jon Snow")
@@ -116,6 +125,7 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
 
     private CaseData getCaseData(Child... children) {
         return CaseData.builder()
+            .id(CASE_NUMBER)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .children1(wrapElements(children))

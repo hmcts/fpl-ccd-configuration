@@ -46,8 +46,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     SubmittedCaseEventHandler.class,
     NotificationService.class,
     OutsourcedCaseContentProvider.class,
-    RespondentSolicitorContentProvider.class,
     LocalAuthorityNameLookupConfiguration.class,
+    RespondentSolicitorContentProvider.class,
     CaseUrlService.class,
     ObjectMapper.class,
 })
@@ -55,6 +55,7 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_FIRST_NAME = "John";
     private static final String RESPONDENT_LAST_NAME = "Watson";
+
     private static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
         .lastName(RESPONDENT_LAST_NAME).build())
         .build();
@@ -164,6 +165,52 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("You can register at https://manage-org.platform.hmcts.net/register-org/register")
                 .line()
                 .line("You’ll need your organisation’s Pay By Account (PBA) details.")
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, "
+                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("representativeNameSource")
+    void notifyRegisteredSolicitor(String firstName, String lastName, String expectedSalutation) {
+        final Respondent respondent1 = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email("solicitor@test.com")
+                .firstName(firstName)
+                .lastName(lastName)
+                .organisation(Organisation.builder().organisationID("123").organisationName("Organisation1").build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(123L)
+            .respondents1(wrapElements(respondent1))
+            .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .state(OPEN)
+            .build();
+
+        underTest.notifyRegisteredRespondentSolicitors(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        assertThat(response())
+            .hasSubject("New C110A application for your client")
+            .hasBody(emailContent()
+                .start()
+                .line(expectedSalutation)
+                .line()
+                .line(LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family"
+                    + " Public Law (FPL) digital service.")
+                .line()
+                .line("They’ve given your details as a respondent’s legal representative.")
+                .line()
+                .line(
+                    "You should now ask your organisation's FPL case access administrator to assign the case to you.")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()

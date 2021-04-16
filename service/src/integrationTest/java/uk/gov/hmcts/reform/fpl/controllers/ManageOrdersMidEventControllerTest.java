@@ -63,6 +63,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     private static final DocmosisDocument DOCMOSIS_DOCUMENT = testDocmosisDocument(DOCUMENT_BINARIES);
     private static final Document UPLOADED_DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_REFERENCE = buildFromDocument(UPLOADED_DOCUMENT);
+    private static final long CCD_CASE_NUMBER = 1234123412341234L;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
@@ -177,6 +178,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void orderDetailsShouldPrepopulateNextSectionDetails() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .id(CCD_CASE_NUMBER)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .children1(CHILDREN)
             .orderAppliesToAllChildren("Yes")

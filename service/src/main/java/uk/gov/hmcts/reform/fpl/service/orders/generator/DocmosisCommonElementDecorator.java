@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class DocmosisCommonElementDecorator {
 
     private final ChildrenService childrenService;
     private final CaseDataExtractionService extractionService;
+    private final CaseDetailsHelper caseDetailsHelper;
 
     public DocmosisParameters decorate(DocmosisParameters currentParameters, CaseData caseData,
                                        OrderStatus status, Order orderType) {
@@ -49,6 +51,7 @@ public class DocmosisCommonElementDecorator {
             .orderTitle(orderType == Order.C21_BLANK_ORDER ? getBlankOrderTitle(caseData) : orderType.getTitle())
             .childrenAct(orderType.getChildrenAct())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
             .courtName(extractionService.getCourtName(localAuthorityCode))
             .dateOfIssue(eventData.getManageOrdersApprovalDate())

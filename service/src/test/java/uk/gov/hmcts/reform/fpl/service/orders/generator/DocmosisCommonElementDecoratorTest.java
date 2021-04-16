@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C21BlankOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -30,6 +31,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class DocmosisCommonElementDecoratorTest {
 
+    private static final long CASE_NUMBER = 1234123412341234L;
+    private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
     private static final String LA_CODE = "LA_CODE";
     private static final String COURT_NAME = "Court Name";
     private static final String FAM_MAN_CASE_NUM = "case number";
@@ -47,6 +50,7 @@ class DocmosisCommonElementDecoratorTest {
     private static final Order ORDER_TYPE = mock(Order.class);
     private static final CaseData CASE_DATA = CaseData.builder()
         .familyManCaseNumber(FAM_MAN_CASE_NUM)
+        .id(CASE_NUMBER)
         .caseLocalAuthority(LA_CODE)
         .judgeAndLegalAdvisor(JUDGE)
         .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -56,9 +60,10 @@ class DocmosisCommonElementDecoratorTest {
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
+    private final CaseDetailsHelper caseDetailsHelper = mock(CaseDetailsHelper.class);
 
     private final DocmosisCommonElementDecorator underTest = new DocmosisCommonElementDecorator(
-        childrenService, extractionService
+        childrenService, extractionService, caseDetailsHelper
     );
 
     @BeforeEach
@@ -67,6 +72,7 @@ class DocmosisCommonElementDecoratorTest {
         when(extractionService.getJudgeAndLegalAdvisor(JUDGE)).thenReturn(DOCMOSIS_JUDGE);
         when(childrenService.getSelectedChildren(any())).thenReturn(CHILDREN);
         when(extractionService.getChildrenDetails(any())).thenReturn(DOCMOSIS_CHILDREN);
+        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
 
         when(ORDER_TYPE.getTitle()).thenReturn(TITLE);
         when(ORDER_TYPE.getChildrenAct()).thenReturn(CHILDREN_ACT);
@@ -142,6 +148,7 @@ class DocmosisCommonElementDecoratorTest {
     private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters() {
         return C32CareOrderDocmosisParameters.builder()
             .familyManCaseNumber(FAM_MAN_CASE_NUM)
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .orderTitle(TITLE)
             .childrenAct(CHILDREN_ACT)
             .judgeAndLegalAdvisor(DOCMOSIS_JUDGE)
