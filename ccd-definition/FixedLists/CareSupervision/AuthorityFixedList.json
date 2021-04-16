@@ -233,6 +233,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KECH",
+    "ListElement": "Kensington and Chelsea Borough Council",
+    "DisplayOrder": 148
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "KBC",
     "ListElement": "Knowsley Borough Council",
     "DisplayOrder": 150
@@ -636,6 +643,13 @@
     "ListElementCode": "WCC",
     "ListElement": "Warwickshire County Council",
     "DisplayOrder": 425
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WMS",
+    "ListElement": "Westminster City Council",
+    "DisplayOrder": 427
   },
   {
     "LiveFrom": "01/01/2017",

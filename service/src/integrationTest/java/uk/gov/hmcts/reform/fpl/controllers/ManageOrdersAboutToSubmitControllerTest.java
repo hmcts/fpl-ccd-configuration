@@ -145,6 +145,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     private CaseData buildCaseData() {
         return CaseData.builder()
+            .id(1234123412341234L)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("CASE_NUMBER")
             .children1(CHILDREN)
