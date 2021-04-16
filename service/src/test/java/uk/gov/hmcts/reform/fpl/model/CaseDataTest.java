@@ -347,9 +347,10 @@ class CaseDataTest {
 
     @Test
     void shouldReturnTrueWhenFutureHearingExists() {
+        Time today = new FixedTimeConfiguration().stoppedTime();
         List<Element<HearingBooking>> hearingBooking =
-            List.of(element(createHearingBooking(time.now().plusDays(6),
-                time.now().plusDays(6))));
+            List.of(element(createHearingBooking(today.now().plusDays(6),
+                today.now().plusDays(6))));
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBooking)
@@ -413,9 +414,10 @@ class CaseDataTest {
 
     @Test
     void shouldReturnFalseWhenHearingDateIsTheFuture() {
+        Time today = new FixedTimeConfiguration().stoppedTime();
         CaseData caseData = CaseData.builder()
-            .hearingStartDate(futureDate)
-            .hearingEndDate(futureDate)
+            .hearingStartDate(today.now().plusDays(1))
+            .hearingEndDate(today.now().plusDays(1))
             .build();
 
         boolean hearingInPast = caseData.isHearingDateInPast();
