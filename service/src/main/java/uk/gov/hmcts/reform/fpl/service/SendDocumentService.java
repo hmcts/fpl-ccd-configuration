@@ -80,13 +80,13 @@ public class SendDocumentService {
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
         return unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
-                && !hasLegalRepresentation(respondent))
+                && hasNoLegalRepresentation(respondent))
             .map(Respondent::getParty)
             .collect(toList());
     }
 
-    private boolean hasLegalRepresentation(Respondent respondent) {
-        return YES.getValue().equals(respondent.getLegalRepresentation());
+    private boolean hasNoLegalRepresentation(Respondent respondent) {
+        return !YES.getValue().equals(respondent.getLegalRepresentation());
     }
 
 }
