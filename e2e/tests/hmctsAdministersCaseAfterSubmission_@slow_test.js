@@ -92,7 +92,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
+  I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Which jurisdiction?'], 'England');
