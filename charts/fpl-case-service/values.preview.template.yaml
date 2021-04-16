@@ -237,7 +237,6 @@ aac-manage-case-assignment:
       enabled: false
     keyVaults:
       aac:
-        resourceGroup: aac-manage-case-assignment
         secrets:
           - aac-manage-case-s2s-secret
           - idam-mca-client-secret
