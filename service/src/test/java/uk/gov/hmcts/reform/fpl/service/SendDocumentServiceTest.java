@@ -336,10 +336,19 @@ class SendDocumentServiceTest {
                 .representedBy(wrapElements(representativeServedByDigitalService.getId()))
                 .build();
 
+            final Respondent representedRespondentTwo = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(YES.getValue())
+                .build();
+
             final CaseData caseData = CaseData.builder()
                 .representatives(List.of(representativeServedByDigitalService))
                 .respondents1(wrapElements(
                     representedRespondentOne,
+                    representedRespondentTwo,
                     notRepresentedRespondent))
                 .build();
 
