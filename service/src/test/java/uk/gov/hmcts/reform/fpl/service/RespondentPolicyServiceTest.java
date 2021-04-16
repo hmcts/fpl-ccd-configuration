@@ -17,13 +17,11 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -41,20 +39,9 @@ class RespondentPolicyServiceTest {
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
-        UUID respondentElementOneId = UUID.randomUUID();
-        UUID respondentElementTwoId = UUID.randomUUID();
-
         RespondentParty respondentParty = RespondentParty.builder()
             .firstName("Joe")
             .lastName("Bloggs")
-            .relationshipToChild("Father")
-            .telephoneNumber(Telephone.builder()
-                .contactDirection("By telephone")
-                .telephoneNumber("02838882333")
-                .telephoneUsageType("Personal home number")
-                .build())
-            .gender("Male")
-            .placeOfBirth("Newry")
             .build();
 
         Organisation solicitorOrganisation = Organisation.builder()
@@ -75,14 +62,12 @@ class RespondentPolicyServiceTest {
             .solicitor(respondentSolicitor)
             .build();
 
-        Respondent respondentTwo = Respondent.builder()
-            .party(respondentParty)
-            .build();
+        Respondent respondentTwo = Respondent.builder().party(respondentParty).build();
 
         Map<String, Object> caseData = new HashMap<>(Map.of(
             "respondents1", List.of(
-                element(respondentElementOneId, respondentOne),
-                element(respondentElementTwoId, respondentTwo)),
+                element(respondentOne),
+                element(respondentTwo)),
             "applicants", List.of(element(Applicant.builder()
                 .party(ApplicantParty.builder()
                     .organisationName("Test organisation")
