@@ -53,8 +53,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldMigrateMissingC2IdCase(Long caseId) {
             CaseDetails caseDetails = caseDetails(migrationId,
                 wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
-                    createOtherApplicationBundle(null)))
-                , caseId);
+                    createOtherApplicationBundle(null))), caseId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
@@ -67,8 +66,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldThrowExceptionForInvalidCaseId() {
             CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()), null))
-                , 1234L);
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                    null)), 1234L);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
@@ -85,8 +84,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                         null),
                     createAdditionalApplicationBundle(null,
                         createOtherApplicationBundle(UUID.randomUUID()))
-                )
-                , 1601977974423857L);
+                ), 1601977974423857L);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
@@ -99,8 +97,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseDetails caseDetails = caseDetails(incorrectMigrationId,
                 wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
-                    createOtherApplicationBundle(null)))
-                , 1615890702114702L);
+                    createOtherApplicationBundle(null))), 1615890702114702L);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
