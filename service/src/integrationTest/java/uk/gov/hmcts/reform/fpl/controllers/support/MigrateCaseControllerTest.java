@@ -118,8 +118,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             return OtherApplicationsBundle.builder().id(id).build();
         }
 
-        private AdditionalApplicationsBundle createAdditionalApplicationBundle(C2DocumentBundle c2DocumentBundle,
-                                                                               OtherApplicationsBundle otherApplicationsBundle) {
+        private AdditionalApplicationsBundle createAdditionalApplicationBundle(
+            C2DocumentBundle c2DocumentBundle,
+            OtherApplicationsBundle otherApplicationsBundle) {
             return AdditionalApplicationsBundle.builder()
                 .c2DocumentBundle(c2DocumentBundle)
                 .otherApplicationsBundle(otherApplicationsBundle)
