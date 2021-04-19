@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
+@Slf4j
 @Getter
 @SuperBuilder(toBuilder = true)
 @AllArgsConstructor
@@ -34,6 +36,10 @@ public class DocmosisOrder implements DocmosisData {
         Map<String, Object> map = mapper.convertValue(this, new TypeReference<>() {});
 
         if (isNotEmpty(directions)) {
+            if (directions.stream().anyMatch(direction -> direction.assignee == null)) {
+                log.warn("Some directions exist without an assignee.");
+            }
+
             map.putAll(directions.stream().filter(direction -> direction.assignee != null)
                 .collect(groupingBy(direction -> direction.assignee.getValue())));
         }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogger;
+import uk.gov.hmcts.reform.fpl.utils.extension.TestLogs;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,12 @@ class DocmosisStandardDirectionOrderTest {
         "respondentDirections", "cafcassDirections", "otherPartiesDirections", "courtDirections", "crest",
         "draftbackground", "courtseal");
 
+    private static final String MISSING_ASSIGNEE_MESSAGE = "Some directions exist without an assignee.";
+
     private final ObjectMapper mapper = new ObjectMapper();
+
+    @TestLogs
+    private final TestLogger logs = new TestLogger(DocmosisOrder.class);
 
     @Test
     void shouldConvertStandardDirectionOrderDirectionsToExpectedMapWhenDirectionsForAllAssignees() {
@@ -58,6 +65,35 @@ class DocmosisStandardDirectionOrderTest {
         Stream.of(DirectionAssignee.values()).forEach(assignee -> modifiedKeys.remove(assignee.getValue()));
 
         assertThat(order.toMap(mapper)).containsOnlyKeys(modifiedKeys);
+    }
+
+    @Test
+    void shouldIgnoreAllDirectionsWithNoAssignees() {
+        List<DocmosisDirection> directions = List.of(direction(null), direction(null));
+
+        Set<String> modifiedKeys = newHashSet(DOCMOSIS_KEYS);
+
+        DocmosisStandardDirectionOrder order = DocmosisStandardDirectionOrder.builder()
+            .directions(directions)
+            .build();
+
+        Stream.of(DirectionAssignee.values()).forEach(assignee -> modifiedKeys.remove(assignee.getValue()));
+
+        assertThat(order.toMap(mapper)).containsOnlyKeys(modifiedKeys);
+        assertThat(logs.getWarns()).contains(MISSING_ASSIGNEE_MESSAGE);
+    }
+
+    @Test
+    void shouldIgnoreAllDirectionsWithSomeMissingAssignees() {
+        List<DocmosisDirection> directions = directionsForAllAssignees();
+        directions.add(direction(null));
+
+        DocmosisStandardDirectionOrder order = DocmosisStandardDirectionOrder.builder()
+            .directions(directions)
+            .build();
+
+        assertThat(order.toMap(mapper)).containsOnlyKeys(DOCMOSIS_KEYS);
+        assertThat(logs.getWarns()).contains(MISSING_ASSIGNEE_MESSAGE);
     }
 
     private List<DocmosisDirection> directionsForAllAssignees() {
