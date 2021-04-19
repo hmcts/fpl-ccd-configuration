@@ -1,7 +1,6 @@
 buildscript {
   repositories {
     mavenCentral()
-//    jcenter()
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
