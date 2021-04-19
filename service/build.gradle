@@ -1,6 +1,7 @@
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
+//    jcenter()
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
@@ -235,12 +236,14 @@ sonarqube {
 
 repositories {
   mavenLocal()
-  jcenter()
   mavenCentral()
-
+  // TODO: that's the only dependency to move (confirm with ops when that's migrated) https://tools.hmcts.net/jira/browse/FPLA-2978
   maven {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
+  //maven {
+  //  url "https://jitpack.io"
+  //}
 
   maven {
     url "https://repo.spring.io/milestone"
