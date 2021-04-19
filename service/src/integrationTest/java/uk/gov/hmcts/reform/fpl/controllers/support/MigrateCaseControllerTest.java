@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,7 +52,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             1610018233059619L})
         void shouldMigrateMissingC2IdCase(Long caseId) {
             CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null)))
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
+                    createOtherApplicationBundle(null)))
                 , caseId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -65,7 +67,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldThrowExceptionForInvalidCaseId() {
             CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID())))
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()), null))
                 , 1234L);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
@@ -74,14 +76,21 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
-        void shouldThrowExceptionIfNoC2WithNullIdFound() {
+        void shouldThrowExceptionIfNoNullIdsFound() {
             CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID())))
+                wrapElements(
+                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                        createOtherApplicationBundle(UUID.randomUUID())),
+                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                        null),
+                    createAdditionalApplicationBundle(null,
+                        createOtherApplicationBundle(UUID.randomUUID()))
+                )
                 , 1601977974423857L);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage("No c2DocumentBundle found with missing Id");
+                .hasMessage("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
         }
 
         @Test
@@ -89,7 +98,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             String incorrectMigrationId = "FPLA-9876";
 
             CaseDetails caseDetails = caseDetails(incorrectMigrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null)))
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
+                    createOtherApplicationBundle(null)))
                 , 1615890702114702L);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -104,8 +114,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             return C2DocumentBundle.builder().id(id).build();
         }
 
-        private AdditionalApplicationsBundle createAdditionalApplicationBundle(C2DocumentBundle c2DocumentBundle) {
-            return AdditionalApplicationsBundle.builder().c2DocumentBundle(c2DocumentBundle).build();
+        private OtherApplicationsBundle createOtherApplicationBundle(UUID id) {
+            return OtherApplicationsBundle.builder().id(id).build();
+        }
+
+        private AdditionalApplicationsBundle createAdditionalApplicationBundle(C2DocumentBundle c2DocumentBundle,
+                                                                               OtherApplicationsBundle otherApplicationsBundle) {
+            return AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2DocumentBundle)
+                .otherApplicationsBundle(otherApplicationsBundle)
+                .build();
         }
 
         private CaseDetails caseDetails(String migrationId,

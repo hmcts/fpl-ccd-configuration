@@ -16,10 +16,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Api
 @RestController
@@ -72,22 +75,36 @@ public class MigrateCaseController extends CallbackController {
             caseData.getAdditionalApplicationsBundle();
 
         if (additionalApplicationsBundle.stream()
-            .noneMatch(bundle -> bundle.getValue().getC2DocumentBundle().getId() == null)) {
-            throw new IllegalArgumentException("No c2DocumentBundle found with missing Id");
+            .noneMatch(this::checkNullIds)) {
+            throw new IllegalArgumentException("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
         }
 
         List<Element<AdditionalApplicationsBundle>> fixedAdditionalApplicationsBundle =
-            additionalApplicationsBundle.stream().map(this::fixMissingId).collect(Collectors.toList());
+            additionalApplicationsBundle.stream().map(this::fixMissingIds).collect(Collectors.toList());
+
         caseDetails.getData().put("additionalApplicationsBundle", fixedAdditionalApplicationsBundle);
     }
 
-    private Element<AdditionalApplicationsBundle> fixMissingId(Element<AdditionalApplicationsBundle> bundle) {
-        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
+    private boolean checkNullIds(Element<AdditionalApplicationsBundle> documentBundle) {
+        AdditionalApplicationsBundle value = documentBundle.getValue();
+        C2DocumentBundle c2DocumentBundle = value.getC2DocumentBundle();
+        OtherApplicationsBundle otherApplicationsBundle = value.getOtherApplicationsBundle();
 
-        if (c2DocumentBundle.getId() == null) {
+        return (!isNull(c2DocumentBundle) && isNull(c2DocumentBundle.getId()))
+            || (!isNull(otherApplicationsBundle) && isNull(otherApplicationsBundle.getId()));
+    }
+
+    private Element<AdditionalApplicationsBundle> fixMissingIds(Element<AdditionalApplicationsBundle> bundle) {
+        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
+        OtherApplicationsBundle otherApplicationsBundle = bundle.getValue().getOtherApplicationsBundle();
+
+        if (!isNull(c2DocumentBundle) && isNull(c2DocumentBundle.getId())) {
             bundle.getValue().getC2DocumentBundle().setId(UUID.randomUUID());
         }
 
+        if (!isNull(otherApplicationsBundle) && isNull(otherApplicationsBundle.getId())) {
+            bundle.getValue().getOtherApplicationsBundle().setId(UUID.randomUUID());
+        }
         return bundle;
     }
 }
