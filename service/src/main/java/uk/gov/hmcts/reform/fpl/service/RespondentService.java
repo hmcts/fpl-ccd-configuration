@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -102,7 +103,7 @@ public class RespondentService {
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasRegisteredOrganisation())
             .map(Respondent::getSolicitor)
-            .collect(Collectors.toUnmodifiableList());
+            .collect(Collectors.toList());
     }
 
     public List<RespondentSolicitor> getUnregisteredSolicitors(List<Element<Respondent>> respondents) {
@@ -111,6 +112,6 @@ public class RespondentService {
             .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
                 && respondent.hasUnregisteredOrganisation())
             .map(Respondent::getSolicitor)
-            .collect(Collectors.toUnmodifiableList());
+            .collect(Collectors.toList());
     }
 }

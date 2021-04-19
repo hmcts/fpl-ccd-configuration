@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.RespondentSolicitorContentProvider;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
@@ -27,12 +26,11 @@ public class RespondentsUpdatedEventHandler {
 
     private final RespondentSolicitorContentProvider respondentSolicitorContentProvider;
     private final NotificationService notificationService;
+    private final RespondentService respondentService;
 
     @Async
     @EventListener
     public void notifyRegisteredRespondentSolicitors(final RespondentsUpdated event) {
-        RespondentService respondentService = new RespondentService();
-
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -42,18 +40,14 @@ public class RespondentsUpdatedEventHandler {
         List<RespondentSolicitor> registeredSolicitorsBefore = respondentService.getRegisteredSolicitors(
             caseDataBefore.getRespondents1());
 
-        List<RespondentSolicitor> updatedSolicitors = registeredSolicitors.stream()
-            .filter(o -> !registeredSolicitorsBefore.contains(o))
-            .collect(Collectors.toList());
+        registeredSolicitors.removeAll(registeredSolicitorsBefore);
 
-        notifyUpdatedSolicitors(caseData, updatedSolicitors, REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE);
+        notifyUpdatedSolicitors(caseData, registeredSolicitors, REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE);
     }
 
     @Async
     @EventListener
     public void notifyUnregisteredSolicitors(final RespondentsUpdated event) {
-        RespondentService respondentService = new RespondentService();
-
         CaseData caseData = event.getCaseData();
         CaseData caseDataBefore = event.getCaseDataBefore();
 
@@ -63,11 +57,10 @@ public class RespondentsUpdatedEventHandler {
         List<RespondentSolicitor> unregisteredSolicitorsBefore = respondentService.getUnregisteredSolicitors(
             caseDataBefore.getRespondents1());
 
-        List<RespondentSolicitor> updatedSolicitors = unregisteredSolicitors.stream()
-            .filter(o -> !unregisteredSolicitorsBefore.contains(o))
-            .collect(Collectors.toList());
+        unregisteredSolicitors.removeAll(unregisteredSolicitorsBefore);
 
-        notifyUpdatedSolicitors(caseData, updatedSolicitors, UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE);
+        notifyUpdatedSolicitors(caseData, unregisteredSolicitors, UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE);
+
     }
 
     private void notifyUpdatedSolicitors(CaseData caseData,
