@@ -15,13 +15,15 @@ import java.util.stream.Collectors;
 public class OrderDocumentGeneratorHolder {
 
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+    private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
 
     private Map<Order, DocmosisParameterGenerator> typeToGenerator;
 
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
-                c32CareOrderDocumentParameterGenerator
+                c32CareOrderDocumentParameterGenerator,
+                c23EPODocumentParameterGenerator
             ).stream().collect(Collectors.toMap(
                 DocmosisParameterGenerator::accept,
                 Function.identity()

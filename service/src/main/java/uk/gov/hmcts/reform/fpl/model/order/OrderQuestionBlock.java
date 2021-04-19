@@ -12,11 +12,18 @@ public enum OrderQuestionBlock {
         List.of("judgeAndLegalAdvisor")),
     APPROVAL_DATE("approvalDate", "Approval Date", OrderSection.ISSUING_DETAILS,
         List.of("manageOrdersApprovalDate")),
+    APPROVAL_DATE_TIME("approvalDateTime", "Approval Date Time", OrderSection.ISSUING_DETAILS,
+        List.of("manageOrdersApprovalDateTime")),
     WHICH_CHILDREN("whichChildren", "Which children", OrderSection.CHILDREN_DETAILS,
         List.of("orderAppliesToAllChildren", "children_label", "childSelector")),
+    EPO_ORDER_DETAILS("epoOrderDetails", "EPO Order details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersEpoType", "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement",
+            "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest",
+            "manageOrdersIncludePhrase", "manageOrdersChildrenDescription", "manageOrdersFurtherDirections",
+            "manageOrdersEndDateTime")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
-    REVIEW_DRAFT_ORDER("previewOrder", "Review draft order",OrderSection.REVIEW,
+    REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview"));
 
 

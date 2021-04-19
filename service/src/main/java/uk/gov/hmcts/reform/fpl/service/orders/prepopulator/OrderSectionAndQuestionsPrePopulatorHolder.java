@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOAddressPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -26,6 +27,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     // Questions
     private final WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
+    private final EPOAddressPrePopulator epoAddressPrePopulator;
 
     // Sections
     private final IssuingDetailsSectionPrePopulator issuingDetailsPrePopulator;
@@ -43,7 +45,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
 
         blockOrderPrePopulatorMap = List.of(
             whichChildrenBlockPrePopulator,
-            approverBlockPrePopulator
+            approverBlockPrePopulator,
+            epoAddressPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()
