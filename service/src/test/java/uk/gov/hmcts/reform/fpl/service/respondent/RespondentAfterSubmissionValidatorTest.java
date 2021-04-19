@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.respondent;
 
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -96,10 +95,10 @@ class RespondentAfterSubmissionValidatorTest {
         Respondent updatedRespondent = Respondent.builder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
-            .organisation(Organisation.builder()
-                .organisationID(ORGANISATION_ID_1)
-                .build())
-            .build()).build();
+                .organisation(Organisation.builder()
+                    .organisationID(ORGANISATION_ID_1)
+                    .build())
+                .build()).build();
 
         List<String> actual = underTest.validate(
             CaseData.builder()

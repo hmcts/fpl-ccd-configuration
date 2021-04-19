@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -276,7 +276,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
         postSubmittedEvent(caseData);
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UNREGISTERED_RESPONDENT_SOLICICTOR),
+            eq(UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE),
             eq(SOLICITOR_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)

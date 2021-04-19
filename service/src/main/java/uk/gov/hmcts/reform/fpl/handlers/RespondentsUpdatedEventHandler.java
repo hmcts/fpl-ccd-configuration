@@ -7,7 +7,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
@@ -16,9 +15,10 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.RespondentSolicitorContentProvider;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
 
 @Slf4j
 @Component
@@ -30,25 +30,23 @@ public class RespondentsUpdatedEventHandler {
 
     @Async
     @EventListener
-    public void notifyRegisteredRespondentSolicitors(final SubmittedCaseEvent event) {
+    public void notifyRegisteredRespondentSolicitors(final RespondentsUpdated event) {
         RespondentService respondentService = new RespondentService();
 
         CaseData caseData = event.getCaseData();
+        CaseData caseDataBefore = event.getCaseDataBefore();
 
         List<RespondentSolicitor> registeredSolicitors = respondentService.getRegisteredSolicitors(
             caseData.getRespondents1());
 
-        registeredSolicitors.forEach(registeredSolicitor -> {
-            RespondentSolicitorTemplate notifyData = respondentSolicitorContentProvider
-                .buildRespondentSolicitorSubmissionNotification(caseData, registeredSolicitor);
+        List<RespondentSolicitor> registeredSolicitorsBefore = respondentService.getRegisteredSolicitors(
+            caseDataBefore.getRespondents1());
 
-            notificationService.sendEmail(
-                REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE,
-                registeredSolicitor.getEmail(),
-                notifyData,
-                caseData.getId()
-            );
-        });
+        List<RespondentSolicitor> updatedSolicitors = registeredSolicitors.stream()
+            .filter(o -> !registeredSolicitorsBefore.contains(o))
+            .collect(Collectors.toList());
+
+        notifyUpdatedSolicitors(caseData, updatedSolicitors, REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE);
     }
 
     @Async
@@ -57,16 +55,30 @@ public class RespondentsUpdatedEventHandler {
         RespondentService respondentService = new RespondentService();
 
         CaseData caseData = event.getCaseData();
+        CaseData caseDataBefore = event.getCaseDataBefore();
 
         List<RespondentSolicitor> unregisteredSolicitors = respondentService.getUnregisteredSolicitors(
             caseData.getRespondents1());
 
-        unregisteredSolicitors.forEach(recipient -> {
+        List<RespondentSolicitor> unregisteredSolicitorsBefore = respondentService.getUnregisteredSolicitors(
+            caseDataBefore.getRespondents1());
+
+        List<RespondentSolicitor> updatedSolicitors = unregisteredSolicitors.stream()
+            .filter(o -> !unregisteredSolicitorsBefore.contains(o))
+            .collect(Collectors.toList());
+
+        notifyUpdatedSolicitors(caseData, updatedSolicitors, UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE);
+    }
+
+    private void notifyUpdatedSolicitors(CaseData caseData,
+                                         List<RespondentSolicitor> updatedSolicitors,
+                                         String solicitorEmailTemplate) {
+        updatedSolicitors.forEach(recipient -> {
             RespondentSolicitorTemplate notifyData =
                 respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(caseData, recipient);
 
             notificationService.sendEmail(
-                UNREGISTERED_RESPONDENT_SOLICICTOR,
+                solicitorEmailTemplate,
                 recipient.getEmail(),
                 notifyData,
                 caseData.getId());

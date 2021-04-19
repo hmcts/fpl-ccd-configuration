@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -73,7 +72,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
             .state(OPEN)
             .build();
 
-        underTest.notifyRegisteredRespondentSolicitors(new SubmittedCaseEvent(caseData, caseDataBefore));
+        underTest.notifyRegisteredRespondentSolicitors(new RespondentsUpdated(caseData, caseDataBefore));
 
         assertThat(response())
             .hasSubject("New C110A application for your client")
