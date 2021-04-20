@@ -14,6 +14,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,13 +27,18 @@ class OrderValidatorHolderTest {
     private ApprovalDateValidator approvalDateValidator;
     @Mock
     private WhichChildrenValidator whichChildrenValidator;
+    @Mock
+    private EPORemovalAddressValidator epoRemovalAddressValidator;
+    @Mock
+    private EPOEndDateValidator epoEndDateValidator;
 
     @InjectMocks
     private OrderValidatorHolder underTest;
 
     @BeforeEach
     void setUp() {
-        validators = List.of(approvalDateValidator, whichChildrenValidator);
+        validators = List.of(
+            approvalDateValidator, whichChildrenValidator, epoRemovalAddressValidator, epoEndDateValidator);
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
     }
@@ -40,7 +47,9 @@ class OrderValidatorHolderTest {
     void blockToValidator() {
         assertThat(underTest.blockToValidator()).isEqualTo(Map.of(
             APPROVAL_DATE, approvalDateValidator,
-            WHICH_CHILDREN, whichChildrenValidator
+            WHICH_CHILDREN, whichChildrenValidator,
+            EPO_REMOVAL_ADDRESS, epoRemovalAddressValidator,
+            EPO_ORDER_DETAILS, epoEndDateValidator
         ));
     }
 
@@ -49,7 +58,9 @@ class OrderValidatorHolderTest {
         underTest.blockToValidator();
         assertThat(underTest.blockToValidator()).isEqualTo(Map.of(
             APPROVAL_DATE, approvalDateValidator,
-            WHICH_CHILDREN, whichChildrenValidator
+            WHICH_CHILDREN, whichChildrenValidator,
+            EPO_REMOVAL_ADDRESS, epoRemovalAddressValidator,
+            EPO_ORDER_DETAILS, epoEndDateValidator
         ));
 
         validators.forEach(validator -> verify(validator).accept());
