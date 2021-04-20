@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service.respondent;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,27 +41,15 @@ class RespondentAfterSubmissionValidatorTest {
         assertThat(actual).isEqualTo(List.of());
     }
 
-    @Test
-    void shouldNotReturnErrorWhenNewRespondentAddedToEmpty() {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldNotReturnErrorWhenNewRespondentAddedToEmpty(List<Element<Respondent>> respondents) {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
                 .build(),
             CaseData.builder()
-                .respondents1(List.of())
-                .build());
-
-        assertThat(actual).isEqualTo(List.of());
-    }
-
-    @Test
-    void shouldNotReturnErrorWhenNewRespondentAddedToNull() {
-        List<String> actual = underTest.validate(
-            CaseData.builder()
-                .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
-                .build(),
-            CaseData.builder()
-                .respondents1(null)
+                .respondents1(respondents)
                 .build());
 
         assertThat(actual).isEqualTo(List.of());

@@ -50,7 +50,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
         super("enter-respondents");
     }
 
-    private static final String DOB_ERROR = "Date of birth cannot be in the future";
+    private static final String DOB_ERROR = "Date of birth for respondent 1 cannot be in the future";
+    private static final String DOB_ERROR_2 = "Date of birth for respondent 2 cannot be in the future";
     private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
     private static final String CASE_ID = "12345";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
@@ -110,7 +111,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR);
+        assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR, DOB_ERROR_2);
     }
 
     @Test

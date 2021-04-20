@@ -158,55 +158,55 @@ class RespondentServiceTest {
     }
 
     @Test
-    void shouldReturnRegisteredSolicitors() {
-        RespondentSolicitor registeredSolicitor1 = RespondentSolicitor.builder()
+    void shouldReturnRegisteredSolicitor() {
+        RespondentSolicitor registeredSolicitor = RespondentSolicitor.builder()
             .firstName("Steven")
             .organisation(Organisation.builder().organisationID("Organisation ID").build())
             .build();
 
-        RespondentSolicitor registeredSolicitor2 = RespondentSolicitor.builder()
+        RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder()
             .firstName("Andrew")
-            .organisation(Organisation.builder().organisationID("Organisation ID").build())
+            .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
             .build();
 
         List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
-                .solicitor(registeredSolicitor1)
+                .solicitor(registeredSolicitor)
                 .build()),
             element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
-                .solicitor(registeredSolicitor2)
+                .solicitor(unregisteredSolicitor)
                 .build()));
 
         List<RespondentSolicitor> registeredSolicitors = service.getRegisteredSolicitors(respondents);
 
-        assertThat(registeredSolicitors).containsExactly(registeredSolicitor1, registeredSolicitor2);
+        assertThat(registeredSolicitors).containsOnly(registeredSolicitor);
     }
 
     @Test
-    void shouldReturnUnregisteredSolicitors() {
-        RespondentSolicitor unregisteredSolicitor1 = RespondentSolicitor.builder()
+    void shouldReturnUnregisteredSolicitor() {
+        RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder()
             .firstName("Steven")
             .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
             .build();
 
-        RespondentSolicitor unregisteredSolicitor2 = RespondentSolicitor.builder()
+        RespondentSolicitor registeredSolicitor = RespondentSolicitor.builder()
             .firstName("Andrew")
-            .unregisteredOrganisation(UnregisteredOrganisation.builder().name("unregistered org").build())
+            .organisation(Organisation.builder().organisationID("Organisation ID").build())
             .build();
 
         List<Element<Respondent>> respondents = List.of(element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
-                .solicitor(unregisteredSolicitor1)
+                .solicitor(unregisteredSolicitor)
                 .build()),
             element(Respondent.builder()
                 .legalRepresentation(YES.getValue())
-                .solicitor(unregisteredSolicitor2)
+                .solicitor(registeredSolicitor)
                 .build()));
 
         List<RespondentSolicitor> unregisteredSolicitors = service.getUnregisteredSolicitors(respondents);
 
-        assertThat(unregisteredSolicitors).containsExactly(unregisteredSolicitor1, unregisteredSolicitor2);
+        assertThat(unregisteredSolicitors).containsOnly(unregisteredSolicitor);
     }
 
     @Test

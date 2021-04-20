@@ -82,7 +82,7 @@ class RespondentValidatorTest {
 
         assertThat(actual).isEqualTo(List.of(
             "Maximum number of respondents is 10",
-            "errorEmailValidator"));
+            "emailValidatorError"));
     }
 
     @Test
@@ -102,8 +102,8 @@ class RespondentValidatorTest {
         List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
 
         assertThat(actual).isEqualTo(List.of(
-            "Date of birth cannot be in the future",
-            "errorEmailValidator"));
+            "Date of birth for respondent 1 cannot be in the future",
+            "emailValidatorError"));
     }
 
     @Test
@@ -123,16 +123,16 @@ class RespondentValidatorTest {
 
         mockServices(caseData);
         when(respondentAfterSubmissionValidator.validate(caseData, CASE_DATA_BEFORE))
-            .thenReturn(List.of("errorAfterSubmissionValidator"));
+            .thenReturn(List.of("afterSubmissionValidatorError"));
         when(validateGroupService.validateGroup(caseData, RespondentSolicitorGroup.class))
-            .thenReturn(List.of("errorRespondentGroupValidator"));
+            .thenReturn(List.of("respondentGroupValidatorError"));
 
         List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
 
         assertThat(actual).isEqualTo(List.of(
-            "errorEmailValidator",
-            "errorAfterSubmissionValidator",
-            "errorRespondentGroupValidator"));
+            "emailValidatorError",
+            "afterSubmissionValidatorError",
+            "respondentGroupValidatorError"));
     }
 
     @Test
@@ -156,7 +156,7 @@ class RespondentValidatorTest {
         List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
 
         assertThat(actual).isEqualTo(List.of(
-            "errorEmailValidator"));
+            "emailValidatorError"));
     }
 
     private void mockServices(CaseData caseData) {
@@ -167,6 +167,6 @@ class RespondentValidatorTest {
             .thenReturn(EMAILS);
 
         when(validateEmailService.validate(EMAILS, "Representative"))
-            .thenReturn(List.of("errorEmailValidator"));
+            .thenReturn(List.of("emailValidatorError"));
     }
 }

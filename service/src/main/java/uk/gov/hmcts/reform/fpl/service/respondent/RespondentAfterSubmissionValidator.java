@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.respondent;
 
-import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,7 @@ public class RespondentAfterSubmissionValidator {
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
 
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
+        List<String> errors = new ArrayList<>();
 
         Set<UUID> currentRespondentIds = getIds(caseData.getRespondents1());
         Set<UUID> previousRespondentIds = getIds(nullSafeList(caseDataBefore.getRespondents1()));
@@ -55,12 +54,11 @@ public class RespondentAfterSubmissionValidator {
             }
         }
 
-        return errors.build();
+        return errors;
     }
 
     private Map<UUID, Respondent> getIdRespondentMap(List<Element<Respondent>> elements) {
-        return elements
-            .stream()
+        return elements.stream()
             .collect(Collectors.toMap(Element::getId, Element::getValue, (val1, val2) -> val1, LinkedHashMap::new));
     }
 
@@ -73,14 +71,11 @@ public class RespondentAfterSubmissionValidator {
     }
 
     private Optional<String> getLegalRepresentation(Respondent value) {
-        return ofNullable(value)
-            .flatMap(respondent -> ofNullable(respondent.getLegalRepresentation())
-            );
+        return ofNullable(value).flatMap(respondent -> ofNullable(respondent.getLegalRepresentation()));
     }
 
     private Set<UUID> getIds(List<Element<Respondent>> respondents1) {
-        return respondents1
-            .stream()
+        return respondents1.stream()
             .map(Element::getId)
             .collect(Collectors.toSet());
     }

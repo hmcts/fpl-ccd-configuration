@@ -106,29 +106,32 @@ class RespondentTest {
         }
     }
 
-    @Test
-    void shouldReturnTrueWhenRepresentedByNotSet() {
-        Respondent respondent = Respondent.builder()
-            .legalRepresentation(YES.getValue())
-            .build();
+    @Nested
+    class HasLegalRepresentationTests {
+        @Test
+        void shouldReturnTrueWhenRepresentedByNotSet() {
+            Respondent respondent = Respondent.builder()
+                .legalRepresentation(YES.getValue())
+                .build();
 
-        assertTrue(respondent.isLegalRepresentationSelectedWhenNoExistingRepresentation());
-    }
+            assertTrue(respondent.hasLegalRepresentation());
+        }
 
-    @Test
-    void shouldReturnFalseWhenNoLegalRepresentation() {
-        Respondent respondent = Respondent.builder()
-            .build();
+        @Test
+        void shouldReturnFalseWhenNoLegalRepresentation() {
+            Respondent respondent = Respondent.builder()
+                .build();
 
-        assertFalse(respondent.isLegalRepresentationSelectedWhenNoExistingRepresentation());
-    }
+            assertFalse(respondent.hasLegalRepresentation());
+        }
 
-    @Test
-    void shouldReturnTrueWhenRepresentedBySet() {
-        Respondent respondent = Respondent.builder()
-            .representedBy(List.of(element(randomUUID())))
-            .build();
+        @Test
+        void shouldReturnTrueWhenRepresentedBySet() {
+            Respondent respondent = Respondent.builder()
+                .representedBy(List.of(element(randomUUID())))
+                .build();
 
-        assertTrue(respondent.isLegalRepresentationSelectedWhenNoExistingRepresentation());
+            assertTrue(respondent.hasLegalRepresentation());
+        }
     }
 }

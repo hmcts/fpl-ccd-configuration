@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.respondent;
 
-import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
@@ -15,8 +13,9 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
@@ -36,11 +35,11 @@ public class RespondentValidator {
     private final Time time;
 
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
+        List<String> errors = new ArrayList<>();
 
         validateMaximumSize(caseData).ifPresent(errors::add);
 
-        validateDob(caseData).ifPresent(errors::add);
+        errors.addAll(validateDob(caseData));
 
         List<Respondent> respondentsWithLegalRep =
             respondentService.getRespondentsWithLegalRepresentation(caseData.getRespondents1());
@@ -52,18 +51,22 @@ public class RespondentValidator {
             errors.addAll(validateGroupService.validateGroup(caseData, RespondentSolicitorGroup.class));
         }
 
-        return errors.build();
+        return errors;
     }
 
-    private Optional<String> validateDob(CaseData caseData) {
-        return caseData.getAllRespondents().stream()
-            .map(Element::getValue)
-            .map(Respondent::getParty)
-            .map(Party::getDateOfBirth)
-            .filter(Objects::nonNull)
-            .filter(dob -> dob.isAfter(time.now().toLocalDate()))
-            .findAny()
-            .map(date -> "Date of birth cannot be in the future");
+    private List<String> validateDob(CaseData caseData) {
+        List<String> dobErrors = new ArrayList<>();
+        List<Element<Respondent>> allRespondents = caseData.getAllRespondents();
+
+        for (int i = 0; i < allRespondents.size(); i++) {
+            LocalDate dob = allRespondents.get(i).getValue().getParty().getDateOfBirth();
+            if (dob != null) {
+                if (dob.isAfter(time.now().toLocalDate())) {
+                    dobErrors.add(String.format("Date of birth for respondent %s cannot be in the future", i + 1));
+                }
+            }
+        }
+        return dobErrors;
     }
 
     private Optional<String> validateMaximumSize(CaseData caseData) {

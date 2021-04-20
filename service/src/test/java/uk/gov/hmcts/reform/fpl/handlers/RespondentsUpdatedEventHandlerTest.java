@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -21,6 +21,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -28,10 +29,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class RespondentsUpdatedEventHandlerTest {
 
     @Mock
@@ -61,19 +62,20 @@ class RespondentsUpdatedEventHandlerTest {
             .organisation(Organisation.builder().organisationID("222").organisationName("org2").build())
             .build();
 
-        final CaseData caseData = caseData().toBuilder()
+        final CaseData caseData = CaseData.builder()
+            .id(123L)
             .respondents1(wrapElements(
                 Respondent.builder().legalRepresentation("Yes").solicitor(solicitor1).build(),
                 Respondent.builder().legalRepresentation("Yes").solicitor(solicitor2).build()))
             .build();
 
-        final CaseData caseDataBefore = caseData().toBuilder()
+        final CaseData caseDataBefore = CaseData.builder()
             .respondents1(wrapElements(
                 Respondent.builder().legalRepresentation("Yes").solicitor(solicitor1).build(),
                 Respondent.builder().legalRepresentation("No").build()))
             .build();
 
-        final RespondentSolicitorTemplate expectedTemplate = RespondentSolicitorTemplate.builder().build();
+        final RespondentSolicitorTemplate expectedTemplate = mock(RespondentSolicitorTemplate.class);
         final RespondentsUpdated respondentsUpdated = new RespondentsUpdated(caseData, caseDataBefore);
 
         when(respondentService.getRegisteredSolicitors(caseData.getRespondents1()))
@@ -99,7 +101,7 @@ class RespondentsUpdatedEventHandlerTest {
     @Test
     void shouldSendEmailToUnregisteredSolicitor() {
         final String expectedEmail = "test@test.com";
-        final CaseData caseDataBefore = caseData();
+        final CaseData caseDataBefore = CaseData.builder().build();
 
         final RespondentSolicitor unregisteredSolicitor = RespondentSolicitor.builder()
             .email(expectedEmail)
@@ -118,8 +120,8 @@ class RespondentsUpdatedEventHandlerTest {
         when(respondentService.getUnregisteredSolicitors(caseData.getRespondents1()))
             .thenReturn(new ArrayList<>(List.of(unregisteredSolicitor)));
 
-        when(respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(any(CaseData.class), any(
-            RespondentSolicitor.class))).thenReturn(expectedTemplate);
+        when(respondentSolicitorContentProvider.buildRespondentSolicitorSubmissionNotification(
+            any(CaseData.class), any(RespondentSolicitor.class))).thenReturn(expectedTemplate);
 
         underTest.notifyUnregisteredSolicitors(submittedCaseEvent);
 
@@ -134,9 +136,9 @@ class RespondentsUpdatedEventHandlerTest {
 
     @Test
     void shouldNotSendEmailWhenNoRespondentsExist() {
-        final CaseData caseData = caseData().toBuilder().respondents1(emptyList()).build();
+        final CaseData caseData = CaseData.builder().respondents1(emptyList()).build();
 
-        final CaseData caseDataBefore = caseData();
+        final CaseData caseDataBefore = CaseData.builder().build();
         final RespondentsUpdated respondentsUpdated = new RespondentsUpdated(caseData, caseDataBefore);
 
         underTest.notifyRegisteredRespondentSolicitors(respondentsUpdated);
@@ -145,4 +147,10 @@ class RespondentsUpdatedEventHandlerTest {
         verifyNoInteractions(respondentSolicitorContentProvider);
     }
 
+    @Test
+    void shouldExecuteAsynchronously() {
+        assertClass(RespondentsUpdatedEventHandler.class).hasAsyncMethods(
+            "notifyRegisteredRespondentSolicitors",
+            "notifyUnregisteredSolicitors");
+    }
 }
