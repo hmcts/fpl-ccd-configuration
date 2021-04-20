@@ -126,7 +126,7 @@ class DocmosisCommonElementDecoratorTest {
         }
 
         @Test
-        void shouldReturnNullWhenBlankOrderTitleNotProvided() {
+        void shouldReturnNullTitleWhenBlankOrderTitleNotProvided() {
             CaseData caseData = CASE_DATA.toBuilder().manageOrdersEventData(
                 ManageOrdersEventData.builder()
                     .manageOrdersType(Order.C21_BLANK_ORDER)

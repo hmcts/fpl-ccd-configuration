@@ -53,6 +53,7 @@ class OrderDocumentGeneratorHolderTest {
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator
         ));
 
+        verify(c21BlankOrderDocumentParameterGenerator).accept();
         verify(c32CareOrderDocumentParameterGenerator).accept();
     }
 
