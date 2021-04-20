@@ -46,7 +46,7 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
         List<String> errors = validateEpoEndDateTime(epoEndTime);
 
         final LocalDateTime rangeEnd = epoApprovalTime.plus(EPO_END_DATE_RANGE);
-        if (errors.isEmpty() && !epoEndTime.isAfter(rangeEnd)) {
+        if (errors.isEmpty() && epoEndTime.isAfter(rangeEnd)) {
             return List.of(END_DATE_RANGE_MESSAGE);
         }
 

@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL_ADDRESS;
 
 @Component
 public class EPOAddressPrePopulator implements QuestionBlockOrderPrePopulator {
@@ -15,7 +15,7 @@ public class EPOAddressPrePopulator implements QuestionBlockOrderPrePopulator {
 
     @Override
     public OrderQuestionBlock accept() {
-        return EPO_ORDER_DETAILS;
+        return EPO_REMOVAL_ADDRESS;
     }
 
     @Override

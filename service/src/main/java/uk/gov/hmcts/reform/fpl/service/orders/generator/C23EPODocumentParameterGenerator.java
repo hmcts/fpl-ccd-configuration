@@ -90,7 +90,8 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
             return null;
         }
 
-        return String.format("The Court directs that %s be excluded from %s from %s so that the child may continue to live "
+        return String.format("The Court directs that %s be excluded from %s from %s "
+                + "so that the child may continue to live "
                 + "there, consent to the exclusion requirement having been given by %s.",
             eventData.getManageOrdersWhoIsExcluded(),
             eventData.getManageOrdersEpoRemovalAddress(),

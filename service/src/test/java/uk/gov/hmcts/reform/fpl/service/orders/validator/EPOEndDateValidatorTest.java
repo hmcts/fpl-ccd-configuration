@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -12,16 +10,11 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_ORDER_DETAILS;
 
 class EPOEndDateValidatorTest {
-
-    private static final String INVALID_TIME = "Enter a valid time";
-    private static final String FUTURE_DATE = "Enter an end date in the future";
-    private static final String INVALID_END_DATE_RANGE = "Emergency protection orders cannot last longer than 8 days";
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
@@ -41,7 +34,7 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(FUTURE_DATE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of("Enter an end date in the future"));
     }
 
     @Test
@@ -53,11 +46,11 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(INVALID_TIME));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of("Enter a valid time"));
     }
 
     @Test
-    void validateEPOEndDateRangeNotInDateRange() {
+    void validateEPOEndDateWhenDateIsNotInRange() {
         final LocalDateTime approvalDate = time.now().minusDays(10);
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -66,15 +59,44 @@ class EPOEndDateValidatorTest {
                 .build())
             .build();
 
-            assertThat(underTest.validate(caseData)).isEqualTo(List.of(INVALID_END_DATE_RANGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(
+            List.of("Emergency protection orders cannot last longer than 8 days"));
     }
 
-    private static Stream<Arguments> epoEndDateRangeValues() {
-        LocalDateTime approvalDate = LocalDateTime.now().minusDays(12);
-        return Stream.of(
-            Arguments.of("date before approval date", approvalDate, approvalDate.minusDays(4), false),
-            Arguments.of("date not in expected range", approvalDate, approvalDate.plusDays(10), false),
-            Arguments.of("valid date", approvalDate, approvalDate.plusDays(5), true)
-        );
+    @Test
+    void validateEPOEndDateWhenDateIsInRange() {
+        final LocalDateTime approvalDate = time.now().minusDays(10);
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(approvalDate)
+                .manageOrdersEndDateTime(approvalDate.minusDays(1))
+                .build())
+            .build();
+
+        Assertions.assertThat(underTest.validate(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldNotValidateWhenApprovalDateIsNull() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(null)
+                .manageOrdersEndDateTime(time.now().minusDays(1))
+                .build())
+            .build();
+
+        Assertions.assertThat(underTest.validate(caseData)).isEmpty();
+    }
+
+    @Test
+    void shouldNotValidateWhenEPOEndDateDateIsNull() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDateTime(null)
+                .manageOrdersEndDateTime(null)
+                .build())
+            .build();
+
+        Assertions.assertThat(underTest.validate(caseData)).isEmpty();
     }
 }

@@ -19,8 +19,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class EPORemovalAddressValidator implements QuestionBlockOrderValidator {
 
-    private static final String INVALID_ADDRESS_LINE_MESSAGE = "Enter the postcode and select the address.";
-    private static final String INVALID_POST_CODE_MESSAGE = "Enter the postcode and select the address.";
+    private static final String INVALID_ADDRESS_LINE_MESSAGE = "Enter a valid address for the contact";
+    private static final String INVALID_POST_CODE_MESSAGE = "Enter a postcode for the contact";
 
     @Override
     public OrderQuestionBlock accept() {
