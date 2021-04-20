@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -100,5 +101,62 @@ class RespondentTest {
 
             assertTrue(respondent.isEmailEnteredWhenRequired());
         }
+    }
+
+    @Nested
+    class HasOrganisationRegistered {
+
+        private Respondent underTest;
+
+        @Test
+        void testIsRegistered() {
+            underTest = Respondent.builder()
+                .solicitor(RespondentSolicitor.builder()
+                    .organisation(Organisation.builder()
+                        .organisationID("someOrgId")
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.hasOrganisationRegistered()).isTrue();
+        }
+
+        @Test
+        void testIsNotRegisteredMissingOrgId() {
+            underTest = Respondent.builder()
+                .solicitor(RespondentSolicitor.builder()
+                    .organisation(Organisation.builder()
+                        .organisationID("")
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.hasOrganisationRegistered()).isFalse();
+        }
+
+        @Test
+        void testIsNotRegisteredMissingOrgIdNull() {
+            underTest = Respondent.builder()
+                .solicitor(RespondentSolicitor.builder()
+                    .organisation(Organisation.builder()
+                        .organisationID(null)
+                        .build())
+                    .build())
+                .build();
+
+            assertThat(underTest.hasOrganisationRegistered()).isFalse();
+        }
+
+        @Test
+        void testIsNotRegisteredMissingOrganisation() {
+            underTest = Respondent.builder()
+                .solicitor(RespondentSolicitor.builder()
+                    .organisation(null)
+                    .build())
+                .build();
+
+            assertThat(underTest.hasOrganisationRegistered()).isFalse();
+        }
+
     }
 }

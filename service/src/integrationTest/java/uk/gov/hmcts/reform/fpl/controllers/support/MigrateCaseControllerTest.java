@@ -9,15 +9,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -27,129 +29,107 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     }
 
     @Nested
-    class Fpla2947 {
-        String migrationId = "FPLA-2947";
-        UUID idOne = UUID.randomUUID();
-        UUID idTwo = UUID.randomUUID();
-        UUID idThree = UUID.randomUUID();
-        UUID idFour = UUID.randomUUID();
-        UUID idFive = UUID.randomUUID();
+    class Fpla2982 {
+        String migrationId = "FPLA-2982";
 
         @ParameterizedTest
-        @ValueSource(longs = {1602246223743823L, 1611588537917646L})
-        void shouldMigrateExpectedListElementCodes(Long caseId) {
-            Element<HearingBooking> hearingOne
-                = element(idOne, hearingBookingWithCancellationReason("OT8"));
+        @ValueSource(longs = {
+            1598429153622508L,
+            1615191831533551L,
+            1594384486007055L,
+            1601977974423857L,
+            1615571327261140L,
+            1615476016828466L,
+            1616507805759840L,
+            1610015759403189L,
+            1615994076934396L,
+            1611613172339094L,
+            1612440806991994L,
+            1607004182103389L,
+            1617045146450299L,
+            1612433400114865L,
+            1615890702114702L,
+            1610018233059619L})
+        void shouldMigrateMissingC2IdCase(Long caseId) {
+            CaseDetails caseDetails = caseDetails(migrationId,
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
+                    createOtherApplicationBundle(null))), caseId);
 
-            Element<HearingBooking> hearingTwo
-                = element(idTwo, hearingBookingWithCancellationReason("OT9"));
-
-            Element<HearingBooking> hearingThree
-                = element(idThree, hearingBookingWithCancellationReason("OT10"));
-
-            Element<HearingBooking> hearingFour
-                = element(idFour, hearingBookingWithCancellationReason("OT7"));
-
-            Element<HearingBooking> hearingFive
-                = element(idFive, hearingBookingWithCancellationReason(null));
-
-            List<Element<HearingBooking>> cancelledHearingBookings = List.of(
-                hearingOne, hearingTwo, hearingThree, hearingFour, hearingFive);
-
-            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings, caseId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getCancelledHearingDetails()).containsExactly(
-                element(idOne, hearingBookingWithCancellationReason("IN1")),
-                element(idTwo, hearingBookingWithCancellationReason("OT8")),
-                element(idThree, hearingBookingWithCancellationReason("OT9")),
-                element(idFour, hearingBookingWithCancellationReason("OT7")),
-                element(idFive, hearingBookingWithCancellationReason(null))
-            );
+            assertThat(!extractedCaseData.getAdditionalApplicationsBundle().isEmpty());
+
+            extractedCaseData.getAdditionalApplicationsBundle()
+                .forEach(bundle -> assertThat(bundle.getValue().getC2DocumentBundle().getId() != null));
         }
 
         @Test
-        void shouldNotUpdateListElementCodesWhenMigrationIsNotRequired() {
-            Element<HearingBooking> hearingOne
-                = element(idOne, hearingBookingWithCancellationReason("OT1"));
+        void shouldThrowExceptionForInvalidCaseId() {
+            CaseDetails caseDetails = caseDetails(migrationId,
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                    null)), 1234L);
 
-            Element<HearingBooking> hearingTwo
-                = element(idTwo, hearingBookingWithCancellationReason("OT3"));
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Invalid case Id");
+        }
 
-            List<Element<HearingBooking>> cancelledHearingBookings = List.of(hearingOne, hearingTwo);
+        @Test
+        void shouldThrowExceptionIfNoNullIdsFound() {
+            CaseDetails caseDetails = caseDetails(migrationId,
+                wrapElements(
+                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                        createOtherApplicationBundle(UUID.randomUUID())),
+                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                        null),
+                    createAdditionalApplicationBundle(null,
+                        createOtherApplicationBundle(UUID.randomUUID()))
+                ), 1601977974423857L);
 
-            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings, 1602246223743823L);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(cancelledHearingBookings);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
         }
 
         @Test
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-1111";
+            String incorrectMigrationId = "FPLA-9876";
 
-            Element<HearingBooking> hearingOne
-                = element(idOne, hearingBookingWithCancellationReason("OT8"));
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId,
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
+                    createOtherApplicationBundle(null))), 1615890702114702L);
 
-            Element<HearingBooking> hearingTwo
-                = element(idTwo, hearingBookingWithCancellationReason("OT9"));
-
-            Element<HearingBooking> hearingThree
-                = element(idThree, hearingBookingWithCancellationReason("OT10"));
-
-            Element<HearingBooking> hearingFour
-                = element(idFour, hearingBookingWithCancellationReason("OT7"));
-
-            List<Element<HearingBooking>> cancelledHearingBookings = List.of(
-                hearingOne, hearingTwo, hearingThree, hearingFour);
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, cancelledHearingBookings, 1602246223743823L);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(cancelledHearingBookings);
+            assertThat(!extractedCaseData.getAdditionalApplicationsBundle().isEmpty());
+
+            extractedCaseData.getAdditionalApplicationsBundle()
+                .forEach(bundle -> assertThat(bundle.getValue().getC2DocumentBundle().getId() == null));
         }
 
-        @Test
-        void shouldNotChangeCaseIfNotExpectedCaseId() {
-            Element<HearingBooking> hearingOne
-                = element(idOne, hearingBookingWithCancellationReason("OT8"));
-
-            Element<HearingBooking> hearingTwo
-                = element(idTwo, hearingBookingWithCancellationReason("OT9"));
-
-            Element<HearingBooking> hearingThree
-                = element(idThree, hearingBookingWithCancellationReason("OT10"));
-
-            Element<HearingBooking> hearingFour
-                = element(idFour, hearingBookingWithCancellationReason("OT7"));
-
-            List<Element<HearingBooking>> cancelledHearingBookings = List.of(
-                hearingOne, hearingTwo, hearingThree, hearingFour);
-
-            CaseDetails caseDetails = caseDetails(migrationId, cancelledHearingBookings, 1234L);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getCancelledHearingDetails()).isEqualTo(cancelledHearingBookings);
+        private C2DocumentBundle createC2DocumentBundle(UUID id) {
+            return C2DocumentBundle.builder().id(id).build();
         }
 
-        @Test
-        void shouldThrowAnErrorIfCaseDoesNotContainCancelledHearingBookings() {
-            CaseDetails caseDetails = caseDetails(migrationId, null, 1611588537917646L);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Case does not contain cancelled hearing bookings");
+        private OtherApplicationsBundle createOtherApplicationBundle(UUID id) {
+            return OtherApplicationsBundle.builder().id(id).build();
         }
 
-        private HearingBooking hearingBookingWithCancellationReason(String reasonCode) {
-            return HearingBooking.builder().cancellationReason(reasonCode).build();
+        private AdditionalApplicationsBundle createAdditionalApplicationBundle(
+            C2DocumentBundle c2DocumentBundle,
+            OtherApplicationsBundle otherApplicationsBundle) {
+            return AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2DocumentBundle)
+                .otherApplicationsBundle(otherApplicationsBundle)
+                .build();
         }
 
-        private CaseDetails caseDetails(String migrationId, List<Element<HearingBooking>> cancelledHearings,
+        private CaseDetails caseDetails(String migrationId,
+                                        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle,
                                         Long caseId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .additionalApplicationsBundle(additionalApplicationsBundle)
                 .id(caseId)
-                .cancelledHearingDetails(cancelledHearings)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
