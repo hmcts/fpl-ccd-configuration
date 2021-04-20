@@ -1,5 +1,11 @@
 #!groovy
 
+properties([
+    parameters([
+                string(name: 'XUI_TEST_URL_PARAM', defaultValue: '', description: 'XUI_TEST_URL_PARAM')
+        ])
+])
+
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
@@ -248,7 +254,7 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:aat') {
-    env.URL = "https://manage-case.aat.platform.hmcts.net"
+    env.URL = params.XUI_TEST_URL_PARAM
     env.TEST_CONF_FPL_URL = "http://fpl-case-service-staging.service.core-compute-aat.internal"
     env.SMOKE_TESTS_SELECTOR = "@skip-smoke-test"
     archiveCoreCaseDataDefinitions('aat')
