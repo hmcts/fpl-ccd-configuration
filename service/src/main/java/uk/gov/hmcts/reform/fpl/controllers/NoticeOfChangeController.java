@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseControllerDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -24,13 +26,17 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap.caseDetailsMap;
 public class NoticeOfChangeController extends CallbackController {
     private final IdamClient idamClient;
     private final RequestData requestData;
+    private final CaseControllerDataStoreApi caseControllerDataStoreApi;
+    private final AuthTokenGenerator authTokenGenerator;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseDetailsMap caseDetailsMap = caseDetailsMap(caseDetails);
 
-        caseDetailsMap.put("NoCUser", idamClient.getUserDetails(requestData.authorisation()));
+        Object auditEvents = caseControllerDataStoreApi.getAuditEvents(requestData.authorisation(), authTokenGenerator.generate(), false, caseDetails.getId().toString());
+
+//        caseDetailsMap.put("NoCUser", idamClient.getUserDetails(requestData.authorisation()));
 
         return respond(caseDetailsMap);
     }
