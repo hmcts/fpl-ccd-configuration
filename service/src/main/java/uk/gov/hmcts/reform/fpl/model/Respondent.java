@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
@@ -22,6 +23,7 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -84,6 +86,15 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
         String hiddenValue = defaultIfNull(party.getContactDetailsHidden(), "");
 
         return hiddenValue.equals("Yes");
+    }
+
+    @JsonIgnore
+    public boolean hasOrganisationRegistered() {
+        return Optional.ofNullable(getSolicitor()).flatMap(
+            solicitor -> Optional.ofNullable(solicitor.getOrganisation()).map(
+                organisation -> isNotBlank(organisation.getOrganisationID())
+            )
+        ).orElse(false);
     }
 
     @Override
