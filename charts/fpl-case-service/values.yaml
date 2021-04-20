@@ -10,6 +10,9 @@ xui-webapp:
 elastic:
   enabled: false
 
+aac-manage-case-assignment:
+  enabled: false
+
 java:
   aadIdentityName: family-public-law
   image: hmctspublic.azurecr.io/fpl/case-service:latest
