@@ -8,6 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -33,11 +35,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -83,10 +87,14 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     void mocks() {
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+            .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(uploadService.uploadDocument(eq(DOCUMENT_PDF_BINARIES), anyString(), eq("application/pdf")))
             .thenReturn(UPLOADED_PDF_DOCUMENT);
 
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(ORDER), eq(WORD)))
+            .thenReturn(DOCMOSIS_WORD_DOCUMENT);
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(WORD)))
             .thenReturn(DOCMOSIS_WORD_DOCUMENT);
         when(uploadService.uploadDocument(eq(DOCUMENT_WORD_BINARIES), anyString(), eq("application/msword")))
             .thenReturn(UPLOADED_WORD_DOCUMENT);
@@ -116,6 +124,47 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
                 .build())
         );
+    }
+
+    @Test
+    void shouldBuildNewEPOObject() {
+        final ManageOrdersEventData manageOrdersEventData = buildManageOrdersEventData();
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(manageOrdersEventData).build();
+
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseCaseData.getOrderCollection()).containsOnly(
+            element(ELEMENT_ID, GeneratedOrder.builder()
+                .orderType("C23_EMERGENCY_PROTECTION_ORDER")
+                .title("C23 - Emergency protection order")
+                .children(CHILDREN)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Dredd")
+                    .build())
+                .dateTimeIssued(now())
+                .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
+                .expiryDateTime(manageOrdersEventData.getManageOrdersEndDateTime())
+                .childrenDescription("first1 last1, first2 last2")
+                .document(DOCUMENT_PDF_REFERENCE)
+                .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
+                .build()));
+    }
+
+    private ManageOrdersEventData buildManageOrdersEventData() {
+        return ManageOrdersEventData.builder()
+            .manageOrdersApprovalDateTime(now().minusDays(8))
+            .manageOrdersEndDateTime(now().minusDays(1))
+            .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
+            .manageOrdersEpoType(EPOType.PREVENT_REMOVAL)
+            .manageOrdersEpoRemovalAddress(Address.builder().addressLine1("address1").postcode("postcode").build())
+            .manageOrdersChildrenDescription("first1 last1, first2 last2")
+            .manageOrdersFurtherDirections("test directions")
+            .manageOrdersExclusionRequirement("Yes")
+            .manageOrdersWhoIsExcluded("John")
+            .manageOrdersExclusionStartDate(dateNow().plusDays(2))
+            .manageOrdersPowerOfArrest(DOCUMENT_PDF_REFERENCE)
+            .build();
     }
 
     @Test

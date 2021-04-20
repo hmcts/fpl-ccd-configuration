@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeForTabView;
 
@@ -47,9 +49,12 @@ public class SealedOrderHistoryService {
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
             .title(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
-            .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
+            .judgeAndLegalAdvisor(
+                getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
+            .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
+            .expiryDateTime(manageOrdersEventData.getManageOrdersEndDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder)
