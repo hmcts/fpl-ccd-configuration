@@ -47,6 +47,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
+    "ListElementCode": "epoRemovalAddress",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "epoRemovalAddress=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "epoExclusion",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "epoExclusion=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
     "ListElementCode": "furtherDirections",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
