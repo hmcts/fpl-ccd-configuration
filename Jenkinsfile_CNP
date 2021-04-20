@@ -2,7 +2,7 @@
 
 properties([
     parameters([
-                string(name: 'XUI_TEST_URL_PARAM', defaultValue: '', description: 'XUI_TEST_URL_PARAM')
+                string(name: 'XUI_TEST_URL_PARAM', defaultValue: 'https://manage-case.aat.platform.hmcts.net', description: 'XUI_TEST_URL_PARAM')
         ])
 ])
 
