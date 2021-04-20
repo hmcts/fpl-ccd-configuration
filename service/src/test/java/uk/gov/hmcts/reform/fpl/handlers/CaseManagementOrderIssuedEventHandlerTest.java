@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
 import java.util.Map;
@@ -62,8 +63,11 @@ class CaseManagementOrderIssuedEventHandlerTest {
     @Mock
     private CoreCaseDataService coreCaseDataService;
 
+    @Mock
+    private RepresentativesInbox representativesInbox;
+
     @InjectMocks
-    private CaseManagementOrderIssuedEventHandler caseManagementOrderIssuedEventHandler;
+    private CaseManagementOrderIssuedEventHandler underTest;
 
     private final IssuedCMOTemplate digitalRepCMOTemplateData
         = IssuedCMOTemplate.builder().familyManCaseNumber("1").build();
@@ -95,6 +99,10 @@ class CaseManagementOrderIssuedEventHandlerTest {
             new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, CAFCASS_EMAIL_ADDRESS);
 
         when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
+        when(representativesInbox.getEmailsByPreference(caseData, EMAIL)).thenReturn(Set.of("fred@flinstone.com",
+            "barney@rubble.com"));
+        when(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).thenReturn(Set.of(
+            "fred@flinstone.com"));
 
         given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(caseData, cmo,
             DIGITAL_SERVICE))
@@ -104,7 +112,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
             EMAIL))
             .willReturn(emailRepCMOTemplateData);
 
-        caseManagementOrderIssuedEventHandler.notifyParties(event);
+        underTest.notifyParties(event);
 
         verify(notificationService).sendEmail(
             CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE,
@@ -140,7 +148,7 @@ class CaseManagementOrderIssuedEventHandlerTest {
     void shouldNotifyPostRepresentatives() {
         HearingOrder cmo = buildCmo();
 
-        caseManagementOrderIssuedEventHandler.sendDocumentToPostRepresentatives(event);
+        underTest.sendDocumentToPostRepresentatives(event);
 
         verify(coreCaseDataService).triggerEvent(JURISDICTION,
             CASE_TYPE,
