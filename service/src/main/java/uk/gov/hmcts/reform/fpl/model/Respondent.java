@@ -42,10 +42,18 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();
 
-    @NotNull(message = "Select if the respondent needs representation", groups = RespondentSolicitorGroup.class)
     private String legalRepresentation;
 
     private RespondentSolicitor solicitor;
+
+    @JsonIgnore
+    @AssertTrue(message = "Select if the respondent needs representation", groups = RespondentSolicitorGroup.class)
+    public boolean isLegalRepresentationSelectedWhenNoExistingRepresentation() {
+        if (isNotEmpty(representedBy)) {
+            return true;
+        }
+        return legalRepresentation != null;
+    }
 
     @JsonIgnore
     @AssertTrue(message = "Add the details for respondent solicitors", groups = RespondentSolicitorGroup.class)

@@ -4,10 +4,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 
+import java.util.List;
+
+import static java.util.UUID.randomUUID;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class RespondentTest {
 
@@ -100,5 +104,31 @@ class RespondentTest {
 
             assertTrue(respondent.isEmailEnteredWhenRequired());
         }
+    }
+
+    @Test
+    void shouldReturnTrueWhenRepresentedByNotSet() {
+        Respondent respondent = Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .build();
+
+        assertTrue(respondent.isLegalRepresentationSelectedWhenNoExistingRepresentation());
+    }
+
+    @Test
+    void shouldReturnFalseWhenNoLegalRepresentation() {
+        Respondent respondent = Respondent.builder()
+            .build();
+
+        assertFalse(respondent.isLegalRepresentationSelectedWhenNoExistingRepresentation());
+    }
+
+    @Test
+    void shouldReturnTrueWhenRepresentedBySet() {
+        Respondent respondent = Respondent.builder()
+            .representedBy(List.of(element(randomUUID())))
+            .build();
+
+        assertTrue(respondent.isLegalRepresentationSelectedWhenNoExistingRepresentation());
     }
 }
