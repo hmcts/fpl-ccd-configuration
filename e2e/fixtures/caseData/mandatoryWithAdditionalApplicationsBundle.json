@@ -188,7 +188,7 @@
             "type": "WITHOUT_NOTICE",
             "author": "HMCTS",
             "document": {
-              "document_url": "http://dm-store:8080/documents/29dbd747-f70d-4ef2-ac52-86520e0d3a1a",
+              "document_url": "${DM_STORE_URL}/documents/29dbd747-f70d-4ef2-ac52-86520e0d3a1a",
               "document_filename": "Test.txt",
               "document_binary_url": "${DM_STORE_URL}/documents/9e5d0a2c-8884-46ba-a147-dd0ca6b9e684/binary"
             },
@@ -206,7 +206,7 @@
             "id": "85bb3a49-e178-4a3a-ad73-165005d8c4bf",
             "author": "HMCTS",
             "document": {
-              "document_url": "http://dm-store:8080/documents/a6e375ca-c38d-4f4a-88b8-63a5ba428f96",
+              "document_url": "${DM_STORE_URL}/documents/a6e375ca-c38d-4f4a-88b8-63a5ba428f96",
               "document_filename": "Test.txt",
               "document_binary_url": "${DM_STORE_URL}/documents/a928c836-5d25-41d7-a6bd-d973f2c326b1/binary"
             },

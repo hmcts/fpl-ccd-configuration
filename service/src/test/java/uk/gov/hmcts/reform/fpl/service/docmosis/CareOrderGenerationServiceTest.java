@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import static java.lang.String.format;
@@ -33,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.EN
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CareOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class, ChildrenService.class})
+    FixedTimeConfiguration.class, ChildrenService.class, CaseDetailsHelper.class})
 class CareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     private static final String EXAMPLE_EXCLUSION_CLAUSE = "Example Exclusion Clause";

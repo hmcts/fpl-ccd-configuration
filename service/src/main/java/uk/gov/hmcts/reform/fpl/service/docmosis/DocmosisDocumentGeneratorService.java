@@ -13,6 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
@@ -21,7 +22,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DocmosisDocumentGeneratorService {
     private final RestTemplate restTemplate;
     private final DocmosisConfiguration configuration;
@@ -31,30 +32,34 @@ public class DocmosisDocumentGeneratorService {
         return generateDocmosisDocument(templateData.toMap(mapper), template);
     }
 
+    // REFACTOR: 08/04/2021 Remove this method in subsequent PR
     public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData, DocmosisTemplates template) {
+        return generateDocmosisDocument(templateData, template, RenderFormat.PDF);
+    }
+
+    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData, DocmosisTemplates template,
+                                                     RenderFormat format) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         DocmosisRequest requestBody = DocmosisRequest.builder()
             .templateName(template.getTemplate())
             .data(templateData)
-            .outputFormat("pdf")
+            .outputFormat(format.getExtension())
             .outputName("IGNORED")
             .accessKey(configuration.getAccessKey())
             .build();
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
 
-        byte[] response;
-
         try {
-            response = restTemplate.exchange(configuration.getUrl() + "/rs/render",
-                HttpMethod.POST, request, byte[].class).getBody();
+            byte[] response = restTemplate.exchange(
+                configuration.getUrl() + "/rs/render", HttpMethod.POST, request, byte[].class)
+                .getBody();
+            return new DocmosisDocument(template.getDocumentTitle(), response);
         } catch (HttpClientErrorException.BadRequest ex) {
             log.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
         }
-
-        return new DocmosisDocument(template.getDocumentTitle(), response);
     }
 }

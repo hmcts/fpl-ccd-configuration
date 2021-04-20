@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
@@ -887,6 +888,10 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final SyntheticCaseSummary syntheticCaseSummary = SyntheticCaseSummary.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
 
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;

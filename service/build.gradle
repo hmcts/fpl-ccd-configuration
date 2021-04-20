@@ -3,7 +3,10 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.4")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
+      exclude group: 'com.vladsch.flexmark'
+    }
   }
 }
 
@@ -14,12 +17,11 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'org.springframework.boot' version '2.4.3'
+  id 'org.springframework.boot' version '2.4.5'
   id 'com.github.ben-manes.versions' version '0.36.0'
   id 'org.sonarqube' version '3.1.1'
   id 'project-report'
   id "idea"
-  id 'au.com.dius.pact' version '4.2.3'
   id 'info.solidsoft.pitest' version '1.6.0'
 }
 
@@ -27,6 +29,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: 'au.com.dius.pact'
 
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
@@ -289,7 +292,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.7.3'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.8.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
