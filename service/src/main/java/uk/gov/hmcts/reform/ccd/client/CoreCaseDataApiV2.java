@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.fpl.model.AuditEventsResponse;
 
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public interface CoreCaseDataApiV2 {
         @RequestBody CaseDataContent content);
 
     @GetMapping("/cases/{caseId}/events")
-    Object getAuditEvents(
+    AuditEventsResponse getAuditEvents(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestHeader("experimental") boolean experimental,
