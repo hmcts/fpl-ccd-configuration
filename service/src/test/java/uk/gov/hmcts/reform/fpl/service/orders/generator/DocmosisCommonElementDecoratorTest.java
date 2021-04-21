@@ -95,32 +95,10 @@ class DocmosisCommonElementDecoratorTest {
         assertThat(decorated).isEqualTo(expectedParameters);
     }
 
-    @Test
-    void shouldUseGeneratorTitleIfGeneratorTitlePresent() {
-        String generatorTitle = "Generator Title";
-
-        C21BlankOrderDocmosisParameters c21BlankOrderDocmosisParameters = C21BlankOrderDocmosisParameters.builder()
-            .orderTitle(generatorTitle)
-            .build();
-
-        DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderTitle(generatorTitle)
-            .courtseal(SEAL)
-            .build();
-
-        DocmosisParameters decorated = underTest.decorate(c21BlankOrderDocmosisParameters,
-            CASE_DATA,
-            SEALED,
-            ORDER_TYPE);
-
-        assertThat(decorated).isEqualTo(expectedParameters);
-    }
-
     private C21BlankOrderDocmosisParameters.C21BlankOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters() {
         return C21BlankOrderDocmosisParameters.builder()
             .familyManCaseNumber(FAM_MAN_CASE_NUM)
             .ccdCaseNumber(FORMATTED_CASE_NUMBER)
-            .orderTitle(TITLE)
             .childrenAct(CHILDREN_ACT)
             .judgeAndLegalAdvisor(DOCMOSIS_JUDGE)
             .courtName(COURT_NAME)

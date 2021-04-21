@@ -5,6 +5,7 @@ const caseData = require('../fixtures/caseData/gatekeepingFullDetails.json');
 
 const approvalDate = {year: 2021, month: 4, day: 9};
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
+const orderTitle = 'some title';
 let caseId;
 
 Feature('HMCTS Admin manages orders');
@@ -30,7 +31,7 @@ Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, 1, 'C32 - Care order', approvalDate, allocatedJudge, 'Timothy Jones');
+  assertOrder(I, caseViewPage, 1, 'C32 - Care order', null, approvalDate, allocatedJudge, 'Timothy Jones');
 });
 
 Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
@@ -45,15 +46,16 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
+  await manageOrdersEventPage.enterTitle(orderTitle);
   await manageOrdersEventPage.enterDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, 2, 'C21 - Blank order', approvalDate, allocatedJudge, 'Timothy Jones');
+  assertOrder(I, caseViewPage, 2, 'C21 - Blank order', 'some title', approvalDate, allocatedJudge, 'Timothy Jones');
 });
 
-function assertOrder(I, caseViewPage, orderIndex, orderType, approvalDate, judge, children) {
+function assertOrder(I, caseViewPage, orderIndex, orderType, orderTitle, approvalDate, judge, children) {
   const orderElement = `Order ${orderIndex}`;
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab([orderElement, 'Type of order'], orderType);
@@ -61,4 +63,8 @@ function assertOrder(I, caseViewPage, orderIndex, orderType, approvalDate, judge
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], judge.title);
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], judge.name);
   I.seeInTab([orderElement, 'Children'], children);
+
+  if(orderTitle != null){
+    I.seeInTab([orderElement, 'Order title'], orderTitle);
+  }
 }

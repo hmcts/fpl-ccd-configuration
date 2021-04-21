@@ -47,7 +47,6 @@ public class DocmosisCommonElementDecorator {
             extractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
         return currentParameters.toBuilder()
-            .orderTitle(getOrderTitle(currentParameters, orderType))
             .childrenAct(orderType.getChildrenAct())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
@@ -59,11 +58,5 @@ public class DocmosisCommonElementDecorator {
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
             .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue() : null)
             .build();
-    }
-
-    private String getOrderTitle(DocmosisParameters currentParameters, Order orderType) {
-        String orderTitle = currentParameters.getOrderTitle();
-
-        return orderTitle != null ? orderTitle : orderType.getTitle();
     }
 }

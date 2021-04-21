@@ -2,30 +2,27 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C21BlankOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
+@ExtendWith({SpringExtension.class})
 class C21BlankOrderDocumentParameterGeneratorTest {
 
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
-    private static final Child CHILD = mock(Child.class);
     private static final GeneratedOrderType TYPE = GeneratedOrderType.BLANK_ORDER;
     private static final String TITLE = "Test title";
     private static final String DIRECTIONS = "Test directions";
@@ -38,22 +35,15 @@ class C21BlankOrderDocumentParameterGeneratorTest {
             .build())
         .build();
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
-    private final LocalAuthorityNameLookupConfiguration laNameLookup = mock(
-        LocalAuthorityNameLookupConfiguration.class
-    );
+    @Mock
+    private LocalAuthorityNameLookupConfiguration laNameLookup;
 
-    private final C21BlankOrderDocumentParameterGenerator underTest = new C21BlankOrderDocumentParameterGenerator(
-        laNameLookup
-    );
+    @InjectMocks
+    private C21BlankOrderDocumentParameterGenerator underTest;
 
     @BeforeEach
     void setUp() {
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
     }
 
     @Test

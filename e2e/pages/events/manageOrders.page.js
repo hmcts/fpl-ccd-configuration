@@ -78,6 +78,11 @@ const selectChildren = async (option, indexes = []) => {
   await I.runAccessibilityTest();
 };
 
+const enterTitle = async (text) => {
+  I.fillField(section4.title, text);
+  await I.runAccessibilityTest();
+};
+
 const enterDirections = async (text) => {
   I.fillField(section4.directions, text);
   await I.runAccessibilityTest();
@@ -95,6 +100,6 @@ const checkPreview = async () => {
 
 module.exports = {
   operations, orders, section2, section3, section4,
-  selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterDirections,
+  selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview,
 };
