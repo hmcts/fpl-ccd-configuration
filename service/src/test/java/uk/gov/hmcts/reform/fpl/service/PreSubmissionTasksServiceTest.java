@@ -44,8 +44,8 @@ class PreSubmissionTasksServiceTest {
         final String changeCaseNameMessage = "Change case name";
         when(eventsChecker.validate(Event.CASE_NAME, caseData)).thenReturn(List.of(changeCaseNameMessage));
 
-        List<EventValidation> eventValidationsForSubmission = preSubmissionTasksService.getEventValidationsForSubmission(
-            caseData);
+        List<EventValidation> eventValidationsForSubmission =
+            preSubmissionTasksService.getEventValidationsForSubmission(caseData);
 
         assertThat(eventValidationsForSubmission.contains(EventValidation.builder()
             .event(Event.CASE_NAME)
