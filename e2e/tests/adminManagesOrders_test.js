@@ -33,6 +33,26 @@ Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage
   assertOrder(I, caseViewPage, 1, 'C32 - Care order', approvalDate, allocatedJudge, 'Timothy Jones');
 });
 
+Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c21);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterDirections('some text');
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, 2, 'C21 - Blank order', approvalDate, allocatedJudge, 'Timothy Jones');
+});
+
 function assertOrder(I, caseViewPage, orderIndex, orderType, approvalDate, judge, children) {
   const orderElement = `Order ${orderIndex}`;
   caseViewPage.selectTab(caseViewPage.tabs.orders);

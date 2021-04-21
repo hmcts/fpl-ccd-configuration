@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -20,6 +21,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class OrderDocumentGeneratorHolderTest {
+
+    private List<DocmosisParameterGenerator> generators;
 
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
@@ -33,8 +36,9 @@ class OrderDocumentGeneratorHolderTest {
 
     @BeforeEach
     void setUp() {
-        when(c21BlankOrderDocumentParameterGenerator.accept()).thenCallRealMethod();
-        when(c32CareOrderDocumentParameterGenerator.accept()).thenCallRealMethod();
+        generators = List.of(c32CareOrderDocumentParameterGenerator, c21BlankOrderDocumentParameterGenerator);
+
+        generators.forEach(generator -> when(generator.accept()).thenCallRealMethod());
     }
 
     @Test
@@ -53,8 +57,6 @@ class OrderDocumentGeneratorHolderTest {
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator
         ));
 
-        verify(c21BlankOrderDocumentParameterGenerator).accept();
-        verify(c32CareOrderDocumentParameterGenerator).accept();
+        generators.forEach(generator -> verify(generator).accept());
     }
-
 }

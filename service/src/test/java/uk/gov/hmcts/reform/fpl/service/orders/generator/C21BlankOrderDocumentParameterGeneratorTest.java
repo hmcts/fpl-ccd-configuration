@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-public class C21BlankOrderDocumentParameterGeneratorTest {
+class C21BlankOrderDocumentParameterGeneratorTest {
 
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
@@ -46,6 +47,15 @@ public class C21BlankOrderDocumentParameterGeneratorTest {
         laNameLookup
     );
 
+    @BeforeEach
+    void setUp() {
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+
+        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+    }
+
     @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C21_BLANK_ORDER);
@@ -53,24 +63,39 @@ public class C21BlankOrderDocumentParameterGeneratorTest {
 
     @Test
     void generate() {
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
-
-        C21BlankOrderDocmosisParameters expectedParameters = C21BlankOrderDocmosisParameters.builder()
-            .orderDetails(DIRECTIONS)
-            .localAuthorityName(LA_NAME)
-            .orderType(TYPE)
-            .build();
-
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
-        assertThat(generatedParameters).isEqualTo(expectedParameters);
+        assertThat(generatedParameters).isEqualTo(expectedCommonParameters().build());
     }
 
     @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER);
+    }
+
+    @Test
+    void shouldReturnDefaultTitleWhenBlankOrderTitleNotProvided() {
+
+        CaseData caseData = CASE_DATA.toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(Order.C21_BLANK_ORDER)
+                .manageOrdersDirections(DIRECTIONS)
+                .build())
+            .build();
+
+        DocmosisParameters expectedParameters = expectedCommonParameters()
+            .orderTitle("Order")
+            .build();
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    private C21BlankOrderDocmosisParameters.C21BlankOrderDocmosisParametersBuilder<?,?> expectedCommonParameters() {
+        return C21BlankOrderDocmosisParameters.builder()
+            .orderTitle(TITLE)
+            .orderDetails(DIRECTIONS)
+            .localAuthorityName(LA_NAME)
+            .orderType(TYPE);
     }
 }

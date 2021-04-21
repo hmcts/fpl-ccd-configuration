@@ -9,6 +9,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
+    "PageShowCondition": "orderTempQuestions.furtherDirections=\"YES\" OR orderTempQuestions.orderDetails=\"YES\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/order-details/mid-event",
     "ShowSummaryChangeOption": "N"
   },

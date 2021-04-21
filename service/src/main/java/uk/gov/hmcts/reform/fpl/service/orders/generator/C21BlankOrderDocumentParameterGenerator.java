@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C21BlankOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C21BlankOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
@@ -33,6 +35,7 @@ public class C21BlankOrderDocumentParameterGenerator implements DocmosisParamete
         String localAuthorityName = laNameLookup.getLocalAuthorityName(localAuthorityCode);
 
         return C21BlankOrderDocmosisParameters.builder()
+            .orderTitle(getOrderTitle(caseData))
             .orderType(TYPE)
             .orderDetails(eventData.getManageOrdersDirections())
             .localAuthorityName(localAuthorityName)
@@ -42,5 +45,11 @@ public class C21BlankOrderDocumentParameterGenerator implements DocmosisParamete
     @Override
     public DocmosisTemplates template() {
         return DocmosisTemplates.ORDER;
+    }
+
+    private String getOrderTitle(CaseData caseData) {
+        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
+        String orderTitle = eventData.getManageOrdersTitle();
+        return isBlank(orderTitle) ? "Order" : orderTitle;
     }
 }

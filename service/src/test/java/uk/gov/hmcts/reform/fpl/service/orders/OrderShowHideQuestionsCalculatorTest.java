@@ -16,19 +16,13 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
-    @ParameterizedTest
-    @MethodSource("blankOrderWithExpectedMap")
-    void calculateBlankOrder(Order order, Map<String,String> expectedShowHideMap) {
-        assertThat(underTest.calculate(C21_BLANK_ORDER)).isEqualTo(expectedShowHideMap);
+    @ParameterizedTest(name = "Show hide map for {0}")
+    @MethodSource("orderWithExpectedMap")
+    void calculate(Order order, Map<String,String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order)).isEqualTo(expectedShowHideMap);
     }
 
-    @ParameterizedTest
-    @MethodSource("careOrderWithExpectedMap")
-    void calculateCareOrder(Order order, Map<String,String> expectedShowHideMap) {
-        assertThat(underTest.calculate(Order.C32_CARE_ORDER)).isEqualTo(expectedShowHideMap);
-    }
-
-    private static Stream<Arguments> careOrderWithExpectedMap() {
+    private static Stream<Arguments> orderWithExpectedMap() {
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, Map.of(
                 "approvalDate", "YES",
@@ -37,13 +31,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 "furtherDirections", "YES",
                 "orderDetails", "NO",
                 "whichChildren", "YES"
-            ))
-
-        );
-    }
-
-    private static Stream<Arguments> blankOrderWithExpectedMap() {
-        return Stream.of(
+            )),
             Arguments.of(C21_BLANK_ORDER, Map.of(
                 "approvalDate", "YES",
                 "approver", "YES",
@@ -52,7 +40,6 @@ class OrderShowHideQuestionsCalculatorTest {
                 "orderDetails", "YES",
                 "whichChildren", "YES"
             ))
-
         );
     }
 }
