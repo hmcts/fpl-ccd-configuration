@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +10,13 @@ import uk.gov.hmcts.reform.fpl.exceptions.HearingNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
-import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -34,8 +29,8 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
-    private final GeneratedOrderService generatedOrderService;
     private final Time time;
+    private final OrderIssuedEmailContentProviderTypeOfOrderCalculator typeCalculator;
 
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final DocumentReference orderDocument,
@@ -74,45 +69,16 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    public AllocatedJudgeTemplateForGeneratedOrder buildAllocatedJudgeOrderIssuedNotification(CaseData caseData) {
-
-        JudgeAndLegalAdvisor judge = getAllocatedJudge(caseData);
-
-        return AllocatedJudgeTemplateForGeneratedOrder.builder()
-            .orderType(getTypeOfOrder(caseData, GENERATED_ORDER))
-            .callout(buildCalloutWithNextHearing(caseData, time.now()))
-            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .judgeTitle(judge.getJudgeOrMagistrateTitle())
-            .judgeName(judge.getJudgeName())
-            .build();
-    }
-
     private OrderIssuedNotifyData commonOrderIssuedNotifyData(
         final CaseData caseData,
         final IssuedOrderType issuedOrderType) {
         return OrderIssuedNotifyData.builder()
             .respondentLastName(getFirstRespondentLastName(caseData))
-            .orderType(getTypeOfOrder(caseData, issuedOrderType))
+            .orderType(typeCalculator.getTypeOfOrder(caseData, issuedOrderType))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
             .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
                 ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
-    }
-
-    private JudgeAndLegalAdvisor getAllocatedJudge(CaseData caseData) {
-        return generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData);
-    }
-
-    private String getTypeOfOrder(CaseData caseData, IssuedOrderType issuedOrderType) {
-        String orderType;
-        if (issuedOrderType == GENERATED_ORDER) {
-            orderType = Iterables.getLast(caseData.getOrderCollection()).getValue().getType();
-        } else {
-            orderType = issuedOrderType.getLabel();
-        }
-
-        return orderType.toLowerCase();
     }
 
 }

@@ -18,8 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -42,11 +44,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     NotificationService.class,
     ObjectMapper.class,
     CaseUrlService.class,
-    RepresentativeNotificationService.class
+    RepresentativeNotificationService.class,
+    RepresentativesInbox.class
 })
 class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
     @MockBean
     private SendDocumentService sendDocumentService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;

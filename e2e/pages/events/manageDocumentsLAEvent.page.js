@@ -7,7 +7,7 @@ module.exports = {
     documentType: {
       furtherEvidence: '#manageDocumentLA_type-FURTHER_EVIDENCE_DOCUMENTS',
       correspondence: '#manageDocumentLA_type-CORRESPONDENCE',
-      c2: '#manageDocumentLA_type-C2',
+      additionalApplications: '#manageDocumentLA_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
       courtBundle: '#manageDocumentLA_type-COURT_BUNDLE',
     },
     relatedToHearing: {
@@ -49,17 +49,16 @@ module.exports = {
     I.click(this.fields.documentType.correspondence);
   },
 
-  async selectC2SupportingDocuments() {
-    I.click(this.fields.documentType.c2);
+  async selectAdditionalApplicationsSupportingDocuments() {
+    I.click(this.fields.documentType.additionalApplications);
   },
 
   async selectCourtBundle() {
     I.click(this.fields.documentType.courtBundle);
   },
 
-  async selectC2() {
-    I.click(this.fields.documentType.c2);
-    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(2)`);
+  async selectApplicationBundleFromDropdown(index) {
+    const dropdownLabel = await I.grabTextFrom(`${this.fields.c2DocumentsList} option:nth-child(${index})`);
     I.waitForElement(this.fields.c2DocumentsList);
     I.selectOption(this.fields.c2DocumentsList, dropdownLabel);
   },
@@ -153,7 +152,6 @@ module.exports = {
   async uploadCorrespondenceDocuments(supportingEvidenceDocument) {
     await this.enterDocumentName(supportingEvidenceDocument.name);
     await this.enterDocumentNotes(supportingEvidenceDocument.notes);
-    await this.enterDateAndTimeReceived(supportingEvidenceDocument.date);
     await this.uploadDocument(supportingEvidenceDocument.document);
     await I.runAccessibilityTest();
   },

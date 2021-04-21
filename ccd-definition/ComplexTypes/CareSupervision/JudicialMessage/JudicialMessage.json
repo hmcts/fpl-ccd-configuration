@@ -71,7 +71,7 @@
     "ID": "JudicialMessage",
     "ListElementCode": "latestMessage",
     "FieldType": "TextArea",
-    "ElementLabel": "Message",
+    "ElementLabel": "Latest message",
     "SecurityClassification": "Public",
     "FieldShowCondition": "status!=\"CLOSED\""
   },
@@ -110,6 +110,14 @@
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "relatedDocuments=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudicialMessage",
+    "ListElementCode": "applicationType",
+    "FieldType": "Text",
+    "ElementLabel": "Application",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",

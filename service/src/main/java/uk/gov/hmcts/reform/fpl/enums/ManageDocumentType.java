@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ManageDocumentType {
-    FURTHER_EVIDENCE_DOCUMENTS("Further evidence documents"),
+    FURTHER_EVIDENCE_DOCUMENTS("Further evidence documents for main application"),
     CORRESPONDENCE("Correspondence"),
-    C2("C2 supporting documents");
+    ADDITIONAL_APPLICATIONS_DOCUMENTS("Documents for additional applications");
 
     private final String label;
 }

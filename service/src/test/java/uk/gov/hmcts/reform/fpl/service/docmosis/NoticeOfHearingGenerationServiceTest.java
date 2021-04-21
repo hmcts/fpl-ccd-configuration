@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -51,12 +52,16 @@ class NoticeOfHearingGenerationServiceTest {
         .judgeTitleAndName("Her Honour Judge Law")
         .legalAdvisorName("Watson")
         .build();
+    private static final long CASE_NUMBER = 1234123412341234L;
+    private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
     private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 3, 3, 3));
     private final CaseDataExtractionService dataExtractionService = mock(CaseDataExtractionService.class);
+    private final CaseDetailsHelper caseDetailsHelper = mock(CaseDetailsHelper.class);
+
     private final NoticeOfHearingGenerationService underTest = new NoticeOfHearingGenerationService(
-        dataExtractionService, courtLookup, time
+        dataExtractionService, courtLookup, caseDetailsHelper, time
     );
 
     @BeforeEach
@@ -78,6 +83,7 @@ class NoticeOfHearingGenerationServiceTest {
                 .hearingLegalAdvisorName("should also be removed")
                 .build()
         );
+        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
     }
 
     @Test
@@ -150,6 +156,7 @@ class NoticeOfHearingGenerationServiceTest {
 
     private CaseData getCaseData(Judge allocatedJudge) {
         return CaseData.builder()
+            .id(CASE_NUMBER)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
             .children1(CHILDREN)
             .allocatedJudge(allocatedJudge)
@@ -163,6 +170,7 @@ class NoticeOfHearingGenerationServiceTest {
                                                                        DocmosisJudgeAndLegalAdvisor judgeAndLA) {
         return DocmosisNoticeOfHearing.builder()
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .children(DOCMOSIS_CHILDREN)
             .hearingBooking(
                 DocmosisHearingBooking.builder()

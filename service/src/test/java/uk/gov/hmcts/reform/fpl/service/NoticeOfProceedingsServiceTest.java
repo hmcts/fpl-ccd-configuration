@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.NoticeOfHearingGenerationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -53,9 +54,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = { JacksonAutoConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
+@SpringBootTest(classes = {JacksonAutoConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     HearingVenueLookUpService.class, FixedTimeConfiguration.class, NoticeOfHearingGenerationService.class,
-    LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class})
+    LookupTestConfig.class, DocmosisConfiguration.class, NoticeOfProceedingsService.class, CaseDetailsHelper.class})
 class NoticeOfProceedingsServiceTest {
     private static final String JUDGE_SURNAME = "Davidson";
     private static final byte[] PDF = {1, 2, 3, 4, 5};
