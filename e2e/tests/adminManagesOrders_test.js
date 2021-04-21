@@ -31,7 +31,13 @@ Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, 1, 'C32 - Care order', null, approvalDate, allocatedJudge, 'Timothy Jones');
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
+    orderType: 'C32 - Care order',
+    approvalDate: approvalDate,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
 });
 
 Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
@@ -52,19 +58,26 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, 2, 'C21 - Blank order', 'some title', approvalDate, allocatedJudge, 'Timothy Jones');
+  assertOrder(I, caseViewPage, {
+    orderIndex: 2,
+    orderType: 'C21 - Blank order',
+    orderTitle: orderTitle,
+    approvalDate: approvalDate,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
 });
 
-function assertOrder(I, caseViewPage, orderIndex, orderType, orderTitle, approvalDate, judge, children) {
-  const orderElement = `Order ${orderIndex}`;
+function assertOrder(I, caseViewPage, order) {
+  const orderElement = `Order ${order.orderIndex}`;
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab([orderElement, 'Type of order'], orderType);
-  I.seeInTab([orderElement, 'Approval date'], dateFormat(dateToString(approvalDate), 'd mmm yyyy'));
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], judge.title);
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], judge.name);
-  I.seeInTab([orderElement, 'Children'], children);
+  I.seeInTab([orderElement, 'Type of order'], order.orderType);
+  I.seeInTab([orderElement, 'Approval date'], dateFormat(dateToString(order.approvalDate), 'd mmm yyyy'));
+  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge);
+  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge);
+  I.seeInTab([orderElement, 'Children'], order.children);
 
-  if(orderTitle != null){
+  if (order.title !== undefined) {
     I.seeInTab([orderElement, 'Order title'], orderTitle);
   }
 }

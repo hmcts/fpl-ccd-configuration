@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C21BlankOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
@@ -43,7 +43,7 @@ class DocmosisCommonElementDecoratorTest {
     private static final DocmosisJudgeAndLegalAdvisor DOCMOSIS_JUDGE = mock(DocmosisJudgeAndLegalAdvisor.class);
     private static final List<Element<Child>> CHILDREN = wrapElements(mock(Child.class));
     private static final List<DocmosisChild> DOCMOSIS_CHILDREN = List.of(mock(DocmosisChild.class));
-    private static final DocmosisParameters DOCMOSIS_PARAMETERS = C21BlankOrderDocmosisParameters.builder().build();
+    private static final DocmosisParameters DOCMOSIS_PARAMETERS = C32CareOrderDocmosisParameters.builder().build();
     private static final Order ORDER_TYPE = mock(Order.class);
     private static final CaseData CASE_DATA = CaseData.builder()
         .familyManCaseNumber(FAM_MAN_CASE_NUM)
@@ -95,8 +95,8 @@ class DocmosisCommonElementDecoratorTest {
         assertThat(decorated).isEqualTo(expectedParameters);
     }
 
-    private C21BlankOrderDocmosisParameters.C21BlankOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters() {
-        return C21BlankOrderDocmosisParameters.builder()
+    private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters() {
+        return C32CareOrderDocmosisParameters.builder()
             .familyManCaseNumber(FAM_MAN_CASE_NUM)
             .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .childrenAct(CHILDREN_ACT)

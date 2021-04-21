@@ -78,9 +78,8 @@ const selectChildren = async (option, indexes = []) => {
   await I.runAccessibilityTest();
 };
 
-const enterTitle = async (text) => {
+const enterTitle = (text) => {
   I.fillField(section4.title, text);
-  await I.runAccessibilityTest();
 };
 
 const enterDirections = async (text) => {

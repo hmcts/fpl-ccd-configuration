@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -18,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({SpringExtension.class})
+@ExtendWith({MockitoExtension.class})
 class C21BlankOrderDocumentParameterGeneratorTest {
 
     private static final String LA_CODE = "LA_CODE";
@@ -41,11 +40,6 @@ class C21BlankOrderDocumentParameterGeneratorTest {
     @InjectMocks
     private C21BlankOrderDocumentParameterGenerator underTest;
 
-    @BeforeEach
-    void setUp() {
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-    }
-
     @Test
     void accept() {
         assertThat(underTest.accept()).isEqualTo(Order.C21_BLANK_ORDER);
@@ -53,6 +47,8 @@ class C21BlankOrderDocumentParameterGeneratorTest {
 
     @Test
     void generate() {
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
         assertThat(generatedParameters).isEqualTo(expectedCommonParameters().build());
     }
@@ -64,6 +60,7 @@ class C21BlankOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnDefaultTitleWhenBlankOrderTitleNotProvided() {
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
         CaseData caseData = CASE_DATA.toBuilder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
