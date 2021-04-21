@@ -29,9 +29,7 @@ public class PreSubmissionTasksRenderer {
 
             lines.add("<div class=\"govuk-details__text\" id=\"sp-msg-unselected-case-content\">");
 
-            validationErrors.forEach(validationError -> {
-                lines.addAll(renderEventValidation(validationError));
-            });
+            validationErrors.forEach(validationError -> lines.addAll(renderEventValidation(validationError)));
 
             lines.add("</div>");
 
