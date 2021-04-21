@@ -56,7 +56,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
 function assertOrder(I, caseViewPage, orderIndex, orderType, approvalDate, judge, children) {
   const orderElement = `Order ${orderIndex}`;
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab([orderElement, 'Order title'], orderType);
+  I.seeInTab([orderElement, 'Type of order'], orderType);
   I.seeInTab([orderElement, 'Approval date'], dateFormat(dateToString(approvalDate), 'd mmm yyyy'));
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], judge.title);
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], judge.name);
