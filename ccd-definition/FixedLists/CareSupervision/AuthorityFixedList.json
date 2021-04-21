@@ -128,6 +128,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "DEN",
+    "ListElement": "Denbighshire County Council",
+    "DisplayOrder": 83
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DER",
     "ListElement": "Derby City Council",
     "DisplayOrder": 85
