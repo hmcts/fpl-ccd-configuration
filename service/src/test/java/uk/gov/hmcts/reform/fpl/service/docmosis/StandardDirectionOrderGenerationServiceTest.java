@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -45,6 +46,7 @@ import static org.assertj.core.util.Lists.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -69,24 +71,31 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 })
 class StandardDirectionOrderGenerationServiceTest {
 
+    private static final long CASE_NUMBER = 1234123412341234L;
+    private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
+
     @MockBean
     private CalendarService calendarService;
+
+    @MockBean
+    private CaseDetailsHelper caseDetailsHelper;
 
     @Autowired
     private Time time;
 
     @Autowired
-    private StandardDirectionOrderGenerationService service;
+    private StandardDirectionOrderGenerationService underTest;
 
     @BeforeEach
     void setup() {
         given(calendarService.getWorkingDayFrom(any(LocalDate.class), anyInt())).willReturn(LocalDate.now());
+        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
     }
 
     @Test
     void shouldMapDirectionsForDraftSDOWhenAllAssignees() {
         StandardDirectionOrder order = StandardDirectionOrder.builder().directions(getDirections()).build();
-        DocmosisStandardDirectionOrder templateData = service.getTemplateData(getCaseData(order));
+        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(getCaseData(order));
 
         assertThat(templateData.getDirections()).containsAll(expectedDirections());
     }
@@ -98,7 +107,7 @@ class StandardDirectionOrderGenerationServiceTest {
             .directions(wrapElements(notNeededDirection))
             .build();
 
-        DocmosisStandardDirectionOrder template = service.getTemplateData(getCaseData(order));
+        DocmosisStandardDirectionOrder template = underTest.getTemplateData(getCaseData(order));
 
         assertThat(template.getDirections()).isEmpty();
     }
@@ -107,7 +116,7 @@ class StandardDirectionOrderGenerationServiceTest {
     void shouldMapCaseDataWhenEmptyListValues() {
         CaseData caseData = caseDataWithEmptyListValues();
 
-        DocmosisStandardDirectionOrder template = service.getTemplateData(caseData);
+        DocmosisStandardDirectionOrder template = underTest.getTemplateData(caseData);
 
         assertThat(template).usingRecursiveComparison()
             .isEqualTo(docmosisOrder(
@@ -120,7 +129,7 @@ class StandardDirectionOrderGenerationServiceTest {
 
     @Test
     void shouldMapCompleteCaseDataForSDOTemplate() {
-        DocmosisStandardDirectionOrder template = service.getTemplateData(fullCaseData());
+        DocmosisStandardDirectionOrder template = underTest.getTemplateData(fullCaseData());
 
         assertThat(template).usingRecursiveComparison()
             .isEqualTo(fullDocmosisOrder());
@@ -149,6 +158,7 @@ class StandardDirectionOrderGenerationServiceTest {
         return CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("123")
+            .id(CASE_NUMBER)
             .children1(emptyList())
             .dateSubmitted(today)
             .respondents1(emptyList())
@@ -171,6 +181,7 @@ class StandardDirectionOrderGenerationServiceTest {
                 .build())
             .courtName(DEFAULT_LA_COURT)
             .familyManCaseNumber(familyManCaseNumber)
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .dateOfIssue(dateOfIssue)
             .complianceDeadline(formatLocalDateToString(today.plusWeeks(26), LONG))
             .children(emptyList())

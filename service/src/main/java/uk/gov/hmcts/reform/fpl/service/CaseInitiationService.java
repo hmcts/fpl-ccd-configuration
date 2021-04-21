@@ -177,15 +177,17 @@ public class CaseInitiationService {
 
     public void grantCaseAccess(CaseData caseData) {
         final Long caseId = caseData.getId();
+        final String creatorId = requestData.userId();
+        final String localAuthority = caseData.getCaseLocalAuthority();
 
-        caseAccessService.revokeCaseRoleFromUser(caseId, requestData.userId(), CREATOR);
+        caseAccessService.revokeCaseRoleFromUser(caseId, creatorId, CREATOR);
 
         if (nonNull(caseData.getOutsourcingPolicy())) {
             final CaseRole caseRole = getCaseRole(caseData.getOutsourcingPolicy());
-            caseAccessService.grantCaseRoleToUser(caseId, requestData.userId(), caseRole);
+            caseAccessService.grantCaseRoleToUser(caseId, creatorId, caseRole);
         } else {
             final CaseRole caseRole = getCaseRole(caseData.getLocalAuthorityPolicy());
-            caseAccessService.grantCaseRoleToLocalAuthority(caseId, caseData.getCaseLocalAuthority(), caseRole);
+            caseAccessService.grantCaseRoleToLocalAuthority(caseId, creatorId, localAuthority, caseRole);
         }
     }
 

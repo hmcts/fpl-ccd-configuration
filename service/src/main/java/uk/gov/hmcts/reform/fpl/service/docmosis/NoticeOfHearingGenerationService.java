@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 public class NoticeOfHearingGenerationService {
     private final CaseDataExtractionService dataService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final CaseDetailsHelper caseDetailsHelper;
     private final Time time;
 
     public DocmosisNoticeOfHearing getTemplateData(CaseData caseData, HearingBooking hearingBooking) {
@@ -32,6 +34,7 @@ public class NoticeOfHearingGenerationService {
 
         return DocmosisNoticeOfHearing.builder()
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
             .courtName(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .children(dataService.getChildrenDetails(caseData.getChildren1()))
             .hearingBooking(getHearingBooking(hearingBooking))

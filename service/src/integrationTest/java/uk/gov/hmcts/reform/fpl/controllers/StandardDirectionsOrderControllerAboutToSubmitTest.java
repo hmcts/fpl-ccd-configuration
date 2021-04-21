@@ -304,6 +304,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
         return CaseDetails.builder()
             .data(data.build())
+            .id(1234123412341234L)
             .build();
     }
 
@@ -321,6 +322,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
                 .build())
             .put("caseLocalAuthority", LA_NAME)
             .put("familyManCaseNumber", "1234")
+            .put("id", 1234123412341234L)
             .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .put("noticeOfProceedings", buildNoticeOfProceedings())
             .put("sdoRouter", SDORoute.UPLOAD);

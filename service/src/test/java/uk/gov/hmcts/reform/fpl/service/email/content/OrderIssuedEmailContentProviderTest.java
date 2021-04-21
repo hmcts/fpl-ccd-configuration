@@ -8,11 +8,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -28,12 +29,10 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.CMO;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.NOTICE_OF_PLACEMENT_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedAllocatedJudgeParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedCMOParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParameters;
 import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.getExpectedParametersForRepresentatives;
@@ -41,21 +40,25 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class})
+    EmailNotificationHelper.class, FixedTimeConfiguration.class,
+    OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class, IdentityService.class})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData caseData = createCase();
 
-    @MockBean
-    private GeneratedOrderService generatedOrderService;
-
     @Autowired
-    private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
+    private OrderIssuedEmailContentProvider underTest;
+
+    @MockBean
+    private ChildrenService childrenService;
+
+    @MockBean
+    private OrderCreationService orderCreationService;
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {
         NotifyData expectedParameters = getExpectedParameters(BLANK_ORDER.getLabel(), true);
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
+        NotifyData actualParameters = underTest.getNotifyDataWithCaseUrl(
             caseData, testDocument, GENERATED_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
@@ -66,7 +69,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
         given(documentDownloadService.downloadDocument(anyString())).willReturn(DOCUMENT_CONTENT);
 
         NotifyData expectedParameters = getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true);
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
+        NotifyData actualParameters = underTest.getNotifyDataWithoutCaseUrl(
             caseData, testDocumentReference(), GENERATED_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
@@ -76,7 +79,7 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
     void shouldBuildNoticeOfPlacementOrderParameters() {
         NotifyData expectedParameters = getExpectedParameters(NOTICE_OF_PLACEMENT_ORDER.getLabel(),
             false);
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(
+        NotifyData actualParameters = underTest.getNotifyDataWithCaseUrl(
             caseData, testDocument, NOTICE_OF_PLACEMENT_ORDER);
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
@@ -95,26 +98,8 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
             .build();
 
         NotifyData expectedParameters = getExpectedCMOParameters(CMO.getLabel());
-        NotifyData actualParameters = orderIssuedEmailContentProvider.getNotifyDataForCMO(
+        NotifyData actualParameters = underTest.getNotifyDataForCMO(
             data, testDocument, CMO);
-
-        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
-    }
-
-    @Test
-    void shouldBuildGeneratedOrderParametersForAllocatedJudge() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeLastName("Scott")
-            .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-            .build();
-
-        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
-            .willReturn(expectedJudgeAndLegalAdvisor);
-
-        AllocatedJudgeTemplateForGeneratedOrder actualParameters = orderIssuedEmailContentProvider
-            .buildAllocatedJudgeOrderIssuedNotification(caseData);
-
-        AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getExpectedAllocatedJudgeParameters();
 
         assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
     }

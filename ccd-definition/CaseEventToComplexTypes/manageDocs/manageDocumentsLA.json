@@ -25,7 +25,8 @@
     "CaseFieldID": "supportingEvidenceDocumentsTemp",
     "ListElementCode": "dateTimeReceived",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "manageDocumentLA.type=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

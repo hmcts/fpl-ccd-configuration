@@ -149,6 +149,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement expectedSupplement,
         SupportingEvidenceBundle expectedSupportingEvidence
     ) {
+        assertThat(actualC2Bundle.getId()).isNotNull();
         assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
@@ -164,6 +165,7 @@ class UploadAdditionalApplicationsServiceTest {
         Supplement expectedSupplement,
         SupportingEvidenceBundle expectedSupportingDocument
     ) {
+        assertThat(actual.getId()).isNotNull();
         assertThat(actual.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
         assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
         assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);

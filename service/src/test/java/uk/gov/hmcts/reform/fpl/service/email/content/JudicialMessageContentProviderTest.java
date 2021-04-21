@@ -59,6 +59,38 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
             .callout("^Smith, 12345, " + HEARING_CALLOUT)
             .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
             .respondentLastName("Smith")
+            .hasApplication("No")
+            .applicationType("")
+            .build();
+
+        assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
+            .isEqualTo(expectedTemplate);
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("application")
+    void testMessageContentWithDifferentApplicationType(String applicationType, YesNo hasApplication) {
+        CaseData caseData = buildCaseData();
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .latestMessage("Please see latest C2")
+            .recipient("paulStuart@fpla.com")
+            .sender("robertDunlop@fpla.com")
+            .urgency("")
+            .applicationType(applicationType)
+            .build();
+
+        NewJudicialMessageTemplate expectedTemplate = NewJudicialMessageTemplate.builder()
+            .sender("robertDunlop@fpla.com")
+            .latestMessage("Please see latest C2")
+            .callout("^Smith, 12345, " + HEARING_CALLOUT)
+            .caseUrl(caseUrl(CASE_REFERENCE, JUDICIAL_MESSAGES))
+            .respondentLastName("Smith")
+            .hasUrgency(NO.getValue())
+            .urgency("")
+            .hasApplication(hasApplication.getValue())
+            .applicationType(applicationType)
             .build();
 
         assertThat(newJudicialMessageContentProvider.buildNewJudicialMessageTemplate(caseData, judicialMessage))
@@ -71,6 +103,13 @@ class JudicialMessageContentProviderTest extends AbstractEmailContentProviderTes
             Arguments.of("Very urgent", "Very urgent", YES),
             Arguments.of("", "", NO),
             Arguments.of(null, "", NO));
+    }
+
+    private static Stream<Arguments> application() {
+        return Stream.of(
+            Arguments.of("C100", YES),
+            Arguments.of("", NO)
+        );
     }
 
     private CaseData buildCaseData() {

@@ -13,7 +13,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.interfaces.RemovableOrder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,11 +31,17 @@ import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 @Data
 @Builder(toBuilder = true)
 public class GeneratedOrder implements RemovableOrder {
+
+    // this is the new type
+    private final String orderType;
     private final String type;
     private final String title;
     private final String details;
     private final DocumentReference document;
+    private final DocumentReference unsealedDocumentCopy;
     private final String dateOfIssue;
+    private final LocalDateTime dateTimeIssued;
+    private final LocalDate approvalDate;
     private final String date;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final FurtherDirections furtherDirections;
@@ -42,6 +51,7 @@ public class GeneratedOrder implements RemovableOrder {
     private final String uploadedOrderDescription;
     @JsonSerialize(contentConverter = BasicChildConverter.class)
     private final List<Element<Child>> children;
+    private final String childrenDescription;
     private String removalReason;
 
     @JsonIgnore
@@ -76,5 +86,10 @@ public class GeneratedOrder implements RemovableOrder {
         }
 
         return children.stream().map(Element::getId).collect(Collectors.toList());
+    }
+
+    @JsonIgnore
+    public boolean isNewVersion() {
+        return Objects.nonNull(dateTimeIssued);
     }
 }

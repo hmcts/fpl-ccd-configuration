@@ -2,6 +2,7 @@
 
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.AppPipelineConfig
+import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 
@@ -106,6 +107,10 @@ def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
 }
 
+
+// Vars for Kubernetes
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
+
 withPipeline(type, product, component) {
   pipelineConf = config;
 
@@ -115,6 +120,13 @@ withPipeline(type, product, component) {
 
   enableAksStagingDeployment()
   enableSlackNotifications('#fpla-tech')
+
+  onMaster() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
+  onPR() {
+    enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+  }
 
   after('checkout') {
     onMaster {

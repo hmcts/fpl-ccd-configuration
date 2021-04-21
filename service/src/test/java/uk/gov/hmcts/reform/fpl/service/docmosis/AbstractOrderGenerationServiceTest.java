@@ -34,6 +34,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testChild;
 abstract class AbstractOrderGenerationServiceTest {
 
     static final String LOCAL_AUTHORITY_NAME = LOCAL_AUTHORITY_1_NAME;
+    static final long CASE_NUMBER = 1234123412341234L;
+    static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
     @Autowired
     Time time;
@@ -50,6 +52,7 @@ abstract class AbstractOrderGenerationServiceTest {
 
         return caseDataBuilder
             .familyManCaseNumber("123")
+            .id(CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
@@ -87,6 +90,7 @@ abstract class AbstractOrderGenerationServiceTest {
             .orderType(type)
             .furtherDirections(type != BLANK_ORDER ? "Example Directions" : "")
             .familyManCaseNumber("123")
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .courtName("Family Court")
             .dateOfIssue(date)
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)

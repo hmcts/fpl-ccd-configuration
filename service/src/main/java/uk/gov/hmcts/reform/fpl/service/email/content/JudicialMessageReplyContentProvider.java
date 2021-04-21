@@ -9,7 +9,10 @@ import uk.gov.hmcts.reform.fpl.model.notify.JudicialMessageReplyTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import static org.apache.logging.log4j.util.Strings.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.JUDICIAL_MESSAGES;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
@@ -25,6 +28,9 @@ public class JudicialMessageReplyContentProvider extends AbstractEmailContentPro
             .callout(buildCalloutWithNextHearing(caseData, time.now()))
             .latestMessage(judicialMessage.getLatestMessage())
             .caseUrl(getCaseUrl(caseData.getId(), JUDICIAL_MESSAGES))
+            .hasApplication(isNotEmpty(judicialMessage.getApplicationType()) ? YES.getValue() : NO.getValue())
+            .applicationType(
+                isNotEmpty(judicialMessage.getApplicationType()) ? judicialMessage.getApplicationType() : "")
             .build();
     }
 }

@@ -94,10 +94,11 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldUpdateExistingJudicialMessageAndSortIntoExistingJudicialMessageListWhenReplying() {
-        String dateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
+        String originalDateSent = formatLocalDateTimeBaseUsingFormat(now().minusDays(1), DATE_TIME_AT);
 
         MessageJudgeEventData messageJudgeEventData = MessageJudgeEventData.builder()
-            .judicialMessageDynamicList(buildDynamicList(0, Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, dateSent)))
+            .judicialMessageDynamicList(buildDynamicList(0,
+                Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, originalDateSent)))
             .judicialMessageReply(JudicialMessage.builder()
                 .isReplying(YesNo.YES.getValue())
                 .latestMessage(REPLY)
@@ -110,7 +111,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .messageJudgeEventData(messageJudgeEventData)
             .judicialMessages(List.of(
-                element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(dateSent, MESSAGE))))
+                element(SELECTED_DYNAMIC_LIST_ITEM_ID, buildJudicialMessage(originalDateSent, MESSAGE))))
             .build();
 
         JudicialMessage expectedUpdatedJudicialMessage = JudicialMessage.builder()
@@ -122,7 +123,7 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
             .latestMessage(REPLY)
             .messageHistory(String.format("%s - %s", SENDER, MESSAGE) + "\n \n"
                 + String.format("%s - %s", MESSAGE_RECIPIENT, REPLY))
-            .dateSent(dateSent)
+            .dateSent(formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME_AT))
             .build();
 
         when(userService.getUserEmail()).thenReturn(MESSAGE_RECIPIENT);
@@ -179,9 +180,9 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveTransientFields() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.ofEntries(
-                Map.entry("hasC2Applications", "some data"),
-                Map.entry("isMessageRegardingC2", "some data"),
-                Map.entry("c2DynamicList", "some data"),
+                Map.entry("hasAdditionalApplications", "some data"),
+                Map.entry("isMessageRegardingAdditionalApplications", "some data"),
+                Map.entry("additionalApplicationsDynamicList", "some data"),
                 Map.entry("relatedDocumentsLabel", "some data"),
                 Map.entry("nextHearingLabel", "some data"),
                 Map.entry("judicialMessageMetaData", JudicialMessageMetaData.builder()
@@ -200,9 +201,10 @@ class MessageJudgeControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-        assertThat(response.getData()).doesNotContainKeys("hasC2Applications",
-            "isMessageRegardingC2",
-            "c2DynamicList",
+        assertThat(response.getData()).doesNotContainKeys(
+            "hasAdditionalApplications",
+            "isMessageRegardingAdditionalApplications",
+            "additionalApplicationsDynamicList",
             "relatedDocumentsLabel",
             "nextHearingLabel",
             "judicialMessageMetaData",

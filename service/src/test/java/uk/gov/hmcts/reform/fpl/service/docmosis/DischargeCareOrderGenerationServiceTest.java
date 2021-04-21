@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -48,7 +49,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {DischargeCareOrderGenerationService.class, CaseDataExtractionService.class,
     LookupTestConfig.class, HearingVenueLookUpService.class, JacksonAutoConfiguration.class,
-    FixedTimeConfiguration.class, ChildrenService.class, DischargeCareOrderService.class})
+    FixedTimeConfiguration.class, ChildrenService.class, DischargeCareOrderService.class,
+    CaseDetailsHelper.class})
 class DischargeCareOrderGenerationServiceTest extends AbstractOrderGenerationServiceTest {
 
     @Autowired

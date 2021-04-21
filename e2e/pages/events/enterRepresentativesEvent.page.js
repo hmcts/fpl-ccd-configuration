@@ -65,4 +65,8 @@ module.exports = {
         throw new Error(`Unsupported representative serving preferences ${servingPreferences}`);
     }
   },
+
+  setRepresentativeEmail(elementIndex, email) {
+    I.fillField(this.fields(elementIndex).representative.email, email);
+  },
 };

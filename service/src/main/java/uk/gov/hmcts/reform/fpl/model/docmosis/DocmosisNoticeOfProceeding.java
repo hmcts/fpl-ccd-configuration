@@ -11,6 +11,7 @@ import lombok.Data;
 public class DocmosisNoticeOfProceeding implements DocmosisData {
     private final String courtName;
     private final String familyManCaseNumber;
+    private final String ccdCaseNumber;
     private final String todaysDate;
     private final String applicantName;
     private final String orderTypes;

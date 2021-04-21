@@ -98,6 +98,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
         HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
+            .id(1234123412341234L)
             .children1(createPopulatedChildren(now().toLocalDate()))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sendNoticeOfHearing("Yes")

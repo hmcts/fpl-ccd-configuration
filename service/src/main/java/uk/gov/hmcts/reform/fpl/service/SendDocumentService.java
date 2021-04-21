@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -78,9 +79,14 @@ public class SendDocumentService {
 
     private List<Recipient> getNotRepresentedRespondents(CaseData caseData) {
         return unwrapElements(caseData.getRespondents1()).stream()
-            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy()))
+            .filter(respondent -> ObjectUtils.isEmpty(respondent.getRepresentedBy())
+                && hasNoLegalRepresentation(respondent))
             .map(Respondent::getParty)
             .collect(toList());
+    }
+
+    private boolean hasNoLegalRepresentation(Respondent respondent) {
+        return !YES.getValue().equals(respondent.getLegalRepresentation());
     }
 
 }

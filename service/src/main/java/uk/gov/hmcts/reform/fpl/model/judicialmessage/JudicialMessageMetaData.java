@@ -16,4 +16,5 @@ public class JudicialMessageMetaData {
     @JsonProperty("requestedBy")
     private final String subject;
     private final String urgency;
+    private final String applicationType;
 }

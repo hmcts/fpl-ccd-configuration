@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentTypeListLA",
     "ListElementCode": "FURTHER_EVIDENCE_DOCUMENTS",
-    "ListElement": "Further evidence documents",
+    "ListElement": "Further documents for main application",
     "DisplayOrder": 1
   },
   {
@@ -23,8 +23,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentTypeListLA",
-    "ListElementCode": "C2",
-    "ListElement": "Further C2 supporting documents",
+    "ListElementCode": "ADDITIONAL_APPLICATIONS_DOCUMENTS",
+    "ListElement": "Documents for additional applications",
     "DisplayOrder": 4
   }
 ]

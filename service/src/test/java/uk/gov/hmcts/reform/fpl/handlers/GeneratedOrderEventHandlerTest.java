@@ -15,14 +15,13 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.allocatedjudge.AllocatedJudgeTemplateForGeneratedOrder;
-import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
@@ -30,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -37,7 +37,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -46,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.CAFCASS_SOLICITOR
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.ALLOCATED_JUDGE_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -61,9 +59,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
     HmctsAdminNotificationHandler.class, SendDocumentService.class})
 class GeneratedOrderEventHandlerTest {
 
-    @MockBean
-    private GeneratedOrderService generatedOrderService;
-
+    private static final Set<String> EMAIL_REPS = Set.of("barney@rubble.com");
+    private static final Set<String> DIGITAL_REPS = Set.of(
+        "fred@flinstones.com");
     @MockBean
     private OrderIssuedEmailContentProvider orderIssuedEmailContentProvider;
 
@@ -82,8 +80,11 @@ class GeneratedOrderEventHandlerTest {
     @MockBean
     private SendDocumentService sendDocumentService;
 
+    @MockBean
+    private RepresentativesInbox representativesInbox;
+
     @Autowired
-    private GeneratedOrderEventHandler generatedOrderEventHandler;
+    private GeneratedOrderEventHandler underTest;
 
     private CaseData caseData = caseData();
 
@@ -107,11 +108,14 @@ class GeneratedOrderEventHandlerTest {
         given(orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(
             caseData, event.getOrderDocument(), GENERATED_ORDER))
             .willReturn(getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true));
+
+        given(representativesInbox.getEmailsByPreference(caseData, EMAIL)).willReturn(EMAIL_REPS);
+        given(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).willReturn(DIGITAL_REPS);
     }
 
     @Test
     void shouldNotifyPartiesOnOrderSubmission() {
-        generatedOrderEventHandler.notifyParties(event);
+        underTest.notifyParties(event);
 
         verify(issuedOrderAdminNotificationHandler).notifyAdmin(
             caseData,
@@ -127,54 +131,14 @@ class GeneratedOrderEventHandlerTest {
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             caseData.getId(),
             getExpectedParameters(BLANK_ORDER.getLabel(), true),
-            getExpectedDigitalServedRepresentativesForAddingPartiesToCase(),
+            DIGITAL_REPS,
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES);
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             caseData.getId(),
             getExpectedParametersForRepresentatives(BLANK_ORDER.getLabel(), true),
-            getExpectedEmailRepresentativesForAddingPartiesToCase(),
+            EMAIL_REPS,
             ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES);
-    }
-
-    @Test
-    void shouldNotifyAllocatedJudgeOnOrderIssued() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeEmailAddress("judge@gmail.com")
-            .build();
-
-        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
-            .willReturn(expectedJudgeAndLegalAdvisor);
-
-        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
-
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
-            .willReturn(expectedParameters);
-
-        generatedOrderEventHandler.notifyAllocatedJudge(event);
-
-        verify(notificationService).sendEmail(
-            ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_JUDGE,
-            ALLOCATED_JUDGE_EMAIL_ADDRESS,
-            expectedParameters,
-            caseData.getId());
-    }
-
-    @Test
-    void shouldNotNotifyAllocatedJudgeOnOrderIssuedWithNoJudge() {
-        JudgeAndLegalAdvisor expectedJudgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder().build();
-
-        given(generatedOrderService.getAllocatedJudgeFromMostRecentOrder(caseData))
-            .willReturn(expectedJudgeAndLegalAdvisor);
-
-        final AllocatedJudgeTemplateForGeneratedOrder expectedParameters = getOrderIssuedAllocatedJudgeParameters();
-
-        given(orderIssuedEmailContentProvider.buildAllocatedJudgeOrderIssuedNotification(caseData))
-            .willReturn(expectedParameters);
-
-        generatedOrderEventHandler.notifyAllocatedJudge(event);
-
-        verifyNoInteractions(notificationService);
     }
 
     @Test
@@ -190,12 +154,12 @@ class GeneratedOrderEventHandlerTest {
 
         GeneratedOrderEvent event = new GeneratedOrderEvent(caseData, testDocument);
 
-        generatedOrderEventHandler.notifyParties(event);
+        underTest.notifyParties(event);
 
         verify(orderIssuedEmailContentProvider, never()).getNotifyDataWithoutCaseUrl(any(), any(), any());
 
         verify(representativeNotificationService, never()).sendNotificationToRepresentatives(
-            any(), any(), any(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES));
+            any(), any(), anySet(), eq(ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES));
     }
 
     @Test
@@ -221,7 +185,7 @@ class GeneratedOrderEventHandlerTest {
 
         given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
 
-        generatedOrderEventHandler.sendOrderByPost(event);
+        underTest.sendOrderByPost(event);
 
         verify(sendDocumentService).sendDocuments(caseData, List.of(testDocument), List.of(representative, respondent));
         verify(sendDocumentService).getStandardRecipients(caseData);

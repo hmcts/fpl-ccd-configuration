@@ -29,8 +29,13 @@ public class UploadDocumentService {
         this.requestData = requestData;
     }
 
+    // REFACTOR: 08/04/2021 Remove this method in subsequent PR
     public Document uploadPDF(byte[] pdf, String fileName) {
-        MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
+        return uploadDocument(pdf, fileName, MediaType.APPLICATION_PDF_VALUE);
+    }
+
+    public Document uploadDocument(byte[] pdf, String fileName, String contentType) {
+        MultipartFile file = new InMemoryMultipartFile("files", fileName, contentType, pdf);
 
         UploadResponse response = documentUploadClient.upload(requestData.authorisation(),
             authTokenGenerator.generate(), requestData.userId(), newArrayList(file));

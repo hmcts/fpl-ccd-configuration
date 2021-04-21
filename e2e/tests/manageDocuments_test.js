@@ -119,13 +119,13 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential correspond
   assertCorrespondence(I, 'local authority', 2, 'C2 supporting document', 'Supports the C2 application');
 });
 
-xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadC2DocumentsEventPage}) => {
+Scenario('HMCTS Admin and LA upload confidential C2 supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadC2DocumentsEventPage);
+  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
-  await manageDocumentsEventPage.selectC2SupportingDocuments();
-  await manageDocumentsEventPage.selectC2FromDropdown();
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
+  await manageDocumentsEventPage.selectApplicationBundleFromDropdown(2);
   await I.goToNextPage();
   await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
   await I.addAnotherElementToCollection();
@@ -133,22 +133,21 @@ xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', asyn
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
-  assertConfidentialC2SupportingDocuments(I, 1, 'Email to say evidence will be late', 'Evidence will be late');
-  assertC2SupportingDocuments(I, 2, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 'C2 application', 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertC2SupportingDocuments(I, 'C2 application', 2, 'Email with evidence attached', 'Case evidence included');
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
   I.dontSeeInTab(['Email to say evidence will be late']);
-  assertC2SupportingDocuments(I, 1, 'Email with evidence attached', 'Case evidence included');
-
+  assertC2SupportingDocuments(I, 'C2 application', 1, 'Email with evidence attached', 'Case evidence included');
 
   await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
 
-  await manageDocumentsLAEventPage.selectC2SupportingDocuments();
-  await manageDocumentsLAEventPage.selectC2();
+  await manageDocumentsLAEventPage.selectAdditionalApplicationsSupportingDocuments();
+  await manageDocumentsLAEventPage.selectApplicationBundleFromDropdown(2);
   await I.goToNextPage();
   await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
   await I.addAnotherElementToCollection();
@@ -156,19 +155,70 @@ xScenario('HMCTS Admin and LA upload confidential C2 supporting documents', asyn
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
-  assertC2SupportingDocuments(I, 1, 'Email with evidence attached', 'Case evidence included');
-  assertConfidentialC2SupportingDocuments(I, 2, 'Correspondence document', 'Test notes');
-  assertC2SupportingDocuments(I, 3, 'C2 supporting document', 'Supports the C2 application');
+  assertC2SupportingDocuments(I, 'C2 application', 1, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 'C2 application', 2, 'Correspondence document', 'Test notes');
+  assertC2SupportingDocuments(I, 'C2 application', 3, 'C2 supporting document', 'Supports the C2 application');
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.c2);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
-  assertConfidentialC2SupportingDocuments(I, 1, 'Email to say evidence will be late', 'Evidence will be late');
-  assertC2SupportingDocuments(I, 2, 'Email with evidence attached', 'Case evidence included');
-  assertConfidentialC2SupportingDocuments(I, 3, 'Correspondence document', 'Test notes');
-  assertC2SupportingDocuments(I, 4, 'C2 supporting document', 'Supports the C2 application');
+  assertConfidentialC2SupportingDocuments(I, 'C2 application', 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertC2SupportingDocuments(I, 'C2 application', 2, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 'C2 application', 3, 'Correspondence document', 'Test notes');
+  assertC2SupportingDocuments(I, 'C2 application', 4, 'C2 supporting document', 'Supports the C2 application');
+});
+
+Scenario('HMCTS Admin and LA upload confidential Other applications supporting documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage, uploadAdditionalApplicationsEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await manageDocumentsForLAHelper.uploadOtherApplications(I, caseViewPage, uploadAdditionalApplicationsEventPage);
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+
+  await manageDocumentsEventPage.selectAdditionalApplicationsSupportingDocuments();
+  await manageDocumentsEventPage.selectApplicationBundleFromDropdown(2);
+  await I.goToNextPage();
+  await manageDocumentsEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[0]);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[1]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+
+  assertConfidentialC2SupportingDocuments(I, 'Other applications', 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertC2SupportingDocuments(I, 'Other applications', 2, 'Email with evidence attached', 'Case evidence included');
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+
+  I.dontSeeInTab(['Email to say evidence will be late']);
+  assertC2SupportingDocuments(I, 'Other applications', 1, 'Email with evidence attached', 'Case evidence included');
+
+  await caseViewPage.goToNewActions(config.applicationActions.manageDocumentsLA);
+
+  await manageDocumentsLAEventPage.selectAdditionalApplicationsSupportingDocuments();
+  await manageDocumentsLAEventPage.selectApplicationBundleFromDropdown(2);
+  await I.goToNextPage();
+  await manageDocumentsLAEventPage.uploadConfidentialSupportingEvidenceDocument(supportingEvidenceDocuments[2]);
+  await I.addAnotherElementToCollection();
+  await manageDocumentsLAEventPage.uploadSupportingEvidenceDocument(supportingEvidenceDocuments[3]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
+
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+
+  assertC2SupportingDocuments(I, 'Other applications', 1, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 'Other applications', 2, 'Correspondence document', 'Test notes');
+  assertC2SupportingDocuments(I, 'Other applications', 3, 'C2 supporting document', 'Supports the C2 application');
+
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
+
+  assertConfidentialC2SupportingDocuments(I, 'Other applications', 1, 'Email to say evidence will be late', 'Evidence will be late');
+  assertC2SupportingDocuments(I, 'Other applications', 2, 'Email with evidence attached', 'Case evidence included');
+  assertConfidentialC2SupportingDocuments(I, 'Other applications', 3, 'Correspondence document', 'Test notes');
+  assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
 const assertConfidentialFurtherEvidence = (I, prefix, index, docName, notes) => {
@@ -196,23 +246,21 @@ const assertSupportingEvidence = (I, supportingEvidenceName, docName, notes, con
   if (confidential) {
     I.seeInTab([supportingEvidenceName, ''], 'Confidential');
   }
-
-  I.seeTextInTab([supportingEvidenceName, 'Uploaded by']);
 };
 
-const assertConfidentialC2SupportingDocuments = (I, index, docName, notes) => {
-  assertC2SupportingDocuments(I, index, docName, notes, true);
+const assertConfidentialC2SupportingDocuments = (I, application, index, docName, notes) => {
+  assertC2SupportingDocuments(I, application, index, docName, notes, true);
 };
 
-const assertC2SupportingDocuments = (I, index, docName, notes, confidential = false) => {
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Document name'], docName);
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Notes'], notes);
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'File'], 'mockFile.txt');
-  I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+const assertC2SupportingDocuments = (I, application, index, docName, notes, confidential = false) => {
+  I.seeInTab(['Additional applications 1', application, `Supporting documents ${index}`, 'Document name'], docName);
+  I.seeInTab(['Additional applications 1', application, `Supporting documents ${index}`, 'Notes'], notes);
+  I.seeInTab(['Additional applications 1', application, `Supporting documents ${index}`, 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInTab(['Additional applications 1', application, `Supporting documents ${index}`, 'File'], 'mockFile.txt');
+
+  I.seeTextInTab(['Additional applications 1', application, `Supporting documents ${index}`, 'Uploaded by']);
 
   if (confidential) {
-    I.seeInTab(['C2 Application 1', `C2 supporting documents ${index}`, ''], 'Confidential');
+    I.seeInTab(['Additional applications 1', application, `Supporting documents ${index}`, ''], 'Confidential');
   }
-
-  I.seeTextInTab(['C2 Application 1', `C2 supporting documents ${index}`, 'Uploaded by']);
 };

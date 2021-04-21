@@ -18,6 +18,8 @@ import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 @Slf4j
 @Service
 public class NotificationService {
+    public static final String SEPARATOR = "/";
+
     private final NotificationClient notificationClient;
     private final ObjectMapper mapper;
     private final String environment;
@@ -36,7 +38,7 @@ public class NotificationService {
         });
         log.debug("Sending email (with template id: {}) to {}", templateId, maskEmail(recipient));
         try {
-            notificationClient.sendEmail(templateId, recipient, personalisation, environment + "/" + reference);
+            notificationClient.sendEmail(templateId, recipient, personalisation, environment + SEPARATOR + reference);
         } catch (NotificationClientException e) {
             log.error("Failed to send email (with template id: {}) to {}", templateId, maskEmail(recipient), e);
         }

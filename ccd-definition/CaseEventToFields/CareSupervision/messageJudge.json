@@ -40,39 +40,39 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
-    "CaseFieldID": "hasC2Applications",
+    "CaseFieldID": "hasAdditionalApplications",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 2,
-    "FieldShowCondition": "isMessageRegardingC2=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "isMessageRegardingAdditionalApplications=\"DO_NOT_SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/message-judge/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
-    "CaseFieldID": "isMessageRegardingC2",
+    "CaseFieldID": "isMessageRegardingAdditionalApplications",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
     "PageShowCondition": "messageJudgeOption!=\"REPLY\"",
-    "FieldShowCondition": "hasC2Applications=\"Yes\""
+    "FieldShowCondition": "hasAdditionalApplications=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "messageJudgeOrLegalAdviser",
-    "CaseFieldID": "c2DynamicList",
+    "CaseFieldID": "additionalApplicationsDynamicList",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
     "PageID": "NewMessageMetaData",
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 2,
-    "FieldShowCondition": "isMessageRegardingC2=\"Yes\""
+    "FieldShowCondition": "isMessageRegardingAdditionalApplications=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -107,7 +107,7 @@
     "PageID": "NewMessageNote",
     "ShowSummaryChangeOption": "N",
     "PageDisplayOrder": 3,
-    "FieldShowCondition": "isMessageRegardingC2=\"Yes\""
+    "FieldShowCondition": "isMessageRegardingAdditionalApplications=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

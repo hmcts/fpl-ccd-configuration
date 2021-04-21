@@ -21,6 +21,7 @@ public class DocmosisOrder implements DocmosisData {
     private final DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final String courtName;
     private final String familyManCaseNumber;
+    private final String ccdCaseNumber;
     private final String dateOfIssue;
     private final List<DocmosisChild> children;
     private final List<DocmosisDirection> directions;

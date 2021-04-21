@@ -34,6 +34,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
@@ -261,6 +263,99 @@ class SendDocumentServiceTest {
             assertThat(actualRecipients)
                 .containsExactlyInAnyOrder(representativeServedByPost.getValue(), notRepresentedRespondent.getParty());
 
+        }
+
+        @Test
+        void shouldReturnNotRepresentedRespondentWhenLegalRepresentationIsNoAndNotRepresentedInMangeRep() {
+            final Respondent notRepresentedRespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Not Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(NO.getValue())
+                .build();
+
+            final Element<Representative> representativeServedByDigitalService = element(Representative.builder()
+                .fullName("Representative 1")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+
+            final Respondent representedRespondentOne = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(YES.getValue())
+                .representedBy(wrapElements(representativeServedByDigitalService.getId()))
+                .build();
+
+            final Respondent representedRespondentTwo = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(NO.getValue())
+                .representedBy(wrapElements(representativeServedByDigitalService.getId()))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .representatives(List.of(representativeServedByDigitalService))
+                .respondents1(wrapElements(
+                    representedRespondentOne,
+                    representedRespondentTwo,
+                    notRepresentedRespondent))
+                .build();
+
+            final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
+
+            assertThat(actualRecipients).size().isEqualTo(1);
+            assertThat(actualRecipients.get(0)).isEqualTo(notRepresentedRespondent.getParty());
+        }
+
+        @Test
+        void shouldReturnNotRepresentedRespondentWhenLegalRepresentationIsNullAndNotRepresentedInMangeRep() {
+            final Respondent notRepresentedRespondent = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Not Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(null)
+                .build();
+
+            final Element<Representative> representativeServedByDigitalService = element(Representative.builder()
+                .fullName("Representative 1")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+
+            final Respondent representedRespondentOne = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(null)
+                .representedBy(wrapElements(representativeServedByDigitalService.getId()))
+                .build();
+
+            final Respondent representedRespondentTwo = Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Represented")
+                    .lastName("Respondent")
+                    .build())
+                .legalRepresentation(YES.getValue())
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .representatives(List.of(representativeServedByDigitalService))
+                .respondents1(wrapElements(
+                    representedRespondentOne,
+                    representedRespondentTwo,
+                    notRepresentedRespondent))
+                .build();
+
+            final List<Recipient> actualRecipients = underTest.getStandardRecipients(caseData);
+
+            assertThat(actualRecipients).size().isEqualTo(1);
+            assertThat(actualRecipients.get(0)).isEqualTo(notRepresentedRespondent.getParty());
         }
     }
 

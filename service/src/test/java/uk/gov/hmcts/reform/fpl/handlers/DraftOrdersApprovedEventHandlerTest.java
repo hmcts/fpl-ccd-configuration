@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
@@ -55,6 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testAddress;
 
 @ExtendWith(SpringExtension.class)
 class DraftOrdersApprovedEventHandlerTest {
+    private static final Set<String> EMAIL_REPS = Set.of("emailRep1");
+    private static final Set<String> DIGITAL_REPS = Set.of("digitalRep1");
     @Mock
     private SendDocumentService sendDocumentService;
 
@@ -76,8 +79,11 @@ class DraftOrdersApprovedEventHandlerTest {
     @Mock
     private ReviewDraftOrdersEmailContentProvider reviewDraftOrdersEmailContentProvider;
 
+    @Mock
+    private RepresentativesInbox representativesInbox;
+
     @InjectMocks
-    private DraftOrdersApprovedEventHandler draftOrdersApprovedEventHandler;
+    private DraftOrdersApprovedEventHandler underTest;
 
     @Test
     void shouldNotifyAdminAndLAOfApprovedOrders() {
@@ -103,7 +109,7 @@ class DraftOrdersApprovedEventHandlerTest {
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, hearing.getValue(), orders, DIGITAL_SERVICE)).willReturn(expectedTemplate);
 
-        draftOrdersApprovedEventHandler.sendNotificationToAdminAndLA(new DraftOrdersApproved(caseData, orders));
+        underTest.sendNotificationToAdminAndLA(new DraftOrdersApproved(caseData, orders));
 
         verify(notificationService).sendEmail(
             JUDGE_APPROVES_DRAFT_ORDERS,
@@ -149,23 +155,26 @@ class DraftOrdersApprovedEventHandlerTest {
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, hearing.getValue(), orders, DIGITAL_SERVICE)).willReturn(expectedTemplate);
 
+        when(representativesInbox.getEmailsByPreference(caseData, EMAIL)).thenReturn(EMAIL_REPS);
+        when(representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE)).thenReturn(DIGITAL_REPS);
+
         given(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
             caseData, hearing.getValue(), orders, EMAIL)).willReturn(expectedTemplate);
 
-        draftOrdersApprovedEventHandler.sendNotificationToCafcassAndRepresentatives(
+        underTest.sendNotificationToCafcassAndRepresentatives(
             new DraftOrdersApproved(caseData, orders));
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             12345L,
             expectedTemplate,
-            digitalReps,
+            DIGITAL_REPS,
             JUDGE_APPROVES_DRAFT_ORDERS
         );
 
         verify(representativeNotificationService).sendNotificationToRepresentatives(
             12345L,
             expectedTemplate,
-            emailReps,
+            EMAIL_REPS,
             JUDGE_APPROVES_DRAFT_ORDERS
         );
 
@@ -193,7 +202,9 @@ class DraftOrdersApprovedEventHandlerTest {
 
         when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
 
-        draftOrdersApprovedEventHandler
+        when(representativesInbox.getEmailsByPreference(caseData, EMAIL)).thenReturn(Set.of());
+
+        underTest
             .sendNotificationToCafcassAndRepresentatives(new DraftOrdersApproved(caseData, orders));
 
         verifyNoInteractions(representativeNotificationService);
@@ -226,7 +237,7 @@ class DraftOrdersApprovedEventHandlerTest {
 
         given(sendDocumentService.getStandardRecipients(caseData)).willReturn(List.of(representative, respondent));
 
-        draftOrdersApprovedEventHandler.sendDocumentToPostRecipients(new DraftOrdersApproved(caseData, orders));
+        underTest.sendDocumentToPostRecipients(new DraftOrdersApproved(caseData, orders));
 
         verify(sendDocumentService).getStandardRecipients(caseData);
 

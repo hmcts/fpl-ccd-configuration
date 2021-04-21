@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_NAME;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 
 @SpringBootTest(classes = {ObjectMapper.class, NotificationService.class})
 @ActiveProfiles({"integration-test", "email-template-test"})
@@ -57,6 +59,9 @@ public class EmailTemplateTest {
     private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @MockBean
+    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+
+    @MockBean
     private CoreCaseDataService coreCaseDataService;
 
     private ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
@@ -75,6 +80,8 @@ public class EmailTemplateTest {
         when(hmctsCourtLookupConfiguration.getCourt(any()))
             .thenReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "court@test.com", COURT_CODE));
         when(hmctsAdminNotificationHandler.getHmctsAdminEmail(any())).thenReturn("hmcts-admin@test.com");
+        when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any()))
+            .thenReturn(LOCAL_AUTHORITY_NAME);
     }
 
     public static class TestConfiguration {

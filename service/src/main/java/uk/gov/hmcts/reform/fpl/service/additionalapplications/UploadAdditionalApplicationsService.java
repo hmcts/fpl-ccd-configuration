@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
@@ -65,8 +66,9 @@ public class UploadAdditionalApplicationsService {
 
         return caseData.getTemporaryC2Document()
             .toBuilder()
+            .id(UUID.randomUUID())
             .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .supplementsBundle(updatedSupplementsBundle)
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
             .type(caseData.getC2Type()).build();
@@ -85,7 +87,8 @@ public class UploadAdditionalApplicationsService {
 
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
-            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time.now(), DATE_TIME))
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
             .document(temporaryOtherApplicationsBundle.getDocument())
             .supportingEvidenceBundle(updatedSupportingEvidenceBundle)
@@ -93,8 +96,8 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(List<Element<C2DocumentBundle>>
-                                                                           c2DocumentBundle) {
+    public List<Element<C2DocumentBundle>> sortOldC2DocumentCollection(
+        List<Element<C2DocumentBundle>> c2DocumentBundle) {
         c2DocumentBundle.sort(comparing(e -> e.getValue().getUploadedDateTime(), reverseOrder()));
         return c2DocumentBundle;
     }

@@ -8,7 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.config.EpsLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityIdLookupConfiguration;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,17 +28,22 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.EPS;
 import static uk.gov.hmcts.reform.fpl.enums.OutsourcingType.MLA;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = LENIENT)
 class LocalAuthorityServiceTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String LOCAL_AUTHORITY_CODE = "EX";
     private static final String ORG_ID = "ORG001";
     private static final String USER_DOMAIN = "example.gov.uk";
+    private static final String USER_EMAIL = "test@" + USER_DOMAIN;
 
     @Mock
     private IdamClient idamClient;
@@ -59,6 +66,9 @@ class LocalAuthorityServiceTest {
     @Mock
     private LocalAuthorityCodeLookupConfiguration codesConfig;
 
+    @Mock
+    private OrganisationService organisationService;
+
     @InjectMocks
     private LocalAuthorityService underTest;
 
@@ -72,7 +82,7 @@ class LocalAuthorityServiceTest {
 
         @ParameterizedTest
         @ValueSource(strings = {"mock@example.gov.uk", "mock.mock@example.gov.uk", "mock@ExAmPlE.gov.uk"})
-        void shouldReturnLocalAuthorityCode(String email) {
+        void shouldReturnLocalAuthorityCodeWhenUserEmailMappedToLocalAuthority(String email) {
             given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().sub(email).build());
             given(codesConfig.getLocalAuthorityCode(USER_DOMAIN)).willReturn(Optional.of(LOCAL_AUTHORITY_CODE));
 
@@ -81,10 +91,53 @@ class LocalAuthorityServiceTest {
 
         @Test
         void shouldReturnEmptyLocalAuthorityCodeWhenUserDoesNotBelongToAny() {
-            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().sub("test@examlpe.gov.uk").build());
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().sub(USER_EMAIL).build());
             given(codesConfig.getLocalAuthorityCode(USER_DOMAIN)).willReturn(Optional.empty());
+            given(organisationService.findOrganisation()).willReturn(Optional.empty());
 
             assertThat(underTest.getLocalAuthorityCode()).isEmpty();
+
+            verify(codesConfig).getLocalAuthorityCode(USER_DOMAIN);
+            verify(organisationService).findOrganisation();
+            verifyNoInteractions(idsConfig);
+        }
+
+        @Test
+        void shouldReturnEmptyWhenUserEmailNorOrganisationIsMappedToLocalAuthority() {
+            String organisationId = "testId";
+            Organisation organisation = Organisation.builder()
+                .organisationIdentifier(organisationId)
+                .build();
+
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().sub(USER_EMAIL).build());
+            given(codesConfig.getLocalAuthorityCode(USER_DOMAIN)).willReturn(Optional.empty());
+            given(organisationService.findOrganisation()).willReturn(Optional.of(organisation));
+            given(idsConfig.getLocalAuthorityCode(organisationId)).willReturn(Optional.empty());
+
+            assertThat(underTest.getLocalAuthorityCode()).isEmpty();
+
+            verify(codesConfig).getLocalAuthorityCode(USER_DOMAIN);
+            verify(organisationService).findOrganisation();
+            verify(idsConfig).getLocalAuthorityCode(organisationId);
+        }
+
+        @Test
+        void shouldReturnLocalAuthorityCodeWhenUserEmailNotMappedButUserOrganisationMappedToLocalAuthority() {
+            String organisationId = "testId";
+            Organisation organisation = Organisation.builder()
+                .organisationIdentifier(organisationId)
+                .build();
+
+            given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().sub(USER_EMAIL).build());
+            given(codesConfig.getLocalAuthorityCode(USER_DOMAIN)).willReturn(Optional.empty());
+            given(organisationService.findOrganisation()).willReturn(Optional.of(organisation));
+            given(idsConfig.getLocalAuthorityCode(organisationId)).willReturn(Optional.of(LOCAL_AUTHORITY_CODE));
+
+            assertThat(underTest.getLocalAuthorityCode()).isEqualTo(Optional.of(LOCAL_AUTHORITY_CODE));
+
+            verify(codesConfig).getLocalAuthorityCode(USER_DOMAIN);
+            verify(organisationService).findOrganisation();
+            verify(idsConfig).getLocalAuthorityCode(organisationId);
         }
 
         @Test

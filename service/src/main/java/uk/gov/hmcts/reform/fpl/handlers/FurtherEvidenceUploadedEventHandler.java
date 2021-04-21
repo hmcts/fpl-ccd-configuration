@@ -10,11 +10,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FurtherEvidenceNotificationService;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Slf4j
@@ -27,33 +30,28 @@ public class FurtherEvidenceUploadedEventHandler {
     public void handleDocumentUploadedEvent(final FurtherEvidenceUploadedEvent event) {
         final CaseData caseData = event.getCaseData();
         final CaseData caseDataBefore = event.getCaseDataBefore();
-        final String excludedEmail = event.getInitiatedBy().getEmail();
-        final String sender = event.getInitiatedBy().getFullName();
+        final UserDetails uploader = event.getInitiatedBy();
+
+        final Set<String> recipients = new HashSet<>();
 
         if (event.isUploadedByLA()) {
             if (hasNewNonConfidentialDocuments(caseData.getFurtherEvidenceDocumentsLA(),
                 caseDataBefore.getFurtherEvidenceDocumentsLA())) {
-                notifyRespondents(caseData, excludedEmail, sender);
+                recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData));
             }
         } else {
             if (hasNewNonConfidentialDocuments(caseData.getFurtherEvidenceDocuments(),
                 caseDataBefore.getFurtherEvidenceDocuments())) {
-                notifyLASolicitors(caseData, excludedEmail, sender);
-                notifyRespondents(caseData, excludedEmail, sender);
+                recipients.addAll(furtherEvidenceNotificationService.getRepresentativeEmails(caseData));
+                recipients.addAll(furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData));
             }
         }
-    }
 
-    private void notifyLASolicitors(final CaseData caseData, final String excludeEmail, final String sender) {
-        Set<String> recipients = furtherEvidenceNotificationService.getLocalAuthoritySolicitorEmails(caseData);
-        furtherEvidenceNotificationService.sendFurtherEvidenceDocumentsUploadedNotification(
-            caseData, filterRecipients(recipients, excludeEmail), sender);
-    }
+        recipients.removeIf(email -> Objects.equals(email, uploader.getEmail()));
 
-    private void notifyRespondents(final CaseData caseData, final String excludeEmail, final String sender) {
-        Set<String> recipients = furtherEvidenceNotificationService.getRespondentRepresentativeEmails(caseData);
-        furtherEvidenceNotificationService.sendFurtherEvidenceDocumentsUploadedNotification(
-            caseData, filterRecipients(recipients, excludeEmail), sender);
+        if (isNotEmpty(recipients)) {
+            furtherEvidenceNotificationService.sendNotification(caseData, recipients, uploader.getFullName());
+        }
     }
 
     private static boolean hasNewNonConfidentialDocuments(List<Element<SupportingEvidenceBundle>> newEvidenceBundle,
@@ -63,11 +61,5 @@ public class FurtherEvidenceUploadedEventHandler {
             .anyMatch(d -> oldEvidenceBundleUnwrapped.stream()
                 .noneMatch(old -> old.getDocument().equals(d.getDocument()))
                 && !d.isConfidentialDocument());
-    }
-
-    private static Set<String> filterRecipients(final Set<String> recipients, final String excludeEmail) {
-        return recipients.stream()
-            .filter(r -> !r.equals(excludeEmail))
-            .collect(Collectors.toSet());
     }
 }

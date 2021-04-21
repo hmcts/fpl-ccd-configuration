@@ -29,6 +29,7 @@ public class ValidateEmailService {
 
     private static final String ERROR_MESSAGE = "Enter an email address in the correct format,"
         + " for example name@example.com";
+    private static final List<String> OPTIONAL_KEYS = List.of("Applicant", "Representative");
 
     private static final String LOCAL_CHARS = "a-zA-Z0-9.!#$%&'*+/=?^_`{|}~\\-";
 
@@ -73,7 +74,7 @@ public class ValidateEmailService {
     }
 
     private boolean emailIsOptional(String key) {
-        return key.equals("Applicant");
+        return OPTIONAL_KEYS.contains(key);
     }
 
     /*

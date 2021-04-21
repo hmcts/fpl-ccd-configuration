@@ -6,14 +6,24 @@ public enum CaseRole {
     EPSMANAGING,
     LAMANAGING,
     SOLICITOR,
+    SOLICITORA,
+    SOLICITORB,
+    SOLICITORC,
+    SOLICITORD,
+    SOLICITORE,
+    SOLICITORF,
+    SOLICITORG,
+    SOLICITORH,
+    SOLICITORI,
+    SOLICITORJ,
     LABARRISTER,
     BARRISTER,
     CAFCASSSOLICITOR;
 
-    private String formattedName;
+    private final String formattedName;
 
     CaseRole() {
-        this.formattedName = String.format("[%s]", name());
+        this.formattedName = formatName(name());
     }
 
     public String formattedName() {
@@ -21,6 +31,10 @@ public enum CaseRole {
     }
 
     public static CaseRole from(String name) {
-        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", ""));
+        return CaseRole.valueOf(name.replaceAll("[\\[\\]]", "").replace("SOLICITOR", "SOLICITOR"));
+    }
+
+    private static String formatName(String name) {
+        return String.format("[%s]", name);
     }
 }

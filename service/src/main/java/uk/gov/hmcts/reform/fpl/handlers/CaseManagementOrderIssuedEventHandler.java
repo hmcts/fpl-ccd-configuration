@@ -9,20 +9,19 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.cmo.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.IssuedCMOTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
@@ -34,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMA
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseManagementOrderIssuedEventHandler {
     private final InboxLookupService inboxLookupService;
+    private final RepresentativesInbox representativesInbox;
     private final NotificationService notificationService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -76,16 +76,15 @@ public class CaseManagementOrderIssuedEventHandler {
     private void sendToRepresentatives(final CaseData caseData,
                                        HearingOrder cmo,
                                        RepresentativeServingPreferences servingPreference) {
-        List<Representative> representatives = caseData.getRepresentativesByServedPreference(servingPreference);
+        Set<String> representatives = representativesInbox.getEmailsByPreference(caseData, servingPreference);
 
-        representatives.stream()
-            .filter(representative -> isNotBlank(representative.getEmail()))
+        representatives
             .forEach(representative -> {
                 IssuedCMOTemplate representativeNotificationParameters =
                     caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParameters(
                         caseData, cmo, servingPreference);
 
-                notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative.getEmail(),
+                notificationService.sendEmail(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, representative,
                     representativeNotificationParameters, caseData.getId());
             });
     }

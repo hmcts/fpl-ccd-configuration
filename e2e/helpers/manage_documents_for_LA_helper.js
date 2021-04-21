@@ -22,17 +22,35 @@ const createHearing = async (I, caseViewPage, manageHearingsEventPage) => {
   I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
 };
 
-const uploadC2 = async (I, caseViewPage, uploadC2DocumentsEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
-  uploadC2DocumentsEventPage.selectApplicationType('WITH_NOTICE');
+const uploadC2 = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
+  uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
+  uploadAdditionalApplicationsEventPage.selectC2Type('WITH_NOTICE');
   await I.goToNextPage();
-  uploadC2DocumentsEventPage.usePbaPayment();
-  uploadC2DocumentsEventPage.enterPbaPaymentDetails(c2Payment);
-  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
+  uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
+  uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('APPOINTMENT_OF_GUARDIAN');
+  await I.goToNextPage();
+  await uploadAdditionalApplicationsEventPage.getFeeToPay();
+  uploadAdditionalApplicationsEventPage.usePbaPayment();
+  uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
+};
+
+const uploadOtherApplications = async (I, caseViewPage, uploadAdditionalApplicationsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadAdditionalApplications);
+  uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('OTHER_ORDER');
+  await I.goToNextPage();
+  uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Appointment of a guardian');
+  uploadAdditionalApplicationsEventPage.uploadDocument(config.testFile);
+  await I.goToNextPage();
+  await uploadAdditionalApplicationsEventPage.getFeeToPay();
+  uploadAdditionalApplicationsEventPage.usePbaPayment();
+  uploadAdditionalApplicationsEventPage.enterPbaPaymentDetails(c2Payment);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadAdditionalApplications);
 };
 
 module.exports = {
-  createHearing, uploadC2,
+  createHearing, uploadC2, uploadOtherApplications,
 };

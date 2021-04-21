@@ -45,6 +45,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
     private static final byte[] PDF = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
     private static final String DRAFT_ORDER_FILE_NAME = "draft-standard-directions-order.pdf";
+    private static final long CASE_NUMBER = 1234123412341234L;
     private final Document document = document();
 
     @MockBean
@@ -71,6 +72,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
             .data(createCaseDataMap(buildTestDirections())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .build())
+            .id(CASE_NUMBER)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
@@ -90,6 +92,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
                 .put("allocatedJudge", getJudgeAndLegalAdvisor())
                 .build())
+            .id(CASE_NUMBER)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
@@ -104,6 +107,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
             .data(createCaseDataMap(buildTestDirections())
                 .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
                 .build())
+            .id(CASE_NUMBER)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails, "service-route");
