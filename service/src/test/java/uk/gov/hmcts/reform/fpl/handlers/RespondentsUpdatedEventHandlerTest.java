@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
@@ -90,7 +90,7 @@ class RespondentsUpdatedEventHandlerTest {
         underTest.notifyRegisteredRespondentSolicitors(respondentsUpdated);
 
         verify(notificationService).sendEmail(
-            REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE,
+            REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
             recipient2,
             expectedTemplate,
             caseData.getId());
@@ -126,7 +126,7 @@ class RespondentsUpdatedEventHandlerTest {
         underTest.notifyUnregisteredSolicitors(submittedCaseEvent);
 
         verify(notificationService).sendEmail(
-            UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE,
+            UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
             expectedEmail,
             expectedTemplate,
             caseData.getId());

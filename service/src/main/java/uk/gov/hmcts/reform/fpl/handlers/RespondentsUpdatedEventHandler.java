@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.fpl.service.email.content.RespondentSolicitorContentP
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 
 @Slf4j
 @Component
@@ -42,7 +42,7 @@ public class RespondentsUpdatedEventHandler {
 
         registeredSolicitors.removeAll(registeredSolicitorsBefore);
 
-        notifyUpdatedSolicitors(caseData, registeredSolicitors, REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE);
+        notifyUpdatedSolicitors(caseData, registeredSolicitors, REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE);
     }
 
     @Async
@@ -59,7 +59,7 @@ public class RespondentsUpdatedEventHandler {
 
         unregisteredSolicitors.removeAll(unregisteredSolicitorsBefore);
 
-        notifyUpdatedSolicitors(caseData, unregisteredSolicitors, UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE);
+        notifyUpdatedSolicitors(caseData, unregisteredSolicitors, UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE);
 
     }
 

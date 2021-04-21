@@ -31,7 +31,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -206,9 +207,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
             .respondents1(wrapElements(respondentWithRepresentative))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseData);
-
-        CaseData responseData = extractCaseData(callbackResponse);
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
         assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
             .isEqualTo(SOLICITOR_ORG_ID);
@@ -258,7 +257,15 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldPublishRespondentsUpdatedEvent() {
-        Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
+        Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .organisation(Organisation.builder().organisationID("Registered Org ID").build())
+                .build())
+            .build();
+
+        Respondent respondentWithUnregisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
                 .email(SOLICITOR_EMAIL)
@@ -270,14 +277,21 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_ID))
-            .respondents1(wrapElements(respondentWithRepresentative))
+            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
 
         postSubmittedEvent(caseData);
 
         checkUntil(() -> verify(notificationClient).sendEmail(
-            eq(UNREGISTERED_RESPONDENT_SOLICICTOR_TEMPLATE),
+            eq(REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE),
+            eq(SOLICITOR_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE),
             eq(SOLICITOR_EMAIL),
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
