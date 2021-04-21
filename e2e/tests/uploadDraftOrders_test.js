@@ -1,4 +1,5 @@
 const config = require('../config.js');
+const representatives = require('../fixtures/representatives.js');
 const standardDirectionOrder = require('../fixtures/caseData/prepareForHearing.json');
 const draftOrdersHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
@@ -57,7 +58,6 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
   await draftOrdersHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing3, supportingDoc);
   await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder2, hearing1);
-  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -72,9 +72,6 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   assertDraftOrders(I, 3, hearing3, [
     {title: draftCMO, status: draftStatus, supportingDocs: supportingDoc},
   ]);
-  assertDraftOrders(I, 4, hearing4, [
-    {title: draftOrder3.title, status: withJudgeStatus},
-  ]);
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], hearing2);
@@ -83,6 +80,27 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDoc.fileName);
   I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded'], date);
   I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by'], 'kurt@swansea.gov.uk');
+});
+
+Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+
+  const representative = representatives.servedByDigitalService;
+
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+  await I.addAnotherElementToCollection('Representatives');
+  await enterRepresentativesEventPage.enterRepresentative(representative);
+  await enterRepresentativesEventPage.setRepresentativeEmail(1, config.privateSolicitorOne.email);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
+  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
+
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  assertDraftOrders(I, 4, hearing4, [
+    {title: draftOrder3.title, status: withJudgeStatus},
+  ]);
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
