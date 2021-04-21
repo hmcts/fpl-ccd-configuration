@@ -256,13 +256,13 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   I.seeInTab(['Respondents 1', 'Representative', 'Representative\'s last name'], respondents[0].solicitor.lastName);
   I.seeInTab(['Respondents 1', 'Representative', 'Email address'], respondents[0].solicitor.email);
   I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], 'Swansea City Council');
-  I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Address'], respondents[0].solicitor.organisationAddress);
+  let address = Object.values(respondents[0].solicitor.organisationAddress);
+  I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Address'], address);
   I.seeInTab(['Respondents 1', 'Managing office', 'Building and Street'], respondents[0].solicitor.regionalOfficeAddress.buildingAndStreet.lineOne);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 2'], respondents[0].solicitor.regionalOfficeAddress.buildingAndStreet.lineTwo);
   I.seeInTab(['Respondents 1', 'Managing office', 'Address Line 3'], respondents[0].solicitor.regionalOfficeAddress.buildingAndStreet.lineThree);
   I.seeInTab(['Respondents 1', 'Managing office', 'Town or City'], respondents[0].solicitor.regionalOfficeAddress.town);
   I.seeInTab(['Respondents 1', 'Managing office', 'Postcode/Zipcode'], respondents[0].solicitor.regionalOfficeAddress.postcode);
-  I.seeInTab(['Respondents 1', 'Managing office', 'Country'], respondents[0].solicitor.regionalOfficeAddress.country);
 
   I.seeInTab(['Respondents 2', 'Party', 'First name'], respondents[1].firstName);
   I.seeInTab(['Respondents 2', 'Party', 'Last name'], respondents[1].lastName);
@@ -322,7 +322,7 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   I.seeInTab(['Applicants 1', 'Address', 'Building and Street'], applicant.address.buildingAndStreet.lineOne);
   I.seeInTab(['Applicants 1', 'Address', 'Address Line 2'], applicant.address.buildingAndStreet.lineTwo);
   I.seeInTab(['Applicants 1', 'Address', 'Address Line 3'], applicant.address.buildingAndStreet.lineThree);
-  I.seeInTab(['Applicants 1', 'Address', 'Town or City'], applicant.address.town);
+  I.seeInTab(['Applicants 1', 'Address', 'Town or City'], applicant.address.townCity);
   I.seeInTab(['Applicants 1', 'Address', 'County'], applicant.address.county);
   I.seeInTab(['Applicants 1', 'Address', 'Postcode/Zipcode'], applicant.address.postcode);
   I.seeInTab(['Applicants 1', 'Address', 'Country'], applicant.address.country);
