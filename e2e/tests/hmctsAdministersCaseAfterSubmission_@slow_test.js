@@ -111,7 +111,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Application type'], 'C1 - Parental responsibility');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Date and time of upload']);
+  I.seeTextInTab(['Additional applications 1', 'Other applications', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'Other applications', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Document name'], 'C20 - Secure accommodation');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Which jurisdiction?'], 'England');
