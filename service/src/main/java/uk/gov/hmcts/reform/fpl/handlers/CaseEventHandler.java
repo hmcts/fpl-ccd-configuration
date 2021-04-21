@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
+import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksRenderer;
+import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -25,6 +27,8 @@ public class CaseEventHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final TaskListService taskListService;
     private final TaskListRenderer taskListRenderer;
+    private final PreSubmissionTasksRenderer preSubmissionTasksRenderer;
+    private final PreSubmissionTasksService preSubmissionTasksService;
 
     @EventListener
     public void handleCaseDataChange(final CaseDataChanged event) {
@@ -33,7 +37,7 @@ public class CaseEventHandler {
         if (caseData.getState() == OPEN) {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
-            final String taskList = taskListRenderer.render(tasks);
+            final String taskList = taskListRenderer.render(tasks) + getSubmissionTasks(caseData);
 
             coreCaseDataService.triggerEvent(
                 JURISDICTION,
@@ -42,5 +46,10 @@ public class CaseEventHandler {
                 "internal-update-task-list",
                 Map.of("taskList", taskList));
         }
+    }
+
+    private String getSubmissionTasks(CaseData caseData) {
+        return preSubmissionTasksRenderer
+            .render(preSubmissionTasksService.getEventValidationsForSubmission(caseData));
     }
 }

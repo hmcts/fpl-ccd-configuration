@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -19,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 @Service
 public class CaseSubmissionChecker extends CompoundEventChecker {
 
-    private static final List<Event> REQUIRED_EVENTS = List.of(
+    private static final List<Event> REQUIRED_EVENTS = Collections.unmodifiableList(List.of(
             CASE_NAME,
             ORDERS_SOUGHT,
             HEARING_URGENCY,
@@ -28,7 +29,7 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
             CHILDREN,
             RESPONDENTS,
             ALLOCATION_PROPOSAL
-    );
+    ));
 
     @Override
     public List<String> validate(CaseData caseData) {
@@ -48,5 +49,9 @@ public class CaseSubmissionChecker extends CompoundEventChecker {
     @Override
     public boolean isAvailable(CaseData caseData) {
         return validate(caseData).isEmpty();
+    }
+
+    public static List<Event> getRequiredEvents() {
+        return REQUIRED_EVENTS;
     }
 }
