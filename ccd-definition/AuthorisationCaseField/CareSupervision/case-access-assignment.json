@@ -256,7 +256,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents1",
     "UserRoles": [
-      "caseworker-caa",
       "caseworker-approver"
     ],
     "CRUD": "CRU"
