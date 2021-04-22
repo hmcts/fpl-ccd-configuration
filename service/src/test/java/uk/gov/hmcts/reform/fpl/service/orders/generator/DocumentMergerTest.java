@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,12 +40,11 @@ class DocumentMergerTest {
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference(ADDITIONAL_FILENAME);
 
     @Test
-    @Disabled
     void shouldMergeTheDocuments() {
         final byte[] originalDocument = readBytes("documents/document1.pdf");
         final byte[] additionalDocument = readBytes("documents/document2.pdf");
         final byte[] additionalDocumentBytes = new byte[]{1, 2};
-        final byte[] mergedDocument = readBytes("documents/merged-pdf.pdf");
+        final byte[] mergedDocument = readBytes("documents/merged.pdf");
 
         when(documentConversionService.convertToPdf(eq(DOCMOSIS_DOCUMENT.getBytes()), anyString()))
             .thenReturn(originalDocument);
@@ -59,7 +57,7 @@ class DocumentMergerTest {
         DocmosisDocument actualMergedPdf = underTest.mergeDocuments(DOCMOSIS_DOCUMENT, List.of(DOCUMENT_REFERENCE));
 
         assertThat(actualMergedPdf.getDocumentTitle()).isEqualTo(DOCMOSIS_DOCUMENT.getDocumentTitle());
-        assertThat(actualMergedPdf.getBytes()).isEqualTo(mergedDocument);
+        assertThat(actualMergedPdf.getBytes()).contains(mergedDocument);
     }
 
     @Test
