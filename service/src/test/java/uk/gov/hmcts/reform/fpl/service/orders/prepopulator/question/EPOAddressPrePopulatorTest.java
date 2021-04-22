@@ -19,7 +19,7 @@ class EPOAddressPrePopulatorTest {
     }
 
     @Test
-    void testAddressIsPrePopulateWithExistingAddressInOrders() {
+    void testAddressIsPrePopulatedWithExistingAddressInOrders() {
         final Address address = Address.builder().addressLine1("1 Street").postcode("SW1").build();
         CaseData caseData = CaseData.builder().orders(Orders.builder().address(address).build()).build();
 
@@ -28,8 +28,14 @@ class EPOAddressPrePopulatorTest {
     }
 
     @Test
-    void testAddressIsPopulatedSetWhenAddressIsNotSetInOrders() {
+    void testPrepopulateAddressWhenCaseDataDoesNotHaveOrders() {
         CaseData caseData = CaseData.builder().build();
+        Assertions.assertThat(underTest.prePopulate(caseData)).isEmpty();
+    }
+
+    @Test
+    void testPrepopulateAddressWhenOrdersDoesNotHaveAddress() {
+        CaseData caseData = CaseData.builder().orders(Orders.builder().build()).build();
         Assertions.assertThat(underTest.prePopulate(caseData)).isEmpty();
     }
 }

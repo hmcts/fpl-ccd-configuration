@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 class C23EPODocumentParameterGeneratorTest {
     private static final String LA_CODE = "LA_CODE";
@@ -66,10 +68,25 @@ class C23EPODocumentParameterGeneratorTest {
         assertThat(underTest.accept()).isEqualTo(ORDER_TYPE);
     }
 
-
     @Test
     void template() {
         assertThat(underTest.template()).isEqualTo(EPO);
+    }
+
+    @Test
+    void testAdditionalDocuments() {
+        final DocumentReference documentReference = testDocumentReference();
+        CaseData caseData = CaseData.builder().manageOrdersEventData(
+            ManageOrdersEventData.builder()
+                .manageOrdersPowerOfArrest(documentReference).build()).build();
+        assertThat(underTest.additionalDocuments(caseData)).isEqualTo(List.of(documentReference));
+    }
+
+    @Test
+    void testAdditionalDocumentsReturnsEmptyList() {
+        CaseData caseData = CaseData.builder().manageOrdersEventData(
+            ManageOrdersEventData.builder().build()).build();
+        assertThat(underTest.additionalDocuments(caseData)).isEqualTo(List.of());
     }
 
     @Test
