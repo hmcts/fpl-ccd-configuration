@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 
 class EPOEndDateValidatorTest {
 
@@ -22,7 +22,7 @@ class EPOEndDateValidatorTest {
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(EPO_ORDER_DETAILS);
+        assertThat(underTest.accept()).isEqualTo(EPO_EXPIRY_DATE);
     }
 
     @Test

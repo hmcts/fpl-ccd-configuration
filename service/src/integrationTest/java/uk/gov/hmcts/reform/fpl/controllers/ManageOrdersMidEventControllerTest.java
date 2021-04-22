@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -93,19 +94,18 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(
-            Map.of(
-                "approver", "YES",
-                "approvalDate", "YES",
-                "previewOrder", "YES",
-                "furtherDirections", "YES",
-                "whichChildren", "YES",
-                "approvalDateTime", "NO",
-                "epoOrderDetails", "NO",
-                "epoRemovalAddress", "NO",
-                "epoExclusion", "NO"
-            )
-        );
+        Map<String, String> expectedQuestions = new HashMap<>(getOrderQuestions());
+        expectedQuestions.putAll(Map.of(
+            "approvalDate", "YES",
+            "approvalDateTime", "NO",
+            "epoIncludePhrase", "NO",
+            "epoOrderType", "NO",
+            "epoChildrenDescription", "NO",
+            "epoExpiryDate", "NO",
+            "epoPreventRemoval", "NO"
+        ));
+
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
     @Test
@@ -117,19 +117,18 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(
-            Map.of(
-                "approver", "YES",
-                "approvalDate", "NO",
-                "approvalDateTime", "YES",
-                "previewOrder", "YES",
-                "furtherDirections", "YES",
-                "whichChildren", "YES",
-                "epoOrderDetails", "YES",
-                "epoRemovalAddress", "YES",
-                "epoExclusion", "YES"
-            )
-        );
+        Map<String, String> expectedQuestions = new HashMap<>(getOrderQuestions());
+        expectedQuestions.putAll(Map.of(
+            "approvalDate", "NO",
+            "approvalDateTime", "YES",
+            "epoIncludePhrase", "YES",
+            "epoOrderType", "YES",
+            "epoChildrenDescription", "YES",
+            "epoExpiryDate", "YES",
+            "epoPreventRemoval", "YES"
+        ));
+
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
     @Test
@@ -255,7 +254,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @Test
     void epoEndDateShouldReturnErrorForFutureDate() {
-        CaseData caseData = CaseData.builder().manageOrdersEventData(
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
@@ -267,7 +266,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void epoEndDateShouldReturnErrorWhenEndDateIsNotInRangeWithApprovalDate() {
         final LocalDateTime approvalDate = LocalDateTime.now().minusDays(10);
 
-        CaseData caseData = CaseData.builder().manageOrdersEventData(
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(approvalDate.plusDays(9), approvalDate)).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
@@ -353,6 +352,14 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .getRootCause()
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.model.order.OrderSection.DOES_NOT_MATCH");
+    }
+
+    private static Map<String, String> getOrderQuestions() {
+        return Map.of(
+            "approver", "YES",
+            "previewOrder", "YES",
+            "furtherDirections", "YES",
+            "whichChildren", "YES");
     }
 
     private CaseData buildCaseData() {

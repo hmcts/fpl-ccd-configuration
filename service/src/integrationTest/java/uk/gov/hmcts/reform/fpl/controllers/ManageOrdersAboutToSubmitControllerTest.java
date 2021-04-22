@@ -154,7 +154,6 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                     .build())
                 .dateTimeIssued(now())
                 .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
-                .expiryDateTime(manageOrdersEventData.getManageOrdersEndDateTime())
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)

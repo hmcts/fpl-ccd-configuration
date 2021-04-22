@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_ORDER_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -31,7 +31,7 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
 
     @Override
     public OrderQuestionBlock accept() {
-        return EPO_ORDER_DETAILS;
+        return EPO_EXPIRY_DATE;
     }
 
     @Override

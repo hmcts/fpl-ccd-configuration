@@ -38,28 +38,46 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "epoOrderDetails",
+    "ListElementCode": "epoOrderType",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "epoOrderDetails=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "epoOrderType=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "epoRemovalAddress",
+    "ListElementCode": "epoIncludePhrase",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "epoRemovalAddress=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "epoIncludePhrase=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "epoExclusion",
+    "ListElementCode": "epoChildrenDescription",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "epoExclusion=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "epoChildrenDescription=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "epoExpiryDate",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "epoExpiryDate=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "epoPreventRemoval",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "epoPreventRemoval=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

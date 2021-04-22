@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -70,7 +70,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
         questionBlockPrepopulatorMapping = Map.of(
             APPROVER, approverBlockPrePopulator,
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
-            EPO_REMOVAL_ADDRESS, epoAddressPrePopulator
+            EPO_PREVENT_REMOVAL, epoAddressPrePopulator
         );
 
         sectionPrepopulatorMapping = Map.of(

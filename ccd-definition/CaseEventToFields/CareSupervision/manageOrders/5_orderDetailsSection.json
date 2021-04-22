@@ -35,7 +35,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.epoOrderDetails=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.epoOrderType=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -48,7 +48,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEpoType=\"PREVENT_REMOVAL\"",
+    "FieldShowCondition": "orderTempQuestions.epoPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -61,7 +61,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEpoType=\"PREVENT_REMOVAL\"",
+    "FieldShowCondition": "orderTempQuestions.epoPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -74,7 +74,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEpoType=\"PREVENT_REMOVAL\" AND manageOrdersExclusionRequirement=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.epoPreventRemoval=\"YES\" AND manageOrdersExclusionRequirement=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -87,7 +87,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEpoType=\"PREVENT_REMOVAL\" AND manageOrdersExclusionRequirement=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.epoPreventRemoval=\"YES\" AND manageOrdersExclusionRequirement=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -100,7 +100,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEpoType=\"PREVENT_REMOVAL\" AND manageOrdersExclusionRequirement=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.epoPreventRemoval=\"YES\" AND manageOrdersExclusionRequirement=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -113,7 +113,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.epoOrderDetails=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.epoIncludePhrase=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -126,7 +126,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.epoOrderDetails=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.epoChildrenDescription=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -152,7 +152,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.epoOrderDetails=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.epoExpiryDate=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

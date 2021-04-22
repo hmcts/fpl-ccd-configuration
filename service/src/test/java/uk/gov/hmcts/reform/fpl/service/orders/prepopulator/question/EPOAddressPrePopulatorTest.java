@@ -15,7 +15,7 @@ class EPOAddressPrePopulatorTest {
 
     @Test
     void testAcceptsEPORemovalAddressSection() {
-        Assertions.assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.EPO_REMOVAL_ADDRESS);
+        Assertions.assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.EPO_PREVENT_REMOVAL);
     }
 
     @Test

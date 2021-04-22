@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXCLUSION;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_ORDER_DETAILS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_PREVENT_REMOVAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -28,8 +30,8 @@ public enum Order {
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order",
-        List.of(APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_ORDER_DETAILS, EPO_REMOVAL_ADDRESS, EPO_EXCLUSION,
-            FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+        List.of(APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE, EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION,
+            EPO_EXPIRY_DATE, EPO_PREVENT_REMOVAL, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
     private final String title;

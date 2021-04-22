@@ -52,7 +52,6 @@ public class SealedOrderHistoryService {
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
-            .expiryDateTime(manageOrdersEventData.getManageOrdersEndDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder)

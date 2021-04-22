@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_PREVENT_REMOVAL;
 
 class EPORemovalAddressValidatorTest {
 
@@ -21,7 +21,7 @@ class EPORemovalAddressValidatorTest {
 
     @Test
     void accept() {
-        AssertionsForClassTypes.assertThat(underTest.accept()).isEqualTo(EPO_REMOVAL_ADDRESS);
+        AssertionsForClassTypes.assertThat(underTest.accept()).isEqualTo(EPO_PREVENT_REMOVAL);
     }
 
     @Test

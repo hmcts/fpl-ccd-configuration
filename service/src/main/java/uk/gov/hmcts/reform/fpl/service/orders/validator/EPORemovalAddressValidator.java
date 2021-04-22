@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.logging.log4j.util.Strings.isEmpty;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_REMOVAL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_PREVENT_REMOVAL;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -24,7 +24,7 @@ public class EPORemovalAddressValidator implements QuestionBlockOrderValidator {
 
     @Override
     public OrderQuestionBlock accept() {
-        return EPO_REMOVAL_ADDRESS;
+        return EPO_PREVENT_REMOVAL;
     }
 
     @Override

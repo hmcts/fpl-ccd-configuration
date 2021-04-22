@@ -106,14 +106,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
-    "ListElementCode": "expiryDateTime",
-    "FieldType": "DateTime",
-    "ElementLabel": "Ends on",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "GeneratedOrder",
     "ListElementCode": "date",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",

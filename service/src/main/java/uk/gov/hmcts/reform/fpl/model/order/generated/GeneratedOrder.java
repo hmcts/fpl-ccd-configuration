@@ -47,7 +47,6 @@ public class GeneratedOrder implements RemovableOrder {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final FurtherDirections furtherDirections;
     private final String expiryDate;
-    private final LocalDateTime expiryDateTime;
     private final String courtName;
     private final String uploader;
     private final String uploadedOrderDescription;
