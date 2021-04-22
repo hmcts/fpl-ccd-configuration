@@ -508,7 +508,7 @@
     "SecurityClassification": "Public",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-summary/submitted",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/submitted",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",

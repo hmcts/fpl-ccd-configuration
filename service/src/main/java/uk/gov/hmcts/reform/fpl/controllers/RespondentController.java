@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -94,6 +95,7 @@ public class RespondentController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
+        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
     }
 
 }
