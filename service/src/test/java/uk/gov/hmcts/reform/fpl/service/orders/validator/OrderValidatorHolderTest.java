@@ -14,6 +14,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -25,6 +26,8 @@ class OrderValidatorHolderTest {
 
     @Mock
     private ApprovalDateValidator approvalDateValidator;
+    @Mock
+    private ApprovalDateTimeValidator approvalDateTimeValidator;
     @Mock
     private WhichChildrenValidator whichChildrenValidator;
     @Mock
@@ -38,7 +41,8 @@ class OrderValidatorHolderTest {
     @BeforeEach
     void setUp() {
         validators = List.of(
-            approvalDateValidator, whichChildrenValidator, epoRemovalAddressValidator, epoEndDateValidator);
+            approvalDateValidator, approvalDateTimeValidator, whichChildrenValidator,
+            epoRemovalAddressValidator, epoEndDateValidator);
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
     }
@@ -47,6 +51,7 @@ class OrderValidatorHolderTest {
     void blockToValidator() {
         assertThat(underTest.blockToValidator()).isEqualTo(Map.of(
             APPROVAL_DATE, approvalDateValidator,
+            APPROVAL_DATE_TIME, approvalDateTimeValidator,
             WHICH_CHILDREN, whichChildrenValidator,
             EPO_PREVENT_REMOVAL, epoRemovalAddressValidator,
             EPO_EXPIRY_DATE, epoEndDateValidator
@@ -58,6 +63,7 @@ class OrderValidatorHolderTest {
         underTest.blockToValidator();
         assertThat(underTest.blockToValidator()).isEqualTo(Map.of(
             APPROVAL_DATE, approvalDateValidator,
+            APPROVAL_DATE_TIME, approvalDateTimeValidator,
             WHICH_CHILDREN, whichChildrenValidator,
             EPO_PREVENT_REMOVAL, epoRemovalAddressValidator,
             EPO_EXPIRY_DATE, epoEndDateValidator

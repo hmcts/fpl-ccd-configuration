@@ -253,7 +253,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void epoEndDateShouldReturnErrorForFutureDate() {
+    void epoEndDateShouldReturnErrorForPastDate() {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();
 
@@ -264,10 +264,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @Test
     void epoEndDateShouldReturnErrorWhenEndDateIsNotInRangeWithApprovalDate() {
-        final LocalDateTime approvalDate = LocalDateTime.now().minusDays(10);
+        final LocalDateTime approvalDate = LocalDateTime.now().minusDays(5);
 
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(approvalDate.plusDays(9), approvalDate)).build();
+            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(9))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
@@ -276,10 +276,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @Test
     void epoEndDateShouldReturnErrorWhenEndDateTimeIsMidnight() {
-        final LocalDateTime endDateTime = LocalDateTime.of(dateNow(), LocalTime.MIDNIGHT);
+        final LocalDateTime endDateTime = LocalDateTime.of(dateNow().plusDays(1), LocalTime.MIDNIGHT);
 
         CaseData caseData = CaseData.builder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(endDateTime, now().minusDays(10))).build();
+            buildRemoveToAccommodationEventData(now(), endDateTime)).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
@@ -309,7 +309,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void shouldNotReturnErrorsWhenEPOOrderDetailsAreValidForRemoveToAccommodation() {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(now().minusDays(1), now().minusDays(4))).build();
+            buildRemoveToAccommodationEventData(now().minusDays(4), now().plusDays(1))).build();
 
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
             .thenReturn(DOCMOSIS_DOCUMENT);
@@ -375,9 +375,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     private ManageOrdersEventData buildRemoveToAccommodationEventData(
-        LocalDateTime endDateTime, LocalDateTime approvalDate) {
+        LocalDateTime approvalDateTime, LocalDateTime endDateTime) {
         return ManageOrdersEventData.builder()
-            .manageOrdersApprovalDateTime(approvalDate)
+            .manageOrdersApprovalDateTime(approvalDateTime)
             .manageOrdersEndDateTime(endDateTime)
             .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
             .manageOrdersEpoType(EPOType.REMOVE_TO_ACCOMMODATION)
@@ -387,8 +387,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private ManageOrdersEventData buildPreventRemovalEventData(Address removalAddress) {
         return ManageOrdersEventData.builder()
-            .manageOrdersApprovalDateTime(now().minusDays(8))
-            .manageOrdersEndDateTime(now().minusDays(1))
+            .manageOrdersApprovalDateTime(now())
+            .manageOrdersEndDateTime(now().plusDays(1))
             .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
             .manageOrdersEpoType(EPOType.PREVENT_REMOVAL)
             .manageOrdersEpoRemovalAddress(removalAddress)

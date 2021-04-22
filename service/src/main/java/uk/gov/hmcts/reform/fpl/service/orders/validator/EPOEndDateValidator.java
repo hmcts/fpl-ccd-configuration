@@ -56,7 +56,7 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
     private List<String> validateEpoEndDateTime(LocalDateTime epoEndTime) {
         List<String> errors = new ArrayList<>();
 
-        if (epoEndTime.isAfter(time.now())) {
+        if (!epoEndTime.isAfter(time.now())) {
             errors.add(FUTURE_DATE_MESSAGE);
         }
 

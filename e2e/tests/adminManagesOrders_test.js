@@ -7,7 +7,7 @@ const dateTimeFormat = 'd mmm yyyy, h:MM:ss TT';
 const dateFormat = 'd mmm yyyy';
 const approvalDate = {year: 2021, month: 4, day: 9};
 const today = new Date(Date.now());
-const yesterday = new Date(Date.now() - (3600 * 1000 * 24));
+const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
 let caseId;
 
@@ -51,7 +51,7 @@ Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) =>
   await I.goToNextPage();
   await manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.removeAccommodation);
   await manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
-  await manageOrdersEventPage.enterEPOEndDateTime(yesterday);
+  await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
@@ -81,7 +81,7 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await manageOrdersEventPage.uploadPowerOfArrest(config.testPdfFile);
 
   await manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
-  await manageOrdersEventPage.enterEPOEndDateTime(yesterday);
+  await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();

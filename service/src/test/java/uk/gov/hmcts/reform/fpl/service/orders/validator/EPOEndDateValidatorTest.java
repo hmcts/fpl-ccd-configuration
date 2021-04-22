@@ -29,8 +29,8 @@ class EPOEndDateValidatorTest {
     void validateFutureDate() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now().minusDays(1))
-                .manageOrdersEndDateTime(time.now().plusDays(1))
+                .manageOrdersApprovalDateTime(time.now())
+                .manageOrdersEndDateTime(time.now().minusHours(1))
                 .build())
             .build();
 
@@ -41,8 +41,8 @@ class EPOEndDateValidatorTest {
     void validateMidnightTime() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now().minusDays(2))
-                .manageOrdersEndDateTime(LocalDateTime.of(time.now().minusDays(1).toLocalDate(), LocalTime.MIDNIGHT))
+                .manageOrdersApprovalDateTime(time.now())
+                .manageOrdersEndDateTime(LocalDateTime.of(time.now().plusDays(1).toLocalDate(), LocalTime.MIDNIGHT))
                 .build())
             .build();
 
@@ -51,11 +51,11 @@ class EPOEndDateValidatorTest {
 
     @Test
     void validateEPOEndDateWhenDateIsNotInRange() {
-        final LocalDateTime approvalDate = time.now().minusDays(10);
+        final LocalDateTime approvalDate = time.now();
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(time.now().minusHours(1))
+                .manageOrdersEndDateTime(approvalDate.plusDays(10))
                 .build())
             .build();
 
@@ -65,11 +65,11 @@ class EPOEndDateValidatorTest {
 
     @Test
     void validateEPOEndDateWhenDateIsInRange() {
-        final LocalDateTime approvalDate = time.now().minusDays(10);
+        final LocalDateTime approvalDate = time.now();
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(approvalDate.minusDays(1))
+                .manageOrdersEndDateTime(approvalDate.plusDays(1))
                 .build())
             .build();
 
