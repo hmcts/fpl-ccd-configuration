@@ -29,7 +29,6 @@ public enum OrderQuestionBlock {
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview"));
 
-
     private final String showHideField;
     private final String question;
     private final OrderSection section;

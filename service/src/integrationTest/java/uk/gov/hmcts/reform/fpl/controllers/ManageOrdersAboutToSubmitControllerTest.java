@@ -24,12 +24,14 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -69,11 +72,14 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     private static final Document UPLOADED_WORD_DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_PDF_REFERENCE = buildFromDocument(UPLOADED_PDF_DOCUMENT);
     private static final DocumentReference DOCUMENT_WORD_REFERENCE = buildFromDocument(UPLOADED_WORD_DOCUMENT);
+    private static final DocumentReference UPLOADED_POWER_OF_ARREST = testDocumentReference();
 
     private static final UUID ELEMENT_ID = UUID.randomUUID();
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
+    @MockBean
+    private DocumentMerger documentMerger;
     @MockBean
     private UploadDocumentService uploadService;
     @MockBean
@@ -89,6 +95,10 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
+
+        when(documentMerger.mergeDocuments(eq(DOCMOSIS_PDF_DOCUMENT), anyList()))
+            .thenReturn(DOCMOSIS_PDF_DOCUMENT);
+
         when(uploadService.uploadDocument(eq(DOCUMENT_PDF_BINARIES), anyString(), eq("application/pdf")))
             .thenReturn(UPLOADED_PDF_DOCUMENT);
 

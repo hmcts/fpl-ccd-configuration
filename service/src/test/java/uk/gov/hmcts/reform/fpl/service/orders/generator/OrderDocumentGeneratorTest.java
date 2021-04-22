@@ -39,9 +39,10 @@ class OrderDocumentGeneratorTest {
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
     private final OrderDocumentGeneratorHolder generatorHolder = mock(OrderDocumentGeneratorHolder.class);
     private final DocmosisCommonElementDecorator decorator = mock(DocmosisCommonElementDecorator.class);
+    private final DocumentMerger documentMerger = mock(DocumentMerger.class);
 
     private final OrderDocumentGenerator underTest = new OrderDocumentGenerator(
-        docmosisRenderer, objectMapper, generatorHolder, decorator
+        docmosisRenderer, objectMapper, generatorHolder, decorator, documentMerger
     );
 
     @Test

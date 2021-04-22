@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -73,6 +74,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
+
+    @MockBean
+    private DocumentMerger documentMerger;
 
     @MockBean
     private UploadDocumentService uploadService;

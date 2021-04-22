@@ -90,8 +90,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
+    "ListElementCode": "approvalDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": "Approval date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
     "ListElementCode": "expiryDate",
     "FieldType": "Text",
+    "ElementLabel": "Ends on",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "expiryDateTime",
+    "FieldType": "DateTime",
     "ElementLabel": "Ends on",
     "SecurityClassification": "Public"
   },
