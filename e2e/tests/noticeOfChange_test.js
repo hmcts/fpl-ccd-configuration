@@ -1,19 +1,37 @@
 const config = require('../config.js');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
+const representedCase = require('../fixtures/caseData/representedCase.json');
 
 let caseId;
 
 Feature('Notice of change');
 
-BeforeSuite(async ({I}) => {
+Scenario('Private solicitor obtains access to an unrepresented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
   caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);
-});
-
-Scenario('Private solicitor obtains case access through NoC', async ({I, caseListPage, noticeOfChangePage}) => {
   await I.signIn(config.privateSolicitorOne);
   I.navigateToCaseList();
   caseListPage.searchForCasesWithId(caseId);
   I.dontSeeCaseInSearchResult(caseId);
+  await usersCompletesNoC(I, caseListPage, noticeOfChangePage);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  assertRepresentative(I, config.privateSolicitorOne.email, 'External', config.privateSolicitorOne.email, 'Private solicitors');
+});
+
+Scenario('Private solicitor replaces respondent solicitor on a represented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+  caseId = await I.submitNewCaseWithData(representedCase);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  assertRepresentative(I, 'Tom', 'Jones', 'test@test.co.uk');
+  await I.signIn(config.privateSolicitorOne);
+  I.navigateToCaseList();
+  caseListPage.searchForCasesWithId(caseId);
+  I.dontSeeCaseInSearchResult(caseId);
+  await usersCompletesNoC(I, caseListPage, noticeOfChangePage);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  assertRepresentative(I, config.privateSolicitorOne.email, 'External', config.privateSolicitorOne.email, 'Private solicitors');
+});
+
+const usersCompletesNoC = async (I, caseListPage, noticeOfChangePage) => {
   noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
   await I.retryUntilExists(() => I.click('Continue'), noticeOfChangePage.fields.applicantName);
@@ -23,7 +41,15 @@ Scenario('Private solicitor obtains case access through NoC', async ({I, caseLis
   noticeOfChangePage.confirmNoticeOfChange();
   await I.retryUntilExists(() => I.click('Submit'), '.govuk-panel--confirmation');
   I.see('Notice of change successful');
-  I.navigateToCaseList();
-  caseListPage.searchForCasesWithId(caseId);
-  I.seeCaseInSearchResult(caseId);
-});
+  await I.retryUntilExists(() => I.click('View this case'), '.case-title');
+};
+
+const assertRepresentative = (I, firstName, lastName, email, organisation) => {
+  I.seeInTab(['Representative', 'Representative\'s first name'], firstName);
+  I.seeInTab(['Representative', 'Representative\'s last name'], lastName);
+  I.seeInTab(['Representative', 'Email address'], email);
+
+  if (organisation) {
+    I.seeInTab(['Representative', 'Organisation'], 'Private solicitors');
+  }
+};
