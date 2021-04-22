@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 @RequestMapping("/callback/noc-decision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class NoticeOfChangeController extends CallbackController {
+
     private final NoticeOfChangeService noticeOfChangeService;
 
     @PostMapping("/about-to-start")

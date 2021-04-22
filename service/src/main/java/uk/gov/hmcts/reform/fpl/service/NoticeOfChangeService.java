@@ -27,11 +27,7 @@ public class NoticeOfChangeService {
         AuditEvent auditEvent = auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_EVENT)
             .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s event in audit", NOC_EVENT)));
 
-        log.info("Audit event found {}", auditEvent);
-
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
-
-        log.info("Audit event user details test {}", solicitor.getEmail());
 
         return respondentRepresentationService.updateRepresentation(caseData, solicitor);
     }

@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
-@WebMvcTest(MessageJudgeController.class)
+@WebMvcTest(NoticeOfChangeController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NoticeOfChangeControllerTest extends AbstractCallbackTest {
 
@@ -59,10 +59,8 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
     void init() {
         givenFplService();
         givenSystemUser();
-
         when(caseDataApi.getAuditEvents(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, false, CASE_ID.toString()))
             .thenReturn(AUDIT_EVENTS);
-
         when(idamClient.getUserByUserId(USER_AUTH_TOKEN, SOLICITOR_ID))
             .thenReturn(SOLICITOR_USER);
     }

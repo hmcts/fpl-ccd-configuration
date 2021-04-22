@@ -64,17 +64,17 @@ public class RespondentRepresentationService {
     }
 
     public List<Element<Respondent>> updateRepresentation(CaseData caseData, UserDetails solicitor) {
-        ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
+        final ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
 
         if (isEmpty(change) || isEmpty(change.getCaseRoleId()) || isEmpty(change.getOrganisationToAdd())) {
             throw new IllegalStateException("Invalid or missing ChangeOrganisationRequest: " + change);
         }
 
-        SolicitorRole solicitorRole = SolicitorRole.from(change.getCaseRoleId().getValueCode());
+        final SolicitorRole solicitorRole = SolicitorRole.from(change.getCaseRoleId().getValueCode());
 
-        List<Element<Respondent>> respondents = defaultIfNull(caseData.getRespondents1(), emptyList());
+        final List<Element<Respondent>> respondents = defaultIfNull(caseData.getRespondents1(), emptyList());
 
-        Respondent respondent = respondents.get(solicitorRole.getIndex()).getValue();
+        final Respondent respondent = respondents.get(solicitorRole.getIndex()).getValue();
 
         respondent.setLegalRepresentation(YesNo.YES.getValue());
 

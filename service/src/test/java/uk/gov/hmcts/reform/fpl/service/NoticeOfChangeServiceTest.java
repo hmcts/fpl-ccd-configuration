@@ -28,6 +28,7 @@ class NoticeOfChangeServiceTest {
 
     private static final Long CASE_ID = 10L;
     private static final String USER_ID = "User1";
+    private static final String NOC_REQUEST_EVENT = "nocRequest";
 
     @Mock
     private UserService userService;
@@ -68,28 +69,28 @@ class NoticeOfChangeServiceTest {
             .userId(USER_ID)
             .build();
 
-        final UserDetails userDetails = UserDetails.builder()
+        final UserDetails solicitorUser = UserDetails.builder()
             .email("john.smith@test.com")
             .forename("John")
             .surname("Smith")
             .build();
 
-        when(auditEventService.getLatestAuditEventByName(caseData.getId().toString(), "nocRequest"))
+        when(auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_REQUEST_EVENT))
             .thenReturn(Optional.of(auditEvent));
 
         when(userService.getUserDetailsById(USER_ID))
-            .thenReturn(userDetails);
+            .thenReturn(solicitorUser);
 
-        when(respondentRepresentationService.updateRepresentation(caseData, userDetails))
+        when(respondentRepresentationService.updateRepresentation(caseData, solicitorUser))
             .thenReturn(List.of(respondent));
 
         final List<Element<Respondent>> updatedRespondents = underTest.updateRepresentation(caseData);
 
         assertThat(updatedRespondents).containsExactly(respondent);
 
-        verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), "nocRequest");
+        verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
         verify(userService).getUserDetailsById(USER_ID);
-        verify(respondentRepresentationService).updateRepresentation(caseData, userDetails);
+        verify(respondentRepresentationService).updateRepresentation(caseData, solicitorUser);
         verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
     }
 
@@ -100,14 +101,14 @@ class NoticeOfChangeServiceTest {
             .id(CASE_ID)
             .build();
 
-        when(auditEventService.getLatestAuditEventByName(caseData.getId().toString(), "nocRequest"))
+        when(auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_REQUEST_EVENT))
             .thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> underTest.updateRepresentation(caseData))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Could not find nocRequest event in audit");
 
-        verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), "nocRequest");
+        verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
         verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
     }
 

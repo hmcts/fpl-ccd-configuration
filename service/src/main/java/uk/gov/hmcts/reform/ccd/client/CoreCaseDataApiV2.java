@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.AuditEventsResponse;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATION;
 
 @FeignClient(
     name = "core-case-data-api-v2",

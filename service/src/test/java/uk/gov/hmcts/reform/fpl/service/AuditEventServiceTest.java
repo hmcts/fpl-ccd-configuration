@@ -55,7 +55,6 @@ class AuditEventServiceTest {
         when(userConfig.getPassword()).thenReturn(PASSWORD);
         when(idamClient.getAccessToken(USERNAME, PASSWORD)).thenReturn(USER_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
-
         when(caseDataApi.getAuditEvents(USER_TOKEN, SERVICE_TOKEN, false, CASE_ID))
             .thenReturn(auditEventsResponse);
     }

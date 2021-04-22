@@ -12,7 +12,9 @@ Scenario('Private solicitor obtains access to an unrepresented case', async ({I,
   I.navigateToCaseList();
   caseListPage.searchForCasesWithId(caseId);
   I.dontSeeCaseInSearchResult(caseId);
-  await usersCompletesNoC(I, caseListPage, noticeOfChangePage);
+  
+  await userCompletesNoC(I, caseListPage, noticeOfChangePage);
+  
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, config.privateSolicitorOne.email, 'External', config.privateSolicitorOne.email, 'Private solicitors');
 });
@@ -22,16 +24,18 @@ Scenario('Private solicitor replaces respondent solicitor on a represented case'
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, 'Tom', 'Jones', 'test@test.co.uk');
+  
   await I.signIn(config.privateSolicitorOne);
   I.navigateToCaseList();
   caseListPage.searchForCasesWithId(caseId);
   I.dontSeeCaseInSearchResult(caseId);
-  await usersCompletesNoC(I, caseListPage, noticeOfChangePage);
+  
+  await userCompletesNoC(I, caseListPage, noticeOfChangePage);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, config.privateSolicitorOne.email, 'External', config.privateSolicitorOne.email, 'Private solicitors');
 });
 
-const usersCompletesNoC = async (I, caseListPage, noticeOfChangePage) => {
+const userCompletesNoC = async (I, caseListPage, noticeOfChangePage) => {
   noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
   await I.retryUntilExists(() => I.click('Continue'), noticeOfChangePage.fields.applicantName);

@@ -53,13 +53,16 @@ class UserServiceTest {
 
     @Test
     void shouldReturnUserDetails() {
-        String userId = "1111-1111";
-        UserDetails expectedUserDetails = UserDetails.builder().email(USER_EMAIL).forename("Tom").build();
+        final String userId = "1111-1111";
+        final UserDetails expectedUserDetails = UserDetails.builder()
+            .email(USER_EMAIL)
+            .forename("Tom")
+            .build();
 
         when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
         when(client.getUserByUserId(USER_AUTHORISATION, userId)).thenReturn(expectedUserDetails);
 
-        UserDetails actualUserDetails = underTest.getUserDetailsById(userId);
+        final UserDetails actualUserDetails = underTest.getUserDetailsById(userId);
 
         assertThat(actualUserDetails).isEqualTo(expectedUserDetails);
     }

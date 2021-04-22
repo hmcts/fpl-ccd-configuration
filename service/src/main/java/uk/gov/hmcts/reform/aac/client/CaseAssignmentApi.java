@@ -30,5 +30,4 @@ public interface CaseAssignmentApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestBody CallbackRequest callbackRequest
     );
-
 }

@@ -306,7 +306,6 @@ public class TestDataHelper {
             .build();
     }
 
-
     public static DynamicList caseRoleDynamicList(String role) {
         final DynamicListElement dynamicListElement = DynamicListElement.builder()
             .code(role)

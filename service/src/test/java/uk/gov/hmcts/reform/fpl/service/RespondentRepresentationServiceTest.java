@@ -47,37 +47,37 @@ class RespondentRepresentationServiceTest {
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
-        RespondentParty respondentPartyOne = RespondentParty.builder()
+        final RespondentParty respondentPartyOne = RespondentParty.builder()
             .firstName("Joe")
             .lastName("Bloggs")
             .build();
 
-        RespondentParty respondentPartyTwo = RespondentParty.builder()
+        final RespondentParty respondentPartyTwo = RespondentParty.builder()
             .firstName("Sam")
             .lastName("Smith")
             .build();
 
-        Organisation solicitorOrganisation = Organisation.builder()
+        final Organisation solicitorOrganisation = Organisation.builder()
             .organisationName("Summers Inc")
             .organisationID("12345")
             .build();
 
-        RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
+        final RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
             .firstName("Ben")
             .lastName("Summers")
             .email("bensummers@gmail.com")
             .organisation(solicitorOrganisation)
             .build();
 
-        Respondent respondentOne = Respondent.builder()
+        final Respondent respondentOne = Respondent.builder()
             .party(respondentPartyOne)
             .legalRepresentation("Yes")
             .solicitor(respondentSolicitor)
             .build();
 
-        Respondent respondentTwo = Respondent.builder().party(respondentPartyTwo).build();
+        final Respondent respondentTwo = Respondent.builder().party(respondentPartyTwo).build();
 
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .respondents1(List.of(
                 element(respondentOne),
                 element(respondentTwo)))
@@ -89,21 +89,21 @@ class RespondentRepresentationServiceTest {
             .build();
 
 
-        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
+        final Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
 
-        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
-        NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
+        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
+        final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
 
-        OrganisationPolicy expectedOrganisationPolicyOne = OrganisationPolicy.builder()
+        final OrganisationPolicy expectedOrganisationPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
             .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
             .build();
 
-        Map<String, Object> expectedNoticeOfChangeAnswers = Map.of(
+        final Map<String, Object> expectedNoticeOfChangeAnswers = Map.of(
             "noticeOfChangeAnswers0", expectedNoticeOfChangeAnswersOne,
             "noticeOfChangeAnswers1", expectedNoticeOfChangeAnswersTwo);
 
-        Map<String, Object> expectedRespondentPolicies = Map.of(
+        final Map<String, Object> expectedRespondentPolicies = Map.of(
             "respondentPolicy0", expectedOrganisationPolicyOne,
             "respondentPolicy1", buildOrganisationPolicy(SolicitorRole.SOLICITORB),
             "respondentPolicy2", buildOrganisationPolicy(SolicitorRole.SOLICITORC),
@@ -115,7 +115,8 @@ class RespondentRepresentationServiceTest {
             "respondentPolicy8", buildOrganisationPolicy(SolicitorRole.SOLICITORI),
             "respondentPolicy9", buildOrganisationPolicy(SolicitorRole.SOLICITORJ));
 
-        Map<String, Object> expectedData = new HashMap<>();
+        final Map<String, Object> expectedData = new HashMap<>();
+
         expectedData.putAll(expectedNoticeOfChangeAnswers);
         expectedData.putAll(expectedRespondentPolicies);
 
@@ -124,7 +125,7 @@ class RespondentRepresentationServiceTest {
 
     @Test
     void shouldBuildRespondentPolicyFromEmptyCase() {
-        CaseData caseData = CaseData.builder()
+        final CaseData caseData = CaseData.builder()
             .applicants(List.of(element(Applicant.builder()
                 .party(ApplicantParty.builder()
                     .organisationName("Test organisation")
@@ -133,7 +134,7 @@ class RespondentRepresentationServiceTest {
             .respondents1(emptyList())
             .build();
 
-        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
+        final Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
 
         assertThat(data).isEqualTo(Map.of(
             "respondentPolicy0", buildOrganisationPolicy(SolicitorRole.SOLICITORA),
@@ -298,7 +299,7 @@ class RespondentRepresentationServiceTest {
         }
     }
 
-    private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {
+    private static NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {
         return NoticeOfChangeAnswers.builder()
             .respondentFirstName(respondentParty.getFirstName())
             .respondentLastName(respondentParty.getLastName())
@@ -306,7 +307,7 @@ class RespondentRepresentationServiceTest {
             .build();
     }
 
-    private OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {
+    private static OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {
         return OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel())

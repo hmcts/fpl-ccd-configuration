@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 @Jacksonized
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuditEvent {
+
+    @JsonProperty("id")
+    private final String id;
+
     @JsonProperty("user_id")
     private final String userId;
 
@@ -21,9 +25,6 @@ public class AuditEvent {
 
     @JsonProperty("user_last_name")
     private final String userLastName;
-
-    @JsonProperty("id")
-    private final String id;
 
     @JsonProperty("created_date")
     private final LocalDateTime createdDate;

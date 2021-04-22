@@ -17,15 +17,15 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuditEventService {
     private final IdamClient idamClient;
-    private final SystemUpdateUserConfiguration userConfig;
-    private final CoreCaseDataApiV2 caseDataApiV2;
+    private final CoreCaseDataApiV2 caseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
+    private final SystemUpdateUserConfiguration userConfig;
 
     public Optional<AuditEvent> getLatestAuditEventByName(String caseId, String eventName) {
         String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
 
         AuditEventsResponse auditEventsResponse
-            = caseDataApiV2.getAuditEvents(userToken, authTokenGenerator.generate(), false, caseId);
+            = caseDataApi.getAuditEvents(userToken, authTokenGenerator.generate(), false, caseId);
 
         return auditEventsResponse.getAuditEvents().stream()
             .filter(auditEvent -> eventName.equals(auditEvent.getId()))
