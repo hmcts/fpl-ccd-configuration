@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfChangeService {
     private final AuditEventService auditEventService;
@@ -27,6 +29,8 @@ public class NoticeOfChangeService {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseData caseDataBefore = objectMapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
+        log.info("About to get the noc request audit event details");
+
         Optional<AuditEvent> nocRequestAuditEvent
             = auditEventService.getLatestAuditEventByName(caseDetails.getId().toString(), NOC_EVENT);
 
@@ -34,6 +38,8 @@ public class NoticeOfChangeService {
             String.format("Could not find an occurrence of %s in audit events", NOC_EVENT)));
 
         UserDetails userDetails = userService.getUserDetailsById(auditEvent.getUserId());
+
+        log.info("User email is" + userDetails.getEmail());
 
         return respondentPolicyService.updateRespondentPolicies(caseData, caseDataBefore, userDetails);
     }
