@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder(toBuilder = true)
 @Jacksonized
@@ -22,4 +24,7 @@ public class AuditEvent {
 
     @JsonProperty("id")
     private final String id;
+
+    @JsonProperty("created_date")
+    private final LocalDateTime createdDate;
 }

@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 class UserServiceTest {
 
+    public static final String USER_EMAIL = "user@email.com";
     private static final String USER_AUTHORISATION = "USER_AUTH";
 
     private final RequestData requestData = mock(RequestData.class);
@@ -27,16 +28,14 @@ class UserServiceTest {
 
     @Test
     void shouldReturnUserEmail() {
-        String expectedEmail = "user@email.com";
-
         when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
         when(client.getUserDetails(USER_AUTHORISATION)).thenReturn(UserDetails.builder()
-            .email(expectedEmail)
+            .email(USER_EMAIL)
             .build());
 
         String email = underTest.getUserEmail();
 
-        assertThat(email).isEqualTo(expectedEmail);
+        assertThat(email).isEqualTo(USER_EMAIL);
     }
 
     @Test
@@ -52,4 +51,16 @@ class UserServiceTest {
         assertThat(underTest.hasUserRole(CAFCASS)).isTrue();
     }
 
+    @Test
+    void shouldReturnUserDetails() {
+        String userId = "1111-1111";
+        UserDetails expectedUserDetails = UserDetails.builder().email(USER_EMAIL).forename("Tom").build();
+
+        when(requestData.authorisation()).thenReturn(USER_AUTHORISATION);
+        when(client.getUserByUserId(USER_AUTHORISATION, userId)).thenReturn(expectedUserDetails);
+
+        UserDetails actualUserDetails = underTest.getUserDetailsById(userId);
+
+        assertThat(actualUserDetails).isEqualTo(expectedUserDetails);
+    }
 }

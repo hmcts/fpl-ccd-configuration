@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
 import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
@@ -12,13 +13,18 @@ import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -57,5 +63,44 @@ public class RespondentPolicyService {
         }
 
         return data;
+    }
+
+    public List<Element<Respondent>> updateRespondentPolicies(CaseData caseData,
+                                                              CaseData caseDataBefore,
+                                                              UserDetails userDetails) {
+        RespondentPolicyData respondentPolicyData = caseData.getRespondentPolicyData();
+        RespondentPolicyData respondentPolicyDataBefore = caseDataBefore.getRespondentPolicyData();
+        List<OrganisationPolicy> respondentPolicyDiff = respondentPolicyData.diff(respondentPolicyDataBefore);
+
+        if (!respondentPolicyDiff.isEmpty()) {
+            OrganisationPolicy policy = respondentPolicyDiff.get(0);
+            int index = SolicitorRole.from(policy.getOrgPolicyCaseAssignedRole()).getIndex();
+            Organisation organisation = policy.getOrganisation();
+
+            return updateRespondents(caseData.getRespondents1(), index, userDetails, organisation);
+        } else {
+            throw new IllegalStateException("Could not find updated respondentPolicy");
+        }
+    }
+
+    private List<Element<Respondent>> updateRespondents(List<Element<Respondent>> respondents,
+                                                        Integer index,
+                                                        UserDetails userDetails,
+                                                        Organisation organisation) {
+        Element<Respondent> respondentElement = respondents.get(index);
+
+        Respondent updatedRespondent = respondentElement.getValue().toBuilder()
+            .legalRepresentation("Yes")
+            .solicitor(RespondentSolicitor.builder()
+                .email(userDetails.getEmail())
+                .firstName(userDetails.getForename())
+                .lastName(userDetails.getFullName())
+                .organisation(organisation)
+                .build())
+            .build();
+
+        respondents.set(index, element(respondentElement.getId(), updatedRespondent));
+
+        return respondents;
     }
 }
