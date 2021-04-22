@@ -89,12 +89,18 @@ public class RespondentPolicyService {
                                                         Organisation organisation) {
         Element<Respondent> respondentElement = respondents.get(index);
 
+        String surname = "";
+
+        if (userDetails.getSurname().isPresent()) {
+            surname = userDetails.getSurname().get();
+        }
+
         Respondent updatedRespondent = respondentElement.getValue().toBuilder()
             .legalRepresentation("Yes")
             .solicitor(RespondentSolicitor.builder()
                 .email(userDetails.getEmail())
                 .firstName(userDetails.getForename())
-                .lastName(userDetails.getSurname().isPresent() ? userDetails.getSurname().get() : "")
+                .lastName(surname)
                 .organisation(organisation)
                 .build())
             .build();
