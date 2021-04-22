@@ -25,7 +25,7 @@ public class NoticeOfChangeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentaton(caseData));
+        caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentation(caseData));
 
         return respond(caseDetails);
     }
