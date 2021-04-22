@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +15,20 @@ import uk.gov.hmcts.reform.fpl.components.RespondentPolicyConverter;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -36,6 +43,9 @@ class RespondentPolicyServiceTest {
 
     @Autowired
     private RespondentPolicyService respondentPolicyService;
+
+    private static final UUID RESPONDENT_ONE_ID = UUID.randomUUID();
+    private static final UUID RESPONDENT_TWO_ID = UUID.randomUUID();
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
@@ -144,6 +154,106 @@ class RespondentPolicyServiceTest {
         ));
     }
 
+    @Test
+    void shouldUpdateRespondentSolicitorWhenUpdatingRespondentPolicy() {
+        List<Element<Respondent>> respondents = new ArrayList<>();
+
+        respondents.add(element(RESPONDENT_ONE_ID, Respondent.builder()
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder()
+                    .organisationID("555")
+                    .organisationID("TA123")
+                    .build())
+                .build())
+            .build()));
+
+        respondents.add(element(RESPONDENT_TWO_ID, Respondent.builder().build()));
+
+        OrganisationPolicy updatedOrganisationPolicy = OrganisationPolicy.builder()
+            .orgPolicyCaseAssignedRole("[SOLICITORA]")
+            .organisation(Organisation.builder()
+                .organisationID("123")
+                .organisationID("WA123")
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondentPolicyData(RespondentPolicyData.builder()
+                .respondentPolicy0(updatedOrganisationPolicy)
+                .respondentPolicy1(OrganisationPolicy.builder()
+                    .orgPolicyCaseAssignedRole("[SOLICITORB]")
+                    .organisation(Organisation.builder()
+                        .organisationID("111")
+                        .organisationID("BA123")
+                        .build())
+                    .build())
+                .respondentPolicy2(OrganisationPolicy.builder().build())
+                .respondentPolicy3(OrganisationPolicy.builder().build())
+                .respondentPolicy4(OrganisationPolicy.builder().build())
+                .respondentPolicy5(OrganisationPolicy.builder().build())
+                .respondentPolicy6(OrganisationPolicy.builder().build())
+                .respondentPolicy7(OrganisationPolicy.builder().build())
+                .respondentPolicy8(OrganisationPolicy.builder().build())
+                .respondentPolicy9(OrganisationPolicy.builder().build())
+                .build())
+            .respondents1(respondents)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .respondentPolicyData(buildRespondentPolicyData())
+            .respondents1(respondents)
+            .build();
+
+        UserDetails userDetails = UserDetails.builder()
+            .forename("Tom")
+            .surname("Wilson")
+            .email("test@test.co.uk")
+            .build();
+
+        List<Element<Respondent>> updatedRespondents =
+            respondentPolicyService.updateRespondentPolicies(caseData, caseDataBefore, userDetails);
+
+        List<Element<Respondent>> expectedRespondents = List.of(
+            element(RESPONDENT_ONE_ID, Respondent.builder()
+                .legalRepresentation("Yes")
+                .solicitor(RespondentSolicitor.builder()
+                    .firstName("Tom")
+                    .lastName("Wilson")
+                    .email("test@test.co.uk")
+                    .organisation(updatedOrganisationPolicy.getOrganisation())
+                    .build())
+                .build()),
+            element(RESPONDENT_TWO_ID, Respondent.builder().build()));
+
+        assertThat(updatedRespondents).isEqualTo(expectedRespondents);
+    }
+
+    @Test
+    void shouldThrowAnExceptionIfUpdatedRespondentPolicyCannotBeFound() {
+        List<Element<Respondent>> respondents = List.of();
+
+        CaseData caseData = CaseData.builder()
+            .respondentPolicyData(buildRespondentPolicyData())
+            .respondents1(respondents)
+            .build();
+
+        CaseData caseDataBefore = CaseData.builder()
+            .respondentPolicyData(buildRespondentPolicyData())
+            .respondents1(respondents)
+            .build();
+
+        UserDetails userDetails = UserDetails.builder()
+            .forename("Tom")
+            .surname("Wilson")
+            .email("test@test.co.uk")
+            .build();
+
+        Assertions.assertThatThrownBy(() -> respondentPolicyService.updateRespondentPolicies(
+            caseData, caseDataBefore, userDetails))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("Could not find updated respondentPolicy");
+    }
+
     private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {
         return NoticeOfChangeAnswers.builder()
             .respondentFirstName(respondentParty.getFirstName())
@@ -156,6 +266,33 @@ class RespondentPolicyServiceTest {
         return OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel())
+            .build();
+    }
+
+    private RespondentPolicyData buildRespondentPolicyData() {
+        return RespondentPolicyData.builder()
+            .respondentPolicy0(OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole("[SOLICITORA]")
+                .organisation(Organisation.builder()
+                    .organisationID("000")
+                    .organisationID("SA111")
+                    .build())
+                .build())
+            .respondentPolicy1(OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole("[SOLICITORB]")
+                .organisation(Organisation.builder()
+                    .organisationID("111")
+                    .organisationID("BA123")
+                    .build())
+                .build())
+            .respondentPolicy2(OrganisationPolicy.builder().build())
+            .respondentPolicy3(OrganisationPolicy.builder().build())
+            .respondentPolicy4(OrganisationPolicy.builder().build())
+            .respondentPolicy5(OrganisationPolicy.builder().build())
+            .respondentPolicy6(OrganisationPolicy.builder().build())
+            .respondentPolicy7(OrganisationPolicy.builder().build())
+            .respondentPolicy8(OrganisationPolicy.builder().build())
+            .respondentPolicy9(OrganisationPolicy.builder().build())
             .build();
     }
 }

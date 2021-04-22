@@ -94,7 +94,7 @@ public class RespondentPolicyService {
             .solicitor(RespondentSolicitor.builder()
                 .email(userDetails.getEmail())
                 .firstName(userDetails.getForename())
-                .lastName(userDetails.getFullName())
+                .lastName(userDetails.getSurname().isPresent() ? userDetails.getSurname().get() : "")
                 .organisation(organisation)
                 .build())
             .build();
