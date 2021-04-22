@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.aac.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.components.NoticeOfChangeAnswersConverter;
@@ -21,15 +20,16 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -43,9 +43,6 @@ class RespondentPolicyServiceTest {
 
     @Autowired
     private RespondentPolicyService respondentPolicyService;
-
-    private static final UUID RESPONDENT_ONE_ID = UUID.randomUUID();
-    private static final UUID RESPONDENT_TWO_ID = UUID.randomUUID();
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
@@ -79,20 +76,19 @@ class RespondentPolicyServiceTest {
 
         Respondent respondentTwo = Respondent.builder().party(respondentPartyTwo).build();
 
-        Map<String, Object> caseData = new HashMap<>(Map.of(
-            "respondents1", List.of(
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of(
                 element(respondentOne),
-                element(respondentTwo)),
-            "applicants", List.of(element(Applicant.builder()
+                element(respondentTwo)))
+            .applicants(List.of(element(Applicant.builder()
                 .party(ApplicantParty.builder()
                     .organisationName("Test organisation")
                     .build())
-                .build()))
-        ));
+                .build())))
+            .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
 
-        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
+        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
 
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
@@ -127,18 +123,16 @@ class RespondentPolicyServiceTest {
 
     @Test
     void shouldBuildRespondentPolicyFromEmptyCase() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "applicants", List.of(element(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Test organisation")
-                        .build())
-                    .build())),
-                "respondents1", List.of()
-            ))
+        CaseData caseData = CaseData.builder()
+            .applicants(List.of(element(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Test organisation")
+                    .build())
+                .build())))
+            .respondents1(emptyList())
             .build();
 
-        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseDetails);
+        Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
 
         assertThat(data).isEqualTo(Map.of(
             "respondentPolicy0", buildOrganisationPolicy(SolicitorRole.SOLICITORA),
@@ -155,53 +149,34 @@ class RespondentPolicyServiceTest {
     }
 
     @Test
-    void shouldUpdateRespondentSolicitorWhenUpdatingRespondentPolicy() {
-        List<Element<Respondent>> respondents = new ArrayList<>();
+    void shouldUpdateRespondentSolicitorWhenOrganisationChangeRequested() {
 
-        respondents.add(element(RESPONDENT_ONE_ID, Respondent.builder()
-            .solicitor(RespondentSolicitor.builder()
-                .organisation(Organisation.builder()
-                    .organisationID("555")
-                    .organisationID("TA123")
-                    .build())
-                .build())
-            .build()));
+        Element<Respondent> respondent1 = element(Respondent.builder().build());
 
-        respondents.add(element(RESPONDENT_TWO_ID, Respondent.builder().build()));
+        Element<Respondent> respondent2 = element(Respondent.builder().build());
 
-        OrganisationPolicy updatedOrganisationPolicy = OrganisationPolicy.builder()
-            .orgPolicyCaseAssignedRole("[SOLICITORA]")
-            .organisation(Organisation.builder()
-                .organisationID("123")
-                .organisationID("WA123")
-                .build())
+        Organisation organisation = Organisation.builder()
+            .organisationID("test1")
+            .build();
+
+        DynamicListElement dynamicListElement = DynamicListElement.builder()
+            .code("[SOLICITORA]")
+            .label("Solicitor A")
+            .build();
+
+        DynamicList dynamicList = DynamicList.builder()
+            .value(dynamicListElement)
+            .listItems(List.of(dynamicListElement))
+            .build();
+
+        ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
+            .organisationToAdd(organisation)
+            .caseRoleId(dynamicList)
             .build();
 
         CaseData caseData = CaseData.builder()
-            .respondentPolicyData(RespondentPolicyData.builder()
-                .respondentPolicy0(updatedOrganisationPolicy)
-                .respondentPolicy1(OrganisationPolicy.builder()
-                    .orgPolicyCaseAssignedRole("[SOLICITORB]")
-                    .organisation(Organisation.builder()
-                        .organisationID("111")
-                        .organisationID("BA123")
-                        .build())
-                    .build())
-                .respondentPolicy2(OrganisationPolicy.builder().build())
-                .respondentPolicy3(OrganisationPolicy.builder().build())
-                .respondentPolicy4(OrganisationPolicy.builder().build())
-                .respondentPolicy5(OrganisationPolicy.builder().build())
-                .respondentPolicy6(OrganisationPolicy.builder().build())
-                .respondentPolicy7(OrganisationPolicy.builder().build())
-                .respondentPolicy8(OrganisationPolicy.builder().build())
-                .respondentPolicy9(OrganisationPolicy.builder().build())
-                .build())
-            .respondents1(respondents)
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .respondentPolicyData(buildRespondentPolicyData())
-            .respondents1(respondents)
+            .respondents1(List.of(respondent1, respondent2))
+            .changeOrganisationRequestField(changeOrganisationRequest)
             .build();
 
         UserDetails userDetails = UserDetails.builder()
@@ -211,47 +186,20 @@ class RespondentPolicyServiceTest {
             .build();
 
         List<Element<Respondent>> updatedRespondents =
-            respondentPolicyService.updateRespondentPolicies(caseData, caseDataBefore, userDetails);
+            respondentPolicyService.updateNoticeOfChangeRepresentation(caseData, userDetails);
 
-        List<Element<Respondent>> expectedRespondents = List.of(
-            element(RESPONDENT_ONE_ID, Respondent.builder()
+        Element<Respondent> expectedRespondent =
+            element(respondent1.getId(), Respondent.builder()
                 .legalRepresentation("Yes")
                 .solicitor(RespondentSolicitor.builder()
                     .firstName("Tom")
                     .lastName("Wilson")
                     .email("test@test.co.uk")
-                    .organisation(updatedOrganisationPolicy.getOrganisation())
+                    .organisation(organisation)
                     .build())
-                .build()),
-            element(RESPONDENT_TWO_ID, Respondent.builder().build()));
+                .build());
 
-        assertThat(updatedRespondents).isEqualTo(expectedRespondents);
-    }
-
-    @Test
-    void shouldThrowAnExceptionIfUpdatedRespondentPolicyCannotBeFound() {
-        List<Element<Respondent>> respondents = List.of();
-
-        CaseData caseData = CaseData.builder()
-            .respondentPolicyData(buildRespondentPolicyData())
-            .respondents1(respondents)
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .respondentPolicyData(buildRespondentPolicyData())
-            .respondents1(respondents)
-            .build();
-
-        UserDetails userDetails = UserDetails.builder()
-            .forename("Tom")
-            .surname("Wilson")
-            .email("test@test.co.uk")
-            .build();
-
-        Assertions.assertThatThrownBy(() -> respondentPolicyService.updateRespondentPolicies(
-            caseData, caseDataBefore, userDetails))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("Could not find updated respondentPolicy");
+        assertThat(updatedRespondents).containsExactly(expectedRespondent, respondent2);
     }
 
     private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {

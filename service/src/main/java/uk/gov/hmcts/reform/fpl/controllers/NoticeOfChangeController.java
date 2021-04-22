@@ -10,29 +10,25 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
-
-import java.util.List;
 
 @Api
 @RestController
-@RequestMapping("/callback/check-noc-approval")
+@RequestMapping("/callback/noc-decision")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class NoticeOfChangeController extends CallbackController {
     private final NoticeOfChangeService noticeOfChangeService;
 
-    @PostMapping("/about-to-submit")
+    @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<Respondent>> updatedRespondents =
-            noticeOfChangeService.updateRespondentsOnNoc(caseDetails, caseDetailsBefore);
-
-        caseDetails.getData().put("respondents1", updatedRespondents);
+        caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentaton(caseData));
 
         return respond(caseDetails);
     }
+
+
 }

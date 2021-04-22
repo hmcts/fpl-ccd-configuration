@@ -30,4 +30,17 @@ public interface CaseAssignmentApi {
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestBody CallbackRequest callbackRequest
     );
+
+
+    @PostMapping(
+        value = "/noc/apply-decision",
+        consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    SubmittedCallbackResponse applyDecision(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @RequestBody CallbackRequest callbackRequest
+    );
+
 }
