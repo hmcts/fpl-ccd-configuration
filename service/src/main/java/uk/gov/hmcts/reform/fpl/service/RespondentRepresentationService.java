@@ -42,7 +42,7 @@ public class RespondentRepresentationService {
         List<Element<Respondent>> respondents = caseData.getRespondents1();
         int numOfRespondents = respondents.size();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < SolicitorRole.values().length; i++) {
             SolicitorRole solicitorRole = SolicitorRole.values()[i];
 
             Optional<Element<Respondent>> respondentElement
