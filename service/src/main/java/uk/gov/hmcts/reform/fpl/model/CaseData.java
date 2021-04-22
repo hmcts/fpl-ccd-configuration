@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -904,4 +905,6 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+
+    private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
 }
