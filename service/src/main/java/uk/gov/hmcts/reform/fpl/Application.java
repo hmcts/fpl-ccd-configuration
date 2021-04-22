@@ -13,7 +13,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
     "uk.gov.hmcts.reform.idam.client",
     "uk.gov.hmcts.reform.rd.client",
     "uk.gov.hmcts.reform.fnp.client",
-    "uk.gov.hmcts.reform.calendar.client"
+    "uk.gov.hmcts.reform.calendar.client",
+    "uk.gov.hmcts.reform.aac.client"
 })
 @ComponentScan
 @EnableRetry
