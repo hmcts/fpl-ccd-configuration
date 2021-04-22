@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,8 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -30,19 +28,22 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class,
     NoticeOfChangeAnswersConverter.class,
     RespondentPolicyConverter.class,
-    RespondentPolicyService.class})
-class RespondentPolicyServiceTest {
+    RespondentRepresentationService.class})
+class RespondentRepresentationServiceTest {
 
     @Autowired
-    private RespondentPolicyService respondentPolicyService;
+    private RespondentRepresentationService respondentPolicyService;
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
@@ -148,58 +149,153 @@ class RespondentPolicyServiceTest {
         ));
     }
 
-    @Test
-    void shouldUpdateRespondentSolicitorWhenOrganisationChangeRequested() {
+    @Nested
+    class RepresentationUpdate {
 
-        Element<Respondent> respondent1 = element(Respondent.builder().build());
-
-        Element<Respondent> respondent2 = element(Respondent.builder().build());
-
-        Organisation organisation = Organisation.builder()
-            .organisationID("test1")
-            .build();
-
-        DynamicListElement dynamicListElement = DynamicListElement.builder()
-            .code("[SOLICITORA]")
-            .label("Solicitor A")
-            .build();
-
-        DynamicList dynamicList = DynamicList.builder()
-            .value(dynamicListElement)
-            .listItems(List.of(dynamicListElement))
-            .build();
-
-        ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
-            .organisationToAdd(organisation)
-            .caseRoleId(dynamicList)
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .respondents1(List.of(respondent1, respondent2))
-            .changeOrganisationRequestField(changeOrganisationRequest)
-            .build();
-
-        UserDetails userDetails = UserDetails.builder()
+        final UserDetails solicitorUser = UserDetails.builder()
             .forename("Tom")
             .surname("Wilson")
             .email("test@test.co.uk")
             .build();
 
-        List<Element<Respondent>> updatedRespondents =
-            respondentPolicyService.updateNoticeOfChangeRepresentation(caseData, userDetails);
+        @Test
+        void shouldThrowExceptionWhenOrganisationChangeRequestIsNotPresent() {
+            final CaseData caseData = CaseData.builder()
+                .build();
 
-        Element<Respondent> expectedRespondent =
-            element(respondent1.getId(), Respondent.builder()
-                .legalRepresentation("Yes")
-                .solicitor(RespondentSolicitor.builder()
-                    .firstName("Tom")
-                    .lastName("Wilson")
-                    .email("test@test.co.uk")
-                    .organisation(organisation)
+            assertThatThrownBy(() -> respondentPolicyService.updateRepresentation(caseData, solicitorUser))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Invalid or missing ChangeOrganisationRequest: null");
+
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRoleIsNotPresentInChangeRequest() {
+            final ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
+                .organisationToAdd(organisation("Test"))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .changeOrganisationRequestField(changeOrganisationRequest)
+                .build();
+
+            assertThatThrownBy(() -> respondentPolicyService.updateRepresentation(caseData, solicitorUser))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Invalid or missing ChangeOrganisationRequest: " + changeOrganisationRequest);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenOrganisationToAddIsNotPresentInChangeRequest() {
+            final ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
+                .caseRoleId(caseRoleDynamicList("[SOLICITOR1]"))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .changeOrganisationRequestField(changeOrganisationRequest)
+                .build();
+
+            assertThatThrownBy(() -> respondentPolicyService.updateRepresentation(caseData, solicitorUser))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Invalid or missing ChangeOrganisationRequest: " + changeOrganisationRequest);
+        }
+
+        @Test
+        void shouldUpdateRespondentSolicitorWhenRepresentationAddedViaNoC() {
+
+            final Element<Respondent> respondent1 = element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("John")
+                    .lastName("Smith")
                     .build())
                 .build());
 
-        assertThat(updatedRespondents).containsExactly(expectedRespondent, respondent2);
+            final Element<Respondent> respondent2 = element(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Emma")
+                    .lastName("Green")
+                    .build())
+                .build());
+
+            final Organisation organisation = organisation("ORG");
+
+            final ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
+                .organisationToAdd(organisation)
+                .caseRoleId(caseRoleDynamicList("[SOLICITORA]"))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .respondents1(List.of(respondent1, respondent2))
+                .changeOrganisationRequestField(changeOrganisationRequest)
+                .build();
+
+            final List<Element<Respondent>> updatedRespondents =
+                respondentPolicyService.updateRepresentation(caseData, solicitorUser);
+
+            final Element<Respondent> updatedRespondent =
+                element(respondent1.getId(), respondent1.getValue().toBuilder()
+                    .legalRepresentation("Yes")
+                    .solicitor(RespondentSolicitor.builder()
+                        .firstName("Tom")
+                        .lastName("Wilson")
+                        .email("test@test.co.uk")
+                        .organisation(organisation)
+                        .build())
+                    .build());
+
+            assertThat(updatedRespondents).containsExactly(updatedRespondent, respondent2);
+        }
+
+        @Test
+        void shouldUpdateRespondentSolicitorWhenRepresentationUpdatedViaNoC() {
+
+            final Element<Respondent> respondent1 = element(Respondent.builder()
+                .solicitor(RespondentSolicitor.builder()
+                    .firstName("John")
+                    .firstName("Smith")
+                    .email("john.smith@test.com")
+                    .organisation(organisation("ORG1"))
+                    .build())
+                .build());
+
+            final Element<Respondent> respondent2 = element(Respondent.builder()
+                .solicitor(RespondentSolicitor.builder()
+                    .firstName("Emma")
+                    .firstName("Green")
+                    .email("emma.green@test.com")
+                    .organisation(organisation("ORG2"))
+                    .build())
+                .build());
+
+            final Element<Respondent> respondent3 = element(Respondent.builder().build());
+
+            final Organisation newOrganisation = organisation("ORG3");
+
+            final ChangeOrganisationRequest changeOrganisationRequest = ChangeOrganisationRequest.builder()
+                .organisationToAdd(newOrganisation)
+                .caseRoleId(caseRoleDynamicList("[SOLICITORB]"))
+                .build();
+
+            final CaseData caseData = CaseData.builder()
+                .respondents1(List.of(respondent1, respondent2, respondent3))
+                .changeOrganisationRequestField(changeOrganisationRequest)
+                .build();
+
+            final List<Element<Respondent>> updatedRespondents =
+                respondentPolicyService.updateRepresentation(caseData, solicitorUser);
+
+            final Element<Respondent> updatedRespondent =
+                element(respondent2.getId(), respondent2.getValue().toBuilder()
+                    .legalRepresentation("Yes")
+                    .solicitor(RespondentSolicitor.builder()
+                        .firstName("Tom")
+                        .lastName("Wilson")
+                        .email("test@test.co.uk")
+                        .organisation(newOrganisation)
+                        .build())
+                    .build());
+
+            assertThat(updatedRespondents).containsExactly(respondent1, updatedRespondent, respondent3);
+        }
     }
 
     private NoticeOfChangeAnswers buildNoticeOfChangeAnswers(RespondentParty respondentParty) {
@@ -217,30 +313,4 @@ class RespondentPolicyServiceTest {
             .build();
     }
 
-    private RespondentPolicyData buildRespondentPolicyData() {
-        return RespondentPolicyData.builder()
-            .respondentPolicy0(OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole("[SOLICITORA]")
-                .organisation(Organisation.builder()
-                    .organisationID("000")
-                    .organisationID("SA111")
-                    .build())
-                .build())
-            .respondentPolicy1(OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole("[SOLICITORB]")
-                .organisation(Organisation.builder()
-                    .organisationID("111")
-                    .organisationID("BA123")
-                    .build())
-                .build())
-            .respondentPolicy2(OrganisationPolicy.builder().build())
-            .respondentPolicy3(OrganisationPolicy.builder().build())
-            .respondentPolicy4(OrganisationPolicy.builder().build())
-            .respondentPolicy5(OrganisationPolicy.builder().build())
-            .respondentPolicy6(OrganisationPolicy.builder().build())
-            .respondentPolicy7(OrganisationPolicy.builder().build())
-            .respondentPolicy8(OrganisationPolicy.builder().build())
-            .respondentPolicy9(OrganisationPolicy.builder().build())
-            .build();
-    }
 }

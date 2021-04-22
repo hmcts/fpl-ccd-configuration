@@ -69,6 +69,10 @@ public abstract class AbstractTest {
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(userDetails);
     }
 
+    protected void givenUser(String userId, UserDetails userDetails) {
+        given(idamClient.getUserByUserId(userId, USER_AUTH_TOKEN)).willReturn(userDetails);
+    }
+
     protected void givenSystemUser() {
         given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
     }

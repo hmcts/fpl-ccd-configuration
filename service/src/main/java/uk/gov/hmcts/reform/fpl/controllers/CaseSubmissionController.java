@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
+import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -60,7 +60,7 @@ public class CaseSubmissionController extends CallbackController {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
-    private final RespondentPolicyService respondentPolicyService;
+    private final RespondentRepresentationService respondentPolicyService;
     private final IdamClient idamClient;
     private final RequestData requestData;
 

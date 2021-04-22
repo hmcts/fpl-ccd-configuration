@@ -24,11 +24,12 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RespondentPolicyService {
+public class RespondentRepresentationService {
 
     private final NoticeOfChangeAnswersConverter noticeOfChangeRespondentConverter;
     private final RespondentPolicyConverter respondentPolicyConverter;
@@ -62,10 +63,14 @@ public class RespondentPolicyService {
         return data;
     }
 
-    public List<Element<Respondent>> updateNoticeOfChangeRepresentation(CaseData caseData, UserDetails solicitor) {
-        ChangeOrganisationRequest changeOrganisationRequest = caseData.getChangeOrganisationRequestField();
+    public List<Element<Respondent>> updateRepresentation(CaseData caseData, UserDetails solicitor) {
+        ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
 
-        SolicitorRole solicitorRole = SolicitorRole.from(changeOrganisationRequest.getCaseRoleId().getValueCode());
+        if (isEmpty(change) || isEmpty(change.getCaseRoleId()) || isEmpty(change.getOrganisationToAdd())) {
+            throw new IllegalStateException("Invalid or missing ChangeOrganisationRequest: " + change);
+        }
+
+        SolicitorRole solicitorRole = SolicitorRole.from(change.getCaseRoleId().getValueCode());
 
         List<Element<Respondent>> respondents = defaultIfNull(caseData.getRespondents1(), emptyList());
 
@@ -77,7 +82,7 @@ public class RespondentPolicyService {
             .email(solicitor.getEmail())
             .firstName(solicitor.getForename())
             .lastName(solicitor.getSurname().orElse(EMPTY))
-            .organisation(changeOrganisationRequest.getOrganisationToAdd())
+            .organisation(change.getOrganisationToAdd())
             .build());
 
         return caseData.getRespondents1();

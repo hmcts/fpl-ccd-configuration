@@ -29,6 +29,4 @@ public class NoticeOfChangeController extends CallbackController {
 
         return respond(caseDetails);
     }
-
-
 }

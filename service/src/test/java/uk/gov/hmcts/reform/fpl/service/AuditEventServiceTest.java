@@ -21,28 +21,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AuditEventServiceTest {
+class AuditEventServiceTest {
 
-    public static final String USERNAME = "Username";
-    public static final String PASSWORD = "Password";
-    public static final String USER_TOKEN = "USER_TOKEN";
-    public static final String SERVICE_TOKEN = "SERVICE_TOKEN";
-    public static final String CASE_ID = "1111";
-
-    @Mock
-    private SystemUpdateUserConfiguration userConfig;
+    private static final String USERNAME = "Username";
+    private static final String PASSWORD = "Password";
+    private static final String USER_TOKEN = "USER_TOKEN";
+    private static final String SERVICE_TOKEN = "SERVICE_TOKEN";
+    private static final String CASE_ID = "1111";
 
     @Mock
     private IdamClient idamClient;
 
     @Mock
-    private CoreCaseDataApiV2 coreCaseDataApiV2;
+    private CoreCaseDataApiV2 caseDataApi;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
     private AuditEventsResponse auditEventsResponse;
+
+    @Mock
+    private SystemUpdateUserConfiguration userConfig;
 
     @InjectMocks
     private AuditEventService auditEventService;
@@ -56,7 +56,7 @@ public class AuditEventServiceTest {
         when(idamClient.getAccessToken(USERNAME, PASSWORD)).thenReturn(USER_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
 
-        when(coreCaseDataApiV2.getAuditEvents(USER_TOKEN, SERVICE_TOKEN, false, CASE_ID))
+        when(caseDataApi.getAuditEvents(USER_TOKEN, SERVICE_TOKEN, false, CASE_ID))
             .thenReturn(auditEventsResponse);
     }
 

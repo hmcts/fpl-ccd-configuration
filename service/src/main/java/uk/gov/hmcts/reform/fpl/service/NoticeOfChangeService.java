@@ -20,21 +20,19 @@ public class NoticeOfChangeService {
 
     private final UserService userService;
     private final AuditEventService auditEventService;
-    private final RespondentPolicyService respondentPolicyService;
+    private final RespondentRepresentationService respondentRepresentationService;
 
     public List<Element<Respondent>> updateRepresentation(CaseData caseData) {
 
         AuditEvent auditEvent = auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_EVENT)
-            .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s in audit", NOC_EVENT)));
+            .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s event in audit", NOC_EVENT)));
 
         log.info("Audit event found {}", auditEvent);
-
-        log.info("Audit event user {}", auditEvent.getUserId());
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
 
         log.info("Audit event user details {}", solicitor);
 
-        return respondentPolicyService.updateNoticeOfChangeRepresentation(caseData, solicitor);
+        return respondentRepresentationService.updateRepresentation(caseData, solicitor);
     }
 }

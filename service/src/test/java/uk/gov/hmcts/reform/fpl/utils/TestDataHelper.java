@@ -305,4 +305,18 @@ public class TestDataHelper {
             .value(selected != -1 && selected < listItems.size() ? listItems.get(selected) : DynamicListElement.EMPTY)
             .build();
     }
+
+
+    public static DynamicList caseRoleDynamicList(String role) {
+        final DynamicListElement dynamicListElement = DynamicListElement.builder()
+            .code(role)
+            .label(role)
+            .build();
+
+        return DynamicList.builder()
+            .value(dynamicListElement)
+            .listItems(List.of(dynamicListElement))
+            .build();
+    }
+
 }

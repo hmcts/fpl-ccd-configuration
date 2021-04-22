@@ -229,7 +229,7 @@ sonarqube {
     property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java, **/controllers/support/**, **/**"
+    property "sonar.coverage.exclusions", "**/model/**, **/config/**/*Configuration.java, **/testingsupport/**, **MigrateCaseController.java, **/controllers/support/**"
   }
 }
 
