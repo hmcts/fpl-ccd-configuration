@@ -15,12 +15,14 @@ module.exports = {
     I.click(this.noticeOfChange);
   },
 
-  enterCaseReference(caseReference) {
+  async enterCaseReference(caseReference) {
     I.fillField(this.fields.caseRefSearch, caseReference);
+    await I.runAccessibilityTest();
   },
 
-  enterApplicantName(applicantName) {
+  async enterApplicantName(applicantName) {
     I.fillField(this.fields.applicantName, applicantName);
+    await I.runAccessibilityTest();
   },
 
   enterRespondentName(firstName, lastName) {

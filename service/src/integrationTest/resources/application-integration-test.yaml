@@ -28,6 +28,10 @@ core_case_data:
   api:
     url: http://fake-ccd-data-store-api
 
+case-assignment:
+  api:
+    url: http://localhost:4454
+
 docmosis:
   tornado:
     url: http://fake-docmosis-url

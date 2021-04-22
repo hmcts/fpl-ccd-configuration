@@ -15,9 +15,9 @@ Scenario('Private solicitor obtains case access through NoC', async ({I, caseLis
   caseListPage.searchForCasesWithId(caseId);
   I.dontSeeCaseInSearchResult(caseId);
   noticeOfChangePage.navigate();
-  noticeOfChangePage.enterCaseReference(caseId);
+  await noticeOfChangePage.enterCaseReference(caseId);
   await I.retryUntilExists(() => I.click('Continue'), noticeOfChangePage.fields.applicantName);
-  noticeOfChangePage.enterApplicantName('Swansea City Council');
+  await noticeOfChangePage.enterApplicantName('Swansea City Council');
   noticeOfChangePage.enterRespondentName('Joe', 'Bloggs');
   await I.retryUntilExists(() => I.click('Continue'), noticeOfChangePage.fields.confirmNoC);
   noticeOfChangePage.confirmNoticeOfChange();
