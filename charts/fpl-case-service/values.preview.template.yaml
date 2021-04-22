@@ -8,6 +8,7 @@ java:
   environment:
     FPL_ENV: preview
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
+    CASE_ASSIGNMENT_API_URL: http://aac-${SERVICE_FQDN}
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
@@ -134,6 +135,7 @@ ccd:
         IDAM_USER_URL: https://idam-web-public.aat.platform.hmcts.net
         CCD_S2S_AUTHORISED_SERVICES_CASE_USER_ROLES: fpl_case_service,aac_manage_case_assignment
         DATA_STORE_CROSS_JURISDICTIONAL_ROLES: caseworker-caa,caseworker-approver
+        CCD_DOCUMENT_URL_PATTERN: https?://dm-store.*
         ELASTIC_SEARCH_ENABLED: true
         ELASTIC_SEARCH_HOSTS: ${SERVICE_NAME}-es-master:9200
         ELASTIC_SEARCH_DATA_NODES_HOSTS:  http://${SERVICE_NAME}-es-master:9200
