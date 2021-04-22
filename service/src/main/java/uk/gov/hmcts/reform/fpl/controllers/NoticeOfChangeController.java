@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 
 import java.util.List;
 
@@ -26,13 +27,14 @@ public class NoticeOfChangeController extends CallbackController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
 
         List<Element<Respondent>> updatedRespondents =
             noticeOfChangeService.updateRespondentsOnNoc(caseDetails, caseDetailsBefore);
 
-        caseDetails.getData().put("respondents1", updatedRespondents);
+        caseDetailsMap.put("respondents1", updatedRespondents);
 
-        return respond(caseDetails);
+        return respond(caseDetailsMap);
     }
 }
