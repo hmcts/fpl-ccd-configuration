@@ -33,7 +33,7 @@ public class NoticeOfChangeService {
 
         UserDetails solicitor = userService.getUserDetailsById(auditEvent.getUserId());
 
-        log.info("Audit event user details {}", solicitor);
+        log.info("Audit event user details test {}", solicitor);
 
         return respondentPolicyService.updateNoticeOfChangeRepresentation(caseData, solicitor);
     }
