@@ -94,8 +94,12 @@ public class RespondentController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
-        publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+        if (!OPEN.equals(caseData.getState())) {
+            if(featureToggleService.hasRSOCaseAccess()) {
+                publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
+            }
+            publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
+        }
     }
 
 }
