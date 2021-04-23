@@ -60,7 +60,7 @@ public class CaseSubmissionController extends CallbackController {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
-    private final RespondentRepresentationService respondentPolicyService;
+    private final RespondentRepresentationService respondentRepresentationService;
     private final IdamClient idamClient;
     private final RequestData requestData;
 
@@ -125,7 +125,7 @@ public class CaseSubmissionController extends CallbackController {
                 .build());
 
             if (featureToggleService.hasRSOCaseAccess()) {
-                data.putAll(respondentPolicyService.generateForSubmission(caseData));
+                data.putAll(respondentRepresentationService.generateForSubmission(caseData));
             }
         }
 
