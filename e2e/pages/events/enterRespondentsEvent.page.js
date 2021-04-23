@@ -103,8 +103,8 @@ module.exports = {
     }
   },
 
-  async enterRepresentationDetails(option, respondent) {
-    const elementIndex = await I.getActiveElementIndex();
+  async enterRepresentationDetails(option, respondent, index) {
+    const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
 
     I.click(this.fields(elementIndex).legalRepresentation(option).option);
     if (option === 'Yes') {

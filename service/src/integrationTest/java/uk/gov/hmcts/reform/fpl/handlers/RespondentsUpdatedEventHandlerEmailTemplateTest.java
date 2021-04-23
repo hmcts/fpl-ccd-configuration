@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.TimeConfiguration;
 import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     LocalAuthorityNameLookupConfiguration.class,
     CaseUrlService.class,
     ObjectMapper.class,
+    TimeConfiguration.class
 })
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
