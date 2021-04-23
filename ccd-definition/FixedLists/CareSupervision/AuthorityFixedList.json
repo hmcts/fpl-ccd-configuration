@@ -100,6 +100,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CWC",
+    "ListElement": "Cheshire West and Chester Council",
+    "DisplayOrder": 63
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "COR",
     "ListElement": "Cornwall Council",
     "DisplayOrder": 65
