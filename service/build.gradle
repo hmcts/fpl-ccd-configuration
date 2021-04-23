@@ -289,7 +289,7 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.3.1'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.4.0'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
@@ -309,7 +309,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
