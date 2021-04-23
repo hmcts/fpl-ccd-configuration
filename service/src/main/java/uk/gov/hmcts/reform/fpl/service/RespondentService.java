@@ -17,6 +17,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
 public class RespondentService {
@@ -93,5 +94,23 @@ public class RespondentService {
         String lastName = defaultIfNull(respondentParty.getLastName(), "");
 
         return String.format("%s %s", firstName, lastName);
+    }
+
+    public List<RespondentSolicitor> getRegisteredSolicitors(List<Element<Respondent>> respondents) {
+        return unwrapElements(respondents)
+            .stream()
+            .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
+                && respondent.hasRegisteredOrganisation())
+            .map(Respondent::getSolicitor)
+            .collect(Collectors.toList());
+    }
+
+    public List<RespondentSolicitor> getUnregisteredSolicitors(List<Element<Respondent>> respondents) {
+        return unwrapElements(respondents)
+            .stream()
+            .filter(respondent -> YES.getValue().equals(respondent.getLegalRepresentation())
+                && respondent.hasUnregisteredOrganisation())
+            .map(Respondent::getSolicitor)
+            .collect(Collectors.toList());
     }
 }

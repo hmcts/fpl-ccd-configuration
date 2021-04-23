@@ -47,7 +47,6 @@ public class DocmosisCommonElementDecorator {
             extractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
         return currentParameters.toBuilder()
-            .orderTitle(orderType.getTitle())
             .childrenAct(orderType.getChildrenAct())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
             .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
