@@ -78,17 +78,10 @@ class CaseDataTest {
 
     private static final String EXCLUSION_CLAUSE = "exclusionClause";
     private static final UUID[] HEARING_IDS = {randomUUID(), randomUUID(), randomUUID(), randomUUID()};
-
-    private final UUID cmoID = randomUUID();
-
-    private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2020, 12, 5, 15, 0, 0));
-    private final String formattedTime = "5 December 2020, 3:00pm";
-
-    private final LocalDateTime futureDate = time.now().plusDays(1);
-    private final String formattedFutureDate = "6 December 2020, 3:00pm";
-
-    private final LocalDateTime pastDate = time.now().minusDays(1);
-    private final String formattedPastDate = "4 December 2020, 3:00pm";
+    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final UUID cmoID = randomUUID();
+    private final LocalDateTime futureDate = NOW.plusDays(1);
+    private final LocalDateTime pastDate = NOW.minusDays(1);
 
     @Test
     void shouldGetAllOthersWhenFirstAndAdditionalOthersExist() {
@@ -347,10 +340,8 @@ class CaseDataTest {
 
     @Test
     void shouldReturnTrueWhenFutureHearingExists() {
-        Time today = new FixedTimeConfiguration().stoppedTime();
         List<Element<HearingBooking>> hearingBooking =
-            List.of(element(createHearingBooking(today.now().plusDays(6),
-                today.now().plusDays(6))));
+            List.of(element(createHearingBooking(NOW.plusDays(6), NOW.plusDays(6))));
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBooking)
@@ -364,8 +355,7 @@ class CaseDataTest {
     @Test
     void shouldReturnFalseWhenNoFutureHearingExists() {
         List<Element<HearingBooking>> hearingBooking =
-            newArrayList(element(createHearingBooking(time.now().minusDays(6),
-                time.now().plusDays(6))));
+            List.of(element(createHearingBooking(NOW.minusDays(6), NOW.plusDays(6))));
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBooking)
@@ -835,16 +825,20 @@ class CaseDataTest {
 
     @Nested
     class BuildApplicationBundlesDynamicList {
-        private Element<C2DocumentBundle> pastC2Element = buildC2WithFormattedDate(formattedPastDate);
-        private Element<C2DocumentBundle> presentC2Element = buildC2WithFormattedDate(formattedTime);
-        private Element<C2DocumentBundle> futureC2Element = buildC2WithFormattedDate(formattedFutureDate);
+        private final String formattedDate = "5 December 2020, 3:00pm";
+        private final String formattedFutureDate = "6 December 2020, 3:00pm";
+        private final String formattedPastDate = "4 December 2020, 3:00pm";
+        private final String july2020 = "4 July 2020, 3:00pm";
+        private final String may2021 = "6 May 2021, 3:00pm";
 
-        private String july2020 = "4 July 2020, 3:00pm";
-        private String may2021 = "6 May 2021, 3:00pm";
+        private final Element<C2DocumentBundle> pastC2Element = buildC2WithFormattedDate(formattedPastDate);
+        private final Element<C2DocumentBundle> presentC2Element = buildC2WithFormattedDate(formattedDate);
+        private final Element<C2DocumentBundle> futureC2Element = buildC2WithFormattedDate(formattedFutureDate);
 
-        private C2DocumentBundle pastC2Bundle = buildC2WithFormattedDate(july2020).getValue();
-        private C2DocumentBundle presentC2Bundle = buildC2WithFormattedDate(formattedTime).getValue();
-        private C2DocumentBundle futureC2Bundle = buildC2WithFormattedDate(may2021).getValue();
+
+        private final C2DocumentBundle pastC2Bundle = buildC2WithFormattedDate(july2020).getValue();
+        private final C2DocumentBundle presentC2Bundle = buildC2WithFormattedDate(formattedDate).getValue();
+        private final C2DocumentBundle futureC2Bundle = buildC2WithFormattedDate(may2021).getValue();
 
         @Test
         void shouldBuildDynamicListFromC2Documents() {
