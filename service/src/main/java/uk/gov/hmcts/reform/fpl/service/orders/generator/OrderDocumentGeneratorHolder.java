@@ -17,7 +17,10 @@ public class OrderDocumentGeneratorHolder {
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
 
+    private final C23EPOAdditionalDocumentsPopulator c23EPOAdditionalDocumentsPopulator;
+
     private Map<Order, DocmosisParameterGenerator> typeToGenerator;
+    private Map<Order, OrderAdditionalDocumentsHolder> orderAdditionalDocumentsHolder;
 
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
@@ -32,5 +35,16 @@ public class OrderDocumentGeneratorHolder {
         return typeToGenerator;
     }
 
+    public Map<Order, OrderAdditionalDocumentsHolder> getOrderAdditionalDocuments() {
+        if (orderAdditionalDocumentsHolder == null) {
+            orderAdditionalDocumentsHolder = List.of(
+                c23EPOAdditionalDocumentsPopulator
+            ).stream().collect(Collectors.toMap(
+                OrderAdditionalDocumentsHolder::accept,
+                Function.identity()
+            ));
+        }
+        return orderAdditionalDocumentsHolder;
+    }
 
 }

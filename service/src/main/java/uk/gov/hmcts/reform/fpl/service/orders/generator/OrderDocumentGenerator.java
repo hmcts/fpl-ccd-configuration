@@ -28,6 +28,7 @@ public class OrderDocumentGenerator {
 
     public DocmosisDocument generate(Order orderType, CaseData caseData, OrderStatus orderStatus, RenderFormat format) {
         DocmosisParameterGenerator documentGenerator = holder.getTypeToGenerator().get(orderType);
+        OrderAdditionalDocumentsHolder documentsHolder = holder.getOrderAdditionalDocuments().get(orderType);
 
         DocmosisParameters docmosisParameters = Optional.ofNullable(documentGenerator)
             .map(generator -> {
@@ -40,11 +41,10 @@ public class OrderDocumentGenerator {
         });
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            templateData, documentGenerator.template(), format
-        );
+            templateData, documentGenerator.template(), format);
 
-        if (orderStatus == OrderStatus.SEALED) {
-            return documentMerger.mergeDocuments(docmosisDocument, documentGenerator.additionalDocuments(caseData));
+        if (documentsHolder != null && orderStatus == OrderStatus.SEALED) {
+            return documentMerger.mergeDocuments(docmosisDocument, documentsHolder.additionalDocuments(caseData));
         }
 
         return docmosisDocument;

@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -70,17 +68,6 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
     @Override
     public DocmosisTemplates template() {
         return DocmosisTemplates.EPO;
-    }
-
-    @Override
-    public List<DocumentReference> additionalDocuments(CaseData caseData) {
-        ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
-
-        if (isNull(eventData.getManageOrdersPowerOfArrest())) {
-            return List.of();
-        }
-
-        return List.of(eventData.getManageOrdersPowerOfArrest());
     }
 
     private String orderDetails(int numOfChildren, String caseLocalAuthority) {

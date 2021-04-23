@@ -111,32 +111,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void epoOrderSelectionShouldPopulateQuestionConditionHolder() {
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(
-                ManageOrdersEventData.builder().manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER).build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
-
-        Map<String, String> expectedQuestions = new HashMap<>(Map.of(
-            "approver", "YES",
-            "previewOrder", "YES",
-            "furtherDirections", "YES",
-            "whichChildren", "YES",
-            "approvalDate", "NO",
-            "approvalDateTime", "YES",
-            "epoIncludePhrase", "YES",
-            "epoTypeAndPreventRemoval", "YES",
-            "epoChildrenDescription", "YES",
-            "epoExpiryDate", "YES"
-        ));
-        expectedQuestions.put("epoTypeAndPreventRemoval", "YES");
-
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
-    }
-
-    @Test
     void orderSelectionShouldPrePopulateFirstSectionDetails() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
