@@ -11,7 +11,7 @@ fi
 
 if [[ ${environment} == "prod" ]]; then
   excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json,*-testing.json"
-elif [[ ${environment} == "ithc"]]; then
+elif [[ ${environment} == "ithc" ]]; then
   excludedFilenamePatterns="-e UserProfile.json,*-nonprod.json"
 else
   excludedFilenamePatterns="-e UserProfile.json,*-prod.json"
