@@ -2,53 +2,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "placement",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "[LASOLICITOR]",
-          "[EPSMANAGING]",
-          "[LAMANAGING]",
-          "caseworker-publiclaw-courtadmin"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-judiciary",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-solicitor"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "manageOrders",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-solicitor"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "nocRequest",
     "AccessControl": [
       {
@@ -69,6 +22,28 @@
           "caseworker-approver"
         ],
         "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendRespondents",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "caseworker-publiclaw-solicitor"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
       }
     ]
   }
