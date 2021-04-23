@@ -231,10 +231,10 @@ module.exports = {
     isOrderRemoved && I.seeInTab([orderHeading, 'Reason for removal'], order.reasonForRemoval);
   },
 
-  async assertOrderSentToParty(I, caseViewPage, partyName, order) {
+  async assertOrderSentToParty(I, caseViewPage, partyName, order, index = 1) {
     caseViewPage.selectTab(caseViewPage.tabs.documentsSentToParties);
     const numberOfDocuments = await I.grabNumberOfVisibleElements(`//*[text() = '${partyName}']/ancestor::ccd-read-complex-field-table//ccd-read-complex-field-table`);
-    I.seeInTab(['Party 1', 'Representative name'], partyName);
-    I.seeInTab(['Party 1', `Document ${numberOfDocuments}`, 'File'], order.document);
+    I.seeInTab([`Party ${index}`, 'Recipient'], partyName);
+    I.seeInTab([`Party ${index}`, `Document ${numberOfDocuments}`, 'File'], order.document);
   },
 };

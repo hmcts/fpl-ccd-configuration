@@ -2,117 +2,130 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "nameOfRepresentative",
-    "EventElementLabel": "Name of representative",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "usePbaPayment",
-    "EventElementLabel": "Are you using PBA to pay?",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "pbaNumber",
-    "EventElementLabel": "Payment by account (PBA) number",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "clientCode",
-    "EventElementLabel": "Client code",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "fileReference",
-    "EventElementLabel": "Customer reference",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "OPTIONAL",
-    "FieldShowCondition": "temporaryC2Document.usePbaPayment=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
-    "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "description",
-    "EventElementLabel": "Notes",
-    "FieldDisplayOrder": 7,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundleComplexType",
-    "CaseEventID": "uploadC2",
+    "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "document",
-    "EventElementLabel": "Upload a file",
-    "FieldDisplayOrder": 6,
+    "EventElementLabel": "Upload C2 application",
+    "FieldDisplayOrder": "1",
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadC2",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "EventElementLabel": "C2 supporting document",
-    "ListElementCode": "supportingEvidenceBundle",
+    "ListElementCode": "c2AdditionalOrdersRequested",
+    "EventElementLabel": "Are you using the C2 to apply for any of the below?",
+    "FieldDisplayOrder": "2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundleComplexType",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "parentalResponsibilityType",
+    "EventElementLabel": "Who's seeking parental responsibility?",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryC2Document.c2AdditionalOrdersRequested CONTAINS \"PARENTAL_RESPONSIBILITY\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Supplements",
+    "ListElementCode": "supplementsBundle",
+    "FieldDisplayOrder": "4",
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadC2",
+    "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
-    "ListElementCode": "supportingEvidenceBundle.name",
+    "EventElementLabel": "Select supplement",
+    "ListElementCode": "supplementsBundle.name",
+    "FieldDisplayOrder": "5",
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadC2",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.secureAccommodationType",
+    "EventElementLabel": "Which jurisdiction?",
+    "FieldDisplayOrder": "6",
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "temporaryC2Document.supplementsBundle.name=\"C20_SECURE_ACCOMMODATION\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "ListElementCode": "supplementsBundle.notes",
+    "FieldDisplayOrder": "7",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Upload document",
+    "ListElementCode": "supplementsBundle.document",
+    "FieldDisplayOrder": "8",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "Supporting Documents",
+    "ListElementCode": "supportingEvidenceBundle",
+    "FieldDisplayOrder": "9",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
+    "CaseFieldID": "temporaryC2Document",
+    "EventElementLabel": "File name",
+    "ListElementCode": "supportingEvidenceBundle.name",
+    "FieldDisplayOrder": "10",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
+    "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.notes",
+    "FieldDisplayOrder": "11",
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadC2",
+    "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.dateTimeReceived",
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "temporaryC2Document=\"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
-    "CaseEventID": "uploadC2",
+    "CaseEventID": "uploadAdditionalApplications",
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "supportingEvidenceBundle.document",
     "EventElementLabel": "Upload document",
+    "FieldDisplayOrder": "12",
     "DisplayContext": "MANDATORY"
   }
 ]
-

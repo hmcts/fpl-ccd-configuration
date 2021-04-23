@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Supplement",
+    "ListElementCode": "name",
+    "FieldType": "FixedList",
+    "ElementLabel": "Document name",
+    "FieldTypeParameter": "SupplementType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Supplement",
+    "ListElementCode": "secureAccommodationType",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Which jurisdiction?",
+    "FieldTypeParameter": "SecureAccommodationType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Supplement",
+    "ListElementCode": "notes",
+    "FieldType": "TextArea",
+    "ElementLabel": "Notes",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Supplement",
+    "ListElementCode": "dateTimeUploaded",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Supplement",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Supplement",
+    "ListElementCode": "uploadedBy",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  }
+]

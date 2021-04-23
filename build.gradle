@@ -1,12 +1,12 @@
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
   }
 }
 
 plugins {
   id 'java'
-  id 'org.owasp.dependencycheck' version '6.1.1' apply true
+  id 'org.owasp.dependencycheck' version '6.1.5' apply true
 }
 
 allprojects {
@@ -15,7 +15,7 @@ allprojects {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 dependencyCheck {

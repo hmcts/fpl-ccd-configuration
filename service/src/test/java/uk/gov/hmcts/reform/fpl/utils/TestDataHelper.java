@@ -17,7 +17,9 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
+import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -28,13 +30,17 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudge;
 import uk.gov.hmcts.reform.rd.model.Organisation;
+import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static feign.Request.HttpMethod.GET;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -46,6 +52,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.ChildGender.BOY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 public class TestDataHelper {
@@ -63,6 +70,10 @@ public class TestDataHelper {
         return Organisation.builder()
             .organisationIdentifier(organisationCode)
             .build();
+    }
+
+    public static byte[] testDocumentBinary() {
+        return RandomUtils.nextBytes(RandomUtils.nextInt(3, 10));
     }
 
     public static DocumentReference testDocumentReference() {
@@ -245,6 +256,25 @@ public class TestDataHelper {
             .build();
     }
 
+    public static LetterWithPdfsRequest printRequest(Long caseId, DocumentReference order, byte[]... binaries) {
+        List<String> documents = Stream.of(binaries)
+            .map(Base64.getEncoder()::encodeToString)
+            .collect(toList());
+        Map<String, Object> parameters = Map.of("caseId", caseId, "documentName", order.getFilename());
+        return new LetterWithPdfsRequest(documents, "FPLA001", parameters);
+    }
+
+    public static SentDocument documentSent(Recipient recipient, Document coversheet, Document document,
+                                            UUID letterId, LocalDateTime sentAt) {
+        return SentDocument.builder()
+            .partyName(recipient.getFullName())
+            .letterId(letterId.toString())
+            .document(DocumentReference.buildFromDocument(document))
+            .coversheet(DocumentReference.buildFromDocument(coversheet))
+            .sentAt(formatLocalDateTimeBaseUsingFormat(sentAt, "h:mma, d MMMM yyyy"))
+            .build();
+    }
+
     public static FeignException feignException(int status) {
         return feignException(status, "Test");
     }
@@ -252,7 +282,7 @@ public class TestDataHelper {
     public static FeignException feignException(int status, String message) {
         return FeignException.errorStatus(message, Response.builder()
             .status(status)
-            .request(Request.create(GET, EMPTY, Map.of(), new byte[] {}, UTF_8, null))
+            .request(Request.create(GET, EMPTY, Map.of(), new byte[]{}, UTF_8, null))
             .build());
     }
 

@@ -19,6 +19,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
@@ -60,16 +62,25 @@ public class HearingOrder implements RemovableOrder {
 
     @JsonIgnore
     public boolean isRemovable() {
-        return !SEND_TO_JUDGE.equals(status);
+        return true;
     }
 
     public String asLabel() {
-        if (APPROVED.equals(status)) {
-            return format("Sealed case management order issued on %s",
-                formatLocalDateToString(dateIssued, "d MMMM yyyy"));
-        }
+        if (type == C21) {
+            return format("Draft order sent on %s", formatLocalDateToString(dateSent, DATE));
+        } else {
+            if (APPROVED.equals(status)) {
+                return format("Sealed case management order issued on %s",
+                    formatLocalDateToString(dateIssued, DATE));
+            }
 
-        return format("Draft case management order sent on %s",
-            formatLocalDateToString(dateSent, "d MMMM yyyy"));
+            if (SEND_TO_JUDGE.equals(status)) {
+                return format("Agreed case management order sent on %s",
+                    formatLocalDateToString(dateSent, DATE));
+            }
+
+            return format("Draft case management order sent on %s",
+                formatLocalDateToString(dateSent, DATE));
+        }
     }
 }

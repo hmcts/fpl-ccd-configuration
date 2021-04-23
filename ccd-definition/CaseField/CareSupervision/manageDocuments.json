@@ -22,7 +22,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsSupportingC2List",
     "FieldType": "DynamicList",
-    "Label": "Choose the relevant C2 application for this document",
+    "Label": "Select application:",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -42,7 +42,7 @@
     "ID": "supportingEvidenceDocumentsTemp",
     "FieldType": "Collection",
     "FieldTypeParameter": "SupportingEvidenceBundle",
-    "Label": "Document",
+    "Label": "Supporting documents",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -60,7 +60,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsSupportingC2Label",
     "FieldType": "Text",
-    "Label": "Upload C2 documents for:",
+    "Label": "Application:",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -71,7 +71,8 @@
     "FieldType": "Label",
     "Label": "## Further evidence",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N",
+    "Comment": "Update label in 2770 when new page added for admin"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -87,7 +88,16 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageDocumentsC2Heading",
     "FieldType": "Label",
-    "Label": "## C2 supporting documents",
+    "Label": "## Further order application documents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageDocumentsRespondentStatementsHeading",
+    "FieldType": "Label",
+    "Label": "## Further evidence - respondent statement",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

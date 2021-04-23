@@ -179,7 +179,7 @@ class EmailNotificationHelperTest {
                     .build())))
             .build();
 
-        String expectedContent = String.format("^Davids, 12345,%s", buildHearingDateText(hearingBooking));
+        String expectedContent = String.format("Davids, 12345,%s", buildHearingDateText(hearingBooking));
 
         assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
     }
@@ -197,7 +197,7 @@ class EmailNotificationHelperTest {
                 element(hearingBooking)))
             .build();
 
-        String expectedContent = String.format("^12345,%s", buildHearingDateText(hearingBooking));
+        String expectedContent = String.format("12345,%s", buildHearingDateText(hearingBooking));
 
         assertThat(buildCallout(caseData)).isEqualTo(expectedContent);
     }

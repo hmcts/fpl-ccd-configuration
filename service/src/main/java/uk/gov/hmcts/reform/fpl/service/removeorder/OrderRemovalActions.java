@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderRemovalActions {
+    private final DraftOrderRemovalAction draftOrderRemovalAction;
     private final SealedCMORemovalAction sealedCMORemovalAction;
     private final GeneratedOrderRemovalAction generatedOrderRemovalAction;
     private final SDORemovalAction sdoRemovalAction;
@@ -29,6 +30,7 @@ public class OrderRemovalActions {
             sealedCMORemovalAction,
             generatedOrderRemovalAction,
             sdoRemovalAction,
+            draftOrderRemovalAction,
             draftCMORemovalAction
         );
     }

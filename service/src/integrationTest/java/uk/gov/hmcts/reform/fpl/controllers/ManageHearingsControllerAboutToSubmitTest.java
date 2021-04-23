@@ -75,6 +75,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingVenueCustom(newHearing.getVenueCustomAddress())
             .hearingStartDate(newHearing.getStartDate())
             .hearingEndDate(newHearing.getEndDate())
+            .hearingPresence(newHearing.getPresence())
             .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
             .noticeOfHearingNotes(newHearing.getAdditionalNotes())
             .build();
@@ -97,6 +98,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
 
         HearingBooking newHearing = testHearing(now().plusDays(2));
         CaseData initialCaseData = CaseData.builder()
+            .id(1234123412341234L)
             .children1(createPopulatedChildren(now().toLocalDate()))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .sendNoticeOfHearing("Yes")
@@ -105,6 +107,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingVenueCustom(newHearing.getVenueCustomAddress())
             .hearingStartDate(newHearing.getStartDate())
             .hearingEndDate(newHearing.getEndDate())
+            .hearingPresence(newHearing.getPresence())
             .judgeAndLegalAdvisor(newHearing.getJudgeAndLegalAdvisor())
             .noticeOfHearingNotes(newHearing.getAdditionalNotes())
             .build();
@@ -134,6 +137,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingVenueCustom(existingHearing.getVenueCustomAddress())
             .hearingStartDate(existingHearing.getStartDate())
             .hearingEndDate(existingHearing.getEndDate())
+            .hearingPresence(existingHearing.getPresence())
             .judgeAndLegalAdvisor(existingHearing.getJudgeAndLegalAdvisor())
             .noticeOfHearingNotes(existingHearing.getAdditionalNotes())
             .build();
@@ -170,6 +174,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(pastHearingToBeAdjourned.getValue().getVenue())
             .hearingVenueCustom(pastHearingToBeAdjourned.getValue().getVenueCustomAddress())
+            .hearingPresence(pastHearingToBeAdjourned.getValue().getPresence())
             .hearingStartDate(reListedHearingStartTime)
             .hearingEndDate(reListedHearingEndTime)
             .judgeAndLegalAdvisor(pastHearingToBeAdjourned.getValue().getJudgeAndLegalAdvisor())
@@ -238,6 +243,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(futureHearingToBeVacated.getValue().getVenue())
             .hearingVenueCustom(futureHearingToBeVacated.getValue().getVenueCustomAddress())
+            .hearingPresence(futureHearing.getValue().getPresence())
             .hearingStartDate(reListedHearingStartTime)
             .hearingEndDate(reListedHearingEndTime)
             .judgeAndLegalAdvisor(futureHearingToBeVacated.getValue().getJudgeAndLegalAdvisor())
@@ -285,6 +291,7 @@ class ManageHearingsControllerAboutToSubmitTest extends ManageHearingsController
             .hearingType(CASE_MANAGEMENT)
             .hearingVenue(adjournedHearing.getValue().getVenue())
             .hearingVenueCustom(adjournedHearing.getValue().getVenueCustomAddress())
+            .hearingPresence(adjournedHearing.getValue().getPresence())
             .hearingStartDate(reListedHearingStartTime)
             .hearingEndDate(reListedHearingEndTime)
             .judgeAndLegalAdvisor(adjournedHearing.getValue().getJudgeAndLegalAdvisor())

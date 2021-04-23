@@ -11,21 +11,25 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
@@ -46,15 +50,16 @@ public class ManageDocumentsController extends CallbackController {
     private final ManageDocumentService manageDocumentService;
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
     private final ConfidentialDocumentsSplitter splitter;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(
-            manageDocumentService.initialiseManageDocumentEvent(caseData, MANAGE_DOCUMENT_KEY)
-        );
+        caseDetails.getData().putAll(manageDocumentService.baseEventData(caseData));
 
         caseDetails.getData().remove("furtherEvidenceDocumentsTEMP");
 
@@ -67,6 +72,8 @@ public class ManageDocumentsController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
+
+        caseDetails.getData().putAll(manageDocumentService.baseEventData(caseData));
 
         switch (caseData.getManageDocument().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
@@ -87,12 +94,13 @@ public class ManageDocumentsController extends CallbackController {
                     caseData.getCorrespondenceDocuments()
                 );
                 break;
-            case C2:
-                if (!caseData.hasC2DocumentBundle()) {
-                    return respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
+            case ADDITIONAL_APPLICATIONS_DOCUMENTS:
+                if (!caseData.hasApplicationBundles()) {
+                    return respond(caseDetails,
+                        List.of("There are no additional applications to associate supporting documents with"));
                 }
-                caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
-                supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
+                caseDetails.getData().putAll(manageDocumentService.initialiseApplicationBundlesListAndLabel(caseData));
+                supportingEvidence = manageDocumentService.getApplicationsSupportingEvidenceBundles(caseData);
                 break;
         }
 
@@ -154,11 +162,11 @@ public class ManageDocumentsController extends CallbackController {
                 );
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
                 break;
-            case C2:
-                List<Element<C2DocumentBundle>> updatedC2Documents =
-                    manageDocumentService.buildFinalC2SupportingDocuments(caseData);
+            case ADDITIONAL_APPLICATIONS_DOCUMENTS:
+                Map<String, Object> data = manageDocumentService
+                    .buildFinalApplicationBundleSupportingDocuments(caseData);
 
-                caseDetailsMap.putIfNotEmpty(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+                caseDetailsMap.putIfNotEmpty(data);
                 break;
         }
 
@@ -167,5 +175,16 @@ public class ManageDocumentsController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY);
 
         return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest request) {
+        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
+            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request),
+                getCaseDataBefore(request), false,
+                userDetails));
+        }
     }
 }

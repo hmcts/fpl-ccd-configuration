@@ -43,6 +43,10 @@ core_case_data:
   api:
     url: http://localhost:4452
 
+case-assignment:
+  api:
+    url: http://localhost:4454
+
 docmosis:
   tornado:
     url: http://localhost:5433
@@ -86,7 +90,7 @@ appinsights:
 
 fpl:
   local_authority_email_to_code:
-    mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN;swindon.gov.uk=>SN;wiltshire.gov.uk=>SNW'
+    mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;swindon.gov.uk=>SN;'
   local_authority_code_to_name:
     mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council;SN=>Swindon County Council;SNW=>Wiltshire County Council'
   local_authority_code_to_hmcts_court:

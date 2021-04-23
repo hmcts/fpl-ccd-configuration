@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -74,4 +76,9 @@ public abstract class AbstractTest {
     protected void givenFplService() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
+
+    protected <T> CaseData getCase(ArgumentCaptor<T> captor) {
+        return mapper.convertValue(captor.getValue(), CaseData.class);
+    }
+
 }

@@ -6,13 +6,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.ParentalResponsibilityType;
+import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialBundle;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -24,8 +27,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Jacksonized
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class C2DocumentBundle implements ConfidentialBundle {
-    private final C2ApplicationType type;
+public class C2DocumentBundle implements ApplicationsBundle {
+    private UUID id;
+    private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
     private final String pbaNumber;
@@ -36,9 +40,22 @@ public class C2DocumentBundle implements ConfidentialBundle {
     private final String uploadedDateTime;
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
+    private final List<Element<Supplement>> supplementsBundle;
+    private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
+    private final ParentalResponsibilityType parentalResponsibilityType;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
+    }
+
+    public String toLabel() {
+        return format("C2, %s", uploadedDateTime);
+    }
+
+    @JsonIgnore
+    @Override
+    public int getSortOrder() {
+        return 2;
     }
 
     @Override
@@ -85,21 +102,7 @@ public class C2DocumentBundle implements ConfidentialBundle {
         return documentReferences;
     }
 
-    @JsonIgnore
-    private String getSupportingEvidenceFileNames() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(DocumentReference::getFilename)
-            .collect(Collectors.joining("\n"));
-    }
-
-    @JsonIgnore
-    private List<Element<DocumentReference>> getSupportingEvidenceBundleReferences() {
-        return getSupportingEvidenceBundle().stream()
-            .map(Element::getValue)
-            .map(SupportingEvidenceBundle::getDocument)
-            .map(ElementUtils::element)
-            .collect(Collectors.toList());
+    public void setId(UUID newId) {
+        this.id = newId;
     }
 }

@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -17,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisTemplateDataGeneration;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -25,6 +24,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstApplicantName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -32,30 +32,32 @@ public class NoticeOfProceedingsTemplateDataGenerationService
     extends DocmosisTemplateDataGeneration<DocmosisNoticeOfProceeding> {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CaseDataExtractionService caseDataExtractionService;
+    private final CaseDetailsHelper caseDetailsHelper;
     private final Time time;
 
     @Override
     public DocmosisNoticeOfProceeding getTemplateData(CaseData caseData) {
         HearingBooking hearing = caseData.getFirstHearing().orElseThrow(NoHearingBookingException::new);
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearing);
 
         return DocmosisNoticeOfProceeding.builder()
             .courtName(getCourtName(caseData.getCaseLocalAuthority()))
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+            .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
             .todaysDate(formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
-            .applicantName(PeopleInCaseHelper.getFirstApplicantName(caseData.getApplicants()))
+            .applicantName(getFirstApplicantName(caseData.getApplicants()))
             .orderTypes(getOrderTypes(caseData.getOrders()))
             .childrenNames(getAllChildrenNames(caseData.getAllChildren()))
-            .hearingBooking(DocmosisHearingBooking.builder()
-                .hearingDate(caseDataExtractionService.getHearingDateIfHearingsOnSameDay(hearing).orElse(""))
-                .hearingVenue(hearingVenueLookUpService.buildHearingVenue(hearingVenue))
-                .preHearingAttendance(caseDataExtractionService.extractPrehearingAttendance(hearing))
-                .hearingTime(caseDataExtractionService.getHearingTime(hearing))
-                .build())
+            .hearingBooking(getHearingBooking(hearing))
             .crest(getCrestData())
             .courtseal(getCourtSealData())
+            .build();
+    }
+
+    private DocmosisHearingBooking getHearingBooking(HearingBooking hearing) {
+        return caseDataExtractionService.getHearingBookingData(hearing).toBuilder()
+            .hearingLegalAdvisorName(null) // wipe unwanted data
+            .hearingJudgeTitleAndName(null)
             .build();
     }
 

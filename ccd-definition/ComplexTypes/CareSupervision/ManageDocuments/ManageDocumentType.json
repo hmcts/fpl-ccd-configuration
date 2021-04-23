@@ -4,8 +4,9 @@
     "ID": "ManageDocumentType",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
-    "ElementLabel": "Which document type do you want to manage?",
+    "ElementLabel": "Choose a document category",
     "FieldTypeParameter": "ManageDocumentTypeList",
+    "HintText": "Your document will be stored in the corresponding tab",
     "SecurityClassification": "Public"
   },
   {

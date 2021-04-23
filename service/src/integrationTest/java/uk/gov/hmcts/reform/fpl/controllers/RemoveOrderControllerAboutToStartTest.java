@@ -71,6 +71,8 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
         Element<HearingOrder> draftCMOTwo = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
         Element<HearingOrder> draftCMOThree = element(UUID.randomUUID(), buildPastHearingOrder(DRAFT_CMO));
         Element<HearingOrder> agreedCMO = element(UUID.randomUUID(), buildPastHearingOrder(AGREED_CMO));
+        Element<HearingOrder> draftOrderOne = element(UUID.randomUUID(), buildPastHearingOrder(C21));
+        Element<HearingOrder> draftOrderTwo = element(UUID.randomUUID(), buildPastHearingOrder(C21));
 
         CaseData caseData = CaseData.builder()
             .state(state)
@@ -79,15 +81,13 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
             .draftUploadedCMOs(newArrayList(draftCMOOne, draftCMOThree))
             .hearingOrdersBundlesDrafts(newArrayList(
                 element(HearingOrdersBundle.builder()
-                    .orders(newArrayList(
-                        draftCMOOne,
-                        element(buildPastHearingOrder(C21))))
+                    .orders(newArrayList(draftCMOOne, draftOrderOne))
                     .build()),
                 element(HearingOrdersBundle.builder()
                     .orders(newArrayList(draftCMOTwo))
                     .build()),
                 element(HearingOrdersBundle.builder()
-                    .orders(newArrayList(agreedCMO))
+                    .orders(newArrayList(agreedCMO, draftOrderTwo))
                     .build())
             ))
             .build();
@@ -111,11 +111,17 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
                         formatLocalDateToString(dateNow(), "d MMMM yyyy"))),
                 buildListElement(draftCMOOne.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                buildListElement(draftOrderOne.getId(), format("Draft order sent on %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOTwo.getId(), format("Draft case management order sent on %s",
                     formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                buildListElement(agreedCMO.getId(), format("Agreed case management order sent on %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
+                buildListElement(draftOrderTwo.getId(), format("Draft order sent on %s",
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy"))),
                 buildListElement(draftCMOThree.getId(), format("Draft case management order sent on %s",
-                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))
-            )).build();
+                    formatLocalDateToString(dateNow().minusDays(1), "d MMMM yyyy")))))
+            .build();
 
         assertThat(builtDynamicList).isEqualTo(expectedList);
     }
@@ -184,7 +190,7 @@ class RemoveOrderControllerAboutToStartTest extends AbstractCallbackTest {
     private HearingOrder buildPastHearingOrder(HearingOrderType type) {
         return HearingOrder.builder()
             .type(type)
-            .status(type == AGREED_CMO ? SEND_TO_JUDGE : DRAFT)
+            .status((type == AGREED_CMO || type == C21) ? SEND_TO_JUDGE : DRAFT)
             .dateSent(dateNow().minusDays(1))
             .dateIssued(dateNow())
             .build();

@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
@@ -230,6 +232,103 @@ class PaymentServiceTest {
             verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
             verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
             verify(feeService).getFeesDataForC2(WITH_NOTICE);
+        }
+
+        private FeesData buildFeesData(FeeDto feeDto) {
+            return FeesData.builder()
+                .totalAmount(feeDto.getCalculatedAmount())
+                .fees(List.of(feeDto))
+                .build();
+        }
+    }
+
+    @Nested
+    class MakePaymentForAdditionalApplications {
+        String testPbaNumber = "PBA123";
+        FeeDto feeForAdditionalApplications = FeeDto.builder().calculatedAmount(BigDecimal.TEN).build();
+        FeesData feesData = buildFeesData(feeForAdditionalApplications);
+
+        @Test
+        void shouldMakeCorrectPaymentForAdditionalApplications() {
+            CaseData caseData = buildCaseData("clientCode", "customerReference");
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference("customerReference")
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(feeForAdditionalApplications))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldMakeCorrectPaymentForAdditionalApplicationsWhenCustomerReferenceIsInvalid(
+            final String customerReference) {
+            String clientCode = "clientCode";
+            CaseData caseData = buildCaseData(clientCode, customerReference);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference(BLANK_PARAMETER_VALUE)
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(FeeDto.builder().calculatedAmount(BigDecimal.TEN).build()))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldMakeCorrectPaymentForAdditionalApplicationsWhenCaseReferenceIsInvalid(final String clientCode) {
+            String customerReference = "customerReference";
+            CaseData caseData = buildCaseData(clientCode, customerReference);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = buildCreditAccountPaymentRequest(clientCode,
+                customerReference,
+                feeForAdditionalApplications);
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+        }
+
+        @ParameterizedTest
+        @ValueSource(booleans = {true, false})
+        void shouldMakeExpectedPaymentWhenFeeAndPayCaseTypeFeatureToggleIsToggledOnAndOff(final boolean toggleStatus) {
+            String customerReference = "customerReference";
+            CaseData caseData = buildCaseData("clientCode", "customerReference");
+
+            when(featureToggleService.isFeeAndPayCaseTypeEnabled()).thenReturn(toggleStatus);
+
+            CreditAccountPaymentRequest expectedPaymentRequest = testCreditAccountPaymentRequestBuilder()
+                .customerReference(customerReference)
+                .amount(feeForAdditionalApplications.getCalculatedAmount())
+                .fees(List.of(feeForAdditionalApplications))
+                .build();
+
+            paymentService.makePaymentForAdditionalApplications(CASE_ID, caseData, feesData);
+
+            verify(paymentClient).callPaymentsApi(expectedPaymentRequest);
+            verify(localAuthorityNameLookupConfiguration).getLocalAuthorityName("LA");
+        }
+
+        private CaseData buildCaseData(String clientCode, String customerReference) {
+            return CaseData.builder()
+                .caseLocalAuthority("LA")
+                .additionalApplicationsBundle(List.of(
+                    element(AdditionalApplicationsBundle.builder()
+                        .pbaPayment(PBAPayment.builder()
+                            .clientCode(clientCode)
+                            .fileReference(customerReference)
+                            .pbaNumber(testPbaNumber)
+                            .build()).build()))).build();
         }
 
         private FeesData buildFeesData(FeeDto feeDto) {

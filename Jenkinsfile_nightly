@@ -70,6 +70,7 @@ withNightlyPipeline(type, product, component) {
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
+  enableCrossBrowserTest()
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -95,5 +96,9 @@ withNightlyPipeline(type, product, component) {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
+  }
+
+  after('crossBrowserTest') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }

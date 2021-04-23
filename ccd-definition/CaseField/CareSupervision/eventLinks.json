@@ -149,15 +149,14 @@
     "ID": "reviewCMOLink",
     "FieldType": "Label",
     "Label": "[Approve orders](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/reviewCMO)",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadC2Link",
     "FieldType": "Label",
-    "Label": "[Upload a new C2 application](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadC2)",
+    "Label": "[Upload additional applications](/case/${[JURISDICTION]}/${[CASE_TYPE]}/${[CASE_REFERENCE]}/trigger/uploadAdditionalApplications)",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.cmo.DraftOrdersApproved;
@@ -17,7 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
@@ -26,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.C21;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
@@ -40,8 +45,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ObjectMapper.class,
     CaseUrlService.class,
     RepresentativeNotificationService.class,
+    RepresentativesInbox.class
 })
 class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
+    @MockBean
+    private SendDocumentService sendDocumentService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private DraftOrdersApprovedEventHandler underTest;
@@ -111,5 +122,7 @@ class DraftOrdersApprovedEmailTemplateTest extends EmailTemplateTest {
                 .end("Do not reply to this email. If you need to contact us, "
                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
+
+        verifyNoInteractions(sendDocumentService);
     }
 }

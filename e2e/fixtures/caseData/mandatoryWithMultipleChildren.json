@@ -131,6 +131,30 @@
             "relationshipToChild": "Uncle"
           }
         }
+      },
+      {
+        "id": "2bfdecbf-26fa-429a-bcf3-0b5cba21a588",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "SE16 6BA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 20",
+              "AddressLine2": "Heron House 8"
+            },
+            "lastName": "Bloggs",
+            "firstName": "George",
+            "dateOfBirth": "1990-02-03",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "07000 654321"
+            },
+            "relationshipToChild": "Uncle"
+          }
+        }
       }
     ],
     "dateSubmitted": "TO BE FILLED WITH VALID DATA",

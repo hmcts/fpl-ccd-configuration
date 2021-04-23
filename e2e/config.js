@@ -156,6 +156,8 @@ module.exports = {
     closeTheCase: 'Close the case',
     returnApplication: 'Return application',
     manageDocuments: 'Manage documents',
+    uploadAdditionalApplications: 'Upload additional applications',
+    manageOrders: 'Manage orders',
   },
   superUserActions: {
     removeOrder: 'Remove an order',

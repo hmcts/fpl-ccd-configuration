@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class StandardDirectionOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
     private final OrdersLookupService ordersLookupService;
     private final CaseDataExtractionService dataService;
+    private final CaseDetailsHelper caseDetailsHelper;
 
     private static final int SDO_DIRECTION_INDEX_START = 2;
 
@@ -43,6 +45,7 @@ public class StandardDirectionOrderGenerationService extends
                 .judgeAndLegalAdvisor(getJudgeAndLegalAdvisor(standardDirectionOrder.getJudgeAndLegalAdvisor()))
                 .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
+                .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
                 .dateOfIssue(standardDirectionOrder.getDateOfIssue())
                 .complianceDeadline(caseData.getComplianceDeadline())
                 .children(dataService.getChildrenDetails(caseData.getAllChildren()))
@@ -50,7 +53,7 @@ public class StandardDirectionOrderGenerationService extends
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
                 .directions(buildDirections(standardDirectionOrder.getDirections()))
-                .hearingBooking(dataService.getHearingBookingData(firstHearing, null))
+                .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
         if (standardDirectionOrder.isSealed()) {

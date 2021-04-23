@@ -1,5 +1,3 @@
-/* global process */
-
 require('./e2e/helpers/event_listener');
 const lodash = require('lodash');
 
@@ -58,14 +56,17 @@ exports.config = {
     HooksHelper: {
       require: './e2e/helpers/hooks_helper.js',
     },
-    PuppeteerHelpers: {
-      require: './e2e/helpers/puppeter_helper.js',
+    BrowserHelpers: {
+      require: './e2e/helpers/browser_helper.js',
     },
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
     },
     GenerateReportHelper: {
-      require: './e2e/helpers/generate_report_helper.js'
+      require: './e2e/helpers/generate_report_helper.js',
+    },
+    TabAssertions: {
+      require: './e2e/helpers/tab_assertions_helper.js',
     },
   },
   include: {
@@ -123,6 +124,8 @@ exports.config = {
     manageLegalRepresentativesEventPage: './e2e/pages/events/manageLegalRepresentativesEvent.page.js',
     addApplicationDocumentsEventPage: './e2e/pages/events/addApplicationDocumentsEvent.page.js',
     messageJudgeOrLegalAdviserEventPage: './e2e/pages/events/messageJudgeOrLegalAdviserEvent.page.js',
+    uploadAdditionalApplicationsEventPage: './e2e/pages/events/uploadAdditionalApplicationsEvent.page.js',
+    manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
   },
   plugins: {
     autoDelay: {

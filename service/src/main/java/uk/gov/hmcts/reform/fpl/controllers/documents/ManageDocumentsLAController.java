@@ -11,28 +11,38 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.events.FurtherEvidenceUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.ManageDocumentLA;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.RESPONDENT_STATEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.DOCUMENT_SUB_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_LA_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RELATED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_STATEMENT_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
@@ -51,14 +61,16 @@ public class ManageDocumentsLAController extends CallbackController {
     private final ManageDocumentService manageDocumentService;
     private final ApplicationDocumentsService applicationDocumentsService;
     private final ConfidentialDocumentsSplitter splitter;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().putAll(
-            manageDocumentService.initialiseManageDocumentEvent(caseData, MANAGE_DOCUMENT_LA_KEY));
+        caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
 
         return respond(caseDetails);
     }
@@ -70,26 +82,23 @@ public class ManageDocumentsLAController extends CallbackController {
 
         List<Element<SupportingEvidenceBundle>> supportingEvidence = new ArrayList<>();
 
+        caseDetails.getData().putAll(manageDocumentLAService.baseEventData(caseData));
+
         switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
-                caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
-                    caseData, caseData.getManageDocumentLA().isDocumentRelatedToHearing()));
-                supportingEvidence = manageDocumentService.getFurtherEvidenceCollection(
-                    caseData,
-                    caseData.getManageDocumentLA().isDocumentRelatedToHearing(),
-                    caseData.getFurtherEvidenceDocumentsLA()
-                );
-                break;
+                caseDetails.getData().put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+                return respond(caseDetails);
             case CORRESPONDENCE:
                 supportingEvidence = manageDocumentService.getSupportingEvidenceBundle(
                     caseData.getCorrespondenceDocumentsLA());
                 break;
-            case C2:
-                if (!caseData.hasC2DocumentBundle()) {
-                    return respond(caseDetails, List.of("There are no C2s to associate supporting documents with"));
+            case ADDITIONAL_APPLICATIONS_DOCUMENTS:
+                if (!caseData.hasApplicationBundles()) {
+                    return respond(caseDetails, List.of(
+                        "There are no additional applications to associate supporting documents with"));
                 }
-                caseDetails.getData().putAll(manageDocumentService.initialiseC2DocumentListAndLabel(caseData));
-                supportingEvidence = manageDocumentService.getC2SupportingEvidenceBundle(caseData);
+                caseDetails.getData().putAll(manageDocumentService.initialiseApplicationBundlesListAndLabel(caseData));
+                supportingEvidence = manageDocumentService.getApplicationsSupportingEvidenceBundles(caseData);
                 break;
             case COURT_BUNDLE:
                 if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
@@ -97,11 +106,37 @@ public class ManageDocumentsLAController extends CallbackController {
                 }
                 caseDetails.getData().putAll(manageDocumentLAService.initialiseCourtBundleFields(caseData));
                 break;
-            case APPLICATION:
-                break;
         }
 
         caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/further-evidence-documents/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleFurtherEvidenceMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (OTHER.equals(caseData.getManageDocumentSubtypeListLA())) {
+            caseDetails.getData().putAll(manageDocumentService.initialiseHearingListAndLabel(
+                caseData, YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())));
+
+            List<Element<SupportingEvidenceBundle>> supportingEvidence
+                = manageDocumentService.getFurtherEvidenceCollection(caseData,
+                YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing()),
+                caseData.getFurtherEvidenceDocumentsLA());
+
+            caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, supportingEvidence);
+        } else if (RESPONDENT_STATEMENT.equals(caseData.getManageDocumentSubtypeListLA())) {
+            UUID selectedRespondentId = manageDocumentService.getSelectedRespondentId(caseData);
+
+            caseDetails.getData().put(RESPONDENT_STATEMENT_LIST_KEY,
+                caseData.buildRespondentStatementDynamicList(selectedRespondentId));
+
+            caseDetails.getData().put(TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY,
+                manageDocumentService.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId));
+        }
+
         return respond(caseDetails);
     }
 
@@ -112,12 +147,21 @@ public class ManageDocumentsLAController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(request);
         CaseDetailsMap caseDetailsMap = CaseDetailsMap.caseDetailsMap(caseDetails);
 
-        ManageDocumentLA manageDocumentLA = caseData.getManageDocumentLA();
-        switch (manageDocumentLA.getType()) {
+        switch (caseData.getManageDocumentLA().getType()) {
             case FURTHER_EVIDENCE_DOCUMENTS:
                 List<Element<SupportingEvidenceBundle>> currentBundle;
 
-                if (manageDocumentLA.isDocumentRelatedToHearing()) {
+                if (RESPONDENT_STATEMENT.equals(caseData.getManageDocumentSubtypeListLA())) {
+                    caseDetailsMap.putIfNotEmpty("respondentStatements",
+                        manageDocumentService.getUpdatedRespondentStatements(caseData));
+                } else if (APPLICATION_DOCUMENTS.equals(caseData.getManageDocumentSubtypeListLA())) {
+                    //Application documents
+
+                    caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
+                        caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
+                    ));
+                    //Hearing related evidence
+                } else if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
                     currentBundle = manageDocumentService.setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
                         caseData, caseDataBefore
                     );
@@ -128,7 +172,7 @@ public class ManageDocumentsLAController extends CallbackController {
                     caseDetailsMap.putIfNotEmpty(
                         HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY, updatedBundle
                     );
-
+                    //Non-hearing-related evidence
                 } else {
                     currentBundle = manageDocumentService.setDateTimeUploadedOnSupportingEvidence(
                         caseData.getSupportingEvidenceDocumentsTemp(), caseDataBefore.getFurtherEvidenceDocumentsLA()
@@ -151,28 +195,31 @@ public class ManageDocumentsLAController extends CallbackController {
                 );
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY, updatedCorrespondenceDocuments);
                 break;
-            case C2:
-                List<Element<C2DocumentBundle>> updatedC2Documents =
-                    manageDocumentService.buildFinalC2SupportingDocuments(caseData);
-
-                caseDetailsMap.putIfNotEmpty(C2_DOCUMENTS_COLLECTION_KEY, updatedC2Documents);
+            case ADDITIONAL_APPLICATIONS_DOCUMENTS:
+                caseDetailsMap.putIfNotEmpty(
+                    manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData));
                 break;
             case COURT_BUNDLE:
                 caseDetailsMap.putIfNotEmpty(COURT_BUNDLE_LIST_KEY, manageDocumentLAService
                     .buildCourtBundleList(caseData));
-                break;
-            case APPLICATION:
-                caseDetailsMap.putIfNotEmpty(applicationDocumentsService.updateApplicationDocuments(
-                    caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()
-                ));
                 break;
         }
 
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_LA_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
-            COURT_BUNDLE_KEY);
+            COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENT_STATEMENT_LIST_KEY);
 
         return respond(caseDetailsMap);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest request) {
+        if (this.featureToggleService.isFurtherEvidenceUploadNotificationEnabled()) {
+            UserDetails userDetails = idamClient.getUserDetails(requestData.authorisation());
+
+            publishEvent(new FurtherEvidenceUploadedEvent(getCaseData(request), getCaseDataBefore(request),
+                true, userDetails));
+        }
     }
 }

@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.HearingNeedsBooked;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.hearing.HearingPresence;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
@@ -40,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @Data
 @Builder(toBuilder = true)
-@AllArgsConstructor
+@Jacksonized
 @HasEndDateAfterStartDate(groups = HearingBookingDetailsGroup.class)
 public class HearingBooking {
     private final HearingType type;
@@ -49,6 +50,7 @@ public class HearingBooking {
     private final String venue;
     private final String customPreviousVenue;
     private final Address venueCustomAddress;
+    private final HearingPresence presence;
     @TimeNotMidnight(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @Future(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime startDate;
@@ -66,7 +68,7 @@ public class HearingBooking {
     private UUID caseManagementOrderId;
     private DocumentReference noticeOfHearing;
     private final PreviousHearingVenue previousHearingVenue;
-    private final String cancellationReason;
+    private String cancellationReason;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
@@ -116,6 +118,7 @@ public class HearingBooking {
         return list;
     }
 
+    @JsonIgnore
     public boolean isOfType(HearingType hearingType) {
         return type == hearingType;
     }
@@ -133,5 +136,10 @@ public class HearingBooking {
     @JsonIgnore
     public boolean isToBeReListed() {
         return status == VACATED_TO_BE_RE_LISTED || status == ADJOURNED_TO_BE_RE_LISTED;
+    }
+
+    @JsonIgnore
+    public boolean isRemote() {
+        return HearingPresence.REMOTE == presence;
     }
 }

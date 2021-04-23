@@ -31,15 +31,23 @@ public class CaseAccessService {
     private final SystemUpdateUserConfiguration userConfig;
     private final OrganisationService organisationService;
 
+    //TO-DO remove once FPLA-2946 migration is done
+    public void grantCaseRoleToUsers(Long caseId, Set<String> userIds, CaseRole caseRole) {
+        grantCaseAccess(caseId, userIds, caseRole);
+        log.info("Users {} granted {} to case {}", userIds, caseRole, caseId);
+    }
+
     public void grantCaseRoleToUser(Long caseId, String userId, CaseRole caseRole) {
         grantCaseAccess(caseId, Set.of(userId), caseRole);
         log.info("User {} granted {} to case {}", userId, caseRole, caseId);
     }
 
-    public void grantCaseRoleToLocalAuthority(Long caseId, String localAuthority, CaseRole caseRole) {
-        Set<String> localAuthorityUsers = getUsers(caseId, localAuthority, caseRole);
-        grantCaseAccess(caseId, localAuthorityUsers, caseRole);
-        log.info("Users {} granted {} to case {}", localAuthorityUsers, caseRole, caseId);
+    public void grantCaseRoleToLocalAuthority(Long caseId, String creatorId, String localAuthority, CaseRole caseRole) {
+        Set<String> users = getLocalAuthorityUsers(caseId, localAuthority, caseRole);
+        users.add(creatorId);
+
+        grantCaseAccess(caseId, users, caseRole);
+        log.info("Users {} granted {} to case {}", users, caseRole, caseId);
     }
 
     public void revokeCaseRoleFromUser(Long caseId, String userId, CaseRole caseRole) {
@@ -87,7 +95,7 @@ public class CaseAccessService {
         }
     }
 
-    private Set<String> getUsers(Long caseId, String localAuthority, CaseRole caseRole) {
+    private Set<String> getLocalAuthorityUsers(Long caseId, String localAuthority, CaseRole caseRole) {
         try {
             return organisationService.findUserIdsInSameOrganisation(localAuthority);
         } catch (Exception e) {

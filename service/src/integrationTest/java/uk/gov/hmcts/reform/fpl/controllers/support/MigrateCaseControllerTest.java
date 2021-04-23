@@ -3,646 +3,137 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
-import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseNote;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.launchdarkly.shaded.com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
 class MigrateCaseControllerTest extends AbstractCallbackTest {
-
     MigrateCaseControllerTest() {
         super("migrate-case");
     }
 
     @Nested
-    class Fpla2724 {
-        String familyManNumber = "WR20C50007";
-        String migrationId = "FPLA-2724";
-        UUID orderToBeRemovedId = UUID.randomUUID();
-        UUID orderTwoId = UUID.randomUUID();
-        HearingOrder cmo = HearingOrder.builder()
-            .type(HearingOrderType.AGREED_CMO)
-            .title("Agreed CMO discussed at hearing")
-            .build();
-        UUID hearingOneId = UUID.randomUUID();
-        UUID hearingTwoId = UUID.randomUUID();
-
-        @Test
-        void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-            Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved,
-                additionalOrder);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(
-                element(hearingOneId, hearing(null)),
-                additionalHearing));
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-1111";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-            Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved,
-                additionalOrder);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
-            String incorrectFamilyManNumber = "LE30C500231";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-            Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved,
-                additionalOrder);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
-
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
-            List<Element<HearingBooking>> hearingBookings = newArrayList(newArrayList());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null,
-                hearingBookings);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No draft case management orders in the case");
-        }
-
-        private CaseDetails caseDetails(String migrationId,
-                                        String familyManNumber,
-                                        List<Element<HearingOrder>> draftCaseManagementOrders,
-                                        List<Element<HearingBooking>> hearingBookings) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManNumber)
-                .draftUploadedCMOs(draftCaseManagementOrders)
-                .hearingDetails(hearingBookings)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-
-        private HearingBooking hearing(UUID cmoId) {
-            return HearingBooking.builder()
-                .type(CASE_MANAGEMENT)
-                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                .caseManagementOrderId(cmoId)
-                .build();
-        }
-    }
-
-    @Nested
-    class Fpla2705 {
-        String familyManNumber = "SN20C50023";
-        String migrationId = "FPLA-2705";
-        UUID orderToBeRemovedId = UUID.randomUUID();
-        UUID orderTwoId = UUID.randomUUID();
-
-        HearingOrder cmo = HearingOrder.builder()
-            .type(HearingOrderType.AGREED_CMO)
-            .status(CMOStatus.SEND_TO_JUDGE)
-            .title("Agreed CMO discussed at hearing")
-            .build();
-
-        UUID hearingOneId = UUID.randomUUID();
-        UUID hearingTwoId = UUID.randomUUID();
-
-        @Test
-        void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
-
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-            Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved, additionalOrder);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(
-                element(hearingOneId, hearing(null)),
-                additionalHearing));
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-1111";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(orderToBeRemoved);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved);
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
-            String incorrectFamilyManNumber = "SE30C500231";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(orderToBeRemoved);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved);
-
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
-            List<Element<HearingBooking>> hearingBookings = newArrayList(newArrayList());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null,
-                hearingBookings);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No draft case management orders in the case");
-        }
-
-        private CaseDetails caseDetails(String migrationId,
-                                        String familyManNumber,
-                                        List<Element<HearingOrder>> draftCaseManagementOrders,
-                                        List<Element<HearingBooking>> hearingBookings) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManNumber)
-                .draftUploadedCMOs(draftCaseManagementOrders)
-                .hearingDetails(hearingBookings)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-
-        private HearingBooking hearing(UUID cmoId) {
-            return HearingBooking.builder()
-                .type(CASE_MANAGEMENT)
-                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                .caseManagementOrderId(cmoId)
-                .build();
-        }
-    }
-
-    @Nested
-    class Fpla2715 {
-        String familyManNumber = "CF20C50079";
-        String migrationId = "FPLA-2715";
-        UUID orderToBeRemovedId = UUID.randomUUID();
-        UUID orderTwoId = UUID.randomUUID();
-
-        HearingOrder cmo = HearingOrder.builder()
-            .type(HearingOrderType.AGREED_CMO)
-            .status(CMOStatus.SEND_TO_JUDGE)
-            .title("Agreed CMO discussed at hearing")
-            .build();
-
-        UUID hearingOneId = UUID.randomUUID();
-        UUID hearingTwoId = UUID.randomUUID();
-
-        @Test
-        void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
-
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-            Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved, additionalOrder);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(
-                element(hearingOneId, hearing(null)),
-                additionalHearing));
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-1111";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(orderToBeRemoved);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved);
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
-            String incorrectFamilyManNumber = "AB30C500231";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(orderToBeRemoved);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved);
-
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
-            List<Element<HearingBooking>> hearingBookings = newArrayList(newArrayList());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null,
-                hearingBookings);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No draft case management orders in the case");
-        }
-
-        private CaseDetails caseDetails(String migrationId,
-                                        String familyManNumber,
-                                        List<Element<HearingOrder>> draftCaseManagementOrders,
-                                        List<Element<HearingBooking>> hearingBookings) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManNumber)
-                .draftUploadedCMOs(draftCaseManagementOrders)
-                .hearingDetails(hearingBookings)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-
-        private HearingBooking hearing(UUID cmoId) {
-            return HearingBooking.builder()
-                .type(CASE_MANAGEMENT)
-                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                .caseManagementOrderId(cmoId)
-                .build();
-        }
-    }
-
-    @Nested
-    class Fpla2740 {
-        String familyManNumber = "ZW21C50002";
-        String migrationId = "FPLA-2740";
-
-        @Test
-        void shouldRemoveFirstCaseNote() {
-            Element<CaseNote> caseNoteToRemove = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
-
-            Element<CaseNote> caseNote2 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note2").createdBy("Test").build());
-
-            Element<CaseNote> caseNote3 = element(CaseNote.builder()
-                .date(LocalDate.now().minusDays(1)).note("note3").createdBy("Test").build());
-
-            Element<CaseNote> caseNote4 = element(CaseNote.builder()
-                .date(LocalDate.now().minusDays(2)).note("note4").createdBy("Test").build());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
-                newArrayList(caseNoteToRemove, caseNote2, caseNote3, caseNote4));
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getCaseNotes()).isEqualTo(List.of(caseNote2, caseNote3, caseNote4));
-        }
+    class Fpla2982 {
+        String migrationId = "FPLA-2982";
 
         @ParameterizedTest
-        @NullAndEmptySource
-        void shouldThrowExceptionWhenCaseDataDoesNotHaveCaseNotes(List<Element<CaseNote>> caseNotes) {
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, caseNotes);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Expected at least 4 case notes but found empty");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenCaseHaveLessThanExpectedCaseNotes() {
-            Element<CaseNote> caseNote1 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
-
-            Element<CaseNote> caseNote2 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note2").createdBy("Test").build());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
-                newArrayList(caseNote1, caseNote2));
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Expected at least 4 case notes but found 2");
-        }
-
-        @Test
-        void shouldThrowExceptionWhenCaseHaveMoreThanExpectedCaseNotes() {
-            Element<CaseNote> caseNote1 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
-
-            Element<CaseNote> caseNote2 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note2").createdBy("Test").build());
-
-            Element<CaseNote> caseNote3 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note3").createdBy("Test").build());
-
-            Element<CaseNote> caseNote4 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note4").createdBy("Test").build());
-
-            Element<CaseNote> caseNote5 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note5").createdBy("Test").build());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber,
-                newArrayList(caseNote1, caseNote2, caseNote3, caseNote4, caseNote5));
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Expected at least 4 case notes but found 5");
-        }
-
-        @Test
-        void shouldNotRemoveCaseNotesForTheIncorrectMigrationId() {
-            String incorrectMigrationId = "FPLA-2015";
-
-            Element<CaseNote> caseNote1 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
-
-            Element<CaseNote> caseNote2 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note2").createdBy("Test").build());
-
-            Element<CaseNote> caseNote3 = element(CaseNote.builder()
-                .date(LocalDate.now().minusDays(1)).note("note3").createdBy("Test").build());
-
-            Element<CaseNote> caseNote4 = element(CaseNote.builder()
-                .date(LocalDate.now().minusDays(2)).note("note4").createdBy("Test").build());
-
-            ArrayList<Element<CaseNote>> caseNotesList
-                = newArrayList(caseNote1, caseNote2, caseNote3, caseNote4);
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, caseNotesList);
+        @ValueSource(longs = {
+            1598429153622508L,
+            1615191831533551L,
+            1594384486007055L,
+            1601977974423857L,
+            1615571327261140L,
+            1615476016828466L,
+            1616507805759840L,
+            1610015759403189L,
+            1615994076934396L,
+            1611613172339094L,
+            1612440806991994L,
+            1607004182103389L,
+            1617045146450299L,
+            1612433400114865L,
+            1615890702114702L,
+            1610018233059619L})
+        void shouldMigrateMissingC2IdCase(Long caseId) {
+            CaseDetails caseDetails = caseDetails(migrationId,
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
+                    createOtherApplicationBundle(null))), caseId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getCaseNotes()).isEqualTo(caseNotesList);
+            assertThat(!extractedCaseData.getAdditionalApplicationsBundle().isEmpty());
+
+            extractedCaseData.getAdditionalApplicationsBundle()
+                .forEach(bundle -> assertThat(bundle.getValue().getC2DocumentBundle().getId() != null));
         }
 
         @Test
-        void shouldNotRemoveCaseNotesForTheIncorrectCaseReference() {
-            String incorrectFamilyManNumber = "ABC2150003";
+        void shouldThrowExceptionForInvalidCaseId() {
+            CaseDetails caseDetails = caseDetails(migrationId,
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                    null)), 1234L);
 
-            Element<CaseNote> caseNote1 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note1").createdBy("Moley").build());
-
-            Element<CaseNote> caseNote2 = element(CaseNote.builder()
-                .date(LocalDate.now()).note("note2").createdBy("Test").build());
-
-            Element<CaseNote> caseNote3 = element(CaseNote.builder()
-                .date(LocalDate.now().minusDays(1)).note("note3").createdBy("Test").build());
-
-            Element<CaseNote> caseNote4 = element(CaseNote.builder()
-                .date(LocalDate.now().minusDays(2)).note("note4").createdBy("Test").build());
-
-            ArrayList<Element<CaseNote>> caseNotesList
-                = newArrayList(caseNote1, caseNote2, caseNote3, caseNote4);
-
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, caseNotesList);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getCaseNotes()).isEqualTo(caseNotesList);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Invalid case Id");
         }
-
-        private CaseDetails caseDetails(String migrationId,
-                                        String familyManNumber,
-                                        List<Element<CaseNote>> caseNotes) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManNumber)
-                .caseNotes(caseNotes)
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-    }
-
-    @Nested
-    class Fpla2706 {
-        String familyManNumber = "CF20C50049";
-        String migrationId = "FPLA-2706";
-
-        UUID orderToBeRemovedId = UUID.randomUUID();
-        UUID orderTwoId = UUID.randomUUID();
-
-        HearingOrder cmo = HearingOrder.builder()
-            .type(HearingOrderType.DRAFT_CMO)
-            .status(CMOStatus.DRAFT)
-            .title("Draft CMO")
-            .build();
-
-        UUID hearingOneId = UUID.randomUUID();
-        UUID hearingTwoId = UUID.randomUUID();
 
         @Test
-        void shouldRemoveFirstDraftCaseManagementOrderAndUnlinkItsHearing() {
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingOrder> additionalOrder = element(orderTwoId, cmo);
+        void shouldThrowExceptionIfNoNullIdsFound() {
+            CaseDetails caseDetails = caseDetails(migrationId,
+                wrapElements(
+                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                        createOtherApplicationBundle(UUID.randomUUID())),
+                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
+                        null),
+                    createAdditionalApplicationBundle(null,
+                        createOtherApplicationBundle(UUID.randomUUID()))
+                ), 1601977974423857L);
 
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-            Element<HearingBooking> additionalHearing = element(hearingTwoId, hearing(orderTwoId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(
-                orderToBeRemoved, additionalOrder);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved, additionalHearing);
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(List.of(additionalOrder));
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(List.of(
-                element(hearingOneId, hearing(null)),
-                additionalHearing));
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
         }
 
         @Test
         void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-1111";
+            String incorrectMigrationId = "FPLA-9876";
 
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(orderToBeRemoved);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved);
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId, familyManNumber, draftCaseManagementOrders,
-                hearingBookings);
+            CaseDetails caseDetails = caseDetails(incorrectMigrationId,
+                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
+                    createOtherApplicationBundle(null))), 1615890702114702L);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
+            assertThat(!extractedCaseData.getAdditionalApplicationsBundle().isEmpty());
+
+            extractedCaseData.getAdditionalApplicationsBundle()
+                .forEach(bundle -> assertThat(bundle.getValue().getC2DocumentBundle().getId() == null));
         }
 
-        @Test
-        void shouldNotChangeCaseIfNotExpectedCaseNumber() {
-            String incorrectFamilyManNumber = "SE30C500231";
-
-            Element<HearingOrder> orderToBeRemoved = element(orderToBeRemovedId, cmo);
-            Element<HearingBooking> hearingToBeRemoved = element(hearingOneId, hearing(orderToBeRemovedId));
-
-            List<Element<HearingOrder>> draftCaseManagementOrders = newArrayList(orderToBeRemoved);
-
-            List<Element<HearingBooking>> hearingBookings = newArrayList(hearingToBeRemoved);
-
-            CaseDetails caseDetails = caseDetails(migrationId, incorrectFamilyManNumber, draftCaseManagementOrders,
-                hearingBookings);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getDraftUploadedCMOs()).isEqualTo(draftCaseManagementOrders);
-            assertThat(extractedCaseData.getHearingDetails()).isEqualTo(hearingBookings);
+        private C2DocumentBundle createC2DocumentBundle(UUID id) {
+            return C2DocumentBundle.builder().id(id).build();
         }
 
-        @Test
-        void shouldThrowAnExceptionIfCaseDoesNotContainDraftCaseManagementOrders() {
-            List<Element<HearingBooking>> hearingBookings = newArrayList(newArrayList());
-
-            CaseDetails caseDetails = caseDetails(migrationId, familyManNumber, null,
-                hearingBookings);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No draft case management orders in the case");
+        private OtherApplicationsBundle createOtherApplicationBundle(UUID id) {
+            return OtherApplicationsBundle.builder().id(id).build();
         }
 
+        private AdditionalApplicationsBundle createAdditionalApplicationBundle(
+            C2DocumentBundle c2DocumentBundle,
+            OtherApplicationsBundle otherApplicationsBundle) {
+            return AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(c2DocumentBundle)
+                .otherApplicationsBundle(otherApplicationsBundle)
+                .build();
+        }
 
         private CaseDetails caseDetails(String migrationId,
-                                        String familyManNumber,
-                                        List<Element<HearingOrder>> draftCaseManagementOrders,
-                                        List<Element<HearingBooking>> hearingBookings) {
+                                        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle,
+                                        Long caseId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .familyManCaseNumber(familyManNumber)
-                .draftUploadedCMOs(draftCaseManagementOrders)
-                .hearingDetails(hearingBookings)
+                .additionalApplicationsBundle(additionalApplicationsBundle)
+                .id(caseId)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
-        }
-
-        private HearingBooking hearing(UUID cmoId) {
-            return HearingBooking.builder()
-                .type(CASE_MANAGEMENT)
-                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                .caseManagementOrderId(cmoId)
-                .build();
         }
     }
 }

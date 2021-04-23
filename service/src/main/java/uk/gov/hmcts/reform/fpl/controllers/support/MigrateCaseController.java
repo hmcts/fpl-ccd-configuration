@@ -13,12 +13,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
-import uk.gov.hmcts.reform.fpl.service.removeorder.DraftCMORemovalAction;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Api
 @RestController
@@ -27,99 +31,80 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final ConfidentialDocumentsSplitter splitter;
-    private final DraftCMORemovalAction draftCMORemovalAction;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2724".equals(migrationId)) {
-            run2724(caseDetails);
-        }
-
-        if ("FPLA-2705".equals(migrationId)) {
-            run2705(caseDetails);
-        }
-
-        if ("FPLA-2706".equals(migrationId)) {
-            run2706(caseDetails);
-        }
-
-        if ("FPLA-2715".equals(migrationId)) {
-            run2715(caseDetails);
-        }
-
-        if ("FPLA-2740".equals(migrationId)) {
-            run2740(caseDetails);
+        if ("FPLA-2982".equals(migrationId)) {
+            run2982(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2715(CaseDetails caseDetails) {
+    private void run2982(CaseDetails caseDetails) {
+        final List<Long> validCases = List.of(
+            1598429153622508L,
+            1615191831533551L,
+            1594384486007055L,
+            1601977974423857L,
+            1615571327261140L,
+            1615476016828466L,
+            1616507805759840L,
+            1610015759403189L,
+            1615994076934396L,
+            1611613172339094L,
+            1612440806991994L,
+            1607004182103389L,
+            1617045146450299L,
+            1612433400114865L,
+            1615890702114702L,
+            1610018233059619L
+        );
+
         CaseData caseData = getCaseData(caseDetails);
 
-        if ("CF20C50079".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
+        if (!validCases.contains(caseData.getId())) {
+            throw new IllegalArgumentException("Invalid case Id");
         }
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+            caseData.getAdditionalApplicationsBundle();
+
+        if (additionalApplicationsBundle.stream()
+            .noneMatch(this::checkNullIds)) {
+            throw new IllegalArgumentException("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
+        }
+
+        List<Element<AdditionalApplicationsBundle>> fixedAdditionalApplicationsBundle =
+            additionalApplicationsBundle.stream().map(this::fixMissingIds).collect(Collectors.toList());
+
+        caseDetails.getData().put("additionalApplicationsBundle", fixedAdditionalApplicationsBundle);
     }
 
-    private void run2740(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+    private boolean checkNullIds(Element<AdditionalApplicationsBundle> documentBundle) {
+        AdditionalApplicationsBundle value = documentBundle.getValue();
+        C2DocumentBundle c2DocumentBundle = value.getC2DocumentBundle();
+        OtherApplicationsBundle otherApplicationsBundle = value.getOtherApplicationsBundle();
 
-        if ("ZW21C50002".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstCaseNotes(caseDetails);
-        }
+        return (!isNull(c2DocumentBundle) && isNull(c2DocumentBundle.getId()))
+            || (!isNull(otherApplicationsBundle) && isNull(otherApplicationsBundle.getId()));
     }
 
-    private void run2706(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
+    private Element<AdditionalApplicationsBundle> fixMissingIds(Element<AdditionalApplicationsBundle> bundle) {
+        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
+        OtherApplicationsBundle otherApplicationsBundle = bundle.getValue().getOtherApplicationsBundle();
 
-        if ("CF20C50049".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void run2724(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("WR20C50007".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void run2705(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if ("SN20C50023".equals(caseData.getFamilyManCaseNumber())) {
-            removeFirstDraftCaseManagementOrder(caseDetails);
-        }
-    }
-
-    private void removeFirstDraftCaseManagementOrder(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (isEmpty(caseData.getDraftUploadedCMOs())) {
-            throw new IllegalArgumentException("No draft case management orders in the case");
+        if (!isNull(c2DocumentBundle) && isNull(c2DocumentBundle.getId())) {
+            bundle.getValue().getC2DocumentBundle().setId(UUID.randomUUID());
         }
 
-        Element<HearingOrder> firstDraftCmo = caseData.getDraftUploadedCMOs().get(0);
-
-        draftCMORemovalAction.removeDraftCaseManagementOrder(caseData, caseDetails, firstDraftCmo);
-    }
-
-    private void removeFirstCaseNotes(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (isEmpty(caseData.getCaseNotes()) || caseData.getCaseNotes().size() != 4) {
-            throw new IllegalArgumentException(String.format("Expected at least 4 case notes but found %s",
-                isEmpty(caseData.getCaseNotes()) ? "empty" : caseData.getCaseNotes().size()));
+        if (!isNull(otherApplicationsBundle) && isNull(otherApplicationsBundle.getId())) {
+            bundle.getValue().getOtherApplicationsBundle().setId(UUID.randomUUID());
         }
-
-        caseData.getCaseNotes().remove(0);
-        caseDetails.getData().put("caseNotes", caseData.getCaseNotes());
+        return bundle;
     }
 }

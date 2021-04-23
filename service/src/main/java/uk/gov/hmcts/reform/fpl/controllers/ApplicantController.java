@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.apache.logging.log4j.util.Strings.isEmpty;
-
 @Api
 @RestController
 @RequestMapping("/callback/enter-applicant")
@@ -69,7 +67,9 @@ public class ApplicantController extends CallbackController {
         List<String> errors = validateEmailService.validate(applicantEmails, "Applicant");
 
         String solicitorEmail = caseData.getSolicitor().getEmail();
-        validateSolicitorEmail(solicitorEmail, errors);
+        validateEmailService.validate(solicitorEmail,
+            "Solicitor: Enter an email address in the correct format,"
+                + " for example name@example.com").ifPresent(errors::add);
 
         List<String> pbaErrors = pbaNumberService.validate(updatedApplicants);
 
@@ -122,16 +122,5 @@ public class ApplicantController extends CallbackController {
             .map(ApplicantParty::getEmail)
             .map(EmailAddress::getEmail)
             .collect(Collectors.toList());
-    }
-
-    private void validateSolicitorEmail(String solicitorEmail, List<String> errors) {
-        if (!isEmpty(solicitorEmail)) {
-            Optional<String> error = validateEmailService.validate(solicitorEmail,
-                "Solicitor: Enter an email address in the correct format,"
-                    + " for example name@example.com");
-            if (!error.isEmpty()) {
-                errors.add(error.get());
-            }
-        }
     }
 }

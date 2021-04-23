@@ -1,220 +1,191 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.COURT_SEAL;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisImages.CREST;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.HearingType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {NoticeOfHearingGenerationService.class})
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, CaseDataExtractionService.class, HearingVenueLookUpService.class,
-    LookupTestConfig.class, FixedTimeConfiguration.class
-})
 class NoticeOfHearingGenerationServiceTest {
 
-    private static final String HEARING_DATE_AND_TIME_FORMAT = "d MMMM, h:mma";
-    private static final String HEARING_TIME_FORMAT = "h:mma";
+    private static final String NOTES = "Notes";
+    private static final String FAMILY_MAN_CASE_NUMBER = "12345";
 
-    @Autowired
-    NoticeOfHearingGenerationService service;
+    private static final HearingBooking HEARING = mock(HearingBooking.class);
+    private static final List<Element<Child>> CHILDREN = wrapElements(mock(Child.class));
+    private static final JudgeAndLegalAdvisor JUDGE_AND_LA = mock(JudgeAndLegalAdvisor.class);
 
-    @MockBean
-    DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private static final List<DocmosisChild> DOCMOSIS_CHILDREN = List.of(
+        DocmosisChild.builder()
+            .name("Tom Stevens")
+            .dateOfBirth("10 March 2012")
+            .gender("Male")
+            .build()
+    );
+    private static final DocmosisJudgeAndLegalAdvisor DOCMOSIS_JUDGE_AND_LA = DocmosisJudgeAndLegalAdvisor.builder()
+        .judgeTitleAndName("Her Honour Judge Law")
+        .legalAdvisorName("Watson")
+        .build();
+    private static final long CASE_NUMBER = 1234123412341234L;
+    private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
-    @MockBean
-    UploadDocumentService uploadDocumentService;
+    private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
+    private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 3, 3, 3));
+    private final CaseDataExtractionService dataExtractionService = mock(CaseDataExtractionService.class);
+    private final CaseDetailsHelper caseDetailsHelper = mock(CaseDetailsHelper.class);
 
-    @Test
-    void shouldBuildExpectedTemplateDataWithHearingTimeWhenHearingStartAndEndDateDiffer() {
-        LocalDateTime now = LocalDateTime.now();
+    private final NoticeOfHearingGenerationService underTest = new NoticeOfHearingGenerationService(
+        dataExtractionService, courtLookup, caseDetailsHelper, time
+    );
 
-        CaseData caseData = buildCaseData(now.toLocalDate());
-        HearingBooking hearingBooking = buildHearingBooking(now, now.plusDays(1));
-        final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
+    @BeforeEach
+    void mocks() {
+        when(JUDGE_AND_LA.isUsingAllocatedJudge()).thenReturn(false);
 
-        DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
-            .hearingBooking(getDocmosisHearingBookingBuilder()
-                .hearingTime(String.format("%s - %s",
-                    formatLocalDateTime(hearingBooking.getStartDate(), HEARING_DATE_AND_TIME_FORMAT),
-                    formatLocalDateTime(hearingBooking.getEndDate(), HEARING_DATE_AND_TIME_FORMAT)))
-                .preHearingAttendance(formatLocalDateTime(now.minusHours(1), DATE_TIME))
-                .hearingDate("")
-                .build());
+        when(HEARING.getAdditionalNotes()).thenReturn(NOTES);
+        when(HEARING.getJudgeAndLegalAdvisor()).thenReturn(JUDGE_AND_LA);
 
-        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
-
-        assertThat(actualDocmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
+        when(dataExtractionService.getChildrenDetails(CHILDREN)).thenReturn(DOCMOSIS_CHILDREN);
+        when(dataExtractionService.getJudgeAndLegalAdvisor(JUDGE_AND_LA)).thenReturn(DOCMOSIS_JUDGE_AND_LA);
+        when(dataExtractionService.getHearingBookingData(HEARING)).thenReturn(
+            DocmosisHearingBooking.builder()
+                .hearingDate("11 March 2021")
+                .hearingTime("2:00pm - 4:30pm")
+                .hearingVenue("somewhere")
+                .preHearingAttendance("1:00pm")
+                .hearingJudgeTitleAndName("should be removed")
+                .hearingLegalAdvisorName("should also be removed")
+                .build()
+        );
+        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
     }
 
     @Test
-    void shouldBuildExpectedTemplateDataWithHearingDateAndTimeWhenHearingStartAndEndDateAreTheSame() {
-        LocalDateTime now = LocalDateTime.now();
+    void shouldBuildExpectedTemplateDataWithStandardHearingType() {
+        when(HEARING.getType()).thenReturn(CASE_MANAGEMENT);
 
-        CaseData caseData = buildCaseData(now.toLocalDate());
-        HearingBooking hearingBooking = buildHearingBooking(now, now);
-        final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
-        DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
-            .hearingBooking(getDocmosisHearingBookingBuilder()
-                .hearingDate(formatLocalDateTime(now, DATE))
-                .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
-                .hearingTime(String.format("%s - %s",
-                    formatLocalDateTime(now, HEARING_TIME_FORMAT),
-                    formatLocalDateTime(now, HEARING_TIME_FORMAT)))
-                .build());
+        CaseData caseData = getCaseData();
 
-        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
+        DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
 
-        assertThat(actualDocmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
+        DocmosisNoticeOfHearing expectedTemplateData = getExpectedNoticeOfHearingTemplate(
+            "case management", DOCMOSIS_JUDGE_AND_LA
+        );
+
+        assertThat(templateData).isEqualTo(expectedTemplateData);
     }
 
     @Test
-    void shouldBuildExpectedTemplateDataWhenHearingVenueIsCustomPreviousVenue() {
-        LocalDateTime now = LocalDateTime.now();
+    void shouldBuildExpectedTemplateDataWithOtherHearingType() {
+        when(HEARING.getType()).thenReturn(OTHER);
+        when(HEARING.getTypeDetails()).thenReturn("some different type of hearing");
 
-        CaseData caseData = buildCaseData(now.toLocalDate());
-        HearingBooking hearingBooking = buildHearingBooking(now, now).toBuilder()
-            .venue("OTHER")
-            .venueCustomAddress(null)
-            .customPreviousVenue("Custom House, Custom Street")
+        CaseData caseData = getCaseData();
+
+        DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
+
+        DocmosisNoticeOfHearing expectedTemplateData = getExpectedNoticeOfHearingTemplate(
+            "some different type of hearing", DOCMOSIS_JUDGE_AND_LA
+        );
+
+        assertThat(templateData).isEqualTo(expectedTemplateData);
+    }
+
+    @Test
+    void shouldBuildExpectedTemplateDataWithAllocatedJudge() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Judy")
             .build();
 
-        final DocmosisNoticeOfHearing actualDocmosisNoticeOfHearing = service.getTemplateData(caseData, hearingBooking);
-        DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder docmosisNoticeOfHearingBuilder
-            = getDocmosisNoticeOfHearingBuilder(now.toLocalDate())
-            .hearingBooking(getDocmosisHearingBookingBuilder()
-                .hearingVenue("Custom House, Custom Street")
-                .hearingDate(formatLocalDateTime(now, DATE))
-                .preHearingAttendance(formatLocalDateTime(now.minusHours(1), "h:mma"))
-                .hearingTime(String.format("%s - %s",
-                    formatLocalDateTime(now, HEARING_TIME_FORMAT),
-                    formatLocalDateTime(now, HEARING_TIME_FORMAT)))
-                .build());
-
-        DocmosisNoticeOfHearing expectedDocmosisNoticeOfHearing = docmosisNoticeOfHearingBuilder.build();
-
-        assertThat(actualDocmosisNoticeOfHearing).isEqualToComparingFieldByField(expectedDocmosisNoticeOfHearing);
-    }
-
-    private DocmosisNoticeOfHearing.DocmosisNoticeOfHearingBuilder getDocmosisNoticeOfHearingBuilder(
-        LocalDate dateOfBirth) {
-        return DocmosisNoticeOfHearing.builder()
-            .familyManCaseNumber("12345")
-            .courtName(DEFAULT_LA_COURT)
-            .children(getExpectedDocmosisChildren(dateOfBirth))
-            .hearingBooking(getDocmosisHearingBookingBuilder().build())
-            .judgeAndLegalAdvisor(getExpectedDocmosisJudgeAndLegalAdvisor())
-            .postingDate(formatLocalDateToString(LocalDate.now(), DATE))
-            .additionalNotes("additional note")
-            .courtseal(COURT_SEAL.getValue())
-            .crest(CREST.getValue());
-    }
-
-    private HearingBooking buildHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
-        return HearingBooking.builder()
-            .type(CASE_MANAGEMENT)
-            .startDate(startDate)
-            .venue("Venue")
-            .endDate(endDate)
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Law")
-                .legalAdvisorName("Watson")
-                .build())
-            .additionalNotes("additional note")
+        JudgeAndLegalAdvisor selectedJudgeAndLA = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HER_HONOUR_JUDGE)
+            .judgeLastName("Judy")
             .build();
-    }
 
-    private List<DocmosisChild> getExpectedDocmosisChildren(LocalDate dateOfBirth) {
-        return List.of(
-            DocmosisChild.builder()
-                .name("Tom Stevens")
-                .dateOfBirth(formatLocalDateToString(dateOfBirth, FormatStyle.LONG))
-                .gender("Male")
-                .build(),
-            DocmosisChild.builder()
-                .name("Sarah Stevens")
-                .dateOfBirth(formatLocalDateToString(dateOfBirth.minusDays(2), FormatStyle.LONG))
-                .gender("Female")
-                .build());
-    }
-
-    private DocmosisJudgeAndLegalAdvisor getExpectedDocmosisJudgeAndLegalAdvisor() {
-        return DocmosisJudgeAndLegalAdvisor.builder()
+        DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLA = DocmosisJudgeAndLegalAdvisor.builder()
+            .judgeTitleAndName("Her Honour Judge Judy")
             .legalAdvisorName("Watson")
-            .judgeTitleAndName("Her Honour Judge Law")
+            .build();
+
+        when(HEARING.getType()).thenReturn(CASE_MANAGEMENT);
+        when(JUDGE_AND_LA.isUsingAllocatedJudge()).thenReturn(true);
+        when(dataExtractionService.getJudgeAndLegalAdvisor(selectedJudgeAndLA)).thenReturn(docmosisJudgeAndLA);
+
+        CaseData caseData = getCaseData(allocatedJudge);
+
+        DocmosisNoticeOfHearing templateData = underTest.getTemplateData(caseData, HEARING);
+
+        DocmosisNoticeOfHearing expectedTemplateData = getExpectedNoticeOfHearingTemplate(
+            "case management", docmosisJudgeAndLA
+        );
+
+        assertThat(templateData).isEqualTo(expectedTemplateData);
+
+    }
+
+    private CaseData getCaseData() {
+        return getCaseData(null);
+    }
+
+    private CaseData getCaseData(Judge allocatedJudge) {
+        return CaseData.builder()
+            .id(CASE_NUMBER)
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .children1(CHILDREN)
+            .allocatedJudge(allocatedJudge)
+            .judgeAndLegalAdvisor(JUDGE_AND_LA)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .hearingDetails(wrapElements(HEARING))
             .build();
     }
 
-    private DocmosisHearingBooking.DocmosisHearingBookingBuilder getDocmosisHearingBookingBuilder() {
-        return DocmosisHearingBooking.builder()
-            .hearingType(CASE_MANAGEMENT.getLabel().toLowerCase())
-            .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
-    }
-
-    private CaseData buildCaseData(LocalDate dateOfBirth) {
-        return CaseData.builder()
-            .familyManCaseNumber("12345")
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .children1(wrapElements(
-                Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Tom")
-                        .lastName("Stevens")
-                        .dateOfBirth(dateOfBirth)
-                        .gender("Male")
-                        .build())
-                    .build(),
-                Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sarah")
-                        .lastName("Stevens")
-                        .dateOfBirth(dateOfBirth.minusDays(2))
-                        .gender("Female")
-                        .build())
-                    .build()
-            )).build();
-    }
-
-    private String formatLocalDateTime(LocalDateTime dateTime, String format) {
-        return formatLocalDateTimeBaseUsingFormat(dateTime, format);
+    private DocmosisNoticeOfHearing getExpectedNoticeOfHearingTemplate(String hearingType,
+                                                                       DocmosisJudgeAndLegalAdvisor judgeAndLA) {
+        return DocmosisNoticeOfHearing.builder()
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
+            .children(DOCMOSIS_CHILDREN)
+            .hearingBooking(
+                DocmosisHearingBooking.builder()
+                    .hearingDate("11 March 2021")
+                    .hearingTime("2:00pm - 4:30pm")
+                    .hearingVenue("somewhere")
+                    .preHearingAttendance("1:00pm")
+                    .hearingType(hearingType)
+                    .build())
+            .judgeAndLegalAdvisor(judgeAndLA)
+            .postingDate("3 March 2021")
+            .additionalNotes(NOTES)
+            .courtName(DEFAULT_LA_COURT)
+            .courtseal("[userImage:familycourtseal.png]")
+            .crest("[userImage:crest.png]")
+            .build();
     }
 }

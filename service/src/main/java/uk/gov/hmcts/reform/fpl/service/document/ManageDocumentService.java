@@ -4,14 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.exceptions.NoHearingBookingException;
+import uk.gov.hmcts.reform.fpl.exceptions.RespondentNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -27,11 +35,12 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
@@ -55,38 +64,31 @@ public class ManageDocumentService {
     public static final String MANAGE_DOCUMENTS_HEARING_LABEL_KEY = "manageDocumentsHearingLabel";
     public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
+    public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
 
-    public Map<String, Object> initialiseManageDocumentEvent(CaseData caseData, String caseFieldKey) {
-        Map<String, Object> listAndLabel = new HashMap<>();
-        String hasHearings;
-        String hasC2s;
+    public Map<String, Object> baseEventData(CaseData caseData) {
+        Map<String, Object> eventData = new HashMap<>();
 
-        if (caseData.getHearingDetails() != null && !caseData.getHearingDetails().isEmpty()) {
-            listAndLabel.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
-            //only relevant for LA event
-            listAndLabel.put(COURT_BUNDLE_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+        YesNo hasHearings = YesNo.from(isNotEmpty(caseData.getHearingDetails()));
+        YesNo hasC2s = YesNo.from(caseData.hasApplicationBundles());
 
-            hasHearings = YES.getValue();
-        } else {
-            hasHearings = NO.getValue();
-        }
-
-        //If toggle not on, replicate old behaviour (always show C2 list, even if empty)
-        if (caseData.hasC2DocumentBundle()) {
-            listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList());
-            hasC2s = YES.getValue();
-        } else {
-            hasC2s = NO.getValue();
-        }
-
-        ManageDocument manageDocument = ManageDocument.builder()
-            .hasHearings(hasHearings)
-            .hasC2s(hasC2s)
+        ManageDocument manageDocument = defaultIfNull(caseData.getManageDocument(), ManageDocument.builder().build())
+            .toBuilder()
+            .hasHearings(hasHearings.getValue())
+            .hasC2s(hasC2s.getValue())
             .build();
 
-        listAndLabel.put(caseFieldKey, manageDocument);
+        eventData.put(MANAGE_DOCUMENT_KEY, manageDocument);
 
-        return listAndLabel;
+        if (hasHearings == YES) {
+            eventData.put(MANAGE_DOCUMENTS_HEARING_LIST_KEY, caseData.buildDynamicHearingList());
+        }
+
+        if (hasC2s == YES) {
+            eventData.put(SUPPORTING_C2_LIST_KEY, caseData.buildApplicationBundlesDynamicList());
+        }
+
+        return eventData;
     }
 
     public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData, boolean relatedToHearing) {
@@ -107,20 +109,19 @@ public class ManageDocumentService {
         return listAndLabel;
     }
 
-    public Map<String, Object> initialiseC2DocumentListAndLabel(CaseData caseData) {
+    public Map<String, Object> initialiseApplicationBundlesListAndLabel(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-        UUID selectedC2DocumentId = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
-        List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle();
+        UUID selectedBundleId = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
+        List<Element<ApplicationsBundle>> applicationsBundles = caseData.getAllApplicationsBundles();
 
-        for (int i = 0; i < c2DocumentBundle.size(); i++) {
-            if (c2DocumentBundle.get(i).getId().equals(selectedC2DocumentId)) {
-                listAndLabel.put(SUPPORTING_C2_LABEL, c2DocumentBundle.get(i).getValue().toLabel(i + 1));
-                break;
-            }
-        }
+        Element<ApplicationsBundle> selectedBundle = applicationsBundles.stream()
+            .filter(bundle -> selectedBundleId.equals(bundle.getId()))
+            .findFirst().orElseThrow(() -> new IllegalArgumentException(
+                "No application bundle found for the selected bundle id, " + selectedBundleId.toString()));
 
-        listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildC2DocumentDynamicList(selectedC2DocumentId));
+        listAndLabel.put(SUPPORTING_C2_LABEL, selectedBundle.getValue().toLabel());
+        listAndLabel.put(SUPPORTING_C2_LIST_KEY, caseData.buildApplicationBundlesDynamicList(selectedBundleId));
 
         return listAndLabel;
     }
@@ -137,21 +138,26 @@ public class ManageDocumentService {
                 Optional<Element<HearingFurtherEvidenceBundle>> bundle = findElement(selectedHearingId, bundles);
 
                 if (bundle.isPresent()) {
-                    return getUserSpecificSupportingEvidences(bundle.get().getValue().getSupportingEvidenceBundle());
+                    List<Element<SupportingEvidenceBundle>> evidenceBundle
+                        = bundle.get().getValue().getSupportingEvidenceBundle();
+
+                    setDefaultEvidenceType(evidenceBundle);
+                    return getUserSpecificSupportingEvidences(evidenceBundle);
                 }
             }
-        } else if (unrelatedEvidence != null) {
+        } else if (isNotEmpty(unrelatedEvidence)) {
+            setDefaultEvidenceType(unrelatedEvidence);
             return unrelatedEvidence;
         }
 
         return defaultSupportingEvidences();
     }
 
-    public List<Element<SupportingEvidenceBundle>> getC2SupportingEvidenceBundle(CaseData caseData) {
+    public List<Element<SupportingEvidenceBundle>> getApplicationsSupportingEvidenceBundles(CaseData caseData) {
         UUID selectedC2 = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
-        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selectedC2);
+        ApplicationsBundle selectedBundle = caseData.getApplicationBundleByUUID(selectedC2);
 
-        return getUserSpecificSupportingEvidences(c2DocumentBundle.getSupportingEvidenceBundle());
+        return getUserSpecificSupportingEvidences(selectedBundle.getSupportingEvidenceBundle());
     }
 
     public List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundle(
@@ -234,28 +240,71 @@ public class ManageDocumentService {
         return updatedBundles;
     }
 
-    public List<Element<C2DocumentBundle>> buildFinalC2SupportingDocuments(CaseData caseData) {
+    public Map<String, Object> buildFinalApplicationBundleSupportingDocuments(CaseData caseData) {
+        HashMap<String, Object> data = new HashMap<>();
         UUID selected = getDynamicListSelectedValue(caseData.getManageDocumentsSupportingC2List(), mapper);
 
-        C2DocumentBundle c2DocumentBundle = caseData.getC2DocumentBundleByUUID(selected);
+        if (caseData.getC2DocumentBundleByUUID(selected) != null) {
+            data.put(C2_DOCUMENTS_COLLECTION_KEY, updatedC2DocumentBundle(caseData, selected));
+        } else {
+            data.put(ADDITIONAL_APPLICATIONS_BUNDLE_KEY,
+                updateAdditionalDocumentsBundle(caseData, selected));
+        }
+        return data;
+    }
 
-        List<Element<SupportingEvidenceBundle>> modifiedEvidence =
-            setDateTimeUploadedOnSupportingEvidence(caseData.getSupportingEvidenceDocumentsTemp(),
-                c2DocumentBundle.getSupportingEvidenceBundle());
+    private List<Element<AdditionalApplicationsBundle>> updateAdditionalDocumentsBundle(
+        CaseData caseData, UUID selectedBundleId) {
 
+        List<Element<AdditionalApplicationsBundle>> applicationsBundles = caseData.getAdditionalApplicationsBundle();
+
+        for (Element<AdditionalApplicationsBundle> element : applicationsBundles) {
+            C2DocumentBundle c2DocumentBundle = element.getValue().getC2DocumentBundle();
+            OtherApplicationsBundle otherApplicationsBundle = element.getValue().getOtherApplicationsBundle();
+
+            if (!isNull(c2DocumentBundle) && selectedBundleId.equals(c2DocumentBundle.getId())) {
+
+                List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
+                    c2DocumentBundle.getSupportingEvidenceBundle(),
+                    caseData.getSupportingEvidenceDocumentsTemp());
+
+                c2DocumentBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
+            } else if (!isNull(otherApplicationsBundle) && selectedBundleId.equals(otherApplicationsBundle.getId())) {
+
+                List<Element<SupportingEvidenceBundle>> updatedSupportingDocuments = updateSupportingEvidenceBundle(
+                    otherApplicationsBundle.getSupportingEvidenceBundle(),
+                    caseData.getSupportingEvidenceDocumentsTemp());
+
+                otherApplicationsBundle.setSupportingEvidenceBundle(updatedSupportingDocuments);
+            }
+        }
+        return applicationsBundles;
+    }
+
+    private List<Element<C2DocumentBundle>> updatedC2DocumentBundle(CaseData caseData, UUID selected) {
         List<Element<C2DocumentBundle>> c2Bundles = caseData.getC2DocumentBundle();
+
         for (Element<C2DocumentBundle> element : c2Bundles) {
             if (selected.equals(element.getId())) {
-                List<Element<SupportingEvidenceBundle>> existingEvidence
-                    = new ArrayList<>(element.getValue().getSupportingEvidenceBundle());
-
-                updateExistingEvidenceWithChanges(existingEvidence, modifiedEvidence);
-                sortByDateUploaded(existingEvidence);
-
-                element.getValue().setSupportingEvidenceBundle(existingEvidence);
+                List<Element<SupportingEvidenceBundle>> updatedBundle = updateSupportingEvidenceBundle(
+                    element.getValue().getSupportingEvidenceBundle(), caseData.getSupportingEvidenceDocumentsTemp());
+                element.getValue().setSupportingEvidenceBundle(updatedBundle);
             }
         }
         return c2Bundles;
+    }
+
+    private List<Element<SupportingEvidenceBundle>> updateSupportingEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> existingSupportingEvidenceBundle,
+        List<Element<SupportingEvidenceBundle>> updatedSupportingEvidenceBundle
+    ) {
+        List<Element<SupportingEvidenceBundle>> modifiedEvidence = setDateTimeUploadedOnSupportingEvidence(
+            updatedSupportingEvidenceBundle, existingSupportingEvidenceBundle);
+
+        updateExistingEvidenceWithChanges(existingSupportingEvidenceBundle, modifiedEvidence);
+        sortByDateUploaded(existingSupportingEvidenceBundle);
+
+        return existingSupportingEvidenceBundle;
     }
 
     public List<Element<SupportingEvidenceBundle>> setDateTimeOnHearingFurtherEvidenceSupportingEvidence(
@@ -274,6 +323,45 @@ public class ManageDocumentService {
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
+    public List<Element<SupportingEvidenceBundle>> getRespondentStatementFurtherEvidenceCollection(CaseData caseData,
+                                                                                                   UUID id) {
+        return caseData.getRespondentStatementByRespondentId(id)
+            .map(Element::getValue)
+            .map(RespondentStatement::getSupportingEvidenceBundle)
+            .orElse(defaultSupportingEvidences());
+    }
+
+    public List<Element<RespondentStatement>> getUpdatedRespondentStatements(CaseData caseData) {
+        List<Element<RespondentStatement>> respondentStatementDocuments = caseData.getRespondentStatements();
+        UUID selectedRespondentId = getSelectedRespondentId(caseData);
+        String respondentFullName = getRespondentFullName(caseData, selectedRespondentId);
+        List<Element<SupportingEvidenceBundle>> newBundle = caseData.getSupportingEvidenceDocumentsTemp();
+
+        Element<RespondentStatement> respondentStatement
+            = caseData.getRespondentStatementByRespondentId(selectedRespondentId)
+            .orElseGet(() -> {
+                Element<RespondentStatement> newRespondentStatement = element(RespondentStatement.builder()
+                    .respondentId(selectedRespondentId)
+                    .respondentName(respondentFullName)
+                    .build());
+
+                respondentStatementDocuments.add(newRespondentStatement);
+                return newRespondentStatement;
+            });
+
+        if (newBundle.isEmpty()) {
+            respondentStatementDocuments.remove(respondentStatement);
+        } else {
+            respondentStatement.getValue().setSupportingEvidenceBundle(newBundle);
+        }
+
+        return respondentStatementDocuments;
+    }
+
+    public UUID getSelectedRespondentId(CaseData caseData) {
+        return getDynamicListSelectedValue(caseData.getRespondentStatementList(), mapper);
+    }
+
     // Separate collection based on idam role (only show users their own documents)
     private List<Element<SupportingEvidenceBundle>> getUserSpecificSupportingEvidences(
         List<Element<SupportingEvidenceBundle>> bundles) {
@@ -289,6 +377,13 @@ public class ManageDocumentService {
             .collect(Collectors.toList());
 
         return isEmpty(supportingEvidences) ? defaultSupportingEvidences() : supportingEvidences;
+    }
+
+    private void setDefaultEvidenceType(List<Element<SupportingEvidenceBundle>> unrelatedEvidence) {
+        unrelatedEvidence.stream()
+            .map(Element::getValue)
+            .filter(bundle -> bundle.getType() == null)
+            .forEach(bundle -> bundle.setType(OTHER_REPORTS));
     }
 
     private Element<HearingFurtherEvidenceBundle> buildHearingSupportingEvidenceBundle(
@@ -321,5 +416,13 @@ public class ManageDocumentService {
             LocalDateTime date2 = defaultIfNull(ele2.getValue().getDateTimeUploaded(), LocalDateTime.MAX);
             return date1.compareTo(date2);
         });
+    }
+
+    private String getRespondentFullName(CaseData caseData, UUID respondentId) {
+        return caseData.findRespondent(respondentId)
+            .map(Element::getValue)
+            .map(Respondent::getParty)
+            .map(RespondentParty::getFullName)
+            .orElseThrow(() -> new RespondentNotFoundException(respondentId));
     }
 }

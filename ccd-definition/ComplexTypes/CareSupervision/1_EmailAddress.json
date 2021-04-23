@@ -5,7 +5,7 @@
     "ListElementCode": "email",
     "FieldType": "Text",
     "ElementLabel": "Email",
-    "HintText": "Case notifications will go to this email address",
+    "HintText": "Case notifications will not go to this email address",
     "SecurityClassification": "Public"
   }
 ]

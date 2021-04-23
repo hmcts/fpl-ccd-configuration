@@ -12,21 +12,15 @@ import java.time.Month;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
 
 class CaseManagementOrderTest {
 
     @ParameterizedTest
-    @EnumSource(value = CMOStatus.class, names = {"APPROVED", "DRAFT", "RETURNED"})
+    @EnumSource(value = CMOStatus.class, names = {"APPROVED", "DRAFT", "RETURNED", "SEND_TO_JUDGE"})
     void shouldReturnTrueIfCaseManagementOrderStatusIsApprovedOrDraft(CMOStatus cmoStatus) {
-        HearingOrder caseManagementOrder = HearingOrder.builder().status(cmoStatus).build();
+        HearingOrder caseManagementOrder = HearingOrder.builder().type(DRAFT_CMO).status(cmoStatus).build();
         assertThat(caseManagementOrder.isRemovable()).isTrue();
-    }
-
-    @Test
-    void shouldReturnFalseIfCaseManagementOrderStatusIsNotApproved() {
-        HearingOrder caseManagementOrder = HearingOrder.builder().status(SEND_TO_JUDGE).build();
-        assertThat(caseManagementOrder.isRemovable()).isFalse();
     }
 
     @Test

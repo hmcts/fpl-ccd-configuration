@@ -31,12 +31,11 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "internal-change-SEND_DOCUMENT",
-    "Name": "Send document",
+    "ID": "internal-change-UPDATE_CASE",
+    "Name": "Update case",
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/send-document/about-to-submit"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -94,6 +93,22 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrders",
+    "Name": "Manage orders",
+    "Description": "Manage orders",
+    "DisplayOrder": 10,
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/submitted"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -172,9 +187,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadC2",
-    "Name": "Upload a C2",
-    "Description": "Upload a c2 to the case",
+    "ID": "uploadAdditionalApplications",
+    "Name": "Upload additional applications",
+    "Description": "Upload additional applications",
     "DisplayOrder": 11,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
@@ -182,8 +197,8 @@
     "ShowSummary": "Y",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/submitted",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-additional-applications/submitted",
     "RetriesTimeoutURLSubmittedEvent": "0"
   },
   {
@@ -402,7 +417,8 @@
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents-la/submitted"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -585,7 +601,8 @@
     "EndButtonLabel": "Save and continue",
     "Comment": "Recreated due to differing permissions in this state compared to other states",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-start",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-documents/submitted"
   },
   {
     "LiveFrom": "01/01/2017",

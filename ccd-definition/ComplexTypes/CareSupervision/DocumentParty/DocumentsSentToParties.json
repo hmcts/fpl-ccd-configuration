@@ -4,7 +4,7 @@
     "ID": "DocumentsSentToParty",
     "ListElementCode": "partyName",
     "FieldType": "Text",
-    "ElementLabel": "Representative name",
+    "ElementLabel": "Recipient",
     "SecurityClassification": "Public"
   },
   {

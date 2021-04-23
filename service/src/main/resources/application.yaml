@@ -111,6 +111,111 @@ fees-register:
       jurisdiction2: family court
       keyword: CareOrder
       service: public law
+    ESO_EXTENSION:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: GHI
+      service: private law
+    CHILD_ARRANGEMENTS:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: ExtSupervision
+      service: private law
+    WARRANT_OF_ASSISTANCE:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: WarrantSearchChild
+      service: private law
+    RECOVERY_ORDER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: Recovery
+      service: private law
+    WARRANT_TO_ASSIST_PERSON:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: HIJ
+      service: private law
+    CHILD_ASSESSMENT:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: NOP
+      service: private law
+    CONTACT_WITH_CHILD_IN_CARE:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: WXY
+      service: private law
+    CHANGE_SURNAME:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: ZAB
+      service: private law
+    SECURE_ACCOMMODATION_ENGLAND:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: SecureAccommEngland
+      service: private law
+    SPECIAL_GUARDIANSHIP:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: FGH
+      service: private law
+    APPOINTMENT_OF_GUARDIAN:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: UVW
+      service: private law
+    PARENTAL_RESPONSIBILITY_FATHER:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: XYZ
+      service: private law
+    PARENTAL_RESPONSIBILITY_FEMALE_PARENT:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: AABC
+      service: private law
+    SECURE_ACCOMMODATION_WALES:
+      channel: default
+      event: miscellaneous
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: SecureAccommWales
+      service: private law
+    DECLARATION_OF_PARENTAGE:
+      channel: default
+      event: issue
+      jurisdiction1: family
+      jurisdiction2: family court
+      keyword: JKL
+      service: other
 
 payment:
   site_id: ABA3
@@ -146,13 +251,19 @@ scheduler:
       cronGroup: "NIGHTLY_CRON"
       description: 'Finds upcoming hearings'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpcomingHearingsFinder'
-      cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * MON-FRI *}
+      cron: ${UPCOMING_HEARINGS_CRON:0 0 2 ? * * *}
     - name: 'Summary tab'
       enabled: true
       cronGroup: "NIGHTLY_CRON"
       description: 'Updates the summary tab'
       jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UpdateSummaryCaseDetails'
       cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 3 ? * * *} # might be a longer running job
+    - name: 'Undelivered emails'
+      enabled: true
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Find undelivered emails'
+      jobClass: 'uk.gov.hmcts.reform.fpl.jobs.UndeliveredEmailsFinder'
+      cron: ${UPDATE_SUMMARY_TAB_CRON:0 0 8 ? * * *}
 
 testing:
   support:

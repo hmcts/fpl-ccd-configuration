@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -24,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -70,9 +70,6 @@ class DraftOrderServiceTest {
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
-    @Mock
-    private FeatureToggleService featureToggleService;
-
     private DraftOrderService service;
 
     @Mock
@@ -80,7 +77,7 @@ class DraftOrderServiceTest {
 
     @BeforeEach
     void init() {
-        service = new DraftOrderService(featureToggleService, new ObjectMapper(), time, documentUploadHelper);
+        service = new DraftOrderService(new ObjectMapper(), time, documentUploadHelper);
     }
 
     @Nested
@@ -193,6 +190,7 @@ class DraftOrderServiceTest {
             UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
                 .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
+                .cmoSupportingDocs(bundle)
                 .build();
 
             CaseData caseData = CaseData.builder()
@@ -213,6 +211,107 @@ class DraftOrderServiceTest {
                 .pastHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
                 .futureHearingsForCMO(dynamicList(emptyList()))
                 .hearingsForHearingOrderDrafts(dynamicList(hearings, defaultListItem("No hearing")))
+                .build();
+
+            assertThat(cmoInfo).isEqualTo(expectedInfo);
+        }
+
+        @Test
+        void shouldPullExistingInfoAndReplaceDocumentsWhenNewDocumentsAreUploaded() {
+            Element<SupportingEvidenceBundle> supportingDoc = element(
+                SupportingEvidenceBundle.builder().name("case summary").build());
+            Element<SupportingEvidenceBundle> newSupportingDoc = element(
+                SupportingEvidenceBundle.builder().name("new support document").build());
+
+            DocumentReference previousOrder = testDocumentReference();
+            DocumentReference newOrder = testDocumentReference();
+
+            Element<HearingOrder> previousCmo = element(HearingOrder.builder()
+                .status(DRAFT)
+                .order(previousOrder)
+                .supportingDocs(List.of(supportingDoc)).build());
+
+            List<Element<HearingBooking>> futureHearings = wrapElements(
+                hearing(CASE_MANAGEMENT, LocalDateTime.of(2050, 3, 2, 0, 0, 0), previousCmo.getId()),
+                hearing(CASE_MANAGEMENT, LocalDateTime.of(2050, 3, 7, 0, 0, 0)));
+
+            futureHearings.get(0).getValue().setCaseManagementOrderId(previousCmo.getId());
+
+            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .futureHearingsForCMO(dynamicList(futureHearings.get(0).getId(), futureHearings))
+                .cmoSupportingDocs(List.of(newSupportingDoc))
+                .cmoUploadType(CMOType.DRAFT)
+                .previousCMO(previousOrder)
+                .replacementCMO(newOrder)
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(previousCmo))
+                .hearingDetails(futureHearings)
+                .uploadDraftOrdersEventData(eventData)
+                .build();
+
+            UploadDraftOrdersData cmoInfo = service.getDraftsInfo(caseData);
+
+            UploadDraftOrdersData expectedInfo = eventData.toBuilder()
+                .showReplacementCMO(YES)
+                .replacementCMO(null)
+                .previousCMO(previousCmo.getValue().getOrder())
+                .cmoToSend(newOrder)
+                .cmoHearingInfo("Case management hearing, 2 March 2050")
+                .cmoJudgeInfo("His Honour Judge Dredd")
+                .cmoSupportingDocs(List.of(newSupportingDoc))
+                .futureHearingsForCMO(dynamicList(futureHearings.get(0).getId(), futureHearings))
+                .pastHearingsForCMO(dynamicList(emptyList()))
+                .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
+                .build();
+
+            assertThat(cmoInfo).isEqualTo(expectedInfo);
+        }
+
+        @Test
+        void shouldRemoveSupportingDocumentsWhenSupportedDocIsRemovedFromTheAssociatedDraftCMO() {
+            Element<SupportingEvidenceBundle> supportingDoc = element(
+                SupportingEvidenceBundle.builder().name("case summary").build());
+
+            Element<HearingOrder> previousCmo = element(HearingOrder.builder()
+                .status(DRAFT)
+                .order(testDocumentReference())
+                .supportingDocs(List.of(supportingDoc)).build());
+
+            List<Element<HearingBooking>> hearings = wrapElements(
+                hearing(CASE_MANAGEMENT, LocalDateTime.of(2050, 3, 2, 0, 0, 0), previousCmo.getId()),
+                hearing(CASE_MANAGEMENT, LocalDateTime.of(2050, 3, 7, 0, 0, 0)));
+
+            hearings.get(0).getValue().setCaseManagementOrderId(previousCmo.getId());
+
+            UploadDraftOrdersData eventData = UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(HearingOrderKind.CMO))
+                .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
+                .cmoSupportingDocs(null)
+                .cmoUploadType(CMOType.DRAFT)
+                .previousCMO(previousCmo.getValue().getOrder())
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .draftUploadedCMOs(List.of(previousCmo))
+                .hearingDetails(hearings)
+                .uploadDraftOrdersEventData(eventData)
+                .build();
+
+            UploadDraftOrdersData cmoInfo = service.getDraftsInfo(caseData);
+
+            UploadDraftOrdersData expectedInfo = eventData.toBuilder()
+                .showReplacementCMO(YES)
+                .previousCMO(previousCmo.getValue().getOrder())
+                .cmoToSend(previousCmo.getValue().getOrder())
+                .cmoHearingInfo("Case management hearing, 2 March 2050")
+                .cmoJudgeInfo("His Honour Judge Dredd")
+                .cmoSupportingDocs(List.of())
+                .futureHearingsForCMO(dynamicList(hearings.get(0).getId(), hearings))
+                .pastHearingsForCMO(dynamicList(emptyList()))
+                .hearingsForHearingOrderDrafts(dynamicList(emptyList(), defaultListItem("No hearing")))
                 .build();
 
             assertThat(cmoInfo).isEqualTo(expectedInfo);

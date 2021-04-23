@@ -19,11 +19,10 @@ import static java.util.stream.Collectors.joining;
 @Slf4j
 @Service
 public class HearingVenueLookUpService {
+    public static final String HEARING_VENUE_ID_OTHER = "OTHER";
 
     private final ObjectMapper objectMapper;
     private List<HearingVenue> hearingVenues;
-
-    private static final String HEARING_VENUE_ID_OTHER = "OTHER";
 
     @Autowired
     public HearingVenueLookUpService(ObjectMapper objectMapper) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -48,5 +49,45 @@ class LocalAuthorityIdLookupConfigurationTest {
         assertThatThrownBy(() -> underTest.getLocalAuthorityId("X"))
             .isInstanceOf(UnknownLocalAuthorityException.class)
             .hasMessage("Local authority with code X does not have id configured");
+    }
+
+    @Nested
+    class LocalAuthorityCode {
+
+        @Test
+        void shouldReturnLocalAuthorityCode() {
+            final LocalAuthorityIdLookupConfiguration underTest =
+                new LocalAuthorityIdLookupConfiguration("SA=>ORG001;HN => ORG002");
+
+            assertThat(underTest.getLocalAuthorityCode("ORG001")).contains("SA");
+            assertThat(underTest.getLocalAuthorityCode("ORG002")).contains("HN");
+        }
+
+        @Test
+        void shouldReturnEmptyLocalAuthorityCodeWhenMappingIsNotPresent() {
+            final LocalAuthorityIdLookupConfiguration underTest =
+                new LocalAuthorityIdLookupConfiguration("SA=>ORG001");
+
+            assertThat(underTest.getLocalAuthorityCode("ORG002")).isEmpty();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyLocalAuthorityCodeOrganisationIdIsNullOrEmpty(String organisationId) {
+            final LocalAuthorityIdLookupConfiguration underTest =
+                new LocalAuthorityIdLookupConfiguration("SA=>ORG001");
+
+            assertThat(underTest.getLocalAuthorityCode(organisationId)).isEmpty();
+        }
+
+        @Test
+        void shouldThrowExceptionWhenMultipleLAsConfiguredForSameOrganisation() {
+            final LocalAuthorityIdLookupConfiguration underTest =
+                new LocalAuthorityIdLookupConfiguration("SA=>ORG001;HN=>ORG001");
+
+            assertThatThrownBy(() -> underTest.getLocalAuthorityCode("ORG001"))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Multiple local authorities [SA, HN] configured for organisation ORG001");
+        }
     }
 }
