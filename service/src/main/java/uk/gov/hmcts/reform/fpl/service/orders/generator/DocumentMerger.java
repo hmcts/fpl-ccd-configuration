@@ -27,7 +27,8 @@ public class DocumentMerger {
     private final DocumentConversionService documentConversionService;
 
     public DocmosisDocument mergeDocuments(
-        DocmosisDocument originalDocument, List<DocumentReference> additionalDocuments) {
+        DocmosisDocument originalDocument,
+        List<DocumentReference> additionalDocuments) {
 
         if (isEmpty(additionalDocuments)) {
             return originalDocument;
@@ -49,7 +50,8 @@ public class DocumentMerger {
     }
 
     private List<InputStream> getPdfFilesToMerge(
-        DocmosisDocument originalDocument, List<DocumentReference> additionalDocuments) {
+        DocmosisDocument originalDocument,
+        List<DocumentReference> additionalDocuments) {
         List<InputStream> documents = new ArrayList<>();
         final byte[] convertedOriginalDocument = documentConversionService.convertToPdf(
             originalDocument.getBytes(), originalDocument.getDocumentTitle());

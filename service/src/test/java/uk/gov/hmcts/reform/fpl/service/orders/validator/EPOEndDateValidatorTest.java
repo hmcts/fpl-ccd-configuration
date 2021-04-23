@@ -76,27 +76,4 @@ class EPOEndDateValidatorTest {
         Assertions.assertThat(underTest.validate(caseData)).isEmpty();
     }
 
-    @Test
-    void shouldNotValidateWhenApprovalDateIsNull() {
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(null)
-                .manageOrdersEndDateTime(time.now().minusDays(1))
-                .build())
-            .build();
-
-        Assertions.assertThat(underTest.validate(caseData)).isEmpty();
-    }
-
-    @Test
-    void shouldNotValidateWhenEPOEndDateDateIsNull() {
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(null)
-                .manageOrdersEndDateTime(null)
-                .build())
-            .build();
-
-        Assertions.assertThat(underTest.validate(caseData)).isEmpty();
-    }
 }

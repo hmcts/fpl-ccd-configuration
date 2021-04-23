@@ -94,16 +94,18 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        Map<String, String> expectedQuestions = new HashMap<>(getOrderQuestions());
-        expectedQuestions.putAll(Map.of(
+        Map<String, String> expectedQuestions = new HashMap<>(Map.of(
+            "approver", "YES",
+            "previewOrder", "YES",
+            "furtherDirections", "YES",
+            "whichChildren", "YES",
             "approvalDate", "YES",
             "approvalDateTime", "NO",
             "epoIncludePhrase", "NO",
-            "epoOrderType", "NO",
             "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO",
-            "epoPreventRemoval", "NO"
+            "epoExpiryDate", "NO"
         ));
+        expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
@@ -117,16 +119,19 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        Map<String, String> expectedQuestions = new HashMap<>(getOrderQuestions());
-        expectedQuestions.putAll(Map.of(
+        Map<String, String> expectedQuestions = new HashMap<>(Map.of(
+            "approver", "YES",
+            "previewOrder", "YES",
+            "furtherDirections", "YES",
+            "whichChildren", "YES",
             "approvalDate", "NO",
             "approvalDateTime", "YES",
             "epoIncludePhrase", "YES",
-            "epoOrderType", "YES",
+            "epoTypeAndPreventRemoval", "YES",
             "epoChildrenDescription", "YES",
-            "epoExpiryDate", "YES",
-            "epoPreventRemoval", "YES"
+            "epoExpiryDate", "YES"
         ));
+        expectedQuestions.put("epoTypeAndPreventRemoval", "YES");
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
@@ -287,26 +292,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void epoRemovalAddressShouldReturnErrorWhenPostCodeIsEmpty() {
-        CaseData caseData = CaseData.builder().manageOrdersEventData(
-            buildPreventRemovalEventData(Address.builder().addressLine1("address1").build())).build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
-
-        assertThat(response.getErrors()).containsOnly("Enter a postcode for the contact");
-    }
-
-    @Test
-    void epoRemovalAddressShouldReturnErrorWhenAddressLine1IsEmpty() {
-        CaseData caseData = CaseData.builder().manageOrdersEventData(
-            buildPreventRemovalEventData(Address.builder().postcode("postcode").build())).build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
-
-        assertThat(response.getErrors()).containsOnly("Enter a valid address for the contact");
-    }
-
-    @Test
     void shouldNotReturnErrorsWhenEPOOrderDetailsAreValidForRemoveToAccommodation() {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().minusDays(4), now().plusDays(1))).build();
@@ -352,14 +337,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .getRootCause()
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.model.order.OrderSection.DOES_NOT_MATCH");
-    }
-
-    private static Map<String, String> getOrderQuestions() {
-        return Map.of(
-            "approver", "YES",
-            "previewOrder", "YES",
-            "furtherDirections", "YES",
-            "whichChildren", "YES");
     }
 
     private CaseData buildCaseData() {

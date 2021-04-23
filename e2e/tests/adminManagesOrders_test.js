@@ -9,6 +9,7 @@ const approvalDate = {year: 2021, month: 4, day: 9};
 const today = new Date(Date.now());
 const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
+const removalAddress = {buildingAndStreet: {lineOne: 'Flat 2 Caversham', town: 'Reading'}, postcode: 'RG4 7AA'};
 let caseId;
 
 Feature('HMCTS Admin manages orders');
@@ -73,8 +74,7 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
-  await manageOrdersEventPage.clickPostCodeLink('I can\'t enter a UK postcode');
-  await manageOrdersEventPage.enterRemovalAddress('Flat 2 Caversham', 'RG4 7AA');
+  await manageOrdersEventPage.enterRemovalAddress(removalAddress);
   await manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
   await manageOrdersEventPage.enterWhoIsExcluded('John Doe');
   await manageOrdersEventPage.enterExclusionStartDate(approvalDate);

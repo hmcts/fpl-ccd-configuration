@@ -35,22 +35,20 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.putAll(Map.of(
             "approvalDate", "YES",
             "approvalDateTime", "NO",
-            "epoOrderType", "NO",
             "epoIncludePhrase", "NO",
             "epoChildrenDescription", "NO",
             "epoExpiryDate", "NO",
-            "epoPreventRemoval", "NO"
+            "epoTypeAndPreventRemoval", "NO"
         ));
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.putAll(Map.of(
             "approvalDate", "NO",
             "approvalDateTime", "YES",
-            "epoOrderType", "YES",
             "epoIncludePhrase", "YES",
             "epoChildrenDescription", "YES",
             "epoExpiryDate", "YES",
-            "epoPreventRemoval", "YES"
+            "epoTypeAndPreventRemoval", "YES"
         ));
 
         return Stream.of(

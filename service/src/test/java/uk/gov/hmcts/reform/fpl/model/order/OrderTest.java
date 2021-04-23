@@ -9,7 +9,8 @@ import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -40,7 +41,11 @@ class OrderTest {
             Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
-            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty())
+            Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, REVIEW, Optional.empty())
         );
     }
 }

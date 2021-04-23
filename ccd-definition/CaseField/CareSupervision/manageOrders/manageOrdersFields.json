@@ -144,6 +144,7 @@
     "Label": "Upload power of arrest, if required",
     "FieldType": "Document",
     "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".doc,.docx,.pdf",
     "Searchable": "N"
   }
 ]

@@ -47,8 +47,7 @@ public class SealedOrderHistoryService {
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
             .title(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
-            .judgeAndLegalAdvisor(
-                getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
+            .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
             .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())

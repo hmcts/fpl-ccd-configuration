@@ -1,5 +1,6 @@
 const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 // Fields
 const operations = {
@@ -51,10 +52,6 @@ const section4 = {
       yes: 'Yes',
       no: 'No',
     },
-  },
-  removalAddress: {
-    addressLine1: '#manageOrdersEpoRemovalAddress_AddressLine1',
-    postcode: '#manageOrdersEpoRemovalAddress_PostCode',
   },
   exclusionRequirement: {
     group: '#manageOrdersExclusionRequirement',
@@ -146,15 +143,8 @@ const uploadPowerOfArrest = async (file) => {
   await I.runAccessibilityTest();
 };
 
-const clickPostCodeLink = async (linkLabel) => {
-  I.click(locate(`//a[text()="${linkLabel}"]`));
-  await I.runAccessibilityTest();
-};
-
-const enterRemovalAddress = async (address1, postcode) => {
-  I.fillField(section4.removalAddress.addressLine1, address1);
-  I.fillField(section4.removalAddress.postcode, postcode);
-  await I.runAccessibilityTest();
+const enterRemovalAddress = async (address) => {
+  postcodeLookup.enterAddressManually(address);
 };
 
 const enterFurtherDirections = async (text) => {
@@ -170,6 +160,6 @@ const checkPreview = async () => {
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterFurtherDirections, checkPreview,
-  enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime, clickPostCodeLink, enterRemovalAddress,
+  enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime, enterRemovalAddress,
   selectExclusionRequirement,enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
 };

@@ -2,6 +2,12 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -22,7 +28,6 @@ import java.util.List;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
@@ -34,13 +39,14 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class C23EPODocumentParameterGeneratorTest {
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final Order ORDER_TYPE = C23_EMERGENCY_PROTECTION_ORDER;
 
-    private static final Child CHILD = mock(Child.class);
     public static final String CHILDREN_DESCRIPTION = "Children description";
     public static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.now().minusDays(8);
     public static final LocalDateTime END_DATE_TIME = LocalDateTime.now();
@@ -49,14 +55,15 @@ class C23EPODocumentParameterGeneratorTest {
     public static final Address REMOVAL_ADDRESS = Address.builder()
         .addressLine1("12 street").postcode("SW1").country("UK").build();
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
-    private final LocalAuthorityNameLookupConfiguration laNameLookup = mock(
-        LocalAuthorityNameLookupConfiguration.class
-    );
+    @Mock
+    private static Child CHILD;
+    @Mock
+    private ChildrenService childrenService;
+    @Mock
+    private LocalAuthorityNameLookupConfiguration laNameLookup;
 
-    private final C23EPODocumentParameterGenerator underTest = new C23EPODocumentParameterGenerator(
-        laNameLookup, childrenService
-    );
+    @InjectMocks
+    private C23EPODocumentParameterGenerator underTest;
 
     @BeforeEach
     void setUp() {

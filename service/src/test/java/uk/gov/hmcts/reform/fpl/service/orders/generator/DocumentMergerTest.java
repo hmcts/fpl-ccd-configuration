@@ -69,11 +69,10 @@ class DocumentMergerTest {
 
     @Test
     void shouldThrowExceptionWhenAdditionalDocumentIsCorrupted() {
-        final byte[] originalDocument = readBytes("documents/document1.pdf");
         final byte[] additionalDocumentBytes = new byte[]{1, 2};
 
         when(documentConversionService.convertToPdf(eq(DOCMOSIS_DOCUMENT.getBytes()), anyString()))
-            .thenReturn(originalDocument);
+            .thenReturn(new byte[]{1});
 
         when(documentDownloadService.downloadDocument(eq(DOCUMENT_REFERENCE.getBinaryUrl())))
             .thenReturn(additionalDocumentBytes);
@@ -84,9 +83,8 @@ class DocumentMergerTest {
             () -> underTest.mergeDocuments(DOCMOSIS_DOCUMENT, List.of(DOCUMENT_REFERENCE))
         );
 
-        assertThat(exception.getMessage())
-            .isEqualTo(String.format("Exception occurred while merging documents for %s",
-                DOCMOSIS_DOCUMENT.getDocumentTitle()));
+        assertThat(exception.getMessage()).isEqualTo(
+            "Exception occurred while merging documents for " + DOCMOSIS_DOCUMENT.getDocumentTitle());
     }
 
 }

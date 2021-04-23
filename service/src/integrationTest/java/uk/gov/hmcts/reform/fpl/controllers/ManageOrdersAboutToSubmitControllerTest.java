@@ -114,7 +114,12 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldBuildNewOrderObject() {
-        CaseData caseData = buildCaseData();
+        CaseData caseData = buildCaseData().toBuilder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersApprovalDate(dateNow())
+                .manageOrdersFurtherDirections("Some further directions")
+                .build()).build();
 
         CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
@@ -138,7 +143,20 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldBuildNewEPOObject() {
-        final ManageOrdersEventData manageOrdersEventData = buildManageOrdersEventData();
+        final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersApprovalDateTime(now())
+            .manageOrdersEndDateTime(now().plusDays(1))
+            .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
+            .manageOrdersEpoType(EPOType.PREVENT_REMOVAL)
+            .manageOrdersEpoRemovalAddress(Address.builder().addressLine1("address1").postcode("postcode").build())
+            .manageOrdersChildrenDescription("first1 last1")
+            .manageOrdersFurtherDirections("test directions")
+            .manageOrdersExclusionRequirement("Yes")
+            .manageOrdersWhoIsExcluded("John")
+            .manageOrdersExclusionStartDate(dateNow().plusDays(2))
+            .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
+            .build();
+
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(manageOrdersEventData).build();
 
         CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
@@ -160,25 +178,19 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .build()));
     }
 
-    private ManageOrdersEventData buildManageOrdersEventData() {
-        return ManageOrdersEventData.builder()
-            .manageOrdersApprovalDateTime(now().minusDays(8))
-            .manageOrdersEndDateTime(now().minusDays(1))
-            .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
-            .manageOrdersEpoType(EPOType.PREVENT_REMOVAL)
-            .manageOrdersEpoRemovalAddress(Address.builder().addressLine1("address1").postcode("postcode").build())
-            .manageOrdersChildrenDescription("first1 last1, first2 last2")
-            .manageOrdersFurtherDirections("test directions")
-            .manageOrdersExclusionRequirement("Yes")
-            .manageOrdersWhoIsExcluded("John")
-            .manageOrdersExclusionStartDate(dateNow().plusDays(2))
-            .manageOrdersPowerOfArrest(DOCUMENT_PDF_REFERENCE)
-            .build();
-    }
-
     @Test
     void shouldRemoveTransientFields() {
-        CaseDetails caseDetails = asCaseDetails(buildCaseData());
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
+            ManageOrdersEventData.builder()
+                .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
+                .manageOrdersEpoType(EPOType.REMOVE_TO_ACCOMMODATION)
+                .manageOrdersApprovalDateTime(now())
+                .manageOrdersEndDateTime(now().plusDays(1))
+                .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
+                .manageOrdersFurtherDirections("further directions").build())
+            .build();
+
+        CaseDetails caseDetails = asCaseDetails(caseData);
 
         // dummy data set for the front end that is dirtying case data
         caseDetails.getData().putAll(Map.of(
@@ -197,7 +209,10 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
             "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
             "issuingDetailsSectionSubHeader", "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
-            "manageOrdersOperation"
+            "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
+            "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",
+            "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded",
+            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest"
         );
     }
 
@@ -211,11 +226,6 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .childSelector(Selector.newSelector(2))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
             .allocatedJudge(Judge.builder().judgeLastName("Dredd").judgeTitle(HIS_HONOUR_JUDGE).build())
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
-                .manageOrdersApprovalDate(dateNow())
-                .manageOrdersFurtherDirections("Some further directions")
-                .build())
             .build();
     }
 }

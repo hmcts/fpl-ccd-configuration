@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.time.LocalTime.MIDNIGHT;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 
 @Component
@@ -24,7 +24,6 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
     private static final String FUTURE_DATE_MESSAGE = "Enter an end date in the future";
     private static final String END_DATE_RANGE_MESSAGE = "Emergency protection orders cannot last longer than 8 days";
 
-    private static final LocalTime MIDNIGHT = LocalTime.of(0, 0, 0);
     private static final Duration EPO_END_DATE_RANGE = Duration.of(8, ChronoUnit.DAYS);
 
     private final Time time;
@@ -38,10 +37,6 @@ public class EPOEndDateValidator implements QuestionBlockOrderValidator {
     public List<String> validate(CaseData caseData) {
         final LocalDateTime epoApprovalTime = caseData.getManageOrdersEventData().getManageOrdersApprovalDateTime();
         final LocalDateTime epoEndTime = caseData.getManageOrdersEventData().getManageOrdersEndDateTime();
-
-        if (epoEndTime == null || epoApprovalTime == null) {
-            return List.of();
-        }
 
         List<String> errors = validateEpoEndDateTime(epoEndTime);
 
