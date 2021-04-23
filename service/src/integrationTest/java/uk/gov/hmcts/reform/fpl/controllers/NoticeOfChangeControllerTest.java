@@ -2,11 +2,16 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.aac.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.AuditEvent;
 import uk.gov.hmcts.reform.fpl.model.AuditEventsResponse;
@@ -20,6 +25,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -48,8 +54,18 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
         .id(SOLICITOR_ID)
         .build();
 
+    private static final AboutToStartOrSubmitCallbackResponse ASSIGNMENT_RESPONSE = AboutToStartOrSubmitCallbackResponse
+        .builder()
+        .build();
+
+    @Captor
+    private ArgumentCaptor<CallbackRequest> requestCaptor;
+
     @MockBean
     private CoreCaseDataApiV2 caseDataApi;
+
+    @MockBean
+    private CaseAssignmentApi caseAssignmentApi;
 
     NoticeOfChangeControllerTest() {
         super("noc-decision");
@@ -63,6 +79,8 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
             .thenReturn(AUDIT_EVENTS);
         when(idamClient.getUserByUserId(USER_AUTH_TOKEN, SOLICITOR_ID))
             .thenReturn(SOLICITOR_USER);
+        when(caseAssignmentApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), requestCaptor.capture()))
+            .thenReturn(ASSIGNMENT_RESPONSE);
     }
 
     @Test
@@ -100,10 +118,13 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
             .changeOrganisationRequestField(changeRequest)
             .build();
 
-        final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+        final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
+
+        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
 
         final Element<Respondent> expectedRespondent = update(respondent2, SOLICITOR_USER, NEW_ORGANISATION);
 
+        assertThat(actualResponse).isEqualTo(ASSIGNMENT_RESPONSE);
         assertThat(updatedCaseData.getRespondents1()).containsExactly(respondent1, expectedRespondent, respondent3);
     }
 
@@ -148,11 +169,15 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
             .respondents1(List.of(respondent1, respondent2, respondent3))
             .build();
 
-        final CaseData updatedCaseData = extractCaseData(postAboutToStartEvent(caseData));
+
+        final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
+
+        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
 
         final Element<Respondent> expectedRespondent = update(respondent1, SOLICITOR_USER, NEW_ORGANISATION);
 
         assertThat(updatedCaseData.getRespondents1()).containsExactly(expectedRespondent, respondent2, respondent3);
+        assertThat(actualResponse).isEqualTo(ASSIGNMENT_RESPONSE);
     }
 
     private Element<Respondent> update(Element<Respondent> respondent, UserDetails solicitor, Organisation org) {
