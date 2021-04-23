@@ -16,6 +16,8 @@ public enum OrderQuestionBlock {
         List.of("orderAppliesToAllChildren", "children_label", "childSelector")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
+    DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersTitle", "manageOrdersDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order",OrderSection.REVIEW,
         List.of("orderPreview"));
 

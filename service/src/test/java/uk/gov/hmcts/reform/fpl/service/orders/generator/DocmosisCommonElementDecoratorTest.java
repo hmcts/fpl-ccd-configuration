@@ -99,7 +99,6 @@ class DocmosisCommonElementDecoratorTest {
         return C32CareOrderDocmosisParameters.builder()
             .familyManCaseNumber(FAM_MAN_CASE_NUM)
             .ccdCaseNumber(FORMATTED_CASE_NUMBER)
-            .orderTitle(TITLE)
             .childrenAct(CHILDREN_ACT)
             .judgeAndLegalAdvisor(DOCMOSIS_JUDGE)
             .courtName(COURT_NAME)

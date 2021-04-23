@@ -13,12 +13,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -42,10 +42,18 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     @Builder.Default
     private List<Element<UUID>> representedBy = new ArrayList<>();
 
-    @NotNull(message = "Select if the respondent needs representation", groups = RespondentSolicitorGroup.class)
     private String legalRepresentation;
 
     private RespondentSolicitor solicitor;
+
+    @JsonIgnore
+    @AssertTrue(message = "Select if the respondent needs representation", groups = RespondentSolicitorGroup.class)
+    public boolean hasLegalRepresentation() {
+        if (isNotEmpty(representedBy)) {
+            return true;
+        }
+        return legalRepresentation != null;
+    }
 
     @JsonIgnore
     @AssertTrue(message = "Add the details for respondent solicitors", groups = RespondentSolicitorGroup.class)
@@ -55,14 +63,8 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
             if (isEmpty(solicitor)) {
                 return false;
             }
-            //User selected an organisation
-            if (isNotEmpty(solicitor.getOrganisation())
-                && isNotEmpty(solicitor.getOrganisation().getOrganisationID())) {
-                return true;
-            }
-            //User entered unregistered organisation details
-            return isNotEmpty(solicitor.getUnregisteredOrganisation())
-                && isNotEmpty(solicitor.getUnregisteredOrganisation().getName());
+            //User selected an organisation or user entered unregistered organisation details
+            return hasRegisteredOrganisation() || hasUnregisteredOrganisation();
         }
         return true;
     }
@@ -89,10 +91,19 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     }
 
     @JsonIgnore
-    public boolean hasOrganisationRegistered() {
-        return Optional.ofNullable(getSolicitor()).flatMap(
-            solicitor -> Optional.ofNullable(solicitor.getOrganisation()).map(
+    public boolean hasRegisteredOrganisation() {
+        return ofNullable(getSolicitor()).flatMap(
+            respondentSolicitor -> ofNullable(respondentSolicitor.getOrganisation()).map(
                 organisation -> isNotBlank(organisation.getOrganisationID())
+            )
+        ).orElse(false);
+    }
+
+    @JsonIgnore
+    public boolean hasUnregisteredOrganisation() {
+        return ofNullable(getSolicitor()).flatMap(
+            respondentSolicitor -> ofNullable(respondentSolicitor.getUnregisteredOrganisation()).map(
+                organisation -> isNotBlank(organisation.getName())
             )
         ).orElse(false);
     }

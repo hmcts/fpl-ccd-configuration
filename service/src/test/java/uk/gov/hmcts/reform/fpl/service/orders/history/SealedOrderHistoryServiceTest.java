@@ -293,7 +293,7 @@ class SealedOrderHistoryServiceTest {
     private GeneratedOrder.GeneratedOrderBuilder expectedGeneratedOrder() {
         return GeneratedOrder.builder()
             .orderType(ORDER_TYPE.name())
-            .title(ORDER_TYPE.getHistoryTitle())
+            .type(ORDER_TYPE.getHistoryTitle())
             .judgeAndLegalAdvisor(TAB_JUDGE_AND_LEGAL_ADVISOR)
             .children(wrapElements(child1))
             .childrenDescription(CHILD_1_FULLNAME)

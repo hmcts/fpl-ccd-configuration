@@ -68,8 +68,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.APPLICATION_PBA_PAYMENT_FA
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICICTOR;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType.CONTACT_WITH_NAMED_PERSON;
 import static uk.gov.hmcts.reform.fpl.controllers.ReturnApplicationController.RETURN_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -184,7 +184,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
-                REGISTERED_RESPONDENT_SUBMISSION_TEMPLATE,
+                REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
                 registeredSolicitorParameters,
                 NOTIFICATION_REFERENCE));
@@ -292,7 +292,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("respondents1", wrapElements(respondent));
-        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -308,7 +307,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
-                UNREGISTERED_RESPONDENT_SOLICICTOR,
+                UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
                 expectedUnregisteredSolicitorParameters,
                 NOTIFICATION_REFERENCE
@@ -327,7 +326,6 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put("respondents1", wrapElements(respondent));
-        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_1_NAME);
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -343,7 +341,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         checkUntil(() ->
             verify(notificationClient, never()).sendEmail(
-                UNREGISTERED_RESPONDENT_SOLICICTOR,
+                UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
                 expectedUnregisteredSolicitorParameters,
                 NOTIFICATION_REFERENCE

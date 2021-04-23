@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -20,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
+@ExtendWith({MockitoExtension.class})
 class C32CareOrderDocumentParameterGeneratorTest {
 
     private static final String LA_CODE = "LA_CODE";
@@ -34,14 +39,14 @@ class C32CareOrderDocumentParameterGeneratorTest {
             .build())
         .build();
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
-    private final LocalAuthorityNameLookupConfiguration laNameLookup = mock(
-        LocalAuthorityNameLookupConfiguration.class
-    );
+    @Mock
+    private ChildrenService childrenService;
 
-    private final C32CareOrderDocumentParameterGenerator underTest = new C32CareOrderDocumentParameterGenerator(
-        laNameLookup, childrenService
-    );
+    @Mock
+    private LocalAuthorityNameLookupConfiguration laNameLookup;
+
+    @InjectMocks
+    private C32CareOrderDocumentParameterGenerator underTest;
 
     @Test
     void accept() {
@@ -87,6 +92,7 @@ class C32CareOrderDocumentParameterGeneratorTest {
 
     private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?,?> expectedCommonParameters() {
         return C32CareOrderDocmosisParameters.builder()
+            .orderTitle(Order.C32_CARE_ORDER.getTitle())
             .orderType(TYPE)
             .furtherDirections(FURTHER_DIRECTIONS)
             .localAuthorityName(LA_NAME);

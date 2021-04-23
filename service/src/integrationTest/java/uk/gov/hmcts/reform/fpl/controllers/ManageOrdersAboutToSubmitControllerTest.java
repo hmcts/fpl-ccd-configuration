@@ -103,7 +103,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C32_CARE_ORDER")
-                .title("C32 - Care order")
+                .type("C32 - Care order")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -137,9 +137,9 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         assertThat(response.getData()).doesNotContainKeys(
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
-            "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
-            "issuingDetailsSectionSubHeader", "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
-            "manageOrdersOperation"
+            "childSelector", "manageOrdersTitle", "manageOrdersDirections", "manageOrdersFurtherDirections",
+            "orderPreview", "manageOrdersType", "orderTempQuestions", "issuingDetailsSectionSubHeader",
+            "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader", "manageOrdersOperation"
         );
     }
 

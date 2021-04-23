@@ -14,4 +14,6 @@ public class ManageOrdersEventData {
     Order manageOrdersType;
     LocalDate manageOrdersApprovalDate;
     String manageOrdersFurtherDirections;
+    String manageOrdersTitle;
+    String manageOrdersDirections;
 }

@@ -39,7 +39,7 @@ public class RepresentativesInbox {
                 nullSafeList(caseData.getRespondents1()).stream()
                     .filter(respondent ->
                         (preference == RepresentativeServingPreferences.DIGITAL_SERVICE)
-                            == respondent.getValue().hasOrganisationRegistered())
+                            == respondent.getValue().hasRegisteredOrganisation())
                     .map(respondent -> Optional.ofNullable(respondent.getValue().getSolicitor())
                         .map(RespondentSolicitor::getEmail).orElse(null))
                     .filter(StringUtils::isNotBlank)
