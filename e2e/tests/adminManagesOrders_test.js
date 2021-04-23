@@ -32,7 +32,7 @@ Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: '1',
+    orderIndex: 1,
     orderType: 'C32 - Care order',
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
@@ -59,7 +59,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: '2',
+    orderIndex: 2,
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
@@ -73,8 +73,8 @@ function assertOrder(I, caseViewPage, order) {
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab([orderElement, 'Type of order'], order.orderType);
   I.seeInTab([orderElement, 'Approval date'], dateFormat(dateToString(order.approvalDate), 'd mmm yyyy'));
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge);
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge);
+  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
+  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
   I.seeInTab([orderElement, 'Children'], order.children);
 
   if (order.title !== undefined) {
