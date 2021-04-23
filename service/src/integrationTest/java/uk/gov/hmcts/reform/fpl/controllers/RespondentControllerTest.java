@@ -29,10 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
@@ -256,7 +258,8 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldPublishRespondentsUpdatedEvent() {
+    void shouldPublishRespondentsUpdatedEventIfNotOpenStateToggledOn() {
+        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
@@ -277,6 +280,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_ID))
+            .state(SUBMITTED)
             .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
@@ -296,6 +300,72 @@ class RespondentControllerTest extends AbstractCallbackTest {
             anyMap(),
             eq(NOTIFICATION_REFERENCE)
         ));
+    }
+
+    @Test
+    void shouldPublishRespondentsUpdatedEventIfOpenStateToggledOn() {
+        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
+        Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .organisation(Organisation.builder().organisationID("Registered Org ID").build())
+                .build())
+            .build();
+
+        Respondent respondentWithUnregisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .unregisteredOrganisation(UnregisteredOrganisation.builder()
+                    .name("Unregistered Org")
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_ID))
+            .state(OPEN)
+            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .build();
+
+        postSubmittedEvent(caseData);
+
+        verifyNoInteractions(notificationClient);
+    }
+
+    @Test
+    void shouldPublishRespondentsUpdatedEventIfNotOpenStateToggledOff() {
+        when(featureToggleService.hasRSOCaseAccess()).thenReturn(false);
+        Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .organisation(Organisation.builder().organisationID("Registered Org ID").build())
+                .build())
+            .build();
+
+        Respondent respondentWithUnregisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .unregisteredOrganisation(UnregisteredOrganisation.builder()
+                    .name("Unregistered Org")
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_ID))
+            .state(SUBMITTED)
+            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .build();
+
+        postSubmittedEvent(caseData);
+
+        verifyNoInteractions(notificationClient);
     }
 
     private List<Element<Respondent>> buildRespondents() {
