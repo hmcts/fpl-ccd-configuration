@@ -8,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
-import uk.gov.hmcts.reform.aac.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.AuditEvent;
 import uk.gov.hmcts.reform.fpl.model.AuditEventsResponse;
@@ -59,7 +59,7 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
         .build();
 
     @Captor
-    private ArgumentCaptor<CallbackRequest> requestCaptor;
+    private ArgumentCaptor<DecisionRequest> requestCaptor;
 
     @MockBean
     private CoreCaseDataApiV2 caseDataApi;
@@ -120,7 +120,7 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
 
         final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
 
-        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
+        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue().getCaseDetails());
 
         final Element<Respondent> expectedRespondent = update(respondent2, SOLICITOR_USER, NEW_ORGANISATION);
 
@@ -172,7 +172,7 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
 
         final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
 
-        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
+        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue().getCaseDetails());
 
         final Element<Respondent> expectedRespondent = update(respondent1, SOLICITOR_USER, NEW_ORGANISATION);
 

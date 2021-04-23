@@ -1,26 +1,42 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.ccd.model.ChangeOrganisationApprovalStatus.APPROVED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentService {
+
+    private final Time time;
 
     public String buildRespondentLabel(List<Element<Respondent>> respondents) {
         StringBuilder sb = new StringBuilder();
@@ -113,4 +129,70 @@ public class RespondentService {
             .map(Respondent::getSolicitor)
             .collect(Collectors.toList());
     }
+
+
+    public List<ChangeOrganisationRequest> getRepresentationChanges(List<Element<Respondent>> after,
+                                                                    List<Element<Respondent>> before) {
+
+        final List<Element<Respondent>> newRespondents = defaultIfNull(after, new ArrayList<>());
+        final List<Element<Respondent>> oldRespondents = defaultIfNull(before, new ArrayList<>());
+
+        final Map<UUID, Organisation> newRespondentsOrganisations = organisationByRespondentId(newRespondents);
+        final Map<UUID, Organisation> oldRespondentsOrganisations = organisationByRespondentId(oldRespondents);
+
+        final List<ChangeOrganisationRequest> changeRequests = new ArrayList<>();
+
+        for (int i = 0; i < newRespondents.size(); i++) {
+            SolicitorRole solicitorRole = SolicitorRole.values()[i];
+            UUID respondentId = newRespondents.get(i).getId();
+
+            Organisation newOrganisation = newRespondentsOrganisations.get(respondentId);
+            Organisation oldOrganisation = oldRespondentsOrganisations.get(respondentId);
+
+            if (!Objects.equals(newOrganisation, oldOrganisation)) {
+                changeRequests.add(changeRequest(newOrganisation, oldOrganisation, solicitorRole));
+            }
+        }
+
+        return changeRequests;
+    }
+
+    private Map<UUID, Organisation> organisationByRespondentId(List<Element<Respondent>> respondents) {
+        return defaultIfNull(respondents, new ArrayList<Element<Respondent>>()).stream()
+            .collect(
+                HashMap::new,
+                (container, respondent) -> container.put(respondent.getId(), getOrganisation(respondent.getValue())),
+                HashMap::putAll
+            );
+    }
+
+    private ChangeOrganisationRequest changeRequest(Organisation newOrganisation,
+                                                    Organisation oldOrganisation,
+                                                    SolicitorRole solicitorRole) {
+
+        final DynamicListElement roleItem = DynamicListElement.builder()
+            .code(solicitorRole.getCaseRoleLabel())
+            .label(solicitorRole.getCaseRoleLabel())
+            .build();
+
+        return ChangeOrganisationRequest.builder()
+            .approvalStatus(APPROVED)
+            .requestTimestamp(time.now())
+            .caseRoleId(DynamicList.builder()
+                .value(roleItem)
+                .listItems(List.of(roleItem))
+                .build())
+            .organisationToRemove(oldOrganisation)
+            .organisationToAdd(newOrganisation)
+            .build();
+    }
+
+    private Organisation getOrganisation(Respondent respondent) {
+        return Optional.ofNullable(respondent)
+            .map(Respondent::getSolicitor)
+            .map(RespondentSolicitor::getOrganisation)
+            .filter(org -> isNotEmpty(org.getOrganisationID()))
+            .orElse(null);
+    }
+
 }

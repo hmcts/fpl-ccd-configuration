@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -316,6 +317,10 @@ public class TestDataHelper {
             .value(dynamicListElement)
             .listItems(List.of(dynamicListElement))
             .build();
+    }
+
+    public static DynamicList caseRoleDynamicList(SolicitorRole role) {
+        return caseRoleDynamicList(role.getCaseRoleLabel());
     }
 
 }

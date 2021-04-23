@@ -11,11 +11,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -45,10 +43,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.feignException;
 class OrganisationServiceTest {
 
     @Mock
-    private SystemUpdateUserConfiguration userConfig;
-
-    @Mock
-    private IdamClient idamClient;
+    private SystemUserService systemUserService;
 
     @Mock
     private OrganisationApi organisationApi;
@@ -203,16 +198,12 @@ class OrganisationServiceTest {
     @Nested
     class FindOrganisation {
 
-        private static final String USER = "user";
-        private static final String PASSWORD = "password";
         private static final String TOKEN = "token";
         private static final String ORGANISATION_ID = "ORGSA";
 
         @BeforeEach
         void init() {
-            when(userConfig.getUserName()).thenReturn(USER);
-            when(userConfig.getPassword()).thenReturn(PASSWORD);
-            when(idamClient.getAccessToken(USER, PASSWORD)).thenReturn(TOKEN);
+            when(systemUserService.getSysUserToken()).thenReturn(TOKEN);
         }
 
         @Test
