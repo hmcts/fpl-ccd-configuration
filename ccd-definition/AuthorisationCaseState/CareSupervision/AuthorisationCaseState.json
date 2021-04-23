@@ -6,7 +6,8 @@
     "UserRoles": [
       "caseworker-publiclaw-solicitor",
       "caseworker-publiclaw-systemupdate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
@@ -24,7 +25,8 @@
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
@@ -42,7 +44,8 @@
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
@@ -60,7 +63,8 @@
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
@@ -77,7 +81,8 @@
       "caseworker-publiclaw-gatekeeper",
       "caseworker-publiclaw-judiciary",
       "caseworker-publiclaw-magistrate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
@@ -89,7 +94,8 @@
       "caseworker-publiclaw-solicitor",
       "caseworker-publiclaw-courtadmin",
       "caseworker-publiclaw-systemupdate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   },
@@ -107,7 +113,8 @@
       "caseworker-publiclaw-systemupdate",
       "caseworker-publiclaw-bulkscan",
       "caseworker-publiclaw-bulkscansystemupdate",
-      "caseworker-caa"
+      "caseworker-caa",
+      "caseworker-approver"
     ],
     "CRUD": "CRU"
   }
