@@ -126,7 +126,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C32_CARE_ORDER")
-                .title("C32 - Care order")
+                .type("C32 - Care order")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -164,7 +164,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
                 .orderType("C23_EMERGENCY_PROTECTION_ORDER")
-                .title("C23 - Emergency protection order")
+                .type("C23 - Emergency protection order")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)
@@ -212,7 +212,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
             "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",
             "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded",
-            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest"
+            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest", "manageOrdersTitle", "manageOrdersDirections"
         );
     }
 

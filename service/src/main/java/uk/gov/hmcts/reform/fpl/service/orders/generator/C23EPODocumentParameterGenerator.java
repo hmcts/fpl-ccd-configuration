@@ -52,6 +52,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
 
         return C23EPODocmosisParameters.builder()
             .orderType(TYPE)
+            .orderTitle(Order.C23_EMERGENCY_PROTECTION_ORDER.getTitle())
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName))
             .localAuthorityName(localAuthorityName)

@@ -15,6 +15,7 @@ const orders = {
   options: {
     c32: 'C32_CARE_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
+    c21: 'C21_BLANK_ORDER',
   },
 };
 
@@ -38,6 +39,8 @@ const section3 = {
 };
 
 const section4 = {
+  title: '#manageOrdersTitle',
+  directions: '#manageOrdersDirections',
   furtherDirections: '#manageOrdersFurtherDirections',
   epoTypes: {
     group: '#manageOrdersEpoType',
@@ -113,6 +116,15 @@ const selectChildren = async (option, indexes = []) => {
   await I.runAccessibilityTest();
 };
 
+const enterTitle = (text) => {
+  I.fillField(section4.title, text);
+};
+
+const enterDirections = async (text) => {
+  I.fillField(section4.directions, text);
+  await I.runAccessibilityTest();
+};
+
 const selectIncludePhrase = async (includePhrase) => {
   I.click(`${section4.includePhrase.group}-${includePhrase}`);
   await I.runAccessibilityTest();
@@ -159,7 +171,7 @@ const checkPreview = async () => {
 
 module.exports = {
   operations, orders, section2, section3, section4,
-  selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterFurtherDirections, checkPreview,
-  enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime, enterRemovalAddress,
-  selectExclusionRequirement,enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
+  enterFurtherDirections, checkPreview,enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterRemovalAddress, selectExclusionRequirement,enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
 };

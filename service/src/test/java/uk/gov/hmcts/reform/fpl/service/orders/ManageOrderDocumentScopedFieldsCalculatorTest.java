@@ -16,6 +16,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "orderAppliesToAllChildren",
             "children_label",
             "childSelector",
+            "manageOrdersTitle",
+            "manageOrdersDirections",
             "manageOrdersEpoType",
             "manageOrdersIncludePhrase",
             "manageOrdersChildrenDescription",

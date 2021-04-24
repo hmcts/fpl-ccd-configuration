@@ -27,6 +27,8 @@ public enum OrderQuestionBlock {
             "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
+    DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersTitle", "manageOrdersDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview"));
 

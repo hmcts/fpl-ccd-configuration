@@ -119,6 +119,7 @@ class C23EPODocumentParameterGeneratorTest {
 
         return C23EPODocmosisParameters.builder()
             .orderType(EMERGENCY_PROTECTION_ORDER)
+            .orderTitle("Emergency protection order")
             .furtherDirections(FURTHER_DIRECTIONS)
             .orderDetails(format("It is ordered that the child is placed in the care of %s.", LA_NAME))
             .localAuthorityName(LA_NAME)

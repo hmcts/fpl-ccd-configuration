@@ -98,6 +98,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             "approver", "YES",
             "previewOrder", "YES",
             "furtherDirections", "YES",
+            "orderDetails","NO",
             "whichChildren", "YES",
             "approvalDate", "YES",
             "approvalDateTime", "NO",

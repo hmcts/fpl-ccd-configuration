@@ -20,6 +20,8 @@ public class ManageOrdersEventData {
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;
     String manageOrdersFurtherDirections;
+    String manageOrdersTitle;
+    String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
     String manageOrdersChildrenDescription;

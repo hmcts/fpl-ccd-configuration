@@ -45,7 +45,8 @@ public class SealedOrderHistoryService {
 
         pastOrders.add(element(identityService.generateId(), GeneratedOrder.builder()
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
-            .title(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
+            .title(manageOrdersEventData.getManageOrdersTitle())
+            .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
@@ -88,6 +89,5 @@ public class SealedOrderHistoryService {
             ).collect(Collectors.joining(", "))
         ).orElse(null);
     }
-
 }
 

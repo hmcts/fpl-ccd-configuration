@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderDocumentGeneratorHolder {
 
+    private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
 
@@ -25,6 +26,7 @@ public class OrderDocumentGeneratorHolder {
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
+                c21BlankOrderDocumentParameterGenerator,
                 c32CareOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator
             ).stream().collect(Collectors.toMap(

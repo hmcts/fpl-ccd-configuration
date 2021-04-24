@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
@@ -26,6 +27,10 @@ public enum Order {
     C32_CARE_ORDER(
         "Care order", "Section 31 Children Act 1989", "C32 - Care order",
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C21_BLANK_ORDER(
+        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
+        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order",
