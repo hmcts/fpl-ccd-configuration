@@ -280,7 +280,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
@@ -293,7 +293,7 @@ dependencies {
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.8.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
