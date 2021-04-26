@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
-import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksRenderer;
 import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
@@ -46,9 +45,6 @@ class CaseEventHandlerTest {
     @Mock
     private PreSubmissionTasksService preSubmissionTasksService;
 
-    @Mock
-    private PreSubmissionTasksRenderer preSubmissionTasksRenderer;
-
     @InjectMocks
     private CaseEventHandler caseEventHandler;
 
@@ -63,8 +59,8 @@ class CaseEventHandlerTest {
             Task.builder().event(CASE_NAME).state(COMPLETED).build(),
             Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
         );
-        final String renderedPreSubmissionMessages = "<div>Change case name in the case name screen</div>";
-        final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>";
+
+        final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>" + "\n\n" ;
 
         final List<PreSubmissionTask> preSubmissionTasks = List.of(
             PreSubmissionTask.builder().event(CASE_NAME).messages(List.of("Change case name")).build()
@@ -80,13 +76,13 @@ class CaseEventHandlerTest {
         verify(taskListService).getTasksForOpenCase(caseData);
         verify(taskListRenderer).render(tasks, preSubmissionTasks);
         verify(preSubmissionTasksService).getPreSubmissionTasks(caseData);
-        verify(preSubmissionTasksRenderer).renderLines(preSubmissionTasks);
+
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
             CASE_TYPE,
             caseData.getId(),
             "internal-update-task-list",
-            Map.of("taskList", renderedTaskLists + renderedPreSubmissionMessages)
+            Map.of("taskList", renderedTaskLists)
         );
     }
 
