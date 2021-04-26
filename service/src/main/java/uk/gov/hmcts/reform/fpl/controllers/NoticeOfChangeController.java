@@ -32,7 +32,7 @@ public class NoticeOfChangeController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentation(caseData));
+        caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
 
         return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(), callbackRequest);
     }

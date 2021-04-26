@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.AuditEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -22,7 +20,7 @@ public class NoticeOfChangeService {
     private final AuditEventService auditEventService;
     private final RespondentRepresentationService respondentRepresentationService;
 
-    public List<Element<Respondent>> updateRepresentation(CaseData caseData) {
+    public Map<String, Object> updateRepresentation(CaseData caseData) {
 
         AuditEvent auditEvent = auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_EVENT)
             .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s event in audit", NOC_EVENT)));

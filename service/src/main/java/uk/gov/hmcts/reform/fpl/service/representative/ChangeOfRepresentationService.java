@@ -4,11 +4,9 @@ import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
-import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -29,20 +27,23 @@ public class ChangeOfRepresentationService {
 
     // by method need to be HMCTS in case of admin
     public List<Element<ChangeOfRepresentation>> changeRepresentative(
-        List<Element<ChangeOfRepresentation>> current, Respondent respondent,
-        RespondentSolicitor addedRepresentative, RespondentSolicitor removedRepresentative,
-        ChangeOfRepresentationMethod method, String by) {
+        ChangeOfRepresentationRequest changeOfRepresentationRequest) {
 
-        List<Element<ChangeOfRepresentation>> changeOfRepresentatives = Lists.newArrayList(nullSafeList(current));
+        List<Element<ChangeOfRepresentation>> changeOfRepresentatives = Lists.newArrayList(nullSafeList(
+            changeOfRepresentationRequest.getCurrent()));
 
         changeOfRepresentatives.add(element(identityService.generateId(),
             ChangeOfRepresentation.builder()
-                .respondent(respondent.getParty().getFullName())
-                .via(method.getLabel())
-                .by(by)
+                .respondent(changeOfRepresentationRequest.getRespondent().getParty().getFullName())
+                .via(changeOfRepresentationRequest.getMethod().getLabel())
+                .by(changeOfRepresentationRequest.getBy())
                 .date(time.now().toLocalDate())
-                .removed(Optional.ofNullable(removedRepresentative).map(this::from).orElse(null))
-                .added(Optional.ofNullable(addedRepresentative).map(this::from).orElse(null))
+                .removed(Optional.ofNullable(changeOfRepresentationRequest.getRemovedRepresentative())
+                    .map(this::from)
+                    .orElse(null))
+                .added(Optional.ofNullable(changeOfRepresentationRequest.getAddedRepresentative())
+                    .map(this::from)
+                    .orElse(null))
                 .build()));
 
         changeOfRepresentatives.sort(Comparator.comparing(e -> e.getValue().getDate()));

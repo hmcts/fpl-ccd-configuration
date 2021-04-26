@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +30,7 @@ class NoticeOfChangeServiceTest {
     private static final Long CASE_ID = 10L;
     private static final String USER_ID = "User1";
     private static final String NOC_REQUEST_EVENT = "nocRequest";
+    private static final Map<String, Object> UPDATED_REPRESENTATION = Map.of("some", "stuff");
 
     @Mock
     private UserService userService;
@@ -82,15 +84,14 @@ class NoticeOfChangeServiceTest {
             .thenReturn(solicitorUser);
 
         when(respondentRepresentationService.updateRepresentation(caseData, solicitorUser))
-            .thenReturn(List.of(respondent));
+            .thenReturn(UPDATED_REPRESENTATION);
 
-        final List<Element<Respondent>> updatedRespondents = underTest.updateRepresentation(caseData);
+        final Map<String, Object> actual = underTest.updateRepresentation(caseData);
 
-        assertThat(updatedRespondents).containsExactly(respondent);
+        assertThat(actual).isEqualTo(UPDATED_REPRESENTATION);
 
         verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
         verify(userService).getUserDetailsById(USER_ID);
-        verify(respondentRepresentationService).updateRepresentation(caseData, solicitorUser);
         verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
     }
 
