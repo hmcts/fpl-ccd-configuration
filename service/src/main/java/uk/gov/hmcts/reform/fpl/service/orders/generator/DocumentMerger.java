@@ -26,9 +26,8 @@ public class DocumentMerger {
     private final DocumentDownloadService documentDownloadService;
     private final DocumentConversionService documentConversionService;
 
-    public DocmosisDocument mergeDocuments(
-        DocmosisDocument originalDocument,
-        List<DocumentReference> additionalDocuments) {
+    public DocmosisDocument mergeDocuments(DocmosisDocument originalDocument,
+                                           List<DocumentReference> additionalDocuments) {
 
         if (isEmpty(additionalDocuments)) {
             return originalDocument;
@@ -45,13 +44,13 @@ public class DocumentMerger {
             return new DocmosisDocument(originalDocument.getDocumentTitle(), docOutputStream.toByteArray());
         } catch (IOException e) {
             throw new DocumentMergeException(
-                "Exception occurred while merging documents for " + originalDocument.getDocumentTitle(), e);
+                "Exception occurred while merging documents for " + originalDocument.getDocumentTitle(), e
+            );
         }
     }
 
-    private List<InputStream> getPdfFilesToMerge(
-        DocmosisDocument originalDocument,
-        List<DocumentReference> additionalDocuments) {
+    private List<InputStream> getPdfFilesToMerge(DocmosisDocument originalDocument,
+                                                 List<DocumentReference> additionalDocuments) {
         List<InputStream> documents = new ArrayList<>();
         final byte[] convertedOriginalDocument = documentConversionService.convertToPdf(
             originalDocument.getBytes(), originalDocument.getDocumentTitle());

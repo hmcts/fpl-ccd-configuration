@@ -21,17 +21,17 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -47,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -64,22 +65,25 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         .build();
     private static final List<Element<Child>> CHILDREN = wrapElements(CHILD_1, CHILD_2);
 
-    private static final byte[] DOCUMENT_PDF_BINARIES = testDocumentBinaries();
+    // need actual pdfs for the merging
+    private static final byte[] DOCUMENT_PDF_BINARIES = readBytes("documents/document1.pdf");
+    private static final byte[] POWER_OF_ARREST_BINARIES = readBytes("documents/document2.pdf");
     private static final byte[] DOCUMENT_WORD_BINARIES = testDocumentBinaries();
-    private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES);
+    private static final DocmosisDocument DOCMOSIS_PDF_DOCUMENT = testDocmosisDocument(DOCUMENT_PDF_BINARIES)
+        .toBuilder().documentTitle("pdf.pdf").build();
     private static final DocmosisDocument DOCMOSIS_WORD_DOCUMENT = testDocmosisDocument(DOCUMENT_WORD_BINARIES);
     private static final Document UPLOADED_PDF_DOCUMENT = testDocument();
     private static final Document UPLOADED_WORD_DOCUMENT = testDocument();
     private static final DocumentReference DOCUMENT_PDF_REFERENCE = buildFromDocument(UPLOADED_PDF_DOCUMENT);
     private static final DocumentReference DOCUMENT_WORD_REFERENCE = buildFromDocument(UPLOADED_WORD_DOCUMENT);
-    private static final DocumentReference UPLOADED_POWER_OF_ARREST = testDocumentReference();
+    private static final DocumentReference UPLOADED_POWER_OF_ARREST = testDocumentReference("PoA.pdf");
 
     private static final UUID ELEMENT_ID = UUID.randomUUID();
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
     @MockBean
-    private DocumentMerger documentMerger;
+    private DocumentDownloadService downloadService;
     @MockBean
     private UploadDocumentService uploadService;
     @MockBean
@@ -95,10 +99,11 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
         when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
             .thenReturn(DOCMOSIS_PDF_DOCUMENT);
-
-        when(documentMerger.mergeDocuments(eq(DOCMOSIS_PDF_DOCUMENT), anyList()))
-            .thenReturn(DOCMOSIS_PDF_DOCUMENT);
-
+        when(downloadService.downloadDocument(UPLOADED_POWER_OF_ARREST.getBinaryUrl()))
+            .thenReturn(POWER_OF_ARREST_BINARIES);
+        // won't know merged document contents
+        when(uploadService.uploadDocument(any(), eq("c23_emergency_protection_order.pdf"), eq("application/pdf")))
+            .thenReturn(UPLOADED_PDF_DOCUMENT);
         when(uploadService.uploadDocument(eq(DOCUMENT_PDF_BINARIES), anyString(), eq("application/pdf")))
             .thenReturn(UPLOADED_PDF_DOCUMENT);
 
@@ -119,7 +124,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .manageOrdersType(C32_CARE_ORDER)
                 .manageOrdersApprovalDate(dateNow())
                 .manageOrdersFurtherDirections("Some further directions")
-                .build()).build();
+                .build())
+            .build();
 
         CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
 
@@ -142,8 +148,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldBuildNewEPOObject() {
-        final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+    void shouldBuildNewEPO() {
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
             .manageOrdersApprovalDateTime(now())
             .manageOrdersEndDateTime(now().plusDays(1))
             .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)

@@ -41,14 +41,17 @@ class OrderValidatorHolderTest {
     @BeforeEach
     void setUp() {
         validators = List.of(
-            approvalDateValidator, approvalDateTimeValidator, whichChildrenValidator, epoEndDateValidator);
+            approvalDateValidator, approvalDateTimeValidator, whichChildrenValidator, epoEndDateValidator
+        );
 
-        validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
         orderQuestionBlockValidators = Map.of(
             APPROVAL_DATE, approvalDateValidator,
             APPROVAL_DATE_TIME, approvalDateTimeValidator,
             WHICH_CHILDREN, whichChildrenValidator,
-            EPO_EXPIRY_DATE, epoEndDateValidator);
+            EPO_EXPIRY_DATE, epoEndDateValidator
+        );
+
+        validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
     }
 
     @Test
