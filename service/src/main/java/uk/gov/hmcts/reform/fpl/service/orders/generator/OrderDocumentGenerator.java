@@ -28,7 +28,7 @@ public class OrderDocumentGenerator {
 
     public DocmosisDocument generate(Order orderType, CaseData caseData, OrderStatus orderStatus, RenderFormat format) {
         DocmosisParameterGenerator documentGenerator = holder.getTypeToGenerator().get(orderType);
-        OrderAdditionalDocumentsHolder documentsHolder = holder.getOrderAdditionalDocuments().get(orderType);
+        AdditionalDocumentsCollector documentsHolder = holder.getTypeToAdditionalDocumentsCollector().get(orderType);
 
         DocmosisParameters docmosisParameters = Optional.ofNullable(documentGenerator)
             .map(generator -> {
@@ -37,13 +37,13 @@ public class OrderDocumentGenerator {
             })
             .orElseThrow(() -> new UnsupportedOperationException("Not implemented yet for order " + orderType.name()));
 
-        Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {
-        });
+        Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {});
 
         DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            templateData, documentGenerator.template(), format);
+            templateData, documentGenerator.template(), format
+        );
 
-        if (documentsHolder != null && orderStatus == OrderStatus.SEALED) {
+        if (documentsHolder != null && OrderStatus.SEALED == orderStatus) {
             return documentMerger.mergeDocuments(docmosisDocument, documentsHolder.additionalDocuments(caseData));
         }
 

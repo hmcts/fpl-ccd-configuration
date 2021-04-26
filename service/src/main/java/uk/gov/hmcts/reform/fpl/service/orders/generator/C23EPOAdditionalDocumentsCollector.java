@@ -14,7 +14,7 @@ import static java.util.Objects.isNull;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class C23EPOAdditionalDocumentsPopulator implements OrderAdditionalDocumentsHolder {
+public class C23EPOAdditionalDocumentsCollector implements AdditionalDocumentsCollector {
 
     @Override
     public Order accept() {

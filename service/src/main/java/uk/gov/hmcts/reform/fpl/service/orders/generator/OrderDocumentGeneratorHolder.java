@@ -14,14 +14,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderDocumentGeneratorHolder {
 
+    // parameter generators
     private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
 
-    private final C23EPOAdditionalDocumentsPopulator c23EPOAdditionalDocumentsPopulator;
+    // additional document collectors
+    private final C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
 
     private Map<Order, DocmosisParameterGenerator> typeToGenerator;
-    private Map<Order, OrderAdditionalDocumentsHolder> orderAdditionalDocumentsHolder;
+    private Map<Order, AdditionalDocumentsCollector> typeToAdditionalDocsCollector;
 
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
@@ -29,24 +31,18 @@ public class OrderDocumentGeneratorHolder {
                 c21BlankOrderDocumentParameterGenerator,
                 c32CareOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator
-            ).stream().collect(Collectors.toMap(
-                DocmosisParameterGenerator::accept,
-                Function.identity()
-            ));
+            ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;
     }
 
-    public Map<Order, OrderAdditionalDocumentsHolder> getOrderAdditionalDocuments() {
-        if (orderAdditionalDocumentsHolder == null) {
-            orderAdditionalDocumentsHolder = List.of(
-                c23EPOAdditionalDocumentsPopulator
-            ).stream().collect(Collectors.toMap(
-                OrderAdditionalDocumentsHolder::accept,
-                Function.identity()
-            ));
+    public Map<Order, AdditionalDocumentsCollector> getTypeToAdditionalDocumentsCollector() {
+        if (typeToAdditionalDocsCollector == null) {
+            typeToAdditionalDocsCollector = List.of(
+                c23EPOAdditionalDocumentsCollector
+            ).stream().collect(Collectors.toMap(AdditionalDocumentsCollector::accept, Function.identity()));
         }
-        return orderAdditionalDocumentsHolder;
+        return typeToAdditionalDocsCollector;
     }
 
 }

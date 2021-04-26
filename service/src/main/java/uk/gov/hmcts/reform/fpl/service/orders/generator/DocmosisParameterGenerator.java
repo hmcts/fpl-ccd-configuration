@@ -12,5 +12,4 @@ public interface DocmosisParameterGenerator {
     DocmosisParameters generate(CaseData caseData);
 
     DocmosisTemplates template();
-
 }

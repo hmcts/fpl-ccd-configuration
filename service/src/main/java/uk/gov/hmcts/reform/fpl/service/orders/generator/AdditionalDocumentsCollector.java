@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 
 import java.util.List;
 
-public interface OrderAdditionalDocumentsHolder {
+public interface AdditionalDocumentsCollector {
 
     Order accept();
 

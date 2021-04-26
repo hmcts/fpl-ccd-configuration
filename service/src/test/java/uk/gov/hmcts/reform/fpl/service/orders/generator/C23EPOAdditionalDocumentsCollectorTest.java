@@ -12,11 +12,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-class C23EPOAdditionalDocumentsPopulatorTest {
+class C23EPOAdditionalDocumentsCollectorTest {
 
     private static final Order ORDER_TYPE = C23_EMERGENCY_PROTECTION_ORDER;
 
-    private C23EPOAdditionalDocumentsPopulator underTest = new C23EPOAdditionalDocumentsPopulator();
+    private C23EPOAdditionalDocumentsCollector underTest = new C23EPOAdditionalDocumentsCollector();
 
     @Test
     void accept() {
