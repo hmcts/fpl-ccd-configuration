@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -113,6 +114,21 @@ class RespondentAfterSubmissionValidatorTest {
                 .build());
 
         assertThat(actual).isEqualTo(List.of());
+    }
+
+    @Test
+    void shouldReturnErrorWhenLegalRepresentationRemoved() {
+        List<String> actual = underTest.validate(
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, Respondent.builder().legalRepresentation(NO.getValue()).build())))
+                .build(),
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1).toBuilder()
+                    .legalRepresentation(YES.getValue())
+                    .build())))
+                .build());
+
+        assertThat(actual).isEqualTo(List.of("Removing existing representation from respondent 1 is not allowed"));
     }
 
     @Test
