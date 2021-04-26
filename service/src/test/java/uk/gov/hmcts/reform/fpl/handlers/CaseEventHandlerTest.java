@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.submission.EventValidation;
+import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksRenderer;
 import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksService;
@@ -66,22 +66,21 @@ class CaseEventHandlerTest {
         final String renderedPreSubmissionMessages = "<div>Change case name in the case name screen</div>";
         final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>";
 
-        final List<EventValidation> eventValidations = List.of(
-            EventValidation.builder().event(CASE_NAME).messages(List.of("Change case name")).build()
+        final List<PreSubmissionTask> preSubmissionTasks = List.of(
+            PreSubmissionTask.builder().event(CASE_NAME).messages(List.of("Change case name")).build()
         );
 
-        when(preSubmissionTasksService.getEventValidationsForSubmission(caseData)).thenReturn(eventValidations);
-        when(preSubmissionTasksRenderer.render(eventValidations)).thenReturn(renderedPreSubmissionMessages);
+        when(preSubmissionTasksService.getPreSubmissionTasks(caseData)).thenReturn(preSubmissionTasks);
 
         when(taskListService.getTasksForOpenCase(caseData)).thenReturn(tasks);
-        when(taskListRenderer.render(tasks)).thenReturn(renderedTaskLists);
+        when(taskListRenderer.render(tasks, preSubmissionTasks)).thenReturn(renderedTaskLists);
 
         caseEventHandler.handleCaseDataChange(caseDataChanged);
 
         verify(taskListService).getTasksForOpenCase(caseData);
-        verify(taskListRenderer).render(tasks);
-        verify(preSubmissionTasksService).getEventValidationsForSubmission(caseData);
-        verify(preSubmissionTasksRenderer).render(eventValidations);
+        verify(taskListRenderer).render(tasks, preSubmissionTasks);
+        verify(preSubmissionTasksService).getPreSubmissionTasks(caseData);
+        verify(preSubmissionTasksRenderer).renderLines(preSubmissionTasks);
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
             CASE_TYPE,

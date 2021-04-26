@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
+import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
@@ -42,8 +43,10 @@ public class TaskListRenderer {
 
     private final TaskListRenderElements taskListRenderElements;
 
+    private final PreSubmissionTasksRenderer preSubmissionTasksRenderer;
+
     //TODO consider templating solution like mustache
-    public String render(List<Task> allTasks) {
+    public String render(List<Task> allTasks, List<PreSubmissionTask> preSubmissionTasks) {
         final List<String> lines = new LinkedList<>();
 
         lines.add("<div class='width-50'>");
@@ -51,6 +54,8 @@ public class TaskListRenderer {
         groupInSections(allTasks).forEach(section -> lines.addAll(renderSection(section)));
 
         lines.add("</div>");
+
+        lines.addAll(preSubmissionTasksRenderer.renderLines(preSubmissionTasks));
 
         return String.join("\n\n", lines);
     }

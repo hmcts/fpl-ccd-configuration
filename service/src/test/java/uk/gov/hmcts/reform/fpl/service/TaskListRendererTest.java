@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
@@ -32,33 +33,40 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 class TaskListRendererTest {
+    PreSubmissionTasksRenderer preSubmissionTasksRenderer = new PreSubmissionTasksRenderer();
 
     private final TaskListRenderer taskListRenderer = new TaskListRenderer(
         new TaskListRenderElements(
             "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
-        ));
+        ), preSubmissionTasksRenderer);
 
     private static List<Task> TASKS = List.of(
-            task(CASE_NAME, COMPLETED_FINISHED),
-            task(ORDERS_SOUGHT, IN_PROGRESS),
-            task(HEARING_URGENCY, COMPLETED_FINISHED),
-            task(GROUNDS, COMPLETED),
-            task(RISK_AND_HARM, IN_PROGRESS),
-            task(FACTORS_AFFECTING_PARENTING, COMPLETED_FINISHED),
-            task(APPLICATION_DOCUMENTS, COMPLETED),
-            task(ORGANISATION_DETAILS, COMPLETED),
-            task(CHILDREN, COMPLETED),
-            task(RESPONDENTS, IN_PROGRESS),
-            task(ALLOCATION_PROPOSAL, COMPLETED),
-            task(OTHER_PROCEEDINGS, NOT_STARTED),
-            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
-            task(OTHERS, NOT_STARTED),
-            task(COURT_SERVICES, IN_PROGRESS),
-            task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+        task(CASE_NAME, COMPLETED_FINISHED),
+        task(ORDERS_SOUGHT, IN_PROGRESS),
+        task(HEARING_URGENCY, COMPLETED_FINISHED),
+        task(GROUNDS, COMPLETED),
+        task(RISK_AND_HARM, IN_PROGRESS),
+        task(FACTORS_AFFECTING_PARENTING, COMPLETED_FINISHED),
+        task(APPLICATION_DOCUMENTS, COMPLETED),
+        task(ORGANISATION_DETAILS, COMPLETED),
+        task(CHILDREN, COMPLETED),
+        task(RESPONDENTS, IN_PROGRESS),
+        task(ALLOCATION_PROPOSAL, COMPLETED),
+        task(OTHER_PROCEEDINGS, NOT_STARTED),
+        task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+        task(OTHERS, NOT_STARTED),
+        task(COURT_SERVICES, IN_PROGRESS),
+        task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+
+    private final static List<PreSubmissionTask> PRE_SUBMISSION_TASKS = List.of(
+        PreSubmissionTask.builder()
+            .event(ORDERS_SOUGHT)
+            .messages(List.of("Add the orders and directions sought"))
+            .build());
 
     @Test
     void shouldRenderTaskListWithApplicationDocuments() {
-        assertThat(taskListRenderer.render(TASKS)).isEqualTo(
+        assertThat(taskListRenderer.render(TASKS, PRE_SUBMISSION_TASKS)).isEqualTo(
             readString("task-list/expected-task-list.md").trim());
     }
 }

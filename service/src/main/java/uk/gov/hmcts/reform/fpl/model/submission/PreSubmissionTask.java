@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class EventValidation {
+public class PreSubmissionTask {
     private final Event event;
     private final List<String> messages;
 }
