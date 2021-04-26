@@ -60,7 +60,7 @@ class CaseEventHandlerTest {
             Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
         );
 
-        final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>" + "\n\n" ;
+        final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>" + "\n\n";
 
         final List<PreSubmissionTask> preSubmissionTasks = List.of(
             PreSubmissionTask.builder().event(CASE_NAME).messages(List.of("Change case name")).build()
