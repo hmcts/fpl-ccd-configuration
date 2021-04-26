@@ -135,7 +135,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipLabel",
     "FieldDisplayOrder": 8,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "READONLY",
     "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
   {
@@ -172,7 +172,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.proceedingsLabel",
     "FieldDisplayOrder": 12,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "READONLY",
     "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
   {
