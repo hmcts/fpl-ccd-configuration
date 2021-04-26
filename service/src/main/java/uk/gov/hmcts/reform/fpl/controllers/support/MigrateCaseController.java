@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,7 @@ import static java.util.Objects.isNull;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final RespondentPolicyService respondentPolicyService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -39,6 +42,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-2982".equals(migrationId)) {
             run2982(caseDetails);
+        }
+
+        if ("FPLA-2961".equals(migrationId)) {
+            run2961(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -83,6 +90,19 @@ public class MigrateCaseController extends CallbackController {
             additionalApplicationsBundle.stream().map(this::fixMissingIds).collect(Collectors.toList());
 
         caseDetails.getData().put("additionalApplicationsBundle", fixedAdditionalApplicationsBundle);
+    }
+
+    private void run2961(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getRespondents1().size() > 10) {
+            throw new IllegalStateException(String.format("Case %s has %s respondents", caseDetails.getId(),
+                caseData.getRespondents1().size()));
+        }
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
     }
 
     private boolean checkNullIds(Element<AdditionalApplicationsBundle> documentBundle) {
