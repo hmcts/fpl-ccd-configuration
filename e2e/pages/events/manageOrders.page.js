@@ -125,37 +125,31 @@ const enterDirections = async (text) => {
   await I.runAccessibilityTest();
 };
 
-const selectIncludePhrase = async (includePhrase) => {
+const selectIncludePhrase = (includePhrase) => {
   I.click(`${section4.includePhrase.group}-${includePhrase}`);
-  await I.runAccessibilityTest();
 };
 
-const selectEpoType = async (epoType) => {
+const selectEpoType = (epoType) => {
   I.click(`${section4.epoTypes.group}-${epoType}`);
-  await I.runAccessibilityTest();
 };
 
-const selectExclusionRequirement = async (exclusionRequirement) => {
+const selectExclusionRequirement = (exclusionRequirement) => {
   I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
-  await I.runAccessibilityTest();
 };
 
-const enterWhoIsExcluded = async (text) => {
+const enterWhoIsExcluded = (text) => {
   I.fillField(section4.whoIsExcluded, text);
-  await I.runAccessibilityTest();
 };
 
 const enterExclusionStartDate = async (date) => {
   await I.fillDate(date, section4.exclusionStartDate);
-  await I.runAccessibilityTest();
 };
 
-const uploadPowerOfArrest = async (file) => {
+const uploadPowerOfArrest = (file) => {
   I.attachFile(section4.powerOfArrest, file);
-  await I.runAccessibilityTest();
 };
 
-const enterRemovalAddress = async (address) => {
+const enterRemovalAddress = (address) => {
   postcodeLookup.enterAddressManually(address);
 };
 
@@ -172,6 +166,6 @@ const checkPreview = async () => {
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview,enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
-  enterRemovalAddress, selectExclusionRequirement,enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
 };

@@ -1,9 +1,8 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
-const dateToString = require('../helpers/date_to_string_helper');
 const caseData = require('../fixtures/caseData/gatekeepingFullDetails.json');
 
-const approvalDate = {year: 2021, month: 4, day: 9};
+const approvalDate = new Date(2021, 3, 9);
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
 const orderTitle = 'some title';
 const today = new Date(Date.now());
@@ -55,8 +54,8 @@ Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) =>
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.removeAccommodation);
-  await manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
+  manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.removeAccommodation);
+  manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
   await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
@@ -84,14 +83,13 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
-  await manageOrdersEventPage.enterRemovalAddress(removalAddress);
-  await manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
-  await manageOrdersEventPage.enterWhoIsExcluded('John Doe');
+  manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
+  manageOrdersEventPage.enterRemovalAddress(removalAddress);
+  manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
+  manageOrdersEventPage.enterWhoIsExcluded('John Doe');
   await manageOrdersEventPage.enterExclusionStartDate(approvalDate);
-  await manageOrdersEventPage.uploadPowerOfArrest(config.testPdfFile);
-
-  await manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
+  manageOrdersEventPage.uploadPowerOfArrest(config.testPdfFile);
+  manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
   await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
@@ -119,7 +117,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.enterTitle(orderTitle);
+  manageOrdersEventPage.enterTitle(orderTitle);
   await manageOrdersEventPage.enterDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
@@ -137,19 +135,17 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
 
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
+  const dateOfApproval = order.approvalDate !== undefined ? order.approvalDate : order.approvalDateTime;
+  const mask = order.approvalDate !== undefined ? 'd mmm yyyy' : 'd mmm yyyy, h:MM:ss TT';
+
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab([orderElement, 'Type of order'], order.orderType);
+  I.seeInTab([orderElement, 'Approval date'], dateFormat(dateOfApproval, mask));
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
   I.seeInTab([orderElement, 'Children'], order.children);
 
   if (order.title !== undefined) {
     I.seeInTab([orderElement, 'Order title'], orderTitle);
-  }
-  if (order.approvalDate !== undefined) {
-    I.seeInTab([orderElement, 'Approval date'], dateFormat(dateToString(order.approvalDate), 'd mmm yyyy'));
-  }
-  if (order.approvalDateTime !== undefined) {
-    I.seeInTab([orderElement, 'Approval date'], dateFormat(order.approvalDateTime, 'd mmm yyyy, h:MM:ss TT'));
   }
 }

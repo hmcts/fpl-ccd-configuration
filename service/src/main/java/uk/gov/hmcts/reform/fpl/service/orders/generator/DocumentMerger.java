@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.List;
 import static io.jsonwebtoken.lang.Collections.isEmpty;
 import static org.apache.pdfbox.io.MemoryUsageSetting.setupMainMemoryOnly;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentMerger {
@@ -41,6 +43,7 @@ public class DocumentMerger {
         pdfMergerUtility.setDestinationStream(docOutputStream);
         try {
             pdfMergerUtility.mergeDocuments(setupMainMemoryOnly());
+            log.info("Merged {} documents", 1 + additionalDocuments.size());
             return new DocmosisDocument(originalDocument.getDocumentTitle(), docOutputStream.toByteArray());
         } catch (IOException e) {
             throw new DocumentMergeException(
