@@ -92,7 +92,8 @@
     "ListElementCode": "relationshipLabel",
     "FieldType": "Label",
     "ElementLabel": "## Relationship to the child",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "relationshipLabel=\"HIDE_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -126,7 +127,8 @@
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
     "ElementLabel": "## Ability to take part in proceedings",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "proceedingsLabel=\"HIDE_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",

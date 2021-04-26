@@ -135,7 +135,8 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipLabel",
     "FieldDisplayOrder": 8,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -171,7 +172,8 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.proceedingsLabel",
     "FieldDisplayOrder": 12,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -267,7 +269,8 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.signUpRequestHeader",
-    "DisplayContext": "READONLY"
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -275,7 +278,8 @@
     "CaseEventID": "amendRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.signupRequestLabel",
-    "DisplayContext": "READONLY"
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "party!=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
