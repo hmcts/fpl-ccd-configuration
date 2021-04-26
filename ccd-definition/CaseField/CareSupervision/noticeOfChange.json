@@ -1,5 +1,13 @@
 [
   {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "changeOrganisationRequestField",
+    "Label": "Change Organisation Request",
+    "FieldType": "ChangeOrganisationRequest",
+    "SecurityClassification": "PUBLIC"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "changeOfRepresentatives",
@@ -7,6 +15,6 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "ChangeOfRepresentation",
     "SecurityClassification": "Public",
-    "Searchable": "N"
+    "Searchable": "N"  
   }
 ]

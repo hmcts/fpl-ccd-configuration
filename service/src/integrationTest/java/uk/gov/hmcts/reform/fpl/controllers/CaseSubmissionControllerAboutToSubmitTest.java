@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -46,8 +47,6 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
-import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -219,11 +218,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         OrganisationPolicy expectedRespondentPolicyOne = OrganisationPolicy.builder()
             .organisation(solicitorOrganisation)
-            .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
-            .build();
-
-        OrganisationPolicy expectedRespondentPolicyTwo = OrganisationPolicy.builder()
-            .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
+            .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
             .build();
 
         NoticeOfChangeAnswers expectedNoticeOfChangeAnswers = NoticeOfChangeAnswers.builder()
@@ -236,10 +231,21 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
 
         assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
-        assertThat(respondentPolicyData.getRespondentPolicy0()).isEqualTo(expectedRespondentPolicyOne);
-        assertThat(respondentPolicyData.getRespondentPolicy1()).isEqualTo(expectedRespondentPolicyTwo);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isEqualTo(expectedNoticeOfChangeAnswers);
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isEqualTo(expectedNoticeOfChangeAnswers);
+
+        assertThat(respondentPolicyData).isEqualTo(RespondentPolicyData.builder()
+            .respondentPolicy0(expectedRespondentPolicyOne)
+            .respondentPolicy1(buildOrganisationPolicy(SolicitorRole.SOLICITORB))
+            .respondentPolicy2(buildOrganisationPolicy(SolicitorRole.SOLICITORC))
+            .respondentPolicy3(buildOrganisationPolicy(SolicitorRole.SOLICITORD))
+            .respondentPolicy4(buildOrganisationPolicy(SolicitorRole.SOLICITORE))
+            .respondentPolicy5(buildOrganisationPolicy(SolicitorRole.SOLICITORF))
+            .respondentPolicy6(buildOrganisationPolicy(SolicitorRole.SOLICITORG))
+            .respondentPolicy7(buildOrganisationPolicy(SolicitorRole.SOLICITORH))
+            .respondentPolicy8(buildOrganisationPolicy(SolicitorRole.SOLICITORI))
+            .respondentPolicy9(buildOrganisationPolicy(SolicitorRole.SOLICITORJ))
+            .build());
     }
 
     @Test
@@ -317,6 +323,13 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .party(ApplicantParty.builder()
                 .organisationName("Test organisation")
                 .build())
+            .build();
+    }
+
+    private OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {
+        return OrganisationPolicy.builder()
+            .organisation(Organisation.builder().build())
+            .orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel())
             .build();
     }
 }

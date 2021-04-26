@@ -19,13 +19,14 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
 import uk.gov.hmcts.reform.fpl.events.AmendedReturnedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
+import uk.gov.hmcts.reform.fpl.events.RespondentsSubmitted;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
+import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
@@ -60,7 +61,7 @@ public class CaseSubmissionController extends CallbackController {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
-    private final RespondentPolicyService respondentPolicyService;
+    private final RespondentRepresentationService respondentRepresentationService;
     private final IdamClient idamClient;
     private final RequestData requestData;
 
@@ -125,7 +126,7 @@ public class CaseSubmissionController extends CallbackController {
                 .build());
 
             if (featureToggleService.hasRSOCaseAccess()) {
-                data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
+                data.putAll(respondentRepresentationService.generateForSubmission(caseData));
             }
         }
 
@@ -142,6 +143,7 @@ public class CaseSubmissionController extends CallbackController {
 
         if (caseDataBefore.getState() == OPEN) {
             publishEvent(new SubmittedCaseEvent(caseData, caseDataBefore));
+            publishEvent(new RespondentsSubmitted(caseData));
             publishEvent(new CaseDataChanged(caseData));
         } else if (isInReturnedState(callbackRequest.getCaseDetailsBefore())) {
             publishEvent(new AmendedReturnedCaseEvent(caseData));

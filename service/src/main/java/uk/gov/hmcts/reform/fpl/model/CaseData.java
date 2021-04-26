@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.aac.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -907,4 +908,5 @@ public class CaseData {
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
+    private final ChangeOrganisationRequest changeOrganisationRequestField;
 }
