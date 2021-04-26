@@ -58,7 +58,7 @@ class TaskListRendererTest {
         task(COURT_SERVICES, IN_PROGRESS),
         task(SUBMIT_APPLICATION, NOT_AVAILABLE));
 
-    private final static List<PreSubmissionTask> PRE_SUBMISSION_TASKS = List.of(
+    private static final List<PreSubmissionTask> PRE_SUBMISSION_TASKS = List.of(
         PreSubmissionTask.builder()
             .event(ORDERS_SOUGHT)
             .messages(List.of("Add the orders and directions sought"))

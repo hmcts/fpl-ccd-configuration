@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ORDERS_SOUGHT;
 
 @ExtendWith(SpringExtension.class)
@@ -22,9 +21,9 @@ class PreSubmissionTasksRendererTest {
         "</span>",
         "</summary>",
         "<div class=\"govuk-details__text\" id=\"sp-msg-unselected-case-content\">",
-        "Add the orders and directions sought in the <a href=" +
-            "'/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and " +
-            "directions sought</a>",
+        "Add the orders and directions sought in the <a href="
+            + "'/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and "
+            + "directions sought</a>",
         "</div>",
         "</details>"
     );
