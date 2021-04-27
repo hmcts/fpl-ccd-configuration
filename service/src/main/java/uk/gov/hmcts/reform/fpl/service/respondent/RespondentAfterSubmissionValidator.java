@@ -51,7 +51,7 @@ public class RespondentAfterSubmissionValidator {
 
             if (YES.getValue().equals(previous.getLegalRepresentation())
                 && NO.getValue().equals(current.getLegalRepresentation())) {
-                errors.add(String.format("Removing existing representation from respondent %d is not allowed", i + 1));
+                errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
             }
 
             if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))

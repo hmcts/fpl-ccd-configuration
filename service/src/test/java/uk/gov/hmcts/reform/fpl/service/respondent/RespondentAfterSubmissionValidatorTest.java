@@ -128,7 +128,7 @@ class RespondentAfterSubmissionValidatorTest {
                     .build())))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("Removing existing representation from respondent 1 is not allowed"));
+        assertThat(actual).isEqualTo(List.of("You cannot remove respondent 1's legal representative"));
     }
 
     @Test
