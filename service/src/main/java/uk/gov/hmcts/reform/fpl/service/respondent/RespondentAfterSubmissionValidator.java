@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Component
@@ -33,7 +34,7 @@ public class RespondentAfterSubmissionValidator {
         Set<UUID> previousRespondentIds = getIds(nullSafeList(caseDataBefore.getRespondents1()));
 
         if (!currentRespondentIds.containsAll(previousRespondentIds)) {
-            errors.add("Removing an existing respondent is not allowed");
+            errors.add(" You cannot remove a respondent from the case");
         }
 
         Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getRespondents1());
@@ -45,12 +46,27 @@ public class RespondentAfterSubmissionValidator {
         for (int i = 0; i < currentRespondents.size(); i++) {
             Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
             Respondent current = currentRespondentsList.get(i).getValue();
+
+            if (current.getLegalRepresentation() == null) {
+                errors.add(String.format("Confirm if respondent %d has legal representation", i + 1));
+            }
+            if (isEmpty(current.getSolicitor().getFirstName()) || isEmpty(current.getSolicitor().getLastName())) {
+                errors.add(String.format("Add the full name of respondent %d’s legal representative", i + 1));
+
+            }
+            if (isEmpty(current.getSolicitor().getEmail())) {
+                errors.add(String.format("Add the email address of respondent %d’s legal representative", i + 1));
+            }
+            if (!current.hasRegisteredOrganisation() || !current.hasUnregisteredOrganisation()) {
+                errors.add(String.format("Add the organisation details for respondent %d's representative", i + 1));
+            }
+
             Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
 
             if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
                 && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
 
-                errors.add(String.format("Change of organisation for respondent %d is not allowed", i + 1));
+                errors.add("You cannot change organisation details for a legal representative");
             }
         }
 
