@@ -136,10 +136,10 @@ exports.config = {
         'doubleClick',
         'rightClick',
         'fillField',
-        'pressKey',
         'checkOption',
         'selectOption',
       ],
+      delayAfter: 550,
     },
     retryFailedStep: {
       enabled: true,
