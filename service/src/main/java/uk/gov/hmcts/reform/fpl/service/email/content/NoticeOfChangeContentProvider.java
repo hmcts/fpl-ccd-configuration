@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.RespondentSolicitorNoticeOfChangeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
@@ -15,10 +15,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfChangeContentProvider extends SharedNotifyContentProvider {
 
-    public RespondentSolicitorNoticeOfChangeTemplate buildRespondentSolicitorAccessGrantedNotification(
+    public NoticeOfChangeRespondentSolicitorTemplate buildRespondentSolicitorAccessGrantedNotification(
         CaseData caseData, RespondentSolicitor solicitor) {
 
-        return RespondentSolicitorNoticeOfChangeTemplate.builder()
+        return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(getSalutation(solicitor))
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())
@@ -26,10 +26,10 @@ public class NoticeOfChangeContentProvider extends SharedNotifyContentProvider {
             .build();
     }
 
-    public RespondentSolicitorNoticeOfChangeTemplate buildRespondentSolicitorAccessRevokedNotification(
+    public NoticeOfChangeRespondentSolicitorTemplate buildRespondentSolicitorAccessRevokedNotification(
         CaseData caseData, RespondentSolicitor solicitor) {
 
-        return RespondentSolicitorNoticeOfChangeTemplate.builder()
+        return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(getSalutation(solicitor))
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())

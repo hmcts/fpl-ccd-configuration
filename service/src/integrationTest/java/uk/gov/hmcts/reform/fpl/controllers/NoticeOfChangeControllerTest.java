@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.RespondentSolicitorNoticeOfChangeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 
@@ -244,14 +244,14 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotifyNewRespondentSolicitorWhenCaseIsSubmitted() {
 
-            RespondentSolicitorNoticeOfChangeTemplate respondentSolicitorNoticeOfChangeTemplate =
+            NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeRespondentSolicitorTemplate =
                 getExpectedNoticeOfChangeParameters()
                     .salutation("Dear New Solicitor")
                     .caseUrl("http://fake-url/cases/case-details/" + CASE_ID)
                     .build();
 
             final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-                respondentSolicitorNoticeOfChangeTemplate, new TypeReference<>() {
+                noticeOfChangeRespondentSolicitorTemplate, new TypeReference<>() {
                 });
 
             postSubmittedEvent(callbackRequest);
@@ -267,13 +267,13 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotifyOldRespondentSolicitorWhenCaseIsSubmitted() {
 
-            RespondentSolicitorNoticeOfChangeTemplate respondentSolicitorNoticeOfChangeTemplate =
+            NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeRespondentSolicitorTemplate =
                 getExpectedNoticeOfChangeParameters()
                     .salutation("Dear Old Solicitor")
                     .build();
 
             final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-                respondentSolicitorNoticeOfChangeTemplate, new TypeReference<>() {
+                noticeOfChangeRespondentSolicitorTemplate, new TypeReference<>() {
                 });
 
             postSubmittedEvent(callbackRequest);
@@ -286,9 +286,9 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
                     notificationReference));
         }
 
-        private RespondentSolicitorNoticeOfChangeTemplate.RespondentSolicitorNoticeOfChangeTemplateBuilder
+        private NoticeOfChangeRespondentSolicitorTemplate.NoticeOfChangeRespondentSolicitorTemplateBuilder
             getExpectedNoticeOfChangeParameters() {
-            return RespondentSolicitorNoticeOfChangeTemplate.builder()
+            return NoticeOfChangeRespondentSolicitorTemplate.builder()
                 .caseName(caseName)
                 .ccdNumber(CASE_ID.toString());
         }

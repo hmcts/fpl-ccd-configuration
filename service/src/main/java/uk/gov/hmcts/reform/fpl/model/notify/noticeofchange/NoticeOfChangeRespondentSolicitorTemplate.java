@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 @Data
 @Builder
-public class RespondentSolicitorNoticeOfChangeTemplate implements NotifyData {
+public class NoticeOfChangeRespondentSolicitorTemplate implements NotifyData {
     private final String salutation;
     private String caseName;
     private String ccdNumber;

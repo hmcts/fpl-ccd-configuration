@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.RespondentSolicitorNoticeOfChangeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.stream.Stream;
@@ -38,7 +38,7 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
             .lastName(lastName)
             .build();
 
-        RespondentSolicitorNoticeOfChangeTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation)
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation)
             .caseUrl("http://fake-url/cases/case-details/" + CASE_ID)
             .build();
 
@@ -56,7 +56,7 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
             .lastName(lastName)
             .build();
 
-        RespondentSolicitorNoticeOfChangeTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation).build();
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation).build();
 
         assertThat(underTest.buildRespondentSolicitorAccessRevokedNotification(CASE_DATA, respondentSolicitor))
             .isEqualTo(expectedTemplate);
@@ -79,12 +79,11 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
         );
     }
 
-    private RespondentSolicitorNoticeOfChangeTemplate.RespondentSolicitorNoticeOfChangeTemplateBuilder
+    private NoticeOfChangeRespondentSolicitorTemplate.NoticeOfChangeRespondentSolicitorTemplateBuilder
         buildExpectedTemplate(String expectedSalutation) {
-        return RespondentSolicitorNoticeOfChangeTemplate.builder()
+        return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(expectedSalutation)
             .caseName(CASE_NAME)
             .ccdNumber(CASE_ID.toString());
     }
-
 }

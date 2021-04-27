@@ -9,7 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.RespondentSolicitorNoticeOfChangeTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 
@@ -26,8 +26,8 @@ public class NoticeOfChangeEventHandlerTest {
     private static final String expectedEmail = "test@test.com";
     private static final RespondentSolicitor solicitor = RespondentSolicitor.builder().email(expectedEmail).build();
     private static final  CaseData caseData = caseData();
-    private static final RespondentSolicitorNoticeOfChangeTemplate expectedTemplate =
-        RespondentSolicitorNoticeOfChangeTemplate.builder()
+    private static final NoticeOfChangeRespondentSolicitorTemplate expectedTemplate =
+        NoticeOfChangeRespondentSolicitorTemplate.builder()
             .build();
 
     @MockBean
