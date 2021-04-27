@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 class NoticeOfChangeControllerTest extends AbstractCallbackTest {
 
     private static final Long CASE_ID = 10L;
-    private static final String SOLICITOR_ID = "1111111";
 
     @Captor
     private ArgumentCaptor<CallbackRequest> requestCaptor;
@@ -94,6 +93,8 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
                 .thenReturn(auditEvents);
             when(idamClient.getUserByUserId(USER_AUTH_TOKEN, solicitorId))
                 .thenReturn(solicitorUser);
+            when(caseAssignmentApi.applyDecision(eq(USER_AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), requestCaptor.capture()))
+                .thenReturn(assignmentResponse);
         }
 
         @Test
@@ -131,15 +132,15 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
                 .changeOrganisationRequestField(changeRequest)
                 .build();
 
-        final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
+            final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
 
-        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
+            final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
 
             final Element<Respondent> expectedRespondent = update(respondent2, solicitorUser, newOrganisation);
 
-        assertThat(actualResponse).isEqualTo(assignmentResponse);
-        assertThat(updatedCaseData.getRespondents1()).containsExactly(respondent1, expectedRespondent, respondent3);
-    }
+            assertThat(actualResponse).isEqualTo(assignmentResponse);
+            assertThat(updatedCaseData.getRespondents1()).containsExactly(respondent1, expectedRespondent, respondent3);
+        }
 
         @Test
         void shouldUpdateRespondentRepresentation() {
@@ -183,15 +184,15 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
                 .build();
 
 
-        final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
+            final AboutToStartOrSubmitCallbackResponse actualResponse = postAboutToStartEvent(caseData);
 
-        final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
+            final CaseData updatedCaseData = extractCaseData(requestCaptor.getValue());
 
             final Element<Respondent> expectedRespondent = update(respondent1, solicitorUser, newOrganisation);
 
-        assertThat(updatedCaseData.getRespondents1()).containsExactly(expectedRespondent, respondent2, respondent3);
-        assertThat(actualResponse).isEqualTo(assignmentResponse);
-    }
+            assertThat(updatedCaseData.getRespondents1()).containsExactly(expectedRespondent, respondent2, respondent3);
+            assertThat(actualResponse).isEqualTo(assignmentResponse);
+        }
 
         private Element<Respondent> update(Element<Respondent> respondent, UserDetails solicitor, Organisation org) {
             return element(respondent.getId(), respondent.getValue().toBuilder()
