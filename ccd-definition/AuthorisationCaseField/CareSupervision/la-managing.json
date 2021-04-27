@@ -1097,5 +1097,12 @@
     "CaseFieldID": "documentsSentToParties",
     "UserRole": "[LAMANAGING]",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submissionRequiredFieldsInfo",
+    "UserRole": "[LAMANAGING]",
+    "CRUD": "R"
   }
 ]

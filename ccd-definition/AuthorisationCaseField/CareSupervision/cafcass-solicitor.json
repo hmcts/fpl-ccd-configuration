@@ -453,5 +453,12 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "UserRole": "[CAFCASSSOLICITOR]",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "submissionRequiredFieldsInfo",
+    "UserRole": "[CAFCASSSOLICITOR]",
+    "CRUD": "R"
   }
 ]
