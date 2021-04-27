@@ -10,8 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+
+import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Api
 @RestController
@@ -29,5 +36,25 @@ public class NoticeOfChangeController extends CallbackController {
         caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentation(caseData));
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
+
+        CaseData oldCaseData = getCaseDataBefore(callbackRequest);
+        CaseData newCaseData = getCaseData(callbackRequest);
+
+        List<Respondent> oldRespondents = unwrapElements(oldCaseData.getAllRespondents());
+        List<Respondent> newRespondents = unwrapElements(newCaseData.getAllRespondents());
+
+        for (int i = 0; i < newRespondents.size(); i++) {
+            RespondentSolicitor oldRespondentSolicitor = oldRespondents.get(i).getSolicitor();
+            RespondentSolicitor newRespondentSolicitor = newRespondents.get(i).getSolicitor();
+
+            if (!oldRespondentSolicitor.equals(newRespondentSolicitor)) {
+                publishEvent(new NoticeOfChangeEvent(newCaseData, oldRespondentSolicitor, newRespondentSolicitor));
+                break;
+            }
+        }
     }
 }
