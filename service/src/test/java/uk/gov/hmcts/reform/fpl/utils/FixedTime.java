@@ -12,6 +12,10 @@ public class FixedTime implements Time {
         this.fixed = LocalDateTime.now();
     }
 
+    public FixedTime(LocalDateTime time) {
+        this.fixed = time;
+    }
+
     @Override
     public LocalDateTime now() {
         return fixed;

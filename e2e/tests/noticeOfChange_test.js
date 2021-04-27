@@ -34,7 +34,7 @@ Scenario('Private solicitor replaces respondent solicitor on a represented case'
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  await assertRepresentative(I, solicitor2.details, 'Private solicitors');
+  await assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon');
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
 
@@ -54,7 +54,7 @@ Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, en
   I.see('No cases found.');
 });
 
-const assertRepresentative = async (I, user, organisation) => {
+const assertRepresentative = (I, user, organisation) => {
   I.seeInTab(['Representative', 'Representative\'s first name'], user.forename);
   I.seeInTab(['Representative', 'Representative\'s last name'], user.surname);
   I.seeInTab(['Representative', 'Email address'], user.email);
