@@ -107,9 +107,7 @@
     "ListElementCode": "directionLabel",
     "FieldType": "Label",
     "ElementLabel": "## Directions",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "directionLabel=\"HIDE_LABEL\"",
-    "Comment": "Needs showing in event, but requires configuring a CaseEventToComplexType for ordersNeeded"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
