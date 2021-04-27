@@ -104,13 +104,13 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void shouldNotReturnErrorWhenSolicitorOrganisationAdded() {
+    void shouldNotReturnErrorWhenRespondentWithRegisteredSolicitorUnchanged() {
         List<String> actual = underTest.validate(
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1))))
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build(),
             CaseData.builder()
-                .respondents1(List.of())
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
         assertThat(actual).isEqualTo(List.of());
@@ -123,7 +123,20 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, Respondent.builder().legalRepresentation(NO.getValue()).build())))
                 .build(),
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1).toBuilder()
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
+                .build());
+
+        assertThat(actual).isEqualTo(List.of("You cannot remove respondent 1's legal representative"));
+    }
+
+    @Test
+    void shouldNotReturnErrorWhenLegalRepresentationRemoved() {
+        List<String> actual = underTest.validate(
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, Respondent.builder().legalRepresentation(NO.getValue()).build())))
+                .build(),
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1).toBuilder()
                     .legalRepresentation(YES.getValue())
                     .build())))
                 .build());
@@ -135,10 +148,10 @@ class RespondentAfterSubmissionValidatorTest {
     void shouldReturnErrorWhenSolicitorOrganisationModified() {
         List<String> actual = underTest.validate(
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2))))
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2))))
                 .build(),
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1))))
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
@@ -148,10 +161,10 @@ class RespondentAfterSubmissionValidatorTest {
     void shouldReturnErrorWhenSolicitorOrganisationDeleted() {
         List<String> actual = underTest.validate(
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(null))))
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(null))))
                 .build(),
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1))))
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
         assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
@@ -162,14 +175,14 @@ class RespondentAfterSubmissionValidatorTest {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
-                    element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_2))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_2))
                 ))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
-                    element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_1))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))
                 ))
                 .build());
 
@@ -181,14 +194,14 @@ class RespondentAfterSubmissionValidatorTest {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
-                    element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_2))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_2))
                 ))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_1)),
-                    element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_1))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))
                 ))
                 .build());
 
@@ -203,14 +216,14 @@ class RespondentAfterSubmissionValidatorTest {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
-                    element(UUID_2, solicitorWithOrganisation(null))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(null))
                 ))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
-                    element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_1))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))
                 ))
                 .build());
 
@@ -222,14 +235,14 @@ class RespondentAfterSubmissionValidatorTest {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(null)),
-                    element(UUID_2, solicitorWithOrganisation(null))
+                    element(UUID_1, respondentWithRegisteredSolicitor(null)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(null))
                 ))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, solicitorWithOrganisation(ORGANISATION_ID_2)),
-                    element(UUID_2, solicitorWithOrganisation(ORGANISATION_ID_1))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))
                 ))
                 .build());
 
@@ -239,8 +252,10 @@ class RespondentAfterSubmissionValidatorTest {
         ));
     }
 
-    private Respondent solicitorWithOrganisation(String organisationID) {
-        return Respondent.builder().solicitor(RespondentSolicitor.builder()
+    private Respondent respondentWithRegisteredSolicitor(String organisationID) {
+        return Respondent.builder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
             .organisation(Organisation.builder()
                 .organisationID(organisationID)
                 .build())
