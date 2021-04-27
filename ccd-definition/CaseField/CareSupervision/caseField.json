@@ -70,7 +70,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "groundsForEPO",
-    "Label": "How are there grounds for an emergency protection order?",
+    "Label": "*How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -79,7 +79,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "grounds",
-    "Label": "How does this case meet the threshold criteria?",
+    "Label": "*How does this case meet the threshold criteria?",
     "FieldType": "Grounds",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -88,7 +88,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearing",
-    "Label": "*Hearing needed",
+    "Label": "Hearing needed",
     "FieldType": "Hearing",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -327,7 +327,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orders",
-    "Label": "*Orders and directions needed",
+    "Label": "Orders and directions needed",
     "FieldType": "Orders",
     "SecurityClassification": "Public",
     "Searchable": "N"
