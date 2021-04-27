@@ -30,7 +30,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
-    "Label": "Case name",
+    "Label": "*Case name",
     "HintText": "Include the local authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
@@ -88,7 +88,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearing",
-    "Label": "Hearing needed",
+    "Label": "*Hearing needed",
     "FieldType": "Hearing",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -327,7 +327,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orders",
-    "Label": "Orders and directions needed",
+    "Label": "*Orders and directions needed",
     "FieldType": "Orders",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -1589,6 +1589,15 @@
     "Label": "What type of C2 application?",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "C2ApplicationType",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "submissionRequiredFieldsInfo",
+    "Label": "You can save and return to this page at any time. Questions marked with a * need to be completed before you can send your application.",
+    "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }
