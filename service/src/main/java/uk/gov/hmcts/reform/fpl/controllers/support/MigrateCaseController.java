@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
@@ -95,14 +96,22 @@ public class MigrateCaseController extends CallbackController {
     private void run2961(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getRespondents1().size() > 10) {
-            throw new IllegalStateException(String.format("Case %s has %s respondents", caseDetails.getId(),
-                caseData.getRespondents1().size()));
+        List<State> invalidStates = List.of(
+            State.OPEN,
+            State.CLOSED,
+            State.DELETED
+        );
+
+        if (!invalidStates.contains(caseData.getState())) {
+            if (caseData.getRespondents1().size() > 10) {
+                throw new IllegalStateException(String.format("Case %s has %s respondents", caseDetails.getId(),
+                    caseData.getRespondents1().size()));
+            }
+
+            Map<String, Object> data = caseDetails.getData();
+
+            data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
         }
-
-        Map<String, Object> data = caseDetails.getData();
-
-        data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
     }
 
     private boolean checkNullIds(Element<AdditionalApplicationsBundle> documentBundle) {

@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -12,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -155,10 +160,19 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Fpla2961 {
         Long caseId = 1111L;
         String migrationId = "FPLA-2961";
+
+        private Stream<Arguments> invalidStates() {
+            return Stream.of(
+                Arguments.of(State.OPEN),
+                Arguments.of(State.CLOSED),
+                Arguments.of(State.DELETED)
+            );
+        }
 
         @Test
         void shouldGenerateRespondentPoliciesAndNoticeOfChangeAnswersFromFullyPopulatedCaseData() {
@@ -314,7 +328,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
-        void shouldNotUpdateCaseDetailsIfMigrationIdIsIncorrect() {
+        void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
             String incorrectMigrationId = "FPLA-1111";
             List<Element<Applicant>> applicants = List.of();
 
@@ -326,6 +340,29 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .build()));
 
             CaseDetails caseDetails = caseDetails(respondents, applicants, incorrectMigrationId);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getRespondents1()).isEqualTo(respondents);
+            assertThat(extractedCaseData.getApplicants()).isEqualTo(applicants);
+            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder().build());
+            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(
+                NoticeOfChangeAnswersData.builder().build());
+        }
+
+        @ParameterizedTest
+        @MethodSource("invalidStates")
+        void shouldNotMigrateCaseIfStateIsUnsupported(State caseState) {
+            List<Element<Applicant>> applicants = List.of();
+
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Simpson")
+                        .build())
+                    .build()));
+
+            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
+            caseDetails.setState(caseState.getValue());
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
             assertThat(extractedCaseData.getRespondents1()).isEqualTo(respondents);
@@ -361,6 +398,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                                         List<Element<Applicant>> applicants,
                                         String migrationId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .state(State.SUBMITTED)
                 .respondents1(respondents)
                 .applicants(applicants)
                 .id(caseId)
