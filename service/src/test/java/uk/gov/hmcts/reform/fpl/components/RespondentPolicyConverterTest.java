@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,9 +30,10 @@ class RespondentPolicyConverterTest {
 
     private static final UUID ELEMENT_ID = UUID.randomUUID();
     private static final LocalDate RESPONDENT_DOB = LocalDate.now().minusDays(5);
+    private static final Organisation EMPTY_ORG = Organisation.builder().build();
 
     @Test
-    void shouldConvertRepresentedRespondentToOrganisationPolicy() {
+    void shouldConvertRespondentSolicitorWithOrganisationToRespondentPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
 
         Organisation solicitorOrganisation = Organisation.builder()
@@ -50,7 +52,7 @@ class RespondentPolicyConverterTest {
                 .build())
             .build();
 
-        Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
+        Optional<Element<Respondent>> optionalRespondentElement = Optional.of(element(ELEMENT_ID, respondent));
 
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
                 .organisation(solicitorOrganisation)
@@ -58,28 +60,47 @@ class RespondentPolicyConverterTest {
                 .build();
 
         OrganisationPolicy actualOrganisationPolicy
-            = respondentPolicyConverter.generateForSubmission(respondentElement, SOLICITORA);
+            = respondentPolicyConverter.generateForSubmission(SOLICITORA, optionalRespondentElement);
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }
 
     @Test
-    void shouldConvertNonRepresentedRespondentToOrganisationPolicy() {
+    void shouldConvertRespondentSolicitorWithoutOrganisationToRespondentPolicy() {
         RespondentParty respondentParty = buildRespondentParty();
 
         Respondent respondent = Respondent.builder()
             .party(respondentParty)
-            .legalRepresentation("No")
+            .legalRepresentation("Yes")
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Ben")
+                .lastName("Summers")
+                .email("bensummers@gmail.com")
+                .build())
             .build();
 
-        Element<Respondent> respondentElement = element(ELEMENT_ID, respondent);
+        Optional<Element<Respondent>> optionalRespondentElement = Optional.of(element(ELEMENT_ID, respondent));
 
         OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
-                .build();
+            .organisation(EMPTY_ORG)
+            .orgPolicyCaseAssignedRole(SOLICITORA.getCaseRoleLabel())
+            .build();
 
-        OrganisationPolicy actualOrganisationPolicy = respondentPolicyConverter.generateForSubmission(
-            respondentElement, SOLICITORB);
+        OrganisationPolicy actualOrganisationPolicy
+            = respondentPolicyConverter.generateForSubmission(SOLICITORA, optionalRespondentElement);
+
+        assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
+    }
+
+    @Test
+    void shouldSetOrgPolicyWhenNoRespondentHasBeenProvided() {
+        OrganisationPolicy expectedOrganisationPolicy = OrganisationPolicy.builder()
+            .organisation(EMPTY_ORG)
+            .orgPolicyCaseAssignedRole(SOLICITORB.getCaseRoleLabel())
+            .build();
+
+        OrganisationPolicy actualOrganisationPolicy
+            = respondentPolicyConverter.generateForSubmission(SOLICITORB, Optional.empty());
 
         assertThat(actualOrganisationPolicy).isEqualTo(expectedOrganisationPolicy);
     }

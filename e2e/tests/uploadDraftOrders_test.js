@@ -1,4 +1,5 @@
 const config = require('../config.js');
+const representatives = require('../fixtures/representatives.js');
 const standardDirectionOrder = require('../fixtures/caseData/prepareForHearing.json');
 const draftOrdersHelper = require('../helpers/cmo_helper');
 const dateFormat = require('dateformat');
@@ -39,12 +40,14 @@ const supportingDoc = {name: 'case summary', notes: 'this is the case summary', 
 
 let caseId;
 let today;
+let date;
 
 Feature('Upload Draft Orders Journey');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(standardDirectionOrder);
   today = new Date();
+  date = dateFormat(today, 'd mmm yyyy');
 });
 
 Scenario('Local authority uploads draft orders', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
@@ -55,7 +58,6 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   await draftOrdersHelper.localAuthoritySendsAgreedCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing2, supportingDoc);
   await draftOrdersHelper.localAuthorityUploadsDraftCmo(I, caseViewPage, uploadCaseManagementOrderEventPage, hearing3, supportingDoc);
   await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder2, hearing1);
-  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
@@ -70,17 +72,35 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
   assertDraftOrders(I, 3, hearing3, [
     {title: draftCMO, status: draftStatus, supportingDocs: supportingDoc},
   ]);
-  assertDraftOrders(I, 4, hearing4, [
-    {title: draftOrder3.title, status: withJudgeStatus},
-  ]);
 
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], hearing2);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], supportingDoc.name);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], supportingDoc.notes);
   I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDoc.fileName);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded', dateFormat(today, 'd mmm yyyy')]);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by', 'kurt@swansea.gov.uk']);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded'], date);
+  I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by'], 'kurt@swansea.gov.uk');
+});
+
+Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+
+  const representative = representatives.servedByDigitalService;
+
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+  await I.addAnotherElementToCollection('Representatives');
+  await enterRepresentativesEventPage.enterRepresentative(representative);
+  await enterRepresentativesEventPage.setRepresentativeEmail(1, config.privateSolicitorOne.email);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  await I.navigateToCaseDetailsAs(config.privateSolicitorOne, caseId);
+  await draftOrdersHelper.localAuthorityUploadsC21(I, caseViewPage, uploadCaseManagementOrderEventPage, draftOrder3);
+
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  assertDraftOrders(I, 4, hearing4, [
+    {title: draftOrder3.title, status: withJudgeStatus},
+  ]);
 });
 
 Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
@@ -211,7 +231,7 @@ const assertDraftOrders = function (I, collectionId, hearingName, orders, title,
     I.seeInTab([hearing, draft, 'Title'], order.title);
     I.seeInTab([hearing, draft, 'Order'], 'mockFile.docx');
     I.seeInTab([hearing, draft, 'Status'], order.status);
-    I.seeInTab([hearing, draft, 'Date sent'], dateFormat(today, 'd mmm yyyy'));
+    I.seeInTab([hearing, draft, 'Date sent'], date);
 
     if (order.status === returnedStatus) {
       I.seeInTab([hearing, draft, 'Changes requested by judge'], changeRequestReason);
@@ -230,7 +250,7 @@ const assertSealedCMO = (I, collectionId, hearingName) => {
 
   I.seeInTab([sealedCMO, 'Order'], 'mockFile.pdf');
   I.seeInTab([sealedCMO, 'Hearing'], hearingName);
-  I.seeInTab([sealedCMO, 'Date issued'], dateFormat(today, 'd mmm yyyy'));
+  I.seeInTab([sealedCMO, 'Date issued'], date);
   I.seeInTab([sealedCMO, 'Judge'], 'Her Honour Judge Reed');
 };
 

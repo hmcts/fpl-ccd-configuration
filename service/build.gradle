@@ -1,6 +1,6 @@
 buildscript {
   repositories {
-    jcenter()
+    mavenCentral()
   }
   dependencies {
     classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
@@ -235,12 +235,14 @@ sonarqube {
 
 repositories {
   mavenLocal()
-  jcenter()
   mavenCentral()
-
+  // TODO: that's the only dependency to move (confirm with ops when that's migrated) https://tools.hmcts.net/jira/browse/FPLA-2978
   maven {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
+  //maven {
+  //  url "https://jitpack.io"
+  //}
 
   maven {
     url "https://repo.spring.io/milestone"
@@ -278,7 +280,7 @@ dependencies {
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.8.RELEASE'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
   implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
@@ -287,11 +289,11 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.3.1'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.4.0'
 
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.8.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -307,7 +309,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
   compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '3.0.3'
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
   implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'

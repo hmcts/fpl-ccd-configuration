@@ -43,6 +43,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
         return C32CareOrderDocmosisParameters.builder()
+            .orderTitle(Order.C32_CARE_ORDER.getTitle())
             .orderType(TYPE)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName))

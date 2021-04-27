@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
-import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
@@ -21,11 +20,13 @@ import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.JUDGE_APPROVES_DRAFT_ORDERS;
@@ -40,6 +41,7 @@ public class DraftOrdersApprovedEventHandler {
     private final NotificationService notificationService;
     private final ReviewDraftOrdersEmailContentProvider contentProvider;
     private final InboxLookupService inboxLookupService;
+    private final RepresentativesInbox representativesInbox;
     private final RepresentativeNotificationService representativeNotificationService;
     private final HmctsAdminNotificationHandler adminNotificationHandler;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -101,7 +103,7 @@ public class DraftOrdersApprovedEventHandler {
             caseData.getId().toString()
         );
 
-        List<Representative> emailRepresentatives = caseData.getRepresentativesByServedPreference(EMAIL);
+        Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
 
         if (!emailRepresentatives.isEmpty()) {
             representativeNotificationService.sendNotificationToRepresentatives(
@@ -112,7 +114,7 @@ public class DraftOrdersApprovedEventHandler {
             );
         }
 
-        List<Representative> digitalRepresentatives = caseData.getRepresentativesByServedPreference(DIGITAL_SERVICE);
+        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
 
         if (!digitalRepresentatives.isEmpty()) {
             content = contentProvider.buildOrdersApprovedContent(caseData, hearing, approvedOrders, DIGITAL_SERVICE);

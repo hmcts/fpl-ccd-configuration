@@ -24,7 +24,7 @@ Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudge
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
-  I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser.email);
   I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
   I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
   I.seeInTab(['Message 1', 'Urgency'], 'High');
@@ -44,8 +44,8 @@ Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOr
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
-  I.seeInTab(['Message 1', 'From'], config.judicaryUser);
-  I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'From'], config.judicaryUser.email);
+  I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser.email);
   I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
   I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Latest message'], reply);
@@ -66,8 +66,8 @@ Scenario('HMCTS admin closes the message', async ({I, caseViewPage, messageJudge
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
   const history = config.ctscEmail + ' - ' +  message + '\n \n' + config.judicaryUser.email + ' - ' + reply;
   I.see('Closed messages');
-  I.seeInTab(['Message 1', 'From'], config.judicaryUser);
-  I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'From'], config.judicaryUser.email);
+  I.seeInTab(['Message 1', 'Sent to'], config.hmctsAdminUser.email);
   I.seeInTab(['Message 1', 'Message subject'], 'Subject 1');
   I.seeInTab(['Message 1', 'Urgency'], 'High');
   I.seeInTab(['Message 1', 'Status'], 'Closed');
@@ -87,7 +87,7 @@ Scenario('Judge messages court admin', async ({I, caseViewPage, messageJudgeOrLe
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
 
   caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
-  I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser);
+  I.seeInTab(['Message 1', 'From'], config.hmctsAdminUser.email);
   I.seeInTab(['Message 1', 'Sent to'], config.ctscEmail);
   I.seeInTab(['Message 1', 'Message subject'], 'Judge subject');
   I.seeInTab(['Message 1', 'Latest message'], 'Judge message');

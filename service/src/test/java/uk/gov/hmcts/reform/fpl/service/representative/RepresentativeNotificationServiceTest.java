@@ -10,10 +10,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_REPRESENTATIVE_ADDED_TO_CASE_TEMPLATE;
@@ -23,10 +26,13 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POS
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {RepresentativeNotificationService.class})
+@SpringBootTest(classes = {RepresentativeNotificationService.class, RepresentativesInbox.class})
 class RepresentativeNotificationServiceTest {
     @MockBean
     private NotificationService notificationService;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Autowired
     private RepresentativeNotificationService representativeNotificationService;
@@ -82,8 +88,9 @@ class RepresentativeNotificationServiceTest {
             .representatives(getRepresentativesOfMixedServingPreferences())
             .build();
 
-        representativeNotificationService.sendToRepresentativesByServedPreference(
-            POST, TEMPLATE_NAME, TEMPLATE_DATA, caseData);
+        assertThrows(IllegalArgumentException.class,
+            () -> representativeNotificationService.sendToRepresentativesByServedPreference(
+                POST, TEMPLATE_NAME, TEMPLATE_DATA, caseData));
 
         verifyNoMoreInteractions(notificationService);
     }
@@ -92,8 +99,9 @@ class RepresentativeNotificationServiceTest {
     void shouldNotNotifyAnyRepresentativesWhenRepresentativesDoNotExist() {
         CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
-        representativeNotificationService.sendToRepresentativesByServedPreference(
-            POST, TEMPLATE_NAME, TEMPLATE_DATA, caseData);
+        assertThrows(IllegalArgumentException.class,
+            () -> representativeNotificationService.sendToRepresentativesByServedPreference(
+                POST, TEMPLATE_NAME, TEMPLATE_DATA, caseData));
 
         verifyNoMoreInteractions(notificationService);
     }

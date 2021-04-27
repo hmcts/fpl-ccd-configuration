@@ -65,6 +65,9 @@ exports.config = {
     GenerateReportHelper: {
       require: './e2e/helpers/generate_report_helper.js',
     },
+    TabAssertions: {
+      require: './e2e/helpers/tab_assertions_helper.js',
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -74,6 +77,7 @@ exports.config = {
     caseViewPage: './e2e/pages/caseView.page.js',
     paymentHistoryPage: './e2e/pages/paymentHistory.page.js',
     eventSummaryPage: './e2e/pages/eventSummary.page.js',
+    noticeOfChangePage: './e2e/pages/noticeOfChange.page.js',
     openApplicationEventPage: './e2e/pages/events/openApplicationEvent.page.js',
     deleteApplicationEventPage: './e2e/pages/events/deleteApplicationEvent.page.js',
     submitApplicationEventPage: './e2e/pages/events/submitApplicationEvent.page.js',
@@ -132,10 +136,10 @@ exports.config = {
         'doubleClick',
         'rightClick',
         'fillField',
-        'pressKey',
         'checkOption',
         'selectOption',
       ],
+      delayAfter: 550,
     },
     retryFailedStep: {
       enabled: true,
