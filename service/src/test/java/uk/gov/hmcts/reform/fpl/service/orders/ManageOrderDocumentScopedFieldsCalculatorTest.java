@@ -21,6 +21,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
                 "childSelector",
                 "manageOrdersFurtherDirections",
                 "orderPreview",
+                "manageOrdersTitle",
+                "manageOrdersDirections",
                 "manageOrdersOperation",
                 "manageOrdersType",
                 "orderTempQuestions",

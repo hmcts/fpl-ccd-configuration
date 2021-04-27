@@ -129,7 +129,8 @@
               "telephoneNumber": "00000 000000"
             },
             "relationshipToChild": "Uncle"
-          }
+          },
+          "legalRepresentation": "No"
         }
       },
       {
@@ -153,7 +154,8 @@
               "telephoneNumber": "07000 654321"
             },
             "relationshipToChild": "Uncle"
-          }
+          },
+          "legalRepresentation": "No"
         }
       }
     ],

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,21 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.AfterSubmissionCaseDataUpdated;
+import uk.gov.hmcts.reform.fpl.events.RespondentsUpdated;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
-import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 
 @Slf4j
@@ -36,12 +35,12 @@ import static uk.gov.hmcts.reform.fpl.model.Respondent.expandCollection;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RespondentController extends CallbackController {
 
-    private static final int MAX_RESPONDENTS = 10;
     private static final String RESPONDENTS_KEY = "respondents1";
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
-    private final Time time;
-    private final ValidateEmailService validateEmailService;
+    private final FeatureToggleService featureToggleService;
+    private final RespondentRepresentationService respondentRepresentationService;
+    private final RespondentValidator respondentValidator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -58,18 +57,12 @@ public class RespondentController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
-        List<Respondent> respondentsWithLegalRep = respondentService.getRespondentsWithLegalRepresentation(caseData
-            .getRespondents1());
-        List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
-
-        List<String> emailErrors = validateEmailService.validate(emails, "Representative");
-        List<String> respondentDetailsErrors = validate(caseDetails);
-        List<String> combinedValidationErrors = Stream.concat(emailErrors.stream(), respondentDetailsErrors.stream())
-            .collect(Collectors.toList());
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(caseData.getRespondents1()));
-        return respond(caseDetails, combinedValidationErrors);
+
+        List<String> errors = respondentValidator.validate(caseData, caseDataBefore);
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
@@ -89,26 +82,24 @@ public class RespondentController extends CallbackController {
             caseData.getAllRespondents(), caseDataBefore.getAllRespondents());
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
+        if (!OPEN.equals(caseData.getState()) && featureToggleService.hasRSOCaseAccess()) {
+            caseDetails.getData().putAll(respondentRepresentationService.generateForSubmission(caseData));
+        }
         return respond(caseDetails);
     }
 
-    private List<String> validate(CaseDetails caseDetails) {
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
-        if (caseData.getAllRespondents().size() > 10) {
-            errors.add(String.format("Maximum number of respondents is %s", MAX_RESPONDENTS));
+        if (!OPEN.equals(caseData.getState())) {
+            if (featureToggleService.hasRSOCaseAccess()) {
+                publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
+            }
+            publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
-
-        caseData.getAllRespondents().stream()
-            .map(Element::getValue)
-            .map(Respondent::getParty)
-            .map(Party::getDateOfBirth)
-            .filter(Objects::nonNull)
-            .filter(dob -> dob.isAfter(time.now().toLocalDate()))
-            .findAny()
-            .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
-
-        return errors.build();
     }
+
 }
