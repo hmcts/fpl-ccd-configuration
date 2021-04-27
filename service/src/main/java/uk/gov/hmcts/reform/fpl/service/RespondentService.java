@@ -158,12 +158,11 @@ public class RespondentService {
     }
 
     private Map<UUID, Organisation> organisationByRespondentId(List<Element<Respondent>> respondents) {
-        return defaultIfNull(respondents, new ArrayList<Element<Respondent>>()).stream()
-            .collect(
-                HashMap::new,
-                (container, respondent) -> container.put(respondent.getId(), getOrganisation(respondent.getValue())),
-                HashMap::putAll
-            );
+        return respondents.stream().collect(
+            HashMap::new,
+            (container, respondent) -> container.put(respondent.getId(), getOrganisation(respondent.getValue())),
+            HashMap::putAll
+        );
     }
 
     private ChangeOrganisationRequest changeRequest(Organisation newOrganisation,

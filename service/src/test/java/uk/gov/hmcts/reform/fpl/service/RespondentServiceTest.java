@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -16,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.FixedTime;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 class RespondentServiceTest {
 
     @Spy
-    private Time time = new FixedTime();
+    private Time time = new FixedTimeConfiguration().stoppedTime();
 
     @InjectMocks
     private RespondentService service;
@@ -278,16 +280,10 @@ class RespondentServiceTest {
     @Nested
     class RepresentationChanges {
 
-        @Test
-        void shouldReturnEmptyListOfChangesWhenRespondentsNotPresent() {
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(null, null);
-
-            assertThat(changes).isEmpty();
-        }
-
-        @Test
-        void shouldReturnEmptyListOfChangesWhenRespondentsAreEmpty() {
-            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(emptyList(), emptyList());
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnEmptyListOfChangesWhenRespondentsNotPresent(List<Element<Respondent>> respondents) {
+            List<ChangeOrganisationRequest> changes = service.getRepresentationChanges(respondents, respondents);
 
             assertThat(changes).isEmpty();
         }

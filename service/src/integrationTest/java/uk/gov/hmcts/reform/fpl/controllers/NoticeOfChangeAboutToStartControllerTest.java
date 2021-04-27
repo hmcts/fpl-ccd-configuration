@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
 @WebMvcTest(NoticeOfChangeController.class)
 @OverrideAutoConfiguration(enabled = true)
-class NoticeOfChangeControllerTest extends AbstractCallbackTest {
+class NoticeOfChangeAboutToStartControllerTest extends AbstractCallbackTest {
 
     private static final Long CASE_ID = 10L;
     private static final String SOLICITOR_ID = "1111111";
@@ -67,7 +67,7 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
     @MockBean
     private CaseAssignmentApi caseAssignmentApi;
 
-    NoticeOfChangeControllerTest() {
+    NoticeOfChangeAboutToStartControllerTest() {
         super("noc-decision");
     }
 

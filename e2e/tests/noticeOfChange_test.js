@@ -54,7 +54,7 @@ Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, en
   I.see('No cases found.');
 });
 
-const assertRepresentative = async (I, user, organisation) => {
+const assertRepresentative = (I, user, organisation) => {
   I.seeInTab(['Representative', 'Representative\'s first name'], user.forename);
   I.seeInTab(['Representative', 'Representative\'s last name'], user.surname);
   I.seeInTab(['Representative', 'Email address'], user.email);
