@@ -212,6 +212,15 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
         final String caseName = "Test";
         final String solicitorEmail = "solicitor@email.com";
         final String notificationReference = "localhost/" + CASE_ID;
+        final Respondent otherRespondent = Respondent.builder()
+            .legalRepresentation("Yes")
+            .solicitor(RespondentSolicitor.builder()
+                .firstName("Other")
+                .lastName("Solicitor")
+                .email(solicitorEmail)
+                .organisation(Organisation.builder().organisationID("123").build()).build())
+            .build();
+
         final CaseData caseDataBefore = CaseData.builder()
             .id(CASE_ID)
             .caseName(caseName)
@@ -222,7 +231,9 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
                     .lastName("Solicitor")
                     .email(solicitorEmail)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
-                .build())).build();
+                .build(),
+                otherRespondent
+            )).build();
 
         private final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
@@ -234,7 +245,9 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
                     .lastName("Solicitor")
                     .email(solicitorEmail)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
-                .build())).build();
+                .build(),
+                otherRespondent
+            )).build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetailsBefore(asCaseDetails(caseDataBefore))
