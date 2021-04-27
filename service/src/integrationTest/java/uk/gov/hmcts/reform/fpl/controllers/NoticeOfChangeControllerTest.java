@@ -224,29 +224,31 @@ class NoticeOfChangeControllerTest extends AbstractCallbackTest {
         final CaseData caseDataBefore = CaseData.builder()
             .id(CASE_ID)
             .caseName(caseName)
-            .respondents1(wrapElements(Respondent.builder()
+            .respondents1(wrapElements(
+                otherRespondent,
+                Respondent.builder()
                 .legalRepresentation("Yes")
                 .solicitor(RespondentSolicitor.builder()
                     .firstName("Old")
                     .lastName("Solicitor")
                     .email(solicitorEmail)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
-                .build(),
-                otherRespondent
+                .build()
             )).build();
 
         private final CaseData caseData = CaseData.builder()
             .id(CASE_ID)
             .caseName(caseName)
-            .respondents1(wrapElements(Respondent.builder()
+            .respondents1(wrapElements(
+                otherRespondent,
+                Respondent.builder()
                 .legalRepresentation("Yes")
                 .solicitor(RespondentSolicitor.builder()
                     .firstName("New")
                     .lastName("Solicitor")
                     .email(solicitorEmail)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
-                .build(),
-                otherRespondent
+                .build()
             )).build();
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
