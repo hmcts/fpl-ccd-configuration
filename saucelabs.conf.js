@@ -64,10 +64,7 @@ const setupConfig = {
     },
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
-    },
-    TabAssertions: {
-      require: './e2e/helpers/tab_assertions_helper.js',
-    },
+    }
   },
   plugins: {
     retryFailedStep: {
@@ -81,7 +78,7 @@ const setupConfig = {
   },
   include: {
     config: './e2e/config.js',
-    I: './e2e/steps_file.js',
+    I: './e2e/actors/main.js',
     loginPage: './e2e/pages/login.page.js',
     caseListPage: './e2e/pages/caseList.page.js',
     caseViewPage: './e2e/pages/caseView.page.js',
