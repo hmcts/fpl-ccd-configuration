@@ -2,10 +2,9 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -14,56 +13,82 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_NEW_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest(classes = {NoticeOfChangeEventHandler.class})
-public class NoticeOfChangeEventHandlerTest {
+class NoticeOfChangeEventHandlerTest {
 
-    private static final String expectedEmail = "test@test.com";
-    private static final RespondentSolicitor solicitor = RespondentSolicitor.builder().email(expectedEmail).build();
-    private static final  CaseData caseData = caseData();
-    private static final NoticeOfChangeRespondentSolicitorTemplate expectedTemplate =
+    private static final String NEW_EMAIL = "new@test.com";
+    private static final String OLD_EMAIL = "old@test.com";
+    private static final RespondentSolicitor NEW_SOLICITOR = RespondentSolicitor.builder().email(NEW_EMAIL).build();
+    private static final RespondentSolicitor OLD_SOLICITOR = RespondentSolicitor.builder().email(OLD_EMAIL).build();
+    private static final CaseData CASE_DATA = caseData();
+    private static final NoticeOfChangeRespondentSolicitorTemplate EXPECTED_TEMPLATE =
         NoticeOfChangeRespondentSolicitorTemplate.builder()
             .build();
 
-    @MockBean
+    @Mock
     private NotificationService notificationService;
 
-    @MockBean
+    @Mock
     private NoticeOfChangeContentProvider noticeOfChangeContentProvider;
 
-    @Autowired
+    @InjectMocks
     private NoticeOfChangeEventHandler underTest;
 
     @Test
     void shouldSendEmailToSolicitorAccessGranted() {
-        given(noticeOfChangeContentProvider.buildRespondentSolicitorAccessGrantedNotification(caseData, solicitor))
-            .willReturn(expectedTemplate);
+        given(noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, NEW_SOLICITOR))
+            .willReturn(EXPECTED_TEMPLATE);
 
-        underTest.notifySolicitorAccessGranted(new NoticeOfChangeEvent(caseData, solicitor, solicitor));
+        underTest.notifySolicitorAccessGranted(new NoticeOfChangeEvent(CASE_DATA, OLD_SOLICITOR, NEW_SOLICITOR));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
-            expectedEmail,
-            expectedTemplate,
-            caseData.getId());
+            NEW_EMAIL,
+            EXPECTED_TEMPLATE,
+            CASE_DATA.getId());
     }
 
     @Test
     void shouldSendEmailToSolicitorAccessRevoked() {
-        given(noticeOfChangeContentProvider.buildRespondentSolicitorAccessRevokedNotification(caseData, solicitor))
-            .willReturn(expectedTemplate);
+        given(noticeOfChangeContentProvider.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, OLD_SOLICITOR))
+            .willReturn(EXPECTED_TEMPLATE);
 
-        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(caseData, solicitor, solicitor));
+        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(CASE_DATA, OLD_SOLICITOR, NEW_SOLICITOR));
 
         verify(notificationService).sendEmail(
             NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
-            expectedEmail,
-            expectedTemplate,
-            caseData.getId());
+            OLD_EMAIL,
+            EXPECTED_TEMPLATE,
+            CASE_DATA.getId());
+    }
+
+    @Test
+    void shouldNotSendEmailToSolicitorAccessRevokedWhenSolicitorIsNull() {
+        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(CASE_DATA, null, NEW_SOLICITOR));
+
+        verify(notificationService, never()).sendEmail(
+            NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
+            OLD_EMAIL,
+            EXPECTED_TEMPLATE,
+            CASE_DATA.getId());
+    }
+
+    @Test
+    void shouldNotSendEmailToSolicitorAccessRevokedWhenSolicitorEmailIsBlank() {
+        RespondentSolicitor noEmailSolicitor = RespondentSolicitor.builder().email("").build();
+
+        underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(CASE_DATA, noEmailSolicitor, NEW_SOLICITOR));
+
+        verify(notificationService, never()).sendEmail(
+            NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
+            OLD_EMAIL,
+            EXPECTED_TEMPLATE,
+            CASE_DATA.getId());
     }
 }

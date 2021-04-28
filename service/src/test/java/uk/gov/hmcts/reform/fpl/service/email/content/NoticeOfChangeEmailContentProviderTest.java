@@ -16,13 +16,13 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ContextConfiguration(classes = {NoticeOfChangeContentProvider.class, LookupTestConfig.class})
-public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProviderTest {
+class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final Long CASE_ID = 12345L;
     private static final String CASE_NAME = "Test";
-    public static final String FIRST_NAME = "John";
-    public static final String LAST_NAME = "Smith";
-    public static final CaseData CASE_DATA = CaseData.builder().id(12345L).caseName(CASE_NAME).build();
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Smith";
+    private static final CaseData CASE_DATA = CaseData.builder().id(CASE_ID).caseName(CASE_NAME).build();
 
     @Autowired
     private NoticeOfChangeContentProvider underTest;
@@ -30,7 +30,7 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
 
     @ParameterizedTest
     @MethodSource("solicitorNameSource")
-    void shouldReturnExpectedMapForSolicitorAccessGranted(String firstName, String lastName,
+    void shouldBuildNotificationDataForSolicitorAccessGranted(String firstName, String lastName,
                                                           String expectedSalutation) {
 
         RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
@@ -38,17 +38,15 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
             .lastName(lastName)
             .build();
 
-        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation)
-            .caseUrl("http://fake-url/cases/case-details/" + CASE_ID)
-            .build();
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation);
 
-        assertThat(underTest.buildRespondentSolicitorAccessGrantedNotification(CASE_DATA, respondentSolicitor))
+        assertThat(underTest.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, respondentSolicitor))
             .isEqualTo(expectedTemplate);
     }
 
     @ParameterizedTest
     @MethodSource("solicitorNameSource")
-    void shouldReturnExpectedMapForSolicitorAccessRevoked(String firstName, String lastName,
+    void shouldBuildNotificationDataForSolicitorAccessRevoked(String firstName, String lastName,
                                                           String expectedSalutation) {
 
         RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
@@ -56,9 +54,9 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
             .lastName(lastName)
             .build();
 
-        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation).build();
+        NoticeOfChangeRespondentSolicitorTemplate expectedTemplate = buildExpectedTemplate(expectedSalutation);
 
-        assertThat(underTest.buildRespondentSolicitorAccessRevokedNotification(CASE_DATA, respondentSolicitor))
+        assertThat(underTest.buildNoticeOfChangeRespondentSolicitorTemplate(CASE_DATA, respondentSolicitor))
             .isEqualTo(expectedTemplate);
     }
 
@@ -79,11 +77,13 @@ public class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContent
         );
     }
 
-    private NoticeOfChangeRespondentSolicitorTemplate.NoticeOfChangeRespondentSolicitorTemplateBuilder
+    private NoticeOfChangeRespondentSolicitorTemplate
         buildExpectedTemplate(String expectedSalutation) {
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(expectedSalutation)
             .caseName(CASE_NAME)
-            .ccdNumber(CASE_ID.toString());
+            .ccdNumber(CASE_ID.toString())
+            .caseUrl("http://fake-url/cases/case-details/" + CASE_ID)
+            .build();
     }
 }

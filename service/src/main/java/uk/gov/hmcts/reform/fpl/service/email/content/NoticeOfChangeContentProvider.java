@@ -15,7 +15,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NoticeOfChangeContentProvider extends SharedNotifyContentProvider {
 
-    public NoticeOfChangeRespondentSolicitorTemplate buildRespondentSolicitorAccessGrantedNotification(
+    public NoticeOfChangeRespondentSolicitorTemplate buildNoticeOfChangeRespondentSolicitorTemplate(
         CaseData caseData, RespondentSolicitor solicitor) {
 
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
@@ -23,16 +23,6 @@ public class NoticeOfChangeContentProvider extends SharedNotifyContentProvider {
             .caseName(caseData.getCaseName())
             .ccdNumber(caseData.getId().toString())
             .caseUrl(getCaseUrl(caseData.getId()))
-            .build();
-    }
-
-    public NoticeOfChangeRespondentSolicitorTemplate buildRespondentSolicitorAccessRevokedNotification(
-        CaseData caseData, RespondentSolicitor solicitor) {
-
-        return NoticeOfChangeRespondentSolicitorTemplate.builder()
-            .salutation(getSalutation(solicitor))
-            .caseName(caseData.getCaseName())
-            .ccdNumber(caseData.getId().toString())
             .build();
     }
 
