@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -33,17 +35,25 @@ public class RespondentPolicyService {
 
         Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
 
-        for (int i = 0; i < caseData.getRespondents1().size(); i++) {
-            Element<Respondent> respondentElement = caseData.getRespondents1().get(i);
+        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        int numOfRespondents = respondents.size();
 
-            NoticeOfChangeAnswers noticeOfChangeAnswer = noticeOfChangeRespondentConverter.generateForSubmission(
-                respondentElement, firstApplicant);
+        for (int i = 0; i < 10; i++) {
+            SolicitorRole solicitorRole = SolicitorRole.values()[i];
 
-            OrganisationPolicy organisationPolicy = respondentPolicyConverter.generateForSubmission(
-                respondentElement, SolicitorRole.values()[i]);
+            Optional<Element<Respondent>> respondentElement
+                = (i < numOfRespondents) ? Optional.of(respondents.get(i)) : Optional.empty();
 
-            data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+            OrganisationPolicy organisationPolicy
+                = respondentPolicyConverter.generateForSubmission(solicitorRole, respondentElement);
+
             data.put(String.format("respondentPolicy%d", i), organisationPolicy);
+
+            if (respondentElement.isPresent()) {
+                NoticeOfChangeAnswers noticeOfChangeAnswer
+                    = noticeOfChangeRespondentConverter.generateForSubmission(respondentElement.get(), firstApplicant);
+                data.put(String.format("noticeOfChangeAnswers%d", i), noticeOfChangeAnswer);
+            }
         }
 
         return data;
