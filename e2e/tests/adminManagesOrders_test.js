@@ -124,7 +124,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 4,
+    orderIndex: 3,
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,

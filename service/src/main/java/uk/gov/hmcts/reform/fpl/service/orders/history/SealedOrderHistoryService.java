@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
+import static java.util.Comparator.reverseOrder;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -57,29 +60,30 @@ public class SealedOrderHistoryService {
             .unsealedDocumentCopy(plainWordOrder)
             .build()));
 
-        pastOrders.sort(legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc());
+        pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
         return Map.of("orderCollection", pastOrders);
     }
 
     public GeneratedOrder lastGeneratedOrder(CaseData caseData) {
         return caseData.getOrderCollection().stream()
-            .sorted(legacyLastAndThenByDateAndTimeIssuedDesc())
-            .findFirst()
+            .min(legacyLastAndThenByDateAndTimeIssuedDesc())
             .orElseThrow(() -> new IllegalStateException("Element not present"))
             .getValue();
     }
 
-    private Comparator<Element<GeneratedOrder>> legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc() {
-        Comparator<Element<GeneratedOrder>> comparingApprovalDate = Comparator.comparing(
-            e -> e.getValue().getApprovalDate(), Comparator.nullsFirst(Comparator.naturalOrder()));
-        return comparingApprovalDate.thenComparing(e -> e.getValue().getDateTimeIssued(),
-            Comparator.nullsFirst(Comparator.naturalOrder()));
+    private Comparator<Element<GeneratedOrder>> legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc() {
+        Comparator<Element<GeneratedOrder>> comparingApprovalDate = comparing(
+            e -> e.getValue().getApprovalDate(), nullsLast(reverseOrder())
+        );
+        return comparingApprovalDate.thenComparing(
+            e -> e.getValue().getDateTimeIssued(), nullsLast(reverseOrder())
+        );
     }
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByDateAndTimeIssuedDesc() {
-        return Comparator.comparing(e -> e.getValue().getDateTimeIssued(),
-            Comparator.nullsLast(Comparator.reverseOrder()));
+        return comparing(e -> e.getValue().getDateTimeIssued(),
+            Comparator.nullsLast(reverseOrder()));
     }
 
     private String getChildrenForOrder(List<Element<Child>> selectedChildren) {

@@ -151,8 +151,8 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        ORDER_APPROVED_IN_THE_PAST,
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
+                        ORDER_APPROVED_IN_THE_PAST
                     )
                 ));
             }
@@ -174,8 +174,8 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
-                        ORDER_APPROVED_IN_THE_FUTURE
+                        ORDER_APPROVED_IN_THE_FUTURE,
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
                     )
                 ));
             }
@@ -199,10 +199,10 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        ORDER_APPROVED_LEGACY,
-                        ORDER_APPROVED_FOR_SAME_DAY,
+                        ORDER_APPROVED_IN_THE_FUTURE,
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
-                        ORDER_APPROVED_IN_THE_FUTURE
+                        ORDER_APPROVED_FOR_SAME_DAY,
+                        ORDER_APPROVED_LEGACY
                     )
                 ));
             }
@@ -224,8 +224,8 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        ORDER_APPROVED_LEGACY,
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
+                        ORDER_APPROVED_LEGACY
                     )
                 ));
             }
