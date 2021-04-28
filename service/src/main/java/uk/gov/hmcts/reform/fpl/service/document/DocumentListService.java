@@ -44,6 +44,10 @@ public class DocumentListService {
             bundles.add(b1);
         }
 
-        return documentsListRenderer.render(bundles);
+        String render = documentsListRenderer.render(bundles);
+
+        System.out.println("Render is" + render);
+
+        return render;
     }
 }

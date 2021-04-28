@@ -213,7 +213,7 @@ public class ManageDocumentsLAController extends CallbackController {
             COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENT_STATEMENT_LIST_KEY);
 
         //FOR SUBMITTED DOC TAB
-        caseDetails.getData().put("documentsList", documentListService.getDocumentsList(getCaseData(caseDetails)));
+        caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(caseDetails)););
 
         return respond(caseDetailsMap);
     }
