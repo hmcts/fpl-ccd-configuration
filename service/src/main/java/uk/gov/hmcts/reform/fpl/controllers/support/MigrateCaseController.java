@@ -98,7 +98,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2961(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (!isMigratableState(caseData.getState()) && !containsNoCFields(caseData)) {
+        if (isMigratableState(caseData.getState()) && !containsNoCFields(caseData)) {
             if (caseData.getRespondents1().size() > 10) {
                 throw new IllegalStateException(String.format("Case %s has %s respondents", caseDetails.getId(),
                     caseData.getRespondents1().size()));
@@ -117,7 +117,7 @@ public class MigrateCaseController extends CallbackController {
             State.DELETED
         );
 
-        return supportedStates.contains(state);
+        return !supportedStates.contains(state);
     }
 
     private boolean containsNoCFields(CaseData caseData) {
