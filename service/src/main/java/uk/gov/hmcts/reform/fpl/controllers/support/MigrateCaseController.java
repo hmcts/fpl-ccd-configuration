@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
+import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -96,13 +98,7 @@ public class MigrateCaseController extends CallbackController {
     private void run2961(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        List<State> invalidStates = List.of(
-            State.OPEN,
-            State.CLOSED,
-            State.DELETED
-        );
-
-        if (!invalidStates.contains(caseData.getState())) {
+        if (!isMigratableState(caseData.getState()) && !containsNoCFields(caseData)) {
             if (caseData.getRespondents1().size() > 10) {
                 throw new IllegalStateException(String.format("Case %s has %s respondents", caseDetails.getId(),
                     caseData.getRespondents1().size()));
@@ -112,6 +108,24 @@ public class MigrateCaseController extends CallbackController {
 
             data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
         }
+    }
+
+    private boolean isMigratableState(State state) {
+        List<State> supportedStates = List.of(
+            State.OPEN,
+            State.CLOSED,
+            State.DELETED
+        );
+
+        return supportedStates.contains(state);
+    }
+
+    private boolean containsNoCFields(CaseData caseData) {
+        RespondentPolicyData emptyRespondentPolicyData = RespondentPolicyData.builder().build();
+        NoticeOfChangeAnswersData emptyNoCAnswerData = NoticeOfChangeAnswersData.builder().build();
+
+        return !emptyNoCAnswerData.equals(caseData.getNoticeOfChangeAnswersData())
+            || !emptyRespondentPolicyData.equals(caseData.getRespondentPolicyData());
     }
 
     private boolean checkNullIds(Element<AdditionalApplicationsBundle> documentBundle) {

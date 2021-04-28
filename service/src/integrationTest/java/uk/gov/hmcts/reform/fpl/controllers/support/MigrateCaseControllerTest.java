@@ -373,6 +373,75 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
+        void shouldNotMigrateCaseIfCaseContainsNoticeOfChangeAnswerData() {
+            List<Element<Applicant>> applicants = List.of(
+                element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Swansea City Council")
+                        .build())
+                    .build()));
+
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Simpson")
+                        .build())
+                    .build()));
+
+            NoticeOfChangeAnswers noticeOfChangeAnswers0 = NoticeOfChangeAnswers.builder()
+                .applicantName("Swansea City Council")
+                .respondentLastName("Simpson")
+                .build();
+
+            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
+            caseDetails.getData().put("noticeOfChangeAnswers0", noticeOfChangeAnswers0);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(NoticeOfChangeAnswersData.builder()
+                .noticeOfChangeAnswers0(noticeOfChangeAnswers0)
+                .build());
+
+            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder().build());
+        }
+
+        @Test
+        void shouldNotMigrateCaseIfCaseContainsRespondentPolicyData() {
+            List<Element<Applicant>> applicants = List.of(
+                element(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Swansea City Council")
+                        .build())
+                    .build()));
+
+            List<Element<Respondent>> respondents = List.of(
+                element(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Simpson")
+                        .build())
+                    .build()));
+
+            OrganisationPolicy respondentPolicy0 = OrganisationPolicy.builder()
+                .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
+                .organisation(Organisation.builder()
+                    .organisationName("Some org")
+                    .organisationID("WA123")
+                    .build())
+                .build();
+
+            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
+            caseDetails.getData().put("respondentPolicy0", respondentPolicy0);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getNoticeOfChangeAnswersData())
+                .isEqualTo(NoticeOfChangeAnswersData.builder().build());
+
+            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder()
+                .respondentPolicy0(respondentPolicy0)
+                .build());
+        }
+
+        @Test
         void shouldThrowAnExceptionIfCaseContainsMoreThanTenRespondents() {
             List<Element<Respondent>> respondents = List.of(
                 element(Respondent.builder().build()),
