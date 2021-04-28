@@ -5,6 +5,7 @@ const dateToString = require('../helpers/date_to_string_helper');
 const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWithMultipleChildren.json');
 const supportingEvidenceDocuments = require('../fixtures/supportingEvidenceDocuments.js');
 const moment = require('moment');
+const api = require('../helpers/api_helper');
 
 let caseId;
 let submittedAt;
@@ -47,6 +48,8 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   I.seeInTab(['Hearing 1', 'Justices\' Legal Adviser\'s full name'], hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
   I.seeInTab(['Hearing 1', 'Additional notes'], hearingDetails[0].additionalNotes);
   I.seeInTab(['Hearing 1', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
@@ -69,7 +72,7 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
   I.seeInTab(['Hearing 2', 'Start date and time'], formatHearingTime(hearingDetails[1].startDate));
   I.seeInTab(['Hearing 2', 'End date and time'], formatHearingTime(hearingDetails[1].endDate));
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
-}).retry(1); // async send letters call in submitted of previous event
+});
 
 Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
@@ -99,6 +102,8 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
   I.seeInTab(['Hearing 2', 'Additional notes'], 'The venue has changed');
   I.seeInTab(['Hearing 2', 'Notice of hearing'], `Notice_of_hearing_${dateFormat(submittedAt, 'ddmmmm')}.pdf`);
+
+  await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
 Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
@@ -145,7 +150,7 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
   I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'File'], 'mockFile.txt');
   I.seeTextInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Uploaded by']);
-}).retry(1); // async send letters call in submitted of previous event
+});
 
 
 Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
