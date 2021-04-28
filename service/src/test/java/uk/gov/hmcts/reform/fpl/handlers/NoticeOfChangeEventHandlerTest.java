@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_NEW_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -72,11 +72,7 @@ class NoticeOfChangeEventHandlerTest {
     void shouldNotSendEmailToSolicitorAccessRevokedWhenSolicitorIsNull() {
         underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(CASE_DATA, null, NEW_SOLICITOR));
 
-        verify(notificationService, never()).sendEmail(
-            NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
-            OLD_EMAIL,
-            EXPECTED_TEMPLATE,
-            CASE_DATA.getId());
+        verifyNoInteractions(noticeOfChangeContentProvider, notificationService);
     }
 
     @Test
@@ -85,10 +81,6 @@ class NoticeOfChangeEventHandlerTest {
 
         underTest.notifySolicitorAccessRevoked(new NoticeOfChangeEvent(CASE_DATA, noEmailSolicitor, NEW_SOLICITOR));
 
-        verify(notificationService, never()).sendEmail(
-            NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
-            OLD_EMAIL,
-            EXPECTED_TEMPLATE,
-            CASE_DATA.getId());
+        verifyNoInteractions(noticeOfChangeContentProvider, notificationService);
     }
 }
