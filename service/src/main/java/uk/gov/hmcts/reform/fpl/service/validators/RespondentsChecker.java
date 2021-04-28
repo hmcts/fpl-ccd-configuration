@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentAfterSubmissionValidator;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.ArrayList;
@@ -24,17 +26,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RespondentsChecker extends PropertiesChecker {
     private final FeatureToggleService featureToggleService;
+    private final RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
 
     @Override
     public List<String> validate(CaseData caseData) {
 
-        List<Class<?>> groups = new ArrayList<>();
-        groups.add(Default.class);
-
-        if (featureToggleService.isRespondentJourneyEnabled()) {
-            groups.add(RespondentSolicitorGroup.class);
-        }
-        return super.validate(caseData, List.of("respondents1"), groups.toArray(new Class[0]));
+        List<String> errors = new ArrayList<>(respondentAfterSubmissionValidator.validateOnApplicationSubmission(caseData));
+        errors.addAll(super.validate(caseData, List.of("respondents1")));
+        return errors;
     }
 
     @Override

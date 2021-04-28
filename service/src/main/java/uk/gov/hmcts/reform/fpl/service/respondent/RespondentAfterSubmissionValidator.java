@@ -28,6 +28,19 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RespondentAfterSubmissionValidator {
 
+    public List<String> validateOnApplicationSubmission(CaseData caseData) {
+        List<String> errors = new ArrayList<>();
+
+        List<Element<Respondent>> respondents = caseData.getRespondents1();
+
+        for (int i = 0; i < respondents.size(); i++) {
+            Respondent respondent = respondents.get(i).getValue();
+            errors.addAll(getStandardRespondentErrors(respondent, i));
+        }
+
+        return errors;
+    }
+
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
 
         List<String> errors = new ArrayList<>();
@@ -48,20 +61,7 @@ public class RespondentAfterSubmissionValidator {
         for (int i = 0; i < currentRespondents.size(); i++) {
             Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
             Respondent current = currentRespondentsList.get(i).getValue();
-
-            if (current.getLegalRepresentation() == null) {
-                errors.add(String.format("Confirm if respondent %d has legal representation", i + 1));
-            }
-            if (isEmpty(current.getSolicitor().getFirstName()) || isEmpty(current.getSolicitor().getLastName())) {
-                errors.add(String.format("Add the full name of respondent %d’s legal representative", i + 1));
-
-            }
-            if (isEmpty(current.getSolicitor().getEmail())) {
-                errors.add(String.format("Add the email address of respondent %d’s legal representative", i + 1));
-            }
-            if (!current.hasRegisteredOrganisation() || !current.hasUnregisteredOrganisation()) {
-                errors.add(String.format("Add the organisation details for respondent %d's representative", i + 1));
-            }
+            errors.addAll(getStandardRespondentErrors(current, i));
 
             Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
 
@@ -75,6 +75,25 @@ public class RespondentAfterSubmissionValidator {
 
                 errors.add("You cannot change organisation details for a legal representative");
             }
+        }
+
+        return errors;
+    }
+
+    private List<String> getStandardRespondentErrors(Respondent respondent, int i) {
+        List<String> errors = new ArrayList<>();
+        if (respondent.getLegalRepresentation() == null) {
+            errors.add(String.format("Confirm if respondent %d has legal representation", i + 1));
+        }
+        if (isEmpty(respondent.getSolicitor().getFirstName()) || isEmpty(respondent.getSolicitor().getLastName())) {
+            errors.add(String.format("Add the full name of respondent %d’s legal representative", i + 1));
+
+        }
+        if (isEmpty(respondent.getSolicitor().getEmail())) {
+            errors.add(String.format("Add the email address of respondent %d’s legal representative", i + 1));
+        }
+        if (!respondent.hasRegisteredOrganisation() || !respondent.hasUnregisteredOrganisation()) {
+            errors.add(String.format("Add the organisation details for respondent %d's representative", i + 1));
         }
 
         return errors;
