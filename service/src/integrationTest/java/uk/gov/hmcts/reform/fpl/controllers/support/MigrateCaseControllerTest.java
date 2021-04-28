@@ -7,7 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -30,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,9 +45,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     MigrateCaseControllerTest() {
         super("migrate-case");
     }
-
-    @Autowired
-    RespondentPolicyService respondentPolicyService;
 
     @Nested
     class Fpla2982 {
@@ -165,6 +160,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     class Fpla2961 {
         Long caseId = 1111L;
         String migrationId = "FPLA-2961";
+        NoticeOfChangeAnswersData emptyNoticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
+        RespondentPolicyData emptyRespondentPolicyData = RespondentPolicyData.builder().build();
 
         private Stream<Arguments> invalidStates() {
             return Stream.of(
@@ -344,9 +341,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(extractedCaseData.getRespondents1()).isEqualTo(respondents);
             assertThat(extractedCaseData.getApplicants()).isEqualTo(applicants);
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder().build());
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(
-                NoticeOfChangeAnswersData.builder().build());
+            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(emptyRespondentPolicyData);
+            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(emptyNoticeOfChangeAnswersData);
         }
 
         @ParameterizedTest
@@ -367,9 +363,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(extractedCaseData.getRespondents1()).isEqualTo(respondents);
             assertThat(extractedCaseData.getApplicants()).isEqualTo(applicants);
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder().build());
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(
-                NoticeOfChangeAnswersData.builder().build());
+            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(emptyRespondentPolicyData);
+            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(emptyNoticeOfChangeAnswersData);
         }
 
         @Test
@@ -401,7 +396,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .noticeOfChangeAnswers0(noticeOfChangeAnswers0)
                 .build());
 
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder().build());
+            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(emptyRespondentPolicyData);
         }
 
         @Test
@@ -433,8 +428,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData())
-                .isEqualTo(NoticeOfChangeAnswersData.builder().build());
+            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(emptyNoticeOfChangeAnswersData);
 
             assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder()
                 .respondentPolicy0(respondentPolicy0)
