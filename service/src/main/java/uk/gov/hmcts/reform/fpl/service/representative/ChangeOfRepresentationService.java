@@ -25,7 +25,6 @@ public class ChangeOfRepresentationService {
     private final IdentityService identityService;
     private final Time time;
 
-    // by method need to be HMCTS in case of admin
     public List<Element<ChangeOfRepresentation>> changeRepresentative(
         ChangeOfRepresentationRequest changeOfRepresentationRequest) {
 

@@ -38,7 +38,7 @@ public class RespondentRepresentationService {
     private final RespondentPolicyConverter respondentPolicyConverter;
     private final ChangeOfRepresentationService changeOfRepresentationService;
 
-    public Map<String, Object> generateForSubmission(CaseData caseData) {
+    public Map<String, Object> generate(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();

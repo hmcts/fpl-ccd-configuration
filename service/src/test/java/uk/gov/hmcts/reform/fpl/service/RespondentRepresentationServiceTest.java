@@ -104,7 +104,7 @@ class RespondentRepresentationServiceTest {
             .build();
 
 
-        final Map<String, Object> data = underTest.generateForSubmission(caseData);
+        final Map<String, Object> data = underTest.generate(caseData);
 
         final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
         final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
@@ -149,7 +149,7 @@ class RespondentRepresentationServiceTest {
             .respondents1(emptyList())
             .build();
 
-        final Map<String, Object> data = underTest.generateForSubmission(caseData);
+        final Map<String, Object> data = underTest.generate(caseData);
 
         assertThat(data).isEqualTo(Map.of(
             "respondentPolicy0", buildOrganisationPolicy(SolicitorRole.SOLICITORA),
