@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.idam.client.IdamClient;

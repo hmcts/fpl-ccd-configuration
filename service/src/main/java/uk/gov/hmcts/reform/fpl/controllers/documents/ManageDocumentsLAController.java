@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
@@ -64,6 +65,7 @@ public class ManageDocumentsLAController extends CallbackController {
     private final IdamClient idamClient;
     private final RequestData requestData;
     private final FeatureToggleService featureToggleService;
+    private final DocumentListService documentListService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -209,6 +211,9 @@ public class ManageDocumentsLAController extends CallbackController {
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
             COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENT_STATEMENT_LIST_KEY);
+
+        //FOR SUBMITTED DOC TAB
+        caseDetails.getData().put("documentsList", documentListService.getDocumentsList(getCaseData(caseDetails)));
 
         return respond(caseDetailsMap);
     }
