@@ -64,7 +64,10 @@ exports.config = {
     },
     GenerateReportHelper: {
       require: './e2e/helpers/generate_report_helper.js',
-    }
+    },
+    StepListener: {
+      require: './e2e/helpers/stepListener.js',
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -126,18 +129,6 @@ exports.config = {
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
   },
   plugins: {
-    autoDelay: {
-      enabled: true,
-      methods: [
-        'click',
-        'doubleClick',
-        'rightClick',
-        'fillField',
-        'checkOption',
-        'selectOption',
-      ],
-      delayAfter: 550,
-    },
     retryFailedStep: {
       enabled: true,
     },

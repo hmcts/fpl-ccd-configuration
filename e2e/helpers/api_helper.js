@@ -62,16 +62,18 @@ const updateCaseDataWithDocuments = (data) => {
   data.caseData = JSON.parse(lodash.template(JSON.stringify(caseData))({'DM_STORE_URL': config.dmStoreUrl}));
 };
 
+const getHeaders = authToken => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${authToken}`,
+});
+
 const populateWithData = async (caseId, data) => {
   updateCaseDataWithTodaysDateTime(data);
   updateCaseDataWithDocuments(data);
 
   const authToken = await getAuthToken();
   const url = `${config.fplServiceUrl}/testing-support/case/populate/${caseId}`;
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${authToken}`,
-  };
+  const headers = getHeaders(authToken);
 
   return post(url, data, headers);
 };
@@ -79,13 +81,29 @@ const populateWithData = async (caseId, data) => {
 const createCase = async (user, caseName) => {
   const authToken = await getAuthToken(user);
   const url = `${config.fplServiceUrl}/testing-support/case/create`;
+  const headers = getHeaders(authToken);
+  const data = {caseName: caseName};
+  const response = await post(url, data, headers);
+  return await response.json();
+};
+
+const getUser = async (user) => {
+  const authToken = await getAuthToken();
+  const url = `${config.fplServiceUrl}/testing-support/user`;
   const headers = {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${authToken}`,
   };
-  let data = {caseName: caseName};
-  let response = await post(url, data, headers);
+  let response = await post(url, user, headers);
   return await response.json();
+};
+
+const grantCaseAccess = async (caseId, user, role) => {
+  const authToken = await getAuthToken();
+  const url = `${config.fplServiceUrl}/testing-support/case/${caseId}/access`;
+  const headers = getHeaders(authToken);
+  const data = {email: user.email, password: user.password, role: role};
+  return await post(url, data, headers);
 };
 
 const getAuthToken = async (user=config.systemUpdateUser) => {
@@ -103,4 +121,6 @@ const getAuthToken = async (user=config.systemUpdateUser) => {
 module.exports = {
   populateWithData,
   createCase,
+  grantCaseAccess,
+  getUser,
 };
