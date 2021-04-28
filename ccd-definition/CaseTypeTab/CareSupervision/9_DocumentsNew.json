@@ -4,6 +4,17 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "DocumentsNew",
+    "TabLabel": "Further evidence documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "manageDocumentsLALink",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND documentsList !=\"\"",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsNew",
     "TabLabel": "Documents new",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentsListPage",
@@ -18,7 +29,6 @@
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentsList",
     "TabFieldDisplayOrder": 6,
-    "FieldShowCondition": "documentsList = \"DO_NOT_SHOW\"",
-    "TabShowCondition": "documentsList !=\"\""
+    "FieldShowCondition": "documentsList = \"DO_NOT_SHOW\""
   }
 ]
