@@ -99,17 +99,17 @@ class NoticeOfChangeServiceTest {
             when(userService.getUserDetailsById(USER_ID))
                 .thenReturn(solicitorUser);
 
-        when(respondentRepresentationService.updateRepresentation(caseData, solicitorUser))
-            .thenReturn(UPDATED_REPRESENTATION);
+            when(respondentRepresentationService.updateRepresentation(caseData, solicitorUser))
+                .thenReturn(UPDATED_REPRESENTATION);
 
-        final Map<String, Object> actual = underTest.updateRepresentation(caseData);
+            final Map<String, Object> actual = underTest.updateRepresentation(caseData);
 
-        assertThat(actual).isEqualTo(UPDATED_REPRESENTATION);
+            assertThat(actual).isEqualTo(UPDATED_REPRESENTATION);
 
-        verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
-        verify(userService).getUserDetailsById(USER_ID);
-        verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
-    }
+            verify(auditEventService).getLatestAuditEventByName(CASE_ID.toString(), NOC_REQUEST_EVENT);
+            verify(userService).getUserDetailsById(USER_ID);
+            verifyNoMoreInteractions(auditEventService, userService, respondentRepresentationService);
+        }
 
         @Test
         void shouldThrowExceptionWhenNoPreviousNoticeOfChangeRequestInEventAudit() {
