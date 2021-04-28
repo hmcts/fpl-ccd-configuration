@@ -54,6 +54,10 @@ public class DynamicListHelper {
             .build();
     }
 
+    public DynamicList convert(Object object) {
+        return mapper.convertValue(object, DynamicList.class);
+    }
+
     private List<DynamicListElement> listItems(List<Pair<String, ?>> options) {
         return options.stream()
             .map(option -> DynamicListElement.builder()

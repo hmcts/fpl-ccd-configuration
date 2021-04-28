@@ -104,6 +104,8 @@ Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEve
 Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, caseViewPage, manageDocumentsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.selectFurtherEvidence();
+  await I.goToNextPage();
+  manageDocumentsEventPage.selectAnyOtherDocument();
   manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   manageDocumentsEventPage.selectHearing(formatHearingDate(hearingStartDate));
   await I.goToNextPage();
@@ -115,6 +117,8 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
 
   await caseViewPage.goToNewActions(config.administrationActions.manageDocuments);
   manageDocumentsEventPage.selectFurtherEvidence();
+  await I.goToNextPage();
+  manageDocumentsEventPage.selectAnyOtherDocument();
   manageDocumentsEventPage.selectFurtherEvidenceIsRelatedToHearing();
   manageDocumentsEventPage.selectHearing('1 January 2060');
   await I.goToNextPage();
