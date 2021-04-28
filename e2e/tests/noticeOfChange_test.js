@@ -46,6 +46,7 @@ const assertRepresentative = (I, firstName, lastName, email, organisation) => {
   I.seeInTab(['Representative', 'Email address'], email);
 
   if (organisation) {
+    I.waitForText(organisation);
     I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], organisation);
   }
 };
