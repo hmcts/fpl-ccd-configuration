@@ -241,6 +241,10 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         return mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
     }
 
+    protected CaseData extractCaseData(CaseDetails caseDetails) {
+        return caseConverter.convert(caseDetails);
+    }
+
     protected CaseDetails asCaseDetails(CaseData caseData) {
         return CaseDetails.builder()
             .id(caseData.getId())

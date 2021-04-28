@@ -48,16 +48,15 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     private static final String SOLICITOR_ORG_ID = "Organisation ID";
     private static final String SOLICITOR_EMAIL = "solicitor@email.com";
-
-    RespondentControllerTest() {
-        super("enter-respondents");
-    }
-
     private static final String DOB_ERROR = "Date of birth for respondent 1 cannot be in the future";
     private static final String DOB_ERROR_2 = "Date of birth for respondent 2 cannot be in the future";
     private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
     private static final String CASE_ID = "12345";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+
+    RespondentControllerTest() {
+        super("enter-respondents");
+    }
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -71,7 +70,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void aboutToStartShouldPrepopulateRespondent() {
+    void aboutToStartShouldPrePopulateRespondent() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("data", "some data"))
             .build();
@@ -303,7 +302,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldPublishRespondentsUpdatedEventIfOpenStateToggledOn() {
+    void shouldNotPublishRespondentsUpdatedEventIfOpenStateToggledOn() {
         when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
@@ -336,7 +335,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldPublishRespondentsUpdatedEventIfNotOpenStateToggledOff() {
+    void shouldNotPublishRespondentsUpdatedEventIfNotOpenStateToggledOff() {
         when(featureToggleService.hasRSOCaseAccess()).thenReturn(false);
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())

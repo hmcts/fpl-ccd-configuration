@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 
+import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
+
 @Api
 @RestController
 @RequestMapping("/callback/noc-decision")
@@ -34,6 +36,7 @@ public class NoticeOfChangeController extends CallbackController {
 
         caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
 
-        return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(), callbackRequest);
+        return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(),
+            decisionRequest(caseDetails));
     }
 }

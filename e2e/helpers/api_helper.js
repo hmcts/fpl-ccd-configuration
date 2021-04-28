@@ -88,6 +88,17 @@ const createCase = async (user, caseName) => {
   return await response.json();
 };
 
+const getUser = async (user) => {
+  const authToken = await getAuthToken();
+  const url = `${config.fplServiceUrl}/testing-support/user`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${authToken}`,
+  };
+  let response = await post(url, user, headers);
+  return await response.json();
+};
+
 const getAuthToken = async (user=config.systemUpdateUser) => {
   const url = `${config.idamApiUrl}/loginUser?username=${user.email}&password=${user.password}`;
   const data = {};
@@ -103,4 +114,5 @@ const getAuthToken = async (user=config.systemUpdateUser) => {
 module.exports = {
   populateWithData,
   createCase,
+  getUser,
 };
