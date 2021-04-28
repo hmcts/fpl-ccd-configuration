@@ -29,47 +29,36 @@ function organisationTabFieldSelector(pathToField) {
   return `${selector}//*[contains(@class,"complex-panel-compound-field") and ..//*[text()="${fieldName}:"]]`;
 }
 
-class TabAssertions extends Helper {
-
-  seeInTab(pathToField, fieldValue) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-
+module.exports = {
+  seeInTab: function (pathToField, fieldValue) {
     const fieldSelector = tabFieldSelector(pathToField);
 
     if (Array.isArray(fieldValue)) {
       fieldValue.forEach((value, index) => {
-        helper.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
+        this.seeElement(locate(`${fieldSelector}//tr[${index + 1}]`).withText(value));
       });
     } else {
-      helper.seeElement(locate(fieldSelector).withText(fieldValue));
+      this.seeElement(locate(fieldSelector).withText(fieldValue));
     }
-  }
-
+  },
   seeOrganisationInTab(pathToField, fieldValue) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-
     const fieldSelector = organisationTabFieldSelector(pathToField);
 
     if (Array.isArray(fieldValue)) {
       fieldValue.forEach((value) => {
-        helper.seeElement(locate(`${fieldSelector}//tr[1]`).withText(value));
+        this.seeElement(locate(`${fieldSelector}//tr[1]`).withText(value));
       });
     } else {
-      helper.seeElement(locate(fieldSelector).withText(fieldValue));
+      this.seeElement(locate(fieldSelector).withText(fieldValue));
     }
-  }
+  },
 
-  seeTextInTab (pathToField) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-
+  seeTextInTab(pathToField) {
     const fieldSelector = tabFieldSelector(pathToField);
-    helper.seeElement(locate(fieldSelector));
-  }
+    this.seeElement(locate(fieldSelector));
+  },
 
   dontSeeInTab(pathToField) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    helper.dontSeeElement(locate(tabFieldSelector(pathToField)));
-  }
-}
-
-module.exports = TabAssertions;
+    this.dontSeeElement(locate(tabFieldSelector(pathToField)));
+  },
+};
