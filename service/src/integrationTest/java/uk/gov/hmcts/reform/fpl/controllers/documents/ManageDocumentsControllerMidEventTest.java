@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -10,12 +13,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ManageDocument;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.testingsupport.DynamicListHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,19 +30,18 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList.RESPONDENT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C12_WARRANT_TO_ASSIST_PERSON;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LABEL_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @WebMvcTest(ManageDocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -44,60 +49,11 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
 
     private static final String USER_ROLES = "caseworker-publiclaw-courtadmin";
 
+    @Autowired
+    private DynamicListHelper dynamicLists;
+
     ManageDocumentsControllerMidEventTest() {
         super("manage-documents");
-    }
-
-    @Test
-    void shouldInitialiseFurtherEvidenceCollection() {
-        UUID selectHearingId = randomUUID();
-        LocalDateTime today = now();
-        HearingBooking selectedHearingBooking = createHearingBooking(today, today.plusDays(3));
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
-
-        List<Element<HearingBooking>> hearingBookings = List.of(
-            element(createHearingBooking(today.plusDays(5), today.plusDays(6))),
-            element(createHearingBooking(today.plusDays(2), today.plusDays(3))),
-            element(createHearingBooking(today, today.plusDays(1))),
-            element(selectHearingId, selectedHearingBooking)
-        );
-
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(hearingBookings)
-            .manageDocumentsHearingList(selectHearingId)
-            .hearingFurtherEvidenceDocuments(List.of(
-                element(selectHearingId, HearingFurtherEvidenceBundle.builder()
-                    .supportingEvidenceBundle(furtherEvidenceBundle)
-                    .build())
-            ))
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(
-            caseData, "initialise-manage-document-collections", USER_ROLES
-        );
-
-        CaseData extractedCaseData = extractCaseData(response);
-
-        DynamicList expectedDynamicList = asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
-
-        DynamicList hearingList = mapper.convertValue(
-            response.getData().get(MANAGE_DOCUMENTS_HEARING_LIST_KEY), DynamicList.class
-        );
-
-        assertThat(hearingList).isEqualTo(expectedDynamicList);
-
-        assertThat(response.getData().get(MANAGE_DOCUMENTS_HEARING_LABEL_KEY))
-            .isEqualTo(selectedHearingBooking.toLabel());
-
-        assertThat(extractedCaseData.getSupportingEvidenceDocumentsTemp()).isEqualTo(furtherEvidenceBundle);
-
-        assertThat(extractedCaseData.getManageDocument()).isEqualTo(ManageDocument.builder()
-            .type(FURTHER_EVIDENCE_DOCUMENTS)
-            .relatedToHearing("Yes")
-            .hasHearings("Yes")
-            .hasC2s("No")
-            .build());
     }
 
     @Test
@@ -264,17 +220,90 @@ class ManageDocumentsControllerMidEventTest extends AbstractCallbackTest {
         assertThat(response.getErrors()).isEmpty();
     }
 
+    @Test
+    void shouldInitialiseFurtherEvidences() {
+        final LocalDateTime today = LocalDateTime.now();
+
+        final Element<HearingBooking> otherHearing = element(createHearingBooking(today.minusDays(1), today));
+        final Element<HearingBooking> selectedHearing = element(createHearingBooking(today, today.plusDays(1)));
+
+        final Element<HearingFurtherEvidenceBundle> otherHearingEvidences = element(otherHearing.getId(),
+            HearingFurtherEvidenceBundle.builder()
+                .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                .build());
+
+        final Element<HearingFurtherEvidenceBundle> selectedHearingEvidences = element(selectedHearing.getId(),
+            HearingFurtherEvidenceBundle.builder()
+                .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+                .build());
+
+        final CaseData caseData = CaseData.builder()
+            .manageDocumentSubtypeList(OTHER)
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocumentsHearingList(selectedHearing.getId())
+            .hearingDetails(List.of(otherHearing, selectedHearing))
+            .hearingFurtherEvidenceDocuments(List.of(otherHearingEvidences, selectedHearingEvidences))
+            .manageDocument(buildManagementDocument(ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS))
+            .build();
+
+        final DynamicList expectedHearingList = dynamicLists.from(1,
+            Pair.of(otherHearing.getValue().toLabel(), otherHearing.getId()),
+            Pair.of(selectedHearing.getValue().toLabel(), selectedHearing.getId()));
+
+        CaseData updatedCase = extractCaseData(postMidEvent(caseData, "further-evidence-documents", USER_ROLES));
+
+        assertThat(updatedCase.getManageDocumentsHearingList())
+            .extracting(dynamicLists::convert)
+            .isEqualTo(expectedHearingList);
+
+        assertThat(updatedCase.getSupportingEvidenceDocumentsTemp())
+            .isEqualTo(selectedHearingEvidences.getValue().getSupportingEvidenceBundle());
+    }
+
+    @Test
+    void shouldInitialiseRespondentStatements() {
+
+        final Element<Respondent> selectedRespondent = testRespondent("John", "Smith");
+        final Element<Respondent> otherRespondent = testRespondent("George", "Williams");
+
+        final Element<RespondentStatement> selectedRespondentStatements = element(RespondentStatement.builder()
+            .respondentId(selectedRespondent.getId())
+            .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+            .build());
+
+        final Element<RespondentStatement> otherRespondentStatements = element(RespondentStatement.builder()
+            .respondentId(otherRespondent.getId())
+            .supportingEvidenceBundle(buildSupportingEvidenceBundle())
+            .build());
+
+        final CaseData caseData = CaseData.builder()
+            .manageDocumentSubtypeList(RESPONDENT_STATEMENT)
+            .respondents1(List.of(selectedRespondent, otherRespondent))
+            .respondentStatementList(selectedRespondent.getId())
+            .respondentStatements(List.of(selectedRespondentStatements, otherRespondentStatements))
+            .build();
+
+        final DynamicList expectedRespondentStatements = dynamicLists.from(0,
+            Pair.of(selectedRespondent.getValue().getParty().getFullName(), selectedRespondent.getId()),
+            Pair.of(otherRespondent.getValue().getParty().getFullName(), otherRespondent.getId()));
+
+        CaseData updatedCased = extractCaseData(postMidEvent(caseData, "further-evidence-documents", USER_ROLES));
+
+        assertThat(updatedCased.getRespondentStatementList())
+            .extracting(dynamicLists::convert)
+            .isEqualTo(expectedRespondentStatements);
+
+        assertThat(updatedCased.getSupportingEvidenceDocumentsTemp())
+            .isEqualTo(selectedRespondentStatements.getValue().getSupportingEvidenceBundle());
+    }
+
     private ManageDocument buildManagementDocument(ManageDocumentType type) {
         return ManageDocument.builder().type(type).build();
     }
 
-    private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
-    }
-
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
-            .name("test")
+            .name(RandomStringUtils.randomAlphabetic(10))
             .uploadedBy("HMCTS")
             .type(GUARDIAN_REPORTS)
             .build());

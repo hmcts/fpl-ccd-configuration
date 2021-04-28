@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -21,6 +22,10 @@ public enum Order {
     C32_CARE_ORDER(
         "Care order", "Section 31 Children Act 1989", "C32 - Care order",
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C21_BLANK_ORDER(
+        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
+        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     );
 
     private final String title;

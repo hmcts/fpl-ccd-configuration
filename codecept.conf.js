@@ -65,15 +65,19 @@ exports.config = {
     GenerateReportHelper: {
       require: './e2e/helpers/generate_report_helper.js',
     },
+    StepListener: {
+      require: './e2e/helpers/stepListener.js',
+    },
   },
   include: {
     config: './e2e/config.js',
-    I: './e2e/steps_file.js',
+    I: './e2e/actors/main.js',
     loginPage: './e2e/pages/login.page.js',
     caseListPage: './e2e/pages/caseList.page.js',
     caseViewPage: './e2e/pages/caseView.page.js',
     paymentHistoryPage: './e2e/pages/paymentHistory.page.js',
     eventSummaryPage: './e2e/pages/eventSummary.page.js',
+    noticeOfChangePage: './e2e/pages/noticeOfChange.page.js',
     openApplicationEventPage: './e2e/pages/events/openApplicationEvent.page.js',
     deleteApplicationEventPage: './e2e/pages/events/deleteApplicationEvent.page.js',
     submitApplicationEventPage: './e2e/pages/events/submitApplicationEvent.page.js',
@@ -125,18 +129,6 @@ exports.config = {
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
   },
   plugins: {
-    autoDelay: {
-      enabled: true,
-      methods: [
-        'click',
-        'doubleClick',
-        'rightClick',
-        'fillField',
-        'pressKey',
-        'checkOption',
-        'selectOption',
-      ],
-    },
     retryFailedStep: {
       enabled: true,
     },
