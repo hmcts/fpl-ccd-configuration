@@ -171,4 +171,7 @@ module.exports = {
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   otherProposalUrl: '/otherProposal/otherProposal1',
+  staticText: {
+    requiredFieldsForSubmissionMessage: 'You can save and return to this page at any time. Questions marked with a * need to be completed before you can send your application.',
+  },
 };

@@ -41,6 +41,7 @@ Scenario('local authority sees task list', async ({caseViewPage}) => {
 Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async ({I, caseViewPage, changeCaseNameEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   await changeCaseNameEventPage.changeCaseName('New case name');
+  await I.seeRequiredFieldsMessage();
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   await I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
@@ -55,6 +56,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
 
 Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+  await I.seeRequiredFieldsMessage();
   await enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkSupervisionOrder();

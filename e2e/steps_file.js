@@ -111,6 +111,10 @@ module.exports = function () {
       this.see(`updated with event: ${event}`);
     },
 
+    seeRequiredFieldsMessage() {
+      this.see(config.staticText.requiredFieldsForSubmissionMessage);
+    },
+
     clickHyperlink(link, urlNavigatedTo) {
       this.click(link);
       this.seeCurrentUrlEquals(urlNavigatedTo);

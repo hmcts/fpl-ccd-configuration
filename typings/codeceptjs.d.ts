@@ -288,6 +288,7 @@ declare namespace CodeceptJS {
     completeEvent(buttonLocator, changeDetails: { summary: string, description: string }, confirmationPage: boolean) : Promise<void>,
     seeCheckAnswersAndCompleteEvent(buttonLocator, confirmationPage: boolean): Promise<void>,
     seeEventSubmissionConfirmation(event: string) : void,
+    seeRequiredFieldsMessage() : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     startEventViaHyperlink(link: string) : void,
     seeDocument(title: string, name: string, status?: string, reason?: string, dateAndTimeUploaded?: string, uploadedBy?: string) : void,
