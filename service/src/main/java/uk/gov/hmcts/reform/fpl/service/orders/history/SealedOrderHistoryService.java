@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -74,11 +76,21 @@ public class SealedOrderHistoryService {
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc() {
         Comparator<Element<GeneratedOrder>> comparingApprovalDate = comparing(
-            e -> e.getValue().getApprovalDate(), nullsLast(reverseOrder())
+            this::getOrderApprovalDateTime, nullsLast(reverseOrder())
         );
         return comparingApprovalDate.thenComparing(
             e -> e.getValue().getDateTimeIssued(), nullsLast(reverseOrder())
         );
+    }
+
+    private LocalDateTime getOrderApprovalDateTime(Element<GeneratedOrder> orderElement) {
+        if (isNull(orderElement.getValue().getApprovalDateTime())) {
+            if (orderElement.getValue().getApprovalDate() != null) {
+                return orderElement.getValue().getApprovalDate().atStartOfDay();
+            }
+        }
+
+        return orderElement.getValue().getApprovalDateTime();
     }
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByDateAndTimeIssuedDesc() {
