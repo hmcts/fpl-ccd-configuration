@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 
@@ -39,6 +41,7 @@ public class TestingSupportController {
     private final CoreCaseDataApiV2 coreCaseDataApiV2;
     private final RequestData requestData;
     private final AuthTokenGenerator authTokenGenerator;
+    private final IdamClient idamClient;
 
     @PostMapping(value = "/testing-support/case/create", produces = APPLICATION_JSON_VALUE)
     public Map createCase(@RequestBody Map<String, Object> requestBody) {
@@ -79,5 +82,11 @@ public class TestingSupportController {
             log.error(String.format("Populate case event failed: %s", e.contentUTF8()));
             throw e;
         }
+    }
+
+    @PostMapping("/testing-support/user")
+    public UserDetails getUser(@RequestBody Map<String, String> requestBody) {
+        final String token = idamClient.getAccessToken(requestBody.get("email"), requestBody.get("password"));
+        return idamClient.getUserDetails(token);
     }
 }
