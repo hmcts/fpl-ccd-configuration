@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
@@ -53,6 +54,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
         return C23EPODocmosisParameters.builder()
             .orderType(TYPE)
             .orderTitle(Order.C23_EMERGENCY_PROTECTION_ORDER.getTitle())
+            .dateOfIssue(formatLocalDateTimeBaseUsingFormat(eventData.getManageOrdersApprovalDateTime(), DATE_TIME))
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName))
             .localAuthorityName(localAuthorityName)

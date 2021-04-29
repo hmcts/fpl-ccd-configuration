@@ -15,8 +15,10 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class DocmosisCommonElementDecoratorTest {
@@ -38,7 +41,8 @@ class DocmosisCommonElementDecoratorTest {
     private static final String CREST = "[userImage:crest.png]";
     private static final String WATERMARK = "[userImage:draft-watermark.png]";
     private static final String SEAL = "[userImage:familycourtseal.png]";
-    private static final LocalDate APPROVAL_DATE = mock(LocalDate.class);
+    private static final LocalDate APPROVAL_DATE = LocalDate.of(2021, 4, 20);
+    private static final String EXPECTED_APPROVAL_DATE = "20 April 2021";
     private static final JudgeAndLegalAdvisor JUDGE = mock(JudgeAndLegalAdvisor.class);
     private static final DocmosisJudgeAndLegalAdvisor DOCMOSIS_JUDGE = mock(DocmosisJudgeAndLegalAdvisor.class);
     private static final List<Element<Child>> CHILDREN = wrapElements(mock(Child.class));
@@ -78,7 +82,7 @@ class DocmosisCommonElementDecoratorTest {
     @Test
     void decorateDraft() {
         DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS, CASE_DATA, DRAFT, ORDER_TYPE);
-        DocmosisParameters expectedParameters = expectedCommonParameters()
+        DocmosisParameters expectedParameters = expectedCommonParameters(EXPECTED_APPROVAL_DATE)
             .draftbackground(WATERMARK)
             .build();
 
@@ -88,21 +92,42 @@ class DocmosisCommonElementDecoratorTest {
     @Test
     void decorateSealed() {
         DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS, CASE_DATA, SEALED, ORDER_TYPE);
-        DocmosisParameters expectedParameters = expectedCommonParameters()
+        DocmosisParameters expectedParameters = expectedCommonParameters(EXPECTED_APPROVAL_DATE)
             .courtseal(SEAL)
             .build();
 
         assertThat(decorated).isEqualTo(expectedParameters);
     }
 
-    private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters() {
+    @Test
+    void shouldNotUpdateDateOfIssueWhenDateOfIssueIsAlreadySet() {
+        final String expectedDateOfIssue = "25 April 2021, 9:00am";
+        final LocalDateTime dateOfIssue = LocalDateTime.of(2021, 4, 25, 9, 0, 0);
+
+        C32CareOrderDocmosisParameters docmosisParametersWithIssueDate = C32CareOrderDocmosisParameters.builder()
+            .dateOfIssue(DateFormatterHelper.formatLocalDateTimeBaseUsingFormat(dateOfIssue, DATE_TIME))
+            .build();
+
+        DocmosisParameters decorated = underTest.decorate(
+            docmosisParametersWithIssueDate, CASE_DATA, SEALED, ORDER_TYPE);
+
+        DocmosisParameters expectedParameters = expectedCommonParameters(expectedDateOfIssue)
+            .courtseal(SEAL)
+            .build();
+
+        assertThat(decorated).isEqualTo(expectedParameters);
+    }
+
+    private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters(
+        String dateOfIssue) {
+
         return C32CareOrderDocmosisParameters.builder()
             .familyManCaseNumber(FAM_MAN_CASE_NUM)
             .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .childrenAct(CHILDREN_ACT)
             .judgeAndLegalAdvisor(DOCMOSIS_JUDGE)
             .courtName(COURT_NAME)
-            .dateOfIssue(APPROVAL_DATE)
+            .dateOfIssue(dateOfIssue)
             .children(DOCMOSIS_CHILDREN)
             .crest(CREST);
     }
