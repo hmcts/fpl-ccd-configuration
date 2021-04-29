@@ -53,7 +53,8 @@
     "AccessControl": [
       {
         "UserRoles": [
-          "caseworker-caa"
+          "caseworker-caa",
+          "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "CRUD"
       }

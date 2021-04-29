@@ -28,6 +28,10 @@ public class UserService {
         return getIdamRoles().stream().anyMatch(UserRole::isHmctsUser);
     }
 
+    public UserDetails getUserDetailsById(String userId) {
+        return idam.getUserByUserId(requestData.authorisation(), userId);
+    }
+
     private Set<String> getIdamRoles() {
         return requestData.userRoles();
     }
