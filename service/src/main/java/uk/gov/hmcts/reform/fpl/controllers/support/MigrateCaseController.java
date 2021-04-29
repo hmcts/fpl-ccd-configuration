@@ -98,26 +98,29 @@ public class MigrateCaseController extends CallbackController {
     private void run2961(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        if (isMigratableState(caseData.getState()) && !containsNoCFields(caseData)) {
-            if (caseData.getRespondents1().size() > 10) {
-                throw new IllegalStateException(String.format("Case %s has %s respondents", caseDetails.getId(),
-                    caseData.getRespondents1().size()));
-            }
-
-            Map<String, Object> data = caseDetails.getData();
-
-            data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
+        if (isUnsupportedState(caseData.getState()) || containsNoCFields(caseData)) {
+            throw new IllegalStateException(String.format("Migration failed on case %s: Unexpected migration",
+                caseDetails.getId()));
         }
+
+        if (caseData.getRespondents1().size() > 10) {
+            throw new IllegalStateException(String.format("Migration failed on case %s: Case has %s respondents",
+                caseDetails.getId(), caseData.getRespondents1().size()));
+        }
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
     }
 
-    private boolean isMigratableState(State state) {
-        List<State> supportedStates = List.of(
+    private boolean isUnsupportedState(State state) {
+        List<State> unsupportedStates = List.of(
             State.OPEN,
             State.CLOSED,
             State.DELETED
         );
 
-        return !supportedStates.contains(state);
+        return unsupportedStates.contains(state);
     }
 
     private boolean containsNoCFields(CaseData caseData) {

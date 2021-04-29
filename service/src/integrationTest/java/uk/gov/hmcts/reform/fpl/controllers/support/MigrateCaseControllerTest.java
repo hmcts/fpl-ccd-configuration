@@ -173,12 +173,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldGenerateRespondentPoliciesAndNoticeOfChangeAnswersFromFullyPopulatedCaseData() {
-            List<Element<Applicant>> applicants = List.of(
-                element(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Swansea City Council")
-                        .build())
-                    .build()));
+            List<Element<Applicant>> applicants = buildApplicants();
 
             Organisation respondentTwoOrganisation = Organisation.builder()
                 .organisationID("SA123")
@@ -327,7 +322,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
             String incorrectMigrationId = "FPLA-1111";
-            List<Element<Applicant>> applicants = List.of();
+            List<Element<Applicant>> applicants = buildApplicants();
 
             List<Element<Respondent>> respondents = List.of(
                 element(Respondent.builder()
@@ -347,8 +342,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @ParameterizedTest
         @MethodSource("invalidStates")
-        void shouldNotMigrateCaseIfStateIsUnsupported(State caseState) {
-            List<Element<Applicant>> applicants = List.of();
+        void shouldThrowAnExceptionIfStateIsUnsupported(State caseState) {
+            List<Element<Applicant>> applicants = buildApplicants();
 
             List<Element<Respondent>> respondents = List.of(
                 element(Respondent.builder()
@@ -359,22 +354,15 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
             caseDetails.setState(caseState.getValue());
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getRespondents1()).isEqualTo(respondents);
-            assertThat(extractedCaseData.getApplicants()).isEqualTo(applicants);
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(emptyRespondentPolicyData);
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(emptyNoticeOfChangeAnswersData);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Migration failed on case %s: Unexpected migration", caseId));
         }
 
         @Test
-        void shouldNotMigrateCaseIfCaseContainsNoticeOfChangeAnswerData() {
-            List<Element<Applicant>> applicants = List.of(
-                element(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Swansea City Council")
-                        .build())
-                    .build()));
+        void shouldThrowAnExceptionIfCaseContainsNoticeOfChangeAnswerData() {
+            List<Element<Applicant>> applicants = buildApplicants();
 
             List<Element<Respondent>> respondents = List.of(
                 element(Respondent.builder()
@@ -390,23 +378,15 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
             caseDetails.getData().put("noticeOfChangeAnswers0", noticeOfChangeAnswers0);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(NoticeOfChangeAnswersData.builder()
-                .noticeOfChangeAnswers0(noticeOfChangeAnswers0)
-                .build());
-
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(emptyRespondentPolicyData);
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Migration failed on case %s: Unexpected migration", caseId));
         }
 
         @Test
-        void shouldNotMigrateCaseIfCaseContainsRespondentPolicyData() {
-            List<Element<Applicant>> applicants = List.of(
-                element(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .organisationName("Swansea City Council")
-                        .build())
-                    .build()));
+        void shouldThrowAnExceptionIfCaseContainsRespondentPolicyData() {
+            List<Element<Applicant>> applicants = buildApplicants();
 
             List<Element<Respondent>> respondents = List.of(
                 element(Respondent.builder()
@@ -426,13 +406,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
             caseDetails.getData().put("respondentPolicy0", respondentPolicy0);
 
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(emptyNoticeOfChangeAnswersData);
-
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(RespondentPolicyData.builder()
-                .respondentPolicy0(respondentPolicy0)
-                .build());
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Migration failed on case %s: Unexpected migration", caseId));
         }
 
         @Test
@@ -454,7 +430,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Case %s has 11 respondents", caseId));
+                .hasMessage(String.format("Migration failed on case %s: Case has %s respondents", caseId,
+                    respondents.size()));
         }
 
         private CaseDetails caseDetails(List<Element<Respondent>> respondents,
@@ -469,6 +446,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
+        }
+
+        private List<Element<Applicant>> buildApplicants() {
+            return List.of(element(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Swansea City Council")
+                    .build())
+                .build()));
         }
 
         private OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {
