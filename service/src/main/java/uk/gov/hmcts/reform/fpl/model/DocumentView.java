@@ -12,5 +12,7 @@ public class DocumentView {
     private String uploadedBy;
     private String uploadedAt;
     private String type;
+    private String includedInSWET;
+    private String documentName;
     private DocumentReference document;
 }

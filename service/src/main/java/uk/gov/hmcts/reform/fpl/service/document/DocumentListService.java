@@ -33,7 +33,9 @@ public class DocumentListService {
                 .document(doc.getDocument())
                 .type(doc.getDocumentType().getLabel())
                 .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                .includedInSWET(doc.getIncludedInSWET())
                 .uploadedBy(doc.getUploadedBy())
+                .documentName(doc.getDocumentName())
                 .build())
             .collect(Collectors.toList());
 
@@ -49,8 +51,6 @@ public class DocumentListService {
         }
 
         String render = documentsListRenderer.render(bundles);
-
-        System.out.println("Render is" + render);
 
         return render;
     }

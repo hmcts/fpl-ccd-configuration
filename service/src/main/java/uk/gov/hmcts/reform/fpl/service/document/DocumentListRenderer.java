@@ -17,6 +17,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.logging.log4j.util.Strings.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 
 @Slf4j
 @Service
@@ -50,12 +53,29 @@ class DocumentsListRenderer {
     }
 
     private String render(DocumentView documentView) {
-        String details = String.join("", renderItems(List.of(
-            Pair.of("Uploaded by", documentView.getUploadedBy()),
-            Pair.of("Date and time uploaded", documentView.getUploadedAt()),
-            Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>")
-        )));
+
+        List<Pair<String, String>> documentFields = getFieldsBasedOnDocumentType(documentView);
+
+        String details = String.join("", renderItems(documentFields));
         return collapsible(documentView.getType(), details);
+    }
+
+    private List<Pair<String, String>> getFieldsBasedOnDocumentType(DocumentView documentView) {
+        List<Pair<String, String>> documentFields = new ArrayList<>();
+        documentFields.add(Pair.of("Uploaded by", documentView.getUploadedBy()));
+        documentFields.add(Pair.of("Date and time uploaded", documentView.getUploadedAt()));
+
+        if (documentView.getType().equals(SWET.getLabel()) && !isEmpty(documentView.getIncludedInSWET())) {
+                documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
+        }
+
+        if (documentView.getType().equals(OTHER.getLabel())) {
+            documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
+        }
+
+        documentFields.add(Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>"));
+
+        return documentFields;
     }
 
     private String collapsible(String title, String content) {
