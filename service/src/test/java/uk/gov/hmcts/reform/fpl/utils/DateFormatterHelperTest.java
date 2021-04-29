@@ -15,23 +15,26 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateFromStringUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 
 class DateFormatterHelperTest {
     private static final String JANUARY_2019 = "1 January 2019";
+    private static final String JANUARY_2019_TIME = "1 January 2019, 12:00pm";
 
     private static Stream<Arguments> dayOfMonthSuffixSource() {
         return Stream.of(
-            Arguments.of(new int[]{
+            Arguments.of(new int[] {
                 4, 5, 6, 7, 8, 9, 10, 11, 12,
                 13, 14, 15, 16, 17, 18, 19, 20,
                 24, 25, 26, 27, 28, 29, 30}, "th"),
-            Arguments.of(new int[]{1, 21, 31}, "st"),
-            Arguments.of(new int[]{2, 22}, "nd"),
-            Arguments.of(new int[]{3, 23}, "rd")
+            Arguments.of(new int[] {1, 21, 31}, "st"),
+            Arguments.of(new int[] {2, 22}, "nd"),
+            Arguments.of(new int[] {3, 23}, "rd")
         );
     }
 
@@ -98,8 +101,31 @@ class DateFormatterHelperTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenFormatIsNull() {
+    void shouldThrowExceptionWhenDateFormatIsNull() {
         assertThrows(NullPointerException.class, () -> parseLocalDateFromStringUsingFormat(JANUARY_2019, null));
+    }
+
+    @Test
+    void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenCorrectFormat() {
+        LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME);
+        assertThat(parsed).isEqualTo(createDateTime());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFormatDoesNotMatchDateTime() {
+        assertThrows(DateTimeParseException.class,
+            () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, "d MM y"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDateTimeIsNull() {
+        assertThrows(NullPointerException.class, () -> parseLocalDateTimeFromStringUsingFormat(null, DATE));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDateTimeFormatFormatIsNull() {
+        assertThrows(NullPointerException.class,
+            () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, null));
     }
 
     private LocalDate createDate() {
