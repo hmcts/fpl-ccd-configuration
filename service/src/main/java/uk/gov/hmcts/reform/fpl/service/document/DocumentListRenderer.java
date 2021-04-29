@@ -85,7 +85,7 @@ class DocumentsListRenderer {
     }
 
     public String renderImage(String imageName, String title) {
-        return format("<img align='right' height='25px' src='%s%s' title='%s'/>", imagesBaseUrl, imageName, title);
+        return format("<img height='25px' src='%s%s' title='%s'/>", imagesBaseUrl, imageName, title);
     }
 
     private String collapsible(String title, String content) {
