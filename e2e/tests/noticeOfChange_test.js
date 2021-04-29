@@ -23,7 +23,7 @@ Scenario('Private solicitor obtains access to an unrepresented case', async ({I,
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  await assertRepresentative(I, solicitor1.details, 'Private solicitors');
+  assertRepresentative(I, solicitor1.details, 'Private solicitors');
 });
 
 Scenario('Private solicitor replaces respondent solicitor on a represented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
@@ -34,7 +34,7 @@ Scenario('Private solicitor replaces respondent solicitor on a represented case'
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  await assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon');
+  assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon');
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
 
