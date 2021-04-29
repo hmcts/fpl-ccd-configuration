@@ -78,7 +78,8 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
                 .build())
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -96,7 +97,8 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         CaseData caseData = CaseData.builder()
             .supportingEvidenceDocumentsTemp(furtherEvidenceBundle)
-            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS, NO.getValue()))
+            .manageDocumentsRelatedToHearing(NO.getValue())
+            .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
         CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
@@ -283,10 +285,6 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private ManageDocument buildManagementDocument(ManageDocumentType type) {
         return ManageDocument.builder().type(type).build();
-    }
-
-    private ManageDocument buildManagementDocument(ManageDocumentType type, String isRelatedToHearing) {
-        return buildManagementDocument(type).toBuilder().relatedToHearing(isRelatedToHearing).build();
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {

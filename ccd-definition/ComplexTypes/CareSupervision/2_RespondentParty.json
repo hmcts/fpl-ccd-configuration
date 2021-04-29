@@ -147,13 +147,5 @@
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "respondent_border",
-    "FieldType": "Label",
-    "ElementLabel": "---",
-    "SecurityClassification": "Public"
   }
 ]
