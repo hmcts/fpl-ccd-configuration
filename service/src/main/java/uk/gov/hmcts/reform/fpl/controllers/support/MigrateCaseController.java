@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
+import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ import static java.util.Objects.isNull;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final RespondentPolicyService respondentPolicyService;
+    private final RespondentRepresentationService respondentRepresentationService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -110,7 +110,7 @@ public class MigrateCaseController extends CallbackController {
 
         Map<String, Object> data = caseDetails.getData();
 
-        data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
+        data.putAll(respondentRepresentationService.generateForSubmission(caseData));
     }
 
     private boolean isUnsupportedState(State state) {
