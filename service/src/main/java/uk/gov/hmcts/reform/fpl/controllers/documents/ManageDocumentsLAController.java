@@ -67,7 +67,6 @@ public class ManageDocumentsLAController extends CallbackController {
     private final RequestData requestData;
     private final FeatureToggleService featureToggleService;
     private final DocumentListService documentListService;
-    private final ObjectMapper objectMapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
