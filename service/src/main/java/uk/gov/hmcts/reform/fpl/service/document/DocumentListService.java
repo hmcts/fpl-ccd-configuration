@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -34,6 +36,8 @@ public class DocumentListService {
                 .uploadedBy(doc.getUploadedBy())
                 .build())
             .collect(Collectors.toList());
+
+        applicationDocuments.sort(comparing(e -> e.getUploadedAt(), reverseOrder()));
 
         DocumentBundleView b1 = DocumentBundleView.builder()
             .name("Applicant's statements and application documents")
