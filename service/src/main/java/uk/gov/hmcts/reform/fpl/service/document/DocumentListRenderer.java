@@ -46,17 +46,16 @@ class DocumentsListRenderer {
         String s = bundle.getDocuments().stream()
             .map(this::render)
             .collect(joining(""));
-        return collapsible(String.format("<h3>%s (%d documents)</h3>", bundle.getName(), bundle.getDocuments().size()), s);
+        return collapsible(bundle.getName(), s);
     }
 
     private String render(DocumentView documentView) {
         String details = String.join("", renderItems(List.of(
-            Pair.of("Name", documentView.getType()),
             Pair.of("Uploaded by", documentView.getUploadedBy()),
-            Pair.of("Uploaded at", documentView.getUploadedAt()),
+            Pair.of("Date and time uploaded", documentView.getUploadedAt()),
             Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>")
         )));
-        return collapsible(String.format("%s - %s", documentView.getType(), documentView.getDocument().getFilename()), details);
+        return collapsible(documentView.getType(), details);
     }
 
     private String collapsible(String title, String content) {

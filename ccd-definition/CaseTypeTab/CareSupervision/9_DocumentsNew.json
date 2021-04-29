@@ -6,9 +6,19 @@
     "TabID": "DocumentsNew",
     "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "manageDocumentsLALink",
+    "CaseFieldID": "submittedForm",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND documentsList !=\"\"",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsNew",
+    "TabLabel": "Further evidence documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "manageDocumentsLALink",
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
