@@ -8,12 +8,9 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentAfterSubmissionValidator;
-import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
-import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.groups.Default;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.validators.EventCheckerHelper.allEmpty;
@@ -31,7 +28,7 @@ public class RespondentsChecker extends PropertiesChecker {
     @Override
     public List<String> validate(CaseData caseData) {
 
-        List<String> errors = new ArrayList<>(respondentAfterSubmissionValidator.validateOnApplicationSubmission(caseData));
+        List<String> errors = new ArrayList<>(respondentAfterSubmissionValidator.validateLegalRepresentation(caseData));
         errors.addAll(super.validate(caseData, List.of("respondents1")));
         return errors;
     }

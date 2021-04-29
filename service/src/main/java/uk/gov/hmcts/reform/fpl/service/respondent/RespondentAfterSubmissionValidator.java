@@ -28,14 +28,14 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RespondentAfterSubmissionValidator {
 
-    public List<String> validateOnApplicationSubmission(CaseData caseData) {
+    public List<String> validateLegalRepresentation(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
         List<Element<Respondent>> respondents = caseData.getRespondents1();
 
         for (int i = 0; i < respondents.size(); i++) {
             Respondent respondent = respondents.get(i).getValue();
-            errors.addAll(getStandardRespondentErrors(respondent, i));
+            errors.addAll(legalRepresentationErrors(respondent, i));
         }
 
         return errors;
@@ -49,7 +49,7 @@ public class RespondentAfterSubmissionValidator {
         Set<UUID> previousRespondentIds = getIds(nullSafeList(caseDataBefore.getRespondents1()));
 
         if (!currentRespondentIds.containsAll(previousRespondentIds)) {
-            errors.add(" You cannot remove a respondent from the case");
+            errors.add("You cannot remove a respondent from the case");
         }
 
         Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getRespondents1());
@@ -61,41 +61,47 @@ public class RespondentAfterSubmissionValidator {
         for (int i = 0; i < currentRespondents.size(); i++) {
             Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
             Respondent current = currentRespondentsList.get(i).getValue();
-            errors.addAll(getStandardRespondentErrors(current, i));
-
             Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
 
             if (YES.getValue().equals(previous.getLegalRepresentation())
                 && NO.getValue().equals(current.getLegalRepresentation())) {
                 errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
+                continue;
             }
 
             if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
                 && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
 
-                errors.add("You cannot change organisation details for a legal representative");
+                errors.add(String.format(
+                    "You cannot change organisation details for respondent %d's legal representative", i + 1));
+                continue;
             }
+
+            errors.addAll(legalRepresentationErrors(current, i));
         }
 
         return errors;
     }
 
-    private List<String> getStandardRespondentErrors(Respondent respondent, int i) {
+    private List<String> legalRepresentationErrors(Respondent respondent, int i) {
         List<String> errors = new ArrayList<>();
         if (respondent.getLegalRepresentation() == null) {
             errors.add(String.format("Confirm if respondent %d has legal representation", i + 1));
-        }
-        if (isEmpty(respondent.getSolicitor().getFirstName()) || isEmpty(respondent.getSolicitor().getLastName())) {
-            errors.add(String.format("Add the full name of respondent %d’s legal representative", i + 1));
+        } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
+            {
+                if (isEmpty(respondent.getSolicitor().getFirstName())
+                    || isEmpty(respondent.getSolicitor().getLastName())) {
+                    errors.add(String.format("Add the full name of respondent %d's legal representative", i + 1));
 
+                }
+                if (isEmpty(respondent.getSolicitor().getEmail())) {
+                    errors.add(String.format("Add the email address of respondent %d's legal representative", i + 1));
+                }
+                if (!respondent.hasRegisteredOrganisation() && !respondent.hasUnregisteredOrganisation()) {
+                    errors.add(String.format("Add the organisation details for respondent %d's representative", i + 1));
+                }
+            }
         }
-        if (isEmpty(respondent.getSolicitor().getEmail())) {
-            errors.add(String.format("Add the email address of respondent %d’s legal representative", i + 1));
-        }
-        if (!respondent.hasRegisteredOrganisation() || !respondent.hasUnregisteredOrganisation()) {
-            errors.add(String.format("Add the organisation details for respondent %d's representative", i + 1));
-        }
-
         return errors;
     }
 
