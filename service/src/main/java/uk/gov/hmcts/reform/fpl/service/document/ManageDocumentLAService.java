@@ -39,7 +39,7 @@ public class ManageDocumentLAService {
     public static final String COURT_BUNDLE_LIST_KEY = "courtBundleList";
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_LA_KEY = "correspondenceDocumentsLA";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
-    public static final String RESPONDENT_STATEMENT_LIST_KEY = "respondentStatementList";
+    public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
@@ -62,7 +62,7 @@ public class ManageDocumentLAService {
         }
 
         if (isNotEmpty(caseData.getAllRespondents())) {
-            listAndLabel.put(RESPONDENT_STATEMENT_LIST_KEY, caseData.buildRespondentStatementDynamicList());
+            listAndLabel.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
         }
 
         return listAndLabel;
