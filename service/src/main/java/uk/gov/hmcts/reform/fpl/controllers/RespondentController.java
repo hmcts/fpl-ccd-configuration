@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
+import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
@@ -39,7 +39,7 @@ public class RespondentController extends CallbackController {
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
     private final FeatureToggleService featureToggleService;
-    private final RespondentPolicyService respondentPolicyService;
+    private final RespondentRepresentationService respondentRepresentationService;
     private final RespondentValidator respondentValidator;
 
     @PostMapping("/about-to-start")
@@ -83,7 +83,7 @@ public class RespondentController extends CallbackController {
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
         if (!OPEN.equals(caseData.getState()) && featureToggleService.hasRSOCaseAccess()) {
-            caseDetails.getData().putAll(respondentPolicyService.generateForSubmission(caseDetails));
+            caseDetails.getData().putAll(respondentRepresentationService.generateForSubmission(caseData));
         }
         return respond(caseDetails);
     }

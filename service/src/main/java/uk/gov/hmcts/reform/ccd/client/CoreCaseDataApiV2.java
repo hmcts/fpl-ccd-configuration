@@ -40,4 +40,3 @@ public interface CoreCaseDataApiV2 {
         @PathVariable("caseId") String caseId
     );
 }
-

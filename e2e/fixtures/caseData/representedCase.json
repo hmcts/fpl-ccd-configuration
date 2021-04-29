@@ -1,0 +1,194 @@
+{
+  "state": "SUBMITTED",
+  "caseData": {
+    "caseName": "e2e test case",
+    "orders": {
+      "orderType": [
+        "CARE_ORDER"
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare"
+      ],
+      "thresholdDetails": "mock threshold details"
+    },
+    "hearing": {
+      "reason": "test reason",
+      "timeFrame": "Same day"
+    },
+    "children1": [
+      {
+        "id": "a8caaf05-e52b-4315-9474-c247ae266164",
+        "value": {
+          "party": {
+            "gender": "Boy",
+            "lastName": "Jones",
+            "firstName": "Timothy",
+            "dateOfBirth": "2015-08-01"
+          }
+        }
+      }
+    ],
+    "solicitor": {
+      "dx": "160010 Kingsway 7",
+      "name": "John Smith",
+      "email": "solicitor@email.com",
+      "mobile": "07000000000",
+      "reference": "reference",
+      "telephone": "00000000000"
+    },
+    "applicants": [
+      {
+        "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+        "value": {
+          "party": {
+            "email": {
+              "email": "applicant@email.com"
+            },
+            "address": {
+              "County": "United Kingdom",
+              "PostCode": "CR0 2GE",
+              "PostTown": "London",
+              "AddressLine1": "Flat 12, Pinnacle Apartments",
+              "AddressLine2": "Saffron Central Square 11"
+            },
+            "partyId": "3a8785c6-178d-4138-bd1a-5eea0debed25",
+            "jobTitle": "Legal adviser",
+            "partyType": "ORGANISATION",
+            "pbaNumber": "PBA0082848",
+            "clientCode": "8888",
+            "mobileNumber": {
+              "telephoneNumber": "07000000000"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "00000000000",
+              "contactDirection": "Jonathon Walker"
+            },
+            "organisationName": "John Smith",
+            "customerReference": "Example reference"
+          },
+          "leadApplicantIndicator": "Yes"
+        }
+      }
+    ],
+    "sendToCtsc": "Yes",
+    "respondents1": [
+      {
+        "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+        "value": {
+          "party": {
+            "gender": "Male",
+            "address": {
+              "County": "",
+              "Country": "United Kingdom",
+              "PostCode": "RG4 7AA",
+              "PostTown": "Reading",
+              "AddressLine1": "Flat 2",
+              "AddressLine2": "Caversham House 15-17",
+              "AddressLine3": "Church Road"
+            },
+            "lastName": "Bloggs",
+            "firstName": "Joe",
+            "dateOfBirth": "1980-01-01",
+            "placeOfBirth": "London",
+            "telephoneNumber": {
+              "telephoneNumber": "00000 000000"
+            },
+            "relationshipToChild": "Uncle"
+          },
+          "legalRepresentation": "Yes",
+          "solicitor": {
+            "firstName": "Tom",
+            "lastName": "Jones",
+            "email": "test@test.co.uk"
+          }
+        }
+      }
+    ],
+    "dateSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submittedForm": "TO BE FILLED WITH VALID DATA",
+    "submissionConsent": [
+      "agree"
+    ],
+    "allocationProposal": {
+      "proposal": "District judge"
+    },
+    "displayAmountToPay": "Yes",
+    "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
+    "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+    "documents_socialWorkOther": [],
+    "documents_checklist_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_threshold_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkCarePlan_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkStatement_document": {
+      "documentStatus": "Included in social work evidence template (SWET)"
+    },
+    "documents_socialWorkAssessment_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "documents_socialWorkChronology_document": {
+      "statusReason": "mock reason",
+      "documentStatus": "To follow"
+    },
+    "documents_socialWorkEvidenceTemplate_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": "TO BE FILLED WITH VALID DATA"
+    },
+    "respondentPolicy0": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+    },
+    "respondentPolicy1": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+    },
+    "respondentPolicy2": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+    },
+    "respondentPolicy3": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+    },
+    "respondentPolicy4": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+    },
+    "respondentPolicy5": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+    },
+    "respondentPolicy6": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+    },
+    "respondentPolicy7": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+    },
+    "respondentPolicy8": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+    },
+    "respondentPolicy9": {
+      "Organisation": {},
+      "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+    },
+    "noticeOfChangeAnswers0": {
+      "applicantName": "Swansea City Council",
+      "respondentFirstName": "Joe",
+      "respondentLastName": "Bloggs"
+    }
+  }
+}
