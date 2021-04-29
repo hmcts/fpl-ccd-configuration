@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ public class ManageDocumentsLAController extends CallbackController {
     private final RequestData requestData;
     private final FeatureToggleService featureToggleService;
     private final DocumentListService documentListService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -212,8 +214,8 @@ public class ManageDocumentsLAController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
             COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENT_STATEMENT_LIST_KEY);
 
-        //FOR SUBMITTED DOC TAB
-        caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(caseDetails)));
+        CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+        caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details)));
 
         return respond(caseDetailsMap);
     }
