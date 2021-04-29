@@ -254,7 +254,8 @@
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
     "ElementLabel": "## Ability to take part in proceedings",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "proceedingsLabel=\"HIDE_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
