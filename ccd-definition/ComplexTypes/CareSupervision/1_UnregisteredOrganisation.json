@@ -5,7 +5,8 @@
     "ListElementCode": "signUpRequestHeader",
     "FieldType": "Label",
     "ElementLabel": "## Ask an organisation to register",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "signUpRequestHeader=\"HIDE_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,7 +14,8 @@
     "ListElementCode": "signupRequestLabel",
     "FieldType": "Label",
     "ElementLabel": "If the organisation you need isn’t listed, enter their details to send them a sign-up request",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "signupRequestLabel=\"HIDE_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
