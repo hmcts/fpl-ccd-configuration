@@ -19,6 +19,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Component
@@ -46,6 +48,11 @@ public class RespondentAfterSubmissionValidator {
             Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
             Respondent current = currentRespondentsList.get(i).getValue();
             Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
+
+            if (YES.getValue().equals(previous.getLegalRepresentation())
+                && NO.getValue().equals(current.getLegalRepresentation())) {
+                errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
+            }
 
             if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
                 && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
