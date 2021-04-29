@@ -27,10 +27,4 @@ module.exports = class HooksHelpers extends Helper {
     return helper.waitForInvisible('xuilib-loading-spinner', 20);
   }
 
-  _afterStep(step) {
-    const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    if (step.name === 'attachFile') {
-      return helper.wait(2); // in seconds; time needed for document store to store uploaded files
-    }
-  }
 };

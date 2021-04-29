@@ -1,10 +1,16 @@
 const config = require('../config.js');
+const apiHelper = require('../helpers/api_helper.js');
 const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
 const representedCase = require('../fixtures/caseData/representedCase.json');
 
 let caseId;
+let privateSolicitorDetails;
 
 Feature('Notice of change');
+
+BeforeSuite(async () => {
+  privateSolicitorDetails = await apiHelper.getUser(config.privateSolicitorOne);
+});
 
 Scenario('Private solicitor obtains access to an unrepresented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
   caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);
@@ -15,7 +21,7 @@ Scenario('Private solicitor obtains access to an unrepresented case', async ({I,
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  assertRepresentative(I, config.privateSolicitorOne.email, 'External', config.privateSolicitorOne.email, 'Private solicitors');
+  assertRepresentative(I, privateSolicitorDetails.forename, privateSolicitorDetails.surname, privateSolicitorDetails.email, 'Private solicitors');
 });
 
 Scenario('Private solicitor replaces respondent solicitor on a represented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
@@ -31,7 +37,7 @@ Scenario('Private solicitor replaces respondent solicitor on a represented case'
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  assertRepresentative(I, config.privateSolicitorOne.email, 'External', config.privateSolicitorOne.email, 'Private solicitors');
+  assertRepresentative(I, privateSolicitorDetails.forename, privateSolicitorDetails.surname, privateSolicitorDetails.email, 'Private solicitors');
 });
 
 const assertRepresentative = (I, firstName, lastName, email, organisation) => {
@@ -40,6 +46,7 @@ const assertRepresentative = (I, firstName, lastName, email, organisation) => {
   I.seeInTab(['Representative', 'Email address'], email);
 
   if (organisation) {
-    I.seeInTab(['Representative', 'Organisation'], 'Private solicitors');
+    I.waitForText(organisation);
+    I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], organisation);
   }
 };
