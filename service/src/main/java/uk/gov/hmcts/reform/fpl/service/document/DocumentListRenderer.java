@@ -74,12 +74,12 @@ class DocumentsListRenderer {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 
+        documentFields.add(Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>"));
+
         boolean isConfidential = true;
         if(isConfidential) {
-            documentFields.add(Pair.of(renderImage("in-progress.png", "In progress"), ""));
+            documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
         }
-
-        documentFields.add(Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>"));
 
         return documentFields;
     }
