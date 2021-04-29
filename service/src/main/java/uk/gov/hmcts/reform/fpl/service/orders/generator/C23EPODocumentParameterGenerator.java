@@ -95,7 +95,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
                 + "so that the child may continue to live "
                 + "there, consent to the exclusion requirement having been given by %s.",
             eventData.getManageOrdersWhoIsExcluded(),
-            eventData.getManageOrdersEpoRemovalAddress(),
+            formatAddress(eventData.getManageOrdersEpoRemovalAddress()),
             formatLocalDateToString(eventData.getManageOrdersExclusionStartDate(), DATE),
             eventData.getManageOrdersWhoIsExcluded());
     }

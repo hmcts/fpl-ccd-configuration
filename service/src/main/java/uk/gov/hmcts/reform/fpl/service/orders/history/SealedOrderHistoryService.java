@@ -85,7 +85,7 @@ public class SealedOrderHistoryService {
 
     private LocalDateTime getOrderApprovalDateTime(Element<GeneratedOrder> orderElement) {
         if (isNull(orderElement.getValue().getApprovalDateTime())) {
-            if (orderElement.getValue().getApprovalDate() != null) {
+            if (!isNull(orderElement.getValue().getApprovalDate())) {
                 return orderElement.getValue().getApprovalDate().atStartOfDay();
             }
         }
