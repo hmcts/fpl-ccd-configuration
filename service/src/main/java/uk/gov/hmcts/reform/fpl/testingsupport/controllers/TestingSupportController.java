@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,15 +19,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
+import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +49,8 @@ public class TestingSupportController {
     private final CoreCaseDataApiV2 coreCaseDataApiV2;
     private final CaseAccessDataStoreApi caseAccess;
     private final RequestData requestData;
+    private final AuthTokenGenerator authToken;
     private final IdamClient idamClient;
-    private final AuthTokenGenerator authTokenGenerator;
-    private final OrganisationService organisationService;
     private final SystemUpdateUserConfiguration userConfig;
 
     @PostMapping(value = "/testing-support/case/create", produces = APPLICATION_JSON_VALUE)
@@ -57,7 +58,7 @@ public class TestingSupportController {
 
         StartEventResponse startEventResponse = coreCaseDataApi.startCase(
             requestData.authorisation(),
-            authTokenGenerator.generate(),
+            authToken.generate(),
             CASE_TYPE,
             "openCase");
 
@@ -71,7 +72,7 @@ public class TestingSupportController {
 
         return coreCaseDataApiV2.saveCase(
             requestData.authorisation(),
-            authTokenGenerator.generate(),
+            authToken.generate(),
             CASE_TYPE,
             caseDataContent);
     }
@@ -91,6 +92,14 @@ public class TestingSupportController {
             log.error(String.format("Populate case event failed: %s", e.contentUTF8()));
             throw e;
         }
+    }
+
+    @GetMapping("/testing-support/case/{caseId}/lastEvent")
+    public AuditEvent getLastEvent(@PathVariable("caseId") String caseId) {
+        return coreCaseDataApiV2.getAuditEvents(requestData.authorisation(), authToken.generate(), false, caseId)
+            .getAuditEvents().stream()
+            .max(Comparator.comparing(AuditEvent::getCreatedDate))
+            .orElse(null);
     }
 
     @PostMapping("/testing-support/user")
@@ -120,7 +129,7 @@ public class TestingSupportController {
                 .build()))
             .build();
 
-        caseAccess.addCaseUserRoles(userToken, authTokenGenerator.generate(), accessRequest);
+        caseAccess.addCaseUserRoles(userToken, authToken.generate(), accessRequest);
 
         log.info("Role {} granted to user {} to case {}", role, email, caseId);
     }
