@@ -184,7 +184,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest);
 
-        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("Removing an existing respondent is not allowed"));
+        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("You cannot remove a respondent from the case"));
     }
 
     @Test

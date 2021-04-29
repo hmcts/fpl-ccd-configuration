@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentAfterSubmissionValidator;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
@@ -28,7 +29,8 @@ import static uk.gov.hmcts.reform.fpl.model.RespondentParty.builder;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class})
+@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class,
+    RespondentAfterSubmissionValidator.class})
 class RespondentsCheckerIsStartedTest {
 
     @Autowired

@@ -31,7 +31,7 @@ public class RespondentAfterSubmissionValidator {
     public List<String> validateLegalRepresentation(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
-        List<Element<Respondent>> respondents = caseData.getRespondents1();
+        List<Element<Respondent>> respondents = nullSafeList(caseData.getRespondents1());
 
         for (int i = 0; i < respondents.size(); i++) {
             Respondent respondent = respondents.get(i).getValue();
