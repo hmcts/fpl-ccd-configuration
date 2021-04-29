@@ -38,11 +38,11 @@ class DocumentsListRenderer {
     //TODO consider templating solution like mustache
     public String render(List<DocumentBundleView> documents) {
         final List<String> lines = new LinkedList<>();
-        lines.add("<div class='width-50'>");
+        lines.add("<p><div class='width-50'>");
         for (DocumentBundleView documentBundle : documents) {
             lines.add(renderBundle(documentBundle));
         }
-        lines.add("</div>");
+        lines.add("</div></p>");
         return String.join("\n\n", lines);
     }
 
