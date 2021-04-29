@@ -115,7 +115,8 @@ class C23EPODocumentParameterGeneratorTest {
         final String exclusionRequirement = String.format("The Court directs that %s be excluded from %s from %s "
                 + "so that the child may continue to live "
                 + "there, consent to the exclusion requirement having been given by %s.",
-            EXCLUDE_PERSON, REMOVAL_ADDRESS, formatLocalDateToString(EXCLUSION_DATE, DATE), EXCLUDE_PERSON);
+            EXCLUDE_PERSON, REMOVAL_ADDRESS.getAddressAsString(", "),
+            formatLocalDateToString(EXCLUSION_DATE, DATE), EXCLUDE_PERSON);
 
         return C23EPODocmosisParameters.builder()
             .orderType(EMERGENCY_PROTECTION_ORDER)
