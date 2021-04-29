@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers.documents;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,8 +212,10 @@ public class ManageDocumentsLAController extends CallbackController {
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, COURT_BUNDLE_HEARING_LIST_KEY,
             COURT_BUNDLE_KEY, DOCUMENT_SUB_TYPE, RELATED_TO_HEARING, RESPONDENT_STATEMENT_LIST_KEY);
 
-        CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
-        caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details)));
+        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
+            CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+            caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details)));
+        }
 
         return respond(caseDetailsMap);
     }

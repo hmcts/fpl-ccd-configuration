@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
@@ -73,9 +74,18 @@ class DocumentsListRenderer {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 
+        boolean isConfidential = true;
+        if(isConfidential) {
+            documentFields.add(Pair.of(renderImage("in-progress.png", "In progress"), ""));
+        }
+
         documentFields.add(Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>"));
 
         return documentFields;
+    }
+
+    public String renderImage(String imageName, String title) {
+        return format("<img align='right' height='25px' src='%s%s' title='%s'/>", imagesBaseUrl, imageName, title);
     }
 
     private String collapsible(String title, String content) {
