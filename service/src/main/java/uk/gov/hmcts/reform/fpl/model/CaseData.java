@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.aac.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -108,7 +109,9 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -340,10 +343,14 @@ public class CaseData {
 
     public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
         List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
-        applicationsBundles
-            .sort(Comparator.comparing(
-                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
-                .thenComparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().toLabel()));
+
+        Comparator<Element<ApplicationsBundle>> reverseChronological = comparing((Element<ApplicationsBundle> bundle) ->
+            parseLocalDateTimeFromStringUsingFormat(bundle.getValue().getUploadedDateTime(), DATE_TIME))
+            .reversed();
+
+        applicationsBundles.sort(Comparator
+            .comparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
+            .thenComparing(reverseChronological));
 
         return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);
     }
@@ -906,4 +913,6 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+
+    private final ChangeOrganisationRequest changeOrganisationRequestField;
 }
