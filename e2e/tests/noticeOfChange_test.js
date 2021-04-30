@@ -1,4 +1,5 @@
 const config = require('../config.js');
+const dateFormat = require('dateformat');
 const apiHelper = require('../helpers/api_helper.js');
 
 const solicitor1 = config.privateSolicitorOne;
@@ -24,6 +25,9 @@ Scenario('Private solicitor obtains access to an unrepresented case', async ({I,
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor1.details, 'Private solicitors');
+
+  caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+  assertChangeOfRepresentative(I, 1, 'Noc', solicitor1.details.email, solicitor1.details, 'Private solicitors');
 });
 
 Scenario('Private solicitor replaces respondent solicitor on a represented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
@@ -35,6 +39,9 @@ Scenario('Private solicitor replaces respondent solicitor on a represented case'
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon');
+
+  caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+  assertChangeOfRepresentative(I, 2, 'Noc', solicitor2.details.email, solicitor2.details, 'London Borough Hillingdon', solicitor1.details, 'Private solicitors');
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
 
@@ -49,6 +56,9 @@ Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, en
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
 
+  caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+  assertChangeOfRepresentative(I, 3, 'FPL', 'HMCTS', null, null, solicitor2.details, 'London Borough Hillingdon');
+
   await I.navigateToCaseDetailsAs(solicitor2, caseId);
 
   I.see('No cases found.');
@@ -62,5 +72,28 @@ const assertRepresentative = (I, user, organisation) => {
   if (organisation) {
     I.waitForText(organisation);
     I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], organisation);
+  }
+};
+
+const assertChangeOfRepresentative = (I, index, method, actingUserEmail, addedUser, addedUserOrganisation, removedUser, removedUserOrganisation) => {
+  let representative = `Change of representative ${index}`;
+
+  I.seeInTab([representative, 'Respondent'], 'Joe Bloggs');
+  I.seeInTab([representative, 'Date'], dateFormat(new Date(), 'd mmm yyyy'));
+  I.seeInTab([representative, 'Updated by'], actingUserEmail);
+  I.seeInTab([representative, 'Updated via'], method);
+
+  if (addedUser) {
+    I.seeInTab([representative, 'Added representative', 'First name'], addedUser.forename);
+    I.seeInTab([representative, 'Added representative', 'Last name'], addedUser.surname);
+    I.seeInTab([representative, 'Added representative', 'Email'], addedUser.email);
+    I.seeOrganisationInTab([representative, 'Added representative', 'Name'], addedUserOrganisation);
+  }
+
+  if (removedUser) {
+    I.seeInTab([representative, 'Removed representative', 'First name'], removedUser.forename);
+    I.seeInTab([representative, 'Removed representative', 'Last name'], removedUser.surname);
+    I.seeInTab([representative, 'Removed representative', 'Email'], removedUser.email);
+    I.seeOrganisationInTab([representative, 'Removed representative', 'Name'], removedUserOrganisation);
   }
 };
