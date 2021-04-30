@@ -58,6 +58,10 @@ xui-webapp:
     ingressHost: xui-${SERVICE_FQDN}
     memoryLimits: 1836Mi
     cpuLimits: 1900m
+    readinessPeriod: 5
+    livenessPeriod: 3
+    livenessDelay: 10
+    livenessFailureThreshold: 2
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health

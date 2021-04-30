@@ -11,15 +11,21 @@ import uk.gov.hmcts.reform.aac.client.CaseAssignmentApi;
 import uk.gov.hmcts.reform.aac.model.DecisionRequest;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+
+import uk.gov.hmcts.reform.ccd.model.AuditEvent;
+import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
+import uk.gov.hmcts.reform.ccd.model.AuditEvent;
+import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.fpl.model.AuditEvent;
-import uk.gov.hmcts.reform.fpl.model.AuditEventsResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+
+import java.util.List;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;

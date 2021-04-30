@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -146,6 +148,15 @@ public class TestDataHelper {
 
     public static List<Element<Child>> testChildren() {
         return List.of(testChild(), testChild(), testChild());
+    }
+
+    public static Element<Respondent> testRespondent(String firstName, String lastName) {
+        return element(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .build())
+            .build());
     }
 
     public static Representative testRepresentative() {
