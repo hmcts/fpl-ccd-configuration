@@ -79,7 +79,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collection;
