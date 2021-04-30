@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
+import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.DocumentView;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -30,7 +33,36 @@ public class DocumentListService {
     public String getDocumentsList(CaseData caseData) {
         List<DocumentBundleView> bundles = new ArrayList<>();
 
-        List<DocumentView> applicationDocuments = caseData.getApplicationDocuments().stream()
+        List<DocumentView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
+            caseData.getApplicationDocuments(), caseData.getFurtherEvidenceDocumentsLA());
+
+        DocumentBundleView applicationBundle = buildBundle("Applicant's statements and application documents", applicationStatementAndDocumentBundle);
+
+        if (isNotEmpty(applicationBundle.getDocuments())) {
+            bundles.add(applicationBundle);
+        }
+
+        if(!isNull(caseData.getFurtherEvidenceDocuments())) {
+            final List<DocumentBundleView> furtherEvidenceBundles = getFurtherEvidenceBundles(caseData);
+
+            if (isNotEmpty(furtherEvidenceBundles)) {
+                bundles.addAll(furtherEvidenceBundles);
+            }
+        }
+
+        return documentsListRenderer.render(bundles);
+    }
+
+    private DocumentBundleView buildBundle(String name, List<DocumentView> documents) {
+        return DocumentBundleView.builder()
+            .name(name)
+            .documents(documents)
+            .build();
+    }
+
+    private List<DocumentView> getApplicationStatementAndDocumentBundle(List<Element<ApplicationDocument>> applicationDocuments,
+                                                                        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
+        List<DocumentView> applicationDocs = applicationDocuments.stream()
             .map(Element::getValue)
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
@@ -43,38 +75,25 @@ public class DocumentListService {
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toList());
 
-        List<DocumentView> applicantStatementDocuments = caseData.getFurtherEvidenceDocumentsLA().stream()
-            .map(Element::getValue)
-            .filter(doc -> doc.getType().equals(FurtherEvidenceType.APPLICANT_STATEMENT))
-            .map(doc -> DocumentView.builder()
-                .document(doc.getDocument())
-                .type(doc.getType().getLabel())
-                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                .uploadedBy(doc.getUploadedBy())
-                .documentName(doc.getName())
-                .build())
-            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-            .collect(Collectors.toList());
+        if (!isNull(furtherEvidenceDocumentsLA)) {
+            List<DocumentView> applicantStatementDocuments = furtherEvidenceDocumentsLA.stream()
+                .map(Element::getValue)
+                .filter(doc -> doc.getType().equals(FurtherEvidenceType.APPLICANT_STATEMENT))
+                .map(doc -> DocumentView.builder()
+                    .document(doc.getDocument())
+                    .type(doc.getType().getLabel())
+                    .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                    .uploadedBy(doc.getUploadedBy())
+                    .documentName(doc.getName())
+                    .build())
+                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+                .collect(Collectors.toList());
 
-        List<DocumentView> combinedApplicationDocuments = Stream.concat(applicationDocuments.stream(), applicantStatementDocuments.stream())
-            .collect(Collectors.toList());
-
-        DocumentBundleView b1 = DocumentBundleView.builder()
-            .name("Applicant's statements and application documents")
-            .documents(combinedApplicationDocuments)
-            .build();
-
-        final List<DocumentBundleView> furtherEvidenceBundles = getFurtherEvidenceBundles(caseData);
-
-        if (isNotEmpty(b1.getDocuments())) {
-            bundles.add(b1);
+            return Stream.concat(applicationDocs.stream(), applicantStatementDocuments.stream())
+                .collect(Collectors.toList());
         }
 
-        if (isNotEmpty(furtherEvidenceBundles)) {
-            bundles.addAll(furtherEvidenceBundles);
-        }
-
-        return documentsListRenderer.render(bundles);
+        return applicationDocs;
     }
 
     private List<DocumentBundleView> getFurtherEvidenceBundles(CaseData caseData) {
