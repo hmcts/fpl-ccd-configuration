@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
-
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 
 @Value
