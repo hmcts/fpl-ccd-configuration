@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.fpl.service.document;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.DocumentBundleView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,21 +39,55 @@ public class DocumentListService {
                 .uploadedBy(doc.getUploadedBy())
                 .documentName(doc.getDocumentName())
                 .build())
+            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toList());
-
-        applicationDocuments.sort(comparing(e -> e.getUploadedAt(), reverseOrder()));
 
         DocumentBundleView b1 = DocumentBundleView.builder()
             .name("Applicant's statements and application documents")
             .documents(applicationDocuments)
             .build();
 
+        final List<DocumentBundleView> furtherEvidenceBundles = getFurtherEvidenceBundles(caseData);
+
         if (isNotEmpty(b1.getDocuments())) {
             bundles.add(b1);
         }
 
-        String render = documentsListRenderer.render(bundles);
+        if (isNotEmpty(furtherEvidenceBundles)) {
+            bundles.addAll(furtherEvidenceBundles);
+        }
 
-        return render;
+        return documentsListRenderer.render(bundles);
+    }
+
+    private List<DocumentBundleView> getFurtherEvidenceBundles(CaseData caseData) {
+        List<DocumentBundleView> documentBundles = new ArrayList<>();
+        Arrays.stream(FurtherEvidenceType.values()).forEach(
+            type -> {
+                final List<DocumentView> documentsView = caseData.getFurtherEvidenceDocuments()
+                    .stream()
+                    .map(Element::getValue)
+                    .filter(doc -> (type == doc.getType()))
+                    .map(doc -> DocumentView.builder()
+                        .document(doc.getDocument())
+                        .type(doc.getType().getLabel())
+                        .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                        .uploadedBy(doc.getUploadedBy())
+                        .documentName(doc.getName())
+                        .build())
+                    .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+                    .collect(Collectors.toUnmodifiableList());
+
+                if (!documentsView.isEmpty()) {
+                    final DocumentBundleView bundleView = DocumentBundleView.builder()
+                        .name(type.getLabel())
+                        .documents(documentsView)
+                        .build();
+
+                    documentBundles.add(bundleView);
+                }
+            }
+        );
+        return documentBundles;
     }
 }

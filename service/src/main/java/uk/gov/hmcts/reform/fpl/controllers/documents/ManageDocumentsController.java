@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_SUPPORTING_DOCUMENTS_COLLECTION;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.CORRESPONDING_DOCUMENTS_COLLECTION_KEY;
@@ -54,6 +53,7 @@ public class ManageDocumentsController extends CallbackController {
     private final IdamClient idamClient;
     private final RequestData requestData;
     private final FeatureToggleService featureToggleService;
+    private final DocumentListService documentListService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -164,16 +164,19 @@ public class ManageDocumentsController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                Map<String, Object> data = manageDocumentService
-                    .buildFinalApplicationBundleSupportingDocuments(caseData);
-
-                caseDetailsMap.putIfNotEmpty(data);
+                caseDetailsMap.putIfNotEmpty(
+                    manageDocumentService.buildFinalApplicationBundleSupportingDocuments(caseData));
                 break;
         }
 
         removeTemporaryFields(caseDetailsMap, TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY, MANAGE_DOCUMENT_KEY,
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY);
+
+        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
+            CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+            caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details)));
+        }
 
         return respond(caseDetailsMap);
     }
