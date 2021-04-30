@@ -163,7 +163,8 @@
               "address": {}
             }
           },
-          "representedBy": []
+          "representedBy": [],
+          "legalRepresentation": "No"
         }
       },
       {
@@ -189,7 +190,8 @@
               "address": {}
             }
           },
-          "representedBy": []
+          "representedBy": [],
+          "legalRepresentation": "No"
         }
       }
     ],

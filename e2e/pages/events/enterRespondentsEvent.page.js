@@ -134,7 +134,7 @@ module.exports = {
 
     await within(this.fields(elementIndex).solicitor.element, () => {
       I.click('Clear');
-      I.fillField('.//input[@id="search-org-text"]', organisationName);
+      I.fillField('.//input[@id="search-org-text"]', organisationName.split(' ')[0]);
       I.click(`.//*[@id="organisation-table"]/caption/h3[text()="${organisationName}"]/../../tbody//a`);
     });
   },
