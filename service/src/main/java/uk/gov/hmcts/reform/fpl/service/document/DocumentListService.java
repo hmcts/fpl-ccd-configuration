@@ -21,6 +21,7 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -78,18 +79,18 @@ public class DocumentListService {
         if (!isNull(furtherEvidenceDocumentsLA)) {
             List<DocumentView> applicantStatementDocuments = furtherEvidenceDocumentsLA.stream()
                 .map(Element::getValue)
-                .filter(doc -> doc.getType().equals(FurtherEvidenceType.APPLICANT_STATEMENT))
+                .filter(doc -> doc.getType().equals(APPLICANT_STATEMENT))
                 .map(doc -> DocumentView.builder()
                     .document(doc.getDocument())
-                    .type(doc.getType().getLabel())
+                    .type(APPLICANT_STATEMENT.getLabel())
                     .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
                     .uploadedBy(doc.getUploadedBy())
                     .documentName(doc.getName())
                     .build())
-                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
                 .collect(Collectors.toList());
 
             return Stream.concat(applicationDocs.stream(), applicantStatementDocuments.stream())
+                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
                 .collect(Collectors.toList());
         }
 

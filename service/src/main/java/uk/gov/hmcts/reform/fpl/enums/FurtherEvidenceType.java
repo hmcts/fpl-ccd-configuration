@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum FurtherEvidenceType {
-    APPLICANT_STATEMENT("Applicant's statement"),
+    APPLICANT_STATEMENT("Application statement"),
     GUARDIAN_REPORTS("Child's guardian reports"),
     EXPERT_REPORTS("Expert reports"),
     OTHER_REPORTS("Other reports");

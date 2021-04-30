@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 
 @Slf4j
 @Service
@@ -60,7 +61,7 @@ class DocumentsListRenderer {
         List<Pair<String, String>> documentFields = getFieldsBasedOnDocumentType(documentView);
 
         String details = String.join("", renderItems(documentFields));
-        final String title = isFurtherEvidenceType(documentView) ? documentView.getFileName() : documentView.getType();
+        final String title = isFurtherEvidenceType(documentView) && !documentView.getType().equals(APPLICANT_STATEMENT.getLabel()) ? documentView.getFileName() : documentView.getType();
         return collapsible(title, details);
     }
 
@@ -74,6 +75,10 @@ class DocumentsListRenderer {
         }
 
         if (documentView.getType().equals(OTHER.getLabel())) {
+            documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
+        }
+
+        if(documentView.getType().equals(APPLICANT_STATEMENT.getLabel())) {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 
