@@ -88,9 +88,11 @@ public class DocumentListService {
                     .map(doc -> DocumentView.builder()
                         .document(doc.getDocument())
                         .type(doc.getType().getLabel())
+                        .fileName(doc.getName())
                         .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
                         .uploadedBy(doc.getUploadedBy())
                         .documentName(doc.getName())
+                        .confidential(doc.isConfidentialDocument())
                         .build())
                     .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
                     .collect(Collectors.toUnmodifiableList());
