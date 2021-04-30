@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
-import uk.gov.hmcts.reform.fpl.model.AuditEvent;
-import uk.gov.hmcts.reform.fpl.model.AuditEventsResponse;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
 

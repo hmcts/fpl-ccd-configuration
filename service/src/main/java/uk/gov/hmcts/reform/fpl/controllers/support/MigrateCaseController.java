@@ -110,7 +110,7 @@ public class MigrateCaseController extends CallbackController {
 
         Map<String, Object> data = caseDetails.getData();
 
-        data.putAll(respondentRepresentationService.generateForSubmission(caseData));
+        data.putAll(respondentRepresentationService.generate(caseData));
     }
 
     private boolean isUnsupportedState(State state) {

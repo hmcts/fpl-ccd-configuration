@@ -688,13 +688,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "changeOrganisationRequestField",
-    "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "noticeOfChangeAnswers1",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
