@@ -1,44 +1,83 @@
 const config = require('../config.js');
 const apiHelper = require('../helpers/api_helper.js');
+const mandatoryWithMultipleRespondents = require('../fixtures/caseData/mandatoryWithMultipleRespondents.json');
 
 const solicitor1 = config.privateSolicitorOne;
 const solicitor2 = config.hillingdonLocalAuthorityUserOne;
+const solicitor3 = config.wiltshireLocalAuthorityUserOne;
 
 let caseId;
 
 Feature('Notice of change');
 
 BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData();
+  caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
   solicitor1.details = await apiHelper.getUser(solicitor1);
   solicitor2.details = await apiHelper.getUser(solicitor2);
+  solicitor3.details = await apiHelper.getUser(solicitor3);
 });
 
-Scenario('Private solicitor obtains access to an unrepresented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+Scenario('Solicitor can request representation only after case submission', async ({I, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
+
+  await I.navigateToCaseDetailsAs(solicitor1, caseId);
+  I.see('No cases found.');
+
+  await noticeOfChangePage.navigate();
+  await noticeOfChangePage.enterCaseReference(caseId);
+  I.click('Continue');
+  I.see('Your notice of change request has not been submitted');
+
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  await submitApplicationEventPage.giveConsent();
+  await I.completeEvent('Submit', null, true);
 
   await I.signIn(solicitor1);
-  I.navigateToCaseList();
-  caseListPage.searchForCasesWithId(caseId);
-  I.dontSeeCaseInSearchResult(caseId);
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor1.details, 'Private solicitors');
 });
 
-Scenario('Private solicitor replaces respondent solicitor on a represented case', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+Scenario('Solicitor request representation of second unrepresented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+
   await I.signIn(solicitor2);
+  I.navigateToCaseList();
+  caseListPage.searchForCasesWithId(caseId);
+  I.dontSeeCaseInSearchResult(caseId);
+
+  await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Emma', 'White');
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon', 2);
+});
+
+Scenario('Solicitor request representation of represented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
+  await I.signIn(solicitor3);
   I.navigateToCaseList();
   caseListPage.searchForCasesWithId(caseId);
   I.dontSeeCaseInSearchResult(caseId);
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon');
+  assertRepresentative(I, solicitor3.details, 'Wiltshire County Council');
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
 
   I.see('No cases found.');
+});
+
+Scenario('Hmcts admin replaces respondent solicitor', async ({I, caseViewPage, enterRespondentsEventPage}) => {
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
+
+  await enterRespondentsEventPage.updateRegisteredOrganisation('Swansea City Council', 1);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
+
+  await I.navigateToCaseDetailsAs(solicitor2, caseId);
+
+  I.see('No cases found.');
+
 });
 
 Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, enterRespondentsEventPage}) => {
@@ -49,18 +88,18 @@ Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, en
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
 
-  await I.navigateToCaseDetailsAs(solicitor2, caseId);
+  await I.navigateToCaseDetailsAs(solicitor3, caseId);
 
   I.see('No cases found.');
 });
 
-const assertRepresentative = (I, user, organisation) => {
+const assertRepresentative = (I, user, organisation, index = 1) => {
   I.seeInTab(['Representative', 'Representative\'s first name'], user.forename);
   I.seeInTab(['Representative', 'Representative\'s last name'], user.surname);
   I.seeInTab(['Representative', 'Email address'], user.email);
 
   if (organisation) {
     I.waitForText(organisation);
-    I.seeOrganisationInTab(['Respondents 1', 'Representative', 'Name'], organisation);
+    I.seeOrganisationInTab([`Respondents ${index}`, 'Representative', 'Name'], organisation);
   }
 };
