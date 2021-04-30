@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
@@ -42,9 +43,25 @@ public class DocumentListService {
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toList());
 
+        List<DocumentView> applicantStatementDocuments = caseData.getFurtherEvidenceDocumentsLA().stream()
+            .map(Element::getValue)
+            .filter(doc -> doc.getType().equals(FurtherEvidenceType.APPLICANT_STATEMENT))
+            .map(doc -> DocumentView.builder()
+                .document(doc.getDocument())
+                .type(doc.getType().getLabel())
+                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                .uploadedBy(doc.getUploadedBy())
+                .documentName(doc.getName())
+                .build())
+            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .collect(Collectors.toList());
+
+        List<DocumentView> combinedApplicationDocuments = Stream.concat(applicationDocuments.stream(), applicantStatementDocuments.stream())
+            .collect(Collectors.toList());
+
         DocumentBundleView b1 = DocumentBundleView.builder()
             .name("Applicant's statements and application documents")
-            .documents(applicationDocuments)
+            .documents(combinedApplicationDocuments)
             .build();
 
         final List<DocumentBundleView> furtherEvidenceBundles = getFurtherEvidenceBundles(caseData);
