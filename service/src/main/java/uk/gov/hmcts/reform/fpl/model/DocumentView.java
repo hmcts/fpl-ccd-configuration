@@ -14,5 +14,7 @@ public class DocumentView {
     private String type;
     private String includedInSWET;
     private String documentName;
+    private String fileName;
+    private boolean confidential;
     private DocumentReference document;
 }

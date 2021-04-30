@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,7 +60,8 @@ class DocumentsListRenderer {
         List<Pair<String, String>> documentFields = getFieldsBasedOnDocumentType(documentView);
 
         String details = String.join("", renderItems(documentFields));
-        return collapsible(documentView.getType(), details);
+        final String title = isFurtherEvidenceType(documentView) ? documentView.getFileName() : documentView.getType();
+        return collapsible(title, details);
     }
 
     private List<Pair<String, String>> getFieldsBasedOnDocumentType(DocumentView documentView) {
@@ -67,7 +70,7 @@ class DocumentsListRenderer {
         documentFields.add(Pair.of("Date and time uploaded", documentView.getUploadedAt()));
 
         if (documentView.getType().equals(SWET.getLabel()) && !isEmpty(documentView.getIncludedInSWET())) {
-                documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
+            documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
         }
 
         if (documentView.getType().equals(OTHER.getLabel())) {
@@ -76,12 +79,16 @@ class DocumentsListRenderer {
 
         documentFields.add(Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>"));
 
-        boolean isConfidential = true;
-        if(isConfidential) {
+        if (documentView.isConfidential()) {
             documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
         }
 
         return documentFields;
+    }
+
+    private boolean isFurtherEvidenceType(DocumentView documentView) {
+        return Arrays.stream(FurtherEvidenceType.values())
+            .anyMatch(type -> type.getLabel().equals(documentView.getType()));
     }
 
     public String renderImage(String imageName, String title) {
