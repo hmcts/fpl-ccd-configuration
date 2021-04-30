@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
@@ -33,12 +35,11 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 class TaskListRendererTest {
-    PreSubmissionTasksRenderer preSubmissionTasksRenderer = new PreSubmissionTasksRenderer();
 
     private final TaskListRenderer taskListRenderer = new TaskListRenderer(
         new TaskListRenderElements(
             "https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/"
-        ), preSubmissionTasksRenderer);
+        ));
 
     private static List<Task> TASKS = List.of(
         task(CASE_NAME, COMPLETED_FINISHED),
@@ -58,15 +59,27 @@ class TaskListRendererTest {
         task(COURT_SERVICES, IN_PROGRESS),
         task(SUBMIT_APPLICATION, NOT_AVAILABLE));
 
-    private static final List<PreSubmissionTask> PRE_SUBMISSION_TASKS = List.of(
-        PreSubmissionTask.builder()
-            .event(ORDERS_SOUGHT)
-            .messages(List.of("Add the orders and directions sought"))
-            .build());
-
     @Test
     void shouldRenderTaskListWithApplicationDocuments() {
-        assertThat(taskListRenderer.render(TASKS, PRE_SUBMISSION_TASKS)).isEqualTo(
-            readString("task-list/expected-task-list.md").trim());
+
+        List<EventValidationErrors> eventErrors = List.of(
+            EventValidationErrors.builder()
+                .event(ORDERS_SOUGHT)
+                .errors(List.of("Add the orders and directions sought"))
+                .build());
+
+        assertThat(taskListRenderer.render(TASKS, eventErrors))
+            .isEqualTo(read("task-list/expected-task-list.md"));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldRenderTaskListWithoutErrors(List<EventValidationErrors> errors) {
+        assertThat(taskListRenderer.render(TASKS, errors))
+            .isEqualTo(read("task-list/expected-task-list-no-errors.md"));
+    }
+
+    private static String read(String filename) {
+        return readString(filename).trim();
     }
 }

@@ -6,12 +6,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
-import uk.gov.hmcts.reform.fpl.service.PreSubmissionTasksService;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class CaseEventHandler {
     private final CoreCaseDataService coreCaseDataService;
     private final TaskListService taskListService;
     private final TaskListRenderer taskListRenderer;
-    private final PreSubmissionTasksService preSubmissionTasksService;
+    private final CaseSubmissionChecker caseSubmissionChecker;
 
     @EventListener
     public void handleCaseDataChange(final CaseDataChanged event) {
@@ -36,9 +36,8 @@ public class CaseEventHandler {
         if (caseData.getState() == OPEN) {
 
             final List<Task> tasks = taskListService.getTasksForOpenCase(caseData);
-            final List<PreSubmissionTask> preSubmissionTasks =
-                preSubmissionTasksService.getPreSubmissionTasks(caseData);
-            final String taskList = taskListRenderer.render(tasks, preSubmissionTasks);
+            final List<EventValidationErrors> eventErrors = caseSubmissionChecker.validateAsGroups(caseData);
+            final String taskList = taskListRenderer.render(tasks, eventErrors);
 
             coreCaseDataService.triggerEvent(
                 JURISDICTION,

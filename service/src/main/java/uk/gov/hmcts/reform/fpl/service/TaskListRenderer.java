@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
-import uk.gov.hmcts.reform.fpl.model.submission.PreSubmissionTask;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.model.tasklist.TaskSection;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
@@ -13,9 +13,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.List.of;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.Event.ALLOCATION_PROPOSAL;
 import static uk.gov.hmcts.reform.fpl.enums.Event.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Event.CASE_NAME;
@@ -43,10 +47,8 @@ public class TaskListRenderer {
 
     private final TaskListRenderElements taskListRenderElements;
 
-    private final PreSubmissionTasksRenderer preSubmissionTasksRenderer;
-
     //TODO consider templating solution like mustache
-    public String render(List<Task> allTasks, List<PreSubmissionTask> preSubmissionTasks) {
+    public String render(List<Task> allTasks, List<EventValidationErrors> tasksErrors) {
         final List<String> lines = new LinkedList<>();
 
         lines.add("<div class='width-50'>");
@@ -55,7 +57,7 @@ public class TaskListRenderer {
 
         lines.add("</div>");
 
-        lines.addAll(preSubmissionTasksRenderer.renderLines(preSubmissionTasks));
+        lines.addAll(renderTasksErrors(tasksErrors));
 
         return String.join("\n\n", lines);
     }
@@ -157,5 +159,17 @@ public class TaskListRenderer {
         return lines;
     }
 
+    private List<String> renderTasksErrors(List<EventValidationErrors> taskErrors) {
+        if (isEmpty(taskErrors)) {
+            return emptyList();
+        }
+        final List<String> errors = taskErrors.stream()
+            .flatMap(task -> task.getErrors()
+                .stream()
+                .map(error -> format("%s in the %s", error, taskListRenderElements.renderLink(task.getEvent()))))
+            .collect(toList());
+
+        return taskListRenderElements.renderCollapsible("Why can't I submit my application?", errors);
+    }
 
 }
