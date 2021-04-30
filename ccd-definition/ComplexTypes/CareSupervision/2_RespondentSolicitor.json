@@ -46,6 +46,7 @@
     "ListElementCode": "unregisteredOrganisation",
     "FieldType": "UnregisteredOrganisation",
     "ElementLabel": "Organisation (unregistered)",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "unregisteredOrganisation.name!=\"\""
   }
 ]
