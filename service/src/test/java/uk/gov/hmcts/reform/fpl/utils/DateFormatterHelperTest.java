@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTi
 class DateFormatterHelperTest {
     private static final String JANUARY_2019 = "1 January 2019";
     private static final String JANUARY_2019_TIME = "1 January 2019, 12:00pm";
+    private static final String TIME_JANUARY_2019 = "12:00pm, 1 January 2019";
 
     private static Stream<Arguments> dayOfMonthSuffixSource() {
         return Stream.of(
@@ -106,26 +108,32 @@ class DateFormatterHelperTest {
     }
 
     @Test
-    void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenCorrectFormat() {
-        LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME);
+    void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenMainFormat() {
+        LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, DATE_TIME, TIME_DATE);
+        assertThat(parsed).isEqualTo(createDateTime());
+    }
+
+    @Test   
+    void shouldParseAFormattedDateTimeToLocalDateTimeWhenGivenAlternativeFormat() {
+        LocalDateTime parsed = parseLocalDateTimeFromStringUsingFormat(TIME_JANUARY_2019, DATE_TIME, TIME_DATE);
         assertThat(parsed).isEqualTo(createDateTime());
     }
 
     @Test
-    void shouldThrowExceptionWhenFormatDoesNotMatchDateTime() {
+    void shouldThrowExceptionWhenDateTimeDoesNotMatchEitherFormat() {
         assertThrows(DateTimeParseException.class,
-            () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, "d MM y"));
+            () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, "d MM y", "h:mma, yyyy"));
     }
 
     @Test
     void shouldThrowExceptionWhenDateTimeIsNull() {
-        assertThrows(NullPointerException.class, () -> parseLocalDateTimeFromStringUsingFormat(null, DATE));
+        assertThrows(NullPointerException.class, () -> parseLocalDateTimeFromStringUsingFormat(null, DATE, DATE));
     }
 
     @Test
-    void shouldThrowExceptionWhenDateTimeFormatFormatIsNull() {
+    void shouldThrowExceptionWhenBothFormatsAreNull() {
         assertThrows(NullPointerException.class,
-            () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, null));
+            () -> parseLocalDateTimeFromStringUsingFormat(JANUARY_2019_TIME, null, null));
     }
 
     private LocalDate createDate() {
