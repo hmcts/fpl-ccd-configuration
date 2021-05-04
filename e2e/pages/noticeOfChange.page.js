@@ -17,7 +17,7 @@ module.exports = {
 
   async enterCaseReference(caseReference) {
     I.fillField(this.fields.caseRefSearch, caseReference);
-    await I.runAccessibilityTest();
+    return await I.runAccessibilityTest();
   },
 
   async enterApplicantName(applicantName) {
@@ -47,4 +47,5 @@ module.exports = {
     I.see('Notice of change successful');
     await I.retryUntilExists(() => I.click('View this case'), '.case-title');
   },
+
 };
