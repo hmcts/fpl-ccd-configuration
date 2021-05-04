@@ -17,10 +17,9 @@ BeforeSuite(async ({I}) => {
   solicitor3.details = await apiHelper.getUser(solicitor3);
 });
 
-Scenario('Solicitor can request representation only after case submission', async ({I, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
-
-  await I.navigateToCaseDetailsAs(solicitor1, caseId);
-  I.see('No cases found.');
+Scenario('Solicitor can request representation only after case submission', async ({I, caseListPage, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
+  await I.signIn(solicitor1);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await noticeOfChangePage.navigate();
   await noticeOfChangePage.enterCaseReference(caseId);
@@ -40,11 +39,8 @@ Scenario('Solicitor can request representation only after case submission', asyn
 });
 
 Scenario('Solicitor request representation of second unrepresented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
-
   await I.signIn(solicitor2);
-  I.navigateToCaseList();
-  caseListPage.searchForCasesWithId(caseId);
-  I.dontSeeCaseInSearchResult(caseId);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Emma', 'White');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
@@ -53,20 +49,17 @@ Scenario('Solicitor request representation of second unrepresented respondent', 
 
 Scenario('Solicitor request representation of represented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
   await I.signIn(solicitor3);
-  I.navigateToCaseList();
-  caseListPage.searchForCasesWithId(caseId);
-  I.dontSeeCaseInSearchResult(caseId);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Joe', 'Bloggs');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor3.details, 'Wiltshire County Council');
 
-  await I.navigateToCaseDetailsAs(solicitor1, caseId);
-
-  I.see('No cases found.');
+  await I.signIn(solicitor1);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('Hmcts admin replaces respondent solicitor', async ({I, caseViewPage, enterRespondentsEventPage}) => {
+Scenario('Hmcts admin replaces respondent solicitor', async ({I, caseListPage, caseViewPage, enterRespondentsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
@@ -74,13 +67,11 @@ Scenario('Hmcts admin replaces respondent solicitor', async ({I, caseViewPage, e
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
 
-  await I.navigateToCaseDetailsAs(solicitor2, caseId);
-
-  I.see('No cases found.');
-
+  await I.signIn(solicitor2);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
-Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, enterRespondentsEventPage}) => {
+Scenario('Hmcts admin removes respondent solicitor', async ({I, caseListPage, caseViewPage, enterRespondentsEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRespondents);
 
@@ -88,9 +79,8 @@ Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, en
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
 
-  await I.navigateToCaseDetailsAs(solicitor3, caseId);
-
-  I.see('No cases found.');
+  await I.signIn(solicitor3);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 const assertRepresentative = (I, user, organisation, index = 1) => {
@@ -103,3 +93,4 @@ const assertRepresentative = (I, user, organisation, index = 1) => {
     I.seeOrganisationInTab([`Respondents ${index}`, 'Representative', 'Name'], organisation);
   }
 };
+
