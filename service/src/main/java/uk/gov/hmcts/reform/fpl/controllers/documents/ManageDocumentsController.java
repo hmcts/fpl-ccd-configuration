@@ -178,7 +178,7 @@ public class ManageDocumentsController extends CallbackController {
             caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details), false));
 
             String confidential = documentListService.getDocumentsList(getCaseData(details), true);
-            caseDetailsMap.put("documentsList2", confidential);
+            caseDetailsMap.put("confidentialFurtherEvidenceDocumentsList", confidential);
         }
 
         return respond(caseDetailsMap);

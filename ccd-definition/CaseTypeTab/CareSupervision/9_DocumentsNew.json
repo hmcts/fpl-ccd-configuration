@@ -58,7 +58,7 @@
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Documents new",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "documentsList2",
+    "CaseFieldID": "confidentialFurtherEvidenceDocumentsList",
     "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "documentsList = \"DO_NOT_SHOW\""
   }
