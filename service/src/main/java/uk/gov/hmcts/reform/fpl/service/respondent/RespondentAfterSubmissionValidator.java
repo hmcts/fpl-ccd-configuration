@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class RespondentAfterSubmissionValidator {
 
         for (int i = 0; i < respondents.size(); i++) {
             Respondent respondent = respondents.get(i).getValue();
-            errors.addAll(legalRepresentationErrors(respondent, i));
+            errors.addAll(legalRepresentationErrors(respondent, i + 1));
         }
 
         return errors;
@@ -77,7 +78,7 @@ public class RespondentAfterSubmissionValidator {
                 continue;
             }
 
-            errors.addAll(legalRepresentationErrors(current, i));
+            errors.addAll(legalRepresentationErrors(current, i + 1));
         }
 
         return errors;
@@ -86,20 +87,19 @@ public class RespondentAfterSubmissionValidator {
     private List<String> legalRepresentationErrors(Respondent respondent, int i) {
         List<String> errors = new ArrayList<>();
         if (respondent.getLegalRepresentation() == null) {
-            errors.add(String.format("Confirm if respondent %d has legal representation", i + 1));
+            errors.add(String.format("Confirm if respondent %d has legal representation", i));
         } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
-            {
-                if (isEmpty(respondent.getSolicitor().getFirstName())
-                    || isEmpty(respondent.getSolicitor().getLastName())) {
-                    errors.add(String.format("Add the full name of respondent %d's legal representative", i + 1));
+            RespondentSolicitor solicitor = respondent.getSolicitor();
+            if (isEmpty(solicitor.getFirstName())
+                || isEmpty(solicitor.getLastName())) {
+                errors.add(String.format("Add the full name of respondent %d's legal representative", i));
 
-                }
-                if (isEmpty(respondent.getSolicitor().getEmail())) {
-                    errors.add(String.format("Add the email address of respondent %d's legal representative", i + 1));
-                }
-                if (!respondent.hasRegisteredOrganisation() && !respondent.hasUnregisteredOrganisation()) {
-                    errors.add(String.format("Add the organisation details for respondent %d's representative", i + 1));
-                }
+            }
+            if (isEmpty(solicitor.getEmail())) {
+                errors.add(String.format("Add the email address of respondent %d's legal representative", i));
+            }
+            if (!respondent.hasRegisteredOrganisation() && !respondent.hasUnregisteredOrganisation()) {
+                errors.add(String.format("Add the organisation details for respondent %d's representative", i));
             }
         }
         return errors;

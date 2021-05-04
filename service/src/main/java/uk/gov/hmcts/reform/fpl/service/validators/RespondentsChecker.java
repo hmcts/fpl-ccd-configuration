@@ -27,7 +27,6 @@ public class RespondentsChecker extends PropertiesChecker {
 
     @Override
     public List<String> validate(CaseData caseData) {
-
         List<String> errors = new ArrayList<>(respondentAfterSubmissionValidator.validateLegalRepresentation(caseData));
         errors.addAll(super.validate(caseData, List.of("respondents1")));
         return errors;
@@ -47,7 +46,7 @@ public class RespondentsChecker extends PropertiesChecker {
         }
     }
 
-    private static boolean isEmptyRespondent(Respondent respondent, boolean featureToggle) {
+    private boolean isEmptyRespondent(Respondent respondent, boolean featureToggle) {
 
         if (isEmpty(respondent)) {
             return true;
