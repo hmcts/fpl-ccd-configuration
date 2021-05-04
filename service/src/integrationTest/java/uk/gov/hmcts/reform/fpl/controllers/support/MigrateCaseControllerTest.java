@@ -413,6 +413,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldThrowAnExceptionIfCaseContainsMoreThanTenRespondents() {
+            List<Element<Applicant>> applicants = buildApplicants();
+
             List<Element<Respondent>> respondents = List.of(
                 element(Respondent.builder().build()),
                 element(Respondent.builder().build()),
@@ -426,12 +428,21 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 element(Respondent.builder().build()),
                 element(Respondent.builder().build()));
 
-            CaseDetails caseDetails = caseDetails(respondents, null, migrationId);
+            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage(String.format("Migration failed on case %s: Case has %s respondents", caseId,
                     respondents.size()));
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseDoesNotContainApplicants() {
+            CaseDetails caseDetails = caseDetails(null, null, migrationId);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Migration failed on case %s: Case doesnt contain applicants", caseId));
         }
 
         private CaseDetails caseDetails(List<Element<Respondent>> respondents,

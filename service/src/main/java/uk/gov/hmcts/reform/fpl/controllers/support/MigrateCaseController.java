@@ -103,6 +103,11 @@ public class MigrateCaseController extends CallbackController {
                 caseDetails.getId()));
         }
 
+        if (caseData.getApplicants() == null) {
+            throw new IllegalStateException(String.format("Migration failed on case %s: Case doesnt contain applicants",
+                caseDetails.getId()));
+        }
+
         if (caseData.getRespondents1().size() > 10) {
             throw new IllegalStateException(String.format("Migration failed on case %s: Case has %s respondents",
                 caseDetails.getId(), caseData.getRespondents1().size()));
