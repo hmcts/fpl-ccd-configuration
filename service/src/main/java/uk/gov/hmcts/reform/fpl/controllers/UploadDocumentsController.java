@@ -35,7 +35,7 @@ public class UploadDocumentsController extends CallbackController {
             caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()));
 
         if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            caseDetails.getData().put("documentsList", documentListService.getDocumentsList(getCaseData(caseDetails)));
+            caseDetails.getData().put("furtherEvidenceDocumentsListNC", documentListService.getDocumentsList(getCaseData(caseDetails)));
         }
         return respond(caseDetails);
     }

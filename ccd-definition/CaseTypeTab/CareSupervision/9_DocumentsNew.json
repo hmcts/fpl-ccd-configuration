@@ -7,7 +7,7 @@
     "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "submittedForm",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND documentsList !=\"\"",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -37,17 +37,7 @@
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Documents new",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "documentsListPage",
-    "TabFieldDisplayOrder": 4
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
-    "TabDisplayOrder": 0,
-    "CaseFieldID": "documentsList",
+    "CaseFieldID": "furtherEvidenceDocumentsListNC",
     "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "documentsList = \"DO_NOT_SHOW\""
   },
@@ -58,7 +48,27 @@
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Documents new",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "furtherEvidenceDocumentsList",
+    "CaseFieldID": "documentsListPage",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Documents new",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "documentsListPageHMCTS",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Documents new",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "documentsList",
     "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "documentsList = \"DO_NOT_SHOW\""
   }
