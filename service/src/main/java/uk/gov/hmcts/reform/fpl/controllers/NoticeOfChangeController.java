@@ -57,7 +57,7 @@ public class NoticeOfChangeController extends CallbackController {
             RespondentSolicitor oldRespondentSolicitor = oldRespondents.get(i).getSolicitor();
             RespondentSolicitor newRespondentSolicitor = newRespondents.get(i).getSolicitor();
 
-            if (!oldRespondentSolicitor.equals(newRespondentSolicitor)) {
+            if (!newRespondentSolicitor.equals(oldRespondentSolicitor)) {
                 publishEvent(new NoticeOfChangeEvent(newCaseData, oldRespondentSolicitor, newRespondentSolicitor));
                 break;
             }

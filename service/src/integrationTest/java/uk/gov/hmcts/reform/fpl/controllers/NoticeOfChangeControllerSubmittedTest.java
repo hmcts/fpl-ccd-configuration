@@ -24,14 +24,15 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 10L;
     private static final String CASE_NAME = "Test";
-    private static final String SOLICITOR_EMAIL = "solicitor@email.com";
+    private static final String NEW_EMAIL = "new@test.com";
+    private static final String OLD_EMAIL = "old@test.com";
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final Respondent OTHER_RESPONDENT = Respondent.builder()
         .legalRepresentation("Yes")
         .solicitor(RespondentSolicitor.builder()
             .firstName("Other")
             .lastName("Solicitor")
-            .email(SOLICITOR_EMAIL)
+            .email("other@test.com")
             .organisation(Organisation.builder().organisationID("123").build()).build())
         .build();
 
@@ -45,7 +46,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                 .solicitor(RespondentSolicitor.builder()
                     .firstName("Old")
                     .lastName("Solicitor")
-                    .email(SOLICITOR_EMAIL)
+                    .email(OLD_EMAIL)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
                 .build()
         )).build();
@@ -58,7 +59,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                 .solicitor(RespondentSolicitor.builder()
                     .firstName("New")
                     .lastName("Solicitor")
-                    .email(SOLICITOR_EMAIL)
+                    .email(NEW_EMAIL)
                     .organisation(Organisation.builder().organisationID("123").build()).build())
                 .build()))
         .build();
@@ -71,7 +72,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotifyRespondentSolicitorsWhenCaseIsSubmitted() {
+    void shouldNotifyRespondentSolicitorsWhenNoticeOfChangeIsSubmitted() {
 
         NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeNewRespondentSolicitorTemplate =
             getExpectedNoticeOfChangeParameters("Dear New Solicitor");
@@ -90,16 +91,44 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
         checkUntil(() -> {
                 verify(notificationClient).sendEmail(
                     NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
-                    SOLICITOR_EMAIL,
+                    NEW_EMAIL,
                     newSolicitorParameters,
                     NOTIFICATION_REFERENCE);
 
                 verify(notificationClient).sendEmail(
                     NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
-                    SOLICITOR_EMAIL,
+                    OLD_EMAIL,
                     oldSolicitorParameters,
                     NOTIFICATION_REFERENCE);
             }
+        );
+    }
+
+    @Test
+    void shouldNotifyNewRespondentSolicitorWhenNoPreviousRepresentationAndNoticeOfChangeIsSubmitted() {
+        NoticeOfChangeRespondentSolicitorTemplate noticeOfChangeNewRespondentSolicitorTemplate =
+            getExpectedNoticeOfChangeParameters("Dear New Solicitor");
+
+        final Map<String, Object> newSolicitorParameters = caseConverter.toMap(
+            noticeOfChangeNewRespondentSolicitorTemplate);
+
+        CaseData caseDataBefore = CaseData.builder()
+            .id(CASE_ID)
+            .caseName(CASE_NAME)
+            .respondents1(wrapElements(
+                OTHER_RESPONDENT,
+                Respondent.builder()
+                    .legalRepresentation("No")
+                    .build()
+            )).build();
+
+        postSubmittedEvent(toCallBackRequest(CASE_DATA, caseDataBefore));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
+            NEW_EMAIL,
+            newSolicitorParameters,
+            NOTIFICATION_REFERENCE)
         );
     }
 
