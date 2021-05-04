@@ -510,5 +510,19 @@
     "CaseFieldID": "additionalApplicationsBundle",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "furtherEvidenceDocumentsListNC",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentsListPage",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRUD"
   }
 ]
