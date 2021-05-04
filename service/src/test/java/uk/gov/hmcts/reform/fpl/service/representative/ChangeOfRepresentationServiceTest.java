@@ -88,7 +88,14 @@ class ChangeOfRepresentationServiceTest {
     @Test
     void testAddingRepresentativeWhenNotRepresented() {
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
-            new ChangeOfRepresentationRequest(List.of(), RESPONDENT, REPRESENTATIVE_1, null, METHOD, ACTIONED_BY));
+            ChangeOfRepresentationRequest.builder()
+                .current(List.of())
+                .respondent(RESPONDENT)
+                .addedRepresentative(REPRESENTATIVE_1)
+                .removedRepresentative(null)
+                .method(METHOD)
+                .by(ACTIONED_BY)
+                .build());
 
         assertThat(actual).isEqualTo(List.of(
             element(UUID, changeOfRepresentation()
@@ -101,12 +108,14 @@ class ChangeOfRepresentationServiceTest {
     @Test
     void testAddingRepresentativeChangedRepresented() {
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
-            new ChangeOfRepresentationRequest(List.of(),
-                RESPONDENT,
-                REPRESENTATIVE_1,
-                REPRESENTATIVE_2,
-                METHOD,
-                ACTIONED_BY));
+            ChangeOfRepresentationRequest.builder()
+                .current(List.of())
+                .respondent(RESPONDENT)
+                .addedRepresentative(REPRESENTATIVE_1)
+                .removedRepresentative(REPRESENTATIVE_2)
+                .method(METHOD)
+                .by(ACTIONED_BY)
+                .build());
 
         assertThat(actual).isEqualTo(List.of(
             element(UUID, changeOfRepresentation()
@@ -120,7 +129,15 @@ class ChangeOfRepresentationServiceTest {
     @Test
     void testAddingRepresentativeRemovedRepresented() {
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
-            new ChangeOfRepresentationRequest(List.of(), RESPONDENT, null, REPRESENTATIVE_1, METHOD, ACTIONED_BY));
+            ChangeOfRepresentationRequest.builder()
+                .current(List.of())
+                .respondent(RESPONDENT)
+                .addedRepresentative(null)
+                .removedRepresentative(REPRESENTATIVE_1)
+                .method(METHOD)
+                .by(ACTIONED_BY)
+                .build()
+        );
 
         assertThat(actual).isEqualTo(List.of(
             element(UUID, changeOfRepresentation()
@@ -139,12 +156,15 @@ class ChangeOfRepresentationServiceTest {
             .date(TODAY.plusDays(1))
             .build());
         List<Element<ChangeOfRepresentation>> actual = underTest.changeRepresentative(
-            new ChangeOfRepresentationRequest(List.of(yesterdayChange, tomorrowChange),
-                RESPONDENT,
-                null,
-                REPRESENTATIVE_1,
-                METHOD,
-                ACTIONED_BY));
+            ChangeOfRepresentationRequest.builder()
+                .current(List.of(yesterdayChange, tomorrowChange))
+                .respondent(RESPONDENT)
+                .addedRepresentative(null)
+                .removedRepresentative(REPRESENTATIVE_1)
+                .method(METHOD)
+                .by(ACTIONED_BY)
+                .build()
+        );
 
         assertThat(actual).isEqualTo(List.of(
             yesterdayChange,
