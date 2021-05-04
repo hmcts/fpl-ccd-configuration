@@ -71,16 +71,22 @@ public abstract class AbstractCallbackTest extends AbstractTest {
         return postAboutToStartEvent(asCaseDetails(caseData), SC_OK, userRoles);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus) {
-        return postEvent(String.format("/callback/%s/mid-event", eventName), data, expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postMidEventWithUserRole(CallbackRequest callbackRequest,
+                                                                            String... userRoles) {
+        return postMidEvent(callbackRequest, SC_OK, userRoles);
+    }
+
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data, int expectedStatus, String... userRoles) {
+        return postEvent(String.format("/callback/%s/mid-event", eventName), data, expectedStatus, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(byte[] data) {
         return postMidEvent(data, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, int expectedStatus) {
-        return postMidEvent(toBytes(callbackRequest), expectedStatus);
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest, int expectedStatus,
+                                                                String... userRoles) {
+        return postMidEvent(toBytes(callbackRequest), expectedStatus, userRoles);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(CallbackRequest callbackRequest) {
