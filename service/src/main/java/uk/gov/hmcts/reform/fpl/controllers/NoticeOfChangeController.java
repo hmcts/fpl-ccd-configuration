@@ -30,7 +30,7 @@ public class NoticeOfChangeController extends CallbackController {
     private final NoticeOfChangeService noticeOfChangeService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 

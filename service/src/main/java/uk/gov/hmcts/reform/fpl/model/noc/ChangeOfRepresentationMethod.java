@@ -1,17 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model.noc;
 
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum ChangeOfRepresentationMethod {
     NOC("Noc"),
     RESPONDENTS_EVENT("FPLA");
 
-    private String label;
-
-    ChangeOfRepresentationMethod(String label) {
-        this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
-    }
+    private final String label;
 }

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangedRepresentative;
+import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 

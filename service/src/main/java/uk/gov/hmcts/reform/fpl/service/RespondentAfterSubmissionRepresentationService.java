@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
-import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationRequest;
+import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
 import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class RespondentAfterSubmissionRepresentationService {
             respondentsAfter,
             respondentsBefore);
 
-        updatedFields.put("changeOfRepresentatives", representationChanges.stream().sequential().reduce(
+        updatedFields.put("changeOfRepresentatives", representationChanges.stream().reduce(
             defaultIfNull(caseData.getChangeOfRepresentatives(), Lists.newArrayList()),
             generateRequest(respondentsAfter, respondentsBefore),
             (v, v2) -> v2
@@ -72,7 +72,7 @@ public class RespondentAfterSubmissionRepresentationService {
                                              ChangeOrganisationRequest changeOrganisationRequest) {
         int solicitorIdx = changeOrganisationRequest.getCaseRole().getIndex();
 
-        if (respondents == null || solicitorIdx >= respondents.size()) {
+        if (solicitorIdx >= respondents.size()) {
             return null;
         }
 

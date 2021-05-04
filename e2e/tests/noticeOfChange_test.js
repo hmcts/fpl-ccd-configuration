@@ -14,8 +14,11 @@ Feature('Notice of change');
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);
   solicitor1.details = await apiHelper.getUser(solicitor1);
+  solicitor1.details.organisation = 'Private solicitors';
   solicitor2.details = await apiHelper.getUser(solicitor2);
+  solicitor2.details.organisation = 'London Borough Hillingdon';
   solicitor3.details = await apiHelper.getUser(solicitor3);
+  solicitor3.details.organisation = 'Wiltshire County Council';
 });
 
 Scenario('Solicitor can request representation only after case submission', async ({I, caseViewPage, submitApplicationEventPage, noticeOfChangePage}) => {
@@ -40,7 +43,7 @@ Scenario('Solicitor can request representation only after case submission', asyn
   assertRepresentative(I, solicitor1.details, 'Private solicitors');
 
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
-  assertChangeOfRepresentative(I, 1, 'Noc', solicitor1.details.email, solicitor1.details, 'Private solicitors');
+  assertChangeOfRepresentative(I, 1, 'Noc', solicitor1.details.email, { addedUser: solicitor1.details });
 });
 
 Scenario('Solicitor request representation of second unrepresented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
@@ -53,6 +56,8 @@ Scenario('Solicitor request representation of second unrepresented respondent', 
   await noticeOfChangePage.userCompletesNoC(caseId, 'Swansea City Council', 'Emma', 'White');
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   assertRepresentative(I, solicitor2.details, 'London Borough Hillingdon', 2);
+  caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
+  assertChangeOfRepresentative(I, 2, 'Noc', solicitor2.details.email, { addedUser: solicitor2.details, removedUser: solicitor1.details });
 });
 
 Scenario('Solicitor request representation of represented respondent', async ({I, caseListPage, caseViewPage, noticeOfChangePage}) => {
@@ -66,7 +71,7 @@ Scenario('Solicitor request representation of represented respondent', async ({I
   assertRepresentative(I, solicitor3.details, 'Wiltshire County Council');
 
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
-  assertChangeOfRepresentative(I, 2, 'Noc', solicitor2.details.email, solicitor2.details, 'London Borough Hillingdon', solicitor1.details, 'Private solicitors');
+  assertChangeOfRepresentative(I, 3, 'Noc', solicitor3.details.email, { addedUser: solicitor3.details });
 
   await I.navigateToCaseDetailsAs(solicitor1, caseId);
 
@@ -96,10 +101,9 @@ Scenario('Hmcts admin removes respondent solicitor', async ({I, caseViewPage, en
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRespondents);
 
   caseViewPage.selectTab(caseViewPage.tabs.changeOfRepresentatives);
-  assertChangeOfRepresentative(I, 3, 'FPL', 'HMCTS', null, null, solicitor2.details, 'London Borough Hillingdon');
+  assertChangeOfRepresentative(I, 4, 'FPL', 'HMCTS', {removedUser: solicitor3.details });
 
-  await I.navigateToCaseDetailsAs(solicitor2, caseId);
-//  await I.navigateToCaseDetailsAs(solicitor3, caseId);
+  await I.navigateToCaseDetailsAs(solicitor3, caseId);
 
   I.see('No cases found.');
 });
@@ -115,8 +119,10 @@ const assertRepresentative = (I, user, organisation, index = 1) => {
   }
 };
 
-const assertChangeOfRepresentative = (I, index, method, actingUserEmail, addedUser, addedUserOrganisation, removedUser, removedUserOrganisation) => {
+const assertChangeOfRepresentative = (I, index, method, actingUserEmail, change) => {
   let representative = `Change of representative ${index}`;
+  let addedUser = change.addedUser;
+  let removedUser = change.removedUser;
 
   I.seeInTab([representative, 'Respondent'], 'Joe Bloggs');
   I.seeInTab([representative, 'Date'], dateFormat(new Date(), 'd mmm yyyy'));
@@ -127,13 +133,13 @@ const assertChangeOfRepresentative = (I, index, method, actingUserEmail, addedUs
     I.seeInTab([representative, 'Added representative', 'First name'], addedUser.forename);
     I.seeInTab([representative, 'Added representative', 'Last name'], addedUser.surname);
     I.seeInTab([representative, 'Added representative', 'Email'], addedUser.email);
-    I.seeOrganisationInTab([representative, 'Added representative', 'Name'], addedUserOrganisation);
+    I.seeOrganisationInTab([representative, 'Added representative', 'Name'], addedUser.organisation);
   }
 
   if (removedUser) {
     I.seeInTab([representative, 'Removed representative', 'First name'], removedUser.forename);
     I.seeInTab([representative, 'Removed representative', 'Last name'], removedUser.surname);
     I.seeInTab([representative, 'Removed representative', 'Email'], removedUser.email);
-    I.seeOrganisationInTab([representative, 'Removed representative', 'Name'], removedUserOrganisation);
+    I.seeOrganisationInTab([representative, 'Removed representative', 'Name'], removedUser.organisation);
   }
 };

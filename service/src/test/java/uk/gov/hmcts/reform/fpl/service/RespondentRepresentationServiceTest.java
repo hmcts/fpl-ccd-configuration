@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
-import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationRequest;
+import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
 import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 

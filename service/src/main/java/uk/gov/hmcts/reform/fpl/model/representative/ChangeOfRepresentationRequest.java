@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.representative;
+package uk.gov.hmcts.reform.fpl.model.representative;
 
 import lombok.Builder;
 import lombok.Value;
