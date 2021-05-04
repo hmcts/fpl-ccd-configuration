@@ -163,6 +163,9 @@ module.exports = {
     removeOrder: 'Remove an order',
     changeCaseState: 'Change case state',
   },
+  internalActions: {
+    updateCase: 'internal-change-UPDATE_CASE',
+  },
   // files
   testFile: './e2e/fixtures/testFiles/mockFile.txt',
   testPdfFile: './e2e/fixtures/testFiles/mockFile.pdf',
