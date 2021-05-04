@@ -11,7 +11,7 @@ dependencies:
     version: 3.4.7
     repository: '@hmctspublic'
   - name: ccd
-    version: 5.0.2
+    version: 4.3.5
     repository: '@hmctspublic'
     tags:
       - fpl-ccd-stack
@@ -20,7 +20,7 @@ dependencies:
     repository: '@hmctspublic'
     condition: xui-webapp.enabled
   - name: idam-pr
-    version: 2.2.6
+    version:  2.2.6
     repository: '@hmctspublic'
     condition: idam-pr.enabled
   - name: elasticsearch
