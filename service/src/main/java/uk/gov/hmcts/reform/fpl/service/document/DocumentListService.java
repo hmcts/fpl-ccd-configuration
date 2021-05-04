@@ -31,8 +31,22 @@ public class DocumentListService {
 
     private final DocumentsListRenderer documentsListRenderer;
 
-    public String getDocumentsList(CaseData caseData) {
+    public String getDocumentsList(CaseData caseData, boolean isConfidential) {
         List<DocumentBundleView> bundles = new ArrayList<>();
+
+        if (isConfidential) {
+            if(!isNull(caseData.getFurtherEvidenceDocuments())) {
+                final List<DocumentBundleView> furtherEvidenceBundles = getConfidentialFurtherEvidenceBundles(caseData);
+
+                if (isNotEmpty(furtherEvidenceBundles)) {
+                    String render = "<div class='width-50'> Confidential </div>";
+                    bundles.addAll(furtherEvidenceBundles);
+                    return render + documentsListRenderer.render(bundles);
+
+                }
+                return "";
+            }
+        }
 
         List<DocumentView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
             caseData.getApplicationDocuments(), caseData.getFurtherEvidenceDocumentsLA());
@@ -104,7 +118,40 @@ public class DocumentListService {
                 final List<DocumentView> documentsView = caseData.getFurtherEvidenceDocuments()
                     .stream()
                     .map(Element::getValue)
-                    .filter(doc -> (type == doc.getType()))
+                    .filter(doc -> (type == doc.getType()) && !doc.isConfidentialDocument())
+                    .map(doc -> DocumentView.builder()
+                        .document(doc.getDocument())
+                        .type(doc.getType().getLabel())
+                        .fileName(doc.getName())
+                        .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                        .uploadedBy(doc.getUploadedBy())
+                        .documentName(doc.getName())
+                        .confidential(doc.isConfidentialDocument())
+                        .build())
+                    .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+                    .collect(Collectors.toUnmodifiableList());
+
+                if (!documentsView.isEmpty()) {
+                    final DocumentBundleView bundleView = DocumentBundleView.builder()
+                        .name(type.getLabel())
+                        .documents(documentsView)
+                        .build();
+
+                    documentBundles.add(bundleView);
+                }
+            }
+        );
+        return documentBundles;
+    }
+
+    private List<DocumentBundleView> getConfidentialFurtherEvidenceBundles(CaseData caseData) {
+        List<DocumentBundleView> documentBundles = new ArrayList<>();
+        Arrays.stream(FurtherEvidenceType.values()).forEach(
+            type -> {
+                final List<DocumentView> documentsView = caseData.getFurtherEvidenceDocuments()
+                    .stream()
+                    .map(Element::getValue)
+                    .filter(doc -> (type == doc.getType()) && doc.isConfidentialDocument())
                     .map(doc -> DocumentView.builder()
                         .document(doc.getDocument())
                         .type(doc.getType().getLabel())

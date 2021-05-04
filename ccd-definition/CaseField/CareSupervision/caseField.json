@@ -1603,8 +1603,16 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentsList2",
+    "Label": "Case name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentsListPage",
-    "Label": "${documentsList}",
+    "Label": "${documentsList}\n ${documentsList2}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC"
   }
