@@ -31,15 +31,26 @@ public class DocumentListService {
 
     private final DocumentsListRenderer documentsListRenderer;
 
-    public String getDocumentsList(CaseData caseData, boolean isConfidential) {
+    public String getDocumentsList(CaseData caseData, boolean isConfidential, String documents) {
         List<DocumentBundleView> bundles = new ArrayList<>();
 
         if (isConfidential) {
             if(!isNull(caseData.getFurtherEvidenceDocuments())) {
-                final List<DocumentBundleView> furtherEvidenceBundles = getConfidentialFurtherEvidenceBundles(caseData);
 
+                List<DocumentBundleView> furtherEvidenceBundles = new ArrayList<>();
+                if(documents.equals("LA")) {
+                    furtherEvidenceBundles = getConfidentialFurtherEvidenceBundles(caseData.getFurtherEvidenceDocumentsLA());
+
+                } else {
+                   furtherEvidenceBundles = getConfidentialFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments());
+                }
                 if (isNotEmpty(furtherEvidenceBundles)) {
-                    String render = "<div class='width-50'> Confidential </div>";
+                    String render = "";
+                    if(documents.equals("LA")) {
+                        render = "<div class='width-50'> Confidential LA docs </div>";
+                    } else {
+                        render = "<div class='width-50'> Confidential HMCTS docs </div>";
+                    }
                     bundles.addAll(furtherEvidenceBundles);
                     return render + documentsListRenderer.render(bundles);
 
@@ -144,11 +155,11 @@ public class DocumentListService {
         return documentBundles;
     }
 
-    private List<DocumentBundleView> getConfidentialFurtherEvidenceBundles(CaseData caseData) {
+    private List<DocumentBundleView> getConfidentialFurtherEvidenceBundles(List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
         List<DocumentBundleView> documentBundles = new ArrayList<>();
         Arrays.stream(FurtherEvidenceType.values()).forEach(
             type -> {
-                final List<DocumentView> documentsView = caseData.getFurtherEvidenceDocuments()
+                final List<DocumentView> documentsView = furtherEvidenceDocuments
                     .stream()
                     .map(Element::getValue)
                     .filter(doc -> (type == doc.getType()) && doc.isConfidentialDocument())
