@@ -1603,15 +1603,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "confidentialFurtherEvidenceDocumentsList",
-    "Label": "Case name",
-    "FieldType": "Text",
-    "SecurityClassification": "PUBLIC"
-  },
-  {
-    "LiveFrom": "01/01/2018",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "confidentialFurtherEvidenceDocumentsListLA",
+    "ID": "furtherEvidenceDocumentsList",
     "Label": "Case name",
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC"
@@ -1620,7 +1612,7 @@
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documentsListPage",
-    "Label": "${documentsList}\n ${confidentialFurtherEvidenceDocumentsListLA}\n ${confidentialFurtherEvidenceDocumentsList}",
+    "Label": "${documentsList}\n ${furtherEvidenceDocumentsList}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC"
   }

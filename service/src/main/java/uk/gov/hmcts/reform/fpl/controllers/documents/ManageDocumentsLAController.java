@@ -214,10 +214,7 @@ public class ManageDocumentsLAController extends CallbackController {
 
         if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
             CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
-            caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details), false, ""));
-
-            String confidential = documentListService.getDocumentsList(getCaseData(details), true, "LA");
-            caseDetailsMap.put("confidentialFurtherEvidenceDocumentsListLA", confidential);
+            caseDetailsMap.put("documentsList", documentListService.getDocumentsList(getCaseData(details)));
         }
 
         return respond(caseDetailsMap);
