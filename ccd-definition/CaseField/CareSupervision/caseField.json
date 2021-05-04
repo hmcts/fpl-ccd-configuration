@@ -1595,7 +1595,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentsList",
+    "ID": "documentViewHMCTS",
     "Label": "Case name",
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC"
@@ -1603,7 +1603,7 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "furtherEvidenceDocumentsListNC",
+    "ID": "documentViewLA",
     "Label": "Case name",
     "FieldType": "Text",
     "SecurityClassification": "PUBLIC"
@@ -1611,16 +1611,16 @@
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentsListPage",
-    "Label": "${furtherEvidenceDocumentsListNC}",
+    "ID": "documentListPageLA",
+    "Label": "${documentViewLA}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC"
   },
   {
     "LiveFrom": "01/01/2018",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "documentsListPageHMCTS",
-    "Label": "${documentsList}",
+    "ID": "documentListPageLAHMCTS",
+    "Label": "${documentViewHMCTS}",
     "FieldType": "Label",
     "SecurityClassification": "PUBLIC"
   }

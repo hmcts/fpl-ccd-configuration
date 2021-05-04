@@ -31,7 +31,7 @@ public class DocumentListService {
 
     private final DocumentsListRenderer documentsListRenderer;
 
-    public String getDocumentsList(CaseData caseData) {
+    public String getDocumentView(CaseData caseData, String view) {
         List<DocumentBundleView> bundles = new ArrayList<>();
 
         List<DocumentView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
@@ -43,38 +43,19 @@ public class DocumentListService {
             bundles.add(applicationBundle);
         }
 
+        List<DocumentBundleView> furtherEvidenceBundles;
 
-        List<DocumentBundleView> furtherEvidenceBundles = getFurtherEvidenceBundlesNC(caseData.getFurtherEvidenceDocuments(),
-            caseData.getFurtherEvidenceDocumentsLA());
+        if(view.equals("HMCTS")) {
+            furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(), true);
+        } else {
+            furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(), false);
+        }
 
         if (isNotEmpty(furtherEvidenceBundles)) {
             furtherEvidenceBundles.stream().forEach(bundle -> bundles.add(bundle));
         }
-
-
-        return documentsListRenderer.render(bundles);
-    }
-
-    public String getDocumentsListAllDocs(CaseData caseData) {
-        List<DocumentBundleView> bundles = new ArrayList<>();
-
-        List<DocumentView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
-            caseData.getApplicationDocuments(), caseData.getFurtherEvidenceDocumentsLA());
-
-        DocumentBundleView applicationBundle = buildBundle("Applicant's statements and application documents", applicationStatementAndDocumentBundle);
-
-        if (isNotEmpty(applicationBundle.getDocuments())) {
-            bundles.add(applicationBundle);
-        }
-
-
-        List<DocumentBundleView> furtherEvidenceBundles = getFurtherEvidenceBundlesIncConf(caseData.getFurtherEvidenceDocuments(),
-            caseData.getFurtherEvidenceDocumentsLA());
-
-        if (isNotEmpty(furtherEvidenceBundles)) {
-            furtherEvidenceBundles.stream().forEach(bundle -> bundles.add(bundle));
-        }
-
 
         return documentsListRenderer.render(bundles);
     }
@@ -88,6 +69,7 @@ public class DocumentListService {
 
     private List<DocumentView> getApplicationStatementAndDocumentBundle(List<Element<ApplicationDocument>> applicationDocuments,
                                                                         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
+
         List<DocumentView> applicationDocs = applicationDocuments.stream()
             .map(Element::getValue)
             .map(doc -> DocumentView.builder()
@@ -122,58 +104,34 @@ public class DocumentListService {
         return applicationDocs;
     }
 
-    private List<DocumentBundleView> getFurtherEvidenceBundlesNC(List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
-                                                                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
+    private List<DocumentBundleView> getFurtherEvidenceBundles(List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
+                                                               List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
+                                                               boolean includeConfidentialHMCTS) {
         List<DocumentBundleView> documentBundles = new ArrayList<>();
         Arrays.stream(FurtherEvidenceType.values()).forEach(
             type -> {
-                List<DocumentView> documentsView = new ArrayList<>();
+                List<DocumentView> hmctsDocumentsView = new ArrayList<>();
+                List<DocumentView> laDocumentsView = new ArrayList<>();
 
                 if(!isNull(furtherEvidenceDocuments)) {
-                    documentsView = furtherEvidenceDocuments
-                        .stream()
-                        .map(Element::getValue)
-                        .filter(doc -> (type == doc.getType()) && !doc.isConfidentialDocument())
-                        .map(doc -> DocumentView.builder()
-                            .document(doc.getDocument())
-                            .type(doc.getType().getLabel())
-                            .fileName(doc.getName())
-                            .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                            .uploadedBy(doc.getUploadedBy())
-                            .documentName(doc.getName())
-                            .confidential(doc.isConfidentialDocument())
-                            .build())
-                        .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-                        .collect(Collectors.toUnmodifiableList());
+                    if(includeConfidentialHMCTS) {
+                        hmctsDocumentsView = getDocumentView(type, furtherEvidenceDocuments);
+                    } else {
+                        hmctsDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocuments);
+                    }
                 }
-
-                List<DocumentView> documentsViewLA = new ArrayList<>();
 
                 if(!isNull(furtherEvidenceDocumentsLA)) {
-                    documentsViewLA = furtherEvidenceDocumentsLA
-                        .stream()
-                        .map(Element::getValue)
-                        .filter(doc -> (type == doc.getType()))
-                        .map(doc -> DocumentView.builder()
-                            .document(doc.getDocument())
-                            .type(doc.getType().getLabel())
-                            .fileName(doc.getName())
-                            .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                            .uploadedBy(doc.getUploadedBy())
-                            .documentName(doc.getName())
-                            .confidential(doc.isConfidentialDocument())
-                            .build())
-                        .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-                        .collect(Collectors.toUnmodifiableList());
+                    laDocumentsView = getDocumentView(type, furtherEvidenceDocumentsLA);
                 }
 
-                List<DocumentView> newList = new ArrayList<>(documentsView);
-                newList.addAll(documentsViewLA);
+                List<DocumentView> combinedView = new ArrayList<>(hmctsDocumentsView);
+                combinedView.addAll(laDocumentsView);
 
-                if (!newList.isEmpty()) {
+                if (!combinedView.isEmpty()) {
                     final DocumentBundleView bundleView = DocumentBundleView.builder()
                         .name(type.getLabel())
-                        .documents(newList)
+                        .documents(combinedView)
                         .build();
 
                     documentBundles.add(bundleView);
@@ -183,65 +141,39 @@ public class DocumentListService {
         return documentBundles;
     }
 
+    private List<DocumentView> getDocumentView(FurtherEvidenceType type, List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+        return furtherEvidenceDocuments
+            .stream()
+            .map(Element::getValue)
+            .filter(doc -> (type == doc.getType()))
+            .map(doc -> DocumentView.builder()
+                .document(doc.getDocument())
+                .type(doc.getType().getLabel())
+                .fileName(doc.getName())
+                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                .uploadedBy(doc.getUploadedBy())
+                .documentName(doc.getName())
+                .confidential(doc.isConfidentialDocument())
+                .build())
+            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .collect(Collectors.toUnmodifiableList());
+    }
 
-    private List<DocumentBundleView> getFurtherEvidenceBundlesIncConf(List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
-                                                                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
-        List<DocumentBundleView> documentBundles = new ArrayList<>();
-        Arrays.stream(FurtherEvidenceType.values()).forEach(
-            type -> {
-                List<DocumentView> documentsView = new ArrayList<>();
-
-                if(!isNull(furtherEvidenceDocuments)) {
-                    documentsView = furtherEvidenceDocuments
-                        .stream()
-                        .map(Element::getValue)
-                        .filter(doc -> (type == doc.getType()))
-                        .map(doc -> DocumentView.builder()
-                            .document(doc.getDocument())
-                            .type(doc.getType().getLabel())
-                            .fileName(doc.getName())
-                            .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                            .uploadedBy(doc.getUploadedBy())
-                            .documentName(doc.getName())
-                            .confidential(doc.isConfidentialDocument())
-                            .build())
-                        .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-                        .collect(Collectors.toUnmodifiableList());
-                }
-
-                List<DocumentView> documentsViewLA = new ArrayList<>();
-
-                if(!isNull(furtherEvidenceDocumentsLA)) {
-                    documentsViewLA = furtherEvidenceDocumentsLA
-                        .stream()
-                        .map(Element::getValue)
-                        .filter(doc -> (type == doc.getType()))
-                        .map(doc -> DocumentView.builder()
-                            .document(doc.getDocument())
-                            .type(doc.getType().getLabel())
-                            .fileName(doc.getName())
-                            .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                            .uploadedBy(doc.getUploadedBy())
-                            .documentName(doc.getName())
-                            .confidential(doc.isConfidentialDocument())
-                            .build())
-                        .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-                        .collect(Collectors.toUnmodifiableList());
-                }
-
-                List<DocumentView> newList = new ArrayList<>(documentsView);
-                newList.addAll(documentsViewLA);
-
-                if (!newList.isEmpty()) {
-                    final DocumentBundleView bundleView = DocumentBundleView.builder()
-                        .name(type.getLabel())
-                        .documents(newList)
-                        .build();
-
-                    documentBundles.add(bundleView);
-                }
-            }
-        );
-        return documentBundles;
+    private List<DocumentView> getNonConfidentialDocumentView(FurtherEvidenceType type, List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+        return furtherEvidenceDocuments
+            .stream()
+            .map(Element::getValue)
+            .filter(doc -> (type == doc.getType()) && !doc.isConfidentialDocument())
+            .map(doc -> DocumentView.builder()
+                .document(doc.getDocument())
+                .type(doc.getType().getLabel())
+                .fileName(doc.getName())
+                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                .uploadedBy(doc.getUploadedBy())
+                .documentName(doc.getName())
+                .confidential(doc.isConfidentialDocument())
+                .build())
+            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .collect(Collectors.toUnmodifiableList());
     }
 }

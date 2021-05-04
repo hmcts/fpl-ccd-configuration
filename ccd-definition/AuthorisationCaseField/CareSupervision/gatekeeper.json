@@ -2417,14 +2417,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentsList",
+    "CaseFieldID": "documentViewHMCTS",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "documentsListPage",
+    "CaseFieldID": "documentViewLA",
+    "UserRole": "caseworker-publiclaw-gatekeeper",
+    "CRUD": "CUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "documentListPageLAHMCTS",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   }

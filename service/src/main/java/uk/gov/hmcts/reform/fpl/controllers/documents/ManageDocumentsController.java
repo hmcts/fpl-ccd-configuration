@@ -175,12 +175,10 @@ public class ManageDocumentsController extends CallbackController {
 
         if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
             CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
-            //only hmcts should see as it contains confidential la and hmcts docs
-            String rendering = "<div> this is for hmcts</div>";
-            caseDetailsMap.put("documentsList", rendering + documentListService.getDocumentsListAllDocs(getCaseData(details)));
 
-            String render = "<div> this is for la</div>";
-            caseDetailsMap.put("furtherEvidenceDocumentsListNC", render + documentListService.getDocumentsList(getCaseData(details)));
+            caseDetailsMap.put("documentViewHMCTS", documentListService.getDocumentView(getCaseData(details), "HMCTS"));
+
+            caseDetailsMap.put("documentViewLA", documentListService.getDocumentView(getCaseData(details), "LA"));
         }
 
         return respond(caseDetailsMap);
