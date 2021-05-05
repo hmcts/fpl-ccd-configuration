@@ -77,7 +77,7 @@ module.exports = {
     I.seeElement(`#select-${caseId}:not(:disabled)`);
   },
 
-  async verifyCaseIsNotAccessible(caseId) {
+  verifyCaseIsNotAccessible(caseId) {
     I.navigateToCaseList();
     this.searchForCasesWithId(caseId);
     I.waitForInvisible(this.fields.spinner, 20);
