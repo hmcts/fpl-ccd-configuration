@@ -8,11 +8,16 @@ module.exports = {
       correspondence: '#manageDocument_type-CORRESPONDENCE',
       additionalApplications: '#manageDocument_type-ADDITIONAL_APPLICATIONS_DOCUMENTS',
     },
+    subtype: {
+      respondentStatement: 'Respondent statement',
+      otherDocuments: 'Any other document',
+    },
     relatedToHearing: {
-      yes: '#manageDocument_relatedToHearing-Yes',
-      no: '#manageDocument_relatedToHearing-No',
+      yes: '#manageDocumentsRelatedToHearing-Yes',
+      no: '#manageDocumentsRelatedToHearing-No',
     },
     hearingList: '#manageDocumentsHearingList',
+    respondentStatementList: '#respondentStatementList',
     c2DocumentsList: '#manageDocumentsSupportingC2List',
     supportingDocumentsCollectionId: '#supportingEvidenceDocumentsTemp',
     supportingDocuments: function(index) {
@@ -22,6 +27,18 @@ module.exports = {
 
   selectFurtherEvidence() {
     I.click(this.fields.documentType.furtherEvidence);
+  },
+
+  selectRespondentStatement() {
+    I.click(this.fields.subtype.respondentStatement);
+  },
+
+  selectAnyOtherDocument() {
+    I.click(this.fields.subtype.otherDocuments);
+  },
+
+  selectRespondent(respondentName) {
+    I.selectOption(this.fields.respondentStatementList, respondentName);
   },
 
   selectCorrespondence() {
