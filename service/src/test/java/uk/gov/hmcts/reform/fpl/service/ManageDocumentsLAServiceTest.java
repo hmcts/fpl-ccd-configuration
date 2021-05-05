@@ -35,9 +35,11 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.COURT_BUNDLE_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.MANAGE_DOCUMENT_LA_KEY;
-import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENT_STATEMENT_LIST_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentLAService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -58,12 +60,12 @@ class ManageDocumentsLAServiceTest {
         );
 
         Element<C2DocumentBundle> c2Bundle = element(buildC2DocumentBundle(futureDate.plusDays(2)));
-        C2DocumentBundle c2Application = C2DocumentBundle.builder().id(randomUUID())
-            .uploadedDateTime(futureDate.plusDays(3).toString()).build();
+        C2DocumentBundle c2Application = buildC2DocumentBundle(futureDate.plusDays(3));
         OtherApplicationsBundle otherApplicationsBundle = OtherApplicationsBundle.builder()
             .id(randomUUID())
             .applicationType(OtherApplicationType.C19_WARRANT_TO_ASSISTANCE)
-            .uploadedDateTime(futureDate.toString()).build();
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(futureDate, DATE_TIME))
+                .build();
 
         List<Element<Respondent>> respondents = List.of(
             element(Respondent.builder()
@@ -93,8 +95,8 @@ class ManageDocumentsLAServiceTest {
         DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
-            Pair.of(c2Bundle.getId(), "C2, " + c2Bundle.getValue().getUploadedDateTime()),
             Pair.of(c2Application.getId(), "C2, " + c2Application.getUploadedDateTime()),
+            Pair.of(c2Bundle.getId(), "C2, " + c2Bundle.getValue().getUploadedDateTime()),
             Pair.of(otherApplicationsBundle.getId(), "C19, " + otherApplicationsBundle.getUploadedDateTime())
         );
 
@@ -111,7 +113,7 @@ class ManageDocumentsLAServiceTest {
 
         assertThat(listAndLabel)
             .extracting(COURT_BUNDLE_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_LA_KEY,
-                RESPONDENT_STATEMENT_LIST_KEY)
+                RESPONDENTS_LIST_KEY)
             .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument,
                 expectedRespondentStatementList);
     }
@@ -142,7 +144,7 @@ class ManageDocumentsLAServiceTest {
         Map<String, Object> listAndLabel = manageDocumentLAService.baseEventData(caseData);
 
         assertThat(listAndLabel)
-            .extracting(RESPONDENT_STATEMENT_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
+            .extracting(RESPONDENTS_LIST_KEY, MANAGE_DOCUMENT_LA_KEY)
             .containsExactly(null, expectedManageDocument);
     }
 
@@ -177,6 +179,9 @@ class ManageDocumentsLAServiceTest {
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().uploadedDateTime(dateTime.toString()).build();
+        return C2DocumentBundle.builder()
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .build();
     }
 }

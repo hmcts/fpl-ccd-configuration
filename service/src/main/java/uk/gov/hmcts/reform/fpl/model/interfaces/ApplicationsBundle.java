@@ -15,6 +15,8 @@ public interface ApplicationsBundle extends ConfidentialBundle {
 
     int getSortOrder();
 
+    String getUploadedDateTime();
+
     @JsonIgnore
     default String getSupportingEvidenceFileNames() {
         return getSupportingEvidenceBundle().stream()
