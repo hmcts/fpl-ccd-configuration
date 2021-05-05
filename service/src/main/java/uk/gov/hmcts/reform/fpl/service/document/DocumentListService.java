@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.DocumentView;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -19,11 +20,11 @@ import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -33,17 +34,29 @@ public class DocumentListService {
 
     public String getDocumentView(CaseData caseData, String view) {
         List<DocumentBundleView> bundles = new ArrayList<>();
-        List<DocumentBundleView> applicationStatementAndDocumentBundle = new ArrayList<>();
+        List<DocumentBundleView> applicationStatementAndDocumentBundle;
 
-        if(view.equals("HMCTS")) {
-            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
-                caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(), true, true);
-        } else if(view.equals("LA")) {
-            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
-                caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(),false, true);
+        if (view.equals("HMCTS")) {
+            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
+                caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(),
+                true,
+                true);
+        } else if (view.equals("LA")) {
+            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
+                caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(),
+                false,
+                true);
         } else {
-            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
-                caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(),false, false);
+            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
+                caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(),
+                false,
+                true);
         }
 
         if (isNotEmpty(applicationStatementAndDocumentBundle)) {
@@ -51,23 +64,63 @@ public class DocumentListService {
         }
 
         List<DocumentBundleView> furtherEvidenceBundles;
+        List<DocumentBundleView> hearingEvidenceBundles;
 
         if (view.equals("HMCTS")) {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), true, true);
-        } else if(view.equals("LA")) {
+
+            hearingEvidenceBundles = getHearingEvidenceBundles(
+                caseData.getHearingFurtherEvidenceDocuments(), true, true);
+        } else if (view.equals("LA")) {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), false, true);
+
+            hearingEvidenceBundles = getHearingEvidenceBundles(
+                caseData.getHearingFurtherEvidenceDocuments(), false, true);
         } else {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), false, false);
+
+            hearingEvidenceBundles = getHearingEvidenceBundles(
+                caseData.getHearingFurtherEvidenceDocuments(), false, false);
         }
 
         if (isNotEmpty(furtherEvidenceBundles)) {
             bundles.addAll(furtherEvidenceBundles);
         }
 
+        if (isNotEmpty(hearingEvidenceBundles)) {
+            bundles.addAll(hearingEvidenceBundles);
+        }
+
         return documentsListRenderer.render(bundles);
+    }
+
+    private List<DocumentBundleView> getHearingEvidenceBundles(
+        List<Element<HearingFurtherEvidenceBundle>> hearingEvidenceDocuments,
+        boolean includeConfidentialHMCTS,
+        boolean includeConfidentialLA
+    ) {
+
+        if (isEmpty(hearingEvidenceDocuments)) {
+            return List.of();
+        }
+
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = new ArrayList<>();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
+
+        unwrapElements(hearingEvidenceDocuments).forEach(bundle -> {
+            furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
+            furtherEvidenceDocumentsLA.addAll(bundle.getSupportingEvidenceLA());
+        });
+
+        return getFurtherEvidenceBundles(
+            furtherEvidenceDocuments,
+            furtherEvidenceDocumentsLA,
+            includeConfidentialHMCTS,
+            includeConfidentialLA);
+
     }
 
     private DocumentBundleView buildBundle(String name, List<DocumentView> documents) {
@@ -91,7 +144,7 @@ public class DocumentListService {
         List<DocumentView> applicantStatementDocumentsLA = new ArrayList<>();
         List<DocumentView> combinedStatementDocuments = new ArrayList<>();
 
-        if (!isNull(applicationDocuments)) {
+        if (isNotEmpty(applicationDocuments)) {
             applicationDocs = applicationDocuments.stream()
                 .map(Element::getValue)
                 .map(doc -> DocumentView.builder()
@@ -106,30 +159,38 @@ public class DocumentListService {
                 .collect(Collectors.toList());
         }
 
-        if (!isNull(furtherEvidenceDocuments)) {
+        if (isNotEmpty(furtherEvidenceDocuments)) {
             if (includeConfidentialHMCTS) {
-                applicantStatementDocuments = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocuments);
+                applicantStatementDocuments = getFurtherEvidenceDocumentView(
+                    APPLICANT_STATEMENT, furtherEvidenceDocuments);
             } else {
-                applicantStatementDocuments = getNonConfidentialDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocuments);
+                applicantStatementDocuments = getNonConfidentialDocumentView(
+                    APPLICANT_STATEMENT, furtherEvidenceDocuments);
             }
         }
-        if (!isNull(furtherEvidenceDocumentsLA)) {
+        if (isNotEmpty(furtherEvidenceDocumentsLA)) {
             if (includeConfidentialLA) {
-                applicantStatementDocumentsLA = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
+                applicantStatementDocumentsLA = getFurtherEvidenceDocumentView(
+                    APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
             } else {
-                applicantStatementDocumentsLA = getNonConfidentialDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
+                applicantStatementDocumentsLA = getNonConfidentialDocumentView(
+                    APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
             }
         }
 
-        List<DocumentView> newList = Stream.concat(applicantStatementDocuments.stream(), applicantStatementDocumentsLA.stream())
+        List<DocumentView> newList = Stream.concat(
+            applicantStatementDocuments.stream(),
+            applicantStatementDocumentsLA.stream())
             .collect(Collectors.toList());
 
-        List<DocumentView> sortedDocuments = Stream.concat(newList.stream(), applicationDocs.stream())
+        List<DocumentView> sortedDocuments = Stream.concat(
+            newList.stream(), applicationDocs.stream())
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toList());
 
-        if(!sortedDocuments.isEmpty()) {
-            applicationDocumentBundle.add(buildBundle("Applicant's statements and application documents", sortedDocuments));
+        if (!sortedDocuments.isEmpty()) {
+            applicationDocumentBundle.add(buildBundle(
+                "Applicant's statements and application documents", sortedDocuments));
         }
 
         return applicationDocumentBundle;
@@ -145,39 +206,39 @@ public class DocumentListService {
         Arrays.stream(FurtherEvidenceType.values())
             .filter(type -> type != APPLICANT_STATEMENT)
             .forEach(
-            type -> {
-                List<DocumentView> hmctsDocumentsView = new ArrayList<>();
-                List<DocumentView> laDocumentsView = new ArrayList<>();
+                type -> {
+                    List<DocumentView> hmctsDocumentsView = new ArrayList<>();
+                    List<DocumentView> laDocumentsView = new ArrayList<>();
 
-                if (!isNull(furtherEvidenceDocuments)) {
-                    if (includeConfidentialHMCTS) {
-                        hmctsDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocuments);
-                    } else {
-                        hmctsDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocuments);
+                    if (isNotEmpty(furtherEvidenceDocuments)) {
+                        if (includeConfidentialHMCTS) {
+                            hmctsDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocuments);
+                        } else {
+                            hmctsDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocuments);
+                        }
+                    }
+
+                    if (isNotEmpty(furtherEvidenceDocumentsLA)) {
+                        if (includeConfidentialLA) {
+                            laDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
+                        } else {
+                            laDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocumentsLA);
+                        }
+                    }
+
+                    List<DocumentView> combinedView = new ArrayList<>(hmctsDocumentsView);
+                    combinedView.addAll(laDocumentsView);
+
+                    if (!combinedView.isEmpty()) {
+                        final DocumentBundleView bundleView = DocumentBundleView.builder()
+                            .name(type.getLabel())
+                            .documents(combinedView)
+                            .build();
+
+                        documentBundles.add(bundleView);
                     }
                 }
-
-                if (!isNull(furtherEvidenceDocumentsLA)) {
-                    if (includeConfidentialLA) {
-                        laDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
-                    } else {
-                        laDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocumentsLA);
-                    }
-                }
-
-                List<DocumentView> combinedView = new ArrayList<>(hmctsDocumentsView);
-                combinedView.addAll(laDocumentsView);
-
-                if (!combinedView.isEmpty()) {
-                    final DocumentBundleView bundleView = DocumentBundleView.builder()
-                        .name(type.getLabel())
-                        .documents(combinedView)
-                        .build();
-
-                    documentBundles.add(bundleView);
-                }
-            }
-        );
+            );
         return documentBundles;
     }
 
