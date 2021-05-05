@@ -37,7 +37,8 @@ public class DocumentListService {
         List<DocumentView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
             caseData.getApplicationDocuments(), caseData.getFurtherEvidenceDocumentsLA());
 
-        DocumentBundleView applicationBundle = buildBundle("Applicant's statements and application documents", applicationStatementAndDocumentBundle);
+        DocumentBundleView applicationBundle = buildBundle(
+            "Applicant's statements and application documents", applicationStatementAndDocumentBundle);
 
         if (isNotEmpty(applicationBundle.getDocuments())) {
             bundles.add(applicationBundle);
@@ -45,7 +46,7 @@ public class DocumentListService {
 
         List<DocumentBundleView> furtherEvidenceBundles;
 
-        if(view.equals("HMCTS")) {
+        if (view.equals("HMCTS")) {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), true);
         } else {
@@ -54,7 +55,7 @@ public class DocumentListService {
         }
 
         if (isNotEmpty(furtherEvidenceBundles)) {
-            furtherEvidenceBundles.stream().forEach(bundle -> bundles.add(bundle));
+            bundles.addAll(furtherEvidenceBundles);
         }
 
         return documentsListRenderer.render(bundles);
@@ -67,8 +68,9 @@ public class DocumentListService {
             .build();
     }
 
-    private List<DocumentView> getApplicationStatementAndDocumentBundle(List<Element<ApplicationDocument>> applicationDocuments,
-                                                                        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
+    private List<DocumentView> getApplicationStatementAndDocumentBundle(
+        List<Element<ApplicationDocument>> applicationDocuments,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
 
         List<DocumentView> applicationDocs = applicationDocuments.stream()
             .map(Element::getValue)
@@ -104,25 +106,27 @@ public class DocumentListService {
         return applicationDocs;
     }
 
-    private List<DocumentBundleView> getFurtherEvidenceBundles(List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
-                                                               List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
-                                                               boolean includeConfidentialHMCTS) {
+    private List<DocumentBundleView> getFurtherEvidenceBundles(
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
+        boolean includeConfidentialHMCTS) {
+
         List<DocumentBundleView> documentBundles = new ArrayList<>();
         Arrays.stream(FurtherEvidenceType.values()).forEach(
             type -> {
                 List<DocumentView> hmctsDocumentsView = new ArrayList<>();
                 List<DocumentView> laDocumentsView = new ArrayList<>();
 
-                if(!isNull(furtherEvidenceDocuments)) {
-                    if(includeConfidentialHMCTS) {
-                        hmctsDocumentsView = getDocumentView(type, furtherEvidenceDocuments);
+                if (!isNull(furtherEvidenceDocuments)) {
+                    if (includeConfidentialHMCTS) {
+                        hmctsDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocuments);
                     } else {
                         hmctsDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocuments);
                     }
                 }
 
-                if(!isNull(furtherEvidenceDocumentsLA)) {
-                    laDocumentsView = getDocumentView(type, furtherEvidenceDocumentsLA);
+                if (!isNull(furtherEvidenceDocumentsLA)) {
+                    laDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
                 }
 
                 List<DocumentView> combinedView = new ArrayList<>(hmctsDocumentsView);
@@ -141,7 +145,10 @@ public class DocumentListService {
         return documentBundles;
     }
 
-    private List<DocumentView> getDocumentView(FurtherEvidenceType type, List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+    private List<DocumentView> getFurtherEvidenceDocumentView(
+        FurtherEvidenceType type,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+
         return furtherEvidenceDocuments
             .stream()
             .map(Element::getValue)
@@ -159,7 +166,10 @@ public class DocumentListService {
             .collect(Collectors.toUnmodifiableList());
     }
 
-    private List<DocumentView> getNonConfidentialDocumentView(FurtherEvidenceType type, List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+    private List<DocumentView> getNonConfidentialDocumentView(
+        FurtherEvidenceType type,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+
         return furtherEvidenceDocuments
             .stream()
             .map(Element::getValue)

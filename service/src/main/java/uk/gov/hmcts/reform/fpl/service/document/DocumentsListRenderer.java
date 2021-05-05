@@ -51,17 +51,21 @@ class DocumentsListRenderer {
 
     private String renderBundle(DocumentBundleView bundle) {
         String s = bundle.getDocuments().stream()
-            .map(this::render)
+            .map(this::renderDocument)
             .collect(joining(""));
         return collapsible(bundle.getName(), s);
     }
 
-    private String render(DocumentView documentView) {
+    private String renderDocument(DocumentView documentView) {
 
         List<Pair<String, String>> documentFields = getFieldsBasedOnDocumentType(documentView);
 
         String details = String.join("", renderItems(documentFields));
-        final String title = isFurtherEvidenceType(documentView) && !documentView.getType().equals(APPLICANT_STATEMENT.getLabel()) ? documentView.getFileName() : documentView.getType();
+
+        final String title = isFurtherEvidenceType(documentView)
+            && !documentView.getType().equals(APPLICANT_STATEMENT.getLabel())
+            ? documentView.getFileName() : documentView.getType();
+
         return collapsible(title, details);
     }
 
@@ -78,11 +82,15 @@ class DocumentsListRenderer {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 
-        if(documentView.getType().equals(APPLICANT_STATEMENT.getLabel())) {
+        if (documentView.getType().equals(APPLICANT_STATEMENT.getLabel())) {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 
-        documentFields.add(Pair.of("Document", "<a href='" + getDocumentUrl(documentView.getDocument()) + "'>" + documentView.getDocument().getFilename() + "</a>"));
+        documentFields.add(Pair.of("Document",
+            "<a href='"
+                + getDocumentUrl(documentView.getDocument())
+                + "'>"
+                + documentView.getDocument().getFilename() + "</a>"));
 
         if (documentView.isConfidential()) {
             documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
@@ -101,10 +109,10 @@ class DocumentsListRenderer {
     }
 
     private String collapsible(String title, String content) {
-        return "<details class=\"govuk-details\">" +
-            "       <summary class=\"govuk-details__summary\">" + title + "</summary>" +
-            "       <div class=\"govuk-details__text\">" + content + "</div>" +
-            "</details>";
+        return "<details class=\"govuk-details\">"
+            + "       <summary class=\"govuk-details__summary\">" + title + "</summary>"
+            + "       <div class=\"govuk-details__text\">" + content + "</div>"
+            + "</details>";
     }
 
     private List<String> renderItems(List<Pair<String, String>> props) {
@@ -117,10 +125,10 @@ class DocumentsListRenderer {
     }
 
     private String renderItem(String name, String value) {
-        return "<div class=\"govuk-summary-list__row\">" +
-            "     <dt class=\"govuk-summary-list__key\">" + name + "</dt>" +
-            "     <dd class=\"govuk-summary-list__value\">" + value + "</dd>" +
-            "</div>";
+        return "<div class=\"govuk-summary-list__row\">"
+            + "     <dt class=\"govuk-summary-list__key\">" + name + "</dt>"
+            + "     <dd class=\"govuk-summary-list__value\">" + value + "</dd>"
+            + "</div>";
     }
 
     private String getDocumentUrl(DocumentReference document) {
