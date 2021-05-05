@@ -1,8 +1,8 @@
-package uk.gov.hmcts.reform.aac.model;
+package uk.gov.hmcts.reform.ccd.model;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum ApprovalStatus {
+public enum ChangeOrganisationApprovalStatus {
 
     PENDING("0"),
     APPROVED("1"),
@@ -10,7 +10,7 @@ public enum ApprovalStatus {
 
     String value;
 
-    ApprovalStatus(String value) {
+    ChangeOrganisationApprovalStatus(String value) {
         this.value = value;
     }
 

@@ -4,7 +4,11 @@ import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 class TaskListRenderElementsTest {
 
@@ -13,7 +17,7 @@ class TaskListRenderElementsTest {
     private TaskListRenderElements underTest = new TaskListRenderElements(BASE_URL);
 
     @Test
-    void testRenderLink() {
+    void shouldRenderLink() {
         String actual = underTest.renderLink(Task.builder()
             .event(Event.ALLOCATION_PROPOSAL)
             .build());
@@ -24,7 +28,7 @@ class TaskListRenderElementsTest {
     }
 
     @Test
-    void testRenderDisabledLink() {
+    void shouldRenderDisabledLink() {
         String actual = underTest.renderDisabledLink(Task.builder()
             .event(Event.ALLOCATION_PROPOSAL)
             .build());
@@ -33,30 +37,64 @@ class TaskListRenderElementsTest {
     }
 
     @Test
-    void testRenderImage() {
+    void shouldRenderImage() {
         String actual = underTest.renderImage("imageName", "title");
 
         assertThat(actual).isEqualTo("<img align='right' height='25px' src='baseUrl/imageName' title='title'/>");
     }
 
     @Test
-    void testRenderHint() {
+    void shouldRenderHint() {
         String actual = underTest.renderHint("Test");
 
         assertThat(actual).isEqualTo("<span class='govuk-hint govuk-!-font-size-14'>Test</span>");
     }
 
     @Test
-    void testRenderInfo() {
+    void shouldRenderInfo() {
         String actual = underTest.renderInfo("Test");
 
         assertThat(actual).isEqualTo("<div class='panel panel-border-wide govuk-!-font-size-16'>Test</div>");
     }
 
     @Test
-    void testRenderHeader() {
+    void shouldRenderHeader() {
         String actual = underTest.renderHeader("Test");
 
         assertThat(actual).isEqualTo("## Test");
+    }
+
+    @Test
+    void shouldRenderCollapsible() {
+        List<String> actual = underTest.renderCollapsible("Test header", List.of("Line 1", "Line 2"));
+
+        assertThat(actual).containsExactly(
+            "<details class='govuk-details'>",
+            "<summary class='govuk-details__summary'>",
+            "<span class='govuk-details__summary-text'>",
+            "Test header",
+            "</span>",
+            "</summary>",
+            "<div class='govuk-details__text'>",
+            "Line 1",
+            "Line 2",
+            "</div>",
+            "</details>");
+    }
+
+    @Test
+    void shouldRenderEmptyCollapsibleWhenNoContent() {
+        List<String> actual = underTest.renderCollapsible("Test header", emptyList());
+
+        assertThat(actual).containsExactly(
+            "<details class='govuk-details'>",
+            "<summary class='govuk-details__summary'>",
+            "<span class='govuk-details__summary-text'>",
+            "Test header",
+            "</span>",
+            "</summary>",
+            "<div class='govuk-details__text'>",
+            "</div>",
+            "</details>");
     }
 }

@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
 
 @Api
 @RestController
@@ -41,7 +42,8 @@ public class NoticeOfChangeController extends CallbackController {
 
         caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentation(caseData));
 
-        return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(), callbackRequest);
+        return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(),
+            decisionRequest(caseDetails));
     }
 
     @PostMapping("/submitted")

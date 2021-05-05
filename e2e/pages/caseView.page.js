@@ -32,6 +32,7 @@ module.exports = {
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
+  tasksErrorsTitle: 'Why can\'t I submit my application?',
 
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
@@ -105,6 +106,19 @@ module.exports = {
     this.checkTaskStatus(task, 'Cannot send yet');
     const taskTarget = await I.grabAttributeFrom(`//p/a[text()="${task}"]`,'href');
     assert.strictEqual(taskTarget, null);
+  },
+
+  async checkTasksHaveErrors(tasksErrors) {
+    I.see(this.tasksErrorsTitle);
+    I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
+
+    const errors = (await I.grabTextFrom('details div')).split('\n\n');
+
+    assert.deepStrictEqual(errors, tasksErrors);
+  },
+
+  async checkTasksHaveNoErrors() {
+    I.dontSee(this.tasksErrorsTitle);
   },
 
   async startTask(task) {
