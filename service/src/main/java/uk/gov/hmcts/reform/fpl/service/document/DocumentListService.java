@@ -33,9 +33,15 @@ public class DocumentListService {
 
     public String getDocumentView(CaseData caseData, String view) {
         List<DocumentBundleView> bundles = new ArrayList<>();
+        List<DocumentBundleView> applicationStatementAndDocumentBundle = new ArrayList<>();
 
-        List<DocumentBundleView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
-            caseData.getFurtherEvidenceDocumentsLA());
+        if(view.equals("HMCTS")) {
+            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(), true, true);
+        } else {
+            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(),false, true);
+        }
 
         if (isNotEmpty(applicationStatementAndDocumentBundle)) {
             bundles.addAll(applicationStatementAndDocumentBundle);
@@ -70,12 +76,17 @@ public class DocumentListService {
 
     private List<DocumentBundleView> getApplicationStatementAndDocumentBundle(
         List<Element<ApplicationDocument>> applicationDocuments,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
+        boolean includeConfidentialHMCTS,
+        boolean includeConfidentialLA) {
 
         List<DocumentBundleView> applicationDocumentBundle = new ArrayList<>();
 
         List<DocumentView> applicationDocs = new ArrayList<>();
         List<DocumentView> applicantStatementDocuments = new ArrayList<>();
+        List<DocumentView> applicantStatementDocumentsLA = new ArrayList<>();
+        List<DocumentView> combinedStatementDocuments = new ArrayList<>();
 
         if (!isNull(applicationDocuments)) {
             applicationDocs = applicationDocuments.stream()
@@ -92,21 +103,25 @@ public class DocumentListService {
                 .collect(Collectors.toList());
         }
 
+        if (!isNull(furtherEvidenceDocuments)) {
+            if (includeConfidentialHMCTS) {
+                applicantStatementDocuments = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocuments);
+            } else {
+                applicantStatementDocuments = getNonConfidentialDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocuments);
+            }
+        }
         if (!isNull(furtherEvidenceDocumentsLA)) {
-            furtherEvidenceDocumentsLA.stream()
-                .map(Element::getValue)
-                .filter(doc -> doc.getType().equals(APPLICANT_STATEMENT))
-                .map(doc -> DocumentView.builder()
-                    .document(doc.getDocument())
-                    .type(APPLICANT_STATEMENT.getLabel())
-                    .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                    .uploadedBy(doc.getUploadedBy())
-                    .documentName(doc.getName())
-                    .build())
-                .collect(Collectors.toList());
+            if (includeConfidentialLA) {
+                applicantStatementDocumentsLA = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
+            } else {
+                applicantStatementDocumentsLA = getNonConfidentialDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
+            }
         }
 
-        List<DocumentView> sortedDocuments = Stream.concat(applicationDocs.stream(), applicantStatementDocuments.stream())
+        List<DocumentView> newList = Stream.concat(applicantStatementDocuments.stream(), applicantStatementDocumentsLA.stream())
+            .collect(Collectors.toList());
+
+        List<DocumentView> sortedDocuments = Stream.concat(newList.stream(), applicationDocs.stream())
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toList());
 
@@ -124,7 +139,9 @@ public class DocumentListService {
         boolean includeConfidentialLA) {
 
         List<DocumentBundleView> documentBundles = new ArrayList<>();
-        Arrays.stream(FurtherEvidenceType.values()).forEach(
+        Arrays.stream(FurtherEvidenceType.values())
+            .filter(type -> type != APPLICANT_STATEMENT)
+            .forEach(
             type -> {
                 List<DocumentView> hmctsDocumentsView = new ArrayList<>();
                 List<DocumentView> laDocumentsView = new ArrayList<>();
