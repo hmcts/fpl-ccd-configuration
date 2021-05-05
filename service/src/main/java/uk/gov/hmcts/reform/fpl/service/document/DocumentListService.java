@@ -34,24 +34,24 @@ public class DocumentListService {
     public String getDocumentView(CaseData caseData, String view) {
         List<DocumentBundleView> bundles = new ArrayList<>();
 
-        List<DocumentView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
-            caseData.getApplicationDocuments(), caseData.getFurtherEvidenceDocumentsLA());
+        List<DocumentBundleView> applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
+            caseData.getFurtherEvidenceDocumentsLA());
 
-        DocumentBundleView applicationBundle = buildBundle(
-            "Applicant's statements and application documents", applicationStatementAndDocumentBundle);
-
-        if (isNotEmpty(applicationBundle.getDocuments())) {
-            bundles.add(applicationBundle);
+        if (isNotEmpty(applicationStatementAndDocumentBundle)) {
+            bundles.addAll(applicationStatementAndDocumentBundle);
         }
 
         List<DocumentBundleView> furtherEvidenceBundles;
 
         if (view.equals("HMCTS")) {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
-                caseData.getFurtherEvidenceDocumentsLA(), true);
+                caseData.getFurtherEvidenceDocumentsLA(), true, true);
+        } else if(view.equals("LA")) {
+            furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(), false, true);
         } else {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
-                caseData.getFurtherEvidenceDocumentsLA(), false);
+                caseData.getFurtherEvidenceDocumentsLA(), false, false);
         }
 
         if (isNotEmpty(furtherEvidenceBundles)) {
@@ -68,25 +68,32 @@ public class DocumentListService {
             .build();
     }
 
-    private List<DocumentView> getApplicationStatementAndDocumentBundle(
+    private List<DocumentBundleView> getApplicationStatementAndDocumentBundle(
         List<Element<ApplicationDocument>> applicationDocuments,
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA) {
 
-        List<DocumentView> applicationDocs = applicationDocuments.stream()
-            .map(Element::getValue)
-            .map(doc -> DocumentView.builder()
-                .document(doc.getDocument())
-                .type(doc.getDocumentType().getLabel())
-                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                .includedInSWET(doc.getIncludedInSWET())
-                .uploadedBy(doc.getUploadedBy())
-                .documentName(doc.getDocumentName())
-                .build())
-            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-            .collect(Collectors.toList());
+        List<DocumentBundleView> applicationDocumentBundle = new ArrayList<>();
+
+        List<DocumentView> applicationDocs = new ArrayList<>();
+        List<DocumentView> applicantStatementDocuments = new ArrayList<>();
+
+        if (!isNull(applicationDocuments)) {
+            applicationDocs = applicationDocuments.stream()
+                .map(Element::getValue)
+                .map(doc -> DocumentView.builder()
+                    .document(doc.getDocument())
+                    .type(doc.getDocumentType().getLabel())
+                    .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                    .includedInSWET(doc.getIncludedInSWET())
+                    .uploadedBy(doc.getUploadedBy())
+                    .documentName(doc.getDocumentName())
+                    .build())
+                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+                .collect(Collectors.toList());
+        }
 
         if (!isNull(furtherEvidenceDocumentsLA)) {
-            List<DocumentView> applicantStatementDocuments = furtherEvidenceDocumentsLA.stream()
+            furtherEvidenceDocumentsLA.stream()
                 .map(Element::getValue)
                 .filter(doc -> doc.getType().equals(APPLICANT_STATEMENT))
                 .map(doc -> DocumentView.builder()
@@ -97,19 +104,24 @@ public class DocumentListService {
                     .documentName(doc.getName())
                     .build())
                 .collect(Collectors.toList());
-
-            return Stream.concat(applicationDocs.stream(), applicantStatementDocuments.stream())
-                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-                .collect(Collectors.toList());
         }
 
-        return applicationDocs;
+        List<DocumentView> sortedDocuments = Stream.concat(applicationDocs.stream(), applicantStatementDocuments.stream())
+            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .collect(Collectors.toList());
+
+        if(!sortedDocuments.isEmpty()) {
+            applicationDocumentBundle.add(buildBundle("Applicant's statements and application documents", sortedDocuments));
+        }
+
+        return applicationDocumentBundle;
     }
 
     private List<DocumentBundleView> getFurtherEvidenceBundles(
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
-        boolean includeConfidentialHMCTS) {
+        boolean includeConfidentialHMCTS,
+        boolean includeConfidentialLA) {
 
         List<DocumentBundleView> documentBundles = new ArrayList<>();
         Arrays.stream(FurtherEvidenceType.values()).forEach(
@@ -126,7 +138,11 @@ public class DocumentListService {
                 }
 
                 if (!isNull(furtherEvidenceDocumentsLA)) {
-                    laDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
+                    if (includeConfidentialLA) {
+                        laDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
+                    } else {
+                        laDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocumentsLA);
+                    }
                 }
 
                 List<DocumentView> combinedView = new ArrayList<>(hmctsDocumentsView);
