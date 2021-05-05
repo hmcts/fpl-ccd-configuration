@@ -217,6 +217,8 @@ public class ManageDocumentsLAController extends CallbackController {
             caseDetailsMap.put("documentViewHMCTS", documentListService.getDocumentView(getCaseData(details), "HMCTS"));
 
             caseDetailsMap.put("documentViewLA", documentListService.getDocumentView(getCaseData(details), "LA"));
+
+            caseDetailsMap.put("documentViewNC", documentListService.getDocumentView(getCaseData(details), "NC"));
         }
 
         return respond(caseDetailsMap);

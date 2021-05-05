@@ -38,9 +38,12 @@ public class DocumentListService {
         if(view.equals("HMCTS")) {
             applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
                 caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(), true, true);
-        } else {
+        } else if(view.equals("LA")) {
             applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
                 caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(),false, true);
+        } else {
+            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(), caseData.getFurtherEvidenceDocumentsLA(),false, false);
         }
 
         if (isNotEmpty(applicationStatementAndDocumentBundle)) {
