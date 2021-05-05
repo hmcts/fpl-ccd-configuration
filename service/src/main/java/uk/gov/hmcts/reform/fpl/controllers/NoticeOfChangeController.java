@@ -12,16 +12,15 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
 
 @Api
@@ -34,6 +33,7 @@ public class NoticeOfChangeController extends CallbackController {
     private final AuthTokenGenerator tokenGenerator;
     private final CaseAssignmentApi caseAssignmentApi;
     private final NoticeOfChangeService noticeOfChangeService;
+    private final RespondentService respondentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -52,17 +52,17 @@ public class NoticeOfChangeController extends CallbackController {
         CaseData oldCaseData = getCaseDataBefore(callbackRequest);
         CaseData newCaseData = getCaseData(callbackRequest);
 
-        List<Respondent> oldRespondents = unwrapElements(oldCaseData.getAllRespondents());
-        List<Respondent> newRespondents = unwrapElements(newCaseData.getAllRespondents());
+        List<ChangeOrganisationRequest> changeRequests = respondentService
+            .getRepresentationChanges(newCaseData.getRespondents1(), oldCaseData.getRespondents1());
 
-        for (int i = 0; i < newRespondents.size(); i++) {
-            RespondentSolicitor oldRespondentSolicitor = oldRespondents.get(i).getSolicitor();
-            RespondentSolicitor newRespondentSolicitor = newRespondents.get(i).getSolicitor();
-
-            if (!newRespondentSolicitor.equals(oldRespondentSolicitor)) {
-                publishEvent(new NoticeOfChangeEvent(newCaseData, oldRespondentSolicitor, newRespondentSolicitor));
-                break;
-            }
-        }
+        changeRequests.forEach(
+            changeRequest -> {
+                int solicitorIndex = changeRequest.getCaseRole().getIndex();
+                publishEvent(new NoticeOfChangeEvent(
+                    newCaseData,
+                    oldCaseData.getRespondents1().get(solicitorIndex).getValue().getSolicitor(),
+                    newCaseData.getRespondents1().get(solicitorIndex).getValue().getSolicitor())
+                );
+            });
     }
 }

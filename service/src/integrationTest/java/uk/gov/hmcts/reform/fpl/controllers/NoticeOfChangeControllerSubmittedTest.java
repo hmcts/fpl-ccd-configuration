@@ -13,6 +13,7 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.util.Map;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_CHANGE_NEW_REPRESENTATIVE;
@@ -60,7 +61,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
                     .firstName("New")
                     .lastName("Solicitor")
                     .email(NEW_EMAIL)
-                    .organisation(Organisation.builder().organisationID("123").build()).build())
+                    .organisation(Organisation.builder().organisationID("321").build()).build())
                 .build()))
         .build();
 
@@ -89,13 +90,13 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(toCallBackRequest(CASE_DATA, CASE_DATA_BEFORE));
 
         checkUntil(() -> {
-                verify(notificationClient).sendEmail(
+                verify(notificationClient, times(1)).sendEmail(
                     NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
                     NEW_EMAIL,
                     newSolicitorParameters,
                     NOTIFICATION_REFERENCE);
 
-                verify(notificationClient).sendEmail(
+                verify(notificationClient, times(1)).sendEmail(
                     NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE,
                     OLD_EMAIL,
                     oldSolicitorParameters,
@@ -124,7 +125,7 @@ class NoticeOfChangeControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(toCallBackRequest(CASE_DATA, caseDataBefore));
 
-        checkUntil(() -> verify(notificationClient).sendEmail(
+        checkUntil(() -> verify(notificationClient, times(1)).sendEmail(
             NOTICE_OF_CHANGE_NEW_REPRESENTATIVE,
             NEW_EMAIL,
             newSolicitorParameters,
