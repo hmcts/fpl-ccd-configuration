@@ -1,0 +1,444 @@
+{
+  "description": "Case local authority code and organisation policy added on case creation",
+  "request": {
+    "uri": "/callback/create-order/submitted",
+    "user": "admin",
+    "data": {
+      "case_details": {
+        "case_data": {
+          "orders": {
+            "address": {
+              "County": null,
+              "Country": null,
+              "PostCode": null,
+              "PostTown": null,
+              "AddressLine1": null,
+              "AddressLine2": null,
+              "AddressLine3": null
+            },
+            "epoType": null,
+            "excluded": null,
+            "orderType": [
+              "CARE_ORDER",
+              "INTERIM_CARE_ORDER"
+            ],
+            "directions": "No",
+            "otherOrder": null,
+            "directionDetails": null,
+            "emergencyProtectionOrders": [],
+            "emergencyProtectionOrderDetails": null,
+            "emergencyProtectionOrderDirections": [],
+            "emergencyProtectionOrderDirectionDetails": null
+          },
+          "others": {
+            "firstOther": {},
+            "additionalOthers": []
+          },
+          "grounds": {
+            "thresholdReason": [
+              "beyondControl",
+              "noCare"
+            ],
+            "thresholdDetails": "test details"
+          },
+          "hearing": {
+            "type": "Standard case management hearing",
+            "reason": null,
+            "timeFrame": "Within 18 days",
+            "reason2Days": null,
+            "reason7Days": null,
+            "reason12Days": null,
+            "reducedNotice": "No",
+            "withoutNotice": "No",
+            "type_GiveReason": "test",
+            "respondentsAware": "No",
+            "reducedNoticeReason": null,
+            "withoutNoticeReason": null,
+            "respondentsAwareReason": null
+          },
+          "caseName": "test",
+          "taskList": "<div class='width-50'>\n\n<br/>\n\n## Add application details\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/changeCaseName'>Change case name</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/finished.png' title='Finished'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add grounds for the application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRiskHarm'>Risk and harm to children</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterParentingFactors'>Factors affecting parenting</a>\n\n<span class='govuk-hint govuk-!-font-size-14'>In emergency cases, you can send your application without this information</span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add application documents\n\n<span class='govuk-hint govuk-!-font-size-14'>For example, SWET, social work chronology and care plan<br> In emergency cases, you can send your application without this information </span>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/uploadDocuments'>Upload documents</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add information about the parties\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add court requirements\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Add additional information\n\n<div class='panel panel-border-wide govuk-!-font-size-16'>Only complete if relevant</div>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProceedings'>Other proceedings</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterInternationalElement'>International element</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterOthers'>Other people in the case</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/attendingHearing'>Court services needed</a>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<br/>\n\n## Send application\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n<a>Submit application</a><img align='right' height='25px' src='https://raw.githubusercontent.com/hmcts/fpl-ccd-configuration/master/resources/cannot-send-yet.png' title='Cannot send yet'/>\n\n<hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>\n\n</div>\n\n<details class='govuk-details'>\n\n<summary class='govuk-details__summary'>\n\n<span class='govuk-details__summary-text'>\n\nWhy can't I submit my application?\n\n</span>\n\n</summary>\n\n<div class='govuk-details__text'>\n\nAdd the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>\n\nAdd the hearing urgency details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/hearingNeeded'>Hearing urgency</a>\n\nAdd the grounds for the application in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterGrounds'>Grounds for the application</a>\n\nAdd applicant's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>\n\nAdd the applicant's solicitor's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterApplicant'>Applicant's details</a>\n\nAdd the child's details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterChildren'>Child's details</a>\n\nAdd the respondents' details in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/enterRespondents'>Respondents' details</a>\n\nAdd the allocation proposal in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/otherProposal'>Allocation proposal</a>\n\n</div>\n\n</details>",
+          "children1": [
+            {
+              "id": "7a05ba23-03b5-4c2e-acec-fc4e24c0f499",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "address": {
+                    "County": null,
+                    "Country": null,
+                    "PostCode": null,
+                    "PostTown": null,
+                    "AddressLine1": null,
+                    "AddressLine2": null,
+                    "AddressLine3": null
+                  },
+                  "partyId": "c0b7c184-6d35-4f3d-9ba4-763b76edee4d",
+                  "adoption": null,
+                  "keyDates": null,
+                  "lastName": "White",
+                  "firstName": "Alex",
+                  "partyType": null,
+                  "dateOfBirth": "2016-01-01",
+                  "fathersName": null,
+                  "mothersName": null,
+                  "detailsHidden": null,
+                  "placementCourt": null,
+                  "additionalNeeds": null,
+                  "livingSituation": null,
+                  "litigationIssues": null,
+                  "socialWorkerName": null,
+                  "careAndContactPlan": null,
+                  "detailsHiddenReason": null,
+                  "genderIdentification": null,
+                  "fathersResponsibility": null,
+                  "additionalNeedsDetails": null,
+                  "livingSituationDetails": null,
+                  "litigationIssuesDetails": null,
+                  "placementOrderApplication": null,
+                  "socialWorkerTelephoneNumber": {
+                    "telephoneNumber": null,
+                    "contactDirection": null
+                  },
+                  "showAddressInConfidentialTab": null
+                },
+                "finalOrderIssued": null,
+                "finalOrderIssuedType": null
+              }
+            }
+          ],
+          "solicitor": {
+            "dx": null,
+            "name": "Solicitor 1",
+            "email": "test@test.com",
+            "mobile": "02027725772",
+            "reference": null,
+            "telephone": "02027725772"
+          },
+          "applicants": [
+            {
+              "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
+              "value": {
+                "party": {
+                  "email": {
+                    "email": "test@test.com"
+                  },
+                  "address": {
+                    "County": "Swansea",
+                    "Country": "United Kingdom",
+                    "PostCode": "CR0 2GE",
+                    "PostTown": "Swansea",
+                    "AddressLine1": "Flat 1, Swansea Apartments",
+                    "AddressLine2": "Swansea Central Square 11",
+                    "AddressLine3": "40 Fleet street"
+                  },
+                  "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+                  "jobTitle": "Solicitor",
+                  "pbaNumber": "PBA1234567",
+                  "mobileNumber": {
+                    "telephoneNumber": "02027725772"
+                  },
+                  "telephoneNumber": {
+                    "telephoneNumber": "02027725772",
+                    "contactDirection": "John"
+                  },
+                  "organisationName": "Swansea City Council"
+                },
+                "leadApplicantIndicator": "Yes"
+              }
+            }
+          ],
+          "sendToCtsc": "No",
+          "amountToPay": "205500",
+          "others_label": "No others on the case",
+          "respondents1": [
+            {
+              "id": "cb0775db-a1b4-4109-85b9-91312f5be2ab",
+              "value": {
+                "party": {
+                  "gender": "Male",
+                  "address": {},
+                  "partyId": "97649861-d73e-4ca8-ad50-c6aa584d4857",
+                  "lastName": "Bloggs",
+                  "firstName": "Joe",
+                  "dateOfBirth": "2018-01-01",
+                  "telephoneNumber": {},
+                  "relationshipToChild": "uncle"
+                },
+                "representedBy": [
+                  {
+                    "id": "ffbbb625-6000-4b42-90f0-5dc3d619bd2b",
+                    "value": "217239b4-4669-48ff-90fa-a271003a713a"
+                  }
+                ],
+                "legalRepresentation": "No"
+              }
+            },
+            {
+              "id": "0ad407e1-92bc-4eb3-93ad-c62fb54999d9",
+              "value": {
+                "party": {
+                  "gender": "Female",
+                  "address": {},
+                  "lastName": "White",
+                  "firstName": "Emma",
+                  "dateOfBirth": "2004-01-01",
+                  "telephoneNumber": {},
+                  "relationshipToChild": "sister"
+                },
+                "solicitor": {
+                  "email": "sam@hillingdon.gov.uk",
+                  "lastName": "(local-authority)",
+                  "firstName": "sam@hillingdon.gov.uk",
+                  "organisation": {
+                    "OrganisationID": "ORGSA",
+                    "OrganisationName": "Swansea City Council"
+                  },
+                  "regionalOfficeAddress": {},
+                  "unregisteredOrganisation": {
+                    "name": null,
+                    "address": {}
+                  }
+                },
+                "representedBy": [],
+                "legalRepresentation": "Yes"
+              }
+            }
+          ],
+          "dateSubmitted": "2021-05-06",
+          "groundsForEPO": {
+            "reason": []
+          },
+          "submittedForm": {
+            "document_url": "http://dm-store:8080/documents/47d57216-5da9-4a9b-84fa-6106155b997f",
+            "document_filename": "test.pdf",
+            "document_binary_url": "http://dm-store:8080/documents/47d57216-5da9-4a9b-84fa-6106155b997f/binary"
+          },
+          "deadline26week": "2021-11-04",
+          "orderCollection": [
+            {
+              "id": "157b5cee-59fb-46e9-b753-ba51d07bc551",
+              "value": {
+                "date": null,
+                "type": "C21 - Blank order",
+                "title": "asdasd",
+                "details": null,
+                "children": [
+                  {
+                    "id": "7a05ba23-03b5-4c2e-acec-fc4e24c0f499",
+                    "value": {
+                      "party": {
+                        "gender": "Boy",
+                        "lastName": "White",
+                        "firstName": "Alex",
+                        "dateOfBirth": "2016-01-01"
+                      }
+                    }
+                  }
+                ],
+                "document": {
+                  "document_url": "http://dm-store:8080/documents/0a8a1022-8e83-42d7-8ea2-b55939937823",
+                  "document_filename": "c21_blank_order.pdf",
+                  "document_binary_url": "http://dm-store:8080/documents/0a8a1022-8e83-42d7-8ea2-b55939937823/binary"
+                },
+                "uploader": null,
+                "courtName": null,
+                "orderType": "C21_BLANK_ORDER",
+                "expiryDate": null,
+                "dateOfIssue": null,
+                "approvalDate": "2017-01-01",
+                "removalReason": null,
+                "dateTimeIssued": "2021-05-10T15:30:26.999761",
+                "furtherDirections": {},
+                "childrenDescription": "Alex White",
+                "judgeAndLegalAdvisor": {
+                  "judgeTitle": "HER_HONOUR_JUDGE",
+                  "otherTitle": null,
+                  "judgeFullName": null,
+                  "judgeLastName": "dfsf",
+                  "legalAdvisorName": null,
+                  "judgeEmailAddress": "test@test.com",
+                  "useAllocatedJudge": null,
+                  "allocatedJudgeLabel": null
+                },
+                "unsealedDocumentCopy": {
+                  "document_url": "http://dm-store:8080/documents/1812c8e7-6430-4a1d-a4c0-b2be740f50ae",
+                  "document_filename": "c21_blank_order.doc",
+                  "document_binary_url": "http://dm-store:8080/documents/1812c8e7-6430-4a1d-a4c0-b2be740f50ae/binary"
+                },
+                "uploadedOrderDescription": null
+              }
+            }
+          ],
+          "representatives": [
+            {
+              "id": "217239b4-4669-48ff-90fa-a271003a713a",
+              "value": {
+                "role": "REPRESENTING_RESPONDENT_1",
+                "email": "tomas.powroznik@gmail.com",
+                "address": {
+                  "County": "",
+                  "Country": "United Kingdom",
+                  "PostCode": "SE16 6BA",
+                  "PostTown": "London",
+                  "AddressLine1": "10",
+                  "AddressLine2": "Campion House",
+                  "AddressLine3": "6 Blondin Way"
+                },
+                "fullName": "Szymon Powroznik",
+                "positionInACase": "lkmk",
+                "telephoneNumber": null,
+                "servingPreferences": "POST"
+              }
+            }
+          ],
+          "respondentPolicy0": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORA]"
+          },
+          "respondentPolicy1": {
+            "Organisation": {
+              "OrganisationID": "ORGSA",
+              "OrganisationName": "Swansea City Council"
+            },
+            "OrgPolicyCaseAssignedRole": "[SOLICITORB]"
+          },
+          "respondentPolicy2": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORC]"
+          },
+          "respondentPolicy3": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORD]"
+          },
+          "respondentPolicy4": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORE]"
+          },
+          "respondentPolicy5": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORF]"
+          },
+          "respondentPolicy6": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORG]"
+          },
+          "respondentPolicy7": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORH]"
+          },
+          "respondentPolicy8": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORI]"
+          },
+          "respondentPolicy9": {
+            "Organisation": {},
+            "OrgPolicyCaseAssignedRole": "[SOLICITORJ]"
+          },
+          "respondents_label": "Respondent 1 - Joe Bloggs\nRespondent 2 - Emma White",
+          "submissionConsent": [
+            "agree"
+          ],
+          "allocationProposal": {
+            "proposal": "Circuit judge",
+            "proposalReason": "test"
+          },
+          "caseLocalAuthority": "SA",
+          "displayAmountToPay": "Yes",
+          "dateAndTimeSubmitted": "2021-05-06T14:26:00.692392+01:00",
+          "localAuthorityPolicy": {
+            "Organisation": {
+              "OrganisationID": "ORGSA",
+              "OrganisationName": "Swansea City Council"
+            },
+            "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+          },
+          "caseLocalAuthorityName": "Swansea City Council",
+          "caseSummaryDateOfIssue": "2021-05-06",
+          "noticeOfChangeAnswers0": {
+            "applicantName": "Swansea City Council",
+            "respondentLastName": "Bloggs",
+            "respondentFirstName": "Joe"
+          },
+          "noticeOfChangeAnswers1": {
+            "applicantName": "Swansea City Council",
+            "respondentLastName": "White",
+            "respondentFirstName": "Emma"
+          },
+          "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+          "draftApplicationDocument": {
+            "document_url": "http://dm-store:8080/documents/6075af5e-9654-43ff-ade6-7772615186f8",
+            "document_filename": "draft_c110a_application_06may.pdf",
+            "document_binary_url": "http://dm-store:8080/documents/6075af5e-9654-43ff-ade6-7772615186f8/binary"
+          },
+          "caseSummaryHasNextHearing": null,
+          "caseSummaryNextHearingCMO": null,
+          "caseSummaryCafcassGuardian": null,
+          "caseSummaryHasFinalHearing": null,
+          "caseSummaryLASolicitorName": "Solicitor 1",
+          "caseSummaryNextHearingDate": null,
+          "caseSummaryNextHearingType": null,
+          "caseSummaryOrdersRequested": "Care order, Interim care order",
+          "caseSummaryFinalHearingDate": null,
+          "caseSummaryLASolicitorEmail": "test@test.com",
+          "caseSummaryNextHearingJudge": null,
+          "caseSummaryNumberOfChildren": 1,
+          "caseSummaryAllocatedJudgeName": null,
+          "caseSummaryHasPreviousHearing": null,
+          "caseSummaryPreviousHearingCMO": null,
+          "caseSummaryAllocatedJudgeEmail": null,
+          "caseSummaryPreviousHearingDate": null,
+          "caseSummaryPreviousHearingType": null,
+          "changeOrganisationRequestField": {
+            "CaseRoleId": {
+              "value": {
+                "code": "[SOLICITORA]",
+                "label": "[SOLICITORA]"
+              },
+              "list_items": [
+                {
+                  "code": "[SOLICITORA]",
+                  "label": "[SOLICITORA]"
+                }
+              ]
+            },
+            "ApprovalStatus": "1",
+            "RequestTimestamp": "2021-05-06T14:28:07.54702",
+            "OrganisationToAdd": {},
+            "OrganisationToRemove": {
+              "OrganisationID": "ORGSNW"
+            }
+          },
+          "caseSummaryHasUnresolvedMessages": null,
+          "caseSummaryFirstRespondentLastName": "Bloggs",
+          "caseSummaryFirstRespondentLegalRep": "Szymon Powroznik",
+          "caseSummaryNextHearingEmailAddress": null
+        },
+        "jurisdiction": "PUBLICLAW",
+        "case_type_id": "CARE_SUPERVISION_EPO",
+        "id": "1620107507217474"
+      },
+      "event_id": "openCase"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "data": {
+      "data": {
+        "caseName": "Test case name",
+        "caseLocalAuthority": "SA",
+        "caseLocalAuthorityName": "Swansea City Council",
+        "localAuthorityPolicy": {
+          "Organisation": {
+            "OrganisationID": "${OrganisationID:-62LYJRF}",
+            "OrganisationName": "Swansea City Council"
+          },
+          "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+        }
+      },
+      "errors": null,
+      "warnings": null,
+      "state": null
+    }
+  }
+}

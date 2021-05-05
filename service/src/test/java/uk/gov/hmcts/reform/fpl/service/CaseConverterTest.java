@@ -97,7 +97,8 @@ class CaseConverterTest {
 
     @Test
     void shouldReturnNullIfCaseDataIsNull() {
-        CaseData actualCaseData = caseConverter.convert(null);
+        CaseDetails caseDetails = null;
+        CaseData actualCaseData = caseConverter.convert(caseDetails);
 
         assertThat(actualCaseData).isNull();
     }

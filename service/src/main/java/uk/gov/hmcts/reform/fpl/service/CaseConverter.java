@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -30,6 +31,17 @@ public class CaseConverter {
             .toBuilder()
             .state(State.tryFromValue(caseDetails.getState()).orElse(null))
             .id(caseDetails.getId())
+            .build();
+    }
+
+    public CaseDetails convert(CaseData caseData) {
+        if (isNull(caseData)) {
+            return null;
+        }
+        return CaseDetails.builder()
+            .id(caseData.getId())
+            .state(Optional.ofNullable(caseData.getState()).map(State::getValue).orElse(null))
+            .data(objectMapper.convertValue(caseData, MAP_TYPE))
             .build();
     }
 

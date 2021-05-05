@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
+import io.restassured.http.Header;
+import io.restassured.http.Headers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.io.UncheckedIOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static io.restassured.http.Headers.headers;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -54,6 +57,10 @@ public class AuthenticationService {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public Headers getAuthorizationHeaders(User user) {
+        return headers(new Header("Authorization", this.getAccessToken(user)));
     }
 
 }

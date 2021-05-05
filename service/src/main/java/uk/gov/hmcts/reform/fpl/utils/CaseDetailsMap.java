@@ -31,6 +31,12 @@ public class CaseDetailsMap extends HashMap<String, Object> {
         return new CaseDetailsMap(caseDetail.getData());
     }
 
+    public static CaseDetailsMap caseDetailsMap(Map<String, Object> data) {
+        CaseDetailsMap m = new CaseDetailsMap(new HashMap<>());
+        m.putIfNotEmpty(data);
+        return m;
+    }
+
     public void removeAll(String... keys) {
         Stream.of(keys).forEach(this::remove);
     }

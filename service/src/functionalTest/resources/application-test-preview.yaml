@@ -1,5 +1,5 @@
 test-conf:
   idam-url: https://idam-api.aat.platform.hmcts.net
-  fpl-url:  http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal
+  fpl-url:  http://fpl-case-service-pr-2610.service.core-compute-preview.internal
   placeholders:
     OrganisationID: W9V61CP

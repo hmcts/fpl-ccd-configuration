@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,22 +17,30 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
+import uk.gov.hmcts.reform.fnp.client.PaymentApi;
+import uk.gov.hmcts.reform.fnp.model.payment.Payments;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.NotificationList;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -52,6 +61,13 @@ public class TestingSupportController {
     private final AuthTokenGenerator authToken;
     private final IdamClient idamClient;
     private final SystemUpdateUserConfiguration userConfig;
+    private final DocumentDownloadService documentDownloadService;
+    private final PaymentApi paymentApi;
+    private final NotificationClient notifications;
+
+
+    @Value("${fpl.env}")
+    String environment;
 
     @PostMapping(value = "/testing-support/case/create", produces = APPLICATION_JSON_VALUE)
     public Map createCase(@RequestBody Map<String, Object> requestBody) {
@@ -77,6 +93,26 @@ public class TestingSupportController {
             caseDataContent);
     }
 
+    @PostMapping(value = "/testing-support/case/start", produces = APPLICATION_JSON_VALUE)
+    public Map startCase(@RequestBody Map<String, Object> requestBody) {
+
+        StartEventResponse startEventResponse = coreCaseDataApi.startCase(
+            requestData.authorisation(),
+            authToken.generate(),
+            CASE_TYPE,
+            "openCase");
+
+        CaseDataContent caseDataContent = CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .build())
+            .data(requestBody)
+            .build();
+
+        return null;
+    }
+
     @PostMapping("/testing-support/case/populate/{caseId}")
     public void populateCase(@PathVariable("caseId") Long caseId, @RequestBody Map<String, Object> requestBody) {
         State state = State.fromValue(requestBody.get("state").toString());
@@ -94,6 +130,11 @@ public class TestingSupportController {
         }
     }
 
+    @GetMapping("/testing-support/case/{caseId}")
+    public CaseDetails getCase(@PathVariable("caseId") String caseId) {
+        return coreCaseDataApi.getCase(requestData.authorisation(), authToken.generate(), caseId);
+    }
+
     @GetMapping("/testing-support/case/{caseId}/lastEvent")
     public AuditEvent getLastEvent(@PathVariable("caseId") String caseId) {
         return coreCaseDataApiV2.getAuditEvents(requestData.authorisation(), authToken.generate(), false, caseId)
@@ -106,6 +147,29 @@ public class TestingSupportController {
     public UserDetails getUser(@RequestBody Map<String, String> requestBody) {
         final String token = idamClient.getAccessToken(requestBody.get("email"), requestBody.get("password"));
         return idamClient.getUserDetails(token);
+    }
+
+    @GetMapping("/testing-support/document")
+    public Object getDocument(@RequestBody String url) {
+        return documentDownloadService.downloadDocument(url);
+    }
+
+    @GetMapping("/testing-support/case/{caseId}/payments")
+    public Payments getPayments(@PathVariable("caseId") String caseId) {
+        try {
+            return paymentApi.getCasePayments(requestData.authorisation(), authToken.generate(), caseId);
+        } catch (FeignException e) {
+            return Payments.builder().payments(emptyList()).build();
+        }
+    }
+
+    @GetMapping("/testing-support/case/{caseId}/emails")
+    public NotificationList getEmails(@PathVariable("caseId") String caseId) {
+        try {
+            return notifications.getNotifications(null, "email", environment + "/" + caseId, null);
+        } catch (NotificationClientException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/testing-support/case/{caseId}/access")

@@ -1,0 +1,5 @@
+test-conf:
+  idam-url: https://idam-api.demo.platform.hmcts.net
+  fpl-url: http://fpl-case-service-demo.service.core-compute-demo.internal
+  placeholders:
+    OrganisationID: W9V61CP

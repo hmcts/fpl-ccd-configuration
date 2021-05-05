@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
@@ -30,6 +31,7 @@ public class MessageJudgeEventData {
         };
     }
 
+    @JsonIgnore
     public boolean isReplyingToAMessage() {
         return REPLY.equals(messageJudgeOption);
     }

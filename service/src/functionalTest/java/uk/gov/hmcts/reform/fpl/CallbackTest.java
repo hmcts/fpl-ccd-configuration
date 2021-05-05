@@ -15,7 +15,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Scenario;
 import uk.gov.hmcts.reform.fpl.model.User;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.util.AuthenticationService;
+import uk.gov.hmcts.reform.fpl.util.CaseService;
 import uk.gov.hmcts.reform.fpl.util.ScenarioService;
 import uk.gov.hmcts.reform.fpl.util.TestConfiguration;
 
@@ -35,7 +37,10 @@ import static uk.gov.hmcts.reform.fpl.util.StringUtils.red;
     TestConfiguration.class,
     ObjectMapper.class,
     ScenarioService.class,
-    AuthenticationService.class})
+    AuthenticationService.class,
+    CaseService.class,
+    CaseConverter.class
+})
 public class CallbackTest {
 
     @Autowired
@@ -47,6 +52,9 @@ public class CallbackTest {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @Autowired
+    private CaseService caseService;
+
     @Before
     public void setUp() {
         RestAssured.baseURI = testConfiguration.getFplUrl();
@@ -55,8 +63,8 @@ public class CallbackTest {
 
     @Test
     public void callbackShouldReturnExpectedResponse() {
-        for (Scenario scenario : scenarioService.getScenarios()) {
 
+        for (Scenario scenario : scenarioService.getScenarios()) {
             System.out.println(blue(format("%s (%s)", scenario.getName(), scenario.getDescription())));
 
             String actualResponseBody = SerenityRest
