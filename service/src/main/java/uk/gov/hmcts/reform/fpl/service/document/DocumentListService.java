@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +44,7 @@ public class DocumentListService {
                 caseData.getApplicationDocuments(),
                 caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(),
+                caseData.getHearingFurtherEvidenceDocuments(),
                 true,
                 true);
         } else if (view.equals("LA")) {
@@ -50,6 +52,7 @@ public class DocumentListService {
                 caseData.getApplicationDocuments(),
                 caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(),
+                caseData.getHearingFurtherEvidenceDocuments(),
                 false,
                 true);
         } else {
@@ -57,6 +60,7 @@ public class DocumentListService {
                 caseData.getApplicationDocuments(),
                 caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(),
+                caseData.getHearingFurtherEvidenceDocuments(),
                 false,
                 true);
         }
@@ -110,11 +114,9 @@ public class DocumentListService {
         }
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = new ArrayList<>();
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
 
         unwrapElements(hearingEvidenceDocuments).forEach(bundle -> {
             furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
-            furtherEvidenceDocumentsLA.addAll(bundle.getSupportingEvidenceLA());
         });
 
         return getFurtherEvidenceBundles(
@@ -137,6 +139,7 @@ public class DocumentListService {
         List<Element<ApplicationDocument>> applicationDocuments,
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments,
         boolean includeConfidentialHMCTS,
         boolean includeConfidentialLA) {
 
@@ -145,7 +148,6 @@ public class DocumentListService {
         List<DocumentView> applicationDocs = new ArrayList<>();
         List<DocumentView> applicantStatementDocuments = new ArrayList<>();
         List<DocumentView> applicantStatementDocumentsLA = new ArrayList<>();
-        List<DocumentView> combinedStatementDocuments = new ArrayList<>();
 
         if (isNotEmpty(applicationDocuments)) {
             applicationDocs = applicationDocuments.stream()
@@ -181,15 +183,31 @@ public class DocumentListService {
             }
         }
 
-        List<DocumentView> newList = Stream.concat(
-            applicantStatementDocuments.stream(),
-            applicantStatementDocumentsLA.stream())
-            .collect(Collectors.toList());
+        List<Element<SupportingEvidenceBundle>> hearingEvidenceDocs = new ArrayList<>();
+        List<DocumentView> hearingEvidenceDocumentView = new ArrayList<>();
 
-        List<DocumentView> sortedDocuments = Stream.concat(
-            newList.stream(), applicationDocs.stream())
+        if (!isEmpty(hearingFurtherEvidenceDocuments)) {
+            unwrapElements(hearingFurtherEvidenceDocuments).forEach(bundle -> {
+                hearingEvidenceDocs.addAll(bundle.getSupportingEvidenceBundle());
+            });
+
+            if (includeConfidentialHMCTS) {
+                hearingEvidenceDocumentView = getFurtherEvidenceDocumentView(
+                    APPLICANT_STATEMENT, hearingEvidenceDocs);
+            } else {
+                hearingEvidenceDocumentView = getNonConfidentialDocumentView(
+                    APPLICANT_STATEMENT, hearingEvidenceDocs);
+            }
+        }
+
+        List<DocumentView> sortedDocuments = Stream.of(applicantStatementDocuments,
+            applicantStatementDocumentsLA,
+            hearingEvidenceDocumentView,
+            applicationDocs)
+            .flatMap(Collection::stream)
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toList());
+
 
         if (!sortedDocuments.isEmpty()) {
             applicationDocumentBundle.add(buildBundle(
