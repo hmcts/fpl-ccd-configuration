@@ -62,8 +62,8 @@ class DocumentsListRenderer {
 
         String details = String.join("", renderItems(documentFields));
 
-        final String title = isFurtherEvidenceType(documentView)
-            && !documentView.getType().equals(APPLICANT_STATEMENT.getLabel())
+        final String title = "Respondent statements".equals(documentView.getType())
+            || (isFurtherEvidenceType(documentView) && !documentView.getType().equals(APPLICANT_STATEMENT.getLabel()))
             ? documentView.getFileName() : documentView.getType();
 
         return collapsible(title, details);
