@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ChangeOfRepresentationMethod {
-    NOC("Noc"),
-    RESPONDENTS_EVENT("FPLA");
+    NOC("Notice of change"),
+    RESPONDENTS_EVENT("FPL");
 
     private final String label;
 }
