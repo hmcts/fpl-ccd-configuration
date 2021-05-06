@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.tasklist.TaskListRenderElements;
 
@@ -39,26 +42,44 @@ class TaskListRendererTest {
         ));
 
     private static List<Task> TASKS = List.of(
-            task(CASE_NAME, COMPLETED_FINISHED),
-            task(ORDERS_SOUGHT, IN_PROGRESS),
-            task(HEARING_URGENCY, COMPLETED_FINISHED),
-            task(GROUNDS, COMPLETED),
-            task(RISK_AND_HARM, IN_PROGRESS),
-            task(FACTORS_AFFECTING_PARENTING, COMPLETED_FINISHED),
-            task(APPLICATION_DOCUMENTS, COMPLETED),
-            task(ORGANISATION_DETAILS, COMPLETED),
-            task(CHILDREN, COMPLETED),
-            task(RESPONDENTS, IN_PROGRESS),
-            task(ALLOCATION_PROPOSAL, COMPLETED),
-            task(OTHER_PROCEEDINGS, NOT_STARTED),
-            task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
-            task(OTHERS, NOT_STARTED),
-            task(COURT_SERVICES, IN_PROGRESS),
-            task(SUBMIT_APPLICATION, NOT_AVAILABLE));
+        task(CASE_NAME, COMPLETED_FINISHED),
+        task(ORDERS_SOUGHT, IN_PROGRESS),
+        task(HEARING_URGENCY, COMPLETED_FINISHED),
+        task(GROUNDS, COMPLETED),
+        task(RISK_AND_HARM, IN_PROGRESS),
+        task(FACTORS_AFFECTING_PARENTING, COMPLETED_FINISHED),
+        task(APPLICATION_DOCUMENTS, COMPLETED),
+        task(ORGANISATION_DETAILS, COMPLETED),
+        task(CHILDREN, COMPLETED),
+        task(RESPONDENTS, IN_PROGRESS),
+        task(ALLOCATION_PROPOSAL, COMPLETED),
+        task(OTHER_PROCEEDINGS, NOT_STARTED),
+        task(INTERNATIONAL_ELEMENT, IN_PROGRESS),
+        task(OTHERS, NOT_STARTED),
+        task(COURT_SERVICES, IN_PROGRESS),
+        task(SUBMIT_APPLICATION, NOT_AVAILABLE));
 
     @Test
     void shouldRenderTaskListWithApplicationDocuments() {
-        assertThat(taskListRenderer.render(TASKS)).isEqualTo(
-            readString("task-list/expected-task-list.md").trim());
+
+        List<EventValidationErrors> eventErrors = List.of(
+            EventValidationErrors.builder()
+                .event(ORDERS_SOUGHT)
+                .errors(List.of("Add the orders and directions sought"))
+                .build());
+
+        assertThat(taskListRenderer.render(TASKS, eventErrors))
+            .isEqualTo(read("task-list/expected-task-list.md"));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldRenderTaskListWithoutErrors(List<EventValidationErrors> errors) {
+        assertThat(taskListRenderer.render(TASKS, errors))
+            .isEqualTo(read("task-list/expected-task-list-no-errors.md"));
+    }
+
+    private static String read(String filename) {
+        return readString(filename).trim();
     }
 }
