@@ -45,6 +45,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.genderIdentification",
+    "EventElementLabel": "*What gender do they identify with?",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },

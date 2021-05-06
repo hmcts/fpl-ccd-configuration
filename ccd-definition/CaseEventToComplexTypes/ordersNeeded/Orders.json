@@ -90,7 +90,6 @@
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrders",
     "FieldTypeParameter": "EmergencyProtectionOrderType",
-    "EventElementLabel": "*Do you need any of these related orders?",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -109,7 +108,6 @@
     "CaseFieldID": "orders",
     "ListElementCode": "emergencyProtectionOrderDirections",
     "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
-    "EventElementLabel": "*Do you need any of these directions?",
     "DisplayContext": "OPTIONAL"
   },
   {
