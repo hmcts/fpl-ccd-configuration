@@ -102,7 +102,7 @@ public class DocumentListService {
                 false, false);
 
             respondentStatementBundle = getRespondentStatementsBundle(
-                caseData.getRespondentStatements(), caseData.getRespondents1(), true, true);
+                caseData.getRespondentStatements(), caseData.getRespondents1(), false, false);
         }
 
         bundles = addToBundle(bundles, applicationStatementAndDocumentsBundle);
