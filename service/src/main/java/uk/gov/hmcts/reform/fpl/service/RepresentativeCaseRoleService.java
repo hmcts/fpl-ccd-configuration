@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.flatMapping;
@@ -44,6 +45,7 @@ public class RepresentativeCaseRoleService {
             .filter(representative -> representative.getServingPreferences().equals(DIGITAL_SERVICE))
             .collect(groupingBy(
                 Representative::getEmail,
+                () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER),
                 flatMapping(representative -> representative.getRole().getCaseRoles().stream(), toSet())
             ));
     }
