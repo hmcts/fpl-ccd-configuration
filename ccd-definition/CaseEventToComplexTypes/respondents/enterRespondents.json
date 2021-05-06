@@ -5,6 +5,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.firstName",
+    "EventElementLabel": "*First name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
   },
@@ -14,6 +15,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.lastName",
+    "EventElementLabel": "*Last name",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
@@ -23,6 +25,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.dateOfBirth",
+    "EventElementLabel": "*Date of birth",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
@@ -32,6 +35,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.gender",
+    "EventElementLabel": "*Gender",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
@@ -50,6 +54,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.address",
+    "EventElementLabel": "*Current address",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -144,6 +149,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.relationshipToChild",
+    "EventElementLabel": "*What is the respondent's relationship to the child or children in this case?",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
@@ -200,12 +206,14 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentationLabel",
     "DisplayContext": "READONLY"
-  },  {
+  },
+  {
     "LiveFrom": "01/01/2017",
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "legalRepresentation",
+    "EventElementLabel": "*Do they have legal representation?",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -232,6 +240,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.email",
+    "EventElementLabel": "*Email address",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
@@ -287,6 +296,7 @@
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
     "ListElementCode": "solicitor.unregisteredOrganisation.name",
+    "EventElementLabel": "*Organisation name",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -294,8 +304,8 @@
     "ID": "EnterRespondents",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents1",
-    "EventElementLabel": "Address",
     "ListElementCode": "solicitor.unregisteredOrganisation.address",
+    "EventElementLabel": "*Address",
     "DisplayContext": "OPTIONAL"
   },
   {

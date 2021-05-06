@@ -23,7 +23,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "organisationName",
     "FieldType": "Text",
-    "ElementLabel": "*Name of applicant",
+    "ElementLabel": "Name of applicant",
     "HintText": "Local authority or authorised person",
     "SecurityClassification": "Public"
   },
@@ -32,7 +32,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "pbaNumber",
     "FieldType": "Text",
-    "ElementLabel": "*Payment by account (PBA) number",
+    "ElementLabel": "Payment by account (PBA) number",
     "HintText": "For example, PBA1234567",
     "SecurityClassification": "Public"
   },
@@ -41,7 +41,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "clientCode",
     "FieldType": "Text",
-    "ElementLabel": "*Client code",
+    "ElementLabel": "Client code",
     "SecurityClassification": "Public"
   },
   {
@@ -49,7 +49,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "customerReference",
     "FieldType": "Text",
-    "ElementLabel": "*Customer reference",
+    "ElementLabel": "Customer reference",
     "SecurityClassification": "Public"
   },
   {
@@ -57,7 +57,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
-    "ElementLabel": "*Address",
+    "ElementLabel": "Address",
     "SecurityClassification": "Public"
   },
   {
@@ -65,7 +65,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Telephone",
-    "ElementLabel": "*Telephone number",
+    "ElementLabel": "Telephone number",
     "SecurityClassification": "Public"
   },
   {
@@ -73,7 +73,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "jobTitle",
     "FieldType": "Text",
-    "ElementLabel": "*Job title",
+    "ElementLabel": "Job title",
     "HintText": "For example, legal advisor",
     "SecurityClassification": "Public"
   },
@@ -82,7 +82,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "mobileNumber",
     "FieldType": "MobileNumber",
-    "ElementLabel": "*Mobile number",
+    "ElementLabel": "Mobile number",
     "SecurityClassification": "Public"
   },
   {
@@ -90,7 +90,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "email",
     "FieldType": "EmailAddress",
-    "ElementLabel": "*Email",
+    "ElementLabel": "Email",
     "SecurityClassification": "Public"
   }
 ]

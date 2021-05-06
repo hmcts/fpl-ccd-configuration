@@ -13,7 +13,7 @@
     "ID": "Solicitor",
     "ListElementCode": "name",
     "FieldType": "Text",
-    "ElementLabel": "*Solicitor's full name",
+    "ElementLabel": "Solicitor's full name",
     "HintText": "If you're applying for a local authority, add details of the legal representative in your organisation who'll manage this case",
     "SecurityClassification": "Public"
   },
@@ -22,7 +22,7 @@
     "ID": "Solicitor",
     "ListElementCode": "mobile",
     "FieldType": "Text",
-    "ElementLabel": "*Solicitor's mobile number",
+    "ElementLabel": "Solicitor's mobile number",
     "HintText": "For example, 07665 545327",
     "Max": "24",
     "SecurityClassification": "Public"
@@ -32,7 +32,7 @@
     "ID": "Solicitor",
     "ListElementCode": "telephone",
     "FieldType": "PhoneUK",
-    "ElementLabel": "*Solicitor's telephone number",
+    "ElementLabel": "Solicitor's telephone number",
     "HintText": "For example, 020 2772 5772",
     "SecurityClassification": "Public"
   },
@@ -41,7 +41,7 @@
     "ID": "Solicitor",
     "ListElementCode": "email",
     "FieldType": "Email",
-    "ElementLabel": "*Solicitor's email",
+    "ElementLabel": "Solicitor's email",
     "HintText": "Case notifications will go to this email address",
     "SecurityClassification": "Public"
   },
@@ -50,7 +50,7 @@
     "ID": "Solicitor",
     "ListElementCode": "dx",
     "FieldType": "Text",
-    "ElementLabel": "*DX number",
+    "ElementLabel": "DX number",
     "SecurityClassification": "Public"
   },
   {
@@ -58,7 +58,7 @@
     "ID": "Solicitor",
     "ListElementCode": "reference",
     "FieldType": "Text",
-    "ElementLabel": "*Solicitor's reference",
+    "ElementLabel": "Solicitor's reference",
     "SecurityClassification": "Public"
   }
 ]

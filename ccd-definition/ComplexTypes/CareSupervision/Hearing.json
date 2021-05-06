@@ -5,7 +5,7 @@
     "ListElementCode": "timeFrame",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "TimeFrameList",
-    "ElementLabel": "*When do you need a hearing?",
+    "ElementLabel": "When do you need a hearing?",
     "SecurityClassification": "Public"
   },
   {
@@ -13,7 +13,7 @@
     "ID": "Hearing",
     "ListElementCode": "reason",
     "FieldType": "TextArea",
-    "ElementLabel": "*Give reason",
+    "ElementLabel": "Give reason",
     "FieldShowCondition": "timeFrame=\"Same day\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
@@ -54,7 +54,7 @@
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingTypeFixedList",
-    "ElementLabel": "*What type of hearing do you need?",
+    "ElementLabel": "What type of hearing do you need?",
     "SecurityClassification": "Public"
   },
   {
@@ -71,7 +71,7 @@
     "ID": "Hearing",
     "ListElementCode": "withoutNotice",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Do you need a without notice hearing?",
+    "ElementLabel": "Do you need a without notice hearing?",
     "HintText": "You can only do this if you're applying for an Emergency Protection Order",
     "SecurityClassification": "Public"
   },
@@ -89,7 +89,7 @@
     "ID": "Hearing",
     "ListElementCode": "reducedNotice",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Do you need a hearing with reduced notice?",
+    "ElementLabel": "Do you need a hearing with reduced notice?",
     "SecurityClassification": "Public"
   },
   {
@@ -106,7 +106,7 @@
     "ID": "Hearing",
     "ListElementCode": "respondentsAware",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Are respondents aware of proceedings?",
+    "ElementLabel": "Are respondents aware of proceedings?",
     "SecurityClassification": "Public"
   },
   {

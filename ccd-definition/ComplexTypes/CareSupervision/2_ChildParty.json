@@ -31,7 +31,7 @@
     "ID": "ChildParty",
     "ListElementCode": "lastName",
     "FieldType": "Text",
-    "ElementLabel": "*Last name",
+    "ElementLabel": "Last name",
     "SecurityClassification": "Public"
   },
   {
@@ -39,7 +39,7 @@
     "ID": "ChildParty",
     "ListElementCode": "dateOfBirth",
     "FieldType": "Date",
-    "ElementLabel": "*Date of birth",
+    "ElementLabel": "Date of birth",
     "HintText": "For example, 31 3 2016",
     "SecurityClassification": "Public"
   },
@@ -49,7 +49,7 @@
     "ListElementCode": "gender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "ChildGenderList",
-    "ElementLabel": "*Gender",
+    "ElementLabel": "Gender",
     "SecurityClassification": "Public"
   },
   {
@@ -67,7 +67,7 @@
     "ListElementCode": "livingSituation",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LivingSituationList",
-    "ElementLabel": "*Child's living situation",
+    "ElementLabel": "Child's living situation",
     "SecurityClassification": "Public"
   },
   {
@@ -124,7 +124,7 @@
     "ID": "ChildParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
-    "ElementLabel": "*Current address",
+    "ElementLabel": "Current address",
     "SecurityClassification": "Public",
     "FieldShowCondition": "livingSituation=\"*\" OR showAddressInConfidentialTab=\"Yes\""
   },
@@ -133,7 +133,7 @@
     "ID": "ChildParty",
     "ListElementCode": "keyDates",
     "FieldType": "TextArea",
-    "ElementLabel": "*Key dates for this child",
+    "ElementLabel": "Key dates for this child",
     "HintText": "List any events HMCTS will need to take into account when scheduling hearings. For example, child starting primary school or taking GCSEs.",
     "SecurityClassification": "Public"
   },
@@ -142,7 +142,7 @@
     "ID": "ChildParty",
     "ListElementCode": "careAndContactPlan",
     "FieldType": "TextArea",
-    "ElementLabel": "*Brief summary of care and contact plan",
+    "ElementLabel": "Brief summary of care and contact plan",
     "HintText": "For example, place baby in local authority foster care until further assessments are completed. Supervised contact for parents will be arranged.",
     "SecurityClassification": "Public"
   },
@@ -151,7 +151,7 @@
     "ID": "ChildParty",
     "ListElementCode": "adoption",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Are you considering adoption at this stage?",
+    "ElementLabel": "Are you considering adoption at this stage?",
     "SecurityClassification": "Public"
   },
   {
@@ -177,7 +177,7 @@
     "ID": "ChildParty",
     "ListElementCode": "mothersName",
     "FieldType": "Text",
-    "ElementLabel": "*Mother's full name",
+    "ElementLabel": "Mother's full name",
     "SecurityClassification": "Public"
   },
   {
@@ -185,7 +185,7 @@
     "ID": "ChildParty",
     "ListElementCode": "fathersName",
     "FieldType": "Text",
-    "ElementLabel": "*Father's full name",
+    "ElementLabel": "Father's full name",
     "SecurityClassification": "Public"
   },
   {
@@ -194,7 +194,7 @@
     "ListElementCode": "fathersResponsibility",
     "FieldType": "FixedList",
     "FieldTypeParameter": "FathersResponsibilityList",
-    "ElementLabel": "*Does the father have parental responsibility?",
+    "ElementLabel": "Does the father have parental responsibility?",
     "SecurityClassification": "Public"
   },
   {
@@ -210,7 +210,7 @@
     "ID": "ChildParty",
     "ListElementCode": "socialWorkerTelephoneNumber",
     "FieldType": "Telephone",
-    "ElementLabel": "*Social worker's telephone number",
+    "ElementLabel": "Social worker's telephone number",
     "SecurityClassification": "Public"
   },
   {
@@ -218,7 +218,7 @@
     "ID": "ChildParty",
     "ListElementCode": "additionalNeeds",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Does the child have any additional needs?",
+    "ElementLabel": "Does the child have any additional needs?",
     "HintText": "For example, child has severe autism and learning disabilities. Special needs for autism should be taken into account.",
     "SecurityClassification": "Public"
   },
@@ -263,7 +263,7 @@
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "*Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
+    "ElementLabel": "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
   {
@@ -280,7 +280,7 @@
     "ID": "ChildParty",
     "ListElementCode": "showAddressInConfidentialTab",
     "FieldType": "Text",
-    "ElementLabel": "*Should Address field be shown in confidential tab",
+    "ElementLabel": "Should Address field be shown in confidential tab",
     "FieldShowCondition": "partyId=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }

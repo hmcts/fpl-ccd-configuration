@@ -1,4 +1,4 @@
-[
+ [
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
@@ -23,7 +23,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "firstName",
     "FieldType": "Text",
-    "ElementLabel": "*First name",
+    "ElementLabel": "First name",
     "SecurityClassification": "Public"
   },
   {
@@ -31,7 +31,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "lastName",
     "FieldType": "Text",
-    "ElementLabel": "*Last name",
+    "ElementLabel": "Last name",
     "SecurityClassification": "Public"
   },
   {
@@ -39,7 +39,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "dateOfBirth",
     "FieldType": "Date",
-    "ElementLabel": "*Date of birth",
+    "ElementLabel": "Date of birth",
     "HintText": "For example, 31 3 1980",
     "SecurityClassification": "Public"
   },
@@ -49,7 +49,7 @@
     "ListElementCode": "gender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "GenderList",
-    "ElementLabel": "*Gender",
+    "ElementLabel": "Gender",
     "SecurityClassification": "Public"
   },
   {
@@ -75,7 +75,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
-    "ElementLabel": "*Current address",
+    "ElementLabel": "Current address",
     "SecurityClassification": "Public"
   },
   {
@@ -83,7 +83,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Telephone",
-    "ElementLabel": "*Telephone",
+    "ElementLabel": "Telephone",
     "SecurityClassification": "Public"
   },
   {
@@ -100,7 +100,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "relationshipToChild",
     "FieldType": "TextArea",
-    "ElementLabel": "*What is the respondent's relationship to the child or children in this case?",
+    "ElementLabel": "What is the respondent's relationship to the child or children in this case?",
     "HintText": "Include: the name of the child or children, the respondent's relationship to them and any details if you're not sure this person has parental responsibility",
     "SecurityClassification": "Public"
   },
@@ -109,7 +109,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "contactDetailsHidden",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Do you need contact details hidden from other parties?",
+    "ElementLabel": "Do you need contact details hidden from other parties?",
     "SecurityClassification": "Public"
   },
   {
@@ -136,7 +136,7 @@
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "*Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
   {

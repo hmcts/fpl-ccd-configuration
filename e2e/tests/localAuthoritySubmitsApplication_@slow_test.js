@@ -41,8 +41,6 @@ Scenario('local authority sees task list', async ({caseViewPage}) => {
 Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async ({I, caseViewPage, changeCaseNameEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   await changeCaseNameEventPage.changeCaseName('New case name');
-  await I.seeRequiredFieldsMessage();
-  await I.see('*Case name');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   await I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
@@ -57,7 +55,6 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
 
 Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
-  await I.seeRequiredFieldsMessage();
   await enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkSupervisionOrder();
@@ -82,10 +79,6 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
   enterOrdersAndDirectionsNeededEventPage.checkDirections();
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
-  await I.see('*Which orders do you need?');
-  await I.see('*What type of EPO are you requesting?');
-  await I.see('*Do you need any of these directions?');
-  await I.see('*Do you need any other directions?');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
@@ -109,7 +102,6 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
 
 Scenario('local authority enters hearing @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
-  await I.seeRequiredFieldsMessage();
   await enterHearingNeededEventPage.enterTimeFrame();
   enterHearingNeededEventPage.enterHearingType();
   enterHearingNeededEventPage.enterWithoutNoticeHearing();
@@ -134,7 +126,6 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
 
 Scenario('local authority enters children @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-  await I.seeRequiredFieldsMessage();
   await enterChildrenEventPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
   await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
   await enterChildrenEventPage.enterAddress(children[0].address);
@@ -223,7 +214,6 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
 
 Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
-  await I.seeRequiredFieldsMessage();
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
@@ -319,7 +309,6 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
 
 Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterApplicantEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
-  await I.seeRequiredFieldsMessage();
   await enterApplicantEventPage.enterApplicantDetails(applicant);
   await enterApplicantEventPage.enterSolicitorDetails(solicitor);
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');

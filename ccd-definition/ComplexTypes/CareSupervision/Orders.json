@@ -5,7 +5,7 @@
     "ListElementCode": "orderType",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "OrderType",
-    "ElementLabel": "*Which orders do you need?",
+    "ElementLabel": "Which orders do you need?",
     "SecurityClassification": "Public"
   },
   {
@@ -23,7 +23,7 @@
     "ListElementCode": "epoType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "EPOTypes",
-    "ElementLabel": "*What type of EPO are you requesting?",
+    "ElementLabel": "What type of EPO are you requesting?",
     "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
@@ -42,7 +42,7 @@
     "ListElementCode": "emergencyProtectionOrders",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EmergencyProtectionOrderType",
-    "ElementLabel": "*Do you need any of these related orders?",
+    "ElementLabel": "Do you need any of these related orders?",
     "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
@@ -61,7 +61,7 @@
     "ListElementCode": "emergencyProtectionOrderDirections",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
-    "ElementLabel": "*Do you need any of these directions?",
+    "ElementLabel": "Do you need any of these directions?",
     "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
@@ -79,7 +79,7 @@
     "ID": "Orders",
     "ListElementCode": "emergencyProtectionOrderDirectionDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "*Give details",
+    "ElementLabel": "Give details",
     "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
@@ -114,7 +114,7 @@
     "ID": "Orders",
     "ListElementCode": "directions",
     "FieldType": "YesOrNo",
-    "ElementLabel": "*Do you need any other directions?",
+    "ElementLabel": "Do you need any other directions?",
     "SecurityClassification": "Public"
   },
   {

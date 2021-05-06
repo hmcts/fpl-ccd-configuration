@@ -30,7 +30,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
-    "Label": "*Case name",
+    "Label": "Case name",
     "HintText": "Include the local authority name and respondent's last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public",
@@ -70,7 +70,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "groundsForEPO",
-    "Label": "*How are there grounds for an emergency protection order?",
+    "Label": "How are there grounds for an emergency protection order?",
     "FieldType": "GroundsForEPO",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -79,7 +79,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "grounds",
-    "Label": "*How does this case meet the threshold criteria?",
+    "Label": "How does this case meet the threshold criteria?",
     "FieldType": "Grounds",
     "SecurityClassification": "Public",
     "Searchable": "N"

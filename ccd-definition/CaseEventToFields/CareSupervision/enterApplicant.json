@@ -17,7 +17,7 @@
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "applicants",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "COMPLEX",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
