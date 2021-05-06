@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -118,8 +119,9 @@ public class DocumentListService {
 
         return getFurtherEvidenceBundles(
             furtherEvidenceDocuments,
-            furtherEvidenceDocumentsLA,
+            Collections.emptyList(),
             includeConfidentialHMCTS,
+            //doesn't matter always false
             includeConfidentialLA);
 
     }
