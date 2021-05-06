@@ -55,5 +55,5 @@ public final class NotifyTemplates {
     public static final String JUDGE_REJECTS_DRAFT_ORDERS = "6d0ab7cb-8f1e-4ac0-b51d-11cf0b6ee568";
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "c336fa70-497c-4f45-8cc9-2f2dc16c3ca9";
-    public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "6307a132-8944-4b99-9b4f-5af0cd12f1e8";
+    public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "68b071c5-2eb9-4646-9d3e-22cc168477cf";
 }
