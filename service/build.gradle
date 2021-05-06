@@ -238,7 +238,7 @@ repositories {
   mavenCentral()
   // TODO: that's the only dependency to move (confirm with ops when that's migrated) https://tools.hmcts.net/jira/browse/FPLA-2978
   maven {
-    url "https://dl.bintray.com/hmcts/hmcts-maven"
+    url "https://artifactory.sandbox.platform.hmcts.net/artifactory/maven-remotes"
   }
   //maven {
   //  url "https://jitpack.io"
