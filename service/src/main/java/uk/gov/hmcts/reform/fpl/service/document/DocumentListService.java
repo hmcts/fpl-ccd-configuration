@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,19 +76,22 @@ public class DocumentListService {
                 caseData.getFurtherEvidenceDocumentsLA(), true, true);
 
             hearingEvidenceBundles = getHearingEvidenceBundles(
-                caseData.getHearingFurtherEvidenceDocuments(), true, true);
+                caseData.getHearingFurtherEvidenceDocuments(),
+                true, true);
         } else if (view.equals("LA")) {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), false, true);
 
             hearingEvidenceBundles = getHearingEvidenceBundles(
-                caseData.getHearingFurtherEvidenceDocuments(), false, true);
+                caseData.getHearingFurtherEvidenceDocuments(),
+                false, true);
         } else {
             furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), false, false);
 
             hearingEvidenceBundles = getHearingEvidenceBundles(
-                caseData.getHearingFurtherEvidenceDocuments(), false, false);
+                caseData.getHearingFurtherEvidenceDocuments(),
+                false, false);
         }
 
         if (isNotEmpty(furtherEvidenceBundles)) {
@@ -114,18 +116,63 @@ public class DocumentListService {
         }
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = new ArrayList<>();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
 
         unwrapElements(hearingEvidenceDocuments).forEach(bundle -> {
             furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
         });
 
-        return getFurtherEvidenceBundles(
-            furtherEvidenceDocuments,
-            Collections.emptyList(),
-            includeConfidentialHMCTS,
-            //doesn't matter always false
-            includeConfidentialLA);
+        unwrapElements(hearingEvidenceDocuments).forEach(bundle -> {
+            furtherEvidenceDocumentsLA.addAll(bundle.getSupportingEvidenceLA());
+        });
 
+        List<DocumentBundleView> documentBundles = new ArrayList<>();
+
+
+        if(includeConfidentialHMCTS && includeConfidentialLA) {
+
+            Arrays.stream(FurtherEvidenceType.values())
+                .filter(type -> type != APPLICANT_STATEMENT)
+                .forEach(
+                    type -> {
+
+                        List<DocumentView> docView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocuments);
+
+                            if (!docView.isEmpty()) {
+                                final DocumentBundleView bundleView = DocumentBundleView.builder()
+                                    .name(type.getLabel())
+                                    .documents(docView)
+                                    .build();
+
+                                documentBundles.add(bundleView);
+
+                            }
+                        });
+                    }
+         else if(includeConfidentialLA && !includeConfidentialHMCTS) {
+            Arrays.stream(FurtherEvidenceType.values())
+                .filter(type -> type != APPLICANT_STATEMENT)
+                .forEach(
+                    type -> {
+
+                        List<DocumentView> docView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
+
+                        if (!docView.isEmpty()) {
+                            final DocumentBundleView bundleView = DocumentBundleView.builder()
+                                .name(type.getLabel())
+                                .documents(docView)
+                                .build();
+
+                            documentBundles.add(bundleView);
+
+                        }
+                    });
+                    } else {
+                        // stream further evidence NC
+                    }
+
+
+        return documentBundles;
     }
 
     private DocumentBundleView buildBundle(String name, List<DocumentView> documents) {
