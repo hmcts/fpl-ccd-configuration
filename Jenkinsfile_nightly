@@ -85,6 +85,7 @@ withNightlyPipeline(type, product, component) {
     env.MOCKED_PAYMENTS = false
     env.TEST_RETRIES = 1
     env.TESTS_FOR_ACCESSIBILITY = true
+    env.LOG_TEST_STEPS = true
     env.ENV = 'aat'
   }
 
