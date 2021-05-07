@@ -16,7 +16,7 @@ public class UnregisteredRespondentSolicitorContentProvider {
 
     public UnregisteredRespondentSolicitorTemplate buildContent(CaseData caseData) {
         return UnregisteredRespondentSolicitorTemplate.builder()
-            .ccdCode(caseHelper.formatCCDCaseNumber(caseData.getId()))
+            .ccdNumber(caseHelper.formatCCDCaseNumber(caseData.getId()))
             .localAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .build();
     }

@@ -7,6 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 @Value
 @Builder
 public class UnregisteredRespondentSolicitorTemplate implements NotifyData {
-    String ccdCode;
+    String ccdNumber;
     String localAuthority;
 }

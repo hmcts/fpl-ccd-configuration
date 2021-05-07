@@ -36,7 +36,7 @@ class UnregisteredRespondentSolicitorContentProviderTest {
 
         NotifyData expectedTemplateData = UnregisteredRespondentSolicitorTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
-            .ccdCode(FORMATTED_CCD_NUMBER)
+            .ccdNumber(FORMATTED_CCD_NUMBER)
             .build();
 
         assertThat(underTest.buildContent(caseData)).isEqualTo(expectedTemplateData);

@@ -297,7 +297,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         Map<String, Object> expectedParameters = mapper.convertValue(
             UnregisteredRespondentSolicitorTemplate.builder()
-                .ccdCode("1234-5678-9012-3456")
+                .ccdNumber("1234-5678-9012-3456")
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .build(),
             new TypeReference<>() {}
