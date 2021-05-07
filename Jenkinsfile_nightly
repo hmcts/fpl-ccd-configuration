@@ -77,9 +77,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   after('mutationTest') {
-    withSonarQubeEnv('SonarQube') {
-      sh './gradlew --info sonarqube'
-    }
     teardownSecretsForIntegrationTests()
   }
 
