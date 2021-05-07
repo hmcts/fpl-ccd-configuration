@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
-import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
@@ -41,8 +40,6 @@ public class RespondentController extends CallbackController {
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
     private final FeatureToggleService featureToggleService;
-    // probablyu not needed anymore
-    private final RespondentRepresentationService respondentRepresentationService;
     private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
     private final RespondentValidator respondentValidator;
     private final NoticeOfChangeService noticeOfChangeService;
