@@ -51,14 +51,13 @@ public class ApplicationDocumentBundleTransformer {
 
         List<DocumentView> applicationDocumentView = getApplicationDocumentsView(applicationDocuments);
 
-        List<DocumentView> applicantStatementDocumentView = furtherEvidenceTransformer.getFurtherEvidenceDocumentView(
-            APPLICANT_STATEMENT, furtherEvidenceDocuments, view.isIncludeConfidentialHMCTS());
+        List<DocumentView> applicantStatementDocumentView =
+            furtherEvidenceTransformer.getFurtherEvidenceDocumentsView(
+                APPLICANT_STATEMENT, furtherEvidenceDocuments, view.isIncludeConfidentialHMCTS());
 
         List<DocumentView> applicantStatementDocumentViewLA =
-            furtherEvidenceTransformer.getFurtherEvidenceDocumentView(
-                APPLICANT_STATEMENT,
-                furtherEvidenceDocumentsLA,
-                view.isIncludeConfidentialLA());
+            furtherEvidenceTransformer.getFurtherEvidenceDocumentsView(
+                APPLICANT_STATEMENT, furtherEvidenceDocumentsLA, view.isIncludeConfidentialLA());
 
         List<Element<SupportingEvidenceBundle>> hearingEvidenceDocs = new ArrayList<>();
 
@@ -68,10 +67,8 @@ public class ApplicationDocumentBundleTransformer {
         }
 
         List<DocumentView> hearingEvidenceDocumentView =
-            furtherEvidenceTransformer.getFurtherEvidenceDocumentView(
-                APPLICANT_STATEMENT,
-                hearingEvidenceDocs,
-                view.isIncludeConfidentialHMCTS());
+            furtherEvidenceTransformer.getFurtherEvidenceDocumentsView(
+                APPLICANT_STATEMENT, hearingEvidenceDocs, view.isIncludeConfidentialHMCTS());
 
         List<DocumentView> combinedDocuments = Stream.of(applicantStatementDocumentView,
             applicantStatementDocumentViewLA,

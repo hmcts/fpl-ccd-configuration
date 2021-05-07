@@ -14,21 +14,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
+import static java.util.Arrays.asList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 
 @Component
 public class FurtherEvidenceDocumentsTransformer {
 
     public List<DocumentBundleView> getFurtherEvidenceBundleView(CaseData caseData,
                                                                  DocumentViewType view) {
-
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = caseData.getFurtherEvidenceDocuments();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = caseData.getFurtherEvidenceDocumentsLA();
 
@@ -37,10 +36,10 @@ public class FurtherEvidenceDocumentsTransformer {
             .filter(type -> type != APPLICANT_STATEMENT)
             .forEach(
                 type -> {
-                    List<DocumentView> furtherEvidenceDocumentView = getFurtherEvidenceDocumentView(
+                    List<DocumentView> furtherEvidenceDocumentView = getFurtherEvidenceDocumentsView(
                         type, furtherEvidenceDocuments, view.isIncludeConfidentialHMCTS());
 
-                    List<DocumentView> furtherEvidenceDocumentViewLA = getFurtherEvidenceDocumentView(
+                    List<DocumentView> furtherEvidenceDocumentViewLA = getFurtherEvidenceDocumentsView(
                         type, furtherEvidenceDocumentsLA, view.isIncludeConfidentialLA());
 
                     List<DocumentView> combinedDocuments = new ArrayList<>(furtherEvidenceDocumentView);
@@ -48,7 +47,6 @@ public class FurtherEvidenceDocumentsTransformer {
 
                     if (!combinedDocuments.isEmpty()) {
                         furtherEvidenceBundle.add(buildBundle(type.getLabel(), combinedDocuments));
-
                     }
                 }
             );
@@ -64,7 +62,7 @@ public class FurtherEvidenceDocumentsTransformer {
             .forEach(
                 type -> {
                     List<DocumentView> documentView =
-                        getConfidentialFurtherEvidenceDocumentView(type, supportingEvidenceBundle);
+                        getFurtherEvidenceDocumentsView(type, supportingEvidenceBundle, true);
 
                     if (!documentView.isEmpty()) {
                         DocumentBundleView bundleView = buildBundle(type.getLabel(), documentView);
@@ -75,7 +73,6 @@ public class FurtherEvidenceDocumentsTransformer {
         return documentBundles;
     }
 
-
     private DocumentBundleView buildBundle(String name, List<DocumentView> documents) {
         return DocumentBundleView.builder()
             .name(name)
@@ -83,29 +80,15 @@ public class FurtherEvidenceDocumentsTransformer {
             .build();
     }
 
-    public List<DocumentView> getFurtherEvidenceDocumentView(
+    public List<DocumentView> getFurtherEvidenceDocumentsView(
         FurtherEvidenceType type,
-        List<Element<SupportingEvidenceBundle>> documents,
-        boolean confidential) {
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
+        boolean includeConfidential) {
 
-        if (isNotEmpty(documents)) {
-            if (confidential) {
-                return getConfidentialFurtherEvidenceDocumentView(type, documents);
-            } else {
-                return getNonConfidentialFurtherEvidenceDocumentView(type, documents);
-            }
-        }
-        return emptyList();
-    }
-
-    public List<DocumentView> getConfidentialFurtherEvidenceDocumentView(
-        FurtherEvidenceType type,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
-
-        return furtherEvidenceDocuments
+        return nullSafeList(furtherEvidenceDocuments)
             .stream()
             .map(Element::getValue)
-            .filter(doc -> (type == doc.getType()))
+            .filter(doc -> (type == doc.getType()) && (includeConfidential || !doc.isConfidentialDocument()))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
                 .type(doc.getType().getLabel())
@@ -115,29 +98,7 @@ public class FurtherEvidenceDocumentsTransformer {
                 .documentName(doc.getName())
                 .confidential(doc.isConfidentialDocument())
                 .title(type == APPLICANT_STATEMENT ? doc.getType().getLabel() : doc.getName())
-                .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getType()))
-                .build())
-            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-            .collect(Collectors.toUnmodifiableList());
-    }
-
-    public List<DocumentView> getNonConfidentialFurtherEvidenceDocumentView(
-        FurtherEvidenceType type,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
-
-        return furtherEvidenceDocuments
-            .stream()
-            .map(Element::getValue)
-            .filter(doc -> (type == doc.getType()) && !doc.isConfidentialDocument())
-            .map(doc -> DocumentView.builder()
-                .document(doc.getDocument())
-                .type(doc.getType().getLabel())
-                .fileName(doc.getName())
-                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                .uploadedBy(doc.getUploadedBy())
-                .documentName(doc.getName())
-                .confidential(doc.isConfidentialDocument())
-                .title(type == APPLICANT_STATEMENT ? doc.getType().getLabel() : doc.getName())
+                .includeDocumentName(asList(APPLICANT_STATEMENT, OTHER).contains(doc.getType()))
                 .build())
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toUnmodifiableList());
