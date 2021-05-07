@@ -26,6 +26,7 @@ module.exports = {
         litigationIssuesDetails: `#respondents1_${index}_party_litigationIssuesDetails`,
       },
       solicitor: {
+        element: `#respondents1_${index}_solicitor_solicitor`,
         firstName: `#respondents1_${index}_solicitor_firstName`,
         lastName: `#respondents1_${index}_solicitor_lastName`,
         email: `#respondents1_${index}_solicitor_email`,
@@ -103,8 +104,9 @@ module.exports = {
     }
   },
 
-  async enterRepresentationDetails(option, respondent) {
-    const elementIndex = await I.getActiveElementIndex();
+  async enterRepresentationDetails(option, respondent, index) {
+    const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
+
 
     I.click(this.fields(elementIndex).legalRepresentation(option).option);
     if (option === 'Yes') {
@@ -114,8 +116,8 @@ module.exports = {
     }
   },
 
-  async enterRegisteredOrganisation(respondent) {
-    const elementIndex = await I.getActiveElementIndex();
+  async enterRegisteredOrganisation(respondent, index) {
+    const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
 
     await within(this.fields(elementIndex).solicitor, () => {
       I.fillField('//input[@id="search-org-text"]', respondent.solicitor.organisation);
@@ -124,6 +126,16 @@ module.exports = {
 
     await within(this.fields(elementIndex).solicitor.regionalOfficeAddress, () => {
       postcodeLookup.enterAddressManually(respondent.solicitor.regionalOfficeAddress);
+    });
+  },
+
+  async updateRegisteredOrganisation(organisationName, index) {
+    const elementIndex = (index === undefined) ? await I.getActiveElementIndex() : index;
+
+    await within(this.fields(elementIndex).solicitor.element, () => {
+      I.click('Clear');
+      I.fillField('.//input[@id="search-org-text"]', organisationName.split(' ')[0]);
+      I.click(`.//*[@id="organisation-table"]/caption/h3[text()="${organisationName}"]/../../tbody//a`);
     });
   },
 

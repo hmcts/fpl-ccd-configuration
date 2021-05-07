@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
 import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
@@ -41,6 +42,7 @@ public class RespondentController extends CallbackController {
     private final FeatureToggleService featureToggleService;
     private final RespondentRepresentationService respondentRepresentationService;
     private final RespondentValidator respondentValidator;
+    private final NoticeOfChangeService noticeOfChangeService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -98,6 +100,11 @@ public class RespondentController extends CallbackController {
             if (featureToggleService.hasRSOCaseAccess()) {
                 publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             }
+
+            if (featureToggleService.isNoticeOfChangeEnabled()) {
+                noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore);
+            }
+
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
     }
