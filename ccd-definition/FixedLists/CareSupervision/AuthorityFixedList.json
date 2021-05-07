@@ -303,6 +303,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BRE",
+    "ListElement": "London Borough of Brent",
+    "DisplayOrder": 183
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LBM",
     "ListElement": "London Borough of Merton",
     "DisplayOrder": 185

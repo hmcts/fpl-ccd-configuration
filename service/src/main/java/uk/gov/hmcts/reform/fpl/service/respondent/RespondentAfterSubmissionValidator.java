@@ -43,8 +43,6 @@ public class RespondentAfterSubmissionValidator {
             errors.add("Removing an existing respondent is not allowed");
         }
 
-        //if (!(featureToggleService.isNoticeOfChangeEnabled() && userService.isHmctsAdminUser())) {
-
         if (!(featureToggleService.isNoticeOfChangeEnabled() && userService.isHmctsAdminUser())) {
             Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getAllRespondents());
 
