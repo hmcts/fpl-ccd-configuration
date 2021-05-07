@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -19,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 
 class UserServiceTest {
 
-    public static final String USER_EMAIL = "user@email.com";
+    private static final String USER_EMAIL = "user@email.com";
     private static final String USER_AUTHORISATION = "USER_AUTH";
 
     private final RequestData requestData = mock(RequestData.class);
@@ -65,5 +69,47 @@ class UserServiceTest {
         final UserDetails actualUserDetails = underTest.getUserDetailsById(userId);
 
         assertThat(actualUserDetails).isEqualTo(expectedUserDetails);
+    }
+
+
+    @Nested
+    class IsHmctsAdminUser {
+
+        @Test
+        void shouldReturnTrueIfUserHasOnlyAdminRole() {
+            when(requestData.userRoles()).thenReturn(Set.of(HMCTS_ADMIN.getRoleName()));
+
+            assertThat(underTest.isHmctsAdminUser()).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueIfUserHasAdminRole() {
+            when(requestData.userRoles()).thenReturn(Set.of(HMCTS_ADMIN.getRoleName(), JUDICIARY.getRoleName()));
+
+            assertThat(underTest.isHmctsAdminUser()).isTrue();
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "caseworker-publiclaw-solicitor",
+            "caseworker-publiclaw-cafcass",
+            "caseworker-publiclaw-gatekeeper",
+            "caseworker-publiclaw-judiciary",
+            "caseworker-publiclaw-superuser",
+            "unknown-role"
+        })
+        void shouldReturnFalseIfUserDoesNotHaveAdminRole(String role) {
+            when(requestData.userRoles()).thenReturn(Set.of(role));
+
+            assertThat(underTest.isHmctsAdminUser()).isFalse();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnFalseIfUserDoesNotHaveAnyRole(Set<String> roles) {
+            when(requestData.userRoles()).thenReturn(roles);
+
+            assertThat(underTest.isHmctsAdminUser()).isFalse();
+        }
     }
 }

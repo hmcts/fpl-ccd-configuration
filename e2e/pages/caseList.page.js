@@ -13,9 +13,10 @@ module.exports = {
     caseName: '#caseName',
     search: 'Apply',
     caseList: 'Case list',
+    spinner: 'xuilib-loading-spinner',
   },
 
-  navigate(){
+  navigate() {
     I.click(this.fields.caseList);
   },
 
@@ -43,7 +44,7 @@ module.exports = {
     I.click(this.fields.search);
   },
 
-  async searchForCasesWithName(caseName, state='Any') {
+  async searchForCasesWithName(caseName, state = 'Any') {
     this.setInitialSearchFields(state);
     // wait for our filters to load
     I.waitForVisible(this.fields.caseName, 30);
@@ -52,7 +53,7 @@ module.exports = {
     await I.runAccessibilityTest();
   },
 
-  setInitialSearchFields(state='Any') {
+  setInitialSearchFields(state = 'Any') {
     // wait for initial filters to load
     I.waitForVisible(this.fields.jurisdiction, 30);
     I.selectOption(this.fields.jurisdiction, config.definition.jurisdictionFullDesc);
@@ -60,20 +61,27 @@ module.exports = {
     I.selectOption(this.fields.caseState, state);
   },
 
-  locateCase(caseId){
+  locateCase(caseId) {
     return `a[href$='${caseId}']`;
   },
 
-  locateCaseProperty(caseId, columnNumber){
+  locateCaseProperty(caseId, columnNumber) {
     const caseRow = this.locateCase(caseId);
     const caseProperty = locate(`//td[${columnNumber}]`);
     return caseProperty.inside(caseRow);
   },
 
-  async verifyCaseIsShareable(caseId){
+  async verifyCaseIsShareable(caseId) {
     I.navigateToCaseList();
     await I.retryUntilExists(() => this.searchForCasesWithId(caseId), this.locateCase(caseId), false);
     I.seeElement(`#select-${caseId}:not(:disabled)`);
+  },
+
+  verifyCaseIsNotAccessible(caseId) {
+    I.navigateToCaseList();
+    this.searchForCasesWithId(caseId);
+    I.waitForInvisible(this.fields.spinner, 20);
+    I.see('No cases found. Try using different filters.');
   },
 
 };

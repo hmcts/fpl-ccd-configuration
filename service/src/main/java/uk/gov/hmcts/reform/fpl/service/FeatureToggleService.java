@@ -75,6 +75,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("rso-case-access", createLDUser(), false);
     }
 
+    public boolean isNoticeOfChangeEnabled() {
+        return ldClient.boolVariation("noc", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

@@ -195,7 +195,7 @@ Scenario('HMCTS admin share case with representatives', async ({I, caseViewPage,
   I.see(caseId);
 });
 
-Scenario('HMCTS admin revoke case access from representative', async ({I, caseViewPage}) => {
+Scenario('HMCTS admin revoke case access from representative', async ({I, caseViewPage, caseListPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
 
   await I.removeElementFromCollection('Representatives');
@@ -203,9 +203,9 @@ Scenario('HMCTS admin revoke case access from representative', async ({I, caseVi
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
 
-  await I.navigateToCaseDetailsAs({email: representatives.servedByDigitalService.email, password: config.localAuthorityPassword}, caseId);
+  await I.signIn({email: representatives.servedByDigitalService.email, password: config.localAuthorityPassword});
 
-  I.see('No cases found.');
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('HMCTS admin creates blank order', async ({I, caseViewPage, createOrderEventPage}) => {
