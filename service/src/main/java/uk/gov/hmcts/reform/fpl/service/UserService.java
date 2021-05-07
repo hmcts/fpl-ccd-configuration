@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserService {
@@ -26,6 +28,15 @@ public class UserService {
 
     public boolean isHmctsUser() {
         return getIdamRoles().stream().anyMatch(UserRole::isHmctsUser);
+    }
+
+    public boolean isHmctsAdminUser() {
+        Set<String> roles = getIdamRoles();
+        return roles != null && roles.contains(HMCTS_ADMIN.getRoleName());
+    }
+
+    public UserDetails getUserDetailsById(String userId) {
+        return idam.getUserByUserId(requestData.authorisation(), userId);
     }
 
     private Set<String> getIdamRoles() {

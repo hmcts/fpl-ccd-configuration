@@ -10,10 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessDataStoreApi;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
@@ -25,10 +23,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseAccessService {
 
-    private final IdamClient idam;
     private final CaseAccessDataStoreApi caseAccessDataStoreApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final SystemUpdateUserConfiguration userConfig;
+    private final SystemUserService systemUserService;
     private final OrganisationService organisationService;
 
     //TO-DO remove once FPLA-2946 migration is done
@@ -51,7 +48,7 @@ public class CaseAccessService {
     }
 
     public void revokeCaseRoleFromUser(Long caseId, String userId, CaseRole caseRole) {
-        final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+        final String userToken = systemUserService.getSysUserToken();
         final String serviceToken = authTokenGenerator.generate();
 
         CaseAssignedUserRolesRequest caseAssignedUserRolesRequest = CaseAssignedUserRolesRequest.builder()
@@ -67,7 +64,7 @@ public class CaseAccessService {
 
     private void grantCaseAccess(Long caseId, Set<String> users, CaseRole caseRole) {
         try {
-            final String userToken = idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+            final String userToken = systemUserService.getSysUserToken();
             final String serviceToken = authTokenGenerator.generate();
 
             final String organisationId = organisationService.findOrganisation()

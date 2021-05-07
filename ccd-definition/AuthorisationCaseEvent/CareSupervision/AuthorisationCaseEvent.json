@@ -764,7 +764,8 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-solicitor"
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "R"
       }

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -19,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.Placement;
 import uk.gov.hmcts.reform.fpl.model.PlacementOrderAndNotices;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.SentDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -145,6 +148,15 @@ public class TestDataHelper {
 
     public static List<Element<Child>> testChildren() {
         return List.of(testChild(), testChild(), testChild());
+    }
+
+    public static Element<Respondent> testRespondent(String firstName, String lastName) {
+        return element(Respondent.builder()
+            .party(RespondentParty.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .build())
+            .build());
     }
 
     public static Representative testRepresentative() {
@@ -305,4 +317,21 @@ public class TestDataHelper {
             .value(selected != -1 && selected < listItems.size() ? listItems.get(selected) : DynamicListElement.EMPTY)
             .build();
     }
+
+    public static DynamicList caseRoleDynamicList(String role) {
+        final DynamicListElement dynamicListElement = DynamicListElement.builder()
+            .code(role)
+            .label(role)
+            .build();
+
+        return DynamicList.builder()
+            .value(dynamicListElement)
+            .listItems(List.of(dynamicListElement))
+            .build();
+    }
+
+    public static DynamicList caseRoleDynamicList(SolicitorRole role) {
+        return caseRoleDynamicList(role.getCaseRoleLabel());
+    }
+
 }

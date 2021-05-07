@@ -21,15 +21,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageDocumentType",
-    "ListElementCode": "relatedToHearing",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Does the evidence document relate to a hearing?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "type=\"FURTHER_EVIDENCE_DOCUMENTS\" AND hasHearings=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ManageDocumentType",
     "ListElementCode": "hasC2s",
     "FieldType": "Text",
     "ElementLabel": "Controls display of manageDocumentsSupportingC2List and manageDocumentsNoC2sLabel",

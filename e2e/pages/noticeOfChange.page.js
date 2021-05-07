@@ -17,7 +17,7 @@ module.exports = {
 
   async enterCaseReference(caseReference) {
     I.fillField(this.fields.caseRefSearch, caseReference);
-    await I.runAccessibilityTest();
+    return await I.runAccessibilityTest();
   },
 
   async enterApplicantName(applicantName) {
@@ -34,4 +34,18 @@ module.exports = {
     I.checkOption(this.fields.confirmNoC);
     I.checkOption(this.fields.notifyEveryParty);
   },
+
+  async userCompletesNoC (caseReference, applicantName, firstName, lastName) {
+    this.navigate();
+    await this.enterCaseReference(caseReference);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.applicantName);
+    await this.enterApplicantName(applicantName);
+    this.enterRespondentName(firstName, lastName);
+    await I.retryUntilExists(() => I.click('Continue'), this.fields.confirmNoC);
+    this.confirmNoticeOfChange();
+    await I.retryUntilExists(() => I.click('Submit'), '.govuk-panel--confirmation');
+    I.see('Notice of change successful');
+    await I.retryUntilExists(() => I.click('View this case'), '.case-title');
+  },
+
 };

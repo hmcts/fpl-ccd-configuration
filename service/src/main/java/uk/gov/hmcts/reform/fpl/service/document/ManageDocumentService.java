@@ -55,9 +55,9 @@ public class ManageDocumentService {
 
     public static final String CORRESPONDING_DOCUMENTS_COLLECTION_KEY = "correspondenceDocuments";
     public static final String C2_DOCUMENTS_COLLECTION_KEY = "c2DocumentBundle";
-    public static final String TEMP_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "supportingEvidenceDocumentsTemp";
-    public static final String FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "furtherEvidenceDocuments";
-    public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_COLLECTION_KEY = "hearingFurtherEvidenceDocuments";
+    public static final String TEMP_EVIDENCE_DOCUMENTS_KEY = "supportingEvidenceDocumentsTemp";
+    public static final String FURTHER_EVIDENCE_DOCUMENTS_KEY = "furtherEvidenceDocuments";
+    public static final String HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY = "hearingFurtherEvidenceDocuments";
     public static final String C2_SUPPORTING_DOCUMENTS_COLLECTION = "c2SupportingDocuments";
     public static final String MANAGE_DOCUMENTS_HEARING_LIST_KEY = "manageDocumentsHearingList";
     public static final String SUPPORTING_C2_LIST_KEY = "manageDocumentsSupportingC2List";
@@ -65,12 +65,14 @@ public class ManageDocumentService {
     public static final String SUPPORTING_C2_LABEL = "manageDocumentsSupportingC2Label";
     public static final String MANAGE_DOCUMENT_KEY = "manageDocument";
     public static final String ADDITIONAL_APPLICATIONS_BUNDLE_KEY = "additionalApplicationsBundle";
+    public static final String RESPONDENTS_LIST_KEY = "respondentStatementList";
 
     public Map<String, Object> baseEventData(CaseData caseData) {
         Map<String, Object> eventData = new HashMap<>();
 
-        YesNo hasHearings = YesNo.from(isNotEmpty(caseData.getHearingDetails()));
-        YesNo hasC2s = YesNo.from(caseData.hasApplicationBundles());
+        final YesNo hasHearings = YesNo.from(isNotEmpty(caseData.getHearingDetails()));
+        final YesNo hasC2s = YesNo.from(caseData.hasApplicationBundles());
+        final YesNo hasRespondents = YesNo.from(isNotEmpty(caseData.getAllRespondents()));
 
         ManageDocument manageDocument = defaultIfNull(caseData.getManageDocument(), ManageDocument.builder().build())
             .toBuilder()
@@ -88,13 +90,17 @@ public class ManageDocumentService {
             eventData.put(SUPPORTING_C2_LIST_KEY, caseData.buildApplicationBundlesDynamicList());
         }
 
+        if (hasRespondents == YES) {
+            eventData.put(RESPONDENTS_LIST_KEY, caseData.buildRespondentDynamicList());
+        }
+
         return eventData;
     }
 
-    public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData, boolean relatedToHearing) {
+    public Map<String, Object> initialiseHearingListAndLabel(CaseData caseData) {
         Map<String, Object> listAndLabel = new HashMap<>();
 
-        if (relatedToHearing) {
+        if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
             UUID selectedHearingCode = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
             Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingCode);
 
@@ -126,11 +132,10 @@ public class ManageDocumentService {
         return listAndLabel;
     }
 
-    public List<Element<SupportingEvidenceBundle>> getFurtherEvidenceCollection(
+    public List<Element<SupportingEvidenceBundle>> getFurtherEvidences(
         CaseData caseData,
-        boolean isDocumentRelatedToHearing,
         List<Element<SupportingEvidenceBundle>> unrelatedEvidence) {
-        if (isDocumentRelatedToHearing) {
+        if (YES.getValue().equals(caseData.getManageDocumentsRelatedToHearing())) {
             List<Element<HearingFurtherEvidenceBundle>> bundles = caseData.getHearingFurtherEvidenceDocuments();
             if (!bundles.isEmpty()) {
                 UUID selectedHearingId = getDynamicListSelectedValue(caseData.getManageDocumentsHearingList(), mapper);
@@ -323,8 +328,8 @@ public class ManageDocumentService {
         return setDateTimeUploadedOnSupportingEvidence(currentSupportingDocuments, previousSupportingDocuments);
     }
 
-    public List<Element<SupportingEvidenceBundle>> getRespondentStatementFurtherEvidenceCollection(CaseData caseData,
-                                                                                                   UUID id) {
+    public List<Element<SupportingEvidenceBundle>> getRespondentStatements(CaseData caseData,
+                                                                           UUID id) {
         return caseData.getRespondentStatementByRespondentId(id)
             .map(Element::getValue)
             .map(RespondentStatement::getSupportingEvidenceBundle)
