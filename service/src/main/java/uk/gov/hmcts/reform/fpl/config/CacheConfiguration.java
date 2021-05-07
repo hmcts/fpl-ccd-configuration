@@ -14,13 +14,18 @@ import java.util.List;
 @Configuration
 public class CacheConfiguration {
 
-    public static final String DEFAULT_CACHE = "default";
+    public static final String REQUEST_SCOPED_CACHE_MANAGER = "requestScopeCacheManager";
+
+    public static final String ORGANISATION_CACHE = "organisationCache";
+    public static final String SYS_USER_CACHE = "systemUserCache";
 
     @Bean
     @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public CacheManager requestScopeCacheManager() {
         final SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
-        simpleCacheManager.setCaches(List.of(new ConcurrentMapCache(DEFAULT_CACHE)));
+        simpleCacheManager.setCaches(List.of(
+            new ConcurrentMapCache(ORGANISATION_CACHE),
+            new ConcurrentMapCache(SYS_USER_CACHE)));
         simpleCacheManager.initializeCaches();
         return simpleCacheManager;
     }

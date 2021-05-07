@@ -115,23 +115,3 @@
 <hr class='govuk-!-margin-top-3 govuk-!-margin-bottom-2'/>
 
 </div>
-
-<details class='govuk-details'>
-
-<summary class='govuk-details__summary'>
-
-<span class='govuk-details__summary-text'>
-
-Why can't I submit my application?
-
-</span>
-
-</summary>
-
-<div class='govuk-details__text'>
-
-Add the orders and directions sought in the <a href='/case/PUBLICLAW/CARE_SUPERVISION_EPO/${[CASE_REFERENCE]}/trigger/ordersNeeded'>Orders and directions sought</a>
-
-</div>
-
-</details>

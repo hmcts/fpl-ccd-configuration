@@ -9,13 +9,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserLookupException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.utils.MaskHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 import uk.gov.hmcts.reform.rd.model.OrganisationUser;
@@ -30,7 +28,8 @@ import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
-import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.DEFAULT_CACHE;
+import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.ORGANISATION_CACHE;
+import static uk.gov.hmcts.reform.fpl.config.CacheConfiguration.REQUEST_SCOPED_CACHE_MANAGER;
 import static uk.gov.hmcts.reform.fpl.utils.MaskHelper.maskEmail;
 
 @Service
@@ -40,9 +39,8 @@ public class OrganisationService {
     private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
     private final OrganisationApi organisationApi;
     private final AuthTokenGenerator authTokenGenerator;
+    private final SystemUserService systemUserService;
     private final RequestData requestData;
-    private final IdamClient idamClient;
-    private final SystemUpdateUserConfiguration userConfig;
 
     public Set<String> findUserIdsInSameOrganisation(String localAuthorityCode) {
         try {
@@ -68,7 +66,7 @@ public class OrganisationService {
         }
     }
 
-    @Cacheable(cacheManager = "requestScopeCacheManager", cacheNames = DEFAULT_CACHE)
+    @Cacheable(cacheManager = REQUEST_SCOPED_CACHE_MANAGER, cacheNames = ORGANISATION_CACHE)
     public Optional<Organisation> findOrganisation() {
         try {
             return ofNullable(organisationApi.findUserOrganisation(requestData.authorisation(),
@@ -81,7 +79,7 @@ public class OrganisationService {
 
     public Optional<Organisation> findOrganisation(String organisationId) {
         try {
-            String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+            String userToken = systemUserService.getSysUserToken();
             return ofNullable(organisationApi.findOrganisation(userToken,
                 authTokenGenerator.generate(), organisationId));
         } catch (FeignException.NotFound | FeignException.Forbidden ex) {
