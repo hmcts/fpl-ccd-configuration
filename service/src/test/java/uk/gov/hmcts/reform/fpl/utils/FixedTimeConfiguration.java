@@ -26,7 +26,7 @@ public class FixedTimeConfiguration {
     @Bean
     @Primary
     public Time stoppedTime() {
-        return NOW::toLocalDateTime;
+        return new FixedTime(NOW.toLocalDateTime());
     }
 
     public Time fixedDateTime(LocalDateTime fixed) {

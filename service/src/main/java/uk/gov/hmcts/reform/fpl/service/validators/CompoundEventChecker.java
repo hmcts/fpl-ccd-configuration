@@ -3,11 +3,12 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 public abstract class CompoundEventChecker implements EventChecker {
@@ -16,17 +17,34 @@ public abstract class CompoundEventChecker implements EventChecker {
     private EventsChecker eventChecker;
 
     public List<String> validate(CaseData caseData, List<Event> events) {
-        return events.stream()
-                .flatMap(event -> {
-                    List<String> groupErrors = new ArrayList<>();
-                    List<String> errors = eventChecker.validate(event, caseData);
 
-                    if (isNotEmpty(errors)) {
-                        groupErrors.add(String.format("In the %s section:", event.getName().toLowerCase()));
-                        errors.stream().distinct().forEach(error -> groupErrors.add(String.format("• %s", error)));
-                    }
-                    return groupErrors.stream();
-                })
-                .collect(Collectors.toList());
+        List<EventValidationErrors> eventsErrors = validateEvents(caseData, events);
+
+        return eventsErrors.stream()
+            .flatMap(eventErrors -> {
+                String groupName = format("In the %s section:", eventErrors.getEvent().getName().toLowerCase());
+
+                List<String> formattedEventErrors = eventErrors.getErrors().stream()
+                    .map(error -> format("• %s", error))
+                    .collect(toList());
+
+                formattedEventErrors.add(0, groupName);
+
+                return formattedEventErrors.stream();
+            })
+            .collect(toList());
+    }
+
+    public List<EventValidationErrors> validateEvents(CaseData caseData, List<Event> events) {
+        return events.stream()
+            .map(event -> EventValidationErrors.builder()
+                .event(event)
+                .errors(eventChecker.validate(event, caseData).stream()
+                    .distinct()
+                    .sorted()
+                    .collect(toList()))
+                .build())
+            .filter(eventErrors -> isNotEmpty(eventErrors.getErrors()))
+            .collect(toList());
     }
 }

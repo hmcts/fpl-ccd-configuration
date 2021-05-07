@@ -17,8 +17,8 @@
     "mochawesome": "^6.2.2",
     "moment": "2.29.1",
     "node-fetch": "^2.6.1",
-    "puppeteer": "9.0.0",
-    "webdriverio": "^7.5.2"
+    "puppeteer": "9.1.1",
+    "webdriverio": "^7.5.3"
   },
   "scripts": {
     "lint": "eslint e2e",

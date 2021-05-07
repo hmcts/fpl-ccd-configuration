@@ -36,6 +36,15 @@ Scenario('local authority sees task list', async ({caseViewPage}) => {
   caseViewPage.checkTaskIsNotStarted(config.applicationActions.enterAttendingHearing);
 
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the orders and directions sought in the Orders and directions sought',
+    'Add the hearing urgency details in the Hearing urgency',
+    'Add the grounds for the application in the Grounds for the application',
+    'Add applicant\'s details in the Applicant\'s details',
+    'Add the applicant\'s solicitor\'s details in the Applicant\'s details',
+    'Add the child\'s details in the Child\'s details',
+    'Add the respondents\' details in the Respondents\' details',
+    'Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async ({I, caseViewPage, changeCaseNameEventPage}) => {
@@ -98,6 +107,14 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the hearing urgency details in the Hearing urgency',
+    'Add the grounds for the application in the Grounds for the application',
+    'Add applicant\'s details in the Applicant\'s details',
+    'Add the applicant\'s solicitor\'s details in the Applicant\'s details',
+    'Add the child\'s details in the Child\'s details',
+    'Add the respondents\' details in the Respondents\' details',
+    'Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority enters hearing @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
@@ -122,6 +139,13 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterHearingNeeded);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the grounds for the application in the Grounds for the application',
+    'Add applicant\'s details in the Applicant\'s details',
+    'Add the applicant\'s solicitor\'s details in the Applicant\'s details',
+    'Add the child\'s details in the Child\'s details',
+    'Add the respondents\' details in the Respondents\' details',
+    'Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority enters children @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterChildrenEventPage}) => {
@@ -210,6 +234,12 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterChildren);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterChildren);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the grounds for the application in the Grounds for the application',
+    'Add applicant\'s details in the Applicant\'s details',
+    'Add the applicant\'s solicitor\'s details in the Applicant\'s details',
+    'Add the respondents\' details in the Respondents\' details',
+    'Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage}) => {
@@ -305,6 +335,11 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterRespondents);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterRespondents);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the grounds for the application in the Grounds for the application',
+    'Add applicant\'s details in the Applicant\'s details',
+    'Add the applicant\'s solicitor\'s details in the Applicant\'s details',
+    'Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterApplicantEventPage}) => {
@@ -342,6 +377,9 @@ Scenario('local authority enters applicant @create-case-with-mandatory-sections-
   caseViewPage.checkTaskIsCompleted(config.applicationActions.enterApplicant);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterApplicant);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+  await caseViewPage.checkTasksHaveErrors([
+    'Add the grounds for the application in the Grounds for the application',
+    'Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority enters others to be given notice', async ({I, caseViewPage, enterOthersEventPage}) => {
@@ -415,6 +453,8 @@ Scenario('local authority enters grounds for application @create-case-with-manda
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterGrounds);
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
+
+  await caseViewPage.checkTasksHaveErrors(['Add the allocation proposal in the Allocation proposal']);
 });
 
 Scenario('local authority enters risk and harm to children', async ({I, caseViewPage, enterRiskAndHarmToChildrenEventPage}) => {
@@ -531,6 +571,8 @@ Scenario('local authority enters allocation proposal @create-case-with-mandatory
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   caseViewPage.checkTaskIsFinished(config.applicationActions.enterAllocationProposal);
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAllocationProposal);
+
+  await caseViewPage.checkTasksHaveNoErrors();
 });
 
 Scenario('local authority enters attending hearing', async ({I, caseViewPage, enterAttendingHearingEventPage}) => {
