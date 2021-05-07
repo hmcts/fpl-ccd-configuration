@@ -5,9 +5,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
-import uk.gov.hmcts.reform.fpl.model.DocumentBundleView;
-import uk.gov.hmcts.reform.fpl.model.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
+import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 
 import java.net.URI;
@@ -38,7 +38,6 @@ class DocumentsListRenderer {
         this.caseUrlService = caseUrlService;
     }
 
-    //TODO consider templating solution like mustache
     public String render(List<DocumentBundleView> documents) {
         final List<String> lines = new LinkedList<>();
         lines.add("<p><div class='width-50'>");
