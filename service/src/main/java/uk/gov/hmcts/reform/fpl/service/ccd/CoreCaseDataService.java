@@ -10,9 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.Map;
 
@@ -23,14 +22,17 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CoreCaseDataService {
-    private final SystemUpdateUserConfiguration userConfig;
     private final AuthTokenGenerator authTokenGenerator;
-    private final IdamClient idamClient;
     private final CoreCaseDataApi coreCaseDataApi;
     private final RequestData requestData;
+    private final SystemUserService systemUserService;
 
     public void updateCase(Long caseId, Map<String, Object> updates) {
-        triggerEvent(JURISDICTION, CASE_TYPE, caseId, "internal-change-UPDATE_CASE", updates);
+        triggerEvent(caseId, "internal-change-UPDATE_CASE", updates);
+    }
+
+    public void triggerEvent(Long caseId, String event, Map<String, Object> updates) {
+        triggerEvent(JURISDICTION, CASE_TYPE, caseId, event, updates);
     }
 
     public void triggerEvent(String jurisdiction, String caseType, Long caseId, String event) {
@@ -42,8 +44,9 @@ public class CoreCaseDataService {
                              Long caseId,
                              String eventName,
                              Map<String, Object> eventData) {
-        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
-        String systemUpdateUserId = idamClient.getUserInfo(userToken).getUid();
+
+        String userToken = systemUserService.getSysUserToken();
+        String systemUpdateUserId = systemUserService.getUserId(userToken);
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
             userToken,
@@ -78,7 +81,7 @@ public class CoreCaseDataService {
     }
 
     public SearchResult searchCases(String caseType, String query) {
-        String userToken = idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+        String userToken = systemUserService.getSysUserToken();
 
         return coreCaseDataApi.searchCases(userToken, authTokenGenerator.generate(), caseType, query);
     }
