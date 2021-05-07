@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OtherApplicationsBundle implements ApplicationsBundle {
-    private UUID id;
+    private final UUID id;
     private final OtherApplicationType applicationType;
     private final ParentalResponsibilityType parentalResponsibilityType;
     private final DocumentReference document;
@@ -94,9 +94,5 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     @Override
     public int getSortOrder() {
         return applicationType.getSortOrder();
-    }
-
-    public void setId(UUID newId) {
-        this.id = newId;
     }
 }

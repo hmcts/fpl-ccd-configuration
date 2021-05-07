@@ -22,9 +22,23 @@
     "DisplayOrder": 72,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_AAC_URL}/noc/apply-decision",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/noc-decision/about-to-start",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "ShowEventNotes": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2021",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "updateRepresentation",
+    "Name": "Update representation",
+    "Description": "Update respondent representation via NoC",
+    "DisplayOrder": 73,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_AAC_URL}/noc/apply-decision",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N"
   }
 ]

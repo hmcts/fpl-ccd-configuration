@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
@@ -107,7 +109,10 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -154,13 +159,13 @@ public class CaseData {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
-    public DynamicList buildRespondentStatementDynamicList(UUID selected) {
+    public DynamicList buildRespondentDynamicList(UUID selected) {
         return asDynamicList(getAllRespondents(), selected,
             respondent -> respondent.getParty().getFullName());
     }
 
-    public DynamicList buildRespondentStatementDynamicList() {
-        return buildRespondentStatementDynamicList(null);
+    public DynamicList buildRespondentDynamicList() {
+        return buildRespondentDynamicList(null);
     }
 
     private final Proceeding proceeding;
@@ -339,10 +344,14 @@ public class CaseData {
 
     public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
         List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
-        applicationsBundles
-            .sort(Comparator.comparing(
-                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
-                .thenComparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().toLabel()));
+
+        Comparator<Element<ApplicationsBundle>> reverseChronological = comparing((Element<ApplicationsBundle> bundle) ->
+            parseLocalDateTimeFromStringUsingFormat(bundle.getValue().getUploadedDateTime(), DATE_TIME, TIME_DATE))
+            .reversed();
+
+        applicationsBundles.sort(Comparator
+            .comparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
+            .thenComparing(reverseChronological));
 
         return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);
     }
@@ -565,6 +574,7 @@ public class CaseData {
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
     private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
+    private final ManageDocumentSubtypeList manageDocumentSubtypeList;
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
@@ -904,4 +914,6 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+
+    private final ChangeOrganisationRequest changeOrganisationRequestField;
 }

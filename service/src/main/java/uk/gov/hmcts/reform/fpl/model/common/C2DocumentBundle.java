@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class C2DocumentBundle implements ApplicationsBundle {
-    private UUID id;
+    private final UUID id;
     private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
@@ -100,9 +100,5 @@ public class C2DocumentBundle implements ApplicationsBundle {
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
 
         return documentReferences;
-    }
-
-    public void setId(UUID newId) {
-        this.id = newId;
     }
 }
