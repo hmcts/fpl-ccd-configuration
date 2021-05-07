@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 public class FurtherEvidenceDocumentsTransformer {
 
     public List<DocumentBundleView> getFurtherEvidenceBundleView(CaseData caseData,
-                                                              DocumentViewType view) {
+                                                                 DocumentViewType view) {
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = caseData.getFurtherEvidenceDocuments();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = caseData.getFurtherEvidenceDocumentsLA();

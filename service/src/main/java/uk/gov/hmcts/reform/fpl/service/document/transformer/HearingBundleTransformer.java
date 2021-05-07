@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -13,9 +15,10 @@ import java.util.List;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBundleTransformer {
 
-    FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
+    private final FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
 
     public List<DocumentBundleView> getHearingBundleView(
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments,
