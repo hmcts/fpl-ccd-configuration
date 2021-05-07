@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORA;
 import static uk.gov.hmcts.reform.fpl.enums.SolicitorRole.SOLICITORB;
@@ -43,13 +45,34 @@ class RespondentAfterSubmissionRepresentationServiceTest {
         mock(RespondentRepresentationService.class);
     private final ChangeOfRepresentationService changeOfRepresentationService =
         mock(ChangeOfRepresentationService.class);
+    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
 
     private final RespondentAfterSubmissionRepresentationService underTest =
         new RespondentAfterSubmissionRepresentationService(
             respondentService,
             respondentRepresentationService,
-            changeOfRepresentationService
+            changeOfRepresentationService,
+            featureToggleService
         );
+
+    @BeforeEach
+    void setUp() {
+        when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
+    }
+
+    @Test
+    void testFeatureToggleOffOnlyGenerateFields() {
+        when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(false);
+
+        CaseData caseDataAfter = CaseData.builder().respondents1(RESPONDENTS_AFTER).build();
+        CaseData caseDataBefore = CaseData.builder().respondents1(RESPONDENTS_BEFORE).build();
+        when(respondentRepresentationService.generate(caseDataAfter)).thenReturn(NOC_FIELDS);
+
+        Map<String, Object> actual = underTest.updateRepresentation(caseDataAfter, caseDataBefore);
+
+        assertThat(actual).isEqualTo(NOC_FIELDS);
+        verifyNoInteractions(respondentService, changeOfRepresentationService);
+    }
 
     @Test
     void testNoChanges() {
