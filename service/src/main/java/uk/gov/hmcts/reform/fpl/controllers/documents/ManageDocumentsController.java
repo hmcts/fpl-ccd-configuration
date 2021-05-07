@@ -155,8 +155,7 @@ public class ManageDocumentsController extends CallbackController {
                     currentBundle = documentService
                         .setDateTimeOnHearingFurtherEvidenceSupportingEvidence(caseData, caseDataBefore);
 
-                    var updatedBundle
-                        = documentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
+                    var updatedBundle = documentService.buildHearingFurtherEvidenceCollection(caseData, currentBundle);
 
                     caseDetailsMap.putIfNotEmpty(HEARING_FURTHER_EVIDENCE_DOCUMENTS_KEY, updatedBundle);
                 } else {
@@ -179,8 +178,7 @@ public class ManageDocumentsController extends CallbackController {
                 caseDetailsMap.putIfNotEmpty(CORRESPONDING_DOCUMENTS_COLLECTION_KEY, currentBundle);
                 break;
             case ADDITIONAL_APPLICATIONS_DOCUMENTS:
-                caseDetailsMap.putIfNotEmpty(
-                    documentService.buildFinalApplicationBundleSupportingDocuments(caseData));
+                caseDetailsMap.putIfNotEmpty(documentService.buildFinalApplicationBundleSupportingDocuments(caseData));
                 break;
         }
 

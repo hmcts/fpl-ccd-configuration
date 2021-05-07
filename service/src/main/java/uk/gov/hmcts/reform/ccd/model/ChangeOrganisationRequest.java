@@ -1,5 +1,6 @@
-package uk.gov.hmcts.reform.aac.model;
+package uk.gov.hmcts.reform.ccd.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -7,10 +8,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -32,6 +34,14 @@ public class ChangeOrganisationRequest {
     private LocalDateTime requestTimestamp;
 
     @JsonProperty("ApprovalStatus")
-    private ApprovalStatus approvalStatus;
+    private ChangeOrganisationApprovalStatus approvalStatus;
+
+    @JsonIgnore
+    public SolicitorRole getCaseRole() {
+        return Optional.ofNullable(caseRoleId)
+            .map(DynamicList::getValueCode)
+            .map(SolicitorRole::from)
+            .orElse(null);
+    }
 
 }

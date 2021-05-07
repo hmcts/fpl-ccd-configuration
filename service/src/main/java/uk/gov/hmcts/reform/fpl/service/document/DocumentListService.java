@@ -16,12 +16,14 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.groupingBy;
@@ -37,115 +39,216 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentListService {
 
-    private static final String RESPONDENT_STATEMENT_DOCUMENT = "Respondent statements";
-
     private final DocumentsListRenderer documentsListRenderer;
+    private final String documentViewHMCTS = "HMCTS";
+    private final String documentViewLA = "LA";
+    private static final String RESPONDENT_STATEMENT_DOCUMENT = "Respondent statements";
 
     public String getDocumentView(CaseData caseData, String view) {
         List<DocumentBundleView> bundles = new ArrayList<>();
-        List<DocumentBundleView> applicationStatementAndDocumentBundle;
+        List<DocumentBundleView> applicationStatementAndDocumentsBundle;
+        List<DocumentBundleView> furtherEvidenceBundle;
+        List<DocumentBundleView> hearingEvidenceBundle;
+        List<DocumentBundleView> respondentStatementBundle;
 
-        if (view.equals("HMCTS")) {
-            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
+        if (view.equals(documentViewHMCTS)) {
+            applicationStatementAndDocumentsBundle = getApplicationStatementAndDocumentBundle(
                 caseData.getApplicationDocuments(),
                 caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(),
+                caseData.getHearingFurtherEvidenceDocuments(),
                 true,
                 true);
-        } else if (view.equals("LA")) {
-            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
-                caseData.getApplicationDocuments(),
-                caseData.getFurtherEvidenceDocuments(),
-                caseData.getFurtherEvidenceDocumentsLA(),
-                false,
-                true);
-        } else {
-            applicationStatementAndDocumentBundle = getApplicationStatementAndDocumentBundle(
-                caseData.getApplicationDocuments(),
-                caseData.getFurtherEvidenceDocuments(),
-                caseData.getFurtherEvidenceDocumentsLA(),
-                false,
-                true);
-        }
 
-        if (isNotEmpty(applicationStatementAndDocumentBundle)) {
-            bundles.addAll(applicationStatementAndDocumentBundle);
-        }
-
-        List<DocumentBundleView> furtherEvidenceBundles;
-        List<DocumentBundleView> hearingEvidenceBundles;
-        List<DocumentBundleView> respondentStatementBundles;
-
-        if (view.equals("HMCTS")) {
-            furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
+            furtherEvidenceBundle = getFurtherEvidenceBundle(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), true, true);
 
-            hearingEvidenceBundles = getHearingEvidenceBundles(
-                caseData.getHearingFurtherEvidenceDocuments(), true, true);
+            hearingEvidenceBundle = getHearingBundle(
+                caseData.getHearingFurtherEvidenceDocuments(),
+                true, true);
 
-            respondentStatementBundles = getRespondentStatementBundles(
+            respondentStatementBundle = getRespondentStatementsBundle(
                 caseData.getRespondentStatements(), caseData.getRespondents1(), true, true);
-        } else if (view.equals("LA")) {
-            furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
+        } else if (view.equals(documentViewLA)) {
+            applicationStatementAndDocumentsBundle = getApplicationStatementAndDocumentBundle(
+                caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(),
+                caseData.getHearingFurtherEvidenceDocuments(),
+                false,
+                true);
+
+            furtherEvidenceBundle = getFurtherEvidenceBundle(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), false, true);
 
-            hearingEvidenceBundles = getHearingEvidenceBundles(
-                caseData.getHearingFurtherEvidenceDocuments(), false, true);
+            hearingEvidenceBundle = getHearingBundle(caseData.getHearingFurtherEvidenceDocuments(),
+                false, true);
 
-            respondentStatementBundles = getRespondentStatementBundles(
-                caseData.getRespondentStatements(), caseData.getRespondents1(), false, true);
+            respondentStatementBundle = getRespondentStatementsBundle(
+                caseData.getRespondentStatements(), caseData.getRespondents1(), true, true);
         } else {
-            furtherEvidenceBundles = getFurtherEvidenceBundles(caseData.getFurtherEvidenceDocuments(),
+            applicationStatementAndDocumentsBundle = getApplicationStatementAndDocumentBundle(
+                caseData.getApplicationDocuments(),
+                caseData.getFurtherEvidenceDocuments(),
+                caseData.getFurtherEvidenceDocumentsLA(),
+                caseData.getHearingFurtherEvidenceDocuments(),
+                false,
+                false);
+
+            furtherEvidenceBundle = getFurtherEvidenceBundle(caseData.getFurtherEvidenceDocuments(),
                 caseData.getFurtherEvidenceDocumentsLA(), false, false);
 
-            hearingEvidenceBundles = getHearingEvidenceBundles(
-                caseData.getHearingFurtherEvidenceDocuments(), false, false);
+            hearingEvidenceBundle = getHearingBundle(caseData.getHearingFurtherEvidenceDocuments(),
+                false, false);
 
-            respondentStatementBundles = getRespondentStatementBundles(
+            respondentStatementBundle = getRespondentStatementsBundle(
                 caseData.getRespondentStatements(), caseData.getRespondents1(), false, false);
         }
 
-        if (isNotEmpty(furtherEvidenceBundles)) {
-            bundles.addAll(furtherEvidenceBundles);
-        }
-
-        if (isNotEmpty(hearingEvidenceBundles)) {
-            bundles.addAll(hearingEvidenceBundles);
-        }
-
-        if (isNotEmpty(respondentStatementBundles)) {
-            bundles.addAll(respondentStatementBundles);
-        }
+        bundles = addToBundle(bundles, applicationStatementAndDocumentsBundle);
+        bundles = addToBundle(bundles, furtherEvidenceBundle);
+        bundles = addToBundle(bundles, hearingEvidenceBundle);
+        bundles = addToBundle(bundles, respondentStatementBundle);
 
         return documentsListRenderer.render(bundles);
     }
 
-    private List<DocumentBundleView> getHearingEvidenceBundles(
-        List<Element<HearingFurtherEvidenceBundle>> hearingEvidenceDocuments,
-        boolean includeConfidentialHMCTS,
-        boolean includeConfidentialLA
-    ) {
-
-        if (isEmpty(hearingEvidenceDocuments)) {
-            return List.of();
+    private List<DocumentBundleView> addToBundle(List<DocumentBundleView> bundle, List<DocumentBundleView> bundleToAdd) {
+        if (isNotEmpty(bundleToAdd)) {
+            bundle.addAll(bundleToAdd);
         }
+        return bundle;
+    }
+
+    private List<DocumentBundleView> getHearingBundle(
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments,
+        boolean includeConfidentialHMCTS,
+        boolean includeConfidentialLA) {
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = new ArrayList<>();
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsNC = new ArrayList<>();
 
-        unwrapElements(hearingEvidenceDocuments).forEach(bundle -> {
+        unwrapElements(hearingFurtherEvidenceDocuments).forEach(bundle -> {
             furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
             furtherEvidenceDocumentsLA.addAll(bundle.getSupportingEvidenceLA());
+            furtherEvidenceDocumentsNC.addAll(bundle.getSupportingEvidenceNC());
         });
 
-        return getFurtherEvidenceBundles(
-            furtherEvidenceDocuments,
-            furtherEvidenceDocumentsLA,
-            includeConfidentialHMCTS,
-            includeConfidentialLA);
+        List<DocumentBundleView> hearingFurtherEvidenceBundle = new ArrayList<>();
+
+        if (includeConfidentialHMCTS && includeConfidentialLA) {
+            hearingFurtherEvidenceBundle = addToDocumentBundles(hearingFurtherEvidenceBundle, furtherEvidenceDocuments);
+        } else if (includeConfidentialLA && !includeConfidentialHMCTS) {
+            hearingFurtherEvidenceBundle = addToDocumentBundles(hearingFurtherEvidenceBundle, furtherEvidenceDocumentsLA);
+        } else {
+            hearingFurtherEvidenceBundle = addToDocumentBundles(hearingFurtherEvidenceBundle, furtherEvidenceDocumentsNC);
+        }
+
+        return hearingFurtherEvidenceBundle;
     }
 
-    private List<DocumentBundleView> getRespondentStatementBundles(
+    private List<DocumentBundleView> getFurtherEvidenceBundle(
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
+        boolean includeConfidentialHMCTS,
+        boolean includeConfidentialLA) {
+
+        List<DocumentBundleView> furtherEvidenceBundle = new ArrayList<>();
+        Arrays.stream(FurtherEvidenceType.values())
+            .filter(type -> type != APPLICANT_STATEMENT)
+            .forEach(
+                type -> {
+
+                    List<DocumentView> furtherEvidenceDocumentView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocuments, includeConfidentialHMCTS);
+                    List<DocumentView> furtherEvidenceDocumentViewLA = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA, includeConfidentialLA);
+
+                    List<DocumentView> combinedDocuments = new ArrayList<>(furtherEvidenceDocumentView);
+                    combinedDocuments.addAll(furtherEvidenceDocumentViewLA);
+
+                    if (!combinedDocuments.isEmpty()) {
+                        furtherEvidenceBundle.add(buildBundle(type.getLabel(), combinedDocuments));
+
+                    }
+                }
+            );
+        return furtherEvidenceBundle;
+    }
+
+    private List<DocumentView> getFurtherEvidenceDocumentView(FurtherEvidenceType type, List<Element<SupportingEvidenceBundle>> documents, boolean confidential) {
+        if (isNotEmpty(documents)) {
+            if (confidential) {
+                return getConfidentialFurtherEvidenceDocumentView(
+                    type, documents);
+            } else {
+                return getNonConfidentialFurtherEvidenceDocumentView(
+                    type, documents);
+            }
+        }
+
+        return emptyList();
+    }
+
+    private List<DocumentBundleView> getApplicationStatementAndDocumentBundle(
+        List<Element<ApplicationDocument>> applicationDocuments,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
+        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments,
+        boolean includeConfidentialHMCTS,
+        boolean includeConfidentialLA) {
+
+        List<DocumentBundleView> applicationDocumentsBundle = new ArrayList<>();
+
+        List<DocumentView> applicationDocumentView = getApplicationDocumentsView(applicationDocuments);
+        List<DocumentView> applicantStatementDocumentView = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocuments, includeConfidentialHMCTS);
+        List<DocumentView> applicantStatementDocumentViewLA = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, furtherEvidenceDocumentsLA, includeConfidentialLA);
+
+        List<Element<SupportingEvidenceBundle>> hearingEvidenceDocs = new ArrayList<>();
+
+        if (!isEmpty(hearingFurtherEvidenceDocuments)) {
+            unwrapElements(hearingFurtherEvidenceDocuments).forEach(bundle -> {
+                hearingEvidenceDocs.addAll(bundle.getSupportingEvidenceBundle());
+            });
+        }
+
+        List<DocumentView> hearingEvidenceDocumentView = getFurtherEvidenceDocumentView(APPLICANT_STATEMENT, hearingEvidenceDocs, includeConfidentialHMCTS);
+
+        List<DocumentView> combinedDocuments = Stream.of(applicantStatementDocumentView,
+            applicantStatementDocumentViewLA,
+            hearingEvidenceDocumentView,
+            applicationDocumentView)
+            .flatMap(Collection::stream)
+            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .collect(Collectors.toList());
+
+        if (!combinedDocuments.isEmpty()) {
+            applicationDocumentsBundle.add(buildBundle(
+                "Applicant's statements and application documents", combinedDocuments));
+        }
+        return applicationDocumentsBundle;
+    }
+
+    private List<DocumentView> getApplicationDocumentsView(List<Element<ApplicationDocument>> applicationDocuments) {
+        List<DocumentView> applicationDocs = new ArrayList<>();
+
+        if (isNotEmpty(applicationDocuments)) {
+            applicationDocs = applicationDocuments.stream()
+                .map(Element::getValue)
+                .map(doc -> DocumentView.builder()
+                    .document(doc.getDocument())
+                    .type(doc.getDocumentType().getLabel())
+                    .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                    .includedInSWET(doc.getIncludedInSWET())
+                    .uploadedBy(doc.getUploadedBy())
+                    .documentName(doc.getDocumentName())
+                    .build())
+                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+                .collect(Collectors.toList());
+        }
+        return applicationDocs;
+    }
+
+    private List<DocumentBundleView> getRespondentStatementsBundle(
         List<Element<RespondentStatement>> respondentStatements,
         List<Element<Respondent>> respondents,
         boolean includeConfidentialHMCTS,
@@ -226,121 +329,24 @@ public class DocumentListService {
             .build();
     }
 
-    private List<DocumentBundleView> getApplicationStatementAndDocumentBundle(
-        List<Element<ApplicationDocument>> applicationDocuments,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
-        boolean includeConfidentialHMCTS,
-        boolean includeConfidentialLA) {
-
-        List<DocumentBundleView> applicationDocumentBundle = new ArrayList<>();
-
-        List<DocumentView> applicationDocs = new ArrayList<>();
-        List<DocumentView> applicantStatementDocuments = new ArrayList<>();
-        List<DocumentView> applicantStatementDocumentsLA = new ArrayList<>();
-        List<DocumentView> combinedStatementDocuments = new ArrayList<>();
-
-        if (isNotEmpty(applicationDocuments)) {
-            applicationDocs = applicationDocuments.stream()
-                .map(Element::getValue)
-                .map(doc -> DocumentView.builder()
-                    .document(doc.getDocument())
-                    .type(doc.getDocumentType().getLabel())
-                    .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
-                    .includedInSWET(doc.getIncludedInSWET())
-                    .uploadedBy(doc.getUploadedBy())
-                    .documentName(doc.getDocumentName())
-                    .build())
-                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-                .collect(Collectors.toList());
-        }
-
-        if (isNotEmpty(furtherEvidenceDocuments)) {
-            if (includeConfidentialHMCTS) {
-                applicantStatementDocuments = getFurtherEvidenceDocumentView(
-                    APPLICANT_STATEMENT, furtherEvidenceDocuments);
-            } else {
-                applicantStatementDocuments = getNonConfidentialDocumentView(
-                    APPLICANT_STATEMENT, furtherEvidenceDocuments);
-            }
-        }
-        if (isNotEmpty(furtherEvidenceDocumentsLA)) {
-            if (includeConfidentialLA) {
-                applicantStatementDocumentsLA = getFurtherEvidenceDocumentView(
-                    APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
-            } else {
-                applicantStatementDocumentsLA = getNonConfidentialDocumentView(
-                    APPLICANT_STATEMENT, furtherEvidenceDocumentsLA);
-            }
-        }
-
-        List<DocumentView> newList = Stream.concat(
-            applicantStatementDocuments.stream(),
-            applicantStatementDocumentsLA.stream())
-            .collect(Collectors.toList());
-
-        List<DocumentView> sortedDocuments = Stream.concat(
-            newList.stream(), applicationDocs.stream())
-            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
-            .collect(Collectors.toList());
-
-        if (!sortedDocuments.isEmpty()) {
-            applicationDocumentBundle.add(buildBundle(
-                "Applicant's statements and application documents", sortedDocuments));
-        }
-
-        return applicationDocumentBundle;
-    }
-
-    private List<DocumentBundleView> getFurtherEvidenceBundles(
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA,
-        boolean includeConfidentialHMCTS,
-        boolean includeConfidentialLA) {
-
-        List<DocumentBundleView> documentBundles = new ArrayList<>();
+    private List<DocumentBundleView> addToDocumentBundles(List<DocumentBundleView> documentBundles, List<Element<SupportingEvidenceBundle>> supportingEvdienceBundle) {
         Arrays.stream(FurtherEvidenceType.values())
             .filter(type -> type != APPLICANT_STATEMENT)
             .forEach(
                 type -> {
-                    List<DocumentView> hmctsDocumentsView = new ArrayList<>();
-                    List<DocumentView> laDocumentsView = new ArrayList<>();
+                    List<DocumentView> documentView = getConfidentialFurtherEvidenceDocumentView(type, supportingEvdienceBundle);
 
-                    if (isNotEmpty(furtherEvidenceDocuments)) {
-                        if (includeConfidentialHMCTS) {
-                            hmctsDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocuments);
-                        } else {
-                            hmctsDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocuments);
-                        }
-                    }
-
-                    if (isNotEmpty(furtherEvidenceDocumentsLA)) {
-                        if (includeConfidentialLA) {
-                            laDocumentsView = getFurtherEvidenceDocumentView(type, furtherEvidenceDocumentsLA);
-                        } else {
-                            laDocumentsView = getNonConfidentialDocumentView(type, furtherEvidenceDocumentsLA);
-                        }
-                    }
-
-                    List<DocumentView> combinedView = new ArrayList<>(hmctsDocumentsView);
-                    combinedView.addAll(laDocumentsView);
-
-                    if (!combinedView.isEmpty()) {
-                        final DocumentBundleView bundleView = DocumentBundleView.builder()
-                            .name(type.getLabel())
-                            .documents(combinedView)
-                            .build();
-
+                    if (!documentView.isEmpty()) {
+                        DocumentBundleView bundleView = buildBundle(type.getLabel(), documentView);
                         documentBundles.add(bundleView);
                     }
-                }
-            );
+                });
+
         return documentBundles;
     }
 
-    private List<DocumentView> getFurtherEvidenceDocumentView(
-        FurtherEvidenceType type,
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
+    private List<DocumentView> getConfidentialFurtherEvidenceDocumentView(FurtherEvidenceType type,
+                                                                          List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
 
         return furtherEvidenceDocuments
             .stream()
@@ -359,7 +365,7 @@ public class DocumentListService {
             .collect(Collectors.toUnmodifiableList());
     }
 
-    private List<DocumentView> getNonConfidentialDocumentView(
+    private List<DocumentView> getNonConfidentialFurtherEvidenceDocumentView(
         FurtherEvidenceType type,
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments) {
 
