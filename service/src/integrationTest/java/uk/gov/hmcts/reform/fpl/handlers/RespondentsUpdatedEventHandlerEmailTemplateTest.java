@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.UnregisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.service.notify.SendEmailResponse;
 
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     CaseDetailsHelper.class,
     CaseUrlService.class,
     ObjectMapper.class,
+    FixedTimeConfiguration.class
 })
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
