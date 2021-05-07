@@ -93,7 +93,7 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line(CASE_NAME + " " + CASE_ID)
                 .line()
                 .line(
-                    "The respondent’s new legal representative now have online access to the case. Your "
+                    "The respondent’s new legal representative will now have online access to the case. Your "
                         + "organisation’s access has been revoked.")
                 .line()
                 .line("HM Courts & Tribunals Service")
