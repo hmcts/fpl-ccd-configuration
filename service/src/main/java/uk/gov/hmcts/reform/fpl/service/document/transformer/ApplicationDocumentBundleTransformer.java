@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,8 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -102,6 +105,9 @@ public class ApplicationDocumentBundleTransformer {
                     .includedInSWET(doc.getIncludedInSWET())
                     .uploadedBy(doc.getUploadedBy())
                     .documentName(doc.getDocumentName())
+                    .title(doc.getDocumentType().getLabel())
+                    .includeSWETField(SWET == doc.getDocumentType())
+                    .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getDocumentType()))
                     .build())
                 .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
                 .collect(Collectors.toList());

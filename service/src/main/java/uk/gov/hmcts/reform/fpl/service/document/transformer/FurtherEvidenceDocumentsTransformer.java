@@ -18,6 +18,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -113,6 +114,8 @@ public class FurtherEvidenceDocumentsTransformer {
                 .uploadedBy(doc.getUploadedBy())
                 .documentName(doc.getName())
                 .confidential(doc.isConfidentialDocument())
+                .title(type == APPLICANT_STATEMENT ? doc.getType().getLabel() : doc.getName())
+                .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getType()))
                 .build())
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toUnmodifiableList());
@@ -134,6 +137,7 @@ public class FurtherEvidenceDocumentsTransformer {
                 .uploadedBy(doc.getUploadedBy())
                 .documentName(doc.getName())
                 .confidential(doc.isConfidentialDocument())
+                .title(type == APPLICANT_STATEMENT ? doc.getType().getLabel() : doc.getName())
                 .build())
             .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
             .collect(Collectors.toUnmodifiableList());

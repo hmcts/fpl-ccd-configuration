@@ -17,4 +17,8 @@ public class DocumentView {
     private String fileName;
     private boolean confidential;
     private DocumentReference document;
+    private String title;
+    private boolean includeSWETField;
+    private boolean includeDocumentName;
+
 }

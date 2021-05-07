@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
@@ -13,17 +12,12 @@ import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static org.apache.logging.log4j.util.Strings.isEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
-import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 
 @Slf4j
 @Service
@@ -61,11 +55,7 @@ class DocumentsListRenderer {
 
         String details = String.join("", renderItems(documentFields));
 
-        final String title = "Respondent statements".equals(documentView.getType())
-            || (isFurtherEvidenceType(documentView) && !documentView.getType().equals(APPLICANT_STATEMENT.getLabel()))
-            ? documentView.getFileName() : documentView.getType();
-
-        return collapsible(title, details);
+        return collapsible(documentView.getTitle(), details);
     }
 
     private List<Pair<String, String>> getFieldsBasedOnDocumentType(DocumentView documentView) {
@@ -73,16 +63,16 @@ class DocumentsListRenderer {
         documentFields.add(Pair.of("Uploaded by", documentView.getUploadedBy()));
         documentFields.add(Pair.of("Date and time uploaded", documentView.getUploadedAt()));
 
-        if (documentView.getType().equals(SWET.getLabel()) && !isEmpty(documentView.getIncludedInSWET())) {
+        if (documentView.isIncludeSWETField()) {
             documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
         }
 
-        if (documentView.getType().equals(OTHER.getLabel())) {
+        if (documentView.isIncludeDocumentName()) {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 
-        if (documentView.getType().equals(APPLICANT_STATEMENT.getLabel())) {
-            documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
+        if (documentView.isConfidential()) {
+            documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
         }
 
         documentFields.add(Pair.of("Document",
@@ -91,16 +81,7 @@ class DocumentsListRenderer {
                 + "'>"
                 + documentView.getDocument().getFilename() + "</a>"));
 
-        if (documentView.isConfidential()) {
-            documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
-        }
-
         return documentFields;
-    }
-
-    private boolean isFurtherEvidenceType(DocumentView documentView) {
-        return Arrays.stream(FurtherEvidenceType.values())
-            .anyMatch(type -> type.getLabel().equals(documentView.getType()));
     }
 
     public String renderImage(String imageName, String title) {
