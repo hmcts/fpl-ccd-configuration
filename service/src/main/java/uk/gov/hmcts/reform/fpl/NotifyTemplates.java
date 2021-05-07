@@ -56,4 +56,6 @@ public final class NotifyTemplates {
     public static final String FURTHER_EVIDENCE_UPLOADED_NOTIFICATION_TEMPLATE = "917c07b2-b414-41ab-9d0b-14a570fad413";
     public static final String REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "c336fa70-497c-4f45-8cc9-2f2dc16c3ca9";
     public static final String UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE = "68b071c5-2eb9-4646-9d3e-22cc168477cf";
+    public static final String NOTICE_OF_CHANGE_NEW_REPRESENTATIVE = "0457e13e-6546-46b7-ae96-78d8561ee4ed";
+    public static final String NOTICE_OF_CHANGE_FORMER_REPRESENTATIVE = "c3a25f93-0b63-40e5-96ab-7146a7d699db";
 }
