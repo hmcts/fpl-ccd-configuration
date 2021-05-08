@@ -60,24 +60,21 @@ public class RespondentStatementsTransformer {
                     furtherEvidenceDocumentsNC.addAll(bundle.getSupportingEvidenceNC());
                 });
 
+                List<DocumentView> documentViewList;
+
                 if (view == DocumentViewType.HMCTS) {
-                    List<DocumentView> hmctsDocumentsView = getRespondentStatementsView(
-                        furtherEvidenceDocuments, true);
-                    respondentStatementsView.add(buildBundle(bundleName, hmctsDocumentsView));
-
+                    documentViewList = getRespondentStatementsView(furtherEvidenceDocuments, true);
                 } else if (view == DocumentViewType.LA) {
-                    List<DocumentView> laDocumentsView = getRespondentStatementsView(
-                        furtherEvidenceDocumentsLA, true);
-                    respondentStatementsView.add(buildBundle(bundleName, laDocumentsView));
-
+                    documentViewList = getRespondentStatementsView(furtherEvidenceDocumentsLA, true);
                 } else {
-                    List<DocumentView> ncDocumentsView = getRespondentStatementsView(
-                        furtherEvidenceDocumentsNC, false);
-                    respondentStatementsView.add(buildBundle(bundleName, ncDocumentsView));
+                    documentViewList = getRespondentStatementsView(furtherEvidenceDocumentsNC, false);
                 }
 
-                count++;
+                if (isNotEmpty(documentViewList)) {
+                    respondentStatementsView.add(buildBundle(bundleName, documentViewList));
+                }
             }
+            count++;
         }
 
         return respondentStatementsView;
