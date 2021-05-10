@@ -22,6 +22,9 @@ public class DocumentViewTestHelper {
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT
         = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false);
 
+    public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT2
+        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false);
+
     public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT
         = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true);
 
