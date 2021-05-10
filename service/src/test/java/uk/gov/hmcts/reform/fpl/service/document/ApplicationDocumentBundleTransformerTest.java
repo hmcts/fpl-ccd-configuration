@@ -114,6 +114,37 @@ public class ApplicationDocumentBundleTransformerTest {
         assertThat(bundle).isEqualTo(expectedBundle);
     }
 
+    @Test
+    void shouldGetApplicationDocumentBundleForNonConfidentialView() {
+        CaseData caseData = CaseData.builder()
+            .applicationDocuments(buildApplicationDocuments())
+            .hearingFurtherEvidenceDocuments(hearingEvidenceDocuments)
+            .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
+            .build();
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getHearingFurtherEvidenceDocuments().get(0).getValue().getSupportingEvidenceBundle(), false))
+            .thenReturn(getExpectedHearingDocumentViewNonConfidential());
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getFurtherEvidenceDocuments(), false))
+            .thenReturn(expectedDocumentViewHMCTSNonConfidential());
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getFurtherEvidenceDocumentsLA(), false))
+            .thenReturn(expectedDocumentViewLANonConfidential());
+
+        List<DocumentBundleView> expectedBundle = List.of(DocumentBundleView.builder()
+            .name("Applicant's statements and application documents")
+            .documents(getExpectedApplicationDocumentsNonConfidential())
+            .build());
+
+        List<DocumentBundleView> bundle = underTest.getApplicationStatementAndDocumentBundle(caseData, DocumentViewType.NONCONFIDENTIAL);
+
+        assertThat(bundle).isEqualTo(expectedBundle);
+    }
+
     private List<DocumentView> getExpectedApplicationDocumentsHMCTS() {
         List<DocumentView> documents = new ArrayList<>();
         documents.addAll(getExpectedHearingDocumentViewHMCTS());
@@ -129,6 +160,16 @@ public class ApplicationDocumentBundleTransformerTest {
         documents.addAll(getExpectedHearingDocumentViewLA());
         documents.addAll(expectedDocumentViewHMCTSNonConfidential());
         documents.addAll(expectedDocumentViewLA());
+        documents.addAll(expectedApplicationDocumentView());
+
+        return documents;
+    }
+
+    private List<DocumentView> getExpectedApplicationDocumentsNonConfidential() {
+        List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(getExpectedHearingDocumentViewNonConfidential());
+        documents.addAll(expectedDocumentViewHMCTSNonConfidential());
+        documents.addAll(expectedDocumentViewLANonConfidential());
         documents.addAll(expectedApplicationDocumentView());
 
         return documents;
@@ -183,6 +224,14 @@ public class ApplicationDocumentBundleTransformerTest {
         List<DocumentView> documents = new ArrayList<>();
         documents.addAll(expectedDocumentViewHMCTSNonConfidential());
         documents.addAll(expectedDocumentViewLA());
+
+        return documents;
+    }
+
+    private List<DocumentView> getExpectedHearingDocumentViewNonConfidential() {
+        List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedDocumentViewHMCTSNonConfidential());
+        documents.addAll(expectedDocumentViewLANonConfidential());
 
         return documents;
     }
@@ -243,6 +292,21 @@ public class ApplicationDocumentBundleTransformerTest {
                 .confidential(true)
                 .build(),
             DocumentView.builder()
+                .document(DocumentReference.builder().build())
+                .type("Applicant statement")
+                .uploadedAt("8:20pm, 15th June 2021")
+                .includedInSWET(null)
+                .uploadedBy("Kurt solicitor")
+                .documentName("LA uploaded evidence - non confidential")
+                .title("Application statement")
+                .includeSWETField(false)
+                .includeDocumentName(true)
+                .confidential(false)
+                .build());
+    }
+
+    private List<DocumentView> expectedDocumentViewLANonConfidential() {
+        return List.of(DocumentView.builder()
                 .document(DocumentReference.builder().build())
                 .type("Applicant statement")
                 .uploadedAt("8:20pm, 15th June 2021")
