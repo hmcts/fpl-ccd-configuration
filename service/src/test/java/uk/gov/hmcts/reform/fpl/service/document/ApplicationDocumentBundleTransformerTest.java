@@ -27,8 +27,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT_APPLICANT;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_CONFIDENTIAL_DOCUMENT_APPLICANT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_CONFIDENTIAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_CONFIDENTIAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_NON_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
@@ -47,37 +49,86 @@ public class ApplicationDocumentBundleTransformerTest {
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments
         = buildFurtherEvidenceDocuments();
 
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA
+        = buildFurtherEvidenceDocumentsLA();
+
     @Test
-    void shouldGetApplicationDocumentsBundleForHMCTSView() {
+    void shouldGetApplicationDocumentBundleForHMCTSView() {
         CaseData caseData = CaseData.builder()
             .applicationDocuments(buildApplicationDocuments())
             .hearingFurtherEvidenceDocuments(hearingEvidenceDocuments)
             .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
             .build();
 
         when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
             caseData.getHearingFurtherEvidenceDocuments().get(0).getValue().getSupportingEvidenceBundle(), true))
-            .thenReturn(expectedHearingDocumentView());
+            .thenReturn(getExpectedHearingDocumentViewHMCTS());
 
         when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
             caseData.getFurtherEvidenceDocuments(), true))
-            .thenReturn(expectedFurtherEvidenceDocumentView());
+            .thenReturn(expectedDocumentViewHMCTSNonConfidential());
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getFurtherEvidenceDocumentsLA(), true))
+            .thenReturn(expectedDocumentViewLA());
 
         List<DocumentBundleView> expectedBundle = List.of(DocumentBundleView.builder()
-            .documents(getExpectedApplicationDocuments())
+            .name("Applicant's statements and application documents")
+            .documents(getExpectedApplicationDocumentsHMCTS())
             .build());
 
         List<DocumentBundleView> bundle = underTest.getApplicationStatementAndDocumentBundle(caseData, DocumentViewType.HMCTS);
 
         assertThat(bundle.get(0).getDocuments()).isEqualTo(expectedBundle.get(0).getDocuments());
-        assertThat(bundle.get(0).getDocuments()).hasSize(7);
-        assertThat(bundle).hasSize(1);
     }
 
-    private List<DocumentView> getExpectedApplicationDocuments() {
+    @Test
+    void shouldGetApplicationDocumentBundleForLAView() {
+        CaseData caseData = CaseData.builder()
+            .applicationDocuments(buildApplicationDocuments())
+            .hearingFurtherEvidenceDocuments(hearingEvidenceDocuments)
+            .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
+            .build();
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getHearingFurtherEvidenceDocuments().get(0).getValue().getSupportingEvidenceBundle(), false))
+            .thenReturn(getExpectedHearingDocumentViewLA());
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getFurtherEvidenceDocuments(), false))
+            .thenReturn(expectedDocumentViewHMCTSNonConfidential());
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getFurtherEvidenceDocumentsLA(), true))
+            .thenReturn(expectedDocumentViewLA());
+
+        List<DocumentBundleView> expectedBundle = List.of(DocumentBundleView.builder()
+            .name("Applicant's statements and application documents")
+            .documents(getExpectedApplicationDocumentsLA())
+            .build());
+
+        List<DocumentBundleView> bundle = underTest.getApplicationStatementAndDocumentBundle(caseData, DocumentViewType.LA);
+
+        assertThat(bundle).isEqualTo(expectedBundle);
+    }
+
+    private List<DocumentView> getExpectedApplicationDocumentsHMCTS() {
         List<DocumentView> documents = new ArrayList<>();
-        documents.addAll(expectedFurtherEvidenceDocumentView());
-        documents.addAll(expectedHearingDocumentView());
+        documents.addAll(getExpectedHearingDocumentViewHMCTS());
+        documents.addAll(expectedDocumentViewHMCTS());
+        documents.addAll(expectedDocumentViewLA());
+        documents.addAll(expectedApplicationDocumentView());
+
+        return documents;
+    }
+
+    private List<DocumentView> getExpectedApplicationDocumentsLA() {
+        List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(getExpectedHearingDocumentViewLA());
+        documents.addAll(expectedDocumentViewHMCTSNonConfidential());
+        documents.addAll(expectedDocumentViewLA());
         documents.addAll(expectedApplicationDocumentView());
 
         return documents;
@@ -120,25 +171,42 @@ public class ApplicationDocumentBundleTransformerTest {
         );
     }
 
-    private List<DocumentView> expectedHearingDocumentView() {
+    private List<DocumentView> getExpectedHearingDocumentViewHMCTS() {
+        List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedDocumentViewHMCTS());
+        documents.addAll(expectedDocumentViewLA());
+
+        return documents;
+    }
+
+    private List<DocumentView> getExpectedHearingDocumentViewLA() {
+        List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedDocumentViewHMCTSNonConfidential());
+        documents.addAll(expectedDocumentViewLA());
+
+        return documents;
+    }
+
+    private List<DocumentView> expectedDocumentViewHMCTS() {
         return List.of(DocumentView.builder()
                 .document(DocumentReference.builder().build())
                 .type("Applicant statement")
                 .uploadedAt("8:20pm, 15th June 2021")
                 .includedInSWET(null)
-                .uploadedBy("Kurt solicitor")
-                .documentName("LA uploaded evidence2")
+                .uploadedBy("HMCTS")
+                .documentName("Admin uploaded evidence - confidential")
                 .title("Application statement")
                 .includeSWETField(false)
-                .includeDocumentName(true)
                 .confidential(true)
-                .build(), DocumentView.builder()
+                .includeDocumentName(true)
+                .build(),
+            DocumentView.builder()
                 .document(DocumentReference.builder().build())
                 .type("Applicant statement")
                 .uploadedAt("8:20pm, 15th June 2021")
                 .includedInSWET(null)
                 .uploadedBy("HMCTS")
-                .documentName("Admin uploaded evidence1")
+                .documentName("Admin uploaded evidence - non confidential")
                 .title("Application statement")
                 .includeSWETField(false)
                 .confidential(false)
@@ -146,35 +214,52 @@ public class ApplicationDocumentBundleTransformerTest {
                 .build());
     }
 
-    private List<DocumentView> expectedFurtherEvidenceDocumentView() {
+    private List<DocumentView> expectedDocumentViewHMCTSNonConfidential() {
         return List.of(DocumentView.builder()
-            .document(DocumentReference.builder().build())
-            .type("Applicant statement")
-            .uploadedAt("8:20pm, 15th June 2021")
-            .includedInSWET(null)
-            .uploadedBy("Kurt solicitor")
-            .documentName("LA uploaded evidence2")
-            .title("Application statement")
-            .includeSWETField(false)
-            .includeDocumentName(true)
-            .confidential(true)
-            .build(), DocumentView.builder()
-            .document(DocumentReference.builder().build())
-            .type("Applicant statement")
-            .uploadedAt("8:20pm, 15th June 2021")
-            .includedInSWET(null)
-            .uploadedBy("HMCTS")
-            .documentName("Admin uploaded evidence1")
-            .title("Application statement")
-            .includeSWETField(false)
-            .confidential(false)
-            .includeDocumentName(true)
-            .build());
+                .document(DocumentReference.builder().build())
+                .type("Applicant statement")
+                .uploadedAt("8:20pm, 15th June 2021")
+                .includedInSWET(null)
+                .uploadedBy("HMCTS")
+                .documentName("Admin uploaded evidence - non confidential")
+                .title("Application statement")
+                .includeSWETField(false)
+                .confidential(false)
+                .includeDocumentName(true)
+                .build());
+    }
+
+    private List<DocumentView> expectedDocumentViewLA() {
+        return List.of(DocumentView.builder()
+                .document(DocumentReference.builder().build())
+                .type("Applicant statement")
+                .uploadedAt("8:20pm, 15th June 2021")
+                .includedInSWET(null)
+                .uploadedBy("Kurt solicitor")
+                .documentName("LA uploaded evidence - confidential")
+                .title("Application statement")
+                .includeSWETField(false)
+                .includeDocumentName(true)
+                .confidential(true)
+                .build(),
+            DocumentView.builder()
+                .document(DocumentReference.builder().build())
+                .type("Applicant statement")
+                .uploadedAt("8:20pm, 15th June 2021")
+                .includedInSWET(null)
+                .uploadedBy("Kurt solicitor")
+                .documentName("LA uploaded evidence - non confidential")
+                .title("Application statement")
+                .includeSWETField(false)
+                .includeDocumentName(true)
+                .confidential(false)
+                .build());
     }
 
     private List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceDocuments(UUID hearingId) {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = List.of(
-            LA_CONFIDENTIAL_DOCUMENT_APPLICANT, ADMIN_NON_CONFIDENTIAL_DOCUMENT_APPLICANT);
+            LA_CONFIDENTIAL_DOCUMENT, ADMIN_CONFIDENTIAL_DOCUMENT, LA_NON_CONFIDENTIAL_DOCUMENT,
+            ADMIN_NON_CONFIDENTIAL_DOCUMENT);
 
         return List.of(element(hearingId, HearingFurtherEvidenceBundle.builder()
             .supportingEvidenceBundle(furtherEvidenceBundle)
@@ -183,7 +268,12 @@ public class ApplicationDocumentBundleTransformerTest {
 
     private List<Element<SupportingEvidenceBundle>> buildFurtherEvidenceDocuments() {
         return List.of(
-            LA_CONFIDENTIAL_DOCUMENT_APPLICANT, ADMIN_NON_CONFIDENTIAL_DOCUMENT_APPLICANT);
+            ADMIN_CONFIDENTIAL_DOCUMENT, ADMIN_NON_CONFIDENTIAL_DOCUMENT);
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildFurtherEvidenceDocumentsLA() {
+        return List.of(
+            LA_CONFIDENTIAL_DOCUMENT, LA_NON_CONFIDENTIAL_DOCUMENT);
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {
