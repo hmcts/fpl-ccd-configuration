@@ -10,7 +10,7 @@ const respondent = 'Joe Bloggs';
 let caseId;
 let submittedAt;
 
-Feature('Manage documents');
+Feature('Manage documents').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);

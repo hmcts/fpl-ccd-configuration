@@ -3,7 +3,7 @@ const scannedDocument = require('../fixtures/scannedDocument.js');
 
 let caseId;
 
-Feature('Uploading bulk scan document');
+Feature('Uploading bulk scan document').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData();

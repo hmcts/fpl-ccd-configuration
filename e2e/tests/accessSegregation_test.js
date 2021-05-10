@@ -2,7 +2,7 @@ const config = require('../config.js');
 
 let caseId;
 
-Feature('Access segregation');
+Feature('Access segregation').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => caseId = await I.submitNewCaseWithData());
 

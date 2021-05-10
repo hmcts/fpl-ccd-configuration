@@ -5,7 +5,7 @@ const gatekeepingCaseData = require('../fixtures/caseData/gatekeepingNoAllocated
 
 let caseId;
 
-Feature('Gatekeeper Case administration after gatekeeping');
+Feature('Gatekeeper Case administration after gatekeeping').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeepingCaseData);

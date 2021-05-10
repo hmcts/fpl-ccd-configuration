@@ -3,7 +3,7 @@ const config = require('../config.js');
 const finalHearingCaseData = require('../fixtures/caseData/finalHearingWithMultipleOrders.json');
 const moment = require('moment');
 
-Feature('HMCTS super user removes orders');
+Feature('HMCTS super user removes orders').retry(config.maxTestRetries);
 
 let caseId;
 

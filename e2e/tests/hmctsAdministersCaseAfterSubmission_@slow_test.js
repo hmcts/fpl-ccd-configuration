@@ -19,7 +19,7 @@ const mandatoryWithMultipleChildren = require('../fixtures/caseData/mandatoryWit
 
 let caseId;
 
-Feature('Case administration after submission');
+Feature('Case administration after submission').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);

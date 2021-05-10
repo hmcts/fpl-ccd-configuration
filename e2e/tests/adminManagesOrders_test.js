@@ -8,7 +8,7 @@ const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
 const orderTitle = 'some title';
 let caseId;
 
-Feature('HMCTS Admin manages orders');
+Feature('HMCTS Admin manages orders').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => caseId = await I.submitNewCaseWithData(caseData));
 

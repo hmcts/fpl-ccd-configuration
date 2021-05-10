@@ -42,7 +42,7 @@ let caseId;
 let today;
 let date;
 
-Feature('Upload Draft Orders Journey');
+Feature('Upload Draft Orders Journey').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(standardDirectionOrder);

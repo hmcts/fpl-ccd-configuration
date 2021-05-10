@@ -3,7 +3,7 @@ const config = require('../config.js');
 let caseId;
 let caseName;
 
-Feature('Local authority deletes application');
+Feature('Local authority deletes application').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseName = `Case ${new Date().toISOString()}`;

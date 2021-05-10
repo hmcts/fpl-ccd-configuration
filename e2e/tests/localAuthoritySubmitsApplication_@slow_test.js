@@ -10,7 +10,7 @@ const ordersAndDirectionsNeeded = require('../fixtures/ordersAndDirectionsNeeded
 
 let caseId;
 
-Feature('Local authority creates application');
+Feature('Local authority creates application').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne));
 

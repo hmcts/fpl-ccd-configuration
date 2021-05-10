@@ -5,7 +5,7 @@ const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmiss
 
 let caseId;
 
-Feature('Local authority corrects returned application');
+Feature('Local authority corrects returned application').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);

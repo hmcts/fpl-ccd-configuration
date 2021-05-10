@@ -4,7 +4,7 @@ const cmoHelper = require('../helpers/cmo_helper');
 
 let caseId;
 
-Feature('Review CMO state progression');
+Feature('Review CMO state progression').retry(config.maxTestRetries);
 
 Scenario('Judge transitions CMO to final hearing case state', async ({I, caseViewPage, uploadCaseManagementOrderEventPage, reviewAgreedCaseManagementOrderEventPage}) => {
   caseId = await I.submitNewCaseWithData(finalHearing);

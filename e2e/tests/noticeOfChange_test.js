@@ -8,7 +8,7 @@ const solicitor3 = config.wiltshireLocalAuthorityUserOne;
 
 let caseId;
 
-Feature('Notice of change');
+Feature('Notice of change').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleRespondents);

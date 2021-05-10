@@ -12,7 +12,7 @@ let submittedAt;
 let hearingStartDate;
 let hearingEndDate;
 
-Feature('Hearing administration');
+Feature('Hearing administration').retry(config.maxTestRetries);
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithMultipleChildren);

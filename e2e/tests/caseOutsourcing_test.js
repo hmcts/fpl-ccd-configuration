@@ -1,6 +1,6 @@
 const config = require('../config');
 
-Feature('Case outsourcing');
+Feature('Case outsourcing').retry(config.maxTestRetries);
 
 Scenario('Private solicitor creates case on behalf of local authority ', async ({I, caseListPage}) => {
   const localAuthority = 'Swansea City Council';
