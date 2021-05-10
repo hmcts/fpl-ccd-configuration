@@ -12,6 +12,7 @@ module.exports = {
     draftOrders: 'Draft orders',
     hearings: 'Hearings',
     casePeople: 'People in the case',
+    changeOfRepresentatives: 'Change of representatives',
     legalBasis: 'Legal basis',
     documents: 'Documents',
     documentsSentToParties: 'Documents sent to parties',
