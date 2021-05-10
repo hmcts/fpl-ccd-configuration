@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentListService {
@@ -38,7 +40,11 @@ public class DocumentListService {
 
     private String renderDocumentBundleViews(CaseData caseData, DocumentViewType view) {
         List<DocumentBundleView> bundles = getDocumentBundleViews(caseData, view);
-        return documentsListRenderer.render(bundles);
+        if (isNotEmpty(bundles)) {
+            return documentsListRenderer.render(bundles);
+        }
+
+        return null;
     }
 
     private List<DocumentBundleView> getDocumentBundleViews(

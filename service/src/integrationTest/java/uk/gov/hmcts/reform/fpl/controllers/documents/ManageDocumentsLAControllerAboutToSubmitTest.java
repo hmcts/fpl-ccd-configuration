@@ -5,9 +5,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentTypeListLA;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
@@ -21,10 +23,12 @@ import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -33,6 +37,7 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA.OTHER;
@@ -53,6 +58,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
     private static final String USER = "LA";
     private static final String USER_ROLES = "caseworker-publiclaw-solicitor";
+    public static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
+        .binaryUrl("binary-url").url("fake-url").filename("file1").build();
     private static final SupportingEvidenceBundle NON_CONFIDENTIAL_BUNDLE = SupportingEvidenceBundle.builder()
         .dateTimeUploaded(LocalDateTime.now())
         .uploadedBy(USER)
@@ -64,6 +71,9 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         .name("confidential test")
         .confidential(List.of("CONFIDENTIAL"))
         .build();
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     ManageDocumentsLAControllerAboutToSubmitTest() {
         super("manage-documents-la");
@@ -93,11 +103,18 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentSubtypeListLA(OTHER)
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getHearingFurtherEvidenceDocuments()).first()
             .extracting(evidence -> evidence.getValue().getSupportingEvidenceBundle())
             .isEqualTo(furtherEvidenceBundle);
+
+        assertThat((String) response.getData().get("documentViewLA")).isNotEmpty();
+        assertThat((String) response.getData().get("documentViewHMCTS")).isNotEmpty();
+        assertThat((String) response.getData().get("documentViewNC")).isNotEmpty();
 
         assertExpectedFieldsAreRemoved(responseData);
     }
@@ -112,10 +129,17 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
             .manageDocumentSubtypeListLA(OTHER)
             .build();
 
-        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(false);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData responseData = extractCaseData(response);
 
         assertThat(responseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(responseData);
+        
+        assertThat(response.getData().get("documentViewLA")).isNull();
+        assertThat(response.getData().get("documentViewHMCTS")).isNull();
+        assertThat(response.getData().get("documentViewNC")).isNull();
     }
 
     @Test
@@ -410,6 +434,8 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .dateTimeUploaded(LocalDateTime.now())
+            .type(FurtherEvidenceType.EXPERT_REPORTS)
+            .document(DOCUMENT_REFERENCE)
             .uploadedBy(USER)
             .name("test")
             .build());
