@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -27,7 +25,7 @@ public class NoticeOfChangeService {
     private final RespondentService respondentService;
     private final CoreCaseDataService coreCaseDataService;
 
-    public List<Element<Respondent>> updateRepresentation(CaseData caseData) {
+    public Map<String, Object> updateRepresentation(CaseData caseData) {
 
         AuditEvent auditEvent = auditEventService.getLatestAuditEventByName(caseData.getId().toString(), NOC_EVENT)
             .orElseThrow(() -> new IllegalStateException(String.format("Could not find %s event in audit", NOC_EVENT)));

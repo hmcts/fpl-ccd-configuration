@@ -1612,6 +1612,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "changeOfRepresentatives",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentViewHMCTS",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "CRUD"

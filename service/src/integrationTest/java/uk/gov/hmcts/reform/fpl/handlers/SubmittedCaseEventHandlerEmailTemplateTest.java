@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.RespondentSolicitorContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
@@ -35,13 +35,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     SubmittedCaseEventHandler.class,
     NotificationService.class,
     OutsourcedCaseContentProvider.class,
-    RespondentSolicitorContentProvider.class,
+    RegisteredRespondentSolicitorContentProvider.class,
     CaseUrlService.class,
     ObjectMapper.class,
 })
 class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
-    private static final String RESPONDENT_FIRST_NAME = "John";
     private static final String RESPONDENT_LAST_NAME = "Watson";
     private static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
         .lastName(RESPONDENT_LAST_NAME).build())
