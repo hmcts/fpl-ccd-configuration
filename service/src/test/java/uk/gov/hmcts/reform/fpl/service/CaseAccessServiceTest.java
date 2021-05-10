@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -16,10 +15,8 @@ import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesRequest;
 import uk.gov.hmcts.reform.ccd.model.AddCaseAssignedUserRolesResponse;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRoleWithOrganisation;
 import uk.gov.hmcts.reform.ccd.model.CaseAssignedUserRolesRequest;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.exceptions.GrantCaseAccessException;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import java.util.List;
@@ -54,7 +51,7 @@ class CaseAccessServiceTest {
     private static final String SERVICE_AUTH_TOKEN = "Service token";
 
     @Mock
-    private IdamClient idam;
+    private SystemUserService systemUserService;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -65,15 +62,12 @@ class CaseAccessServiceTest {
     @Mock
     private CaseAccessDataStoreApi caseAccessDataStoreApi;
 
-    @Spy
-    private SystemUpdateUserConfiguration userConfig = new SystemUpdateUserConfiguration("SYS", "SYSPASS");
-
     @InjectMocks
     private CaseAccessService caseRoleService;
 
     @BeforeEach
     void setup() {
-        given(idam.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
+        given(systemUserService.getSysUserToken()).willReturn(AUTH_TOKEN);
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
