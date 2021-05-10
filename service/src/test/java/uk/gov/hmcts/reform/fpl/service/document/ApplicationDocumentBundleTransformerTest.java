@@ -44,16 +44,24 @@ public class ApplicationDocumentBundleTransformerTest {
     private final List<Element<HearingFurtherEvidenceBundle>> hearingEvidenceDocuments
         = buildHearingFurtherEvidenceDocuments(UUID.randomUUID());
 
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments
+        = buildFurtherEvidenceDocuments();
+
     @Test
     void shouldGetApplicationDocumentsBundleForHMCTSView() {
         CaseData caseData = CaseData.builder()
             .applicationDocuments(buildApplicationDocuments())
             .hearingFurtherEvidenceDocuments(hearingEvidenceDocuments)
+            .furtherEvidenceDocuments(furtherEvidenceDocuments)
             .build();
 
         when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
             caseData.getHearingFurtherEvidenceDocuments().get(0).getValue().getSupportingEvidenceBundle(), true))
             .thenReturn(expectedHearingDocumentView());
+
+        when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
+            caseData.getFurtherEvidenceDocuments(), true))
+            .thenReturn(expectedFurtherEvidenceDocumentView());
 
         List<DocumentBundleView> expectedBundle = List.of(DocumentBundleView.builder()
             .documents(getExpectedApplicationDocuments())
@@ -62,10 +70,13 @@ public class ApplicationDocumentBundleTransformerTest {
         List<DocumentBundleView> bundle = underTest.getApplicationStatementAndDocumentBundle(caseData, DocumentViewType.HMCTS);
 
         assertThat(bundle.get(0).getDocuments()).isEqualTo(expectedBundle.get(0).getDocuments());
+        assertThat(bundle.get(0).getDocuments()).hasSize(7);
+        assertThat(bundle).hasSize(1);
     }
 
     private List<DocumentView> getExpectedApplicationDocuments() {
         List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedFurtherEvidenceDocumentView());
         documents.addAll(expectedHearingDocumentView());
         documents.addAll(expectedApplicationDocumentView());
 
@@ -120,6 +131,7 @@ public class ApplicationDocumentBundleTransformerTest {
                 .title("Application statement")
                 .includeSWETField(false)
                 .includeDocumentName(true)
+                .confidential(true)
                 .build(), DocumentView.builder()
                 .document(DocumentReference.builder().build())
                 .type("Applicant statement")
@@ -129,8 +141,35 @@ public class ApplicationDocumentBundleTransformerTest {
                 .documentName("Admin uploaded evidence1")
                 .title("Application statement")
                 .includeSWETField(false)
+                .confidential(false)
                 .includeDocumentName(true)
                 .build());
+    }
+
+    private List<DocumentView> expectedFurtherEvidenceDocumentView() {
+        return List.of(DocumentView.builder()
+            .document(DocumentReference.builder().build())
+            .type("Applicant statement")
+            .uploadedAt("8:20pm, 15th June 2021")
+            .includedInSWET(null)
+            .uploadedBy("Kurt solicitor")
+            .documentName("LA uploaded evidence2")
+            .title("Application statement")
+            .includeSWETField(false)
+            .includeDocumentName(true)
+            .confidential(true)
+            .build(), DocumentView.builder()
+            .document(DocumentReference.builder().build())
+            .type("Applicant statement")
+            .uploadedAt("8:20pm, 15th June 2021")
+            .includedInSWET(null)
+            .uploadedBy("HMCTS")
+            .documentName("Admin uploaded evidence1")
+            .title("Application statement")
+            .includeSWETField(false)
+            .confidential(false)
+            .includeDocumentName(true)
+            .build());
     }
 
     private List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceDocuments(UUID hearingId) {
@@ -140,6 +179,11 @@ public class ApplicationDocumentBundleTransformerTest {
         return List.of(element(hearingId, HearingFurtherEvidenceBundle.builder()
             .supportingEvidenceBundle(furtherEvidenceBundle)
             .build()));
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildFurtherEvidenceDocuments() {
+        return List.of(
+            LA_CONFIDENTIAL_DOCUMENT_APPLICANT, ADMIN_NON_CONFIDENTIAL_DOCUMENT_APPLICANT);
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {
