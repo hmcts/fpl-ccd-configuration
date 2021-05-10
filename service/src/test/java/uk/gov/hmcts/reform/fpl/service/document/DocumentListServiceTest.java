@@ -157,7 +157,9 @@ class DocumentListServiceTest {
             .thenReturn(emptyList());
 
         Map<String, Object> documentViewData = documentListService.getDocumentView(caseData);
-        assertThat(documentViewData).isEmpty();
+        assertThat(documentViewData.get("documentViewLA")).isNull();
+        assertThat(documentViewData.get("documentViewHMCTS")).isNull();
+        assertThat(documentViewData.get("documentViewNC")).isNull();
 
         verify(applicationDocumentTransformer, atMost(3))
             .getApplicationStatementAndDocumentBundle(eq(caseData), any(DocumentViewType.class));

@@ -31,19 +31,9 @@ public class DocumentListService {
     public Map<String, Object> getDocumentView(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        String bundleViewLA = renderDocumentBundleViews(caseData, DocumentViewType.LA);
-        String bundleViewHMCTS = renderDocumentBundleViews(caseData, DocumentViewType.HMCTS);
-        String bundleViewNC = renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL);
-
-        if (isNotEmpty(bundleViewLA)) {
-            data.put("documentViewLA", bundleViewLA);
-        }
-        if (isNotEmpty(bundleViewHMCTS)) {
-            data.put("documentViewHMCTS", bundleViewHMCTS);
-        }
-        if (isNotEmpty(bundleViewNC)) {
-            data.put("documentViewNC", bundleViewNC);
-        }
+        data.put("documentViewLA", renderDocumentBundleViews(caseData, DocumentViewType.LA));
+        data.put("documentViewHMCTS", renderDocumentBundleViews(caseData, DocumentViewType.HMCTS));
+        data.put("documentViewNC", renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL));
 
         return data;
     }
