@@ -1,27 +1,26 @@
-package uk.gov.hmcts.reform.fpl.service.email.content;
+package uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
+import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-@Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class RespondentSolicitorContentProvider extends SharedNotifyContentProvider {
+@Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class RegisteredRespondentSolicitorContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
 
-    public RespondentSolicitorTemplate buildRespondentSolicitorSubmissionNotification(
+    public RegisteredRespondentSolicitorTemplate buildRespondentSolicitorSubmissionNotification(
         CaseData caseData, RespondentSolicitor representative) {
 
-        return RespondentSolicitorTemplate.builder()
+        return RegisteredRespondentSolicitorTemplate.builder()
             .salutation(getSalutation(representative))
             .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .build();
