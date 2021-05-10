@@ -18,6 +18,8 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_CONFIDENTIAL_DOCUMENT;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_NON_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -31,17 +33,29 @@ public class FurtherEvidenceDocumentsBundleTransformerTest {
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments
         = buildFurtherEvidenceDocuments();
 
+    private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA
+        = buildFurtherEvidenceDocumentsLA();
+
     @Test
     void shouldGetFurtherEvidenceDocumentBundleForHMCTSView() {
         CaseData caseData = CaseData.builder()
             .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
             .build();
 
-        List<DocumentBundleView> expectedBundle = List.of(DocumentBundleView.builder()
+        DocumentBundleView expertBundle = DocumentBundleView.builder()
             .name("Expert reports")
             .documents((List.of(buildDocumentView(ADMIN_CONFIDENTIAL_DOCUMENT.getValue()),
-                buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue()))))
-            .build());
+                buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue())
+                ))).build();
+
+        DocumentBundleView guardianBundle = DocumentBundleView.builder()
+            .name("Child's guardian reports")
+            .documents((List.of(buildDocumentView(LA_CONFIDENTIAL_DOCUMENT.getValue()),
+                buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue())
+            ))).build();
+
+        List<DocumentBundleView> expectedBundle = List.of(guardianBundle, expertBundle);
 
         List<DocumentBundleView> bundle = underTest.getFurtherEvidenceBundleView(caseData, DocumentViewType.HMCTS);
 
@@ -52,14 +66,47 @@ public class FurtherEvidenceDocumentsBundleTransformerTest {
     void shouldGetFurtherEvidenceDocumentBundleForLAView() {
         CaseData caseData = CaseData.builder()
             .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
             .build();
 
-        List<DocumentBundleView> expectedBundle = List.of(DocumentBundleView.builder()
+        DocumentBundleView expertBundle = DocumentBundleView.builder()
             .name("Expert reports")
             .documents((List.of(buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue()))))
-            .build());
+            .build();
+
+        DocumentBundleView guardianBundle = DocumentBundleView.builder()
+            .name("Child's guardian reports")
+            .documents((List.of(buildDocumentView(LA_CONFIDENTIAL_DOCUMENT.getValue()),
+                buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue())
+            ))).build();
+
+        List<DocumentBundleView> expectedBundle = List.of(guardianBundle, expertBundle);
 
         List<DocumentBundleView> bundle = underTest.getFurtherEvidenceBundleView(caseData, DocumentViewType.LA);
+
+        assertThat(bundle).isEqualTo(expectedBundle);
+    }
+
+    @Test
+    void shouldGetFurtherEvidenceDocumentBundleForNonConfidentialView() {
+        CaseData caseData = CaseData.builder()
+            .furtherEvidenceDocuments(furtherEvidenceDocuments)
+            .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
+            .build();
+
+        DocumentBundleView expertBundle = DocumentBundleView.builder()
+            .name("Expert reports")
+            .documents((List.of(buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue()))))
+            .build();
+
+        DocumentBundleView guardianBundle = DocumentBundleView.builder()
+            .name("Child's guardian reports")
+            .documents((List.of(buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue())
+            ))).build();
+
+        List<DocumentBundleView> expectedBundle = List.of(guardianBundle, expertBundle);
+
+        List<DocumentBundleView> bundle = underTest.getFurtherEvidenceBundleView(caseData, DocumentViewType.NONCONFIDENTIAL);
 
         assertThat(bundle).isEqualTo(expectedBundle);
     }
@@ -81,5 +128,11 @@ public class FurtherEvidenceDocumentsBundleTransformerTest {
         return List.of(
             ADMIN_CONFIDENTIAL_DOCUMENT,
             ADMIN_NON_CONFIDENTIAL_DOCUMENT);
+    }
+
+    private List<Element<SupportingEvidenceBundle>> buildFurtherEvidenceDocumentsLA() {
+        return List.of(
+            LA_CONFIDENTIAL_DOCUMENT,
+            LA_NON_CONFIDENTIAL_DOCUMENT);
     }
 }

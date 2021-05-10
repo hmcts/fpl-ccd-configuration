@@ -24,13 +24,13 @@ public class DocumentViewTestHelper {
         = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false, FurtherEvidenceType.EXPERT_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT2
-        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false, FurtherEvidenceType.GUARDIAN_REPORTS);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false, FurtherEvidenceType.OTHER_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT
         = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true, FurtherEvidenceType.GUARDIAN_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT =
-        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false, FurtherEvidenceType.OTHER_REPORTS);
+        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false, FurtherEvidenceType.GUARDIAN_REPORTS);
 
     public static final Element<Respondent> RESPONDENT1 = buildRespondent("Dave", "Miller");
     public static final Element<Respondent> RESPONDENT2 = buildRespondent("Will", "Smith");
