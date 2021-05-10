@@ -67,10 +67,10 @@ withNightlyPipeline(type, product, component) {
 
   loadVaultSecrets(integrationTestSecrets)
 
-  enableSecurityScan()
-  enableMutationTest()
+//  enableSecurityScan()
+//  enableMutationTest()
   enableFullFunctionalTest(120)
-  enableCrossBrowserTest()
+//  enableCrossBrowserTest()
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
