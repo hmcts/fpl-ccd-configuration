@@ -36,11 +36,11 @@ public class NoticeOfChangeController extends CallbackController {
     private final RespondentService respondentService;
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("respondents1", noticeOfChangeService.updateRepresentation(caseData));
+        caseDetails.getData().putAll(noticeOfChangeService.updateRepresentation(caseData));
 
         return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(),
             decisionRequest(caseDetails));
