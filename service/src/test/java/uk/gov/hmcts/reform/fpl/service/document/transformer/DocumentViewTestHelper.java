@@ -18,19 +18,19 @@ public class DocumentViewTestHelper {
     }
 
     public static final Element<SupportingEvidenceBundle> ADMIN_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("Admin uploaded evidence1", "HMCTS", true);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence1", "HMCTS", true, FurtherEvidenceType.EXPERT_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false, FurtherEvidenceType.EXPERT_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT2
-        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false, FurtherEvidenceType.GUARDIAN_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true);
+        = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true, FurtherEvidenceType.GUARDIAN_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT =
-        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false);
+        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false, FurtherEvidenceType.OTHER_REPORTS);
 
     public static final Element<Respondent> RESPONDENT1 = buildRespondent("Dave", "Miller");
     public static final Element<Respondent> RESPONDENT2 = buildRespondent("Will", "Smith");
@@ -48,13 +48,13 @@ public class DocumentViewTestHelper {
     }
 
     private static Element<SupportingEvidenceBundle> buildFurtherEvidenceBundle(
-        String name, String uploadedBy, boolean isConfidential) {
+        String name, String uploadedBy, boolean isConfidential, FurtherEvidenceType type) {
         return element(SupportingEvidenceBundle.builder()
             .name(name)
             .document(testDocumentReference())
             .dateTimeUploaded(LocalDateTime.now())
             .uploadedBy(uploadedBy)
-            .type(FurtherEvidenceType.EXPERT_REPORTS)
+            .type(type)
             .confidential(isConfidential ? List.of("CONFIDENTIAL") : List.of())
             .build());
     }
