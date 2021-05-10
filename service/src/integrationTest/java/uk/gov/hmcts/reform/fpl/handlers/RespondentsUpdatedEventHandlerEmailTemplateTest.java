@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.RespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.util.stream.Stream;
 
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     LocalAuthorityNameLookupConfiguration.class,
     CaseUrlService.class,
     ObjectMapper.class,
+    FixedTimeConfiguration.class
 })
 class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest {
 

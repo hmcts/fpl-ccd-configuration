@@ -56,12 +56,24 @@ const updateCaseDataWithTodaysDateTime = (data) => {
 const updateCaseDataWithDocuments = (data) => {
   let caseData = data.caseData;
   caseData.submittedForm = documentData('mockSubmittedForm.pdf');
-  caseData.documents_checklist_document.typeOfDocument = documentData('mockChecklist.pdf');
-  caseData.documents_threshold_document.typeOfDocument = documentData('mockThreshold.pdf');
-  caseData.documents_socialWorkCarePlan_document.typeOfDocument = documentData('mockSWCP.pdf');
-  caseData.documents_socialWorkAssessment_document.typeOfDocument = documentData('mockSWA.pdf');
-  caseData.documents_socialWorkChronology_document.typeOfDocument = documentData('mockSWC.pdf');
-  caseData.documents_socialWorkEvidenceTemplate_document.typeOfDocument = documentData('mockSWET.pdf');
+  if(caseData.documents_checklist_document) {
+    caseData.documents_checklist_document.typeOfDocument = documentData('mockChecklist.pdf');
+  }
+  if(caseData.documents_threshold_document) {
+    caseData.documents_threshold_document.typeOfDocument = documentData('mockThreshold.pdf');
+  }
+  if(caseData.documents_socialWorkCarePlan_document) {
+    caseData.documents_socialWorkCarePlan_document.typeOfDocument = documentData('mockSWCP.pdf');
+  }
+  if(caseData.documents_socialWorkAssessment_document) {
+    caseData.documents_socialWorkAssessment_document.typeOfDocument = documentData('mockSWA.pdf');
+  }
+  if(caseData.documents_socialWorkChronology_document) {
+    caseData.documents_socialWorkChronology_document.typeOfDocument = documentData('mockSWC.pdf');
+  }
+  if(caseData.documents_socialWorkEvidenceTemplate_document) {
+    caseData.documents_socialWorkEvidenceTemplate_document.typeOfDocument = documentData('mockSWET.pdf');
+  }
   if (caseData.standardDirectionOrder) {
     caseData.standardDirectionOrder.orderDoc = documentData('sdo.pdf');
   }

@@ -25,6 +25,7 @@ public abstract class AbstractTest {
 
     protected static final String USER_AUTH_TOKEN = "Bearer token";
     protected static final String SERVICE_AUTH_TOKEN = "Bearer service token";
+    protected static final String SYS_USER_ID = "10";
     protected static final String USER_ID = "1";
 
     @Autowired
@@ -71,6 +72,9 @@ public abstract class AbstractTest {
 
     protected void givenSystemUser() {
         given(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
+        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder()
+            .uid(SYS_USER_ID)
+            .build());
     }
 
     protected void givenFplService() {

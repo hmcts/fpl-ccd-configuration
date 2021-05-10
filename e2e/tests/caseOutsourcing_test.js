@@ -9,11 +9,11 @@ Scenario('Private solicitor creates case on behalf of local authority ', async (
   const caseId = await I.logInAndCreateCase(config.privateSolicitorOne, caseName, localAuthority);
   await caseListPage.verifyCaseIsShareable(caseId);
 
-  await I.navigateToCaseDetailsAs(config.privateSolicitorTwo, caseId);
-  I.see('No cases found.');
+  await I.signIn(config.privateSolicitorTwo);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  I.see('No cases found.');
+  await I.signIn(config.swanseaLocalAuthorityUserOne);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('Local authority creates case on behalf of other local authority', async ({I, caseListPage}) => {
@@ -23,11 +23,11 @@ Scenario('Local authority creates case on behalf of other local authority', asyn
   const caseId = await I.logInAndCreateCase(config.wiltshireLocalAuthorityUserOne, caseName, localAuthority);
   await caseListPage.verifyCaseIsShareable(caseId);
 
-  await I.navigateToCaseDetailsAs(config.wiltshireLocalAuthorityUserTwo, caseId);
-  I.see('No cases found.');
+  await I.signIn(config.wiltshireLocalAuthorityUserTwo, caseId);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 
-  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
-  I.see('No cases found.');
+  await I.signIn(config.swanseaLocalAuthorityUserOne, caseId);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('Local authority creates case for its own', async ({I, caseListPage}) => {

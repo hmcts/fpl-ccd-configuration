@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,6 +31,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RespondentAfterSubmissionValidator {
 
+    private final FeatureToggleService featureToggleService;
+    private final UserService userService;
+
     public List<String> validateLegalRepresentation(CaseData caseData) {
         List<String> errors = new ArrayList<>();
 
@@ -46,39 +51,43 @@ public class RespondentAfterSubmissionValidator {
 
         List<String> errors = new ArrayList<>();
 
-        Set<UUID> currentRespondentIds = getIds(caseData.getRespondents1());
-        Set<UUID> previousRespondentIds = getIds(nullSafeList(caseDataBefore.getRespondents1()));
+        Set<UUID> currentRespondentIds = getIds(caseData.getAllRespondents());
+        Set<UUID> previousRespondentIds = getIds(caseDataBefore.getAllRespondents());
 
         if (!currentRespondentIds.containsAll(previousRespondentIds)) {
             errors.add("You cannot remove a respondent from the case");
         }
 
-        Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getRespondents1());
+        if (!(featureToggleService.isNoticeOfChangeEnabled() && userService.isHmctsAdminUser())) {
+            Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getAllRespondents());
 
-        Map<UUID, Respondent> previousRespondents = getIdRespondentMap(nullSafeList(caseDataBefore.getRespondents1()));
+            Map<UUID, Respondent> previousRespondents = getIdRespondentMap(caseDataBefore.getAllRespondents());
 
-        List<Map.Entry<UUID, Respondent>> currentRespondentsList = new ArrayList<>(currentRespondents.entrySet());
+            List<Map.Entry<UUID, Respondent>> currentRespondentsList = new ArrayList<>(currentRespondents.entrySet());
 
-        for (int i = 0; i < currentRespondents.size(); i++) {
-            Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
-            Respondent current = currentRespondentsList.get(i).getValue();
-            Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
+            for (int i = 0; i < currentRespondents.size(); i++) {
+                Map.Entry<UUID, Respondent> map = currentRespondentsList.get(i);
+                Respondent current = currentRespondentsList.get(i).getValue();
+                Respondent previous = previousRespondents.getOrDefault(map.getKey(), current);
 
-            if (YES.getValue().equals(previous.getLegalRepresentation())
-                && NO.getValue().equals(current.getLegalRepresentation())) {
-                errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
-                continue;
+                if (YES.getValue().equals(previous.getLegalRepresentation())
+                    && NO.getValue().equals(current.getLegalRepresentation())) {
+                    errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
+                    continue;
+                }
+
+                if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
+                    && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
+
+                    errors.add(String.format(
+                        "You cannot change organisation details for respondent %d's legal representative", i + 1));
+                    continue;
+                }
+
+                errors.addAll(legalRepresentationErrors(current, i + 1));
             }
-
-            if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
-                && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
-
-                errors.add(String.format(
-                    "You cannot change organisation details for respondent %d's legal representative", i + 1));
-                continue;
-            }
-
-            errors.addAll(legalRepresentationErrors(current, i + 1));
+        } else {
+            errors.addAll(validateLegalRepresentation(caseData));
         }
 
         return errors;
@@ -106,7 +115,7 @@ public class RespondentAfterSubmissionValidator {
     }
 
     private Map<UUID, Respondent> getIdRespondentMap(List<Element<Respondent>> elements) {
-        return elements.stream()
+        return nullSafeList(elements).stream()
             .collect(Collectors.toMap(Element::getId, Element::getValue, (val1, val2) -> val1, LinkedHashMap::new));
     }
 
@@ -122,8 +131,8 @@ public class RespondentAfterSubmissionValidator {
         return ofNullable(value).flatMap(respondent -> ofNullable(respondent.getLegalRepresentation()));
     }
 
-    private Set<UUID> getIds(List<Element<Respondent>> respondents1) {
-        return respondents1.stream()
+    private Set<UUID> getIds(List<Element<Respondent>> respondents) {
+        return nullSafeList(respondents).stream()
             .map(Element::getId)
             .collect(Collectors.toSet());
     }

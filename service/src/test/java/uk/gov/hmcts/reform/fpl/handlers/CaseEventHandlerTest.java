@@ -7,10 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.CaseDataChanged;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 import uk.gov.hmcts.reform.fpl.model.tasklist.Task;
 import uk.gov.hmcts.reform.fpl.service.TaskListRenderer;
 import uk.gov.hmcts.reform.fpl.service.TaskListService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,9 @@ class CaseEventHandlerTest {
     @Mock
     private TaskListRenderer taskListRenderer;
 
+    @Mock
+    private CaseSubmissionChecker caseSubmissionChecker;
+
     @InjectMocks
     private CaseEventHandler caseEventHandler;
 
@@ -52,17 +57,26 @@ class CaseEventHandlerTest {
         final CaseDataChanged caseDataChanged = new CaseDataChanged(caseData);
         final List<Task> tasks = List.of(
             Task.builder().event(CASE_NAME).state(COMPLETED).build(),
-            Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build()
-        );
+            Task.builder().event(SUBMIT_APPLICATION).state(NOT_AVAILABLE).build());
+
         final String renderedTaskLists = "<h1>Task 1</h1><h2>Task 2</h2>";
 
+        final List<EventValidationErrors> eventsErrors = List.of(
+            EventValidationErrors.builder()
+                .event(CASE_NAME)
+                .errors(List.of("Change case name"))
+                .build());
+
+        when(caseSubmissionChecker.validateAsGroups(caseData)).thenReturn(eventsErrors);
         when(taskListService.getTasksForOpenCase(caseData)).thenReturn(tasks);
-        when(taskListRenderer.render(tasks)).thenReturn(renderedTaskLists);
+        when(taskListRenderer.render(tasks, eventsErrors)).thenReturn(renderedTaskLists);
 
         caseEventHandler.handleCaseDataChange(caseDataChanged);
 
         verify(taskListService).getTasksForOpenCase(caseData);
-        verify(taskListRenderer).render(tasks);
+        verify(caseSubmissionChecker).validateAsGroups(caseData);
+        verify(taskListRenderer).render(tasks, eventsErrors);
+
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
             CASE_TYPE,
