@@ -16,6 +16,7 @@ const orders = {
     c32: 'C32_CARE_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
+    c35a: 'C35A_SUPERVISION_ORDER',
   },
 };
 
