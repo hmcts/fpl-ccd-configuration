@@ -54,6 +54,7 @@ public class DocumentViewTestHelper {
             .document(testDocumentReference())
             .dateTimeUploaded(LocalDateTime.now())
             .uploadedBy(uploadedBy)
+            .type(FurtherEvidenceType.EXPERT_REPORTS)
             .confidential(isConfidential ? List.of("CONFIDENTIAL") : List.of())
             .build());
     }
