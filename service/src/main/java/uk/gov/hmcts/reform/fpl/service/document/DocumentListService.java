@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DocumentListService {
@@ -29,16 +31,30 @@ public class DocumentListService {
     public Map<String, Object> getDocumentView(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("documentViewLA", renderDocumentBundleViews(caseData, DocumentViewType.LA));
-        data.put("documentViewHMCTS", renderDocumentBundleViews(caseData, DocumentViewType.HMCTS));
-        data.put("documentViewNC", renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL));
+        String bundleViewLA = renderDocumentBundleViews(caseData, DocumentViewType.LA);
+        String bundleViewHMCTS = renderDocumentBundleViews(caseData, DocumentViewType.HMCTS);
+        String bundleViewNC = renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL);
+
+        if (isNotEmpty(bundleViewLA)) {
+            data.put("documentViewLA", bundleViewLA);
+        }
+        if (isNotEmpty(bundleViewHMCTS)) {
+            data.put("documentViewHMCTS", bundleViewHMCTS);
+        }
+        if (isNotEmpty(bundleViewNC)) {
+            data.put("documentViewNC", bundleViewNC);
+        }
 
         return data;
     }
 
     private String renderDocumentBundleViews(CaseData caseData, DocumentViewType view) {
         List<DocumentBundleView> bundles = getDocumentBundleViews(caseData, view);
-        return documentsListRenderer.render(bundles);
+        if (isNotEmpty(bundles)) {
+            return documentsListRenderer.render(bundles);
+        }
+
+        return null;
     }
 
     private List<DocumentBundleView> getDocumentBundleViews(

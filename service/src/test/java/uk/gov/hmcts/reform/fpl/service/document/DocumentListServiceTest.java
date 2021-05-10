@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.document;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,12 +20,16 @@ import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransfo
 import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.atMost;
@@ -107,8 +110,9 @@ class DocumentListServiceTest {
 
         when(documentsListRenderer.render(any())).thenReturn("<p><div class='width-50'>");
 
-        documentListService.getDocumentView(caseData);
+        Map<String, Object> documentViewData = documentListService.getDocumentView(caseData);
 
+        assertThat(documentViewData).containsKeys("documentViewLA", "documentViewHMCTS", "documentViewNC");
         verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, LA);
         verify(furtherEvidenceTransformer).getFurtherEvidenceBundleView(caseData, LA);
         verify(hearingBundleTransformer).getHearingBundleView(caseData.getHearingFurtherEvidenceDocuments(), LA);
@@ -129,7 +133,48 @@ class DocumentListServiceTest {
 
         verifyNoMoreInteractions(applicationDocumentTransformer, furtherEvidenceTransformer,
             hearingBundleTransformer, respondentStatementsTransformer, documentsListRenderer);
+    }
 
+    @Test
+    void shouldReturnEmptyMapWhenDocumentBundlesAreEmpty() {
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(List.of(element(UUID.randomUUID(),
+                HearingBooking.builder().type(CASE_MANAGEMENT).build())))
+            .build();
+
+        when(applicationDocumentTransformer.getApplicationStatementAndDocumentBundle(
+            eq(caseData), any(DocumentViewType.class)))
+            .thenReturn(emptyList());
+
+        when(furtherEvidenceTransformer.getFurtherEvidenceBundleView(eq(caseData), any(DocumentViewType.class)))
+            .thenReturn(emptyList());
+
+        when(hearingBundleTransformer.getHearingBundleView(
+            eq(caseData.getHearingFurtherEvidenceDocuments()), any(DocumentViewType.class)))
+            .thenReturn(emptyList());
+
+        when(respondentStatementsTransformer.getRespondentStatementsBundle(eq(caseData), any(DocumentViewType.class)))
+            .thenReturn(emptyList());
+
+        Map<String, Object> documentViewData = documentListService.getDocumentView(caseData);
+        assertThat(documentViewData).isEmpty();
+
+        verify(applicationDocumentTransformer, atMost(3))
+            .getApplicationStatementAndDocumentBundle(eq(caseData), any(DocumentViewType.class));
+
+        verify(furtherEvidenceTransformer, atMost(3))
+            .getFurtherEvidenceBundleView(eq(caseData), any(DocumentViewType.class));
+
+        verify(hearingBundleTransformer, atMost(3))
+            .getHearingBundleView(eq(caseData.getHearingFurtherEvidenceDocuments()), any(DocumentViewType.class));
+
+        verify(respondentStatementsTransformer, atMost(3))
+            .getRespondentStatementsBundle(eq(caseData), any(DocumentViewType.class));
+
+        verifyNoInteractions(documentsListRenderer);
+
+        verifyNoMoreInteractions(applicationDocumentTransformer, furtherEvidenceTransformer,
+            hearingBundleTransformer, respondentStatementsTransformer, documentsListRenderer);
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {

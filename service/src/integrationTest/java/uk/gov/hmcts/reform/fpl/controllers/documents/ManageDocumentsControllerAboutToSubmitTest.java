@@ -5,8 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
@@ -16,24 +18,30 @@ import uk.gov.hmcts.reform.fpl.model.ManageDocument;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.ADDITIONAL_APPLICATIONS_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.CORRESPONDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.ManageDocumentType.FURTHER_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
@@ -43,17 +51,27 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     private static final String USER = "HMCTS";
     private static final String[] USER_ROLES = {"caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"};
+    public static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.builder()
+        .binaryUrl("fake-binary-url").url("fake-url").filename("file1").build();
+
     private static final SupportingEvidenceBundle NON_CONFIDENTIAL_BUNDLE = SupportingEvidenceBundle.builder()
         .dateTimeUploaded(LocalDateTime.now())
         .uploadedBy(USER)
         .name("test")
+        .type(FurtherEvidenceType.APPLICANT_STATEMENT)
+        .document(DOCUMENT_REFERENCE)
         .build();
     private static final SupportingEvidenceBundle CONFIDENTIAL_BUNDLE = SupportingEvidenceBundle.builder()
         .dateTimeUploaded(LocalDateTime.now())
         .uploadedBy(USER)
         .name("confidential test")
+        .type(FurtherEvidenceType.APPLICANT_STATEMENT)
+        .document(DOCUMENT_REFERENCE)
         .confidential(List.of("CONFIDENTIAL"))
         .build();
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     ManageDocumentsControllerAboutToSubmitTest() {
         super("manage-documents");
@@ -82,11 +100,21 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
-        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData extractedCaseData = extractCaseData(response);
 
         assertThat(extractedCaseData.getHearingFurtherEvidenceDocuments()).first()
             .extracting(evidence -> evidence.getValue().getSupportingEvidenceBundle())
             .isEqualTo(furtherEvidenceBundle);
+
+        assertThat((String) response.getData().get("documentViewLA"))
+            .isEqualTo(expectedDocumentView(furtherEvidenceBundle));
+        assertThat((String) response.getData().get("documentViewHMCTS"))
+            .isEqualTo(expectedDocumentView(furtherEvidenceBundle));
+        assertThat((String) response.getData().get("documentViewNC"))
+            .isEqualTo(expectedDocumentView(furtherEvidenceBundle));
 
         assertExpectedFieldsAreRemoved(extractedCaseData);
     }
@@ -101,10 +129,14 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
-        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(false);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData extractedCaseData = extractCaseData(response);
 
         assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(extractedCaseData);
+        assertThat(response.getData()).doesNotContainKeys("documentViewHMCTS", "documentViewLA", "documentViewNC");
     }
 
     @Test
@@ -116,10 +148,15 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(CORRESPONDENCE))
             .build();
 
-        CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseData, USER_ROLES));
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
+        CaseData extractedCaseData = extractCaseData(response);
 
         assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(extractedCaseData);
+        assertThat(response.getData().get("documentViewHMCTS")).isNull();
+        assertThat(response.getData().get("documentViewLA")).isNull();
+        assertThat(response.getData().get("documentViewNC")).isNull();
     }
 
     @Test
@@ -265,6 +302,8 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .manageDocument(buildManagementDocument(FURTHER_EVIDENCE_DOCUMENTS))
             .build();
 
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(true);
+
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData, USER_ROLES);
         CaseData extractedCaseData = extractCaseData(response);
 
@@ -274,6 +313,13 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         assertThat(extractedCaseData.getFurtherEvidenceDocuments()).isEqualTo(furtherEvidenceBundle);
         assertThat(furtherEvidenceDocumentsNC).isEqualTo(wrapElements(NON_CONFIDENTIAL_BUNDLE));
+
+        assertThat((String) response.getData().get("documentViewLA"))
+            .isEqualTo(expectedDocumentView(List.of(furtherEvidenceBundle.get(1))));
+        assertThat((String) response.getData().get("documentViewNC"))
+            .isEqualTo(expectedDocumentView(List.of(furtherEvidenceBundle.get(1))));
+        assertThat((String) response.getData().get("documentViewHMCTS"))
+            .isEqualTo(expectedDocumentView(furtherEvidenceBundle));
     }
 
     private HearingBooking buildFinalHearingBooking() {
@@ -290,7 +336,9 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
         return wrapElements(SupportingEvidenceBundle.builder()
             .dateTimeUploaded(LocalDateTime.now())
+            .type(FurtherEvidenceType.APPLICANT_STATEMENT)
             .uploadedBy(USER)
+            .document(DOCUMENT_REFERENCE)
             .name("test")
             .build());
     }
@@ -323,5 +371,43 @@ class ManageDocumentsControllerAboutToSubmitTest extends AbstractCallbackTest {
             .email("steve.hudson@gov.uk")
             .roles(Arrays.asList(USER_ROLES))
             .build();
+    }
+
+    private String expectedDocumentView(List<Element<SupportingEvidenceBundle>> documents) {
+        return "<p><div class='width-50'>\n\n"
+            + "<details class=\"govuk-details\">"
+            + "       <summary class=\"govuk-details__summary\">"
+            + "Applicant's statements and application documents</summary>"
+            + "       <div class=\"govuk-details__text\">"
+            + documents.stream().map(doc -> buildDocumentView(doc.getValue())).collect(Collectors.joining(""))
+            + "</div></details>\n\n"
+            + "</div></p>";
+    }
+
+    private String buildDocumentView(SupportingEvidenceBundle document) {
+        return "<details class=\"govuk-details\">"
+            + "       <summary class=\"govuk-details__summary\">Application statement</summary>"
+            + "       <div class=\"govuk-details__text\"><dl class=\"govuk-summary-list\">"
+            + renderDocumenntFields("Uploaded by", "HMCTS")
+            + renderDocumenntFields("Date and time uploaded",
+            formatLocalDateTimeBaseUsingFormat(document.getDateTimeUploaded(), TIME_DATE))
+            + renderDocumenntFields("Document name", document.getName())
+            + (document.isConfidentialDocument() ? addConfidentialImage() : "")
+            + renderDocumenntFields("Document", "<a href='http://fake-urlfake-binary-url'>file1</a>")
+            + "</dl></div></details>";
+    }
+
+    private String renderDocumenntFields(String name, String value) {
+        return "<div class=\"govuk-summary-list__row\">"
+            + "     <dt class=\"govuk-summary-list__key\">" + name + "</dt>"
+            + "     <dd class=\"govuk-summary-list__value\">" + value + "</dd>"
+            + "</div>";
+    }
+
+    private String addConfidentialImage() {
+        return "<div class=\"govuk-summary-list__row\">"
+            + "     <dt class=\"govuk-summary-list__key\"><img height='25px' src='https://fake.images.urlconfidential.png' title='Confidential'/></dt>"
+            + "     <dd class=\"govuk-summary-list__value\"></dd>"
+            + "</div>";
     }
 }
