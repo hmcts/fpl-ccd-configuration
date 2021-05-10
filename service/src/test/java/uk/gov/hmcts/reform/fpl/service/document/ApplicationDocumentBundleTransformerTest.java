@@ -67,7 +67,7 @@ public class ApplicationDocumentBundleTransformerTest {
 
         when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
             caseData.getFurtherEvidenceDocuments(), true))
-            .thenReturn(expectedDocumentViewHMCTSNonConfidential());
+            .thenReturn(expectedDocumentViewHMCTS());
 
         when(furtherEvidenceDocumentsTransformer.getFurtherEvidenceDocumentsView(FurtherEvidenceType.APPLICANT_STATEMENT,
             caseData.getFurtherEvidenceDocumentsLA(), true))
@@ -80,7 +80,7 @@ public class ApplicationDocumentBundleTransformerTest {
 
         List<DocumentBundleView> bundle = underTest.getApplicationStatementAndDocumentBundle(caseData, DocumentViewType.HMCTS);
 
-        assertThat(bundle.get(0).getDocuments()).isEqualTo(expectedBundle.get(0).getDocuments());
+        assertThat(bundle).isEqualTo(expectedBundle);
     }
 
     @Test
