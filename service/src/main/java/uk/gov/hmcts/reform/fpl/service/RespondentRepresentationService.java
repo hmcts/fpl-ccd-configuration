@@ -14,7 +14,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
+import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.HashMap;
@@ -33,8 +36,9 @@ public class RespondentRepresentationService {
 
     private final NoticeOfChangeAnswersConverter noticeOfChangeRespondentConverter;
     private final RespondentPolicyConverter respondentPolicyConverter;
+    private final ChangeOfRepresentationService changeOfRepresentationService;
 
-    public Map<String, Object> generateForSubmission(CaseData caseData) {
+    public Map<String, Object> generate(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
 
         Applicant firstApplicant = caseData.getAllApplicants().get(0).getValue();
@@ -63,7 +67,7 @@ public class RespondentRepresentationService {
         return data;
     }
 
-    public List<Element<Respondent>> updateRepresentation(CaseData caseData, UserDetails solicitor) {
+    public Map<String, Object> updateRepresentation(CaseData caseData, UserDetails solicitor) {
         final ChangeOrganisationRequest change = caseData.getChangeOrganisationRequestField();
 
         if (isEmpty(change) || isEmpty(change.getCaseRoleId()) || isEmpty(change.getOrganisationToAdd())) {
@@ -76,16 +80,31 @@ public class RespondentRepresentationService {
 
         final Respondent respondent = respondents.get(solicitorRole.getIndex()).getValue();
 
-        respondent.setLegalRepresentation(YesNo.YES.getValue());
+        RespondentSolicitor removedSolicitor = respondent.getSolicitor();
 
-        respondent.setSolicitor(RespondentSolicitor.builder()
+        RespondentSolicitor addedSolicitor = RespondentSolicitor.builder()
             .email(solicitor.getEmail())
             .firstName(solicitor.getForename())
             .lastName(solicitor.getSurname().orElse(EMPTY))
             .organisation(change.getOrganisationToAdd())
-            .build());
+            .build();
 
-        return caseData.getRespondents1();
+        respondent.setLegalRepresentation(YesNo.YES.getValue());
+        respondent.setSolicitor(addedSolicitor);
+
+        return Map.of(
+            "respondents1", caseData.getRespondents1(),
+            "changeOfRepresentatives", changeOfRepresentationService.changeRepresentative(
+                ChangeOfRepresentationRequest.builder()
+                    .method(ChangeOfRepresentationMethod.NOC)
+                    .by(solicitor.getEmail())
+                    .respondent(respondent)
+                    .current(caseData.getChangeOfRepresentatives())
+                    .addedRepresentative(addedSolicitor)
+                    .removedRepresentative(removedSolicitor)
+                    .build()
+            )
+        );
 
     }
 }
