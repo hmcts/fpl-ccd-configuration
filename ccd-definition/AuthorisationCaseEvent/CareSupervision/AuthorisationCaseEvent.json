@@ -1181,12 +1181,15 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-courtadmin",
-          "caseworker-publiclaw-solicitor"
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
         ],
         "CRUD": "CR"
       },
       {
         "UserRoles": [
+          "caseworker-publiclaw-solicitor",
           "caseworker-publiclaw-magistrate",
           "caseworker-publiclaw-gatekeeper",
           "caseworker-publiclaw-judiciary"

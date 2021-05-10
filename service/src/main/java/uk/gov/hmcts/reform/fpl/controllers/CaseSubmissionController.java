@@ -126,7 +126,7 @@ public class CaseSubmissionController extends CallbackController {
                 .build());
 
             if (featureToggleService.hasRSOCaseAccess()) {
-                data.putAll(respondentRepresentationService.generateForSubmission(caseData));
+                data.putAll(respondentRepresentationService.generate(caseData));
             }
         }
 

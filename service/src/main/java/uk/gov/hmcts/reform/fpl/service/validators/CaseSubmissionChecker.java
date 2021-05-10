@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.validators;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.Event;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.submission.EventValidationErrors;
 
 import java.util.List;
 
@@ -20,19 +21,22 @@ import static uk.gov.hmcts.reform.fpl.enums.Event.RESPONDENTS;
 public class CaseSubmissionChecker extends CompoundEventChecker {
 
     private static final List<Event> REQUIRED_EVENTS = List.of(
-            CASE_NAME,
-            ORDERS_SOUGHT,
-            HEARING_URGENCY,
-            GROUNDS,
-            ORGANISATION_DETAILS,
-            CHILDREN,
-            RESPONDENTS,
-            ALLOCATION_PROPOSAL
-    );
+        CASE_NAME,
+        ORDERS_SOUGHT,
+        HEARING_URGENCY,
+        GROUNDS,
+        ORGANISATION_DETAILS,
+        CHILDREN,
+        RESPONDENTS,
+        ALLOCATION_PROPOSAL);
 
     @Override
     public List<String> validate(CaseData caseData) {
         return super.validate(caseData, REQUIRED_EVENTS);
+    }
+
+    public List<EventValidationErrors> validateAsGroups(CaseData caseData) {
+        return super.validateEvents(caseData, REQUIRED_EVENTS);
     }
 
     @Override
