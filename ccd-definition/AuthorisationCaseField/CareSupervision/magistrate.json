@@ -1608,5 +1608,12 @@
     "CaseFieldID": "manageDocumentsRespondentStatementsHeading",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "changeOfRepresentatives",
+    "UserRole": "caseworker-publiclaw-magistrate",
+    "CRUD": "CRU"
   }
 ]
