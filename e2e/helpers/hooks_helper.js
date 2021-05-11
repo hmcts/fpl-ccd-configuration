@@ -7,13 +7,6 @@ const retryableErrors = [
   'net::ERR_ABORTED'];
 
 module.exports = class HooksHelpers extends Helper {
-  _test(test) {
-    const retries = parseInt(process.env.TEST_RETRIES || '-1');
-    if (retries !== -1 || test.retries() === -1) {
-      test.retries(retries);
-    }
-  }
-
   _beforeSuite() {
     recorder.retry({
       retries: 10,

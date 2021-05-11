@@ -96,7 +96,7 @@ module.exports = {
   ctscEmail: process.env.CTSC_EMAIL || 'FamilyPublicLaw+ctsc@gmail.com',
   TestOutputDir: process.env.E2E_OUTPUT_DIR || './output',
   TestForAccessibility: process.env.TESTS_FOR_ACCESSIBILITY === 'true',
-  maxTestRetries: parseInt(process.env.E2E_TEST_RETRIES) || 2,
+  maxTestRetries: parseInt(process.env.TEST_RETRIES) || 2,
   definition: {
     jurisdiction: 'PUBLICLAW',
     jurisdictionFullDesc: 'Public Law',
