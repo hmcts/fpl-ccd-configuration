@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOAddressPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.IssuingDetailsApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
@@ -28,6 +29,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOAddressPrePopulator epoAddressPrePopulator;
+    private final IssuingDetailsApprovalDateBlockPrePopulator issuingDetailsApprovalDateBlockPrePopulator;
 
     // Sections
     private final IssuingDetailsSectionPrePopulator issuingDetailsPrePopulator;
@@ -46,7 +48,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
         blockOrderPrePopulatorMap = List.of(
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator,
-            epoAddressPrePopulator
+            epoAddressPrePopulator,
+            issuingDetailsApprovalDateBlockPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()

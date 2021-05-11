@@ -39,7 +39,7 @@ public enum Order {
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
-        "Supervision order", "Section 35 Children Act 1989", "C35a - Supervision Order",
+        "Supervision order", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989", "C35a - Supervision Order",
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, SUPERVISION_ORDER_END_DATE, REVIEW_DRAFT_ORDER)
     );
 

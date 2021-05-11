@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
@@ -71,7 +71,7 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
             (numOfChildren == 1) ? "child" : CHILDREN,
             numOfMonths,
             formatLocalDateTimeBaseUsingFormat(orderExpiration,
-                String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
+                String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
     }
 
 }
