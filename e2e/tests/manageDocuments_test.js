@@ -44,22 +44,42 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
 
-  I.dontSeeInTab(['Email to say evidence will be late']);
-  assertFurtherEvidence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
+  //I.dontSeeInTab(['Email to say evidence will be late']);
+  I.click(locate('summary').withText('Other reports'));
+  I.click(locate('summary').withText('Email with evidence attached'));
+  //do we need notes to display?
+  I.seeInExpandedElement('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-  assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
-  assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+  I.click(locate('summary').withText('C2 supporting document'));
+  I.seeInExpandedElement('C2 supporting document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+
+
+  I.click(locate('summary').withText('Expert reports'));
+  I.click(locate('summary').withText('Email with evidence attached'));
+  //this one needs to be confidential and notes missing
+  I.seeInExpandedElement('Correspondence document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
 
-  assertConfidentialFurtherEvidence(I, 'HMCTS', 1, 'Email to say evidence will be late', 'Evidence will be late');
-  assertFurtherEvidence(I, 'HMCTS', 2, 'Email with evidence attached', 'Case evidence included');
+  I.click(locate('summary').withText('Expert reports'));
+  I.click(locate('summary').withText('Email to say evidence will be late'));
+  //CHECK confidential tag exists
+  I.seeInExpandedElement('Email to say evidence will be late', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-  assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
-  assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+  //check confidential tag
+  I.click(locate('summary').withText('Correspondence document'));
+  I.seeInExpandedElement('Correspondence document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+
+
+  I.click(locate('summary').withText('Other reports'));
+  I.click(locate('summary').withText('Email with evidence attached'));
+  I.seeInExpandedElement('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+
+  I.click(locate('summary').withText('C2 supporting document'));
+  I.seeInExpandedElement('C2 supporting document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -258,14 +278,6 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertConfidentialC2SupportingDocuments(I, 'Other applications', 3, 'Correspondence document', 'Test notes');
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
-
-const assertConfidentialFurtherEvidence = (I, prefix, index, docName, notes) => {
-  assertSupportingEvidence(I, `${prefix} further evidence documents ${index}`, docName, notes, true);
-};
-
-const assertFurtherEvidence = (I, prefix, index, docName, notes) => {
-  assertSupportingEvidence(I, `${prefix} further evidence documents ${index}`, docName, notes, false);
-};
 
 const assertConfidentialCorrespondence = (I, suffix, index, docName, notes) => {
   assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, true);

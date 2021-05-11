@@ -61,4 +61,15 @@ module.exports = {
   dontSeeInTab(pathToField) {
     this.dontSeeElement(locate(tabFieldSelector(pathToField)));
   },
+
+  seeInExpandedElement(title, uploadedBy, dateTimeUploaded) {
+    this.seeElement(locate('details')
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded));
+  },
 };
