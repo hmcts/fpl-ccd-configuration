@@ -11,9 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
-import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -44,9 +42,6 @@ class RespondentValidatorTest {
 
     @Mock
     private RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
-
-    @Mock
-    private ValidateGroupService validateGroupService;
 
     @InjectMocks
     private RespondentValidator underTest;
@@ -117,15 +112,12 @@ class RespondentValidatorTest {
         mockServices(caseData);
         when(respondentAfterSubmissionValidator.validate(caseData, CASE_DATA_BEFORE))
             .thenReturn(List.of("afterSubmissionValidatorError"));
-        when(validateGroupService.validateGroup(caseData, RespondentSolicitorGroup.class))
-            .thenReturn(List.of("respondentGroupValidatorError"));
 
         List<String> actual = underTest.validate(caseData, CASE_DATA_BEFORE);
 
         assertThat(actual).isEqualTo(List.of(
             "emailValidatorError",
-            "afterSubmissionValidatorError",
-            "respondentGroupValidatorError"));
+            "afterSubmissionValidatorError"));
     }
 
     @Test

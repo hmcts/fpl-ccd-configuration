@@ -125,7 +125,7 @@ public class CaseSubmissionController extends CallbackController {
                 .put("document_filename", document.originalDocumentName)
                 .build());
 
-            data.putAll(respondentRepresentationService.generateForSubmission(caseData));
+            data.putAll(respondentRepresentationService.generate(caseData));
         }
 
         return respond(caseDetails, errors);

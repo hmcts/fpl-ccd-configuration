@@ -8,9 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
-import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ public class RespondentValidator {
     private final RespondentService respondentService;
     private final ValidateEmailService validateEmailService;
     private final RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
-    private final ValidateGroupService validateGroupService;
 
     private final Time time;
 
@@ -46,7 +43,6 @@ public class RespondentValidator {
 
         if (caseData.getState() != OPEN) {
             errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore));
-            errors.addAll(validateGroupService.validateGroup(caseData, RespondentSolicitorGroup.class));
         }
 
         return errors;

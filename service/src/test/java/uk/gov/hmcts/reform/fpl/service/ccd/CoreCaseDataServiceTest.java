@@ -17,10 +17,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 
 import java.util.List;
 import java.util.Map;
@@ -44,11 +42,9 @@ class CoreCaseDataServiceTest {
     private static final long CASE_ID = 1L;
 
     @Mock
-    private SystemUpdateUserConfiguration userConfig;
+    private SystemUserService systemUserService;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
-    @Mock
-    private IdamClient idamClient;
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
     @Mock
@@ -71,10 +67,8 @@ class CoreCaseDataServiceTest {
 
         @BeforeEach
         void setUp() {
-            when(idamClient.getUserInfo(USER_AUTH_TOKEN))
-                .thenReturn(UserInfo.builder().uid(userId).build());
-            when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
-                .thenReturn(USER_AUTH_TOKEN);
+            when(systemUserService.getUserId(USER_AUTH_TOKEN)).thenReturn(userId);
+            when(systemUserService.getSysUserToken()).thenReturn(USER_AUTH_TOKEN);
 
             when(coreCaseDataApi.startEventForCaseWorker(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, userId, JURISDICTION,
                 CASE_TYPE, Long.toString(CASE_ID), eventId))
@@ -148,8 +142,7 @@ class CoreCaseDataServiceTest {
         List<CaseDetails> cases = List.of(CaseDetails.builder().id(RandomUtils.nextLong()).build());
         SearchResult searchResult = SearchResult.builder().cases(cases).build();
 
-        when(idamClient.getAccessToken(userConfig.getUserName(), userConfig.getPassword()))
-            .thenReturn(USER_AUTH_TOKEN);
+        when(systemUserService.getSysUserToken()).thenReturn(USER_AUTH_TOKEN);
 
         when(coreCaseDataApi.searchCases(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, caseType, query))
             .thenReturn(searchResult);
@@ -158,7 +151,7 @@ class CoreCaseDataServiceTest {
 
         assertThat(returnedSearchResult).isEqualTo(searchResult);
         verify(coreCaseDataApi).searchCases(USER_AUTH_TOKEN, SERVICE_AUTH_TOKEN, caseType, query);
-        verify(idamClient).getAccessToken(userConfig.getUserName(), userConfig.getPassword());
+        verify(systemUserService).getSysUserToken();
     }
 
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {

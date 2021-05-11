@@ -10,8 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 
 import java.util.List;
 import java.util.Map;
@@ -22,20 +23,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseData;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {RespondentSolicitorContentProvider.class, LookupTestConfig.class})
-class RespondentSolicitorContentProviderTest extends AbstractEmailContentProviderTest {
+@ContextConfiguration(classes = {RegisteredRespondentSolicitorContentProvider.class, LookupTestConfig.class})
+class RegisteredRespondentSolicitorContentProviderTest extends AbstractEmailContentProviderTest {
 
     public static final String FIRST_NAME = "John";
     public static final String LAST_NAME = "Smith";
 
     @Autowired
-    private RespondentSolicitorContentProvider underTest;
+    private RegisteredRespondentSolicitorContentProvider underTest;
 
     @ParameterizedTest
     @MethodSource("representativeNameSource")
     void shouldReturnExpectedMapWithRepresentativeNameAndLocalAuthorityName(
         String firstName, String lastName, String expectedFullName) {
-        RespondentSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(expectedFullName);
+        RegisteredRespondentSolicitorTemplate expectedTemplate = buildRegisteredSolicitorTemplate(expectedFullName);
 
         RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
             .firstName(firstName)
@@ -68,8 +69,8 @@ class RespondentSolicitorContentProviderTest extends AbstractEmailContentProvide
         );
     }
 
-    private RespondentSolicitorTemplate buildRegisteredSolicitorTemplate(String expectedFullName) {
-        return RespondentSolicitorTemplate.builder()
+    private RegisteredRespondentSolicitorTemplate buildRegisteredSolicitorTemplate(String expectedFullName) {
+        return RegisteredRespondentSolicitorTemplate.builder()
             .localAuthority(LOCAL_AUTHORITY_NAME)
             .salutation(expectedFullName)
             .build();

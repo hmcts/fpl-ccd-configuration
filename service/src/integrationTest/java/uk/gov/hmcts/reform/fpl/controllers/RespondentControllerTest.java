@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
@@ -28,11 +29,14 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -45,22 +49,24 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     private static final String SOLICITOR_ORG_ID = "Organisation ID";
     private static final String SOLICITOR_EMAIL = "solicitor@email.com";
+    private static final String DOB_ERROR = "Date of birth for respondent 1 cannot be in the future";
+    private static final String DOB_ERROR_2 = "Date of birth for respondent 2 cannot be in the future";
+    private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
+    private static final String CASE_ID = "1234567890123456";
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     RespondentControllerTest() {
         super("enter-respondents");
     }
 
-    private static final String DOB_ERROR = "Date of birth for respondent 1 cannot be in the future";
-    private static final String DOB_ERROR_2 = "Date of birth for respondent 2 cannot be in the future";
-    private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
-    private static final String CASE_ID = "12345";
-    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @MockBean
     private NotificationClient notificationClient;
 
     @Test
-    void aboutToStartShouldPrepopulateRespondent() {
+    void aboutToStartShouldPrePopulateRespondent() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("data", "some data"))
             .build();
@@ -163,21 +169,81 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldReturnRespondentRemovedValidationErrorsWhenRespondentRemoved() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(List.of())
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(element(respondent(dateNow(), "test@test.com"))))
             .state(SUBMITTED)
             .build();
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(asCaseDetails(caseData))
-            .caseDetailsBefore(asCaseDetails(CaseData.builder()
-                .respondents1(List.of(element(respondent(dateNow(), "test@test.com"))))
-                .build()))
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of())
             .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest);
 
-        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("Removing an existing respondent is not allowed"));
+        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("You cannot remove a respondent from the case"));
+    }
+
+    @Test
+    void shouldAllowAdminToUpdateRespondentSolicitorOrganisationWhenNoCIsEnabled() {
+        when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
+
+        Element<Respondent> respondent = element(respondent(dateNow(), "test@test.com"));
+        Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
+            .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
+                .organisation(Organisation.organisation("NEW"))
+                .build())
+            .build());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(respondent))
+            .state(SUBMITTED)
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .respondents1(List.of(updatedRespondent))
+            .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        List<String> errors = postMidEventWithUserRole(callbackRequest, HMCTS_ADMIN.getRoleName()).getErrors();
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisationWhenNoCIsEnabled() {
+        when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
+
+        Element<Respondent> respondent = element(respondent(dateNow(), "respondent1@test.com"));
+        Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
+            .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
+                .organisation(Organisation.organisation("NEW_ORG"))
+                .build())
+            .build());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(respondent))
+            .state(SUBMITTED)
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .respondents1(List.of(updatedRespondent))
+            .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        List<String> errors = postMidEventWithUserRole(callbackRequest, LOCAL_AUTHORITY.getRoleName()).getErrors();
+
+        assertThat(errors)
+            .isEqualTo(List.of("You cannot change organisation details for respondent 1's legal representative"));
     }
 
     @Test
@@ -224,9 +290,10 @@ class RespondentControllerTest extends AbstractCallbackTest {
             .respondents1(List.of(oldRespondent))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-            toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore))
-        );
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
+
         CaseData responseData = extractCaseData(response);
 
         Respondent firstRespondent = responseData.getRespondents1().get(0).getValue();
@@ -240,7 +307,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseData caseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
-        CaseData initialData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData initialData = extractCaseData(callbackRequest);
 
         assertThat(caseData.getConfidentialRespondents())
             .containsOnly(retainConfidentialDetails(initialData.getAllRespondents().get(0)));

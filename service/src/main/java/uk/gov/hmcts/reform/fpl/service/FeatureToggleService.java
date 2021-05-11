@@ -67,6 +67,10 @@ public class FeatureToggleService {
         return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
+    public boolean isNoticeOfChangeEnabled() {
+        return ldClient.boolVariation("noc", createLDUser(), false);
+    }
+
     private LDUser createLDUser() {
         return createLDUser(Map.of());
     }

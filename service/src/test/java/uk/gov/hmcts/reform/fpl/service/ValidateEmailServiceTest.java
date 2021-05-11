@@ -90,7 +90,7 @@ class ValidateEmailServiceTest {
     //See https://github.com/alphagov/notifications-utils/blob/master/tests/test_recipient_validation.py#L122-L152
     private static Stream<String> invalidEmailAddresses() {
         return Stream.of(
-            "incorrect@tld.co.k",
+            "invalid@tld.co.k",
             "<John Doe> johndoe@email.com",
             "very.unusual.”@”.unusual.com@example.com",
             "very.”(),:;<>[]”.VERY.”very@\\\\ \"very”.unusual@strange.example.com",

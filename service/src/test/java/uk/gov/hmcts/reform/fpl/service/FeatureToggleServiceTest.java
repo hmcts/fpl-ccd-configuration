@@ -162,6 +162,18 @@ class FeatureToggleServiceTest {
             eq(false));
     }
 
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldMakeCorrectCallForIsNoticeOfChangeEnabled(Boolean toggleState) {
+        givenToggle(toggleState);
+
+        assertThat(service.isNoticeOfChangeEnabled()).isEqualTo(toggleState);
+        verify(ldClient).boolVariation(
+            eq("noc"),
+            argThat(ldUser(ENVIRONMENT).build()),
+            eq(false));
+    }
+
     private static Stream<Arguments> userAttributesTestSource() {
         return Stream.of(
             Arguments.of(
