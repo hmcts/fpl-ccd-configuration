@@ -126,6 +126,51 @@ class CaseSubmissionGenerationServiceTest {
     }
 
     @Nested
+    class DocmosisCaseSubmissionSigneeNameTest {
+        @Test
+        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerPresent() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager("legal team manager")
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getSigneeName()).isEqualTo("legal team manager");
+        }
+
+        @Test
+        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerIsEmpty() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager("")
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getSigneeName()).isEqualTo("Professor");
+        }
+
+        @Test
+        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerIsNull() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager(null)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getSigneeName()).isEqualTo("Professor");
+        }
+    }
+
+    @Nested
     class DocmosisCaseSubmissionOrdersNeededTest {
         @Test
         void shouldReturnDefaultValueForOrdersNeededWhenOrderTypeEmpty() {

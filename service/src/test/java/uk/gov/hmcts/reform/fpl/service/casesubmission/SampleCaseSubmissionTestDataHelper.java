@@ -43,7 +43,7 @@ public class SampleCaseSubmissionTestDataHelper {
             .internationalElement(expectedDocmosisInternationalElement())
             .courtSeal(null)
             .draftWaterMark(null)
-            .userFullName("Professor")
+            .signeeName("Professor")
             .submittedDate(now().format(ofPattern("d MMMM yyyy")))
             .groundsForEPOReason("There’s reasonable cause to believe the child is likely to suffer"
                 + " significant harm if they’re not moved to accommodation provided by you, or on your behalf\n\n"

@@ -113,7 +113,7 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData))
-            .userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
+            .signeeName(getSigneeName(caseData.getAllApplicants()));
 
         return applicationFormBuilder.build();
     }
@@ -264,6 +264,13 @@ public class CaseSubmissionGenerationService
     private String getThresholdDetails(final Grounds grounds) {
         return (isNotEmpty(grounds) && StringUtils.isNotEmpty(grounds.getThresholdDetails()))
             ? grounds.getThresholdDetails() : DEFAULT_STRING;
+    }
+
+    private String getSigneeName(final List<Element<Applicant>> applicants) {
+        String legalTeamManager = applicants.get(0).getValue().getParty().getLegalTeamManager();
+
+        return isNotEmpty(legalTeamManager) ? legalTeamManager : idamClient.getUserInfo(requestData.authorisation())
+            .getName();
     }
 
     private String buildGroundsThresholdReason(final List<String> thresholdReasons) {

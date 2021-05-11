@@ -10,6 +10,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -32,6 +35,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @WebMvcTest(CaseSubmissionController.class)
@@ -64,14 +68,31 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Test
     void shouldAddConsentLabelToCaseDetails() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(CaseDetails.builder()
-            .data(of("caseName", "title"))
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(CaseData.builder()
+            .caseName("title")
             .build());
 
         assertThat(callbackResponse.getData())
             .containsEntry("caseName", "title")
             .containsEntry("submissionConsentLabel",
                 "I, Emma Taylor, believe that the facts stated in this application are true.");
+    }
+
+    @Test
+    void shouldAddConsentLabelToCaseDetailsWhenLegalTeamManagerPresent() {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(CaseData.builder()
+            .caseName("title")
+            .applicants(wrapElements(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .legalTeamManager("legal team manager")
+                    .build())
+                .build()))
+            .build());
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("submissionConsentLabel",
+                "I, legal team manager, believe that the facts stated in this application are true.");
     }
 
     @Test

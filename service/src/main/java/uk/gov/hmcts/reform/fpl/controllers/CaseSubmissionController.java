@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -88,8 +89,17 @@ public class CaseSubmissionController extends CallbackController {
             }
         }
 
-        String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation())
-            .getName());
+        String signeeName = idamClient.getUserInfo(requestData.authorisation()).getName();
+
+        if (caseData.getApplicants() != null) {
+            String legalTeamManager = caseData.getApplicants().get(0).getValue().getParty().getLegalTeamManager();
+            if (isNotBlank(legalTeamManager)) {
+                signeeName = legalTeamManager;
+            }
+        }
+
+        String label = String.format(CONSENT_TEMPLATE, signeeName);
+
         data.put("submissionConsentLabel", label);
 
         return respond(caseDetails);

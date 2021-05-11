@@ -26,7 +26,7 @@ public class DocmosisCaseSubmission implements DocmosisData {
     private final Allocation allocation;
     private final DocmosisHearingPreferences hearingPreferences;
     private final DocmosisInternationalElement internationalElement;
-    private final String userFullName;
+    private final String signeeName;
     private final String submittedDate;
     private final String groundsForEPOReason;
     private final String groundsThresholdReason;
