@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.document;
+package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ApplicationDocumentBundleTransformer.class, FurtherEvidenceDocumentsTransformer.class})
-public class ApplicationDocumentBundleTransformerTest {
+class ApplicationDocumentBundleTransformerTest {
 
     @MockBean
     private FurtherEvidenceDocumentsTransformer furtherEvidenceDocumentsTransformer;

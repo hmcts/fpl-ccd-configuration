@@ -53,7 +53,7 @@ class DocumentsListRenderer {
 
         List<Pair<String, String>> documentFields = getFieldsBasedOnDocumentType(documentView);
 
-        String details = String.join("", renderItems(documentFields));
+        var details = String.join("", renderItems(documentFields));
 
         return collapsible(documentView.getTitle(), details);
     }
@@ -114,7 +114,7 @@ class DocumentsListRenderer {
     private String getDocumentUrl(DocumentReference document) {
         String binaryUrl = document.getBinaryUrl();
         try {
-            URI uri = new URI(binaryUrl);
+            var uri = new URI(binaryUrl);
             return caseUrlService.getBaseUrl() + uri.getPath();
         } catch (URISyntaxException e) {
             log.error(binaryUrl + " url incorrect.", e);

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.document;
+package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {FurtherEvidenceDocumentsTransformer.class})
-public class FurtherEvidenceDocumentsBundleTransformerTest {
+class FurtherEvidenceDocumentsBundleTransformerTest {
 
     @Autowired
     private FurtherEvidenceDocumentsTransformer underTest;

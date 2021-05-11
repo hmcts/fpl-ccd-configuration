@@ -99,6 +99,6 @@ public class FeatureToggleService {
 
     public boolean isFurtherEvidenceDocumentTabEnabled() {
         return ldClient.boolVariation("further-evidence-document-tab",
-            createLDUser(), true);
+            createLDUser(), false);
     }
 }
