@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
@@ -22,38 +21,20 @@ import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.util.List;
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 
 @Api
 @RestController
 @RequestMapping("/callback/manage-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageOrdersController extends CallbackController {
-
-    private final Time time;
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
-
-    @PostMapping("/order-selection/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-
-        data.put("dateOfIssue", time.now().toLocalDate());
-        data.put("dateAndTimeOfIssue", time.now().toLocalDate().atStartOfDay());
-
-        return respond(caseDetails);
-    }
 
     @PostMapping("/order-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {

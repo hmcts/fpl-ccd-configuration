@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
@@ -12,10 +11,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -28,6 +23,7 @@ public class IssuingDetailsApprovalDateBlockPrePopulator implements QuestionBloc
     public OrderQuestionBlock accept() {
         return APPROVAL_DATE;
     }
+
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
 

@@ -23,5 +23,3 @@ public class IssuingDetailsSectionPrePopulator implements OrderSectionPrePopulat
         return Map.of("issuingDetailsSectionSubHeader", type.getHistoryTitle());
     }
 }
-
-// TODO: Checkpoint. Is there where i should add the population of the date to the "Add issuing details page" for Approval date

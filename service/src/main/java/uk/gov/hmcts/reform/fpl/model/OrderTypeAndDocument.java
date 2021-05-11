@@ -50,7 +50,6 @@ public class OrderTypeAndDocument {
 
     @JsonIgnore
     public DocmosisTemplates getDocmosisTemplate() {
-        // TODO Checkmark. Is Supervision needed here?
         return EMERGENCY_PROTECTION_ORDER == type ? EPO : ORDER;
     }
 

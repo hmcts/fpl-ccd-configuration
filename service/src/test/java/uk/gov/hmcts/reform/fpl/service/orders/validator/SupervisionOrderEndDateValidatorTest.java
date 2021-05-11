@@ -79,5 +79,4 @@ class SupervisionOrderEndDateValidatorTest {
 
         Assertions.assertThat(underTest.validate(caseData)).isEmpty();
     }
-
 }

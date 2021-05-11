@@ -16,7 +16,8 @@ class IssuingDetailsApprovalDateBlockPrePopulatorTest {
     private final Time time = new FixedTime();
     private static final String APPROVAL_DATE_FIELD = "manageOrdersApprovalDate";
 
-    private final IssuingDetailsApprovalDateBlockPrePopulator underTest = new IssuingDetailsApprovalDateBlockPrePopulator(time);
+    private final IssuingDetailsApprovalDateBlockPrePopulator underTest =
+        new IssuingDetailsApprovalDateBlockPrePopulator(time);
 
     @Test
     void testApprovalDate() {
@@ -33,7 +34,8 @@ class IssuingDetailsApprovalDateBlockPrePopulatorTest {
 
     @Test
     void shouldRetainCurrentlyPopulatedValue() {
-        CaseData caseData = CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersApprovalDate(time.now().minusMonths(1).toLocalDate()).build()).build();
+        CaseData caseData = CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder()
+            .manageOrdersApprovalDate(time.now().minusMonths(1).toLocalDate()).build()).build();
 
         assertThat(underTest.prePopulate(caseData)).isEmpty();
     }
