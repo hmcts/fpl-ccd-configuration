@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocum
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.NONCONFIDENTIAL;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_CONFIDENTIAL_DOCUMENT;
@@ -37,7 +38,7 @@ public class FurtherEvidenceDocumentsBundleTransformerTest {
         = buildFurtherEvidenceDocumentsLA();
 
     @Test
-    void shouldGetFurtherEvidenceDocumentBundleForHMCTSView() {
+    void shouldGetFurtherEvidenceDocumentBundleForHmctsView() {
         CaseData caseData = CaseData.builder()
             .furtherEvidenceDocuments(furtherEvidenceDocuments)
             .furtherEvidenceDocumentsLA(furtherEvidenceDocumentsLA)
@@ -47,7 +48,7 @@ public class FurtherEvidenceDocumentsBundleTransformerTest {
             .name("Expert reports")
             .documents((List.of(buildDocumentView(ADMIN_CONFIDENTIAL_DOCUMENT.getValue()),
                 buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue())
-                ))).build();
+            ))).build();
 
         DocumentBundleView guardianBundle = DocumentBundleView.builder()
             .name("Child's guardian reports")
@@ -106,7 +107,7 @@ public class FurtherEvidenceDocumentsBundleTransformerTest {
 
         List<DocumentBundleView> expectedBundle = List.of(guardianBundle, expertBundle);
 
-        List<DocumentBundleView> bundle = underTest.getFurtherEvidenceBundleView(caseData, DocumentViewType.NONCONFIDENTIAL);
+        List<DocumentBundleView> bundle = underTest.getFurtherEvidenceBundleView(caseData, NONCONFIDENTIAL);
 
         assertThat(bundle).isEqualTo(expectedBundle);
     }

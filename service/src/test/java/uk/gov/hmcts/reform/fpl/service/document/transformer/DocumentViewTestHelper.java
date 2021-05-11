@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -18,19 +21,19 @@ public class DocumentViewTestHelper {
     }
 
     public static final Element<SupportingEvidenceBundle> ADMIN_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("Admin uploaded evidence1", "HMCTS", true, FurtherEvidenceType.EXPERT_REPORTS);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false, FurtherEvidenceType.EXPERT_REPORTS);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false, EXPERT_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT2
-        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false, FurtherEvidenceType.OTHER_REPORTS);
+        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false, OTHER_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true, FurtherEvidenceType.GUARDIAN_REPORTS);
+        = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true, GUARDIAN_REPORTS);
 
     public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT =
-        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false, FurtherEvidenceType.GUARDIAN_REPORTS);
+        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false, GUARDIAN_REPORTS);
 
     public static final Element<Respondent> RESPONDENT1 = buildRespondent("Dave", "Miller");
     public static final Element<Respondent> RESPONDENT2 = buildRespondent("Will", "Smith");
