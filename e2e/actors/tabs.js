@@ -73,6 +73,18 @@ module.exports = {
       .withText(dateTimeUploaded));
   },
 
+  seeInExpandedConfidentialDocument(title, uploadedBy, dateTimeUploaded) {
+    this.seeElement(locate('details')
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded)
+      .withDescendant(locate('img')));
+  },
+
   expandDocumentSection(documentSection, documentTitle) {
     this.click(locate('summary').withText(documentSection));
     this.expandDocument(documentTitle);
