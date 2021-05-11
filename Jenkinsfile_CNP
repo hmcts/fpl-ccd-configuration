@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@use-upstream-sonar")
 import uk.gov.hmcts.contino.AppPipelineConfig
 import uk.gov.hmcts.contino.AppPipelineDsl
 
@@ -136,7 +136,7 @@ withPipeline(type, product, component) {
             set -e
 
             git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
-            
+
             git fetch origin perftest:perftest
             git push --force origin HEAD:perftest
           '''
