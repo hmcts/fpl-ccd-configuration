@@ -9,22 +9,17 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
-import uk.gov.hmcts.reform.fpl.validation.groups.RespondentSolicitorGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.validation.Valid;
-import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -45,38 +40,6 @@ public class Respondent implements Representable, ConfidentialParty<Respondent> 
     private String legalRepresentation;
 
     private RespondentSolicitor solicitor;
-
-    @JsonIgnore
-    @AssertTrue(message = "Select if the respondent needs representation", groups = RespondentSolicitorGroup.class)
-    public boolean hasLegalRepresentation() {
-        if (isNotEmpty(representedBy)) {
-            return true;
-        }
-        return legalRepresentation != null;
-    }
-
-    @JsonIgnore
-    @AssertTrue(message = "Add the details for respondent solicitors", groups = RespondentSolicitorGroup.class)
-    public boolean hasRequiredSolicitorOrganisationDetails() {
-        if (YES.getValue().equals(legalRepresentation)) {
-            //User selected yes but did not enter any details
-            if (isEmpty(solicitor)) {
-                return false;
-            }
-            //User selected an organisation or user entered unregistered organisation details
-            return hasRegisteredOrganisation() || hasUnregisteredOrganisation();
-        }
-        return true;
-    }
-
-    @JsonIgnore
-    @AssertTrue(message = "Add email addresses for respondent solicitors", groups = RespondentSolicitorGroup.class)
-    public boolean isEmailEnteredWhenRequired() {
-        if (YES.getValue().equals(legalRepresentation)) {
-            return isNotEmpty(solicitor.getEmail());
-        }
-        return true;
-    }
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
