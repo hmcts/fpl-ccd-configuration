@@ -55,7 +55,7 @@ class EPOEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(approvalDate.plusDays(10))
+                .manageOrdersEndDateTime(approvalDate.plusDays(8).plusSeconds(1))
                 .build())
             .build();
 
@@ -69,7 +69,7 @@ class EPOEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(approvalDate.plusDays(1))
+                .manageOrdersEndDateTime(approvalDate.plusDays(1).minusSeconds(1))
                 .build())
             .build();
 

@@ -98,7 +98,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             "approver", "YES",
             "previewOrder", "YES",
             "furtherDirections", "YES",
-            "orderDetails","NO",
+            "orderDetails", "NO",
             "whichChildren", "YES",
             "approvalDate", "YES",
             "approvalDateTime", "NO",
@@ -247,7 +247,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         final LocalDateTime approvalDate = LocalDateTime.now().minusDays(5);
 
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
-            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(9))).build();
+            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(8).plusSeconds(1))).build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
