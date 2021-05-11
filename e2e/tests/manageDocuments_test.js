@@ -47,39 +47,33 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
 
   //I.dontSeeInTab(['Email to say evidence will be late']);
-  I.click(locate('summary').withText('Other reports'));
-  I.click(locate('summary').withText('Email with evidence attached'));
+  I.expandDocumentSection('Other reports', 'Email with evidence attached');
   //do we need notes to display?
-  I.seeInExpandedElement('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInExpandedDocument('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-  I.click(locate('summary').withText('C2 supporting document'));
-  I.seeInExpandedElement('C2 supporting document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.expandDocument('C2 supporting document');
+  I.seeInExpandedDocument('C2 supporting document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
 
-
-  I.click(locate('summary').withText('Expert reports'));
-  I.click(locate('summary').withText('Email with evidence attached'));
+  I.expandDocumentSection('Expert reports', 'Email with evidence attached');
   //this one needs to be confidential and notes missing
-  I.seeInExpandedElement('Correspondence document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInExpandedDocument('Correspondence document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
 
-  I.click(locate('summary').withText('Expert reports'));
-  I.click(locate('summary').withText('Email to say evidence will be late'));
+  I.expandDocumentSection('Expert reports', 'Email to say evidence will be late');
   //CHECK confidential tag exists
-  I.seeInExpandedElement('Email to say evidence will be late', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.seeInExpandedDocument('Email to say evidence will be late', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
   //check confidential tag
-  I.click(locate('summary').withText('Correspondence document'));
-  I.seeInExpandedElement('Correspondence document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.expandDocument('Correspondence document');
+  I.seeInExpandedDocument('Correspondence document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
 
+  I.expandDocumentSection('Other reports', 'Email with evidence attached');
+  I.seeInExpandedDocument('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-  I.click(locate('summary').withText('Other reports'));
-  I.click(locate('summary').withText('Email with evidence attached'));
-  I.seeInExpandedElement('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-
-  I.click(locate('summary').withText('C2 supporting document'));
-  I.seeInExpandedElement('C2 supporting document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.expandDocument('C2 supporting document');
+  I.seeInExpandedDocument('C2 supporting document', 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {

@@ -62,7 +62,7 @@ module.exports = {
     this.dontSeeElement(locate(tabFieldSelector(pathToField)));
   },
 
-  seeInExpandedElement(title, uploadedBy, dateTimeUploaded) {
+  seeInExpandedDocument(title, uploadedBy, dateTimeUploaded) {
     this.seeElement(locate('details')
       .withChild(locate('summary')
         .withText(title))
@@ -71,5 +71,14 @@ module.exports = {
       .withText(uploadedBy)
       .withText('Date and time uploaded')
       .withText(dateTimeUploaded));
+  },
+
+  expandDocumentSection(documentSection, documentTitle) {
+    this.click(locate('summary').withText(documentSection));
+    this.expandDocument(documentTitle);
+  },
+
+  expandDocument(documentTitle) {
+    this.click(locate('summary').withText(documentTitle));
   },
 };
