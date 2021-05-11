@@ -70,7 +70,9 @@ module.exports = {
       .withText('Uploaded by')
       .withText(uploadedBy)
       .withText('Date and time uploaded')
-      .withText(dateTimeUploaded));
+      .withText(dateTimeUploaded)
+      .withText('Document')
+      .withText('mockFile.txt'));
   },
 
   seeInExpandedConfidentialDocument(title, uploadedBy, dateTimeUploaded) {
@@ -82,7 +84,23 @@ module.exports = {
       .withText(uploadedBy)
       .withText('Date and time uploaded')
       .withText(dateTimeUploaded)
-      .withDescendant(locate('img').withAttr({ title : 'Confidential'})));
+      .withDescendant(locate('img').withAttr({ title : 'Confidential'}))
+      .withText('Document')
+      .withText('mockFile.txt'));
+  },
+
+  dontSeeDocumentSection(title) {
+    this.dontSeeElement(locate('details')
+      .withChild(locate('summary')
+        .withText(title)));
+  },
+
+  dontSeeConfidentialInExpandedDocument(name) {
+    this.dontSeeElement(locate('details')
+      .withChild(locate('summary')
+        .withText(name))
+      .withChild(locate('div'))
+      .withChild(locate('img')));
   },
 
   expandDocumentSection(documentSection, documentTitle) {
