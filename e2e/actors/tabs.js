@@ -82,7 +82,7 @@ module.exports = {
       .withText(uploadedBy)
       .withText('Date and time uploaded')
       .withText(dateTimeUploaded)
-      .withDescendant(locate('img')));
+      .withDescendant(locate('img').withAttr({ title : 'Confidential'})));
   },
 
   expandDocumentSection(documentSection, documentTitle) {
