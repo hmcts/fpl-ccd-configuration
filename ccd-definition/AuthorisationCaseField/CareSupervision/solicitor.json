@@ -570,7 +570,7 @@
     "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
       "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -579,6 +579,15 @@
     "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
       "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
     ],
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "showFurtherEvidenceTab",
+    "UserRoles": ["[SOLICITOR]", "[SOLICITORA]", "[SOLICITORB]", "[SOLICITORC]", "[SOLICITORD]",
+      "[SOLICITORE]", "[SOLICITORF]", "[SOLICITORG]", "[SOLICITORH]", "[SOLICITORI]", "[SOLICITORJ]"
+    ],
+    "CRUD": "CRU"
   }
 ]

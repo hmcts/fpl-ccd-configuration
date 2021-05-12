@@ -2454,13 +2454,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentViewHMCTS",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentListPageHMCTS",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "showFurtherEvidenceTab",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
   }
 ]

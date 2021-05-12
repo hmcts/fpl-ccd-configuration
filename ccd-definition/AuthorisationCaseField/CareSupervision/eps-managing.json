@@ -1110,13 +1110,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentViewLA",
     "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documentListPageLA",
     "UserRole": "[EPSMANAGING]",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "showFurtherEvidenceTab",
+    "UserRole": "[EPSMANAGING]",
+    "CRUD": "CRU"
   }
 ]
