@@ -13,29 +13,25 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCoverDocument;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { JacksonAutoConfiguration.class, DocmosisCoverDocumentsService.class })
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DocmosisCoverDocumentsService.class})
 class DocmosisCoverDocumentsServiceTest {
     private static final String NULL_FAMILY_MAN_NUMBER = null;
     private static final String FAMILY_MAN_NUMBER = "12345";
     private static final Long CCD_CASE_NUMBER = 1234123412341234L;
     private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
-    private byte[] pdf = { 1, 2, 3, 4, 5 };
+    private byte[] pdf = {1, 2, 3, 4, 5};
     private DocmosisDocument docmosisDocument = new DocmosisDocument("example.pdf", pdf);
     private Representative testRepresentative = buildRepresentative();
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
-
-    @MockBean
-    private CaseDetailsHelper caseDetailsHelper;
 
     @Autowired
     private DocmosisCoverDocumentsService underTest;
@@ -44,8 +40,6 @@ class DocmosisCoverDocumentsServiceTest {
     void setup() {
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
             .willReturn(docmosisDocument);
-
-        given(caseDetailsHelper.formatCCDCaseNumber(CCD_CASE_NUMBER)).willReturn(FORMATTED_CASE_NUMBER);
     }
 
     @Test
@@ -72,7 +66,7 @@ class DocmosisCoverDocumentsServiceTest {
     @Test
     void shouldDefaultNullFamilyManCaseNumberToEmptyString() {
         DocmosisCoverDocument coverDocumentData = underTest.buildCoverDocumentsData(
-            NULL_FAMILY_MAN_NUMBER, CCD_CASE_NUMBER,  buildRepresentative());
+            NULL_FAMILY_MAN_NUMBER, CCD_CASE_NUMBER, buildRepresentative());
 
         assertThat(coverDocumentData.getFamilyManCaseNumber()).isEmpty();
     }

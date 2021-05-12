@@ -1,57 +1,27 @@
 package uk.gov.hmcts.reform.fpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.http.Header;
 import io.restassured.http.Headers;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Scenario;
 import uk.gov.hmcts.reform.fpl.model.User;
-import uk.gov.hmcts.reform.fpl.util.AuthenticationService;
-import uk.gov.hmcts.reform.fpl.util.ScenarioService;
-import uk.gov.hmcts.reform.fpl.util.TestConfiguration;
+import uk.gov.hmcts.reform.fpl.service.ScenarioService;
 
 import static com.gargoylesoftware.htmlunit.util.MimeType.APPLICATION_JSON;
-import static io.restassured.http.Headers.headers;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static uk.gov.hmcts.reform.fpl.util.CallbackComparator.callbackComparator;
 import static uk.gov.hmcts.reform.fpl.util.StringUtils.blue;
 import static uk.gov.hmcts.reform.fpl.util.StringUtils.red;
 
 
-@SpringBootTest
-@RunWith(SpringIntegrationSerenityRunner.class)
-@ActiveProfiles("test-${env:local}")
-@ContextConfiguration(classes = {
-    TestConfiguration.class,
-    ObjectMapper.class,
-    ScenarioService.class,
-    AuthenticationService.class})
-public class CallbackTest {
-
-    @Autowired
-    private TestConfiguration testConfiguration;
+public class StatelessCallbackApiTest extends AbstractApiTest {
 
     @Autowired
     private ScenarioService scenarioService;
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = testConfiguration.getFplUrl();
-        RestAssured.useRelaxedHTTPSValidation();
-    }
 
     @Test
     public void callbackShouldReturnExpectedResponse() {
@@ -79,7 +49,11 @@ public class CallbackTest {
 
     private void assertResponse(Scenario scenario, String response) {
         try {
-            assertEquals(scenario.getExpectation().getDataAsString(), response, callbackComparator());
+            String expectedData = scenario.getExpectation().getDataAsString();
+            if (isNotEmpty(expectedData)) {
+                String actualData = isEmpty(response) ? "{}" : response;
+                assertEquals(expectedData, actualData, callbackComparator());
+            }
         } catch (AssertionError assertionError) {
             System.out.println("Expected:");
             System.out.println(red(scenario.getExpectation().getDataAsString()));
@@ -91,6 +65,6 @@ public class CallbackTest {
 
     private Headers getAuthorizationHeaders(Scenario scenario) {
         User user = testConfiguration.getUsers().get(scenario.getRequest().getUser());
-        return headers(new Header("Authorization", authenticationService.getAccessToken(user)));
+        return authenticationService.getAuthorizationHeaders(user);
     }
 }
