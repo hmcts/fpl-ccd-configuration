@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -99,7 +99,6 @@ public class CaseSubmissionController extends CallbackController {
         }
 
         String label = String.format(CONSENT_TEMPLATE, signeeName);
-
         data.put("submissionConsentLabel", label);
 
         return respond(caseDetails);
@@ -129,16 +128,14 @@ public class CaseSubmissionController extends CallbackController {
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
-            data.put("submittedForm", ImmutableMap.<String, String>builder()
-                .put("document_url", document.links.self.href)
-                .put("document_binary_url", document.links.binary.href)
-                .put("document_filename", document.originalDocumentName)
-                .build());
+            data.put("submittedForm", buildFromDocument(document));
 
             if (featureToggleService.hasRSOCaseAccess()) {
                 data.putAll(respondentRepresentationService.generateForSubmission(caseData));
             }
         }
+
+        removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
 
         return respond(caseDetails, errors);
     }

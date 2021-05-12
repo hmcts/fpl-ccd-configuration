@@ -302,6 +302,23 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isNull();
     }
 
+    @Test
+    void shouldRemoveTransientFields() {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
+            .id(2313L)
+            .data(Map.of(
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                "draftApplicationDocument", "Test",
+                "submissionConsentLabel", "Test"
+            ))
+            .build());
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "draftApplicationDocument",
+            "submissionConsentLabel"
+        );
+    }
+
     private RespondentParty buildRespondentParty() {
         return RespondentParty.builder()
             .firstName("Joe")
