@@ -26,7 +26,7 @@
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --grep \"${TESTS_SELECTOR:=(?=.*)^(?!.*@smoke-tests)}\" --reporter mocha-multi",
     "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep \"${SMOKE_TESTS_SELECTOR:=@smoke-tests}\" --reporter mocha-multi",
-    "test:crossbrowser-e2e": "MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep \"${SMOKE_TESTS_SELECTOR:=@cross-browser}\" ${BROWSER_GROUP:='--all'} -c saucelabs.conf.js --reporter mocha-multi",
+    "test:crossbrowser-e2e": "MOCHAWESOME_REPORTFILENAME=crossbrowser codeceptjs run-multiple --grep \"${SMOKE_TESTS_SELECTOR:=@cross-browser}\" ${BROWSER_GROUP:-'--all'} -c saucelabs.conf.js --reporter mocha-multi",
     "test:crossbrowser": "./bin/run-crossbrowser-tests.sh",
     "prepare": "husky install"
   },
