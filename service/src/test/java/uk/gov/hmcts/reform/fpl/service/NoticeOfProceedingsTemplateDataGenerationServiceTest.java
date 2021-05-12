@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -50,15 +49,12 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 13, 13, 13, 13));
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
     private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
-    private final CaseDetailsHelper caseDetailsHelper = mock(
-        CaseDetailsHelper.class);
 
     private NoticeOfProceedingsTemplateDataGenerationService underTest;
 
     @BeforeEach
     void setup() {
-        underTest = new NoticeOfProceedingsTemplateDataGenerationService(
-            courtLookup, extractionService, caseDetailsHelper, time);
+        underTest = new NoticeOfProceedingsTemplateDataGenerationService(courtLookup, extractionService, time);
 
         when(extractionService.getHearingBookingData(HEARING_1)).thenReturn(
             DocmosisHearingBooking.builder()
@@ -70,8 +66,6 @@ class NoticeOfProceedingsTemplateDataGenerationServiceTest {
                 .hearingLegalAdvisorName("should also be removed")
                 .build()
         );
-        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
-
     }
 
     @Test

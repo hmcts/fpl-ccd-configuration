@@ -702,6 +702,7 @@ public class CaseData {
     }
 
     private final DocumentReference submittedForm;
+    private final DocumentReference draftApplicationDocument;
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
