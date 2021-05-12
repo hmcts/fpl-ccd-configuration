@@ -64,6 +64,7 @@ withNightlyPipeline(type, product, component) {
   env.IDAM_API_URL=params.IDAM_API_URL
   env.CASE_SERVICE_URL=params.CASE_SERVICE_URL
   env.SECURITY_RULES = params.SECURITY_RULES
+  env.TEST_RETRIES = 2
 
   loadVaultSecrets(integrationTestSecrets)
 
@@ -83,7 +84,6 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.PARALLEL_CHUNKS = params.FUNCTIONAL_TESTS_WORKERS
     env.MOCKED_PAYMENTS = false
-    env.TEST_RETRIES = 1
     env.TESTS_FOR_ACCESSIBILITY = true
     env.LOG_TEST_STEPS = true
     env.ENV = 'aat'
