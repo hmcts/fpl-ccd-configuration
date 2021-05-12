@@ -6,13 +6,11 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -33,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -68,7 +67,8 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Test
     void shouldAddConsentLabelToCaseDetails() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(CaseData.builder()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData().toBuilder()
+            .state(RETURNED)
             .caseName("title")
             .build());
 
@@ -80,12 +80,11 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @Test
     void shouldAddConsentLabelToCaseDetailsWhenLegalTeamManagerPresent() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(CaseData.builder()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData().toBuilder()
+            .state(RETURNED)
             .caseName("title")
             .applicants(wrapElements(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    .legalTeamManager("legal team manager")
-                    .build())
+                .party(ApplicantParty.builder().legalTeamManager("legal team manager").build())
                 .build()))
             .build());
 
@@ -104,9 +103,9 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
         given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(of("orders", orders))
-            .state(OPEN.getValue())
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData().toBuilder()
+            .orders(orders)
+            .state(OPEN)
             .build());
 
         assertThat(response.getData()).containsEntry("amountToPay", "12300");
@@ -117,24 +116,23 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
     void shouldNotDisplayAmountToPayFieldToAnOpenedCaseWhenErrorIsThrown() {
         given(feeService.getFeesDataForOrders(any())).willThrow(new FeeRegisterException(300, "duplicate", null));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(of())
-            .state(OPEN.getValue())
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData().toBuilder()
+            .state(OPEN)
             .build());
 
-        assertThat(response.getData()).doesNotContainKey("amountToPay");
+        assertThat(response.getData()).containsEntry("amountToPay", null);
         assertThat(response.getData()).containsEntry("displayAmountToPay", NO.getValue());
     }
 
     @Test
     void shouldNotDisplayAmountToPayFieldWhenCaseIsInReturnedState() {
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(CaseDetails.builder()
-            .data(of())
-            .state(RETURNED.getValue())
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData().toBuilder()
+            .state(RETURNED)
             .build());
 
         verify(feeService, never()).getFeesDataForOrders(any());
-        assertThat(response.getData()).doesNotContainKeys("amountToPay", "displayAmountToPay");
+        assertThat(response.getData()).containsEntry("amountToPay", null);
+        assertThat(response.getData()).doesNotContainKeys("displayAmountToPay");
     }
 
     @Test
