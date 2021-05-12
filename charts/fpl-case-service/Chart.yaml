@@ -23,14 +23,6 @@ dependencies:
     version: 2.2.6
     repository: '@hmctspublic'
     condition: idam-pr.enabled
-  - name: elasticsearch
-    version: 7.8.1
-    repository: '@hmctspublic'
-    condition: elastic.enabled
-  - name: logstash
-    version: 2.4.1
-    repository: '@hmctspublic'
-    condition: elastic.enabled
   - name: aac-manage-case-assignment
     version: ~0.1.6
     repository: '@hmctspublic'
