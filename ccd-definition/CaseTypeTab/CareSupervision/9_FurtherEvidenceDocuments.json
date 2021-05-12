@@ -7,7 +7,7 @@
     "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "submittedForm",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND showFurtherEvidenceTab=\"YES\"",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -17,7 +17,7 @@
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "manageDocumentsLALink",
+    "CaseFieldID": "manageDocumentsLink",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -27,28 +27,28 @@
     "TabID": "FurtherEvidenceDocuments",
     "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "manageDocumentsLink",
-    "TabFieldDisplayOrder": 3
+    "CaseFieldID": "standardDirectionsDocument",
+    "TabFieldDisplayOrder": 3,
+    "Comment": "This is deprecated - field for old SDO documents that were uploaded in uploadStandardDirections event"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
+    "TabLabel": "Further evidence documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "manageDocumentsLALink",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentViewLA",
-    "TabFieldDisplayOrder": 4,
-    "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
-    "TabDisplayOrder": 0,
-    "CaseFieldID": "documentViewHMCTS",
     "TabFieldDisplayOrder": 5,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   },
@@ -57,9 +57,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
+    "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "documentViewNC",
+    "CaseFieldID": "documentViewHMCTS",
     "TabFieldDisplayOrder": 6,
     "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   },
@@ -68,19 +68,20 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
+    "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "documentListPageLA",
-    "TabFieldDisplayOrder": 7
+    "CaseFieldID": "documentViewNC",
+    "TabFieldDisplayOrder": 7,
+    "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
+    "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
-    "CaseFieldID": "documentListPageHMCTS",
+    "CaseFieldID": "documentListPageLA",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -88,9 +89,30 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "FurtherEvidenceDocuments",
-    "TabLabel": "Documents new",
+    "TabLabel": "Further evidence documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "documentListPageHMCTS",
+    "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Further evidence documents",
     "TabDisplayOrder": 0,
     "CaseFieldID": "documentListPageNC",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "FurtherEvidenceDocuments",
+    "TabLabel": "Further evidence documents",
+    "TabDisplayOrder": 0,
+    "CaseFieldID": "showFurtherEvidenceTab",
+    "TabFieldDisplayOrder": 11,
+    "FieldShowCondition": "submittedForm = \"DO_NOT_SHOW\""
   }
 ]
