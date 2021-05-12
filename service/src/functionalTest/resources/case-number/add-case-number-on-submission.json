@@ -1,5 +1,4 @@
 {
-  "description": "Confidential information separated to dedicated collection",
   "request": {
     "uri": "/callback/add-case-number/submitted",
     "user": "admin",
