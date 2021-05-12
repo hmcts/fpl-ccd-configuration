@@ -18,17 +18,20 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentAfterSubmissionValidator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class})
+@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class,
+    RespondentAfterSubmissionValidator.class})
 class RespondentsCheckerTest {
 
     @Autowired
@@ -37,9 +40,13 @@ class RespondentsCheckerTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
+    @MockBean
+    private RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
+
     @BeforeEach
     void featureToggleMock() {
         given(featureToggleService.isRespondentJourneyEnabled()).willReturn(true);
+        given(respondentAfterSubmissionValidator.validateLegalRepresentation(any())).willReturn(List.of());
     }
 
     @ParameterizedTest
@@ -70,8 +77,7 @@ class RespondentsCheckerTest {
 
         assertThat(errors).containsExactlyInAnyOrder(
             "Enter the respondent's relationship to child",
-            "Enter the respondent's full name",
-            "Select if the respondent needs representation"
+            "Enter the respondent's full name"
         );
         assertThat(isCompleted).isFalse();
     }
@@ -93,60 +99,6 @@ class RespondentsCheckerTest {
         assertThat(errors).containsExactlyInAnyOrder(
             "Enter the respondent's relationship to child",
             "Enter the respondent's full name"
-        );
-        assertThat(isCompleted).isFalse();
-    }
-
-    @Test
-    void shouldReturnErrorWhenNoOrganisationDetailsEntered() {
-        final Respondent respondent = Respondent.builder()
-            .party(RespondentParty.builder()
-                .firstName("John")
-                .lastName("Smith")
-                .relationshipToChild("Uncle")
-                .build())
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .firstName("Steve")
-                .email("steve@steve.com")
-                .build())
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .respondents1(ElementUtils.wrapElements(respondent))
-            .build();
-
-        final List<String> errors = respondentsChecker.validate(caseData);
-        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
-
-        assertThat(errors).containsExactlyInAnyOrder(
-            "Add the details for respondent solicitors"
-        );
-        assertThat(isCompleted).isFalse();
-    }
-
-    @Test
-    void shouldReturnErrorWhenNoRepresentativeEmailEntered() {
-        final Respondent respondent = Respondent.builder()
-            .party(RespondentParty.builder()
-                .firstName("John")
-                .lastName("Smith")
-                .relationshipToChild("Uncle")
-                .build())
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .organisation(Organisation.builder().organisationID("Test org ID").build())
-                .firstName("Steve")
-                .build())
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .respondents1(ElementUtils.wrapElements(respondent))
-            .build();
-
-        final List<String> errors = respondentsChecker.validate(caseData);
-        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
-
-        assertThat(errors).containsExactlyInAnyOrder(
-            "Add email addresses for respondent solicitors"
         );
         assertThat(isCompleted).isFalse();
     }

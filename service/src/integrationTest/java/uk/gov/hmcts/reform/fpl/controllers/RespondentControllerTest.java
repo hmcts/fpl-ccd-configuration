@@ -185,7 +185,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest);
 
-        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("Removing an existing respondent is not allowed"));
+        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("You cannot remove a respondent from the case"));
     }
 
     @Test
@@ -196,6 +196,9 @@ class RespondentControllerTest extends AbstractCallbackTest {
         Element<Respondent> respondent = element(respondent(dateNow(), "test@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
             .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
                 .organisation(Organisation.organisation("NEW"))
                 .build())
             .build());
@@ -224,6 +227,9 @@ class RespondentControllerTest extends AbstractCallbackTest {
         Element<Respondent> respondent = element(respondent(dateNow(), "respondent1@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
             .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
                 .organisation(Organisation.organisation("NEW_ORG"))
                 .build())
             .build());
@@ -242,7 +248,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
         List<String> errors = postMidEventWithUserRole(callbackRequest, LOCAL_AUTHORITY.getRoleName()).getErrors();
 
         assertThat(errors)
-            .isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
+            .isEqualTo(List.of("You cannot change organisation details for respondent 1's legal representative"));
     }
 
     @Test
