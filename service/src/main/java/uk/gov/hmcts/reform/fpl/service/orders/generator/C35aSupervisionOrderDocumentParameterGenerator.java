@@ -91,8 +91,12 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
         return String.format(
             "It is ordered that %s supervises the %s until %s.",
             localAuthorityName,
-            (numOfChildren == 1) ? CHILD : CHILDREN,
+            getChildGrammar(numOfChildren),
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix))
         );
+    }
+
+    private String getChildGrammar(int numOfChildren) {
+        return (numOfChildren == 1) ? CHILD : CHILDREN;
     }
 }
