@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.util;
+package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Scenario;
+import uk.gov.hmcts.reform.fpl.util.TestConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import static org.springframework.util.StreamUtils.copyToString;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public final class ScenarioService {
 
-    private static final Resource BASE_DIR = new DefaultResourceLoader().getResource("/scenarios");
+    private static final Resource BASE_DIR = new DefaultResourceLoader().getResource("/stateless-scenarios");
 
     private final TestConfiguration testConfiguration;
 
