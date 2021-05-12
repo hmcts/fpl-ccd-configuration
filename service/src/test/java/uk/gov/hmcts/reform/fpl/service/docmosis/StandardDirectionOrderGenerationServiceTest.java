@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -46,7 +45,6 @@ import static org.assertj.core.util.Lists.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -77,9 +75,6 @@ class StandardDirectionOrderGenerationServiceTest {
     @MockBean
     private CalendarService calendarService;
 
-    @MockBean
-    private CaseDetailsHelper caseDetailsHelper;
-
     @Autowired
     private Time time;
 
@@ -89,7 +84,6 @@ class StandardDirectionOrderGenerationServiceTest {
     @BeforeEach
     void setup() {
         given(calendarService.getWorkingDayFrom(any(LocalDate.class), anyInt())).willReturn(LocalDate.now());
-        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
     }
 
     @Test
@@ -139,6 +133,7 @@ class StandardDirectionOrderGenerationServiceTest {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
+            .id(CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateSubmitted(today)
             .standardDirectionOrder(order)
@@ -199,6 +194,7 @@ class StandardDirectionOrderGenerationServiceTest {
         LocalDate today = time.now().toLocalDate();
 
         return DocmosisStandardDirectionOrder.builder()
+            .ccdCaseNumber(FORMATTED_CASE_NUMBER)
             .judgeAndLegalAdvisor(DocmosisJudgeAndLegalAdvisor.builder()
                 .judgeTitleAndName("Her Honour Judge Smith")
                 .legalAdvisorName("Bob Ross")
@@ -229,6 +225,7 @@ class StandardDirectionOrderGenerationServiceTest {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
+            .id(CASE_NUMBER)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .familyManCaseNumber("123")
             .children1(createPopulatedChildren(today))
