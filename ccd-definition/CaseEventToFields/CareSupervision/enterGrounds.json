@@ -44,7 +44,7 @@
     "CaseFieldID": "grounds",
     "CaseEventFieldLabel": "*How does this case meet the threshold criteria?",
     "PageFieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "COMPLEX",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
