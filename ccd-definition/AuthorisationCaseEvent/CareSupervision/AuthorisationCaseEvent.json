@@ -1198,5 +1198,45 @@
         "CRUD": "R"
       }
     ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "nocRequest",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-caa",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "applyNocDecision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-approver"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateRepresentation",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
   }
 ]
