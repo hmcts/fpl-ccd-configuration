@@ -65,7 +65,7 @@
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
     "PageShowCondition": "pageShow=\"Yes\"",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/populate-selector/mid-event",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/populate-children-selector/mid-event",
     "ShowSummaryChangeOption": "Y"
   },
   {
