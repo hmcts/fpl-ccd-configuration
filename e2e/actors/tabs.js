@@ -63,7 +63,7 @@ module.exports = {
   },
 
   seeInExpandedDocument(title, uploadedBy, dateTimeUploaded) {
-    this.seeElement(locate('details')
+    this.seeElement(locate('details').withAttr({open})
       .withChild(locate('summary')
         .withText(title))
       .withChild(locate('div'))
@@ -76,7 +76,7 @@ module.exports = {
   },
 
   seeInExpandedConfidentialDocument(title, uploadedBy, dateTimeUploaded) {
-    this.seeElement(locate('details')
+    this.seeElement(locate('details').withAttr({open})
       .withChild(locate('summary')
         .withText(title))
       .withChild(locate('div'))
@@ -89,10 +89,10 @@ module.exports = {
       .withText('mockFile.txt'));
   },
 
-  dontSeeDocumentSection(title) {
-    this.dontSeeElement(locate('details')
-      .withChild(locate('summary')
-        .withText(title)));
+  dontSeeDocumentSection(documentSection, documentTitle) {
+    this.click(locate('summary').withText(documentSection));
+    this.dontSeeElement(locate('details').withChild(locate('div').withChild(locate('details')
+      .withChild(locate('summary').withText(documentTitle)))));
   },
 
   dontSeeConfidentialInExpandedDocument(name) {
@@ -105,7 +105,8 @@ module.exports = {
 
   expandDocumentSection(documentSection, documentTitle) {
     this.click(locate('summary').withText(documentSection));
-    this.expandDocument(documentTitle);
+    this.click(locate('details').withText(documentSection).withChild(locate('div').withChild(locate('details')
+      .withChild(locate('summary').withText(documentTitle)))));
   },
 
   expandDocument(documentTitle) {
