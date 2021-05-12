@@ -50,7 +50,7 @@ BeforeSuite(async ({I}) => {
   date = dateFormat(today, 'd mmm yyyy');
 });
 
-Scenario('Local authority uploads draft orders @cross-browser', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
+Scenario('Local authority uploads draft orders', async ({I, caseViewPage, uploadCaseManagementOrderEventPage}) => {
 
   await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
 
@@ -103,7 +103,7 @@ Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, e
   ]);
 });
 
-Scenario('Judge makes changes to agreed CMO and seals @cross-browser', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
+Scenario('Judge makes changes to agreed CMO and seals', async ({I, caseViewPage, reviewAgreedCaseManagementOrderEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
 
   await caseViewPage.goToNewActions(config.applicationActions.approveOrders);
