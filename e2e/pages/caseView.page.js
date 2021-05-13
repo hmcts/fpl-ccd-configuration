@@ -29,7 +29,7 @@ module.exports = {
     courtBundle: 'Court bundle',
     judicialMessages: 'Judicial messages',
     otherApplications: 'Other applications',
-    furtherEvidenceDocuments: 'Further evidence documents',
+    furtherEvidence: 'Further evidence',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
