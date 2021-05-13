@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +42,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY_AND_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
@@ -337,56 +335,56 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @Test
     void supervisionOrderEndDateShouldNotAllowCurrentDate() {
-        final LocalDate TEST_VALID_DATE = dateNow();
-        final String TEST_FUTURE_DATE_MESSAGE = "Enter an end date in the future";
+        final LocalDate testInvalidDate = dateNow();
+        final String testFutureDateMessage = "Enter an end date in the future";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
                 .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
-                .manageOrdersSetDateEndDate(TEST_VALID_DATE)
+                .manageOrdersSetDateEndDate(testInvalidDate)
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        assertThat(response.getErrors()).containsOnly(TEST_FUTURE_DATE_MESSAGE);
+        assertThat(response.getErrors()).containsOnly(testFutureDateMessage);
     }
 
     @Test
     void supervisionOrderNumberOfMonthsShouldNotAllowInvalidFutureDate() {
-        final int TEST_INVALID_MONTHS = 16;
-        final String TEST_END_DATE_RANGE_MESSAGE = "Supervision orders cannot last longer than 12 months";
+        final int testInvalidMonth = 16;
+        final String testEndDateRangeMessage = "Supervision orders cannot last longer than 12 months";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
                 .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
-                .manageOrdersSetMonthsEndDate(TEST_INVALID_MONTHS)
+                .manageOrdersSetMonthsEndDate(testInvalidMonth)
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        assertThat(response.getErrors()).containsOnly(TEST_END_DATE_RANGE_MESSAGE);
+        assertThat(response.getErrors()).containsOnly(testEndDateRangeMessage);
     }
 
     @Test
     void supervisionOrderNumberOfMonthsShouldNotAllowInvalidPastDate() {
-        final int TEST_INVALID_MONTHS = -1;
-        final String TEST_UNDER_DATE_RANGE_MESSAGE = "Supervision orders in months should be at least 1";
+        final int testInvalidMonth = -1;
+        final String testUnderDateRangeMessage = "Supervision orders in months should be at least 1";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
                 .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
-                .manageOrdersSetMonthsEndDate(TEST_INVALID_MONTHS)
+                .manageOrdersSetMonthsEndDate(testInvalidMonth)
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        deepEquals(response.getErrors(), TEST_UNDER_DATE_RANGE_MESSAGE);
+        deepEquals(response.getErrors(), testUnderDateRangeMessage);
     }
 
     private CaseData buildCaseData() {
