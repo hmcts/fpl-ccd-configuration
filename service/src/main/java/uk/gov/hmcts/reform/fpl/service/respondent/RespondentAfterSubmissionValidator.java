@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
@@ -32,6 +34,19 @@ public class RespondentAfterSubmissionValidator {
     private final FeatureToggleService featureToggleService;
     private final UserService userService;
 
+    public List<String> validateLegalRepresentation(CaseData caseData) {
+        List<String> errors = new ArrayList<>();
+
+        List<Element<Respondent>> respondents = nullSafeList(caseData.getRespondents1());
+
+        for (int i = 0; i < respondents.size(); i++) {
+            Respondent respondent = respondents.get(i).getValue();
+            errors.addAll(legalRepresentationErrors(respondent, i + 1));
+        }
+
+        return errors;
+    }
+
     public List<String> validate(CaseData caseData, CaseData caseDataBefore) {
 
         List<String> errors = new ArrayList<>();
@@ -40,7 +55,7 @@ public class RespondentAfterSubmissionValidator {
         Set<UUID> previousRespondentIds = getIds(caseDataBefore.getAllRespondents());
 
         if (!currentRespondentIds.containsAll(previousRespondentIds)) {
-            errors.add("Removing an existing respondent is not allowed");
+            errors.add("You cannot remove a respondent from the case");
         }
 
         if (!(featureToggleService.isNoticeOfChangeEnabled() && userService.isHmctsAdminUser())) {
@@ -58,16 +73,44 @@ public class RespondentAfterSubmissionValidator {
                 if (YES.getValue().equals(previous.getLegalRepresentation())
                     && NO.getValue().equals(current.getLegalRepresentation())) {
                     errors.add(String.format("You cannot remove respondent %d's legal representative", i + 1));
+                    continue;
                 }
 
                 if (getLegalRepresentation(current).equals(getLegalRepresentation(previous))
                     && !Objects.equals(getOrganisationID(current), getOrganisationID(previous))) {
 
-                    errors.add(String.format("Change of organisation for respondent %d is not allowed", i + 1));
+                    errors.add(String.format(
+                        "You cannot change organisation details for respondent %d's legal representative", i + 1));
+                    continue;
                 }
+
+                errors.addAll(legalRepresentationErrors(current, i + 1));
             }
+        } else {
+            errors.addAll(validateLegalRepresentation(caseData));
         }
 
+        return errors;
+    }
+
+    private List<String> legalRepresentationErrors(Respondent respondent, int i) {
+        List<String> errors = new ArrayList<>();
+        if (respondent.getLegalRepresentation() == null) {
+            errors.add(String.format("Confirm if respondent %d has legal representation", i));
+        } else if (YES.getValue().equals(respondent.getLegalRepresentation())) {
+            RespondentSolicitor solicitor = respondent.getSolicitor();
+            if (isEmpty(solicitor.getFirstName())
+                || isEmpty(solicitor.getLastName())) {
+                errors.add(String.format("Add the full name of respondent %d's legal representative", i));
+
+            }
+            if (isEmpty(solicitor.getEmail())) {
+                errors.add(String.format("Add the email address of respondent %d's legal representative", i));
+            }
+            if (!respondent.hasRegisteredOrganisation() && !respondent.hasUnregisteredOrganisation()) {
+                errors.add(String.format("Add the organisation details for respondent %d's representative", i));
+            }
+        }
         return errors;
     }
 
