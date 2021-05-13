@@ -26,7 +26,63 @@ class DocumentsListRendererTest {
     private final DocumentsListRenderer underTest = new DocumentsListRenderer(IMAGE_BASE_URL, caseUrlService);
 
     @Test
+    void shouldRenderEmptyDocumentBundles() {
+        List<DocumentBundleView> documentBundleViews = List.of();
+
+        String expectedDocumentView =
+            readString("further-evidence-documents-tab/expected-documents-view-empty.md").trim();
+
+        assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
+    }
+
+    @Test
+    void shouldRenderDocumentBundlesMinimalSingleElement() {
+        when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
+
+        List<DocumentBundleView> documentBundleViews = List.of(
+            DocumentBundleView.builder()
+                .name("Applicant's statements and application documents")
+                .documents(List.of(
+                    DocumentView.builder()
+                        .type("SWET")
+                        .document(DocumentReference.builder()
+                            .filename("swet-doc.docx").url("fake-url.com").binaryUrl("test.com").build())
+                        .title("SWET")
+                        .build()))
+                .build());
+
+        String expectedDocumentView = readString(
+            "further-evidence-documents-tab/expected-documents-view-single-element.md").trim();
+
+        assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
+    }
+
+    @Test
+    void shouldRenderDocumentBundlesMinimalSingleElementWithBadBinaryURL() {
+        when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
+
+        List<DocumentBundleView> documentBundleViews = List.of(
+            DocumentBundleView.builder()
+                .name("Applicant's statements and application documents")
+                .documents(List.of(
+                    DocumentView.builder()
+                        .type("SWET")
+                        .document(DocumentReference.builder()
+                            .filename("swet-doc.docx").url("fake-url.com").binaryUrl("::x").build())
+                        .title("SWET")
+                        .build()))
+                .build());
+
+        String expectedDocumentView = readString(
+            "further-evidence-documents-tab/expected-documents-view-single-element-bad-url.md").trim();
+
+        assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
+    }
+
+    @Test
     void shouldRenderDocumentBundles() {
+        when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
+
         List<DocumentBundleView> documentBundleViews = List.of(
             DocumentBundleView.builder()
                 .name("Applicant's statements and application documents")
@@ -70,7 +126,6 @@ class DocumentsListRendererTest {
 
         String expectedDocumentView = readString("further-evidence-documents-tab/expected-documents-view.md").trim();
 
-        when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
         assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
     }
 }
