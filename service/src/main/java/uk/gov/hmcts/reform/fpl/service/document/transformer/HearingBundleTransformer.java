@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class HearingBundleTransformer {
 
-    private final FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
+    private final FurtherEvidenceDocumentsBundlesTransformer furtherEvidenceTransformer;
 
     public List<DocumentBundleView> getHearingBundleView(
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments,

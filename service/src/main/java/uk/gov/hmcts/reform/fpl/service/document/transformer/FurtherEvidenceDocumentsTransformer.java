@@ -55,27 +55,7 @@ public class FurtherEvidenceDocumentsTransformer {
         return furtherEvidenceBundle;
     }
 
-    public List<DocumentBundleView> getFurtherEvidenceDocumentBundles(
-        List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle) {
-
-        List<DocumentBundleView> documentBundles = new ArrayList<>();
-        Arrays.stream(FurtherEvidenceType.values())
-            .filter(type -> type != APPLICANT_STATEMENT)
-            .forEach(
-                type -> {
-                    List<DocumentView> documentView =
-                        getFurtherEvidenceDocumentsView(type, supportingEvidenceBundle, true);
-
-                    if (!documentView.isEmpty()) {
-                        DocumentBundleView bundleView = buildBundle(type.getLabel(), documentView);
-                        documentBundles.add(bundleView);
-                    }
-                });
-
-        return documentBundles;
-    }
-
-    private DocumentBundleView buildBundle(String name, List<DocumentView> documents) {
+    public DocumentBundleView buildBundle(String name, List<DocumentView> documents) {
         return DocumentBundleView.builder()
             .name(name)
             .documents(documents)
