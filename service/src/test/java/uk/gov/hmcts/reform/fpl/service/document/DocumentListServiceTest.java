@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
 
 import java.util.List;
@@ -60,6 +61,9 @@ class DocumentListServiceTest {
 
     @Mock
     private FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
+
+    @Mock
+    private OtherDocumentsTransformer otherDocumentsTransformer;
 
     @Mock
     private DocumentsListRenderer documentsListRenderer;

@@ -3,15 +3,18 @@ package uk.gov.hmcts.reform.fpl.service.document.transformer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT;
@@ -22,7 +25,9 @@ import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewT
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.SUPPORTING_EVIDENCE_DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class RespondentStatementsTransformerTest {
@@ -81,7 +86,12 @@ class RespondentStatementsTransformerTest {
     }
 
     @Test
-    void shouldReturnRespondentStatementsForNonConfidentialView() {
+    void shouldReturnRespondentStatementsForNonConfidentialViewAndSortByUploadedDate() {
+        Element<SupportingEvidenceBundle> respondent2DocWithoutDate = element(SupportingEvidenceBundle.builder()
+            .name("respondent2 doc1").document(testDocumentReference())
+            .type(FurtherEvidenceType.APPLICANT_STATEMENT)
+            .uploadedBy(null).dateTimeUploaded(null)
+            .build());
         CaseData caseData = CaseData.builder()
             .respondents1(List.of(RESPONDENT1, RESPONDENT2))
             .respondentStatements(wrapElements(
@@ -93,7 +103,8 @@ class RespondentStatementsTransformerTest {
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT2.getId())
                     .respondentName(RESPONDENT2.getValue().getParty().getFullName())
-                    .supportingEvidenceBundle(List.of(ADMIN_NON_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
+                    .supportingEvidenceBundle(List.of(
+                        respondent2DocWithoutDate, ADMIN_NON_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();
 
@@ -107,7 +118,8 @@ class RespondentStatementsTransformerTest {
 
         DocumentBundleView respondent2Bundle = DocumentBundleView.builder()
             .name("Respondent 2 statements")
-            .documents(List.of(buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue())))
+            .documents(List.of(buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue()),
+                buildDocumentView(respondent2DocWithoutDate.getValue())))
             .build();
 
         assertThat(documentBundleView).isEqualTo(List.of(respondent1Bundle, respondent2Bundle));
@@ -136,7 +148,8 @@ class RespondentStatementsTransformerTest {
             .document(document.getDocument())
             .fileName(document.getName())
             .type(RESPONDENT_STATEMENT_TYPE)
-            .uploadedAt(formatLocalDateTimeBaseUsingFormat(document.getDateTimeUploaded(), TIME_DATE))
+            .uploadedAt(isNotEmpty(document.getDateTimeUploaded())
+                ? formatLocalDateTimeBaseUsingFormat(document.getDateTimeUploaded(), TIME_DATE) : null)
             .uploadedBy(document.getUploadedBy())
             .documentName(document.getName())
             .confidential(document.isConfidentialDocument())

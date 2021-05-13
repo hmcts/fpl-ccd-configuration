@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.groupingBy;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -92,13 +93,14 @@ public class RespondentStatementsTransformer {
                 .document(doc.getDocument())
                 .fileName(doc.getName())
                 .type(RESPONDENT_STATEMENT_DOCUMENT)
-                .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                .uploadedAt(isNotEmpty(doc.getDateTimeUploaded())
+                    ? formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE) : null)
                 .uploadedBy(doc.getUploadedBy())
                 .documentName(doc.getName())
                 .confidential(doc.isConfidentialDocument())
                 .title(doc.getName())
                 .build())
-            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
             .collect(Collectors.toUnmodifiableList());
     }
 

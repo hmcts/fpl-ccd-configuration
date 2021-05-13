@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class DocumentListService {
     private final FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
     private final HearingBundleTransformer hearingBundleTransformer;
     private final RespondentStatementsTransformer respondentStatementsTransformer;
+    private final OtherDocumentsTransformer otherDocumentsTransformer;
 
     public Map<String, Object> getDocumentView(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -65,10 +67,14 @@ public class DocumentListService {
         List<DocumentBundleView> respondentStatementBundle =
             respondentStatementsTransformer.getRespondentStatementsBundle(caseData, view);
 
+        List<DocumentBundleView> anyOtherDocumentsBundle
+            = otherDocumentsTransformer.getOtherDocumentsView(caseData, view);
+
         bundles.addAll(applicationStatementAndDocumentsBundle);
         bundles.addAll(furtherEvidenceBundle);
         bundles.addAll(hearingEvidenceBundle);
         bundles.addAll(respondentStatementBundle);
+        bundles.addAll(anyOtherDocumentsBundle);
 
         return bundles;
     }
