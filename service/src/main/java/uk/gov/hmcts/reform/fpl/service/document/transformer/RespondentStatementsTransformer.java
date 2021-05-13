@@ -63,12 +63,18 @@ public class RespondentStatementsTransformer {
 
                 List<DocumentView> documentViewList;
 
-                if (view == DocumentViewType.HMCTS) {
-                    documentViewList = getRespondentStatementsView(furtherEvidenceDocuments, true);
-                } else if (view == DocumentViewType.LA) {
-                    documentViewList = getRespondentStatementsView(furtherEvidenceDocumentsLA, true);
-                } else {
-                    documentViewList = getRespondentStatementsView(furtherEvidenceDocumentsNC, false);
+                switch (view) {
+                    case HMCTS:
+                        documentViewList = getRespondentStatementsView(furtherEvidenceDocuments, true);
+                        break;
+                    case LA:
+                        documentViewList = getRespondentStatementsView(furtherEvidenceDocumentsLA, true);
+                        break;
+                    case NONCONFIDENTIAL:
+                        documentViewList = getRespondentStatementsView(furtherEvidenceDocumentsNC, false);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("View not implemented");
                 }
 
                 if (isNotEmpty(documentViewList)) {
