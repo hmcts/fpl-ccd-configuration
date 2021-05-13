@@ -120,7 +120,7 @@ class DocumentListServiceTest {
 
         assertThat(documentViewData.get("showFurtherEvidenceTab")).isEqualTo(YES);
         assertThat(documentViewData).containsKeys("documentViewLA", "documentViewHMCTS", "documentViewNC");
-         verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, LA);
+        verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, LA);
         verify(furtherEvidenceTransformer).getFurtherEvidenceBundleView(caseData, LA);
         verify(hearingBundleTransformer).getHearingBundleView(caseData.getHearingFurtherEvidenceDocuments(), LA);
         verify(respondentStatementsTransformer).getRespondentStatementsBundle(caseData, LA);
