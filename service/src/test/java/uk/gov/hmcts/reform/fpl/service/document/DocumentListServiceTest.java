@@ -51,11 +51,11 @@ class DocumentListServiceTest {
         when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.NONCONFIDENTIAL))
             .thenReturn(Collections.emptyList());
 
-        Map<String, String> expected = new java.util.HashMap<>();
+        Map<String, Object> expected = new java.util.HashMap<>();
         expected.put("documentViewLA", null);
         expected.put("documentViewHMCTS", null);
         expected.put("documentViewNC", null);
-        expected.put("showFurtherEvidenceTab", YesNo.NO.getValue());
+        expected.put("showFurtherEvidenceTab", YesNo.NO);
 
         Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
 
@@ -84,7 +84,7 @@ class DocumentListServiceTest {
             "documentViewLA", LA_RENDERED_VIEW,
             "documentViewHMCTS", HMCTS_RENDERED_VIEW,
             "documentViewNC", NON_CONFIDENTIAL_RENDERED_VIEW,
-            "showFurtherEvidenceTab", YesNo.YES.getValue()
+            "showFurtherEvidenceTab", YesNo.YES
         ));
     }
 
@@ -105,7 +105,7 @@ class DocumentListServiceTest {
         expected.put("documentViewLA", null);
         expected.put("documentViewHMCTS", HMCTS_RENDERED_VIEW);
         expected.put("documentViewNC", null);
-        expected.put("showFurtherEvidenceTab", YesNo.YES.getValue());
+        expected.put("showFurtherEvidenceTab", YesNo.YES);
 
         Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
 

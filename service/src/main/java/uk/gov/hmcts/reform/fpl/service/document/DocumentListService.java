@@ -30,7 +30,7 @@ public class DocumentListService {
         data.put("documentViewHMCTS", renderDocumentBundleViews(caseData, DocumentViewType.HMCTS));
         data.put("documentViewNC", renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL));
 
-        data.put("showFurtherEvidenceTab", YesNo.from(hasAnyDocumentRendered(data)).getValue());
+        data.put("showFurtherEvidenceTab", YesNo.from(hasAnyDocumentRendered(data)));
 
         return data;
     }
