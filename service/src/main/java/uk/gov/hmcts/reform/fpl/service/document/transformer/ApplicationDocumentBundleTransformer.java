@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -75,7 +76,7 @@ public class ApplicationDocumentBundleTransformer {
             hearingEvidenceDocumentView,
             applicationDocumentView)
             .flatMap(Collection::stream)
-            .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+            .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
             .collect(Collectors.toList());
 
         if (!combinedDocuments.isEmpty()) {
@@ -101,7 +102,8 @@ public class ApplicationDocumentBundleTransformer {
                 .map(doc -> DocumentView.builder()
                     .document(doc.getDocument())
                     .type(doc.getDocumentType().getLabel())
-                    .uploadedAt(formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE))
+                    .uploadedAt(isNotEmpty(doc.getDateTimeUploaded())
+                        ? formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE) : null)
                     .includedInSWET(doc.getIncludedInSWET())
                     .uploadedBy(doc.getUploadedBy())
                     .documentName(doc.getDocumentName())
@@ -109,7 +111,7 @@ public class ApplicationDocumentBundleTransformer {
                     .includeSWETField(SWET == doc.getDocumentType())
                     .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getDocumentType()))
                     .build())
-                .sorted(comparing(DocumentView::getUploadedAt, reverseOrder()))
+                .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
                 .collect(Collectors.toList());
         }
         return applicationDocs;

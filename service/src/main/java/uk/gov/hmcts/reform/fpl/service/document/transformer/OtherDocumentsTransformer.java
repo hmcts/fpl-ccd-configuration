@@ -56,7 +56,7 @@ public class OtherDocumentsTransformer {
                 .fileName(doc.getFileName())
                 .uploadedAt(isNotEmpty(doc.getScannedDate())
                     ? formatLocalDateTimeBaseUsingFormat(doc.getScannedDate(), TIME_DATE) : null)
-                .documentName(doc.getFileName()).build())
+                .title(doc.getFileName()).build())
             .collect(Collectors.toList());
     }
 
@@ -66,6 +66,7 @@ public class OtherDocumentsTransformer {
             .map(Element::getValue)
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
+                .title(doc.getDocumentTitle())
                 .fileName(doc.getDocumentTitle()).build())
             .collect(Collectors.toList());
     }
