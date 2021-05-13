@@ -84,9 +84,9 @@ public class RespondentController extends CallbackController {
             caseData.getAllRespondents(), caseDataBefore.getAllRespondents());
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
-        if (!OPEN.equals(caseData.getState()) && featureToggleService.hasRSOCaseAccess()) {
-            caseDetails.getData()
-                .putAll(respondentAfterSubmissionRepresentationService.updateRepresentation(caseData, caseDataBefore));
+        if (!OPEN.equals(caseData.getState())) {
+            caseDetails.getData().putAll(
+                respondentAfterSubmissionRepresentationService.updateRepresentation(caseData, caseDataBefore));
         }
         return respond(caseDetails);
     }
@@ -98,14 +98,10 @@ public class RespondentController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (!OPEN.equals(caseData.getState())) {
-            if (featureToggleService.hasRSOCaseAccess()) {
-                publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
-            }
-
             if (featureToggleService.isNoticeOfChangeEnabled()) {
                 noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore);
             }
-
+            publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
     }
