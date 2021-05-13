@@ -64,10 +64,21 @@ const section4 = {
       no: 'No',
     },
   },
+  supervisionOrderType: {
+    group: '#manageSupervisionOrderEndDateType',
+    options: {
+      calendarDay: 'SET_CALENDAR_DAY',
+      calendarDayAndTime: 'SET_CALENDAR_DAY_AND_TIME',
+      numberOfMonths: 'SET_NUMBER_OF_MONTHS',
+    },
+  },
   whoIsExcluded: '#manageOrdersWhoIsExcluded',
   exclusionStartDate: '#manageOrdersExclusionStartDate',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
+  supervisionOrderEndDate: '#manageOrdersEndDateTime',
+  supervisionOrderEndDateAndTime: '#manageOrdersSetDateAndTimeEndDate',
+  supervisionOrderNumOfMonths: '#manageOrdersSetMonthsEndDate',
 };
 
 const preview = {
@@ -154,6 +165,26 @@ const enterRemovalAddress = (address) => {
   postcodeLookup.enterAddressManually(address);
 };
 
+const selectSupervisionType = (option) => {
+  I.click(`${section4.supervisionOrderType.group}-${option}`);
+};
+
+const enterSuperVisionOrderEndDate = async (date) => {
+  I.fillDate(date, section4.supervisionOrderEndDate);
+};
+
+const enterSuperVisionOrderEndDateAndTime = async (date) => {
+  I.fillDateAndTime(date, section4.supervisionOrderEndDateAndTime);
+};
+
+const enterSuperVisionNumOfMonths = async (months) => {
+  I.fillField(section4.supervisionOrderNumOfMonths, months);
+};
+
+const selectSupervisionOrder = async (orderDateType) => {
+  I.click(`${section4.supervisionOrderType.group}-${orderDateType}`);
+};
+
 const enterFurtherDirections = async (text) => {
   I.fillField(section4.furtherDirections, text);
   await I.runAccessibilityTest();
@@ -169,4 +200,6 @@ module.exports = {
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
+  selectSupervisionOrder
 };

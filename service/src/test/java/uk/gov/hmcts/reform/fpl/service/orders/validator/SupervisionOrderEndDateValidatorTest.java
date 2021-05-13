@@ -1,24 +1,28 @@
 package uk.gov.hmcts.reform.fpl.service.orders.validator;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
 
 class SupervisionOrderEndDateValidatorTest {
-
     private static final String TEST_INVALID_TIME_MESSAGE = "Enter a valid time";
     private static final String TEST_FUTURE_DATE_MESSAGE = "Enter an end date in the future";
     private static final String TEST_END_DATE_RANGE_MESSAGE = "Supervision orders cannot last longer than 12 months";
+    private static final String TEST_UNDER_DATE_RANGE_MESSAGE = "Supervision orders in months should be at least 1";
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
@@ -30,36 +34,24 @@ class SupervisionOrderEndDateValidatorTest {
     }
 
     @Test
-    void validateFutureDate() {
+    void shouldReturnErrorForDateOverOneYearFromNow() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now())
-                .manageOrdersEndDateTime(time.now().minusHours(1))
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersSetDateEndDate(dateNow().plusYears(2))
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_FUTURE_DATE_MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_END_DATE_RANGE_MESSAGE));
     }
 
     @Test
-    void validateMidnightTime() {
+    void shouldReturnErrorForDateTimeOverOneYearFromNo() {
+        final LocalDateTime supervisionOrderEndDateTime = time.now();
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(time.now())
-                .manageOrdersEndDateTime(LocalDateTime.of(time.now().plusDays(1).toLocalDate(), LocalTime.MIDNIGHT))
-                .build())
-            .build();
-
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_INVALID_TIME_MESSAGE));
-    }
-
-    @Test
-    void validateEndDateWhenDateIsNotInRange() {
-        final LocalDateTime approvalDate = time.now();
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(approvalDate.plusMonths(13))
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersSetDateAndTimeEndDate(supervisionOrderEndDateTime.plusMonths(13))
                 .build())
             .build();
 
@@ -68,15 +60,68 @@ class SupervisionOrderEndDateValidatorTest {
     }
 
     @Test
-    void validateEndDateWhenDateIsInRange() {
-        final LocalDateTime approvalDate = time.now();
+    void shouldReturnErrorForDateInPast() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersApprovalDateTime(approvalDate)
-                .manageOrdersEndDateTime(approvalDate.plusDays(1))
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersSetDateEndDate(dateNow().minusDays(7))
                 .build())
             .build();
 
-        Assertions.assertThat(underTest.validate(caseData)).isEmpty();
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_FUTURE_DATE_MESSAGE));
+    }
+
+    @Test
+    void shouldReturnErrorForDateTimeInPast() {
+        final LocalDateTime supervisionOrderEndDateTime = time.now();
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersSetDateAndTimeEndDate(supervisionOrderEndDateTime.minusDays(10))
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_FUTURE_DATE_MESSAGE));
+    }
+
+    @Test
+    void shouldReturnErrorForNumberOfMonthsOverMaximum() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersSetMonthsEndDate(13)
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_END_DATE_RANGE_MESSAGE));
+    }
+
+    @Test
+    void shouldReturnErrorForNumberOfMonthsLessThanOne() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersSetMonthsEndDate(0)
+                .build())
+            .build();
+
+        deepEquals(underTest.validate(caseData), TEST_UNDER_DATE_RANGE_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorWhenInvalidTimeFormatIsEntered() {
+        final LocalDateTime invalidTime = dateNow().plusDays(1).atTime(LocalTime.MIDNIGHT);
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersSetDateAndTimeEndDate(invalidTime)
+                .build())
+            .build();
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(TEST_INVALID_TIME_MESSAGE));
+    }
+
+    private LocalDate dateNow() {
+        return time.now().toLocalDate();
     }
 }
