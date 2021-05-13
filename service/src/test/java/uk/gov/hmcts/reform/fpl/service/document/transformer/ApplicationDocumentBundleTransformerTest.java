@@ -2,10 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
 import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -33,14 +32,13 @@ import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewT
 import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_NON_CONFIDENTIAL_DOCUMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {ApplicationDocumentBundleTransformer.class, FurtherEvidenceDocumentsTransformer.class})
+@ExtendWith(MockitoExtension.class)
 class ApplicationDocumentBundleTransformerTest {
 
-    @MockBean
+    @Mock
     private FurtherEvidenceDocumentsTransformer furtherEvidenceDocumentsTransformer;
 
-    @Autowired
+    @InjectMocks
     private ApplicationDocumentBundleTransformer underTest;
 
     private final List<Element<HearingFurtherEvidenceBundle>> hearingEvidenceDocuments
@@ -238,87 +236,37 @@ class ApplicationDocumentBundleTransformerTest {
     }
 
     private List<DocumentView> expectedDocumentViewHMCTS() {
-        return List.of(DocumentView.builder()
-                .document(DocumentReference.builder().build())
-                .type("Applicant statement")
-                .uploadedAt("8:20pm, 15th June 2021")
-                .includedInSWET(null)
-                .uploadedBy("HMCTS")
-                .documentName("Admin uploaded evidence - confidential")
-                .title("Application statement")
-                .includeSWETField(false)
-                .confidential(true)
-                .includeDocumentName(true)
-                .build(),
-            DocumentView.builder()
-                .document(DocumentReference.builder().build())
-                .type("Applicant statement")
-                .uploadedAt("8:20pm, 15th June 2021")
-                .includedInSWET(null)
-                .uploadedBy("HMCTS")
-                .documentName("Admin uploaded evidence - non confidential")
-                .title("Application statement")
-                .includeSWETField(false)
-                .confidential(false)
-                .includeDocumentName(true)
-                .build());
+        return List.of(expectedDocumentView("Admin uploaded evidence - confidential", "HMCTS", true),
+            expectedDocumentView("Admin uploaded evidence - non confidential", "HMCTS", false));
     }
 
     private List<DocumentView> expectedDocumentViewHmctsNonConfidential() {
-        return List.of(DocumentView.builder()
-            .document(DocumentReference.builder().build())
-            .type("Applicant statement")
-            .uploadedAt("8:20pm, 15th June 2021")
-            .includedInSWET(null)
-            .uploadedBy("HMCTS")
-            .documentName("Admin uploaded evidence - non confidential")
-            .title("Application statement")
-            .includeSWETField(false)
-            .confidential(false)
-            .includeDocumentName(true)
-            .build());
+        return List.of(expectedDocumentView("Admin uploaded evidence - non confidential", "HMCTS", false));
     }
 
     private List<DocumentView> expectedDocumentViewLA() {
-        return List.of(DocumentView.builder()
-                .document(DocumentReference.builder().build())
-                .type("Applicant statement")
-                .uploadedAt("8:20pm, 15th June 2021")
-                .includedInSWET(null)
-                .uploadedBy("Kurt solicitor")
-                .documentName("LA uploaded evidence - confidential")
-                .title("Application statement")
-                .includeSWETField(false)
-                .includeDocumentName(true)
-                .confidential(true)
-                .build(),
-            DocumentView.builder()
-                .document(DocumentReference.builder().build())
-                .type("Applicant statement")
-                .uploadedAt("8:20pm, 15th June 2021")
-                .includedInSWET(null)
-                .uploadedBy("Kurt solicitor")
-                .documentName("LA uploaded evidence - non confidential")
-                .title("Application statement")
-                .includeSWETField(false)
-                .includeDocumentName(true)
-                .confidential(false)
-                .build());
+        return List.of(
+            expectedDocumentView("LA uploaded evidence - confidential", "Kurt solicitor", true),
+            expectedDocumentView("LA uploaded evidence - non confidential", "Kurt solicitor", false));
     }
 
-    private List<DocumentView> expectedDocumentViewLANonConfidential() {
-        return List.of(DocumentView.builder()
+    private DocumentView expectedDocumentView(String documentName, String uploadedBy, boolean isConfidential) {
+        return DocumentView.builder()
             .document(DocumentReference.builder().build())
             .type("Applicant statement")
             .uploadedAt("8:20pm, 15th June 2021")
             .includedInSWET(null)
-            .uploadedBy("Kurt solicitor")
-            .documentName("LA uploaded evidence - non confidential")
+            .uploadedBy(uploadedBy)
+            .documentName(documentName)
             .title("Application statement")
             .includeSWETField(false)
+            .confidential(isConfidential)
             .includeDocumentName(true)
-            .confidential(false)
-            .build());
+            .build();
+    }
+
+    private List<DocumentView> expectedDocumentViewLANonConfidential() {
+        return List.of(expectedDocumentView("LA uploaded evidence - non confidential", "Kurt solicitor", false));
     }
 
     private List<Element<HearingFurtherEvidenceBundle>> buildHearingFurtherEvidenceDocuments(UUID hearingId) {
@@ -332,36 +280,28 @@ class ApplicationDocumentBundleTransformerTest {
     }
 
     private List<Element<SupportingEvidenceBundle>> buildFurtherEvidenceDocuments() {
-        return List.of(
-            ADMIN_CONFIDENTIAL_DOCUMENT, ADMIN_NON_CONFIDENTIAL_DOCUMENT);
+        return List.of(ADMIN_CONFIDENTIAL_DOCUMENT, ADMIN_NON_CONFIDENTIAL_DOCUMENT);
     }
 
     private List<Element<SupportingEvidenceBundle>> buildFurtherEvidenceDocumentsLA() {
-        return List.of(
-            LA_CONFIDENTIAL_DOCUMENT, LA_NON_CONFIDENTIAL_DOCUMENT);
+        return List.of(LA_CONFIDENTIAL_DOCUMENT, LA_NON_CONFIDENTIAL_DOCUMENT);
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {
-        return List.of(element(ApplicationDocument.builder()
-                .documentType(ApplicationDocumentType.THRESHOLD)
-                .document(DocumentReference.builder().build())
-                .dateTimeUploaded(LocalDateTime.of(2021, 6, 15, 20, 20))
-                .uploadedBy("kurt@swansea.gov.uk")
-                .build()),
-            element(ApplicationDocument.builder()
-                .documentType(ApplicationDocumentType.SWET)
-                .includedInSWET("This is included in SWET")
-                .dateTimeUploaded(LocalDateTime.of(2021, 6, 15, 20, 20))
-                .uploadedBy("kurt@swansea.gov.uk")
-                .document(DocumentReference.builder().build())
-                .build()),
-            element(ApplicationDocument.builder()
-                .documentType(ApplicationDocumentType.OTHER)
-                .documentName("Document name")
-                .uploadedBy("kurt@swansea.gov.uk")
-                .document(DocumentReference.builder().build())
-                .dateTimeUploaded(LocalDateTime.of(2021, 6, 15, 20, 20))
-                .build()));
+        return List.of(buildApplicationDocument(ApplicationDocumentType.THRESHOLD),
+            buildApplicationDocument(ApplicationDocumentType.SWET),
+            buildApplicationDocument(ApplicationDocumentType.OTHER));
+    }
+
+    private Element<ApplicationDocument> buildApplicationDocument(ApplicationDocumentType type) {
+        return element(ApplicationDocument.builder()
+            .documentType(type)
+            .documentName(type == ApplicationDocumentType.OTHER ? "Document name" : null)
+            .uploadedBy("kurt@swansea.gov.uk")
+            .includedInSWET(type == ApplicationDocumentType.SWET ? "This is included in SWET" : null)
+            .document(DocumentReference.builder().build())
+            .dateTimeUploaded(LocalDateTime.of(2021, 6, 15, 20, 20))
+            .build());
     }
 
 }

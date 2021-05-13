@@ -18,6 +18,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Slf4j
 @Service
@@ -60,8 +61,14 @@ class DocumentsListRenderer {
 
     private List<Pair<String, String>> getFieldsBasedOnDocumentType(DocumentView documentView) {
         List<Pair<String, String>> documentFields = new ArrayList<>();
-        documentFields.add(Pair.of("Uploaded by", documentView.getUploadedBy()));
-        documentFields.add(Pair.of("Date and time uploaded", documentView.getUploadedAt()));
+
+        if (isNotEmpty(documentView.getUploadedBy())) {
+            documentFields.add(Pair.of("Uploaded by", documentView.getUploadedBy()));
+        }
+
+        if (isNotEmpty(documentView.getUploadedAt())) {
+            documentFields.add(Pair.of("Date and time uploaded", documentView.getUploadedAt()));
+        }
 
         if (documentView.isIncludeSWETField()) {
             documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));

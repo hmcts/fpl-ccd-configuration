@@ -93,7 +93,6 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                 )
             )).build();
 
-
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
             .caseDetailsBefore(caseDetailsBefore)
