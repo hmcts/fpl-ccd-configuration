@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentAfterSubmissionValidator;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -38,14 +37,10 @@ class RespondentsCheckerTest {
     private RespondentsChecker respondentsChecker;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @MockBean
     private RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
 
     @BeforeEach
-    void featureToggleMock() {
-        given(featureToggleService.isRespondentJourneyEnabled()).willReturn(true);
+    void validatorMock() {
         given(respondentAfterSubmissionValidator.validateLegalRepresentation(any())).willReturn(List.of());
     }
 
@@ -65,27 +60,6 @@ class RespondentsCheckerTest {
 
     @Test
     void shouldReturnErrorsWhenNoRespondentsDetailsSpecified() {
-        final Respondent respondent = Respondent.builder()
-            .party(RespondentParty.builder().build())
-            .build();
-        final CaseData caseData = CaseData.builder()
-            .respondents1(ElementUtils.wrapElements(respondent))
-            .build();
-
-        final List<String> errors = respondentsChecker.validate(caseData);
-        final boolean isCompleted = respondentsChecker.isCompleted(caseData);
-
-        assertThat(errors).containsExactlyInAnyOrder(
-            "Enter the respondent's relationship to child",
-            "Enter the respondent's full name"
-        );
-        assertThat(isCompleted).isFalse();
-    }
-
-    @Test
-    void shouldReturnErrorsWhenNoRespondentsDetailsSpecifiedAndToggleOff() {
-        given(featureToggleService.isRespondentJourneyEnabled()).willReturn(false);
-
         final Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder().build())
             .build();
