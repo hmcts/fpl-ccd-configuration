@@ -5,195 +5,110 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType;
-import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.aggregator.BundleViewAggregator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.atMost;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
-import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.HMCTS;
-import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.LA;
-import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.NONCONFIDENTIAL;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_CONFIDENTIAL_DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.ADMIN_NON_CONFIDENTIAL_DOCUMENT2;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_CONFIDENTIAL_DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.LA_NON_CONFIDENTIAL_DOCUMENT;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentListServiceTest {
 
-    @Mock
-    private RespondentStatementsTransformer respondentStatementsTransformer;
-
-    @Mock
-    private HearingBundleTransformer hearingBundleTransformer;
-
-    @Mock
-    private ApplicationDocumentBundleTransformer applicationDocumentTransformer;
-
-    @Mock
-    private FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
-
-    @Mock
-    private OtherDocumentsTransformer otherDocumentsTransformer;
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final List<DocumentBundleView> LA_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
+    private static final List<DocumentBundleView> HMCTS_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
+    private static final List<DocumentBundleView> NON_CONFIDENTIAL_BUNDLE_VIEWS =
+        List.of(mock(DocumentBundleView.class));
+    private static final String LA_RENDERED_VIEW = "LA_RENDERED_VIEW";
+    private static final String HMCTS_RENDERED_VIEW = "HMCTS_RENDERED_VIEW";
+    private static final String NON_CONFIDENTIAL_RENDERED_VIEW = "NON_CONFIDENTIAL_RENDERED_VIEW";
 
     @Mock
     private DocumentsListRenderer documentsListRenderer;
 
+    @Mock
+    private BundleViewAggregator bundleViewAggregator;
+
     @InjectMocks
-    private DocumentListService documentListService;
+    private DocumentListService underTest;
 
     @Test
-    void shouldRenderApplicationDocumentsBundleView() {
-        List<Element<ApplicationDocument>> applicationDocuments = buildApplicationDocuments();
-        List<Element<SupportingEvidenceBundle>> hearingEvidenceDocuments = List.of(ADMIN_NON_CONFIDENTIAL_DOCUMENT2);
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceHMCTS = List.of(
-            ADMIN_CONFIDENTIAL_DOCUMENT,
-            ADMIN_NON_CONFIDENTIAL_DOCUMENT);
+    void testGetDocumentViewWhenNothingToRender() {
 
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceLA = List.of(
-            LA_CONFIDENTIAL_DOCUMENT,
-            LA_NON_CONFIDENTIAL_DOCUMENT);
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA,
+            DocumentViewType.LA)).thenReturn(Collections.emptyList());
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA,
+            DocumentViewType.HMCTS)).thenReturn(Collections.emptyList());
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.NONCONFIDENTIAL))
+            .thenReturn(Collections.emptyList());
 
-        UUID hearingId = UUID.randomUUID();
-        List<Element<HearingFurtherEvidenceBundle>> hearingEvidence = wrapElements(
-            HearingFurtherEvidenceBundle.builder()
-                .hearingName("hearing1")
-                .supportingEvidenceBundle(hearingEvidenceDocuments)
-                .build());
+        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
 
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(hearingId, HearingBooking.builder().type(CASE_MANAGEMENT).build())))
-            .hearingFurtherEvidenceDocuments(hearingEvidence)
-            .applicationDocuments(applicationDocuments)
-            .furtherEvidenceDocuments(furtherEvidenceHMCTS)
-            .furtherEvidenceDocumentsLA(furtherEvidenceLA)
-            .build();
+        Map<String, String> expected = new java.util.HashMap<>();
+        expected.put("documentViewLA", null);
+        expected.put("documentViewHMCTS", null);
+        expected.put("documentViewNC", null);
+        expected.put("showFurtherEvidenceTab", YesNo.NO.getValue());
 
-        when(applicationDocumentTransformer.getApplicationStatementAndDocumentBundle(
-            eq(caseData), any(DocumentViewType.class)))
-            .thenReturn(List.of(DocumentBundleView.builder().build()));
-
-        when(furtherEvidenceTransformer.getFurtherEvidenceBundleView(eq(caseData), any(DocumentViewType.class)))
-            .thenReturn(List.of(DocumentBundleView.builder().build()));
-
-        when(hearingBundleTransformer.getHearingBundleView(
-            eq(caseData.getHearingFurtherEvidenceDocuments()), any(DocumentViewType.class)))
-            .thenReturn(List.of(DocumentBundleView.builder().build()));
-
-        when(respondentStatementsTransformer.getRespondentStatementsBundle(eq(caseData), any(DocumentViewType.class)))
-            .thenReturn(List.of(DocumentBundleView.builder().build()));
-
-        when(documentsListRenderer.render(any())).thenReturn("<p><div class='width-50'>");
-
-        Map<String, Object> documentViewData = documentListService.getDocumentView(caseData);
-
-        assertThat(documentViewData.get("showFurtherEvidenceTab")).isEqualTo(YES);
-        assertThat(documentViewData).containsKeys("documentViewLA", "documentViewHMCTS", "documentViewNC");
-        verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, LA);
-        verify(furtherEvidenceTransformer).getFurtherEvidenceBundleView(caseData, LA);
-        verify(hearingBundleTransformer).getHearingBundleView(caseData.getHearingFurtherEvidenceDocuments(), LA);
-        verify(respondentStatementsTransformer).getRespondentStatementsBundle(caseData, LA);
-
-        verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, HMCTS);
-        verify(furtherEvidenceTransformer).getFurtherEvidenceBundleView(caseData, HMCTS);
-        verify(hearingBundleTransformer).getHearingBundleView(caseData.getHearingFurtherEvidenceDocuments(), HMCTS);
-        verify(respondentStatementsTransformer).getRespondentStatementsBundle(caseData, HMCTS);
-
-        verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, NONCONFIDENTIAL);
-        verify(furtherEvidenceTransformer).getFurtherEvidenceBundleView(caseData, NONCONFIDENTIAL);
-        verify(hearingBundleTransformer)
-            .getHearingBundleView(caseData.getHearingFurtherEvidenceDocuments(), NONCONFIDENTIAL);
-        verify(respondentStatementsTransformer).getRespondentStatementsBundle(caseData, NONCONFIDENTIAL);
-
-        verify(documentsListRenderer, atMost(3)).render(anyList());
-
-        verifyNoMoreInteractions(applicationDocumentTransformer, furtherEvidenceTransformer,
-            hearingBundleTransformer, respondentStatementsTransformer, documentsListRenderer);
-    }
-
-    @Test
-    void shouldReturnEmptyMapWhenDocumentBundlesAreEmpty() {
-        CaseData caseData = CaseData.builder()
-            .hearingDetails(List.of(element(UUID.randomUUID(),
-                HearingBooking.builder().type(CASE_MANAGEMENT).build())))
-            .build();
-
-        when(applicationDocumentTransformer.getApplicationStatementAndDocumentBundle(
-            eq(caseData), any(DocumentViewType.class)))
-            .thenReturn(emptyList());
-
-        when(furtherEvidenceTransformer.getFurtherEvidenceBundleView(eq(caseData), any(DocumentViewType.class)))
-            .thenReturn(emptyList());
-
-        when(hearingBundleTransformer.getHearingBundleView(
-            eq(caseData.getHearingFurtherEvidenceDocuments()), any(DocumentViewType.class)))
-            .thenReturn(emptyList());
-
-        when(respondentStatementsTransformer.getRespondentStatementsBundle(eq(caseData), any(DocumentViewType.class)))
-            .thenReturn(emptyList());
-
-        Map<String, Object> documentViewData = documentListService.getDocumentView(caseData);
-        assertThat(documentViewData.get("documentViewLA")).isNull();
-        assertThat(documentViewData.get("documentViewHMCTS")).isNull();
-        assertThat(documentViewData.get("documentViewNC")).isNull();
-        assertThat(documentViewData.get("showFurtherEvidenceTab")).isEqualTo(NO);
-
-        verify(applicationDocumentTransformer, atMost(3))
-            .getApplicationStatementAndDocumentBundle(eq(caseData), any(DocumentViewType.class));
-
-        verify(furtherEvidenceTransformer, atMost(3))
-            .getFurtherEvidenceBundleView(eq(caseData), any(DocumentViewType.class));
-
-        verify(hearingBundleTransformer, atMost(3))
-            .getHearingBundleView(eq(caseData.getHearingFurtherEvidenceDocuments()), any(DocumentViewType.class));
-
-        verify(respondentStatementsTransformer, atMost(3))
-            .getRespondentStatementsBundle(eq(caseData), any(DocumentViewType.class));
+        assertThat(actual).isEqualTo(expected);
 
         verifyNoInteractions(documentsListRenderer);
-
-        verifyNoMoreInteractions(applicationDocumentTransformer, furtherEvidenceTransformer,
-            hearingBundleTransformer, respondentStatementsTransformer, documentsListRenderer);
     }
 
-    private List<Element<ApplicationDocument>> buildApplicationDocuments() {
-        return wrapElements(ApplicationDocument.builder()
-            .uploadedBy("Test User")
-            .documentType(ApplicationDocumentType.GENOGRAM)
-            .documentName("document1.docx")
-            .document(testDocumentReference())
-            .build());
+    @Test
+    void testGetDocumentViewWhenAllRendered() {
+
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.LA))
+            .thenReturn(LA_BUNDLE_VIEWS);
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.HMCTS))
+            .thenReturn(HMCTS_BUNDLE_VIEWS);
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.NONCONFIDENTIAL))
+            .thenReturn(NON_CONFIDENTIAL_BUNDLE_VIEWS);
+
+        when(documentsListRenderer.render(LA_BUNDLE_VIEWS)).thenReturn(LA_RENDERED_VIEW);
+        when(documentsListRenderer.render(HMCTS_BUNDLE_VIEWS)).thenReturn(HMCTS_RENDERED_VIEW);
+        when(documentsListRenderer.render(NON_CONFIDENTIAL_BUNDLE_VIEWS)).thenReturn(NON_CONFIDENTIAL_RENDERED_VIEW);
+
+        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
+
+        assertThat(actual).isEqualTo(Map.of(
+            "documentViewLA", LA_RENDERED_VIEW,
+            "documentViewHMCTS", HMCTS_RENDERED_VIEW,
+            "documentViewNC", NON_CONFIDENTIAL_RENDERED_VIEW,
+            "showFurtherEvidenceTab", YesNo.YES.getValue()
+        ));
+    }
+
+    @Test
+    void testGetDocumentViewWhenSomethingRendered() {
+
+        when(documentsListRenderer.render(HMCTS_BUNDLE_VIEWS)).thenReturn(HMCTS_RENDERED_VIEW);
+
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.LA))
+            .thenReturn(Collections.emptyList());
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.HMCTS))
+            .thenReturn(HMCTS_BUNDLE_VIEWS);
+        when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.NONCONFIDENTIAL))
+            .thenReturn(Collections.emptyList());
+
+        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
+
+        Map<String, Object> expected = new java.util.HashMap<>();
+        expected.put("documentViewLA", null);
+        expected.put("documentViewHMCTS", HMCTS_RENDERED_VIEW);
+        expected.put("documentViewNC", null);
+        expected.put("showFurtherEvidenceTab", YesNo.YES.getValue());
+
+        assertThat(actual).isEqualTo(expected);
     }
 
 }
