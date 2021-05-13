@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Scenario;
 import uk.gov.hmcts.reform.fpl.model.User;
 import uk.gov.hmcts.reform.fpl.service.AuthenticationService;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -53,7 +54,7 @@ public abstract class AbstractApiTest {
     protected TestConfiguration testConfiguration;
 
     @Autowired
-    protected AuthenticationService authenticationService;
+    protected ScenarioService scenarioService;
 
     @Autowired
     protected CaseService caseService;
@@ -91,6 +92,12 @@ public abstract class AbstractApiTest {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public void verifyScenario(String scenarioPath) {
+        Scenario scenario = scenarioService.getScenario(scenarioPath);
+        String response = scenarioService.executeScenario(scenario);
+        scenarioService.assertScenario(scenario, response);
     }
 
     public Object configValue(String property) {
