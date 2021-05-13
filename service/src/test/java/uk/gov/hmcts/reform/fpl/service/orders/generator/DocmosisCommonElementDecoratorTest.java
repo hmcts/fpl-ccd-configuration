@@ -61,11 +61,9 @@ class DocmosisCommonElementDecoratorTest {
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
-    private final CaseDetailsHelper caseDetailsHelper = mock(CaseDetailsHelper.class);
 
     private final DocmosisCommonElementDecorator underTest = new DocmosisCommonElementDecorator(
-        childrenService, extractionService, caseDetailsHelper
-    );
+        childrenService, extractionService);
 
     @BeforeEach
     void setUp() {
@@ -73,7 +71,6 @@ class DocmosisCommonElementDecoratorTest {
         when(extractionService.getJudgeAndLegalAdvisor(JUDGE)).thenReturn(DOCMOSIS_JUDGE);
         when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(CHILDREN);
         when(extractionService.getChildrenDetails(CHILDREN)).thenReturn(DOCMOSIS_CHILDREN);
-        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
 
         when(ORDER_TYPE.getTitle()).thenReturn(TITLE);
         when(ORDER_TYPE.getChildrenAct()).thenReturn(CHILDREN_ACT);

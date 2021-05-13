@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -66,11 +65,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
     @MockBean
     private NotificationClient notificationClient;
 
-    @BeforeEach
-    void setUp() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(false);
-    }
-
     @Test
     void aboutToStartShouldPrePopulateRespondent() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -111,6 +105,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
         CaseData caseData = CaseData.builder()
             .respondents1(buildRespondents())
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -122,6 +117,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().minusDays(1))))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -133,6 +129,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().plusDays(1), "Test User <e.test@test.com>")))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -148,6 +145,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 respondent(dateNow(), "Test User <e.test@test.com>"),
                 respondent(dateNow(), "Second Test User <e.test-second@test.com>")
             ))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -161,6 +159,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnNoEmailErrorsForRespondentSolicitorWhenValidEmail() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow(), "test@test.com")))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -170,14 +169,12 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldReturnRespondentRemovedValidationErrorsWhenRespondentRemoved() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
-
         CaseData caseDataBefore = CaseData.builder()
             .respondents1(List.of(element(respondent(dateNow(), "test@test.com"))))
             .state(SUBMITTED)
             .build();
 
-        CaseData caseData = caseDataBefore.toBuilder()
+        CaseData caseData = CaseData.builder()
             .respondents1(List.of())
             .build();
 
@@ -185,17 +182,19 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest);
 
-        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("Removing an existing respondent is not allowed"));
+        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("You cannot remove a respondent from the case"));
     }
 
     @Test
     void shouldAllowAdminToUpdateRespondentSolicitorOrganisationWhenNoCIsEnabled() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
         when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
 
         Element<Respondent> respondent = element(respondent(dateNow(), "test@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
             .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
                 .organisation(Organisation.organisation("NEW"))
                 .build())
             .build());
@@ -218,12 +217,14 @@ class RespondentControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisationWhenNoCIsEnabled() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
         when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
 
         Element<Respondent> respondent = element(respondent(dateNow(), "respondent1@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
             .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
                 .organisation(Organisation.organisation("NEW_ORG"))
                 .build())
             .build());
@@ -242,13 +243,11 @@ class RespondentControllerTest extends AbstractCallbackTest {
         List<String> errors = postMidEventWithUserRole(callbackRequest, LOCAL_AUTHORITY.getRoleName()).getErrors();
 
         assertThat(errors)
-            .isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
+            .isEqualTo(List.of("You cannot change organisation details for respondent 1's legal representative"));
     }
 
     @Test
     void shouldGenerateRespondentPoliciesWhenToggleOnAndStateIsNotOpen() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
-
         Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
@@ -284,6 +283,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 element(oldRespondent.getId(), respondent(dateNow())),
                 element(respondent(dateNow()))
             ))
+            .state(OPEN)
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -317,8 +317,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldPublishRespondentsUpdatedEventIfNotOpenStateToggledOn() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
+    void shouldPublishRespondentsUpdatedEventIfNotOpenState() {
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
@@ -362,8 +361,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotPublishRespondentsUpdatedEventIfOpenStateToggledOn() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
+    void shouldNotPublishRespondentsUpdatedEventIfOpenState() {
         Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
@@ -385,39 +383,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .id(Long.valueOf(CASE_ID))
             .state(OPEN)
-            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
-            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
-            .build();
-
-        postSubmittedEvent(caseData);
-
-        verifyNoInteractions(notificationClient);
-    }
-
-    @Test
-    void shouldNotPublishRespondentsUpdatedEventIfNotOpenStateToggledOff() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(false);
-        Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .email(SOLICITOR_EMAIL)
-                .organisation(Organisation.builder().organisationID("Registered Org ID").build())
-                .build())
-            .build();
-
-        Respondent respondentWithUnregisteredSolicitor = respondent(dateNow()).toBuilder()
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .email(SOLICITOR_EMAIL)
-                .unregisteredOrganisation(UnregisteredOrganisation.builder()
-                    .name("Unregistered Org")
-                    .build())
-                .build())
-            .build();
-
-        CaseData caseData = CaseData.builder()
-            .id(Long.valueOf(CASE_ID))
-            .state(SUBMITTED)
             .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
