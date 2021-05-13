@@ -10,14 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicationDocumentsService;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
-
-import java.util.Map;
-import java.util.Objects;
 
 @Api
 @RestController
@@ -39,18 +35,7 @@ public class UploadDocumentsController extends CallbackController {
             caseData.getApplicationDocuments(), caseDataBefore.getApplicationDocuments()));
 
         if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
-            Map<String, Object> data = documentListService.getDocumentView(getCaseData(caseDetails));
-
-            boolean allValuesAreNull = data.values()
-                .stream()
-                .allMatch(Objects::isNull);
-
-            if (allValuesAreNull) {
-                caseDetails.getData().put("showFurtherEvidenceTab", YesNo.NO);
-            } else {
-                caseDetails.getData().put("showFurtherEvidenceTab", YesNo.YES);
-            }
-            caseDetails.getData().putAll(data);
+            caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
         }
         return respond(caseDetails);
     }

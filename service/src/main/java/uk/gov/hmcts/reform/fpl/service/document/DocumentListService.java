@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.document;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -36,6 +38,16 @@ public class DocumentListService {
         data.put("documentViewLA", renderDocumentBundleViews(caseData, DocumentViewType.LA));
         data.put("documentViewHMCTS", renderDocumentBundleViews(caseData, DocumentViewType.HMCTS));
         data.put("documentViewNC", renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL));
+
+        boolean allValuesAreNull = data.values()
+            .stream()
+            .allMatch(Objects::isNull);
+
+        if (allValuesAreNull) {
+            data.put("showFurtherEvidenceTab", YesNo.NO);
+        } else {
+            data.put("showFurtherEvidenceTab", YesNo.YES);
+        }
 
         return data;
     }
