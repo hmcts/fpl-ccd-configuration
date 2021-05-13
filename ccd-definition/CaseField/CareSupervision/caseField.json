@@ -1598,7 +1598,8 @@
     "ID": "documentViewHMCTS",
     "Label": "Case name",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1606,7 +1607,8 @@
     "ID": "documentViewLA",
     "Label": "Case name",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1614,7 +1616,8 @@
     "ID": "documentViewNC",
     "Label": "Case name",
     "FieldType": "Text",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1622,7 +1625,8 @@
     "ID": "documentListPageHMCTS",
     "Label": "${documentViewHMCTS}",
     "FieldType": "Label",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1630,7 +1634,8 @@
     "ID": "documentListPageLA",
     "Label": "${documentViewLA}",
     "FieldType": "Label",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2018",
@@ -1638,7 +1643,8 @@
     "ID": "documentListPageNC",
     "Label": "${documentViewNC}",
     "FieldType": "Label",
-    "SecurityClassification": "PUBLIC"
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
