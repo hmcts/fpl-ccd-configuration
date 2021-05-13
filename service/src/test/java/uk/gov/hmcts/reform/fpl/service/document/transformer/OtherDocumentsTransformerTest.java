@@ -155,13 +155,14 @@ class OtherDocumentsTransformerTest {
             .fileName(scannedDocument.getFileName())
             .uploadedAt(isNotEmpty(scannedDocument.getScannedDate())
                 ? formatLocalDateTimeBaseUsingFormat(scannedDocument.getScannedDate(), TIME_DATE) : null)
-            .documentName(scannedDocument.getFileName()).build();
+            .title(scannedDocument.getFileName()).build();
     }
 
     private DocumentView buildCourtAdminDocumentView(CourtAdminDocument courtAdminDocument) {
         return DocumentView.builder()
             .document(courtAdminDocument.getDocument())
-            .fileName(courtAdminDocument.getDocumentTitle()).build();
+            .fileName(courtAdminDocument.getDocumentTitle())
+            .title(courtAdminDocument.getDocumentTitle()).build();
     }
 
 }
