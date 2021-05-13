@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
-public class CaseSubmissionApiTest extends AbstractApiTest {
+public class SubmitCaseApiTest extends AbstractApiTest {
 
     @Autowired
     private EmailService emailService;
