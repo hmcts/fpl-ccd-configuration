@@ -24,19 +24,23 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @Component
 public class OtherDocumentsTransformer {
 
+    private static final String DOCUMENT_BUNDLE_NAME = "Any other documents";
+
     public List<DocumentBundleView> getOtherDocumentsView(
         CaseData caseData,
         DocumentViewType documentViewType) {
 
         List<DocumentBundleView> documentBundleViews = new ArrayList<>();
+        List<DocumentView> documentViewList = new ArrayList<>();
 
-        if (documentViewType != DocumentViewType.HMCTS) {
-            List<DocumentView> documentViewList = getScannedDocumentsView(caseData.getScannedDocuments());
-            documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
+        if (documentViewType == DocumentViewType.HMCTS) {
+            documentViewList.addAll(getScannedDocumentsView(caseData.getScannedDocuments()));
+        }
 
-            if (isNotEmpty(documentViewList)) {
-                documentBundleViews.add(buildBundle(documentViewList));
-            }
+        documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
+
+        if (isNotEmpty(documentViewList)) {
+            documentBundleViews.add(buildBundle(documentViewList));
         }
 
         return documentBundleViews;
@@ -46,13 +50,13 @@ public class OtherDocumentsTransformer {
         return defaultIfNull(scannedDocuments, new ArrayList<Element<ScannedDocument>>())
             .stream()
             .map(Element::getValue)
+            .sorted(Comparator.comparing(ScannedDocument::getScannedDate, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getUrl())
                 .fileName(doc.getFileName())
                 .uploadedAt(isNotEmpty(doc.getScannedDate())
                     ? formatLocalDateTimeBaseUsingFormat(doc.getScannedDate(), TIME_DATE) : null)
-                .documentName(doc.getType() + " - " + doc.getSubtype()).build())
-            .sorted(Comparator.comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
+                .documentName(doc.getFileName()).build())
             .collect(Collectors.toList());
     }
 
@@ -68,7 +72,7 @@ public class OtherDocumentsTransformer {
 
     private DocumentBundleView buildBundle(List<DocumentView> documents) {
         return DocumentBundleView.builder()
-            .name("Any other documents")
+            .name(DOCUMENT_BUNDLE_NAME)
             .documents(documents)
             .build();
     }

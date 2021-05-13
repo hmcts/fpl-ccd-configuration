@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentStatement;
@@ -29,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ExtendWith(MockitoExtension.class)
 class RespondentStatementsTransformerTest {
 
     private static final String RESPONDENT_STATEMENT_TYPE = "Respondent statements";
