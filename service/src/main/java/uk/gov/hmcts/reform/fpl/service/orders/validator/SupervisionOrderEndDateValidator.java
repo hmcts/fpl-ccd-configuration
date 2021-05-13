@@ -97,6 +97,7 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
         if (endDate.toLocalTime().equals(MIDNIGHT)) {
             errors.add(INVALID_TIME_MESSAGE);
         }
+
         return errors;
     }
 }

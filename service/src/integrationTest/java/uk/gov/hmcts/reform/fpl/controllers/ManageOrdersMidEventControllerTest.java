@@ -336,8 +336,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void supervisionOrderEndDateShouldAllowCurrentDate() {
+    void supervisionOrderEndDateShouldNotAllowCurrentDate() {
         final LocalDate TEST_VALID_DATE = dateNow();
+        final String TEST_FUTURE_DATE_MESSAGE = "Enter an end date in the future";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -347,48 +348,15 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        assertThat(response.getErrors()).isNull();
-    }
-
-    @Test
-    void supervisionOrderEndDateTimeShouldAllowCurrentDate() {
-        final LocalDateTime TEST_VALID_DATE_TIME = dateNow().plusMonths(6).atStartOfDay().plusHours(8).plusMinutes(35);
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
-                .manageOrdersSetDateAndTimeEndDate(TEST_VALID_DATE_TIME)
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
-
-        assertThat(response.getErrors()).isNull();
-    }
-
-    @Test
-    void supervisionOrderNumberOfMonthsShouldAllowValidFutureDate() {
-        final int TEST_VALID_MONTHS = 11;
-
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
-                .manageOrdersSetMonthsEndDate(TEST_VALID_MONTHS)
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
-
-        assertThat(response.getErrors()).isNull();
+        assertThat(response.getErrors()).containsOnly(TEST_FUTURE_DATE_MESSAGE);
     }
 
     @Test
     void supervisionOrderNumberOfMonthsShouldNotAllowInvalidFutureDate() {
         final int TEST_INVALID_MONTHS = 16;
+        final String TEST_END_DATE_RANGE_MESSAGE = "Supervision orders cannot last longer than 12 months";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -398,10 +366,27 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "/order-selection");
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        System.out.println("response.getErrors() = " + response.getErrors());
-        assertThat(response.getErrors()).containsOnly("Supervision orders cannot last longer than 12 months");
+        assertThat(response.getErrors()).containsOnly(TEST_END_DATE_RANGE_MESSAGE);
+    }
+
+    @Test
+    void supervisionOrderNumberOfMonthsShouldNotAllowInvalidPastDate() {
+        final int TEST_INVALID_MONTHS = -1;
+        final String TEST_UNDER_DATE_RANGE_MESSAGE = "Supervision orders in months should be at least 1";
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersSetMonthsEndDate(TEST_INVALID_MONTHS)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        deepEquals(response.getErrors(), TEST_UNDER_DATE_RANGE_MESSAGE);
     }
 
     private CaseData buildCaseData() {
