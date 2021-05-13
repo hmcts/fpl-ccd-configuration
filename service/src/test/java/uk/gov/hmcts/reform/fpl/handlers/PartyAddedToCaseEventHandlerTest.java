@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.PartyAddedNotifyData;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -54,9 +53,6 @@ class PartyAddedToCaseEventHandlerTest {
     @MockBean
     private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     @Autowired
     private PartyAddedToCaseEventHandler underTest;
 
@@ -65,8 +61,6 @@ class PartyAddedToCaseEventHandlerTest {
 
     @BeforeEach
     void init() {
-        given(featureToggleService.hasRSOCaseAccess()).willReturn(true);
-
         given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
             caseDataBefore.getRepresentatives(), EMAIL))
             .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());

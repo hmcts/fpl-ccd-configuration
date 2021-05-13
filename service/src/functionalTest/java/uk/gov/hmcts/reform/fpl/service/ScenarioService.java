@@ -2,73 +2,58 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.text.StringSubstitutor;
+import net.serenitybdd.rest.SerenityRest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Scenario;
 import uk.gov.hmcts.reform.fpl.util.TestConfiguration;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.lang.String.format;
-import static java.nio.charset.Charset.defaultCharset;
-import static org.apache.commons.io.FilenameUtils.removeExtension;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.springframework.util.StreamUtils.copyToString;
+import static com.gargoylesoftware.htmlunit.util.MimeType.APPLICATION_JSON;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static uk.gov.hmcts.reform.fpl.util.CallbackComparator.callbackComparator;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public final class ScenarioService {
 
-    private static final Resource BASE_DIR = new DefaultResourceLoader().getResource("/stateless-scenarios");
-
-    private final TestConfiguration testConfiguration;
-
     private final ObjectMapper objectMapper;
+    private final TestConfiguration testConfiguration;
+    private final AuthenticationService authenticationService;
 
-    public List<Scenario> getScenarios() {
+    public Scenario getScenario(String path) {
         try {
-            return Stream.of(new PathMatchingResourcePatternResolver()
-                .getResources(format("%s/**/*.json", BASE_DIR.getFilename())))
-                .map(this::loadScenario)
-                .collect(Collectors.toList());
+            String scenarioString = readString(path, testConfiguration.getPlaceholders());
+            return objectMapper.readValue(scenarioString, Scenario.class);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private Scenario loadScenario(Resource resource) {
-        try {
-            String fileContent = copyToString(resource.getInputStream(), defaultCharset());
-            String scenarioString = StringSubstitutor.replace(fileContent, testConfiguration.getPlaceholders());
-            Scenario scenario = objectMapper.readValue(scenarioString, Scenario.class);
-
-            if (isEmpty(scenario.getName())) {
-                scenario.setName(getName(resource));
-            }
-            return scenario;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    public String executeScenario(Scenario scenario) {
+        return SerenityRest
+            .given()
+            .headers(authenticationService.getAuthorizationHeaders(testConfiguration.getUsers()
+                .get(scenario.getRequest().getUser())))
+            .contentType(APPLICATION_JSON)
+            .body(scenario.getRequest().getDataAsString())
+            .post(scenario.getRequest().getUri())
+            .then()
+            .statusCode(scenario.getExpectation().getStatus())
+            .extract()
+            .asString();
     }
 
-    private String getName(Resource resource) throws IOException {
-        Path resourcePath = Paths.get(resource.getFile().getAbsolutePath());
-        Path baseResourcePath = Paths.get(BASE_DIR.getFile().getAbsolutePath());
-
-        return removeExtension(baseResourcePath.relativize(resourcePath).toString())
-            .replace("-", " ")
-            .replace("_", " ")
-            .replace(File.separator, " - ");
+    public void assertScenario(Scenario scenario, String response) {
+        String expectedData = scenario.getExpectation().getDataAsString();
+        if (isNotEmpty(expectedData)) {
+            String actualData = isEmpty(response) ? "{}" : response;
+            assertEquals(expectedData, actualData, callbackComparator());
+        }
     }
 }

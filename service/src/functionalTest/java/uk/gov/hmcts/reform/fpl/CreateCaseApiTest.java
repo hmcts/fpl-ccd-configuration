@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 
-public class CaseCreationApiTest extends AbstractApiTest {
+public class CreateCaseApiTest extends AbstractApiTest {
 
     @Test
     public void shouldCreateAndShareCase() {

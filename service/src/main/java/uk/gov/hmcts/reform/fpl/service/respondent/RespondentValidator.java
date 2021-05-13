@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -27,7 +26,6 @@ public class RespondentValidator {
     private final RespondentService respondentService;
     private final ValidateEmailService validateEmailService;
     private final RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
-    private final FeatureToggleService featureToggleService;
 
     private final Time time;
 
@@ -43,7 +41,7 @@ public class RespondentValidator {
         List<String> emails = respondentService.getRespondentSolicitorEmails(respondentsWithLegalRep);
         errors.addAll(validateEmailService.validate(emails, "Representative"));
 
-        if (featureToggleService.hasRSOCaseAccess() && caseData.getState() != OPEN) {
+        if (caseData.getState() != OPEN) {
             errors.addAll(respondentAfterSubmissionValidator.validate(caseData, caseDataBefore));
         }
 
