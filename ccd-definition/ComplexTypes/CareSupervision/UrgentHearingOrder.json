@@ -1,0 +1,35 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentHearingOrder",
+    "ListElementCode": "allocation",
+    "FieldType": "AllocationDecision",
+    "ElementLabel": "Allocation decision",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentHearingOrder",
+    "ListElementCode": "order",
+    "FieldType": "Document",
+    "ElementLabel": "Order",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentHearingOrder",
+    "ListElementCode": "unsealedOrder",
+    "FieldType": "Document",
+    "ElementLabel": "Unsealed order",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "order=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UrgentHearingOrder",
+    "ListElementCode": "dateAdded",
+    "FieldType": "Date",
+    "ElementLabel": "Date added",
+    "SecurityClassification": "Public"
+  }
+]
