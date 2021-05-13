@@ -51,13 +51,13 @@ class DocumentListServiceTest {
         when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.NONCONFIDENTIAL))
             .thenReturn(Collections.emptyList());
 
-        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
-
         Map<String, String> expected = new java.util.HashMap<>();
         expected.put("documentViewLA", null);
         expected.put("documentViewHMCTS", null);
         expected.put("documentViewNC", null);
         expected.put("showFurtherEvidenceTab", YesNo.NO.getValue());
+
+        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
 
         assertThat(actual).isEqualTo(expected);
 
@@ -100,13 +100,14 @@ class DocumentListServiceTest {
         when(bundleViewAggregator.getDocumentBundleViews(CASE_DATA, DocumentViewType.NONCONFIDENTIAL))
             .thenReturn(Collections.emptyList());
 
-        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
 
         Map<String, Object> expected = new java.util.HashMap<>();
         expected.put("documentViewLA", null);
         expected.put("documentViewHMCTS", HMCTS_RENDERED_VIEW);
         expected.put("documentViewNC", null);
         expected.put("showFurtherEvidenceTab", YesNo.YES.getValue());
+
+        Map<String, Object> actual = underTest.getDocumentView(CASE_DATA);
 
         assertThat(actual).isEqualTo(expected);
     }

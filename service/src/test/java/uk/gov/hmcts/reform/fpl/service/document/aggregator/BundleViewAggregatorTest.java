@@ -44,7 +44,8 @@ class BundleViewAggregatorTest {
     private static final List<DocumentBundleView> HEARING_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
     private static final List<DocumentBundleView> RESPONDENT_STATEMENT_BUNDLE_VIEWS =
         List.of(mock(DocumentBundleView.class));
-    private static final List<DocumentBundleView> OTHER_DOCUMENTS_BUNDLE_VIEWS = List.of(mock(DocumentBundleView.class));
+    private static final List<DocumentBundleView> OTHER_DOCUMENTS_BUNDLE_VIEWS =
+        List.of(mock(DocumentBundleView.class));
 
     @Mock
     private ApplicationDocumentBundleTransformer getDocumentBundleViews;
@@ -79,7 +80,8 @@ class BundleViewAggregatorTest {
         when(respondentStatementsTransformer.getRespondentStatementsBundle(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
             RESPONDENT_STATEMENT_BUNDLE_VIEWS);
 
-        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA,DOCUMENT_VIEW_TYPE)).thenReturn(OTHER_DOCUMENTS_BUNDLE_VIEWS);
+        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
+            OTHER_DOCUMENTS_BUNDLE_VIEWS);
 
         List<DocumentBundleView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
 
@@ -108,7 +110,8 @@ class BundleViewAggregatorTest {
         when(respondentStatementsTransformer.getRespondentStatementsBundle(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
             Collections.emptyList());
 
-        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA,DOCUMENT_VIEW_TYPE)).thenReturn(Collections.emptyList());
+        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA,
+            DOCUMENT_VIEW_TYPE)).thenReturn(Collections.emptyList());
 
         List<DocumentBundleView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
 
