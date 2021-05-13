@@ -35,6 +35,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.atMost;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.HMCTS;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.LA;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.NONCONFIDENTIAL;
@@ -116,8 +118,9 @@ class DocumentListServiceTest {
 
         Map<String, Object> documentViewData = documentListService.getDocumentView(caseData);
 
+        assertThat(documentViewData.get("showFurtherEvidenceTab")).isEqualTo(YES);
         assertThat(documentViewData).containsKeys("documentViewLA", "documentViewHMCTS", "documentViewNC");
-        verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, LA);
+         verify(applicationDocumentTransformer).getApplicationStatementAndDocumentBundle(caseData, LA);
         verify(furtherEvidenceTransformer).getFurtherEvidenceBundleView(caseData, LA);
         verify(hearingBundleTransformer).getHearingBundleView(caseData.getHearingFurtherEvidenceDocuments(), LA);
         verify(respondentStatementsTransformer).getRespondentStatementsBundle(caseData, LA);
@@ -164,6 +167,7 @@ class DocumentListServiceTest {
         assertThat(documentViewData.get("documentViewLA")).isNull();
         assertThat(documentViewData.get("documentViewHMCTS")).isNull();
         assertThat(documentViewData.get("documentViewNC")).isNull();
+        assertThat(documentViewData.get("showFurtherEvidenceTab")).isEqualTo(NO);
 
         verify(applicationDocumentTransformer, atMost(3))
             .getApplicationStatementAndDocumentBundle(eq(caseData), any(DocumentViewType.class));

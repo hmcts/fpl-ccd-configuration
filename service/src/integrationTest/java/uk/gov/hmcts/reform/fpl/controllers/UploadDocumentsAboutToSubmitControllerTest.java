@@ -53,7 +53,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore(boolean isFurtherEvidenceTaEnabled) {
+    void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore(boolean isFurtherEvidenceTabEnabled) {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 
@@ -99,7 +99,7 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
             .caseDetailsBefore(caseDetailsBefore)
             .build();
 
-        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTaEnabled);
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTabEnabled);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
@@ -119,14 +119,16 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .build()))
         );
 
-        if (isFurtherEvidenceTaEnabled) {
+        if (isFurtherEvidenceTabEnabled) {
             assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
             assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
             assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
+            assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
         } else {
             assertThat(callbackResponse.getData().get("documentViewLA")).isNull();
             assertThat(callbackResponse.getData().get("documentViewHMCTS")).isNull();
             assertThat(callbackResponse.getData().get("documentViewNC")).isNull();
+            assertThat((String) callbackResponse.getData().get("showFurtherEvidenceTab")).isNull();
         }
     }
 }

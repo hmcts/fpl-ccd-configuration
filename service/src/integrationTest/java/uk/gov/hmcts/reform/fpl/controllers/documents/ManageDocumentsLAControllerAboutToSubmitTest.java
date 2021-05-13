@@ -115,6 +115,7 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
         assertThat((String) response.getData().get("documentViewLA")).isNotEmpty();
         assertThat((String) response.getData().get("documentViewHMCTS")).isNotEmpty();
         assertThat((String) response.getData().get("documentViewNC")).isNotEmpty();
+        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
 
         assertExpectedFieldsAreRemoved(responseData);
     }
@@ -136,10 +137,11 @@ class ManageDocumentsLAControllerAboutToSubmitTest extends AbstractCallbackTest 
 
         assertThat(responseData.getFurtherEvidenceDocumentsLA()).isEqualTo(furtherEvidenceBundle);
         assertExpectedFieldsAreRemoved(responseData);
-        
+
         assertThat(response.getData().get("documentViewLA")).isNull();
         assertThat(response.getData().get("documentViewHMCTS")).isNull();
         assertThat(response.getData().get("documentViewNC")).isNull();
+        assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
     }
 
     @Test
