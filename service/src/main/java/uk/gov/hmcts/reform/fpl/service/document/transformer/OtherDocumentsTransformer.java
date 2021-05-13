@@ -53,7 +53,7 @@ public class OtherDocumentsTransformer {
                     ? formatLocalDateTimeBaseUsingFormat(doc.getScannedDate(), TIME_DATE) : null)
                 .documentName(doc.getType() + " - " + doc.getSubtype()).build())
             .sorted(Comparator.comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
-            .collect(Collectors.toUnmodifiableList());
+            .collect(Collectors.toList());
     }
 
     private List<DocumentView> getOtherCourtAdminDocumentsView(List<Element<CourtAdminDocument>> otherCourtDocuments) {
@@ -63,7 +63,7 @@ public class OtherDocumentsTransformer {
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
                 .fileName(doc.getDocumentTitle()).build())
-            .collect(Collectors.toUnmodifiableList());
+            .collect(Collectors.toList());
     }
 
     private DocumentBundleView buildBundle(List<DocumentView> documents) {
