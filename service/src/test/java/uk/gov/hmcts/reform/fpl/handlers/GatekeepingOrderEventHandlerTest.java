@@ -7,8 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.sdo.SDONotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -22,8 +23,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_LA;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.SDO_AND_NOP;
+import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup.URGENT_AND_NOP;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CAFCASS_NAME;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
@@ -31,10 +34,13 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
 
 @ExtendWith(MockitoExtension.class)
-class StandardDirectionsOrderIssuedEventHandlerTest {
+class GatekeepingOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
-
-    private final SDONotifyData notifyData = mock(SDONotifyData.class);
+    private static final SDONotifyData NOTIFY_DATA = mock(SDONotifyData.class);
+    private static final DocumentReference ORDER = mock(DocumentReference.class);
+    private static final GatekeepingOrderEvent.GatekeepingOrderEventBuilder BASE_EVENT = GatekeepingOrderEvent.builder()
+        .order(ORDER)
+        .notificationGroup(SDO_AND_NOP);
 
     @Mock
     private NotificationService notificationService;
@@ -50,7 +56,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     private SDOIssuedCafcassContentProvider cafcassContentProvider;
 
     @InjectMocks
-    private StandardDirectionsOrderIssuedEventHandler underTest;
+    private GatekeepingOrderEventHandler underTest;
 
     @Test
     void shouldNotifyCafcassOfIssuedSDO() {
@@ -62,14 +68,14 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-        given(cafcassContentProvider.getNotifyData(caseData)).willReturn(notifyData);
+        given(cafcassContentProvider.getNotifyData(caseData, ORDER)).willReturn(NOTIFY_DATA);
 
-        underTest.notifyCafcass(new StandardDirectionsOrderIssuedEvent(caseData));
+        underTest.notifyCafcass(BASE_EVENT.caseData(caseData).build());
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_CAFCASS,
             CAFCASS_EMAIL_ADDRESS,
-            notifyData,
+            NOTIFY_DATA,
             CASE_ID
         );
     }
@@ -78,7 +84,7 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyLocalAuthorityOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
-        given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(notifyData);
+        given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder()
@@ -86,12 +92,12 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
                 .build())
         ).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyLocalAuthority(new StandardDirectionsOrderIssuedEvent(caseData));
+        underTest.notifyLocalAuthority(BASE_EVENT.caseData(caseData).build());
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_LA,
             Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            notifyData,
+            NOTIFY_DATA,
             CASE_ID.toString()
         );
     }
@@ -100,16 +106,16 @@ class StandardDirectionsOrderIssuedEventHandlerTest {
     void shouldNotifyCTSCOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
-        given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(notifyData);
+        given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
 
         given(ctscLookup.getEmail()).willReturn(CTSC_INBOX);
 
-        underTest.notifyCTSC(new StandardDirectionsOrderIssuedEvent(caseData));
+        underTest.notifyCTSC(BASE_EVENT.caseData(caseData).notificationGroup(URGENT_AND_NOP).build());
 
         verify(notificationService).sendEmail(
-            SDO_AND_NOP_ISSUED_CTSC,
+            URGENT_AND_NOP_ISSUED_CTSC,
             CTSC_INBOX,
-            notifyData,
+            NOTIFY_DATA,
             CASE_ID
         );
     }

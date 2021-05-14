@@ -16,9 +16,8 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
-import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.CommonDirectionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
@@ -39,6 +37,7 @@ import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.StandardDirectionOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderRouteValidator;
 import uk.gov.hmcts.reform.fpl.service.sdo.StandardDirectionsOrderService;
 import uk.gov.hmcts.reform.fpl.service.sdo.UrgentGatekeepingOrderService;
@@ -47,11 +46,12 @@ import uk.gov.hmcts.reform.fpl.validation.groups.DateOfIssueGroup;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute.URGENT;
@@ -86,6 +86,7 @@ public class StandardDirectionsOrderController extends CallbackController {
     private final NoticeOfProceedingsService nopService;
     private final UrgentGatekeepingOrderService urgentOrderService;
     private final GatekeepingOrderRouteValidator routeValidator;
+    private final GatekeepingOrderEventNotificationDecider notificationDecider;
     private final ObjectMapper mapper;
 
     @PostMapping("/about-to-start")
@@ -289,15 +290,15 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         // order is only null when sdoRouter is URGENT
         if (URGENT == sdoRouter || order.isSealed()) {
-            caseDetails.getData().put("state", State.CASE_MANAGEMENT);
+            caseDetails.getData().put("state", CASE_MANAGEMENT);
             tempFields.add("sdoRouter");
 
-            if (State.CASE_MANAGEMENT != caseData.getState()) {
+            if (GATEKEEPING == caseData.getState()) {
                 List<DocmosisTemplates> docmosisTemplateTypes = caseData.getNoticeOfProceedings()
                     .mapProceedingTypesToDocmosisTemplate();
 
                 List<Element<DocumentBundle>> newNOP = nopService.uploadAndPrepareNoticeOfProceedingBundle(
-                        caseData, docmosisTemplateTypes
+                    caseData, docmosisTemplateTypes
                 );
 
                 caseDetails.getData().put("noticeOfProceedingsBundle", newNOP);
@@ -313,25 +314,19 @@ public class StandardDirectionsOrderController extends CallbackController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = getCaseData(callbackRequest);
 
-        StandardDirectionOrder sdo = defaultIfNull(
-            caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
-        );
-        UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
-        if (SEALED != sdo.getOrderStatus() && null == urgentHearingOrder) {
-            return;
-        }
+        Optional<GatekeepingOrderEvent> event = notificationDecider.buildEventToPublish(caseData);
 
-        DocumentReference docToSend = defaultIfNull(sdo.getOrderDoc(), urgentHearingOrder.getOrder());
+        event.ifPresent(eventToPublish -> {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change-SEND_DOCUMENT",
+                Map.of("documentToBeSent", eventToPublish.getOrder())
+            );
 
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change-SEND_DOCUMENT",
-            Map.of("documentToBeSent", docToSend)
-        );
-
-        publishEvent(new StandardDirectionsOrderIssuedEvent(caseData));
+            publishEvent(eventToPublish);
+        });
     }
 
     private String getFirstHearingStartDate(CaseData caseData) {

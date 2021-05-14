@@ -2,28 +2,26 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationEventPublisher;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
+import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -39,19 +37,22 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CAFCASS
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_AND_NOP_ISSUED_CTSC;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTest {
     private static final Long CASE_ID = 1L;
     private static final String SEND_DOCUMENT_EVENT = "internal-change-SEND_DOCUMENT";
-    private static final DocumentReference DOCUMENT_REFERENCE = TestDataHelper.testDocumentReference();
+    private static final DocumentReference SDO_DOCUMENT = testDocumentReference();
+    private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
-    private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
+    private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
 
-    @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    @SpyBean
+    private EventService eventService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -68,27 +69,45 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     @BeforeEach
     void init() {
-        when(documentDownloadService.downloadDocument(any()))
-            .thenReturn(APPLICATION_BINARY);
+        when(documentDownloadService.downloadDocument(any())).thenReturn(APPLICATION_BINARY);
     }
 
     @Test
     void shouldNotTriggerSDOEventWhenDraft() {
-        postSubmittedEvent(buildCallbackRequest(DRAFT));
+        postSubmittedEvent(buildCaseDataWithSDO(DRAFT));
 
-        verify(applicationEventPublisher, never()).publishEvent(StandardDirectionsOrderIssuedEvent.class);
+        verify(eventService, never()).publishEvent(GatekeepingOrderEvent.class);
     }
 
     @Test
     void shouldNotTriggerSendDocumentEventWhenDraft() {
-        postSubmittedEvent(buildCallbackRequest(DRAFT));
+        postSubmittedEvent(buildCaseDataWithSDO(DRAFT));
 
         verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), eq(SEND_DOCUMENT_EVENT), any());
     }
 
     @Test
-    void shouldTriggerSDOEventWhenSubmitted() throws Exception {
-        postSubmittedEvent(buildCallbackRequest(SEALED));
+    void shouldTriggerEventWhenUrgentHearingSubmitted() throws NotificationClientException {
+        postSubmittedEvent(buildCaseDataWithUrgentHearingOrder());
+
+        verify(notificationClient).sendEmail(
+            eq(SDO_AND_NOP_ISSUED_CAFCASS),
+            eq("cafcass@cafcass.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+
+        verify(notificationClient).sendEmail(
+            eq(SDO_AND_NOP_ISSUED_CTSC),
+            eq("FamilyPublicLaw+ctsc@gmail.com"),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        );
+    }
+
+    @Test
+    void shouldTriggerSDOEventWhenSubmitted() throws NotificationClientException {
+        postSubmittedEvent(buildCaseDataWithSDO(SEALED));
 
         verify(notificationClient).sendEmail(
             eq(SDO_AND_NOP_ISSUED_CAFCASS),
@@ -107,49 +126,48 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     @Test
     void shouldTriggerSendDocumentEventWhenSubmitted() {
-        postSubmittedEvent(buildCallbackRequest(SEALED));
+        postSubmittedEvent(buildCaseDataWithSDO(SEALED));
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION,
+        verify(coreCaseDataService).triggerEvent(
+            JURISDICTION,
             CASE_TYPE,
             CASE_ID,
             SEND_DOCUMENT_EVENT,
-            Map.of("documentToBeSent", DOCUMENT_REFERENCE));
+            Map.of("documentToBeSent", SDO_DOCUMENT)
+        );
     }
 
-    private CallbackRequest buildCallbackRequest(OrderStatus status) {
-        StandardDirectionOrder order = StandardDirectionOrder.builder()
-            .orderStatus(status)
-            .orderDoc(DOCUMENT_REFERENCE)
-            .build();
-
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(CASE_ID)
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(Map.of(
-                    HEARING_DETAILS_KEY, List.of(
-                        Element.builder()
-                            .value(HearingBooking.builder()
-                                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
-                                .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
-                                .build())
-                            .build()),
-                    "respondents1", List.of(
-                        Map.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(dateNow().plusDays(1))
-                                    .lastName("Moley")
-                                    .relationshipToChild("Uncle")
-                                    .build())
-                                .build()
-                        )
-                    ),
-                    "standardDirectionOrder", order,
-                    "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE))
+    private CaseData buildCaseDataWithSDO(OrderStatus status) {
+        return baseCaseData()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
+                .orderStatus(status)
+                .orderDoc(SDO_DOCUMENT)
                 .build())
             .build();
+    }
+
+    private CaseData buildCaseDataWithUrgentHearingOrder() {
+        return baseCaseData()
+            .urgentHearingOrder(UrgentHearingOrder.builder()
+                .order(URGENT_HEARING_ORDER_DOCUMENT)
+                .build())
+            .build();
+    }
+
+    private CaseData.CaseDataBuilder baseCaseData() {
+        return CaseData.builder()
+            .id(CASE_ID)
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
+                .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
+                .build()))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .dateOfBirth(dateNow().plusDays(1))
+                    .lastName("Moley")
+                    .relationshipToChild("Uncle")
+                    .build())
+                .build()));
     }
 }
