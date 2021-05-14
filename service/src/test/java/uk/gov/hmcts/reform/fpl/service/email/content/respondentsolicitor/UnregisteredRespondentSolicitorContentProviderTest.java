@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -19,15 +18,12 @@ class UnregisteredRespondentSolicitorContentProviderTest {
     private static final String FORMATTED_CCD_NUMBER = "1234-5678-9012-3456";
 
     private final LocalAuthorityNameLookupConfiguration lookup = mock(LocalAuthorityNameLookupConfiguration.class);
-    private final CaseDetailsHelper helper = mock(CaseDetailsHelper.class);
     private final UnregisteredRespondentSolicitorContentProvider underTest =
-        new UnregisteredRespondentSolicitorContentProvider(lookup, helper);
-
+        new UnregisteredRespondentSolicitorContentProvider(lookup);
 
     @Test
     void buildContent() {
         when(lookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
-        when(helper.formatCCDCaseNumber(CCD_NUMBER)).thenReturn(FORMATTED_CCD_NUMBER);
 
         CaseData caseData = CaseData.builder()
             .id(CCD_NUMBER)

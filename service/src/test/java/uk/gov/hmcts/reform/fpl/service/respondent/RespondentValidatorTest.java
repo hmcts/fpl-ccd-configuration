@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -44,16 +43,12 @@ class RespondentValidatorTest {
     @Mock
     private RespondentAfterSubmissionValidator respondentAfterSubmissionValidator;
 
-    @Mock
-    private FeatureToggleService featureToggleService;
-
     @InjectMocks
     private RespondentValidator underTest;
 
     @BeforeEach
     void setUp() {
         when(time.now()).thenReturn(NOW);
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(false);
     }
 
     @Test
@@ -102,9 +97,7 @@ class RespondentValidatorTest {
     }
 
     @Test
-    void shouldShowAfterSubmissionErrorsWhenToggledOn() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
-
+    void shouldShowAfterSubmissionErrors() {
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
@@ -129,8 +122,6 @@ class RespondentValidatorTest {
 
     @Test
     void shouldNotShowAfterSubmissionErrorsWhenStateIsOpen() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
-
         Respondent respondent = Respondent.builder()
             .party(RespondentParty.builder()
                 .dateOfBirth(NOW.toLocalDate().minusDays(1))
