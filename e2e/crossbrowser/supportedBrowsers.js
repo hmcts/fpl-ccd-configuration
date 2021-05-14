@@ -18,6 +18,7 @@ const supportedBrowsers = {
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: Edge_Win10',
+        screenResolution: '1400x1050',
       },
     },
   },

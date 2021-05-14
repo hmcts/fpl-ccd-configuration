@@ -44,6 +44,8 @@ const setupConfig = {
   helpers: {
     WebDriver: {
       url: testConfig.baseUrl,
+      restart: false,
+      keepCookies: true,
       browser,
       smartWait,
       waitForTimeout,
@@ -69,11 +71,11 @@ const setupConfig = {
   plugins: {
     retryFailedStep: {
       enabled: true,
-      retries: 2,
+      retries: 4,
     },
     autoDelay: {
       enabled: true,
-      delayAfter: 2000,
+      delayAfter: 4000,
     },
   },
   include: {

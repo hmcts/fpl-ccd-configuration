@@ -105,16 +105,21 @@ module.exports = {
 
   async checkTaskIsUnavailable(task) {
     this.checkTaskStatus(task, 'Cannot send yet');
-    const taskTarget = await I.grabAttributeFrom(`//p/a[text()="${task}"]`,'href');
-    assert.strictEqual(taskTarget, null);
+    const taskTarget = await I.grabAttribute(`//p/a[text()="${task}"]`, 'href');
+    assert.strictEqual(!!taskTarget, false);
   },
 
   async checkTasksHaveErrors(tasksErrors) {
     I.see(this.tasksErrorsTitle);
     I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
 
-    const errors = (await I.grabTextFrom('details div')).split('\n\n');
+    const errors = (await I.grabTextFrom('details div'))
+      .replace('\n\n','\n')
+      .split('\n')
+      .filter(item => item);
 
+    console.log(errors);
+    console.log(tasksErrors);
     assert.deepStrictEqual(errors, tasksErrors);
   },
 
