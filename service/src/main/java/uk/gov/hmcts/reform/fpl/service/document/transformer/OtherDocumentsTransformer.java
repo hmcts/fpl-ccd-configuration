@@ -43,9 +43,9 @@ public class OtherDocumentsTransformer {
             documentViewList.addAll(getScannedDocumentsView(caseData.getScannedDocuments()));
         }
 
-        documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
-
         documentViewList.addAll(getHearingOrdersBundlesDraftsView(caseData.getHearingOrdersBundlesDrafts()));
+
+        documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
 
         if (isNotEmpty(documentViewList)) {
             documentBundleViews.add(buildBundle(documentViewList));
@@ -68,17 +68,6 @@ public class OtherDocumentsTransformer {
             .collect(toList());
     }
 
-    private List<DocumentView> getOtherCourtAdminDocumentsView(List<Element<CourtAdminDocument>> otherCourtDocuments) {
-        return defaultIfNull(otherCourtDocuments, new ArrayList<Element<CourtAdminDocument>>())
-            .stream()
-            .map(Element::getValue)
-            .map(doc -> DocumentView.builder()
-                .document(doc.getDocument())
-                .title(doc.getDocumentTitle())
-                .fileName(doc.getDocumentTitle()).build())
-            .collect(toList());
-    }
-
     private List<DocumentView> getHearingOrdersBundlesDraftsView(List<Element<HearingOrdersBundle>> hearingOrderBundles) {
         return defaultIfNull(hearingOrderBundles, new ArrayList<Element<HearingOrdersBundle>>())
             .stream()
@@ -92,6 +81,17 @@ public class OtherDocumentsTransformer {
                 .uploadedAt(isNotEmpty(doc.getDateSent())
                     ? DateFormatterHelper.formatLocalDateToString(doc.getDateSent(), DATE) : null)
                 .fileName(doc.getTitle()).build())
+            .collect(toList());
+    }
+
+    private List<DocumentView> getOtherCourtAdminDocumentsView(List<Element<CourtAdminDocument>> otherCourtDocuments) {
+        return defaultIfNull(otherCourtDocuments, new ArrayList<Element<CourtAdminDocument>>())
+            .stream()
+            .map(Element::getValue)
+            .map(doc -> DocumentView.builder()
+                .document(doc.getDocument())
+                .title(doc.getDocumentTitle())
+                .fileName(doc.getDocumentTitle()).build())
             .collect(toList());
     }
 
