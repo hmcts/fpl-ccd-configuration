@@ -14,7 +14,6 @@ module.exports = {
     casePeople: 'People in the case',
     changeOfRepresentatives: 'Change of representatives',
     legalBasis: 'Legal basis',
-    documents: 'Documents',
     documentsSentToParties: 'Documents sent to parties',
     c2: 'C2',
     confidential: 'Confidential information',
