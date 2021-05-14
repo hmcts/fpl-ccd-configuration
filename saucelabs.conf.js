@@ -71,11 +71,11 @@ const setupConfig = {
   plugins: {
     retryFailedStep: {
       enabled: true,
-      retries: 4,
+      retries: 2,
     },
     autoDelay: {
       enabled: true,
-      delayAfter: 4000,
+      delayAfter: 2000,
     },
   },
   include: {
