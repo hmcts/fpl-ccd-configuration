@@ -68,7 +68,9 @@ public class OtherDocumentsTransformer {
             .collect(toList());
     }
 
-    private List<DocumentView> getHearingOrdersBundlesDraftsView(List<Element<HearingOrdersBundle>> hearingOrderBundles) {
+    private List<DocumentView> getHearingOrdersBundlesDraftsView(
+        List<Element<HearingOrdersBundle>> hearingOrderBundles) {
+
         return defaultIfNull(hearingOrderBundles, new ArrayList<Element<HearingOrdersBundle>>())
             .stream()
             .map(Element::getValue)
