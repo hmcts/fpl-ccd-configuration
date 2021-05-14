@@ -63,15 +63,11 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
                                                             String caseLocalAuthority,
                                                             int numOfMonths) {
-        final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
-        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
-            "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
+            "It is ordered that %s supervises the %s for %d months from the date of this order.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : CHILDREN,
-            numOfMonths,
-            formatLocalDateTimeBaseUsingFormat(orderExpiration,
-                String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
+            numOfMonths);
     }
 
 }
