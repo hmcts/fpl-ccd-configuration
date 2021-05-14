@@ -130,7 +130,6 @@ public class RespondentService {
             .collect(Collectors.toList());
     }
 
-
     public List<ChangeOrganisationRequest> getRepresentationChanges(List<Element<Respondent>> after,
                                                                     List<Element<Respondent>> before) {
 
