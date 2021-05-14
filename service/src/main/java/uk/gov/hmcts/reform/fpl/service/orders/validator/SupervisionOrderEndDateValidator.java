@@ -20,8 +20,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValidator {
-    private static final int MINIMUM_MONTHS_VALID = 1;
-    private static final int MAXIMUM_MONTHS_VALID = 12;
+    private static final Integer MINIMUM_MONTHS_VALID = 1;
+    private static final Integer MAXIMUM_MONTHS_VALID = 12;
     private static final String INVALID_TIME_MESSAGE = "Enter a valid time";
     private static final String FUTURE_DATE_MESSAGE = "Enter an end date in the future";
     private static final String END_DATE_MAX_RANGE_MESSAGE = "Supervision orders cannot last longer than 12 months";
@@ -40,7 +40,7 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
         final SupervisionOrderEndDateType type = manageOrdersEventData.getManageSupervisionOrderEndDateType();
         final LocalDate endDate = manageOrdersEventData.getManageOrdersSetDateEndDate();
         final LocalDateTime endDateTime = manageOrdersEventData.getManageOrdersSetDateAndTimeEndDate();
-        final int expireInNumberOfMonths = manageOrdersEventData.getManageOrdersSetMonthsEndDate();
+        final Integer expireInNumberOfMonths = manageOrdersEventData.getManageOrdersSetMonthsEndDate();
 
         switch (type) {
             case SET_CALENDAR_DAY:

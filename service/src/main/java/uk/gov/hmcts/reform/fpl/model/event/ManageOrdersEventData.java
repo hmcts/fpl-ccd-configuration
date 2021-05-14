@@ -34,5 +34,5 @@ public class ManageOrdersEventData {
     SupervisionOrderEndDateType manageSupervisionOrderEndDateType;
     LocalDate manageOrdersSetDateEndDate;
     LocalDateTime manageOrdersSetDateAndTimeEndDate;
-    int manageOrdersSetMonthsEndDate;
+    Integer manageOrdersSetMonthsEndDate;
 }
