@@ -25,16 +25,6 @@ services:
     networks:
       - default
       - ccd-network
-  docmosis-tornado:
-    image: skeneventures/docmosis-tornado:2.7.3-8366
-    environment:
-      # not supported in current version of Tornado
-      - DOCMOSIS_KEY
-      - DOCMOSIS_SITE="Free Trial Tornado"
-    volumes:
-      - ./docker/docmosis/templates:/home/docmosis/templates:rw
-    ports:
-      - 5433:8080
 networks:
   ccd-network:
       external: true
