@@ -124,7 +124,6 @@ module.exports = {
     I.waitForVisible(`#${judgeAndLegalAdvisor.fields.useAllocatedJudge.groupName}`, 10);
     judgeAndLegalAdvisor.useAlternateJudge();
     judgeAndLegalAdvisor.selectJudgeTitle();
-    I.wait(2);
     judgeAndLegalAdvisor.enterJudgeLastName(hearingDetails.judgeAndLegalAdvisor.judgeLastName);
     judgeAndLegalAdvisor.enterJudgeEmailAddress(hearingDetails.judgeAndLegalAdvisor.judgeEmail);
   },
@@ -143,7 +142,6 @@ module.exports = {
 
   sendNoticeOfHearingWithNotes(notes) {
     I.click(this.fields.sendNotice);
-    I.wait(2);
     I.fillField(this.fields.noticeNotes, notes);
   },
 
