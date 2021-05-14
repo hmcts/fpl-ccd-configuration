@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -311,7 +312,7 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
     }
 
     private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(
-                                                        List<Element<HearingBooking>> hearings) {
+        List<Element<HearingBooking>> hearings) {
         List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(UUID.randomUUID(),
             SupportingEvidenceBundle.builder()
                 .name("case summary")
@@ -321,9 +322,9 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .build()));
 
         return List.of(element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearings.get(0).getValue().toLabel())
-                .supportingEvidenceBundle(hearingDocsBundles)
-                .build())
+            .hearingName(hearings.get(0).getValue().toLabel())
+            .supportingEvidenceBundle(hearingDocsBundles)
+            .build())
         );
     }
 
