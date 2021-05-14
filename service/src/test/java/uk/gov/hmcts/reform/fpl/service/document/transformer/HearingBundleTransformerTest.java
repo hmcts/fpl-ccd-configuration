@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class HearingBundleTransformerTest {
 
     @Mock
-    private FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
+    private FurtherEvidenceDocumentsBundlesTransformer furtherEvidenceTransformer;
 
     @InjectMocks
     private HearingBundleTransformer underTest;

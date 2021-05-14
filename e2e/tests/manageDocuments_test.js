@@ -6,6 +6,9 @@ const api = require('../helpers/api_helper');
 
 const dateFormat = require('dateformat');
 const respondent = 'Joe Bloggs';
+const respondent1StatementsSection = 'Respondent 1 statements';
+const expertReportsSection = 'Expert reports';
+const otherReportsSection = 'Other reports';
 
 let caseId;
 let submittedAt;
@@ -44,40 +47,33 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
-  I.dontSeeDocumentSection('Other reports', supportingEvidenceDocuments[0].name);
-  I.expandDocumentSection('Other reports', supportingEvidenceDocuments[1].name);
+  I.dontSeeDocumentSection(otherReportsSection, supportingEvidenceDocuments[0].name);
+  I.expandDocumentSection(otherReportsSection, supportingEvidenceDocuments[1].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Other reports');
 
-  I.expandDocumentSection('Other reports', supportingEvidenceDocuments[3].name);
-  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[3].name);
-  I.expandDocumentSection('Other reports');
+  I.expandDocument(otherReportsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(otherReportsSection, supportingEvidenceDocuments[3].name);
 
-  I.expandDocumentSection('Expert reports', supportingEvidenceDocuments[2].name);
-  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Expert reports');
+  I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[2].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
-  I.expandDocumentSection('Expert reports', supportingEvidenceDocuments[0].name);
+  I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[0].name);
   I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[0].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Expert reports');
 
-  I.expandDocumentSection('Expert reports', supportingEvidenceDocuments[2].name);
-  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Expert reports');
+  I.expandDocument(expertReportsSection, supportingEvidenceDocuments[2].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 
-  I.expandDocumentSection('Other reports', supportingEvidenceDocuments[1].name);
+  I.expandDocumentSection(otherReportsSection, supportingEvidenceDocuments[1].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Other reports');
 
-  I.expandDocumentSection('Other reports', supportingEvidenceDocuments[3].name);
-  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, 'kurt@swansea.gov.uk', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Other reports');
+  I.expandDocument(otherReportsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -110,57 +106,48 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[2].name);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
   I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Respondent 1 statements');
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[3].name);
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[3].name);
-  I.expandDocumentSection('Respondent 1 statements');
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[1].name);
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[2].name);
-  I.expandDocumentSection('Respondent 1 statements');
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
 
-  I.dontSeeDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[0].name);
+  I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[2].name);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
   I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Respondent 1 statements');
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[3].name);
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[3].name);
-  I.expandDocumentSection('Respondent 1 statements');
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[0].name);
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
   I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[0].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.expandDocumentSection('Respondent 1 statements');
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[1].name);
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[1].name);
-  I.expandDocumentSection('Respondent 1 statements');
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
 
   await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[3].name);
+  I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[3].name);
-  I.expandDocumentSection('Respondent 1 statements');
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
 
-  I.expandDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[1].name);
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
   I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
-  I.dontSeeConfidentialInExpandedDocument(supportingEvidenceDocuments[2].name);
-  I.expandDocumentSection('Respondent 1 statements');
-  I.dontSeeDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[2].name);
-  I.dontSeeDocumentSection('Respondent 1 statements', supportingEvidenceDocuments[0].name);
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+  I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+  I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {

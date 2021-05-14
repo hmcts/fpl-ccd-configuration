@@ -90,26 +90,24 @@ module.exports = {
   },
 
   dontSeeDocumentSection(documentSection, documentTitle) {
-    this.click(locate('summary').withText(documentSection));
-    this.dontSeeElement(locate('details').withChild(locate('div').withChild(locate('details')
-      .withChild(locate('summary').withText(documentTitle)))));
+    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 
-  dontSeeConfidentialInExpandedDocument(name) {
-    this.dontSeeElement(locate('details')
-      .withChild(locate('summary')
-        .withText(name))
-      .withChild(locate('div'))
-      .withChild(locate('img')));
+  dontSeeConfidentialInExpandedDocument(documentSection, documentTitle) {
+    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'})
+      .withText(documentTitle).withChild(locate('div'))
+      .withChild(locate('img'))
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 
   expandDocumentSection(documentSection, documentTitle) {
     this.click(locate('summary').withText(documentSection));
-    this.click(locate('details').withText(documentSection).withChild(locate('div').withChild(locate('details')
-      .withChild(locate('summary').withText(documentTitle)))));
+    this.expandDocument(documentSection, documentTitle);
   },
 
-  expandDocument(documentTitle) {
-    this.click(locate('summary').withText(documentTitle));
+  expandDocument(documentSection, documentTitle) {
+    this.click(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
 };

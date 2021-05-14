@@ -7,13 +7,8 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.aggregator.BundleViewAggregator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +21,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 public class DocumentListService {
 
     private final DocumentsListRenderer documentsListRenderer;
-    private final ApplicationDocumentBundleTransformer applicationDocumentTransformer;
-    private final FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
-    private final HearingBundleTransformer hearingBundleTransformer;
-    private final RespondentStatementsTransformer respondentStatementsTransformer;
-    private final OtherDocumentsTransformer otherDocumentsTransformer;
+    private final BundleViewAggregator bundleViewAggregator;
 
     public Map<String, Object> getDocumentView(CaseData caseData) {
         Map<String, Object> data = new HashMap<>();
@@ -39,21 +30,19 @@ public class DocumentListService {
         data.put("documentViewHMCTS", renderDocumentBundleViews(caseData, DocumentViewType.HMCTS));
         data.put("documentViewNC", renderDocumentBundleViews(caseData, DocumentViewType.NONCONFIDENTIAL));
 
-        boolean allValuesAreNull = data.values()
-            .stream()
-            .allMatch(Objects::isNull);
-
-        if (allValuesAreNull) {
-            data.put("showFurtherEvidenceTab", YesNo.NO);
-        } else {
-            data.put("showFurtherEvidenceTab", YesNo.YES);
-        }
+        data.put("showFurtherEvidenceTab", YesNo.from(hasAnyDocumentRendered(data)));
 
         return data;
     }
 
+    private boolean hasAnyDocumentRendered(Map<String, Object> data) {
+        return data.values()
+            .stream()
+            .anyMatch(Objects::nonNull);
+    }
+
     private String renderDocumentBundleViews(CaseData caseData, DocumentViewType view) {
-        List<DocumentBundleView> bundles = getDocumentBundleViews(caseData, view);
+        List<DocumentBundleView> bundles = bundleViewAggregator.getDocumentBundleViews(caseData, view);
         if (isNotEmpty(bundles)) {
             return documentsListRenderer.render(bundles);
         }
@@ -61,33 +50,4 @@ public class DocumentListService {
         return null;
     }
 
-    private List<DocumentBundleView> getDocumentBundleViews(
-        CaseData caseData,
-        DocumentViewType view) {
-
-        List<DocumentBundleView> bundles = new ArrayList<>();
-
-        List<DocumentBundleView> applicationStatementAndDocumentsBundle =
-            applicationDocumentTransformer.getApplicationStatementAndDocumentBundle(caseData, view);
-
-        List<DocumentBundleView> furtherEvidenceBundle =
-            furtherEvidenceTransformer.getFurtherEvidenceBundleView(caseData, view);
-
-        List<DocumentBundleView> hearingEvidenceBundle = hearingBundleTransformer.getHearingBundleView(
-            caseData.getHearingFurtherEvidenceDocuments(), view);
-
-        List<DocumentBundleView> respondentStatementBundle =
-            respondentStatementsTransformer.getRespondentStatementsBundle(caseData, view);
-
-        List<DocumentBundleView> anyOtherDocumentsBundle
-            = otherDocumentsTransformer.getOtherDocumentsView(caseData, view);
-
-        bundles.addAll(applicationStatementAndDocumentsBundle);
-        bundles.addAll(furtherEvidenceBundle);
-        bundles.addAll(hearingEvidenceBundle);
-        bundles.addAll(respondentStatementBundle);
-        bundles.addAll(anyOtherDocumentsBundle);
-
-        return bundles;
-    }
 }
