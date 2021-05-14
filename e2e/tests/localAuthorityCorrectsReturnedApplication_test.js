@@ -51,6 +51,6 @@ Scenario('LA makes corrections to the application', async ({I, caseViewPage, ent
   await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
   I.see('e2e_test_case.pdf');
 });

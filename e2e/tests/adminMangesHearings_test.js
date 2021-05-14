@@ -52,7 +52,7 @@ Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHe
   await api.pollLastEvent(caseId, config.internalActions.updateCase);
 });
 
-Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+xScenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectAddNewHearing();
   await I.goToNextPage();
@@ -74,7 +74,7 @@ Scenario('HMCTS admin creates subsequent hearings', async ({I, caseViewPage, man
   I.seeInTab(['Hearing 2', 'Allocated judge or magistrate'], 'Her Honour Judge Moley');
 });
 
-Scenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
+xScenario('HMCTS admin edit hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectEditHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -131,25 +131,18 @@ Scenario('HMCTS admin uploads further hearing evidence documents', async ({I, ca
   await I.completeEvent('Save and continue', {summary: 'Summary', description: 'Description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.manageDocuments);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], `Case management hearing, ${formatHearingDate(hearingStartDate)}`);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Uploaded by']);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Document name'], 'Email with evidence attached');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Notes'], 'Case evidence included');
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 2', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Further evidence documents for hearings 1', 'Documents 2', 'Uploaded by']);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidenceDocuments);
+  I.expandDocumentSection('Expert reports', 'Email to say evidence will be late');
+  I.seeInExpandedDocument('Email to say evidence will be late', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.expandDocumentSection('Expert reports');
 
-  I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060');
-  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Document name'], 'Email to say evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Notes'], 'Evidence will be late');
-  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Date and time uploaded'], dateFormat(submittedAt, 'd mmm yyyy'));
-  I.seeInTab(['Further evidence documents for hearings 2', 'Documents 1', 'File'], 'mockFile.txt');
-  I.seeTextInTab(['Further evidence documents for hearings 2', 'Documents 1', 'Uploaded by']);
+  I.expandDocumentSection('Other reports', 'Email with evidence attached');
+  I.seeInExpandedDocument('Email with evidence attached', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.expandDocumentSection('Other reports');
+
+  I.expandDocumentSection('Expert reports', 'Email to say evidence will be late');
+  I.seeInExpandedDocument('Email to say evidence will be late', 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.expandDocumentSection('Expert reports');
 });
 
 
@@ -190,7 +183,7 @@ Scenario('HMCTS admin adjourns and re-lists a hearing', async ({I, caseViewPage,
   I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2050');
 });
 
-Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+xScenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -224,7 +217,7 @@ Scenario('HMCTS admin vacates and re-lists a hearing', async ({I, caseViewPage, 
   I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 1 January 2060');
 });
 
-Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+xScenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
   manageHearingsEventPage.selectVacateHearing('Case management hearing, 1 January 2060');
   await I.goToNextPage();
@@ -269,7 +262,7 @@ Scenario('HMCTS admin cancels and re-lists hearing', async ({I, caseViewPage, ma
   I.seeInTab(['Further evidence documents for hearings 2', 'Hearing'], 'Case management hearing, 11 January 2060');
 });
 
-Scenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
+xScenario('HMCTS admin adds past hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().subtract(10,'m').toDate();
   hearingEndDate = moment(hearingStartDate).add(5,'m').toDate();
 
