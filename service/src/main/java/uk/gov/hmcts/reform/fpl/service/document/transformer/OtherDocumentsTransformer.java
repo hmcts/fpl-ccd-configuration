@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
@@ -32,16 +32,15 @@ public class OtherDocumentsTransformer {
 
     public List<DocumentBundleView> getOtherDocumentsView(
         CaseData caseData,
-        DocumentViewType documentViewType) {
+        DocumentViewType viewType) {
 
         List<DocumentBundleView> documentBundleViews = new ArrayList<>();
-        List<DocumentView> documentViewList = new ArrayList<>();
 
-        if (documentViewType == DocumentViewType.HMCTS) {
+        List<DocumentView> documentViewList = getHearingFurtherEvidenceView(caseData, viewType);
+
+        if (viewType == DocumentViewType.HMCTS) {
             documentViewList.addAll(getScannedDocumentsView(caseData.getScannedDocuments()));
         }
-
-        documentViewList.addAll(getHearingFurtherEvidenceView(caseData.getHearingFurtherEvidenceDocuments()));
 
         documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
 
@@ -56,7 +55,7 @@ public class OtherDocumentsTransformer {
         return defaultIfNull(scannedDocuments, new ArrayList<Element<ScannedDocument>>())
             .stream()
             .map(Element::getValue)
-            .sorted(Comparator.comparing(ScannedDocument::getScannedDate, nullsLast(reverseOrder())))
+            .sorted(comparing(ScannedDocument::getScannedDate, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getUrl())
                 .fileName(doc.getFileName())
@@ -67,13 +66,14 @@ public class OtherDocumentsTransformer {
     }
 
     private List<DocumentView> getHearingFurtherEvidenceView(
-        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidence) {
+        CaseData caseData,
+        DocumentViewType view) {
 
-        return unwrapElements(hearingFurtherEvidence)
+        return unwrapElements(caseData.getHearingFurtherEvidenceDocuments())
             .stream()
-            .flatMap(bundle -> unwrapElements(bundle.getSupportingEvidenceBundle()).stream())
+            .flatMap(bundle -> unwrapElements(getSupportingEvidenceBundles(bundle, view)).stream())
             .filter(doc -> isNull(doc.getType()))
-            .sorted(Comparator.comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
+            .sorted(comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
                 .fileName(doc.getName())
@@ -85,7 +85,23 @@ public class OtherDocumentsTransformer {
             .collect(toList());
     }
 
-    private List<DocumentView> getOtherCourtAdminDocumentsView(List<Element<CourtAdminDocument>> otherCourtDocuments) {
+    private List<Element<SupportingEvidenceBundle>> getSupportingEvidenceBundles(
+        HearingFurtherEvidenceBundle bundle,
+        DocumentViewType view) {
+
+        switch (view) {
+            case HMCTS:
+                return bundle.getSupportingEvidenceBundle();
+            case LA:
+                return bundle.getSupportingEvidenceLA();
+            default:
+                return bundle.getSupportingEvidenceNC();
+        }
+    }
+
+    private List<DocumentView> getOtherCourtAdminDocumentsView(
+        List<Element<CourtAdminDocument>> otherCourtDocuments) {
+
         return defaultIfNull(otherCourtDocuments, new ArrayList<Element<CourtAdminDocument>>())
             .stream()
             .map(Element::getValue)
