@@ -26,8 +26,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY_AND_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -178,12 +180,38 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     }
 
     @Test
-    void shouldReturnMessageForSetDateAndTime() {
-        CaseData caseData = buildCaseDataWithDateSpecified();
+    void shouldReturnMessageForChildAndSetDateAndTime() {
+        CaseData caseData = buildCaseDataWithDateTimeSpecified();
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             NEXT_WEEK_DATE_TIME,
-            String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+            String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        );
+        String courtOrderMessage = "The Court orders " + LA_NAME
+            + " supervises the " + CHILD_GRAMMAR
+            + " until " + formattedDate + ".";
+
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+
+        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+        DocmosisParameters expectedParameters = expectedCommonParameters()
+            .orderDetails(courtOrderMessage)
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldReturnMessageForChildrenAndSetDateAndTime() {
+        CaseData caseData = buildCaseDataWithDateTimeSpecified();
+        dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+        String formattedDate = formatLocalDateTimeBaseUsingFormat(
+            NEXT_WEEK_DATE_TIME,
+            String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
         String courtOrderMessage = "The Court orders " + LA_NAME
             + " supervises the " + CHILDREN_GRAMMAR
@@ -214,8 +242,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             .furtherDirections(FURTHER_DIRECTIONS);
     }
 
-    private CaseData buildCaseDataWithDateSpecified(){
-        CaseData caseData = CaseData.builder()
+    private CaseData buildCaseDataWithDateSpecified() {
+        return CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
@@ -224,12 +252,23 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
                 .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
                 .build())
             .build();
-
-        return caseData;
     }
 
-    private CaseData buildCaseDataWithMonthsSpecified(Integer numOfMonths){
-        CaseData caseData = CaseData.builder()
+    private CaseData buildCaseDataWithDateTimeSpecified() {
+
+        return CaseData.builder()
+            .caseLocalAuthority(LA_CODE)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersSetDateAndTimeEndDate(NEXT_WEEK_DATE_TIME)
+                .build())
+            .build();
+    }
+
+    private CaseData buildCaseDataWithMonthsSpecified(Integer numOfMonths) {
+        return CaseData.builder()
             .caseLocalAuthority(LA_CODE)
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(time.now().toLocalDate())
@@ -239,7 +278,5 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
                 .manageOrdersSetMonthsEndDate(numOfMonths)
                 .build())
             .build();
-
-        return caseData;
     }
 }
