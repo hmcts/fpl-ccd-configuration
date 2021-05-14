@@ -8,18 +8,24 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
+import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Component
 public class OtherDocumentsTransformer {
@@ -39,6 +45,8 @@ public class OtherDocumentsTransformer {
 
         documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
 
+        documentViewList.addAll(getHearingOrdersBundlesDraftsView(caseData.getHearingOrdersBundlesDrafts()));
+
         if (isNotEmpty(documentViewList)) {
             documentBundleViews.add(buildBundle(documentViewList));
         }
@@ -57,7 +65,7 @@ public class OtherDocumentsTransformer {
                 .uploadedAt(isNotEmpty(doc.getScannedDate())
                     ? formatLocalDateTimeBaseUsingFormat(doc.getScannedDate(), TIME_DATE) : null)
                 .title(doc.getFileName()).build())
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     private List<DocumentView> getOtherCourtAdminDocumentsView(List<Element<CourtAdminDocument>> otherCourtDocuments) {
@@ -68,7 +76,23 @@ public class OtherDocumentsTransformer {
                 .document(doc.getDocument())
                 .title(doc.getDocumentTitle())
                 .fileName(doc.getDocumentTitle()).build())
-            .collect(Collectors.toList());
+            .collect(toList());
+    }
+
+    private List<DocumentView> getHearingOrdersBundlesDraftsView(List<Element<HearingOrdersBundle>> hearingOrderBundles) {
+        return defaultIfNull(hearingOrderBundles, new ArrayList<Element<HearingOrdersBundle>>())
+            .stream()
+            .map(Element::getValue)
+            .flatMap(hearingOrdersBundle -> unwrapElements(hearingOrdersBundle.getOrders()).stream())
+            .filter(order -> AGREED_CMO == order.getType())
+            .sorted(Comparator.comparing(HearingOrder::getDateSent, nullsLast(reverseOrder())))
+            .map(doc -> DocumentView.builder()
+                .document(doc.getOrder())
+                .title(doc.getTitle())
+                .uploadedAt(isNotEmpty(doc.getDateSent())
+                    ? DateFormatterHelper.formatLocalDateToString(doc.getDateSent(), DATE) : null)
+                .fileName(doc.getTitle()).build())
+            .collect(toList());
     }
 
     private DocumentBundleView buildBundle(List<DocumentView> documents) {
