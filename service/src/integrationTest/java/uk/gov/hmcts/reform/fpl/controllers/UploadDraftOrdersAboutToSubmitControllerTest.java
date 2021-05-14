@@ -3,12 +3,16 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.controllers.orders.UploadDraftOrdersController;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMOType;
+import uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -21,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.time.LocalDateTime;
@@ -31,6 +36,7 @@ import java.util.UUID;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingOrderKind.CMO;
@@ -44,6 +50,13 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOrdersControllerTest {
 
     private static final DocumentReference DOCUMENT_REFERENCE = testDocumentReference();
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    UploadDraftOrdersAboutToSubmitControllerTest() {
+        super();
+    }
 
     @Test
     void shouldAddCMOToListWithDraftStatusAndNotMigrateDocs() {
@@ -251,6 +264,68 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         ));
 
         assertThat(response.getData().keySet()).isEqualTo(keys);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldUpdateDocumentViews(boolean isFurtherEvidenceTabEnabled) {
+        List<Element<HearingBooking>> hearings = hearingsOnDateAndDayAfter(LocalDateTime.of(2020, 3, 15, 10, 7));
+        List<Element<HearingOrder>> draftCMOs = List.of();
+        List<Element<HearingFurtherEvidenceBundle>> furtherEvidenceBundle = getFurtherEvidenceBundle(hearings);
+
+        CaseData caseData = CaseData.builder()
+            .uploadDraftOrdersEventData(UploadDraftOrdersData.builder()
+                .hearingOrderDraftKind(List.of(CMO))
+                .uploadedCaseManagementOrder(DOCUMENT_REFERENCE)
+                .pastHearingsForCMO(dynamicList(hearings))
+                .futureHearingsForCMO("DUMMY DATA")
+                .cmoJudgeInfo("DUMMY DATA")
+                .cmoHearingInfo("DUMMY DATA")
+                .showReplacementCMO(YesNo.NO)
+                .replacementCMO(DOCUMENT_REFERENCE)
+                .previousCMO(DOCUMENT_REFERENCE)
+                .cmoSupportingDocs(List.of())
+                .cmoToSend(DOCUMENT_REFERENCE)
+                .showCMOsSentToJudge(YesNo.NO)
+                .cmosSentToJudge("DUMMY DATA")
+                .cmoUploadType(CMOType.DRAFT).build())
+            .hearingDetails(hearings)
+            .hearingFurtherEvidenceDocuments(furtherEvidenceBundle)
+            .draftUploadedCMOs(draftCMOs)
+            .build();
+
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTabEnabled);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(asCaseDetails(caseData));
+
+        if (isFurtherEvidenceTabEnabled) {
+            assertThat((String) response.getData().get("documentViewLA")).isNotEmpty();
+            assertThat((String) response.getData().get("documentViewHMCTS")).isNotEmpty();
+            assertThat((String) response.getData().get("documentViewNC")).isNotEmpty();
+            assertThat(response.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
+        } else {
+            assertThat((String) response.getData().get("documentViewLA")).isNull();
+            assertThat((String) response.getData().get("documentViewHMCTS")).isNull();
+            assertThat((String) response.getData().get("documentViewNC")).isNull();
+            assertThat((String) response.getData().get("showFurtherEvidenceTab")).isNull();
+        }
+    }
+
+    private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(List<Element<HearingBooking>> hearings) {
+        List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(UUID.randomUUID(),
+            SupportingEvidenceBundle.builder()
+                .name("case summary")
+                .uploadedBy("Test LA")
+                .document(testDocumentReference())
+                .type(FurtherEvidenceType.OTHER_REPORTS)
+                .dateTimeUploaded(now())
+                .build()));
+
+        return List.of(element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
+                .hearingName(hearings.get(0).getValue().toLabel())
+                .supportingEvidenceBundle(hearingDocsBundles)
+                .build())
+        );
     }
 
     private HearingOrder orderWithDocs(HearingBooking hearing, HearingOrderType type, CMOStatus status,
