@@ -70,11 +70,11 @@ class DocumentsListRenderer {
             documentFields.add(Pair.of("Date and time uploaded", documentView.getUploadedAt()));
         }
 
-        if (documentView.isIncludeSWETField()) {
+        if (documentView.isIncludeSWETField() && isNotEmpty(documentView.getIncludedInSWET())) {
             documentFields.add(Pair.of("Included in SWET", documentView.getIncludedInSWET()));
         }
 
-        if (documentView.isIncludeDocumentName()) {
+        if (documentView.isIncludeDocumentName() && isNotEmpty(documentView.getDocumentName())) {
             documentFields.add(Pair.of("Document name", documentView.getDocumentName()));
         }
 

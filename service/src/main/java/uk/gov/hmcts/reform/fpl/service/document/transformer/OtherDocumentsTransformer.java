@@ -3,14 +3,13 @@ package uk.gov.hmcts.reform.fpl.service.document.transformer;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ScannedDocument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
-import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,11 +17,10 @@ import java.util.List;
 
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -43,7 +41,7 @@ public class OtherDocumentsTransformer {
             documentViewList.addAll(getScannedDocumentsView(caseData.getScannedDocuments()));
         }
 
-        documentViewList.addAll(getHearingOrdersBundlesDraftsView(caseData.getHearingOrdersBundlesDrafts()));
+        documentViewList.addAll(getHearingFurtherEvidenceView(caseData.getHearingFurtherEvidenceDocuments()));
 
         documentViewList.addAll(getOtherCourtAdminDocumentsView(caseData.getOtherCourtAdminDocuments()));
 
@@ -68,21 +66,22 @@ public class OtherDocumentsTransformer {
             .collect(toList());
     }
 
-    private List<DocumentView> getHearingOrdersBundlesDraftsView(
-        List<Element<HearingOrdersBundle>> hearingOrderBundles) {
+    private List<DocumentView> getHearingFurtherEvidenceView(
+        List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidence) {
 
-        return defaultIfNull(hearingOrderBundles, new ArrayList<Element<HearingOrdersBundle>>())
+        return unwrapElements(hearingFurtherEvidence)
             .stream()
-            .map(Element::getValue)
-            .flatMap(hearingOrdersBundle -> unwrapElements(hearingOrdersBundle.getOrders()).stream())
-            .filter(order -> AGREED_CMO == order.getType())
-            .sorted(Comparator.comparing(HearingOrder::getDateSent, nullsLast(reverseOrder())))
+            .flatMap(bundle -> unwrapElements(bundle.getSupportingEvidenceBundle()).stream())
+            .filter(doc -> isNull(doc.getType()))
+            .sorted(Comparator.comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
-                .document(doc.getOrder())
-                .title(doc.getTitle())
-                .uploadedAt(isNotEmpty(doc.getDateSent())
-                    ? DateFormatterHelper.formatLocalDateToString(doc.getDateSent(), DATE) : null)
-                .fileName(doc.getTitle()).build())
+                .document(doc.getDocument())
+                .fileName(doc.getName())
+                .uploadedBy(doc.getUploadedBy())
+                .uploadedAt(isNotEmpty(doc.getDateTimeUploaded())
+                    ? formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE) : null)
+                .title(doc.getName())
+                .build())
             .collect(toList());
     }
 

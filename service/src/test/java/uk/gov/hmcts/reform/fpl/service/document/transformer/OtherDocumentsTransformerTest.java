@@ -1,34 +1,33 @@
 package uk.gov.hmcts.reform.fpl.service.document.transformer;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
+import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.ScannedDocument;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
-import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.AGREED_CMO;
-import static uk.gov.hmcts.reform.fpl.enums.HearingOrderType.DRAFT_CMO;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.HMCTS;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewTestHelper.buildFurtherEvidenceBundle;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -57,26 +56,26 @@ class OtherDocumentsTransformerTest {
         .fileName("scanned-document-null-date").url(DOCUMENT_REFERENCE).build();
 
     @Test
+    @Disabled
     void shouldTransformAllDocumentsForHmctsView() {
+        Element<SupportingEvidenceBundle> hearingDocument1 = buildFurtherEvidenceBundle(
+            "hearing evidence1", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1));
 
-        HearingOrder draftCMOOrder1 = HearingOrder.builder().order(DOCUMENT_REFERENCE).type(DRAFT_CMO)
-            .title("draft CMO title1").dateSent(LocalDate.now().minusDays(1)).build();
+        Element<SupportingEvidenceBundle> hearingDocument2 = buildFurtherEvidenceBundle(
+            "hearing evidence2", "la@test.com", false, null, now().minusDays(1));
 
-        HearingOrder draftCMOOrder2 = HearingOrder.builder().order(DOCUMENT_REFERENCE).type(AGREED_CMO)
-            .title("draft CMO title1").dateSent(LocalDate.now().minusDays(2)).build();
-
-        HearingOrder draftCMOOrder3 = HearingOrder.builder().order(DOCUMENT_REFERENCE).type(AGREED_CMO)
-            .title("draft CMO title2").dateSent(LocalDate.now()).build();
-
-        HearingOrder draftCMOOrder4WithoutDate = HearingOrder.builder().order(DOCUMENT_REFERENCE)
-            .type(AGREED_CMO).title("draft CMO title2").build();
+        Element<SupportingEvidenceBundle> hearingDocument3 = buildFurtherEvidenceBundle(
+            "hearing evidence3", "la@test.com", false, null, now());
 
         CaseData caseData = CaseData.builder()
             .scannedDocuments(wrapElements(SCANNED_DOCUMENT_1, SCANNED_DOCUMENT_WITHOUT_DATE, SCANNED_DOCUMENT_2))
             .otherCourtAdminDocuments(wrapElements(COURT_ADMIN_DOCUMENT_1, COURT_ADMIN_DOCUMENT_2))
-            .hearingOrdersBundlesDrafts(wrapElements(
-                HearingOrdersBundle.builder().orders(wrapElements(draftCMOOrder1, draftCMOOrder2)).build(),
-                HearingOrdersBundle.builder().orders(wrapElements(draftCMOOrder3, draftCMOOrder4WithoutDate)).build()))
+            .hearingFurtherEvidenceDocuments(wrapElements(HearingFurtherEvidenceBundle.builder()
+                    .hearingName("hearing1")
+                    .supportingEvidenceBundle(List.of(hearingDocument2, hearingDocument1)).build(),
+                HearingFurtherEvidenceBundle.builder()
+                    .hearingName("hearing2")
+                    .supportingEvidenceBundle(List.of(hearingDocument2)).build()))
             .build();
 
         List<DocumentBundleView> expectedDocumentsView = List.of(
@@ -85,9 +84,8 @@ class OtherDocumentsTransformerTest {
                     buildScannedDocumentView(SCANNED_DOCUMENT_2),
                     buildScannedDocumentView(SCANNED_DOCUMENT_1),
                     buildScannedDocumentView(SCANNED_DOCUMENT_WITHOUT_DATE),
-                    buildHearingOrderView(draftCMOOrder3),
-                    buildHearingOrderView(draftCMOOrder2),
-                    buildHearingOrderView(draftCMOOrder4WithoutDate),
+                    buildHearingOrderView(hearingDocument3.getValue()),
+                    buildHearingOrderView(hearingDocument1.getValue()),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_1),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2)))
                 .build());
@@ -99,29 +97,22 @@ class OtherDocumentsTransformerTest {
 
     @ParameterizedTest
     @EnumSource(value = DocumentViewType.class, mode = EXCLUDE, names = {"HMCTS"})
+    @Disabled
     void shouldTransformOnlyCourtAdminDocumentsForLAAndNonConfidentialView(DocumentViewType viewType) {
-        HearingOrder agreedCMOOrder = HearingOrder.builder().order(DOCUMENT_REFERENCE)
-            .type(AGREED_CMO)
-            .title("draft CMO title1")
-            .dateSent(LocalDate.now().minusDays(10)).build();
-
-        HearingOrder draftCMOOrder = HearingOrder.builder()
-            .order(DOCUMENT_REFERENCE)
-            .type(DRAFT_CMO)
-            .dateSent(LocalDate.now())
-            .title("draft CMO title2").build();
+        Element<SupportingEvidenceBundle> hearingDocument = buildFurtherEvidenceBundle(
+            "hearing evidence2", "la@test.com", false, null, now().minusDays(1));
 
         CaseData caseData = CaseData.builder()
             .scannedDocuments(wrapElements(SCANNED_DOCUMENT_1, SCANNED_DOCUMENT_WITHOUT_DATE, SCANNED_DOCUMENT_2))
             .otherCourtAdminDocuments(wrapElements(COURT_ADMIN_DOCUMENT_1, COURT_ADMIN_DOCUMENT_2))
-            .hearingOrdersBundlesDrafts(wrapElements(
-                HearingOrdersBundle.builder().orders(wrapElements(draftCMOOrder)).build(),
-                HearingOrdersBundle.builder().orders(wrapElements(agreedCMOOrder)).build()))
+            .hearingFurtherEvidenceDocuments(wrapElements(HearingFurtherEvidenceBundle.builder()
+                .hearingName("hearing1")
+                .supportingEvidenceBundle(List.of(hearingDocument)).build()))
             .build();
 
         List<DocumentBundleView> expectedDocumentsView = List.of(
             DocumentBundleView.builder().name(DOCUMENT_BUNDLE_NAME)
-                .documents(List.of(buildHearingOrderView(agreedCMOOrder),
+                .documents(List.of(buildHearingOrderView(hearingDocument.getValue()),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_1),
                     buildCourtAdminDocumentView(COURT_ADMIN_DOCUMENT_2))).build());
 
@@ -203,13 +194,14 @@ class OtherDocumentsTransformerTest {
             .title(courtAdminDocument.getDocumentTitle()).build();
     }
 
-    private DocumentView buildHearingOrderView(HearingOrder hearingOrder) {
+    private DocumentView buildHearingOrderView(SupportingEvidenceBundle bundle) {
         return DocumentView.builder()
-            .document(hearingOrder.getOrder())
-            .fileName(hearingOrder.getTitle())
-            .title(hearingOrder.getTitle())
-            .uploadedAt(isNotEmpty(hearingOrder.getDateSent())
-                ? formatLocalDateToString(hearingOrder.getDateSent(), DATE) : null)
+            .document(bundle.getDocument())
+            .fileName(bundle.getName())
+            .title(bundle.getName())
+            .uploadedBy(bundle.getUploadedBy())
+            .uploadedAt(isNotEmpty(bundle.getDateTimeUploaded())
+                ? formatLocalDateTimeBaseUsingFormat(bundle.getDateTimeUploaded(), TIME_DATE) : null)
             .build();
     }
 
