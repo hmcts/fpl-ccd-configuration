@@ -22,7 +22,7 @@ let currentUser = {};
 
 module.exports = {
   async signIn(user) {
-    if (currentUser !== user) {
+    if (!(this.isPuppeteer() &&  (currentUser === user))) {
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
 
