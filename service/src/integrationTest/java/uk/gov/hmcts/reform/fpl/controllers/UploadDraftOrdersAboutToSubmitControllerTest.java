@@ -311,7 +311,8 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
         }
     }
 
-    private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(List<Element<HearingBooking>> hearings) {
+    private List<Element<HearingFurtherEvidenceBundle>> getFurtherEvidenceBundle(
+        List<Element<HearingBooking>> hearings) {
         List<Element<SupportingEvidenceBundle>> hearingDocsBundles = List.of(element(UUID.randomUUID(),
             SupportingEvidenceBundle.builder()
                 .name("case summary")
@@ -322,9 +323,9 @@ class UploadDraftOrdersAboutToSubmitControllerTest extends AbstractUploadDraftOr
                 .build()));
 
         return List.of(element(hearings.get(0).getId(), HearingFurtherEvidenceBundle.builder()
-                .hearingName(hearings.get(0).getValue().toLabel())
-                .supportingEvidenceBundle(hearingDocsBundles)
-                .build())
+            .hearingName(hearings.get(0).getValue().toLabel())
+            .supportingEvidenceBundle(hearingDocsBundles)
+            .build())
         );
     }
 
