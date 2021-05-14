@@ -9,7 +9,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOAddressPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.IssuingDetailsApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.IssuingDetailsApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
@@ -43,7 +44,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     @Mock
     private ApproverBlockPrePopulator approverBlockPrePopulator;
     @Mock
-    private EPOAddressPrePopulator epoAddressPrePopulator;
+    private EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     @Mock
     private IssuingDetailsApprovalDateBlockPrePopulator issuingDetailsApprovalDateBlockPrePopulator;
 
@@ -71,13 +72,13 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
         questionPrepopulators = List.of(
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator,
-            epoAddressPrePopulator,
+            epoTypeAndPreventRemovalBlockPrePopulator,
             issuingDetailsApprovalDateBlockPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.of(
             APPROVER, approverBlockPrePopulator,
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
-            EPO_TYPE_AND_PREVENT_REMOVAL, epoAddressPrePopulator,
+            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
             APPROVAL_DATE, issuingDetailsApprovalDateBlockPrePopulator
         );
 
