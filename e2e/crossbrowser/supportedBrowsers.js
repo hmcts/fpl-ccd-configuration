@@ -59,6 +59,7 @@ const supportedBrowsers = {
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: WIN_FIREFOX_LATEST',
+        screenResolution: '1400x1050',
       },
     },
     firefox_mac_latest: {
@@ -67,6 +68,7 @@ const supportedBrowsers = {
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: MAC_FIREFOX_LATEST',
+        screenResolution: '1400x1050',
       },
     },
   },
