@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -65,6 +66,8 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
     private String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
         LocalDateTime orderExpiration;
         String formatString;
+        Integer numOfMonths = null;
+        String courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until %s.";
 
         switch (eventData.getManageSupervisionOrderEndDateType()) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
@@ -79,8 +82,10 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
             case SET_NUMBER_OF_MONTHS:
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
                 LocalDate approvalDate = eventData.getManageOrdersApprovalDate();
-                int numOfMonths = eventData.getManageOrdersSetMonthsEndDate();
+                numOfMonths = eventData.getManageOrdersSetMonthsEndDate();
                 orderExpiration = LocalDateTime.of(approvalDate.plusMonths(numOfMonths), LocalTime.MIDNIGHT);
+                courtResponsibilityAssignmentMessage =
+                    "The Court orders %s supervises the %s for %s months from the date of this order until %s.";
                 break;
             default:
                 throw new IllegalStateException("Unexpected supervision order event data type: "
@@ -88,8 +93,44 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
         }
 
         final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
+        boolean isMonthOptionSelected = eventData.getManageSupervisionOrderEndDateType().equals(SET_NUMBER_OF_MONTHS);
+
+        if (isMonthOptionSelected) {
+            return getMonthMessage(
+                numOfChildren,
+                localAuthorityName,
+                orderExpiration,
+                formatString,
+                numOfMonths,
+                courtResponsibilityAssignmentMessage,
+                dayOrdinalSuffix);
+        } else {
+            return getDateTimeAndDateMessage(
+                numOfChildren, localAuthorityName,
+                orderExpiration,
+                formatString,
+                courtResponsibilityAssignmentMessage,
+                dayOrdinalSuffix);
+        }
+    }
+
+    private String getMonthMessage(int numOfChildren, String localAuthorityName, LocalDateTime orderExpiration,
+                                   String formatString, Integer numOfMonths,
+                                   String courtResponsibilityAssignmentMessage, String dayOrdinalSuffix) {
         return String.format(
-            "It is ordered that %s supervises the %s until %s.",
+            courtResponsibilityAssignmentMessage,
+            localAuthorityName,
+            getChildGrammar(numOfChildren),
+            numOfMonths,
+            formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix))
+        );
+    }
+
+    private String getDateTimeAndDateMessage(int numOfChildren, String localAuthorityName,
+                                             LocalDateTime orderExpiration, String formatString,
+                                             String courtResponsibilityAssignmentMessage, String dayOrdinalSuffix) {
+        return String.format(
+            courtResponsibilityAssignmentMessage,
             localAuthorityName,
             getChildGrammar(numOfChildren),
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix))

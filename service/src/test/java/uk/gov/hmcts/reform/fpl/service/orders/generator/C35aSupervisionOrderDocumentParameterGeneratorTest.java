@@ -1,0 +1,142 @@
+package uk.gov.hmcts.reform.fpl.service.orders.generator;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C35aSupervisionOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+
+@ExtendWith({MockitoExtension.class})
+class C35aSupervisionOrderDocumentParameterGeneratorTest {
+    private static final Time time = new FixedTimeConfiguration().stoppedTime();
+    private static final String CHILD_GRAMMAR = "child";
+    private static final String CHILDREN_GRAMMAR = "children";
+    private static final String LA_CODE = "LA_CODE";
+    private static final String LA_NAME = "Local Authority Name";
+    private static final Child CHILD = mock(Child.class);
+    private static final GeneratedOrderType TYPE = GeneratedOrderType.SUPERVISION_ORDER;
+    private static final String FURTHER_DIRECTIONS = "further directions";
+    private static final LocalDateTime NEXT_WEEK_DATE_TIME = time.now().plusDays(7);
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .caseLocalAuthority(LA_CODE)
+        .manageOrdersEventData(ManageOrdersEventData.builder()
+            .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+            .manageOrdersType(C35A_SUPERVISION_ORDER)
+            .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+            .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
+            .build())
+        .build();
+
+
+    final String dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+
+    @Mock
+    private ChildrenService childrenService;
+
+    @Mock
+    private LocalAuthorityNameLookupConfiguration laNameLookup;
+
+    @InjectMocks
+    private C35aSupervisionOrderDocumentParameterGenerator underTest;
+
+    @Test
+    void accept() {
+        assertThat(underTest.accept()).isEqualTo(Order.C35A_SUPERVISION_ORDER);
+    }
+
+    @Test
+    void shouldReturnContentForSingleChildAndSpecifiedDate() {
+        String formattedDate = formatLocalDateTimeBaseUsingFormat(
+            NEXT_WEEK_DATE_TIME,
+            String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        );
+
+        String courtOrderMessage = "The Court orders " + LA_NAME
+            + " supervises the " + CHILD_GRAMMAR
+            + " until " + formattedDate + ".";
+
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+
+        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+
+        DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
+
+        DocmosisParameters expectedParameters = expectedCommonParameters()
+            .orderDetails(courtOrderMessage)
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldReturnContentForChildrenAndSpecifiedDate() {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority(LA_CODE)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
+                .build())
+            .build();
+        String formattedDate = formatLocalDateTimeBaseUsingFormat(
+            NEXT_WEEK_DATE_TIME,
+            String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
+        );
+
+        String courtOrderMessage = "The Court orders " + LA_NAME
+            + " supervises the " + CHILDREN_GRAMMAR
+            + " until " + formattedDate + ".";
+
+        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD, CHILD);
+
+        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+
+        DocmosisParameters generatedParameters = underTest.generate(caseData);
+
+        DocmosisParameters expectedParameters = expectedCommonParameters()
+            .orderDetails(courtOrderMessage)
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    private C35aSupervisionOrderDocmosisParameters.C35aSupervisionOrderDocmosisParametersBuilder<?,?>
+        expectedCommonParameters() {
+        return C35aSupervisionOrderDocmosisParameters.builder()
+            .orderTitle(Order.C35A_SUPERVISION_ORDER.getTitle())
+            .orderType(TYPE)
+            .furtherDirections(FURTHER_DIRECTIONS);
+    }
+}
