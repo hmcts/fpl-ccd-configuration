@@ -61,7 +61,7 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
             errors.add(END_DATE_MIN_RANGE_MESSAGE);
         }
 
-        if (numberOfMonths >= MAXIMUM_MONTHS_VALID) {
+        if (numberOfMonths > MAXIMUM_MONTHS_VALID) {
             errors.add(END_DATE_MAX_RANGE_MESSAGE);
         }
 

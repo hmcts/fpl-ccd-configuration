@@ -231,9 +231,6 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    @Test
-    void shouldReturnMessageForMonthsChosenAndDate() {}
-
     private C35aSupervisionOrderDocmosisParameters.C35aSupervisionOrderDocmosisParametersBuilder<?,?>
         expectedCommonParameters() {
         return C35aSupervisionOrderDocmosisParameters.builder()
