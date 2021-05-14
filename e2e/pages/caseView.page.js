@@ -117,7 +117,7 @@ module.exports = {
       .replace('\n\n','\n')
       .split('\n')
       .filter(item => item);
-    
+
     assert.deepStrictEqual(errors, tasksErrors);
   },
 

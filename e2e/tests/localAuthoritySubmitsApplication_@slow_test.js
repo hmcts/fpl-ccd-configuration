@@ -242,7 +242,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters respondents @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterRespondentsEventPage}) => {
+Scenario('local authority enters respondents @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterRespondentsEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterContactDetailsHidden('No', 'mock reason');
@@ -342,7 +342,7 @@ Scenario('local authority enters respondents @create-case-with-mandatory-section
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters applicant @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterApplicantEventPage}) => {
+Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterApplicantEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
   await enterApplicantEventPage.enterApplicantDetails(applicant);
   await enterApplicantEventPage.enterSolicitorDetails(solicitor);
@@ -438,7 +438,7 @@ Scenario('local authority enters others to be given notice', async ({I, caseView
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
+Scenario('local authority enters grounds for application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterGroundsForApplicationEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   await enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
   await enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
@@ -561,7 +561,7 @@ Scenario('local authority enters other proceedings', async ({I, caseViewPage, en
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
+Scenario('local authority enters allocation proposal @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterAllocationProposalEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   await enterAllocationProposalEventPage.selectAllocationProposal('Magistrate');
   await enterAllocationProposalEventPage.enterProposalReason('test');
@@ -634,7 +634,7 @@ Scenario('local authority adds multiple application documents @cross-browser', a
 
 let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
 
-Scenario('local authority submits application @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, submitApplicationEventPage}) => {
+Scenario('local authority submits application @create-case-with-mandatory-sections-only', async ({I, caseViewPage, submitApplicationEventPage}) => {
   await caseViewPage.selectTab(caseViewPage.tabs.startApplication);
   await caseViewPage.startTask(config.applicationActions.submitCase);
 
