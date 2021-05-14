@@ -15,7 +15,7 @@
           "caseLocalAuthority": "SA",
           "localAuthorityPolicy": {
             "Organisation": {
-              "OrganisationID": "${OrganisationID:-62LYJRF}"
+              "OrganisationID": "${SwanseaOrganisationID}"
             },
             "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
           }
@@ -34,7 +34,7 @@
         "caseLocalAuthority": "SA",
         "localAuthorityPolicy": {
           "Organisation": {
-            "OrganisationID": "${OrganisationID:-62LYJRF}"
+            "OrganisationID": "${SwanseaOrganisationID}"
           },
           "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
         },

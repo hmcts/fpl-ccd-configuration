@@ -4,11 +4,11 @@ const recorder = require('codeceptjs').recorder;
 const event = require('codeceptjs').event;
 
 const delays = {
-  'click': 500,
-  'doubleClick': 500,
-  'selectOption': 500,
-  'fillFiled': 500,
-  'checkOption': 500,
+  'click': 200,
+  'doubleClick': 200,
+  'selectOption': 200,
+  'fillField': 100,
+  'checkOption': 200,
   'attachFile': 2000,
 };
 

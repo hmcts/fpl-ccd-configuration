@@ -1,0 +1,83 @@
+{
+  "orders": {
+    "orderType": [
+      "INTERIM_CARE_ORDER"
+    ]
+  },
+  "grounds": {
+    "thresholdReason": [
+      "beyondControl",
+      "noCare"
+    ],
+    "thresholdDetails": "Details"
+  },
+  "hearing": {
+    "timeFrame": "Same day"
+  },
+  "caseName": "Api test",
+  "children1": [
+    {
+      "id": "51a09959-b76d-4b62-ab12-87f9d547179d",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "lastName": "White",
+          "firstName": "Alex",
+          "dateOfBirth": "2020-01-01"
+        }
+      }
+    },
+    {
+      "id": "af74e709-42b6-4298-91ab-c0c17f6c796d",
+      "value": {
+        "party": {
+          "gender": "Girl",
+          "lastName": "White",
+          "firstName": "Emma",
+          "dateOfBirth": "2020-01-01"
+        }
+      }
+    }
+  ],
+  "solicitor": {
+    "name": "Sol 1",
+    "email": "test@test.com"
+  },
+  "applicants": [
+    {
+      "id": "00cdfa66-3029-4b0b-97c1-1f08584e8cdf",
+      "value": {
+        "party": {
+          "email": {
+            "email": "test@test.com"
+          },
+          "address": {
+            "PostCode": "CR0 2GE",
+            "AddressLine1": "Line 1"
+          },
+          "jobTitle": "Solicitor",
+          "pbaNumber": "PBA0082848",
+          "telephoneNumber": {
+            "telephoneNumber": "077766655544",
+            "contactDirection": "test"
+          },
+          "organisationName": "Test"
+        }
+      }
+    }
+  ],
+  "respondents1": [
+    {
+      "id": "b9acd968-a13d-4ac1-8135-1edcb1d78700",
+      "value": {
+        "party": {
+          "lastName": "Wall",
+          "firstName": "John",
+          "relationshipToChild": "uncle"
+        },
+        "representedBy": [],
+        "legalRepresentation": "No"
+      }
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "request": {
+    "uri": "/callback/add-case-number/submitted",
+    "user": "admin",
+    "data": {
+      "case_details": {
+        "jurisdiction": "PUBLICLAW",
+        "case_type_id": "CARE_SUPERVISION_EPO",
+        "state": "Submitted",
+        "case_data": {
+          "orders": {
+            "orderType": [
+              "CARE_ORDER",
+              "INTERIM_CARE_ORDER"
+            ]
+          },
+          "grounds": {
+            "thresholdReason": [
+              "beyondControl",
+              "noCare"
+            ],
+            "thresholdDetails": "test details"
+          },
+          "hearing": {
+            "type": "Standard case management hearing",
+            "timeFrame": "Within 18 days",
+            "reducedNotice": "No",
+            "withoutNotice": "No",
+            "type_GiveReason": "test",
+            "respondentsAware": "No"
+          },
+          "caseName": "test",
+          "children1": [
+            {
+              "id": "7a05ba23-03b5-4c2e-acec-fc4e24c0f499",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "address": {
+                  },
+                  "partyId": "c0b7c184-6d35-4f3d-9ba4-763b76edee4d",
+                  "lastName": "White",
+                  "firstName": "Alex",
+                  "dateOfBirth": "2016-01-01",
+                  "socialWorkerTelephoneNumber": {
+                  }
+                }
+              }
+            }
+          ],
+          "solicitor": {
+            "name": "Solicitor 1",
+            "email": "test@test.com",
+            "mobile": "02027725772",
+            "telephone": "02027725772"
+          },
+          "applicants": [
+            {
+              "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
+              "value": {
+                "party": {
+                  "email": {
+                    "email": "test@test.com"
+                  },
+                  "address": {
+                    "County": "Swansea",
+                    "Country": "United Kingdom",
+                    "PostCode": "CR0 2GE",
+                    "PostTown": "Swansea",
+                    "AddressLine1": "Flat 1, Swansea Apartments",
+                    "AddressLine2": "Swansea Central Square 11",
+                    "AddressLine3": "40 Fleet street"
+                  },
+                  "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+                  "jobTitle": "Solicitor",
+                  "pbaNumber": "PBA1234567",
+                  "mobileNumber": {
+                    "telephoneNumber": "02027725772"
+                  },
+                  "telephoneNumber": {
+                    "telephoneNumber": "02027725772",
+                    "contactDirection": "John"
+                  },
+                  "organisationName": "Swansea City Council"
+                },
+                "leadApplicantIndicator": "Yes"
+              }
+            }
+          ],
+          "respondents1": [
+            {
+              "id": "cb0775db-a1b4-4109-85b9-91312f5be2ab",
+              "value": {
+                "party": {
+                  "gender": "Male",
+                  "partyId": "97649861-d73e-4ca8-ad50-c6aa584d4857",
+                  "lastName": "Bloggs",
+                  "firstName": "Joe",
+                  "dateOfBirth": "2018-01-01",
+                  "telephoneNumber": {},
+                  "relationshipToChild": "uncle"
+                },
+                "solicitor": {
+                  "email": "raghu@wiltshire.gov.uk",
+                  "lastName": "(local-authority)",
+                  "firstName": "raghu@wiltshire.gov.uk",
+                  "organisation": {
+                    "OrganisationID": "ORGSW",
+                    "OrganisationName": "Swindon Borough Council"
+                  }
+                }
+              }
+            }
+          ],
+          "allocationProposal": {
+            "proposal": "Circuit judge",
+            "proposalReason": "test"
+          },
+          "caseLocalAuthority": "SA",
+          "amountToPay": "205500",
+          "caseLocalAuthorityName": "Swansea City Council"
+        }
+      },
+      "case_details_before": {
+        "jurisdiction": "PUBLICLAW",
+        "case_type_id": "CARE_SUPERVISION_EPO",
+        "state": "Submitted",
+        "case_data": {
+          "familyManCaseNumber": "123456789",
+          "orders": {
+            "orderType": [
+              "CARE_ORDER",
+              "INTERIM_CARE_ORDER"
+            ]
+          },
+          "grounds": {
+            "thresholdReason": [
+              "beyondControl",
+              "noCare"
+            ],
+            "thresholdDetails": "test details"
+          },
+          "hearing": {
+            "type": "Standard case management hearing",
+            "timeFrame": "Within 18 days",
+            "reducedNotice": "No",
+            "withoutNotice": "No",
+            "type_GiveReason": "test",
+            "respondentsAware": "No"
+          },
+          "caseName": "test",
+          "children1": [
+            {
+              "id": "7a05ba23-03b5-4c2e-acec-fc4e24c0f499",
+              "value": {
+                "party": {
+                  "gender": "Boy",
+                  "address": {
+                  },
+                  "partyId": "c0b7c184-6d35-4f3d-9ba4-763b76edee4d",
+                  "lastName": "White",
+                  "firstName": "Alex",
+                  "dateOfBirth": "2016-01-01",
+                  "socialWorkerTelephoneNumber": {
+                  }
+                }
+              }
+            }
+          ],
+          "solicitor": {
+            "name": "Solicitor 1",
+            "email": "test@test.com",
+            "mobile": "02027725772",
+            "telephone": "02027725772"
+          },
+          "applicants": [
+            {
+              "id": "2bd12c0a-0c2a-490e-afd0-4adb4de2e194",
+              "value": {
+                "party": {
+                  "email": {
+                    "email": "test@test.com"
+                  },
+                  "address": {
+                    "County": "Swansea",
+                    "Country": "United Kingdom",
+                    "PostCode": "CR0 2GE",
+                    "PostTown": "Swansea",
+                    "AddressLine1": "Flat 1, Swansea Apartments",
+                    "AddressLine2": "Swansea Central Square 11",
+                    "AddressLine3": "40 Fleet street"
+                  },
+                  "partyId": "1fff0a63-e869-4ed1-9671-6d8e72de7238",
+                  "jobTitle": "Solicitor",
+                  "pbaNumber": "PBA1234567",
+                  "mobileNumber": {
+                    "telephoneNumber": "02027725772"
+                  },
+                  "telephoneNumber": {
+                    "telephoneNumber": "02027725772",
+                    "contactDirection": "John"
+                  },
+                  "organisationName": "Swansea City Council"
+                },
+                "leadApplicantIndicator": "Yes"
+              }
+            }
+          ],
+          "respondents1": [
+            {
+              "id": "cb0775db-a1b4-4109-85b9-91312f5be2ab",
+              "value": {
+                "party": {
+                  "gender": "Male",
+                  "partyId": "97649861-d73e-4ca8-ad50-c6aa584d4857",
+                  "lastName": "Bloggs",
+                  "firstName": "Joe",
+                  "dateOfBirth": "2018-01-01",
+                  "telephoneNumber": {},
+                  "relationshipToChild": "uncle"
+                },
+                "solicitor": {
+                  "email": "raghu@wiltshire.gov.uk",
+                  "lastName": "(local-authority)",
+                  "firstName": "raghu@wiltshire.gov.uk",
+                  "organisation": {
+                    "OrganisationID": "ORGSW",
+                    "OrganisationName": "Swindon Borough Council"
+                  }
+                }
+              }
+            }
+          ],
+          "allocationProposal": {
+            "proposal": "Circuit judge",
+            "proposalReason": "test"
+          },
+          "caseLocalAuthority": "SA",
+          "amountToPay": "205500",
+          "caseLocalAuthorityName": "Swansea City Council"
+        }
+      },
+      "event_id": "enterOthers"
+    }
+  },
+  "expectation": {
+    "status": 200
+  }
+}
