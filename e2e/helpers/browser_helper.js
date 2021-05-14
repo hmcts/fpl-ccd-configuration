@@ -121,10 +121,8 @@ module.exports = class BrowserHelpers extends Helper {
 
     if (texts.length > 1) {
       throw new Error(`More than one element found for locator ${locator}`);
-    } else if (texts.length === 1) {
-      return texts[0];
     } else {
-      return undefined;
+      return texts[0];
     }
   }
 
