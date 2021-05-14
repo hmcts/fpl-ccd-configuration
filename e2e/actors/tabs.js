@@ -63,16 +63,27 @@ module.exports = {
   },
 
   seeInExpandedDocument(title, uploadedBy, dateTimeUploaded) {
-    this.seeElement(locate('details').withAttr({open})
-      .withChild(locate('summary')
-        .withText(title))
-      .withChild(locate('div'))
-      .withText('Uploaded by')
-      .withText(uploadedBy)
-      .withText('Date and time uploaded')
-      .withText(dateTimeUploaded)
-      .withText('Document')
-      .withText('mockFile.txt'));
+    if(uploadedBy == null) {
+      this.seeElement(locate('details').withAttr({open})
+        .withChild(locate('summary')
+          .withText(title))
+        .withChild(locate('div'))
+        .withText('Date and time uploaded')
+        .withText(dateTimeUploaded)
+        .withText('Document')
+        .withText('mockFile.txt'));
+    } else {
+      this.seeElement(locate('details').withAttr({open})
+        .withChild(locate('summary')
+          .withText(title))
+        .withChild(locate('div'))
+        .withText('Uploaded by')
+        .withText(uploadedBy)
+        .withText('Date and time uploaded')
+        .withText(dateTimeUploaded)
+        .withText('Document')
+        .withText('mockFile.txt'));
+    }
   },
 
   seeInExpandedConfidentialDocument(title, uploadedBy, dateTimeUploaded) {
