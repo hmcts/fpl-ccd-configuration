@@ -95,6 +95,7 @@ public class RespondentStatementsTransformer {
             .stream()
             .map(Element::getValue)
             .filter(doc -> (includeConfidential || !doc.isConfidentialDocument()))
+            .sorted(comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
                 .fileName(doc.getName())
@@ -106,7 +107,6 @@ public class RespondentStatementsTransformer {
                 .confidential(doc.isConfidentialDocument())
                 .title(doc.getName())
                 .build())
-            .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
             .collect(Collectors.toUnmodifiableList());
     }
 

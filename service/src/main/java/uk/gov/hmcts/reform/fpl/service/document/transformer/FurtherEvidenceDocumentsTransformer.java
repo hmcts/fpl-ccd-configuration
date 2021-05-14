@@ -71,6 +71,7 @@ public class FurtherEvidenceDocumentsTransformer {
             .stream()
             .map(Element::getValue)
             .filter(doc -> (type == doc.getType()) && (includeConfidential || !doc.isConfidentialDocument()))
+            .sorted(comparing(SupportingEvidenceBundle::getDateTimeUploaded, nullsLast(reverseOrder())))
             .map(doc -> DocumentView.builder()
                 .document(doc.getDocument())
                 .type(doc.getType().getLabel())
@@ -83,7 +84,6 @@ public class FurtherEvidenceDocumentsTransformer {
                 .title(type == APPLICANT_STATEMENT ? doc.getType().getLabel() : doc.getName())
                 .includeDocumentName(asList(APPLICANT_STATEMENT, OTHER).contains(doc.getType()))
                 .build())
-            .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
             .collect(Collectors.toUnmodifiableList());
     }
 }

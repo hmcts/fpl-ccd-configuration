@@ -9,9 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
-import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.OTHER_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -20,20 +20,17 @@ public class DocumentViewTestHelper {
     private DocumentViewTestHelper() {
     }
 
-    public static final Element<SupportingEvidenceBundle> ADMIN_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS);
+    public static final Element<SupportingEvidenceBundle> ADMIN_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
+        "Admin uploaded evidence1", "HMCTS", true, EXPERT_REPORTS, now());
 
-    public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("Admin uploaded evidence2", "HMCTS", false, EXPERT_REPORTS);
+    public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
+        "Admin uploaded evidence2", "HMCTS", false, EXPERT_REPORTS, now().minusMinutes(1));
 
-    public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_DOCUMENT2
-        = buildFurtherEvidenceBundle("Admin uploaded evidence3", "HMCTS", false, OTHER_REPORTS);
+    public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
+        "LA uploaded evidence1", "Kurt solicitor", true, GUARDIAN_REPORTS, now().minusMinutes(2));
 
-    public static final Element<SupportingEvidenceBundle> LA_CONFIDENTIAL_DOCUMENT
-        = buildFurtherEvidenceBundle("LA uploaded evidence1", "Kurt solicitor", true, GUARDIAN_REPORTS);
-
-    public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT =
-        buildFurtherEvidenceBundle("LA uploaded evidence2", "Kurt solicitor", false, GUARDIAN_REPORTS);
+    public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
+        "LA uploaded evidence2", "Kurt solicitor", false, GUARDIAN_REPORTS, now().minusMinutes(3));
 
     public static final Element<Respondent> RESPONDENT1 = buildRespondent("Dave", "Miller");
     public static final Element<Respondent> RESPONDENT2 = buildRespondent("Will", "Smith");
@@ -50,12 +47,12 @@ public class DocumentViewTestHelper {
             .build());
     }
 
-    private static Element<SupportingEvidenceBundle> buildFurtherEvidenceBundle(
-        String name, String uploadedBy, boolean isConfidential, FurtherEvidenceType type) {
+    public static Element<SupportingEvidenceBundle> buildFurtherEvidenceBundle(
+        String name, String uploadedBy, boolean isConfidential, FurtherEvidenceType type, LocalDateTime uploadedAt) {
         return element(SupportingEvidenceBundle.builder()
             .name(name)
             .document(testDocumentReference())
-            .dateTimeUploaded(LocalDateTime.now())
+            .dateTimeUploaded(uploadedAt)
             .uploadedBy(uploadedBy)
             .type(type)
             .confidential(isConfidential ? List.of("CONFIDENTIAL") : List.of())
