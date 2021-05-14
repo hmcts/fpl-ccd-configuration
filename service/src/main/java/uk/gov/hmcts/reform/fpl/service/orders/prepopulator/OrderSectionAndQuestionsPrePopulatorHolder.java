@@ -48,7 +48,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
         blockOrderPrePopulatorMap = List.of(
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator,
-            epoTypeAndPreventRemovalBlockPrePopulator
+            epoTypeAndPreventRemovalBlockPrePopulator,
             issuingDetailsApprovalDateBlockPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
