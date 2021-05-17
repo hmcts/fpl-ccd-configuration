@@ -128,4 +128,30 @@ class DocumentsListRendererTest {
 
         assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
     }
+
+    @Test
+    void shouldRenderDocumentBundlesIfDocumentNull() {
+        when(caseUrlService.getBaseUrl()).thenReturn(IMAGE_BASE_URL);
+
+        List<DocumentBundleView> documentBundleViews = List.of(
+            DocumentBundleView.builder()
+                .name("Applicant's statements and application documents")
+                .documents(List.of(DocumentView.builder()
+                    .type("Application statement")
+                    .fileName("supportingDoc1 conf hmcts")
+                    .documentName("supportingDoc1 conf hmcts")
+                    .uploadedBy("user@test.com")
+                    .uploadedAt("2:22pm, 4 May 2021")
+                    .confidential(false)
+                    .document(null)
+                    .title("Application statement")
+                    .includeDocumentName(true)
+                    .build()))
+                .build());
+
+        String expectedDocumentView = readString(
+            "further-evidence-documents-tab/expected-documents-view-null-document.md").trim();
+
+        assertThat(underTest.render(documentBundleViews)).isEqualTo(expectedDocumentView);
+    }
 }
