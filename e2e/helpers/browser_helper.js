@@ -132,4 +132,19 @@ module.exports = class BrowserHelpers extends Helper {
 
     runAccessibility(url, page);
   }
+
+  async canClick(selector){
+    const elements = await this.locateSelector(selector);
+
+    if (elements.length > 1) {
+      throw new Error(`More than one element found for locator ${selector}`);
+    }
+    if(elements.length === 0){
+      throw new Error(`No element found for locator ${selector}`);
+    }
+    else if(elements[0].isClickable) {
+      return await elements[0].isClickable();
+    }
+    return true;
+  }
 };
