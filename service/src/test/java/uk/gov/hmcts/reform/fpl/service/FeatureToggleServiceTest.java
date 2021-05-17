@@ -164,24 +164,24 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForRespondentJourneyEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsNoticeOfChangeEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isRespondentJourneyEnabled()).isEqualTo(toggleState);
+        assertThat(service.isNoticeOfChangeEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("respondent-journey"),
+            eq("noc"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForHasRSOCaseAccessEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsFurtherEvidenceDocumentTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.hasRSOCaseAccess()).isEqualTo(toggleState);
+        assertThat(service.isFurtherEvidenceDocumentTabEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("rso-case-access"),
+            eq("further-evidence-document-tab"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

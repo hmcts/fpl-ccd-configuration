@@ -11,9 +11,9 @@ Scenario('Different user in the same local authority can see case created', asyn
   I.see(caseId);
 });
 
-Scenario('Different user in a different local authority cannot see case created', async ({I}) => {
-  await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserTwo, caseId);
-  I.see('No cases found.');
+Scenario('Different user in a different local authority cannot see case created', async ({I, caseListPage}) => {
+  await I.signIn(config.hillingdonLocalAuthorityUserTwo);
+  caseListPage.verifyCaseIsNotAccessible(caseId);
 });
 
 Scenario('HMCTS admin user can see the case', async ({I}) => {

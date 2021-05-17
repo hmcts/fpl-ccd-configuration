@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApiV2;
 import uk.gov.hmcts.reform.ccd.model.AuditEvent;
 import uk.gov.hmcts.reform.ccd.model.AuditEventsResponse;
-import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,26 +21,21 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuditEventServiceTest {
 
-    private static final String USERNAME = "Username";
-    private static final String PASSWORD = "Password";
     private static final String USER_TOKEN = "USER_TOKEN";
     private static final String SERVICE_TOKEN = "SERVICE_TOKEN";
     private static final String CASE_ID = "1111";
 
     @Mock
-    private IdamClient idamClient;
+    private CoreCaseDataApiV2 caseDataApi;
 
     @Mock
-    private CoreCaseDataApiV2 caseDataApi;
+    private SystemUserService systemUserService;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
     private AuditEventsResponse auditEventsResponse;
-
-    @Mock
-    private SystemUpdateUserConfiguration userConfig;
 
     @InjectMocks
     private AuditEventService auditEventService;
@@ -51,9 +44,7 @@ class AuditEventServiceTest {
 
     @BeforeEach
     void setup() {
-        when(userConfig.getUserName()).thenReturn(USERNAME);
-        when(userConfig.getPassword()).thenReturn(PASSWORD);
-        when(idamClient.getAccessToken(USERNAME, PASSWORD)).thenReturn(USER_TOKEN);
+        when(systemUserService.getSysUserToken()).thenReturn(USER_TOKEN);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         when(caseDataApi.getAuditEvents(USER_TOKEN, SERVICE_TOKEN, false, CASE_ID))
             .thenReturn(auditEventsResponse);

@@ -1,33 +1,147 @@
 package uk.gov.hmcts.reform.fpl.service.respondent;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
+@ExtendWith(MockitoExtension.class)
 class RespondentAfterSubmissionValidatorTest {
 
     private static final UUID UUID_1 = UUID.randomUUID();
     private static final UUID UUID_2 = UUID.randomUUID();
-    private static final Respondent RESPONDENT_1 = mock(Respondent.class);
-    private static final Respondent RESPONDENT_2 = mock(Respondent.class);
+    private static final Respondent RESPONDENT_1 = Respondent.builder().legalRepresentation(NO.getValue()).build();
+    private static final Respondent RESPONDENT_2 = Respondent.builder().legalRepresentation(NO.getValue()).build();
     private static final String ORGANISATION_ID_1 = "OrganisationId1";
     private static final String ORGANISATION_ID_2 = "OrganisationId2";
 
-    private final RespondentAfterSubmissionValidator underTest = new RespondentAfterSubmissionValidator();
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
+
+    @InjectMocks
+    private RespondentAfterSubmissionValidator underTest;
+
+    @Nested
+    class ValidateLegalRepresentation {
+        Respondent respondentWithRepresentation = Respondent.builder().legalRepresentation(YES.getValue()).build();
+
+        @Test
+        void shouldNotReturnErrorIfNoRespondents() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of()).build());
+
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
+        void shouldReturnErrorIfNoLegalRepresentationSelected() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of(element(Respondent.builder().build()))).build());
+
+            assertThat(actual).containsExactly("Confirm if respondent 1 has legal representation");
+        }
+
+        @Test
+        void shouldNotReturnErrorIfAllDetailsEntered() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of(element(respondentWithRepresentation.toBuilder()
+                    .solicitor(RespondentSolicitor.builder()
+                        .firstName("John")
+                        .lastName("Smith")
+                        .email("john@smith.com")
+                        .organisation(Organisation.builder().organisationID("test ID").build())
+                        .build())
+                    .build())))
+                    .build());
+
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnErrorIfUnregisteredOrganisationPresent() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of(element(respondentWithRepresentation.toBuilder()
+                    .solicitor(RespondentSolicitor.builder()
+                        .firstName("John")
+                        .lastName("Smith")
+                        .email("john@smith.com")
+                        .unregisteredOrganisation(UnregisteredOrganisation.builder().name("test org name").build())
+                        .build())
+                    .build())))
+                    .build());
+
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
+        void shouldReturnErrorsIfDetailsMissing() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of(element(respondentWithRepresentation.toBuilder()
+                    .solicitor(RespondentSolicitor.builder().build())
+                    .build())))
+                    .build());
+
+            assertThat(actual).containsExactly(
+                "Add the full name of respondent 1's legal representative",
+                "Add the email address of respondent 1's legal representative",
+                "Add the organisation details for respondent 1's representative"
+            );
+        }
+
+        @Test
+        void shouldReturnErrorIfFirstNameMissing() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of(element(respondentWithRepresentation.toBuilder()
+                    .solicitor(RespondentSolicitor.builder()
+                        .lastName("Smith")
+                        .email("john@smith.com")
+                        .organisation(Organisation.builder().organisationID("test ID").build())
+                        .build())
+                    .build())))
+                    .build());
+
+            assertThat(actual).containsExactly("Add the full name of respondent 1's legal representative");
+        }
+
+        @Test
+        void shouldReturnErrorIfLastNameMissing() {
+            List<String> actual = underTest.validateLegalRepresentation(
+                CaseData.builder().respondents1(List.of(element(respondentWithRepresentation.toBuilder()
+                    .solicitor(RespondentSolicitor.builder()
+                        .firstName("John")
+                        .email("john@smith.com")
+                        .organisation(Organisation.builder().organisationID("test ID").build())
+                        .build())
+                    .build())))
+                    .build());
+
+            assertThat(actual).containsExactly("Add the full name of respondent 1's legal representative");
+        }
+    }
 
     @Test
     void shouldNotReturnErrorWhenNoChanges() {
@@ -39,7 +153,7 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of());
+        assertThat(actual).isEmpty();
     }
 
     @ParameterizedTest
@@ -53,7 +167,7 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(respondents)
                 .build());
 
-        assertThat(actual).isEqualTo(List.of());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -66,7 +180,7 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -79,28 +193,20 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1), element(UUID_2, RESPONDENT_2)))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("Removing an existing respondent is not allowed"));
+        assertThat(actual).containsExactly("You cannot remove a respondent from the case");
     }
 
     @Test
     void shouldNotReturnErrorWhenRepresentationAddedToExistingRespondent() {
-        Respondent updatedRespondent = Respondent.builder()
-            .legalRepresentation(YES.getValue())
-            .solicitor(RespondentSolicitor.builder()
-                .organisation(Organisation.builder()
-                    .organisationID(ORGANISATION_ID_1)
-                    .build())
-                .build()).build();
-
         List<String> actual = underTest.validate(
             CaseData.builder()
-                .respondents1(List.of(element(UUID_1, updatedRespondent)))
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(element(UUID_1, RESPONDENT_1)))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -113,7 +219,7 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of());
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -126,7 +232,7 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("You cannot remove respondent 1's legal representative"));
+        assertThat(actual).containsExactly("You cannot remove respondent 1's legal representative");
     }
 
     @Test
@@ -141,7 +247,7 @@ class RespondentAfterSubmissionValidatorTest {
                     .build())))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("You cannot remove respondent 1's legal representative"));
+        assertThat(actual).containsExactly("You cannot remove respondent 1's legal representative");
     }
 
     @Test
@@ -154,7 +260,8 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
+        assertThat(actual).containsExactly(
+            "You cannot change organisation details for respondent 1's legal representative");
     }
 
     @Test
@@ -167,7 +274,8 @@ class RespondentAfterSubmissionValidatorTest {
                 .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 1 is not allowed"));
+        assertThat(actual).containsExactly(
+            "You cannot change organisation details for respondent 1's legal representative");
     }
 
     @Test
@@ -186,7 +294,8 @@ class RespondentAfterSubmissionValidatorTest {
                 ))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 2 is not allowed"));
+        assertThat(actual)
+            .containsExactly("You cannot change organisation details for respondent 2's legal representative");
     }
 
     @Test
@@ -205,10 +314,10 @@ class RespondentAfterSubmissionValidatorTest {
                 ))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of(
-            "Change of organisation for respondent 1 is not allowed",
-            "Change of organisation for respondent 2 is not allowed"
-        ));
+        assertThat(actual).containsExactly(
+            "You cannot change organisation details for respondent 1's legal representative",
+            "You cannot change organisation details for respondent 2's legal representative"
+        );
     }
 
     @Test
@@ -216,18 +325,19 @@ class RespondentAfterSubmissionValidatorTest {
         List<String> actual = underTest.validate(
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1)),
                     element(UUID_2, respondentWithRegisteredSolicitor(null))
                 ))
                 .build(),
             CaseData.builder()
                 .respondents1(List.of(
-                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_2)),
-                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))
+                    element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1)),
+                    element(UUID_2, respondentWithRegisteredSolicitor(ORGANISATION_ID_2))
                 ))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of("Change of organisation for respondent 2 is not allowed"));
+        assertThat(actual).containsExactly(
+            "You cannot change organisation details for respondent 2's legal representative");
     }
 
     @Test
@@ -246,19 +356,39 @@ class RespondentAfterSubmissionValidatorTest {
                 ))
                 .build());
 
-        assertThat(actual).isEqualTo(List.of(
-            "Change of organisation for respondent 1 is not allowed",
-            "Change of organisation for respondent 2 is not allowed"
-        ));
+        assertThat(actual).containsExactly(
+            "You cannot change organisation details for respondent 1's legal representative",
+            "You cannot change organisation details for respondent 2's legal representative"
+        );
+    }
+
+    @Test
+    void shouldReturnOnlyLegalRepresentationErrorsWhenToggleOnAndUserIsAdmin() {
+        given(featureToggleService.isNoticeOfChangeEnabled()).willReturn(true);
+        given(userService.isHmctsAdminUser()).willReturn(true);
+
+        List<String> actual = underTest.validate(
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(null))))
+                .build(),
+            CaseData.builder()
+                .respondents1(List.of(element(UUID_1, respondentWithRegisteredSolicitor(ORGANISATION_ID_1))))
+                .build());
+
+        assertThat(actual).containsExactly(
+            "Add the organisation details for respondent 1's representative");
     }
 
     private Respondent respondentWithRegisteredSolicitor(String organisationID) {
         return Respondent.builder()
             .legalRepresentation(YES.getValue())
             .solicitor(RespondentSolicitor.builder()
-            .organisation(Organisation.builder()
-                .organisationID(organisationID)
-                .build())
-            .build()).build();
+                .firstName("Adam")
+                .lastName("Jones")
+                .email("adam@jones.com")
+                .organisation(Organisation.builder()
+                    .organisationID(organisationID)
+                    .build())
+                .build()).build();
     }
 }

@@ -67,12 +67,8 @@ public class FeatureToggleService {
         return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
     }
 
-    public boolean isRespondentJourneyEnabled() {
-        return ldClient.boolVariation("respondent-journey", createLDUser(), false);
-    }
-
-    public boolean hasRSOCaseAccess() {
-        return ldClient.boolVariation("rso-case-access", createLDUser(), false);
+    public boolean isNoticeOfChangeEnabled() {
+        return ldClient.boolVariation("noc", createLDUser(), false);
     }
 
     private LDUser createLDUser() {
@@ -90,6 +86,11 @@ public class FeatureToggleService {
 
     public boolean isFurtherEvidenceUploadNotificationEnabled() {
         return ldClient.boolVariation("further-evidence-upload-notification",
+            createLDUser(), false);
+    }
+
+    public boolean isFurtherEvidenceDocumentTabEnabled() {
+        return ldClient.boolVariation("further-evidence-document-tab",
             createLDUser(), false);
     }
 }

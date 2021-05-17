@@ -79,6 +79,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CPY",
+    "ListElement": "Caerphilly County Borough Council",
+    "DisplayOrder": 47
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "CAR",
     "ListElement": "Carmarthenshire County Council",
     "DisplayOrder": 50
@@ -657,6 +664,13 @@
     "ListElementCode": "WAL",
     "ListElement": "Walsall Borough Council",
     "DisplayOrder": 420
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WAR",
+    "ListElement": "Warrington Borough Council",
+    "DisplayOrder": 423
   },
   {
     "LiveFrom": "01/01/2017",

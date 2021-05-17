@@ -291,10 +291,10 @@ dependencies {
 
   compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.4.0'
 
-  implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
+  implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.8.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -328,7 +328,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
   testCompile group: 'org.springframework.retry', name: 'spring-retry'
-  testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
+  testCompile group: 'org.awaitility', name: 'awaitility', version: '4.1.0'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
