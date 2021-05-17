@@ -23,7 +23,7 @@ Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudge
   messageJudgeOrLegalAdviserEventPage.enterMessage(message);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.messageJudge);
-  caseViewPage.selectTab(caseViewPage.tabs.judicialMessages);
+  await I.selectTab(caseViewPage.tabs.judicialMessages);
 
   I.seeInTab(['Message 1', 'From'], config.ctscEmail);
   I.seeInTab(['Message 1', 'Sent to'], 'recipient@fpla.com');
