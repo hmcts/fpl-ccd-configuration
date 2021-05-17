@@ -82,12 +82,14 @@ class DocumentsListRenderer {
             documentFields.add(Pair.of(renderImage("confidential.png", "Confidential"), ""));
         }
 
-        documentFields.add(Pair.of("Document",
-            "<a href='"
-                + getDocumentUrl(documentView.getDocument())
-                + "'>"
-                + documentView.getDocument().getFilename() + "</a>"));
+        if (isNotEmpty(documentView.getDocument())) {
+            documentFields.add(Pair.of("Document",
+                "<a href='"
+                    + getDocumentUrl(documentView.getDocument())
+                    + "'>"
+                    + documentView.getDocument().getFilename() + "</a>"));
 
+        }
         return documentFields;
     }
 
