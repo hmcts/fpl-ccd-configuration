@@ -584,6 +584,8 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
+    private final List<Element<ScannedDocument>> scannedDocuments;
 
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;

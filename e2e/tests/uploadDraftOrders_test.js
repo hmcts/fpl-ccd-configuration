@@ -73,13 +73,9 @@ Scenario('Local authority uploads draft orders', async ({I, caseViewPage, upload
     {title: draftCMO, status: draftStatus, supportingDocs: supportingDoc},
   ]);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Hearing'], hearing2);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Document name'], supportingDoc.name);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'Notes'], supportingDoc.notes);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Documents 1', 'File'], supportingDoc.fileName);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Date and time uploaded'], date);
-  I.seeInTab(['Further evidence documents for hearings 1', 'Uploaded by'], 'kurt@swansea.gov.uk');
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection('Any other documents', supportingDoc.name);
+  I.seeInExpandedDocument(supportingDoc.name, config.swanseaLocalAuthorityUserOne.email, dateFormat(date, 'd mmm yyyy'));
 });
 
 Scenario('Respondent solicitor uploads draft orders', async ({I, caseViewPage, enterRepresentativesEventPage, uploadCaseManagementOrderEventPage}) => {
