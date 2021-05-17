@@ -357,7 +357,11 @@ public class ManageDocumentService {
         if (newBundle.isEmpty()) {
             respondentStatementDocuments.remove(respondentStatement);
         } else {
-            respondentStatement.getValue().setSupportingEvidenceBundle(newBundle);
+            List<Element<SupportingEvidenceBundle>> existingBundle
+                = respondentStatement.getValue().getSupportingEvidenceBundle();
+            List<Element<SupportingEvidenceBundle>> updatedBundle
+                = setDateTimeUploadedOnSupportingEvidence(newBundle, existingBundle);
+            respondentStatement.getValue().setSupportingEvidenceBundle(updatedBundle);
         }
 
         return respondentStatementDocuments;
