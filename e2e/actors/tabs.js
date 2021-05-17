@@ -61,4 +61,64 @@ module.exports = {
   dontSeeInTab(pathToField) {
     this.dontSeeElement(locate(tabFieldSelector(pathToField)));
   },
+
+  seeInExpandedDocument(title, uploadedBy, dateTimeUploaded) {
+    if(uploadedBy == null) {
+      this.seeElement(locate('details').withAttr({open})
+        .withChild(locate('summary')
+          .withText(title))
+        .withChild(locate('div'))
+        .withText('Date and time uploaded')
+        .withText(dateTimeUploaded)
+        .withText('Document')
+        .withText('mockFile.txt'));
+    } else {
+      this.seeElement(locate('details').withAttr({open})
+        .withChild(locate('summary')
+          .withText(title))
+        .withChild(locate('div'))
+        .withText('Uploaded by')
+        .withText(uploadedBy)
+        .withText('Date and time uploaded')
+        .withText(dateTimeUploaded)
+        .withText('Document')
+        .withText('mockFile.txt'));
+    }
+  },
+
+  seeInExpandedConfidentialDocument(title, uploadedBy, dateTimeUploaded) {
+    this.seeElement(locate('details').withAttr({open})
+      .withChild(locate('summary')
+        .withText(title))
+      .withChild(locate('div'))
+      .withText('Uploaded by')
+      .withText(uploadedBy)
+      .withText('Date and time uploaded')
+      .withText(dateTimeUploaded)
+      .withDescendant(locate('img').withAttr({ title : 'Confidential'}))
+      .withText('Document')
+      .withText('mockFile.txt'));
+  },
+
+  dontSeeDocumentSection(documentSection, documentTitle) {
+    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
+  },
+
+  dontSeeConfidentialInExpandedDocument(documentSection, documentTitle) {
+    this.dontSeeElement(locate('summary').withAttr({class: 'govuk-details__summary'})
+      .withText(documentTitle).withChild(locate('div'))
+      .withChild(locate('img'))
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
+  },
+
+  expandDocumentSection(documentSection, documentTitle) {
+    this.click(locate('summary').withText(documentSection));
+    this.expandDocument(documentSection, documentTitle);
+  },
+
+  expandDocument(documentSection, documentTitle) {
+    this.click(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
+      .inside(locate('details').withChild(locate('summary').withText(documentSection))));
+  },
 };

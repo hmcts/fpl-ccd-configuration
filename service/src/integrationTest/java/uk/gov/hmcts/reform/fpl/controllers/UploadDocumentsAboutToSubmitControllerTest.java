@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicationDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
@@ -42,12 +44,16 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
     @MockBean
     private DocumentUploadHelper documentUploadHelper;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     UploadDocumentsAboutToSubmitControllerTest() {
         super("upload-documents");
     }
 
-    @Test
-    void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void shouldUpdateApplicationDocumentsWhenExistingInCaseDetailsBefore(boolean isFurtherEvidenceTabEnabled) {
         when(identityService.generateId()).thenReturn(UUID_1).thenReturn(UUID_2);
         given(documentUploadHelper.getUploadedDocumentUserDetails()).willReturn(ANOTHER_USER);
 
@@ -87,11 +93,12 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                 )
             )).build();
 
-
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(caseDetails)
             .caseDetailsBefore(caseDetailsBefore)
             .build();
+
+        given(featureToggleService.isFurtherEvidenceDocumentTabEnabled()).willReturn(isFurtherEvidenceTabEnabled);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest);
 
@@ -110,5 +117,17 @@ class UploadDocumentsAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .dateTimeUploaded(now())
                 .build()))
         );
+
+        if (isFurtherEvidenceTabEnabled) {
+            assertThat((String) callbackResponse.getData().get("documentViewLA")).isNotEmpty();
+            assertThat((String) callbackResponse.getData().get("documentViewHMCTS")).isNotEmpty();
+            assertThat((String) callbackResponse.getData().get("documentViewNC")).isNotEmpty();
+            assertThat(callbackResponse.getData().get("showFurtherEvidenceTab")).isEqualTo("YES");
+        } else {
+            assertThat(callbackResponse.getData().get("documentViewLA")).isNull();
+            assertThat(callbackResponse.getData().get("documentViewHMCTS")).isNull();
+            assertThat(callbackResponse.getData().get("documentViewNC")).isNull();
+            assertThat((String) callbackResponse.getData().get("showFurtherEvidenceTab")).isNull();
+        }
     }
 }
