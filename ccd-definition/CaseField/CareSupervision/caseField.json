@@ -1593,6 +1593,69 @@
     "Searchable": "N"
   },
   {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentViewHMCTS",
+    "Label": "Case name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentViewLA",
+    "Label": "Case name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentViewNC",
+    "Label": "Case name",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentListPageHMCTS",
+    "Label": "${documentViewHMCTS}",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentListPageLA",
+    "Label": "${documentViewLA}",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documentListPageNC",
+    "Label": "${documentViewNC}",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "showFurtherEvidenceTab",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionRequiredFieldsInfo",

@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
@@ -583,6 +584,8 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
+    private final List<Element<ScannedDocument>> scannedDocuments;
 
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
@@ -701,6 +704,7 @@ public class CaseData {
     }
 
     private final DocumentReference submittedForm;
+    private final DocumentReference draftApplicationDocument;
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
@@ -915,5 +919,6 @@ public class CaseData {
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
 
+    private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
 }

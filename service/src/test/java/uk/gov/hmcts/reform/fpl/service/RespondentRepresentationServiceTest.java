@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
@@ -20,7 +21,10 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
+import uk.gov.hmcts.reform.fpl.model.representative.ChangeOfRepresentationRequest;
+import uk.gov.hmcts.reform.fpl.service.representative.ChangeOfRepresentationService;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.HashMap;
@@ -30,7 +34,10 @@ import java.util.Map;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.ccd.model.Organisation.organisation;
+import static uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentationMethod.NOC;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
 
@@ -42,8 +49,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.caseRoleDynamicList;
     RespondentRepresentationService.class})
 class RespondentRepresentationServiceTest {
 
+    private static final List<Element<ChangeOfRepresentation>> UPDATED_CHANGE_OF_REPRESENTATIVES = List.of(element(mock(
+        ChangeOfRepresentation.class)));
+    private static final List<Element<ChangeOfRepresentation>> CHANGE_OF_REPRESENTATIVES = List.of(element(mock(
+        ChangeOfRepresentation.class)));
+
     @Autowired
-    private RespondentRepresentationService respondentPolicyService;
+    private RespondentRepresentationService underTest;
+
+    @MockBean
+    private ChangeOfRepresentationService changeOfRepresentationService;
 
     @Test
     void shouldMapNoticeOfChangeAnswersAndRespondentOrganisationPoliciesFromCaseData() {
@@ -89,7 +104,7 @@ class RespondentRepresentationServiceTest {
             .build();
 
 
-        final Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
+        final Map<String, Object> data = underTest.generate(caseData);
 
         final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersOne = buildNoticeOfChangeAnswers(respondentPartyOne);
         final NoticeOfChangeAnswers expectedNoticeOfChangeAnswersTwo = buildNoticeOfChangeAnswers(respondentPartyTwo);
@@ -134,7 +149,7 @@ class RespondentRepresentationServiceTest {
             .respondents1(emptyList())
             .build();
 
-        final Map<String, Object> data = respondentPolicyService.generateForSubmission(caseData);
+        final Map<String, Object> data = underTest.generate(caseData);
 
         assertThat(data).isEqualTo(Map.of(
             "respondentPolicy0", buildOrganisationPolicy(SolicitorRole.SOLICITORA),
@@ -153,6 +168,7 @@ class RespondentRepresentationServiceTest {
     @Nested
     class RepresentationUpdate {
 
+        private static final String SOLICITOR_EMAIL = "test@test.co.uk";
         final UserDetails solicitorUser = UserDetails.builder()
             .forename("Tom")
             .surname("Wilson")
@@ -164,7 +180,7 @@ class RespondentRepresentationServiceTest {
             final CaseData caseData = CaseData.builder()
                 .build();
 
-            assertThatThrownBy(() -> respondentPolicyService.updateRepresentation(caseData, solicitorUser))
+            assertThatThrownBy(() -> underTest.updateRepresentation(caseData, solicitorUser))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Invalid or missing ChangeOrganisationRequest: null");
 
@@ -180,7 +196,7 @@ class RespondentRepresentationServiceTest {
                 .changeOrganisationRequestField(changeOrganisationRequest)
                 .build();
 
-            assertThatThrownBy(() -> respondentPolicyService.updateRepresentation(caseData, solicitorUser))
+            assertThatThrownBy(() -> underTest.updateRepresentation(caseData, solicitorUser))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Invalid or missing ChangeOrganisationRequest: " + changeOrganisationRequest);
         }
@@ -195,7 +211,7 @@ class RespondentRepresentationServiceTest {
                 .changeOrganisationRequestField(changeOrganisationRequest)
                 .build();
 
-            assertThatThrownBy(() -> respondentPolicyService.updateRepresentation(caseData, solicitorUser))
+            assertThatThrownBy(() -> underTest.updateRepresentation(caseData, solicitorUser))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Invalid or missing ChangeOrganisationRequest: " + changeOrganisationRequest);
         }
@@ -227,23 +243,38 @@ class RespondentRepresentationServiceTest {
             final CaseData caseData = CaseData.builder()
                 .respondents1(List.of(respondent1, respondent2))
                 .changeOrganisationRequestField(changeOrganisationRequest)
+                .changeOfRepresentatives(CHANGE_OF_REPRESENTATIVES)
                 .build();
 
-            final List<Element<Respondent>> updatedRespondents =
-                respondentPolicyService.updateRepresentation(caseData, solicitorUser);
+            RespondentSolicitor updatedRespondentSolicitor = RespondentSolicitor.builder()
+                .firstName("Tom")
+                .lastName("Wilson")
+                .email(SOLICITOR_EMAIL)
+                .organisation(organisation)
+                .build();
+
+            when(changeOfRepresentationService.changeRepresentative(ChangeOfRepresentationRequest.builder()
+                .method(NOC)
+                .current(CHANGE_OF_REPRESENTATIVES)
+                .respondent(respondent1.getValue())
+                .removedRepresentative(null)
+                .addedRepresentative(updatedRespondentSolicitor)
+                .by(SOLICITOR_EMAIL)
+                .build())).thenReturn(UPDATED_CHANGE_OF_REPRESENTATIVES);
+
+            final Map<String, Object> actual =
+                underTest.updateRepresentation(caseData, solicitorUser);
 
             final Element<Respondent> updatedRespondent =
                 element(respondent1.getId(), respondent1.getValue().toBuilder()
                     .legalRepresentation("Yes")
-                    .solicitor(RespondentSolicitor.builder()
-                        .firstName("Tom")
-                        .lastName("Wilson")
-                        .email("test@test.co.uk")
-                        .organisation(organisation)
-                        .build())
+                    .solicitor(updatedRespondentSolicitor)
                     .build());
 
-            assertThat(updatedRespondents).containsExactly(updatedRespondent, respondent2);
+            assertThat(actual).isEqualTo(Map.of(
+                "respondents1", List.of(updatedRespondent, respondent2),
+                "changeOfRepresentatives", UPDATED_CHANGE_OF_REPRESENTATIVES
+            ));
         }
 
         @Test
@@ -258,13 +289,15 @@ class RespondentRepresentationServiceTest {
                     .build())
                 .build());
 
+            RespondentSolicitor intialRespondentSolicitor = RespondentSolicitor.builder()
+                .firstName("Emma")
+                .lastName("Green")
+                .email("emma.green@test.com")
+                .organisation(organisation("ORG2"))
+                .build();
+
             final Element<Respondent> respondent2 = element(Respondent.builder()
-                .solicitor(RespondentSolicitor.builder()
-                    .firstName("Emma")
-                    .firstName("Green")
-                    .email("emma.green@test.com")
-                    .organisation(organisation("ORG2"))
-                    .build())
+                .solicitor(intialRespondentSolicitor)
                 .build());
 
             final Element<Respondent> respondent3 = element(Respondent.builder().build());
@@ -279,23 +312,39 @@ class RespondentRepresentationServiceTest {
             final CaseData caseData = CaseData.builder()
                 .respondents1(List.of(respondent1, respondent2, respondent3))
                 .changeOrganisationRequestField(changeOrganisationRequest)
+                .changeOfRepresentatives(CHANGE_OF_REPRESENTATIVES)
                 .build();
 
-            final List<Element<Respondent>> updatedRespondents =
-                respondentPolicyService.updateRepresentation(caseData, solicitorUser);
+            RespondentSolicitor updatedRespondentSolicitor = RespondentSolicitor.builder()
+                .firstName("Tom")
+                .lastName("Wilson")
+                .email(SOLICITOR_EMAIL)
+                .organisation(newOrganisation)
+                .build();
+
+            when(changeOfRepresentationService.changeRepresentative(ChangeOfRepresentationRequest.builder()
+                .method(NOC)
+                .current(CHANGE_OF_REPRESENTATIVES)
+                .respondent(respondent2.getValue())
+                .removedRepresentative(intialRespondentSolicitor)
+                .addedRepresentative(updatedRespondentSolicitor)
+                .by(SOLICITOR_EMAIL)
+                .build())).thenReturn(UPDATED_CHANGE_OF_REPRESENTATIVES);
+
+            final Map<String, Object> actual =
+                underTest.updateRepresentation(caseData, solicitorUser);
 
             final Element<Respondent> updatedRespondent =
                 element(respondent2.getId(), respondent2.getValue().toBuilder()
                     .legalRepresentation("Yes")
-                    .solicitor(RespondentSolicitor.builder()
-                        .firstName("Tom")
-                        .lastName("Wilson")
-                        .email("test@test.co.uk")
-                        .organisation(newOrganisation)
-                        .build())
+                    .solicitor(updatedRespondentSolicitor)
                     .build());
 
-            assertThat(updatedRespondents).containsExactly(respondent1, updatedRespondent, respondent3);
+            assertThat(actual).isEqualTo(Map.of(
+                "respondents1", List.of(respondent1, updatedRespondent, respondent3),
+                "changeOfRepresentatives", UPDATED_CHANGE_OF_REPRESENTATIVES
+            ));
+
         }
     }
 

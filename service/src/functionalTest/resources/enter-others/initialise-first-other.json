@@ -1,0 +1,51 @@
+{
+  "description": "Empty person added",
+  "request": {
+    "uri": "/callback/enter-others/about-to-start",
+    "user": "solicitor",
+    "data": {
+      "case_details": {
+        "id": 1603889313007853,
+        "jurisdiction": "PUBLICLAW",
+        "case_type_id": "CARE_SUPERVISION_EPO",
+        "state": "Open",
+        "case_data": {
+          "caseName": "test name",
+          "taskList": "<div class='width-50'></div>",
+          "caseLocalAuthority": "SA",
+          "localAuthorityPolicy": {
+            "Organisation": {
+              "OrganisationID": "${SwanseaOrganisationID}"
+            },
+            "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+          }
+        }
+      },
+      "case_details_before": null,
+      "event_id": "enterOthers"
+    }
+  },
+  "expectation": {
+    "status": 200,
+    "data": {
+      "data": {
+        "caseName": "test name",
+        "taskList": "<div class='width-50'></div>",
+        "caseLocalAuthority": "SA",
+        "localAuthorityPolicy": {
+          "Organisation": {
+            "OrganisationID": "${SwanseaOrganisationID}"
+          },
+          "OrgPolicyCaseAssignedRole": "[LASOLICITOR]"
+        },
+        "others": {
+          "firstOther": null,
+          "additionalOthers": []
+        }
+      },
+      "errors": null,
+      "warnings": null,
+      "state": null
+    }
+  }
+}

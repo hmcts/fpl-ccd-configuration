@@ -118,9 +118,7 @@ public class CaseSubmissionController extends CallbackController {
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
             data.put("submittedForm", buildFromDocument(document));
 
-            if (featureToggleService.hasRSOCaseAccess()) {
-                data.putAll(respondentRepresentationService.generateForSubmission(caseData));
-            }
+            data.putAll(respondentRepresentationService.generate(caseData));
         }
 
         removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");

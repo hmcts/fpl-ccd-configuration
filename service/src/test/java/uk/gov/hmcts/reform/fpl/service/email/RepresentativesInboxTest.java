@@ -1,20 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.email;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
@@ -28,14 +24,7 @@ class RepresentativesInboxTest {
     private static final String EMAIL_4 = "email4";
     private static final String ORGANISATION_ID = "ORGANISATION_ID";
 
-    private final FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
-
-    private final RepresentativesInbox underTest = new RepresentativesInbox(featureToggleService);
-
-    @BeforeEach
-    void setUp() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(true);
-    }
+    private final RepresentativesInbox underTest = new RepresentativesInbox();
 
     @Test
     void testRepresentativesByPOSTIsNotAccepted() {
@@ -358,46 +347,4 @@ class RepresentativesInboxTest {
             EMAIL_1, EMAIL_3
         ));
     }
-
-    @Test
-    void testFilterIgnoreRespondentsWhenToggledOff() {
-        when(featureToggleService.hasRSOCaseAccess()).thenReturn(false);
-
-        CaseData caseData = CaseData.builder()
-            .respondents1(wrapElements(
-                Respondent.builder()
-                    .solicitor(RespondentSolicitor.builder()
-                        .email(EMAIL_1)
-                        .organisation(null)
-                        .build())
-                    .build(),
-                Respondent.builder()
-                    .solicitor(RespondentSolicitor.builder()
-                        .email(EMAIL_2)
-                        .organisation(Organisation.builder()
-                            .organisationID(ORGANISATION_ID)
-                            .build())
-                        .build())
-                    .build()
-            ))
-            .representatives(wrapElements(
-                Representative.builder()
-                    .email(EMAIL_3)
-                    .servingPreferences(EMAIL)
-                    .build(),
-                Representative.builder()
-                    .email(EMAIL_4)
-                    .servingPreferences(DIGITAL_SERVICE)
-                    .build()
-            )).build();
-
-        Set<String> actual = underTest.getEmailsByPreference(caseData,
-            EMAIL);
-
-        assertThat(actual).isEqualTo(Set.of(
-            EMAIL_3
-        ));
-    }
-
-
 }

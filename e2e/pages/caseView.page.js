@@ -12,8 +12,8 @@ module.exports = {
     draftOrders: 'Draft orders',
     hearings: 'Hearings',
     casePeople: 'People in the case',
+    changeOfRepresentatives: 'Change of representatives',
     legalBasis: 'Legal basis',
-    documents: 'Documents',
     documentsSentToParties: 'Documents sent to parties',
     c2: 'C2',
     confidential: 'Confidential information',
@@ -28,6 +28,7 @@ module.exports = {
     courtBundle: 'Court bundle',
     judicialMessages: 'Judicial messages',
     otherApplications: 'Other applications',
+    furtherEvidence: 'Further evidence',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
@@ -104,8 +105,8 @@ module.exports = {
 
   async checkTaskIsUnavailable(task) {
     this.checkTaskStatus(task, 'Cannot send yet');
-    const taskTarget = await I.grabAttributeFrom(`//p/a[text()="${task}"]`,'href');
-    assert.strictEqual(taskTarget, null);
+    const taskTarget = await I.grabAttribute(`//p/a[text()="${task}"]`, 'href');
+    assert.strictEqual(!!taskTarget, false);
   },
 
   async checkTasksHaveErrors(tasksErrors) {
