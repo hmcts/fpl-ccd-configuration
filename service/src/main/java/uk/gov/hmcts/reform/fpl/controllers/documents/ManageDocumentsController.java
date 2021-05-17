@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.SupportingEvidenceValidatorService;
 import uk.gov.hmcts.reform.fpl.service.document.ConfidentialDocumentsSplitter;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 import uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsMap;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -60,6 +61,7 @@ public class ManageDocumentsController extends CallbackController {
     private final ManageDocumentService documentService;
     private final SupportingEvidenceValidatorService supportingEvidenceValidatorService;
     private final ConfidentialDocumentsSplitter confidentialDocuments;
+    private final DocumentListService documentListService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest request) {
@@ -184,6 +186,11 @@ public class ManageDocumentsController extends CallbackController {
             C2_SUPPORTING_DOCUMENTS_COLLECTION, SUPPORTING_C2_LABEL, MANAGE_DOCUMENTS_HEARING_LIST_KEY,
             SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENTS_HEARING_LABEL_KEY, "manageDocumentSubtypeList",
             "manageDocumentsRelatedToHearing", "furtherEvidenceDocumentsTEMP");
+
+        if (featureToggleService.isFurtherEvidenceDocumentTabEnabled()) {
+            CaseDetails details = CaseDetails.builder().data(caseDetailsMap).build();
+            caseDetailsMap.putAll(documentListService.getDocumentView(getCaseData(details)));
+        }
 
         return respond(caseDetailsMap);
     }

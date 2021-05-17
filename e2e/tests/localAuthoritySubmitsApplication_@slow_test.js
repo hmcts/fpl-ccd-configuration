@@ -641,7 +641,7 @@ Scenario('local authority submits application @create-case-with-mandatory-sectio
   await I.completeEvent('Submit', null, true);
 
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.see('New_case_name.pdf');
 });
 

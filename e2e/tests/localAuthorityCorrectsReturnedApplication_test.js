@@ -1,14 +1,14 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const applicant = require('../fixtures/applicant.js');
-const mandatorySubmissionFields = require('../fixtures/caseData/mandatorySubmissionFields.json');
+const mandatorySubmissionWithApplicationDocuments = require('../fixtures/caseData/mandatorySubmissionWithApplicationDocuments.json');
 
 let caseId;
 
 Feature('Local authority corrects returned application');
 
 BeforeSuite(async ({I}) => {
-  caseId = await I.submitNewCaseWithData(mandatorySubmissionFields);
+  caseId = await I.submitNewCaseWithData(mandatorySubmissionWithApplicationDocuments);
 });
 
 Scenario('Admin returns application to the LA', async ({I, caseViewPage, returnApplicationEventPage}) => {
@@ -51,6 +51,6 @@ Scenario('LA makes corrections to the application', async ({I, caseViewPage, ent
   await I.completeEvent('Submit', null, true);
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
   I.see('e2e_test_case.pdf');
 });
