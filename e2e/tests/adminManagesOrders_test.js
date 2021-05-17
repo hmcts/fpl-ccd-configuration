@@ -12,7 +12,7 @@ Feature('HMCTS Admin manages orders');
 
 BeforeSuite(async ({I}) => caseId = await I.submitNewCaseWithData(caseData));
 
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);

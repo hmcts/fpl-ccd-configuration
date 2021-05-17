@@ -19,7 +19,7 @@ BeforeSuite(async ({I}) => {
   submittedAt = new Date();
 });
 
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
 Scenario('HMCTS admin creates first hearings', async ({I, caseViewPage, manageHearingsEventPage}) => {
   hearingStartDate = moment().add(5,'m').toDate();

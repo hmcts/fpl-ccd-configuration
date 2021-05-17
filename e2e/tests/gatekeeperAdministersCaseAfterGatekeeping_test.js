@@ -12,7 +12,7 @@ BeforeSuite(async ({I}) => {
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
 });
 
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetails(caseId));
 
 Scenario('Gatekeeper notifies another gatekeeper with a link to the case', async ({I, caseViewPage, notifyGatekeeperEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.notifyGatekeeper);

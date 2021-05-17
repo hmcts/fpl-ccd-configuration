@@ -12,7 +12,7 @@ BeforeSuite(async ({I}) => {
   await I.navigateToCaseDetailsAs(config.hmctsSuperUser, caseId);
 });
 
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetails(caseId));
 
 Scenario('HMCTS super user removes a generated order from a case', async ({I, caseViewPage, removeOrderEventPage}) => {
   const orderToRemove = finalHearingCaseData.caseData.orderCollection[0];

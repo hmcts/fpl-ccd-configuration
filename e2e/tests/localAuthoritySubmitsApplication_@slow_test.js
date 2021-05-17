@@ -14,7 +14,7 @@ Feature('Local authority creates application');
 
 BeforeSuite(async ({I}) => caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne));
 
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority sees task list', async ({caseViewPage}) => {
   caseViewPage.selectTab(caseViewPage.tabs.startApplication);

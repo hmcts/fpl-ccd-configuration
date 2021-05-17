@@ -10,7 +10,7 @@ BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName);
 });
 
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
 
 Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);

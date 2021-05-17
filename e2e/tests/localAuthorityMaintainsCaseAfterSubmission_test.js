@@ -13,7 +13,7 @@ BeforeSuite(async ({I}) => {
   await I.signIn(config.swanseaLocalAuthorityUserOne);
 });
 
-Before(async ({I}) => await I.navigateToCaseDetails(caseId));
+Before(async ({I}) => await I.retry(3).navigateToCaseDetails(caseId));
 
 Scenario('local authority add an external barrister as a legal representative for the case', async ({I, caseViewPage, manageLegalRepresentativesEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.manageLegalRepresentatives);
