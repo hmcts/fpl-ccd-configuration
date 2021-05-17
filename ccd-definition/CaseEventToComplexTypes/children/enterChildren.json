@@ -5,6 +5,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.firstName",
+    "EventElementLabel": "*First name",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
   },
@@ -14,6 +15,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.lastName",
+    "EventElementLabel": "*Last name",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
@@ -23,6 +25,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.dateOfBirth",
+    "EventElementLabel": "*Date of birth",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
@@ -32,6 +35,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.gender",
+    "EventElementLabel": "*Gender",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
@@ -41,6 +45,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.genderIdentification",
+    "EventElementLabel": "*What gender do they identify with?",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },
@@ -105,6 +110,7 @@
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children1",
     "ListElementCode": "party.address",
+    "EventElementLabel": "*Current address",
     "FieldDisplayOrder": 12,
     "DisplayContext": "OPTIONAL"
   },
