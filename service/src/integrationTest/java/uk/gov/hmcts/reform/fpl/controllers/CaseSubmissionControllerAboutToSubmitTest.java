@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
@@ -258,7 +259,9 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .id(2313L)
             .data(Map.of(
                 "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
-                "draftApplicationDocument", "Test",
+                "applicants", List.of(element(buildApplicant())),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build()),
+                "draftApplicationDocument", DocumentReference.buildFromDocument(document),
                 "submissionConsentLabel", "Test"
             ))
             .build());
