@@ -605,7 +605,7 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
 
 Scenario('local authority adds multiple application documents @cross-browser', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
   const browser = await I.getBrowser();
-  if (browser !== 'MicrosoftEdge') {
+  if (browser !== 'MicrosoftEdge' || browser !== 'safari') {
     await caseViewPage.goToNewActions(config.applicationActions.addApplicationDocuments);
 
     await addApplicationDocumentsEventPage.addApplicationDocument('Threshold', config.testPdfFile);

@@ -25,12 +25,12 @@ const supportedBrowsers = {
   safari: {
     safari_mac_latest: {
       browserName: 'safari',
-      platformName: 'macOS 11.00',
+      platformName: LATEST_MAC,
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: MAC_SAFARI',
         seleniumVersion: '3.141.59',
-        screenResolution: '1376x1032',
+        screenResolution: '1920x1440',
       },
     },
   },

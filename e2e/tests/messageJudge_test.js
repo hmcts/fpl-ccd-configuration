@@ -34,7 +34,7 @@ Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPag
   I.dontSeeInTab(['Closed messages']);
 });
 
-Scenario('Judge replies to HMCTS admin @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('Judge replies to HMCTS admin', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await I.navigateToCaseDetailsAs(config.judicaryUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectReplyToMessage();
