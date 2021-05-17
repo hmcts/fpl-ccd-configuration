@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -69,9 +67,6 @@ class RespondentControllerNoCTest extends AbstractCallbackTest {
     @MockBean
     private CoreCaseDataApi coreCaseDataApi;
 
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
     RespondentControllerNoCTest() {
         super("enter-respondents");
     }
@@ -83,9 +78,7 @@ class RespondentControllerNoCTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldUpdateRepresentativesAccessWhenNoticeOfChangeIsToggledOn() {
-
-        given(featureToggleService.isNoticeOfChangeEnabled()).willReturn(true);
+    void shouldUpdateRepresentativesAccess() {
 
         final ChangeOrganisationRequest expectedChange1 = ChangeOrganisationRequest.builder()
             .approvalStatus(APPROVED)
@@ -115,27 +108,10 @@ class RespondentControllerNoCTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotUpdateRepresentativesAccessWhenNoticeOfChangeIsToggledOnButCaseNotSubmitted() {
-
-        given(featureToggleService.isNoticeOfChangeEnabled()).willReturn(true);
+    void shouldNotUpdateRepresentativesAccessWhenCaseNotSubmitted() {
 
         final CaseData caseData = caseDataBefore.toBuilder()
             .state(OPEN)
-            .respondents1(updatedRespondents)
-            .build();
-
-        postSubmittedEvent(toCallBackRequest(caseData, caseDataBefore));
-
-        verifyNoEventStarted();
-    }
-
-    @Test
-    void shouldNotUpdateRepresentativesAccessWhenNoticeOfChangeIsToggledOff() {
-
-        given(featureToggleService.isNoticeOfChangeEnabled()).willReturn(false);
-
-        final CaseData caseData = caseDataBefore.toBuilder()
-            .state(SUBMITTED)
             .respondents1(updatedRespondents)
             .build();
 

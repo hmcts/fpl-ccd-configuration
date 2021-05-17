@@ -30,16 +30,11 @@ public class RespondentAfterSubmissionRepresentationService {
     private final RespondentService respondentService;
     private final RespondentRepresentationService respondentRepresentationService;
     private final ChangeOfRepresentationService changeOfRepresentationService;
-    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> updateRepresentation(CaseData caseData, CaseData caseDataBefore) {
 
         HashMap<String, Object> updatedFields =
             newHashMap(respondentRepresentationService.generate(caseData));
-
-        if (!featureToggleService.isNoticeOfChangeEnabled()) {
-            return updatedFields;
-        }
 
         final List<Element<Respondent>> respondentsAfter = defaultIfNull(caseData.getRespondents1(), emptyList());
         final List<Element<Respondent>> respondentsBefore = defaultIfNull(caseDataBefore.getRespondents1(),
