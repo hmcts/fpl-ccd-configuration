@@ -61,7 +61,8 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "ShowSummary": "N"
+    "ShowSummary": "N",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/render-documents/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -585,7 +586,8 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/render-documents/about-to-submit"
   },
   {
     "LiveFrom": "01/01/2017",

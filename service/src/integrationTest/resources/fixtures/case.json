@@ -3,6 +3,52 @@
     "id": "2313",
     "case_data": {
       "caseLocalAuthority": "test1",
+      "applicants": [
+        {
+          "id": "99ceafd0-de4b-4725-b78b-7625342febed",
+          "value": {
+            "party": {
+              "email": {
+                "email": "applicant@email.com"
+              },
+              "organisationName": "test organisation name"
+            }
+          }
+        }
+      ],
+      "respondents1": [
+        {
+          "id": "d5eb6a70-d6d3-4eb6-b06e-9dc9d6360090",
+          "value": {
+            "party": {
+              "gender": "Male",
+              "address": {
+                "County": "",
+                "Country": "United Kingdom",
+                "PostCode": "RG4 7AA",
+                "PostTown": "Reading",
+                "AddressLine1": "Flat 2",
+                "AddressLine2": "Caversham House 15-17",
+                "AddressLine3": "Church Road"
+              },
+              "lastName": "Bloggs",
+              "firstName": "Joe",
+              "dateOfBirth": "1980-01-01",
+              "placeOfBirth": "London",
+              "telephoneNumber": {
+                "telephoneNumber": "00000 000000"
+              },
+              "relationshipToChild": "Uncle"
+            },
+            "legalRepresentation": "Yes",
+            "solicitor": {
+              "firstName": "Tom",
+              "lastName": "Jones",
+              "email": "test@test.co.uk"
+            }
+          }
+        }
+      ],
       "orders": {
         "orderType": [
           "EMERGENCY_PROTECTION_ORDER"
