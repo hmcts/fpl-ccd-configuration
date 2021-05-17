@@ -43,7 +43,7 @@ class AllocationProposalCheckerTest {
 
             final List<String> errors = allocationProposalChecker.validate(caseData);
 
-            assertThat(errors).contains("Enter an allocation proposal");
+            assertThat(errors).contains("Enter an allocation proposal reason");
         }
 
         @Test
@@ -61,9 +61,10 @@ class AllocationProposalCheckerTest {
         }
 
         @Test
-        void shouldReturnEmptyErrorsWhenAllocationProposalIsPresent() {
+        void shouldReturnEmptyErrorsWhenAllocationProposalandProposalDetailsIsPresent() {
             final Allocation allocation = Allocation.builder()
                 .proposal("Circuit Judge")
+                .proposalReason("test reason")
                 .build();
             final CaseData caseData = CaseData.builder()
                 .allocationProposal(allocation)

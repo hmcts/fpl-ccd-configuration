@@ -12,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 public class Allocation {
     @NotBlank(message = "Enter an allocation proposal")
     private final String proposal;
+    @NotBlank(message = "Enter an allocation proposal reason")
     private final String proposalReason;
     private final String allocationProposalPresent;
     private final String judgeLevelRadio;

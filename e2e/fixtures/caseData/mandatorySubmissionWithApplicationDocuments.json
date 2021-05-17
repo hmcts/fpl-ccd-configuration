@@ -107,7 +107,8 @@
       "agree"
     ],
     "allocationProposal": {
-      "proposal": "District judge"
+      "proposal": "District judge",
+      "proposalReason": "Example reason"
     },
     "displayAmountToPay": "Yes",
     "dateAndTimeSubmitted": "TO BE FILLED WITH VALID DATA",
