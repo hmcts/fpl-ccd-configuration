@@ -107,7 +107,6 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
 
 Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c21);
@@ -141,7 +140,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.all);
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.enterFurtherDirections('Supervision order further details.');
   await manageOrdersEventPage.selectSupervisionOrder(manageOrdersEventPage.section4.supervisionOrderType.options.numberOfMonths);
@@ -151,7 +150,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 1,
+    orderIndex: 3,
     orderType: 'C35a - Supervision order',
     approvalDate: today,
     allocatedJudge: allocatedJudge,
