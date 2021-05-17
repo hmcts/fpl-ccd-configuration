@@ -121,4 +121,20 @@ module.exports = {
     this.click(locate('summary').withAttr({class: 'govuk-details__summary'}).withText(documentTitle)
       .inside(locate('details').withChild(locate('summary').withText(documentSection))));
   },
+
+  async selectTab(tab){
+    const tabSelector = `//*[@role="tab"]/div[text() = "${tab}"]`;
+
+    const numberOfElements = await this.grabNumberOfVisibleElements('//*[@role="tab"]');
+
+    for(let i=0; i<numberOfElements; i++){
+      if((await this.canClick(tabSelector))){
+        break;
+      }
+      console.log(`Scrolling to tab '${tab}'`);
+      this.click('.mat-tab-header-pagination-after');
+    }
+
+    return this.click(tabSelector);
+  },
 };
