@@ -9,15 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisCaseSubmission;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.CaseSubmissionGenerationService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C110A;
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
@@ -26,15 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 public class CaseSubmissionService {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
-
-    private CaseSubmissionGenerationService documentGenerationService;
-
-    @Autowired
-    public void setCaseSubmissionGenerationService(CaseSubmissionGenerationService documentGenerationService) {
-        this.documentGenerationService = documentGenerationService;
-    }
+    private final CaseSubmissionGenerationService documentGenerationService;
 
     public Document generateSubmittedFormPDF(final CaseData caseData, final boolean isDraft) {
         DocmosisCaseSubmission submittedCase = documentGenerationService.getTemplateData(caseData);
@@ -48,12 +37,6 @@ public class CaseSubmissionService {
     }
 
     public String getSigneeName(final List<Element<Applicant>> applicants) {
-        String legalTeamManager = applicants.get(0).getValue().getParty().getLegalTeamManager();
-
-        if (isNotBlank(legalTeamManager)) {
-            return legalTeamManager;
-        } else {
-            return idamClient.getUserInfo(requestData.authorisation()).getName();
-        }
+        return documentGenerationService.getSigneeName(applicants);
     }
 }

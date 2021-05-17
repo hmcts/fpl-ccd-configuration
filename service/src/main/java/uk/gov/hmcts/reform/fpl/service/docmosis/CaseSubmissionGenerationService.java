@@ -43,8 +43,9 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,6 +60,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
@@ -79,8 +81,9 @@ public class CaseSubmissionGenerationService
 
     private final Time time;
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
+    private final IdamClient idamClient;
+    private final RequestData requestData;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
-    private final CaseSubmissionService caseSubmissionService;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
@@ -111,7 +114,7 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData))
-            .userFullName(caseSubmissionService.getSigneeName(caseData.getAllApplicants()));
+            .userFullName(getSigneeName(caseData.getAllApplicants()));
 
         return applicationFormBuilder.build();
     }
@@ -280,6 +283,16 @@ public class CaseSubmissionGenerationService
         }
 
         return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
+    }
+
+    public String getSigneeName(final List<Element<Applicant>> applicants) {
+        String legalTeamManager = applicants.get(0).getValue().getParty().getLegalTeamManager();
+
+        if (isNotBlank(legalTeamManager)) {
+            return legalTeamManager;
+        } else {
+            return idamClient.getUserInfo(requestData.authorisation()).getName();
+        }
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {
