@@ -19,7 +19,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ContextConfiguration(classes = {SDOIssuedCafcassContentProvider.class})
@@ -53,7 +52,6 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
 
         NotifyData expectedParameters = SDONotifyData.builder()
             .leadRespondentsName("Smith")
-            .caseUrl(caseUrl(caseData.getId().toString(), ORDERS))
             .documentLink(Map.of("file", ENCODED_BINARY, "is_csv", false))
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
             .build();

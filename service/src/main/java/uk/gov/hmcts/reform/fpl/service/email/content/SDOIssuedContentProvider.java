@@ -13,6 +13,9 @@ import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstResponden
 public class SDOIssuedContentProvider extends AbstractEmailContentProvider {
     public SDONotifyData buildNotificationParameters(CaseData caseData) {
         return SDONotifyData.builder()
+            .leadRespondentsName(getFirstRespondentLastName(caseData.getRespondents1()))
+            // replace ⤵ with ⤴ when merged in template
+            // only ctcs email uses respondentLastName even though it is a better name
             .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .callout(buildCallout(caseData))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))

@@ -13,7 +13,7 @@ import java.util.Map;
 public class SDONotifyData implements NotifyData {
     String leadRespondentsName;
     String respondentLastName; // only here because the ctsc was designed with this instead of leadRespondentsName
-    String caseUrl;
+    String caseUrl; // optional, not in the cafcass version due to it having the below field instead
     Map<String, Object> documentLink; // optional, only the cafcass version has this populated
     String callout;
 }
