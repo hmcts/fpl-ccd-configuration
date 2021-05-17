@@ -9,8 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -34,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @WebMvcTest(CaseSubmissionController.class)
@@ -58,17 +55,18 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
 
     @BeforeEach
     void mocking() {
-        givenCurrentUserWithName("Emma Taylor");
         given(caseSubmissionService.generateSubmittedFormPDF(any(), eq(true)))
             .willReturn(document);
         given(uploadDocumentService.uploadPDF(DOCUMENT_CONTENT, "2313.pdf"))
             .willReturn(document);
+        given(caseSubmissionService.getSigneeName(any())).willReturn("Emma Taylor");
     }
 
     @Test
     void shouldAddConsentLabelToCaseDetails() {
+        given(feeService.getFeesDataForOrders(any())).willReturn(feesData(10));
+
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData().toBuilder()
-            .state(RETURNED)
             .caseName("title")
             .build());
 
@@ -79,29 +77,10 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldAddConsentLabelToCaseDetailsWhenLegalTeamManagerPresent() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseData().toBuilder()
-            .state(RETURNED)
-            .caseName("title")
-            .applicants(wrapElements(Applicant.builder()
-                .party(ApplicantParty.builder().legalTeamManager("legal team manager").build())
-                .build()))
-            .build());
-
-        assertThat(callbackResponse.getData())
-            .containsEntry("caseName", "title")
-            .containsEntry("submissionConsentLabel",
-                "I, legal team manager, believe that the facts stated in this application are true.");
-    }
-
-    @Test
     void shouldAddAmountToPayFieldToAnOpenedCase() {
-        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
-        FeesData feesData = FeesData.builder()
-            .totalAmount(BigDecimal.valueOf(123))
-            .build();
+        given(feeService.getFeesDataForOrders(any())).willReturn(feesData(123));
 
-        given(feeService.getFeesDataForOrders(orders)).willReturn(feesData);
+        Orders orders = Orders.builder().orderType(List.of(OrderType.CARE_ORDER)).build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData().toBuilder()
             .orders(orders)
@@ -147,5 +126,11 @@ class CaseSubmissionControllerAboutToStartTest extends AbstractCallbackTest {
                     "document_filename", "file.pdf",
                     "document_binary_url",
                     "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"));
+    }
+
+    private static FeesData feesData(long amount) {
+        return FeesData.builder()
+            .totalAmount(BigDecimal.valueOf(amount))
+            .build();
     }
 }

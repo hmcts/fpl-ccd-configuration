@@ -43,9 +43,8 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisOtherParty;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisProceeding;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -80,9 +79,8 @@ public class CaseSubmissionGenerationService
 
     private final Time time;
     private final HmctsCourtLookupConfiguration courtLookupConfiguration;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
     private final CaseSubmissionDocumentAnnexGenerator annexGenerator;
+    private final CaseSubmissionService caseSubmissionService;
 
     public DocmosisCaseSubmission getTemplateData(final CaseData caseData) {
         DocmosisCaseSubmission.Builder applicationFormBuilder = DocmosisCaseSubmission.builder();
@@ -113,7 +111,7 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData))
-            .signeeName(getSigneeName(caseData.getAllApplicants()));
+            .userFullName(caseSubmissionService.getSigneeName(caseData.getAllApplicants()));
 
         return applicationFormBuilder.build();
     }
@@ -264,13 +262,6 @@ public class CaseSubmissionGenerationService
     private String getThresholdDetails(final Grounds grounds) {
         return (isNotEmpty(grounds) && StringUtils.isNotEmpty(grounds.getThresholdDetails()))
             ? grounds.getThresholdDetails() : DEFAULT_STRING;
-    }
-
-    private String getSigneeName(final List<Element<Applicant>> applicants) {
-        String legalTeamManager = applicants.get(0).getValue().getParty().getLegalTeamManager();
-
-        return isNotEmpty(legalTeamManager) ? legalTeamManager : idamClient.getUserInfo(requestData.authorisation())
-            .getName();
     }
 
     private String buildGroundsThresholdReason(final List<String> thresholdReasons) {

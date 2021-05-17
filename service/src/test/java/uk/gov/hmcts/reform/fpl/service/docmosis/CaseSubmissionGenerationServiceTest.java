@@ -39,17 +39,16 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearing;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingPreferences;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisInternationalElement;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRisks;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
 
 import static java.time.LocalDate.now;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,17 +76,13 @@ class CaseSubmissionGenerationServiceTest {
     private static final LocalDate NOW = now();
 
     private static final String FORMATTED_DATE = formatLocalDateToString(NOW, DATE);
-    private static final String AUTH_TOKEN = "Bearer token";
     private static final DocmosisAnnexDocuments DOCMOSIS_ANNEX_DOCUMENTS = mock(DocmosisAnnexDocuments.class);
-
-    @MockBean
-    private IdamClient idamClient;
 
     @MockBean
     private CaseSubmissionDocumentAnnexGenerator annexGenerator;
 
     @MockBean
-    private RequestData requestData;
+    private CaseSubmissionService caseSubmissionService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -100,8 +95,7 @@ class CaseSubmissionGenerationServiceTest {
     @BeforeEach
     void init() {
         givenCaseData = prepareCaseData();
-        given(requestData.authorisation()).willReturn(AUTH_TOKEN);
-        given(idamClient.getUserInfo(AUTH_TOKEN)).willReturn(UserInfo.builder().name("Professor").build());
+        given(caseSubmissionService.getSigneeName(any())).willReturn("Professor");
     }
 
     @Test
@@ -123,51 +117,6 @@ class CaseSubmissionGenerationServiceTest {
         templateDataGenerationService.populateCaseNumber(returnedCaseSubmission, 12345L);
 
         assertThat(returnedCaseSubmission.getCaseNumber()).isEqualTo(expectedCaseNumber);
-    }
-
-    @Nested
-    class DocmosisCaseSubmissionSigneeNameTest {
-        @Test
-        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerPresent() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .applicants(wrapElements(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .legalTeamManager("legal team manager")
-                        .build())
-                    .build()))
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-            assertThat(caseSubmission.getSigneeName()).isEqualTo("legal team manager");
-        }
-
-        @Test
-        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerIsEmpty() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .applicants(wrapElements(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .legalTeamManager("")
-                        .build())
-                    .build()))
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-            assertThat(caseSubmission.getSigneeName()).isEqualTo("Professor");
-        }
-
-        @Test
-        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerIsNull() {
-            CaseData updatedCaseData = givenCaseData.toBuilder()
-                .applicants(wrapElements(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .legalTeamManager(null)
-                        .build())
-                    .build()))
-                .build();
-
-            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
-            assertThat(caseSubmission.getSigneeName()).isEqualTo("Professor");
-        }
     }
 
     @Nested

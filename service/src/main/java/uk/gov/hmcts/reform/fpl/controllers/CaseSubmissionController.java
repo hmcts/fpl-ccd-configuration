@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
@@ -31,7 +30,6 @@ import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -40,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
@@ -63,8 +60,6 @@ public class CaseSubmissionController extends CallbackController {
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
     private final RespondentRepresentationService respondentRepresentationService;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -89,12 +84,7 @@ public class CaseSubmissionController extends CallbackController {
             }
         }
 
-        String signeeName = idamClient.getUserInfo(requestData.authorisation()).getName();
-
-        String legalTeamManager = caseData.getApplicants().get(0).getValue().getParty().getLegalTeamManager();
-        if (isNotBlank(legalTeamManager)) {
-            signeeName = legalTeamManager;
-        }
+        String signeeName = caseSubmissionService.getSigneeName(caseData.getAllApplicants());
 
         String label = String.format(CONSENT_TEMPLATE, signeeName);
         data.put("submissionConsentLabel", label);
