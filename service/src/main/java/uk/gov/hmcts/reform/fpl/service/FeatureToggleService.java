@@ -88,4 +88,9 @@ public class FeatureToggleService {
         return ldClient.boolVariation("further-evidence-upload-notification",
             createLDUser(), false);
     }
+
+    public boolean isFurtherEvidenceDocumentTabEnabled() {
+        return ldClient.boolVariation("further-evidence-document-tab",
+            createLDUser(), false);
+    }
 }

@@ -30,6 +30,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BGW",
+    "ListElement": "Blaenau Gwent County Borough Council",
+    "DisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BOL",
     "ListElement": "Bolton Metropolitan Borough Council",
     "DisplayOrder": 15
