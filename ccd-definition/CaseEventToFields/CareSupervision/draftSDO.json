@@ -402,7 +402,7 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "urgentHearingAllocation",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "PageID": "urgentHearingAllocation",
     "PageDisplayOrder": 14,
     "PageColumnNumber": 1,
