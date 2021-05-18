@@ -7,7 +7,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "submittedForm",
-    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
+    "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\" AND showFurtherEvidenceTab!=\"YES\"",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -50,26 +50,6 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "hearingFurtherEvidenceDocuments",
-    "TabFieldDisplayOrder": 5
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 9,
-    "CaseFieldID": "furtherEvidenceDocuments",
-    "TabFieldDisplayOrder": 6
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DocumentsTab",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 9,
-    "CaseFieldID": "furtherEvidenceDocumentsNC",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -79,7 +59,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "furtherEvidenceDocumentsLA",
+    "CaseFieldID": "furtherEvidenceDocuments",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -89,7 +69,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "furtherEvidenceDocumentsLANC",
+    "CaseFieldID": "furtherEvidenceDocumentsNC",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -99,7 +79,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
-    "CaseFieldID": "respondentStatements",
+    "CaseFieldID": "furtherEvidenceDocumentsLA",
     "TabFieldDisplayOrder": 10
   },
   {
@@ -109,8 +89,28 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
+    "CaseFieldID": "furtherEvidenceDocumentsLANC",
+    "TabFieldDisplayOrder": 11
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 9,
+    "CaseFieldID": "respondentStatements",
+    "TabFieldDisplayOrder": 12
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabBulkScanHeading",
-    "TabFieldDisplayOrder": 11,
+    "TabFieldDisplayOrder": 13,
     "FieldShowCondition": "scannedDocuments=\"*\""
   },
   {
@@ -121,7 +121,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "scannedDocuments",
-    "TabFieldDisplayOrder": 12
+    "TabFieldDisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
@@ -131,7 +131,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "manageDocumentsLALink",
-    "TabFieldDisplayOrder": 13
+    "TabFieldDisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
@@ -141,7 +141,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "documentTabApplicationHeading",
-    "TabFieldDisplayOrder": 14
+    "TabFieldDisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",
@@ -152,7 +152,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocuments",
     "FieldShowCondition": "applicationDocuments!=\"\"",
-    "TabFieldDisplayOrder": 15
+    "TabFieldDisplayOrder": 17
   },
   {
     "LiveFrom": "01/01/2017",
@@ -163,7 +163,7 @@
     "TabDisplayOrder": 9,
     "CaseFieldID": "applicationDocumentsToFollowReason",
     "FieldShowCondition": "applicationDocumentsToFollowReason !=\"\"",
-    "TabFieldDisplayOrder": 16
+    "TabFieldDisplayOrder": 18
   },
   {
     "LiveFrom": "01/01/2017",
@@ -173,6 +173,6 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 9,
     "CaseFieldID": "otherCourtAdminDocuments",
-    "TabFieldDisplayOrder": 20
+    "TabFieldDisplayOrder": 19
   }
 ]

@@ -67,6 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @SuppressWarnings("unchecked")
@@ -1260,9 +1261,9 @@ class ManageDocumentServiceTest {
                 .respondentStatements(newArrayList(
                     element(respondentStatementId, RespondentStatement.builder()
                         .respondentId(respondentOneId)
-                        .supportingEvidenceBundle(newArrayList(
-                            element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())
-                        ))
+                        .supportingEvidenceBundle(
+                            newArrayList(element(supportingEvidenceBundleId,
+                                SupportingEvidenceBundle.builder().document(testDocumentReference()).build())))
                         .respondentName("David Stevenson")
                         .build())))
                 .build();

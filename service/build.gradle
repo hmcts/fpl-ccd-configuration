@@ -294,7 +294,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.8.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -359,7 +359,7 @@ dependencies {
   contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
-  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.1'
+  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.2'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
