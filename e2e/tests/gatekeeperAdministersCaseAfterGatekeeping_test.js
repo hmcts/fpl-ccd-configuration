@@ -79,7 +79,7 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
-  await draftStandardDirectionsEventPage.checkC6();
+  draftStandardDirectionsEventPage.checkC6();
   draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);

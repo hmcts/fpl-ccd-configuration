@@ -4,12 +4,32 @@ const dateFormat = require('dateformat');
 
 let caseId;
 
-Feature('Gatekeeper uploads standard directions order');
+Feature('Alternate gatekeeping order route');
 
 BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(gatekeeping);
 
   await I.navigateToCaseDetailsAs(config.gateKeeperUser, caseId);
+});
+
+Scenario('Gatekeeper uploads urgent hearing order', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
+  const allocationDecisionFields = draftStandardDirectionsEventPage.fields.allocationDecision;
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.createUrgentHearingOrder();
+  await draftStandardDirectionsEventPage.makeAllocationDecision(allocationDecisionFields.judgeLevelConfirmation.no, allocationDecisionFields.allocationLevel.magistrate, 'some reason');
+  await I.goToNextPage();
+  await draftStandardDirectionsEventPage.uploadUrgentHearingOrder(config.testWordFile);
+  await I.completeEvent('Save and continue');
+
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
+  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Allocation decision', 'Give reason'], 'some reason');
+  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Order'], 'mockFile.pdf');
+  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Date added'], dateFormat('d mmm yyyy'));
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
+  I.seeInTab(['Allocation decision', 'Give reason'], 'some reason');
 });
 
 Scenario('Gatekeeper uploads draft standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
@@ -35,7 +55,7 @@ Scenario('Gatekeeper uploads final standard directions', async ({I, caseViewPage
   I.see('mockFile.docx');
   await draftStandardDirectionsEventPage.uploadReplacementSDO(config.testWordFile);
   await draftStandardDirectionsEventPage.markAsFinal();
-  await draftStandardDirectionsEventPage.checkC6();
+  draftStandardDirectionsEventPage.checkC6();
   draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
 
