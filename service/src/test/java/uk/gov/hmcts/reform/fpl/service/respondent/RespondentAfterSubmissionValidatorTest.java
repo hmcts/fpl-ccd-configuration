@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.List;
@@ -38,9 +37,6 @@ class RespondentAfterSubmissionValidatorTest {
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private RespondentAfterSubmissionValidator underTest;
@@ -363,8 +359,7 @@ class RespondentAfterSubmissionValidatorTest {
     }
 
     @Test
-    void shouldReturnOnlyLegalRepresentationErrorsWhenToggleOnAndUserIsAdmin() {
-        given(featureToggleService.isNoticeOfChangeEnabled()).willReturn(true);
+    void shouldReturnOnlyLegalRepresentationErrorsWhenUserIsAdmin() {
         given(userService.isHmctsAdminUser()).willReturn(true);
 
         List<String> actual = underTest.validate(
