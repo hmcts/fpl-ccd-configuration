@@ -49,6 +49,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
@@ -230,12 +232,15 @@ public class StandardDirectionsOrderController extends CallbackController {
     public CallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-        List<String> errors = orderValidationService.validate(caseData);
-        if (!errors.isEmpty()) {
-            return respond(caseDetails, errors);
+        SDORoute sdoRouter = caseData.getSdoRouter();
+
+        if (URGENT != sdoRouter) {
+            List<String> errors = orderValidationService.validate(caseData);
+            if (!errors.isEmpty()) {
+                return respond(caseDetails, errors);
+            }
         }
 
-        SDORoute sdoRouter = caseData.getSdoRouter();
         StandardDirectionOrder order = null;
         switch (sdoRouter) {
             case URGENT:
@@ -294,8 +299,12 @@ public class StandardDirectionsOrderController extends CallbackController {
             tempFields.add("sdoRouter");
 
             if (GATEKEEPING == caseData.getState()) {
-                List<DocmosisTemplates> docmosisTemplateTypes = caseData.getNoticeOfProceedings()
-                    .mapProceedingTypesToDocmosisTemplate();
+                List<DocmosisTemplates> docmosisTemplateTypes;
+                if (URGENT == sdoRouter) {
+                    docmosisTemplateTypes = List.of(C6, C6A);
+                } else {
+                    docmosisTemplateTypes = caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
+                }
 
                 List<Element<DocumentBundle>> newNOP = nopService.uploadAndPrepareNoticeOfProceedingBundle(
                     caseData, docmosisTemplateTypes
