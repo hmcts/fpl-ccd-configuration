@@ -63,5 +63,18 @@
     "PageFieldDisplayOrder": 5,
     "FieldShowCondition": "orderTempQuestions.approvalDate=\"YES\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersApprovalDateTime",
+    "DisplayContext": "MANDATORY",
+    "PageID": "IssuingDetails",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 5,
+    "FieldShowCondition": "orderTempQuestions.approvalDateTime=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]

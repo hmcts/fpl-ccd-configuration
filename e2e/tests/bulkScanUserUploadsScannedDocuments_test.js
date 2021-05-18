@@ -19,13 +19,7 @@ Scenario('HMCTS admin uploads documents to be scanned', async ({I, caseViewPage,
 });
 
 Scenario('HMCTS admin can see documents scanned in with Bulk Scan', async ({I, caseViewPage}) => {
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Scanned Documents 1', 'Document type'], scannedDocument.type);
-  I.seeInTab(['Scanned Documents 1', 'Document subtype'], scannedDocument.subtype);
-  I.seeInTab(['Scanned Documents 1', 'Document url'], 'mockFile.txt');
-  I.seeInTab(['Scanned Documents 1', 'Document control number'], scannedDocument.controlNumber);
-  I.seeInTab(['Scanned Documents 1', 'File name'], scannedDocument.fileName);
-  I.seeInTab(['Scanned Documents 1', 'Scanned date'], '1 Jan 2050, 12:00:00 PM');
-  I.seeInTab(['Scanned Documents 1', 'Delivery date'], '1 Jan 2050, 12:00:00 PM');
-  I.seeInTab(['Scanned Documents 1', 'Exception record reference'], scannedDocument.exceptionRecordReference);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection('Any other documents', 'Example file name');
+  I.seeInExpandedDocument('Example file name', null, '12:00pm, 1 January 2050');
 });

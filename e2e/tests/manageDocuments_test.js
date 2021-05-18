@@ -6,6 +6,9 @@ const api = require('../helpers/api_helper');
 
 const dateFormat = require('dateformat');
 const respondent = 'Joe Bloggs';
+const respondent1StatementsSection = 'Respondent 1 statements';
+const expertReportsSection = 'Expert reports';
+const otherReportsSection = 'Other reports';
 
 let caseId;
 let submittedAt;
@@ -44,22 +47,33 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential further ev
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
-  I.dontSeeInTab(['Email to say evidence will be late']);
-  assertFurtherEvidence(I, 'HMCTS', 1, 'Email with evidence attached', 'Case evidence included');
+  I.dontSeeDocumentSection(otherReportsSection, supportingEvidenceDocuments[0].name);
+  I.expandDocumentSection(otherReportsSection, supportingEvidenceDocuments[1].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-  assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
-  assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+  I.expandDocument(otherReportsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(otherReportsSection, supportingEvidenceDocuments[3].name);
+
+  I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[2].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
 
-  assertConfidentialFurtherEvidence(I, 'HMCTS', 1, 'Email to say evidence will be late', 'Evidence will be late');
-  assertFurtherEvidence(I, 'HMCTS', 2, 'Email with evidence attached', 'Case evidence included');
+  I.expandDocumentSection(expertReportsSection, supportingEvidenceDocuments[0].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[0].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
 
-  assertConfidentialFurtherEvidence(I, 'Local authority', 1, 'Correspondence document', 'Test notes');
-  assertFurtherEvidence(I, 'Local authority', 2, 'C2 supporting document', 'Supports the C2 application');
+  I.expandDocument(expertReportsSection, supportingEvidenceDocuments[2].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+
+  I.expandDocumentSection(otherReportsSection, supportingEvidenceDocuments[1].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+
+  I.expandDocument(otherReportsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential respondent statement', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -92,28 +106,48 @@ Scenario('HMCTS Admin and LA upload confidential and non confidential respondent
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.manageDocumentsLA);
 
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Respondent statements 1', 'Respondent'], respondent);
-  assertConfidentialRespondentStatement(I, 1, supportingEvidenceDocuments[0]);
-  assertRespondentStatement(I, 2, supportingEvidenceDocuments[1]);
-  assertConfidentialRespondentStatement(I, 3, supportingEvidenceDocuments[2]);
-  assertRespondentStatement(I, 4, supportingEvidenceDocuments[3]);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
+
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+
+  I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Respondent statements 1', 'Respondent'], respondent);
-  assertConfidentialRespondentStatement(I, 1, supportingEvidenceDocuments[0]);
-  assertRespondentStatement(I, 2, supportingEvidenceDocuments[1]);
-  assertConfidentialRespondentStatement(I, 3, supportingEvidenceDocuments[2]);
-  assertRespondentStatement(I, 4, supportingEvidenceDocuments[3]);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+  I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[2].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
+
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
+  I.seeInExpandedConfidentialDocument(supportingEvidenceDocuments[0].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
 
   await I.navigateToCaseDetailsAs(config.hillingdonLocalAuthorityUserOne, caseId);
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeInTab(['Respondent statements 1', 'Respondent'], respondent);
-  assertRespondentStatement(I, 1, supportingEvidenceDocuments[1]);
-  assertRespondentStatement(I, 2, supportingEvidenceDocuments[3]);
-  I.dontSeeInTab(supportingEvidenceDocuments[0].name);
-  I.dontSeeInTab(supportingEvidenceDocuments[2].name);
+  caseViewPage.selectTab(caseViewPage.tabs.furtherEvidence);
+
+  I.expandDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[3].name, config.swanseaLocalAuthorityUserOne.email, dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[3].name);
+
+  I.expandDocument(respondent1StatementsSection, supportingEvidenceDocuments[1].name);
+  I.seeInExpandedDocument(supportingEvidenceDocuments[1].name, 'HMCTS', dateFormat(submittedAt, 'd mmm yyyy'));
+  I.dontSeeConfidentialInExpandedDocument(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+  I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[2].name);
+  I.dontSeeDocumentSection(respondent1StatementsSection, supportingEvidenceDocuments[0].name);
 });
 
 Scenario('HMCTS Admin and LA upload confidential and non confidential correspondence documents', async ({I, caseViewPage, manageDocumentsEventPage, manageDocumentsLAEventPage}) => {
@@ -259,31 +293,12 @@ Scenario('HMCTS Admin and LA upload confidential Other applications supporting d
   assertC2SupportingDocuments(I, 'Other applications', 4, 'C2 supporting document', 'Supports the C2 application');
 });
 
-const assertConfidentialFurtherEvidence = (I, prefix, index, docName, notes) => {
-  assertSupportingEvidence(I, `${prefix} further evidence documents ${index}`, docName, notes, true);
-};
-
-const assertFurtherEvidence = (I, prefix, index, docName, notes) => {
-  assertSupportingEvidence(I, `${prefix} further evidence documents ${index}`, docName, notes, false);
-};
-
 const assertConfidentialCorrespondence = (I, suffix, index, docName, notes) => {
   assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, true);
 };
 
 const assertCorrespondence = (I, suffix, index, docName, notes) => {
   assertSupportingEvidence(I, `Correspondence uploaded by ${suffix} ${index}`, docName, notes, false);
-};
-
-const assertConfidentialRespondentStatement = (I, index, doc) => {
-  assertRespondentStatement(I, index, doc);
-  I.seeInTab(['Respondent statements 1', `Documents ${index}`,''], 'Confidential');
-};
-
-const assertRespondentStatement = (I, index, doc) => {
-  I.seeInTab(['Respondent statements 1', `Documents ${index}`, 'Document name'], doc.name);
-  I.seeInTab(['Respondent statements 1', `Documents ${index}`, 'Notes'], doc.notes);
-  I.seeInTab(['Respondent statements 1', `Documents ${index}`, 'File'], 'mockFile.txt');
 };
 
 const assertSupportingEvidence = (I, supportingEvidenceName, docName, notes, confidential) => {
