@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -110,6 +111,24 @@ public class OrderSectionAndQuestionsPrePopulatorTest {
         Map<String, Object> actual = underTest.prePopulate(ORDER, OrderSection.CHILDREN_DETAILS, CASE_DATA);
 
         assertThat(actual).isEqualTo(PRE_POPULATE_WHICH_CHILDREN_DATA);
+    }
+
+    @Test
+    void prePopulateWhenQuestionMatchedAndFilterNullValues() {
+        when(holder.sectionBlockToPopulator()).thenReturn(Map.of());
+        when(holder.questionBlockToPopulator()).thenReturn(Map.of(
+            OrderQuestionBlock.WHICH_CHILDREN, whichChildreQuestionBlockPrePopulator
+        ));
+
+        Map<String, Object> dataWithNullValues = new HashMap<>();
+        dataWithNullValues.put("field1", "value1");
+        dataWithNullValues.put("field2", null);
+
+        when(whichChildreQuestionBlockPrePopulator.prePopulate(CASE_DATA)).thenReturn(dataWithNullValues);
+
+        Map<String, Object> actual = underTest.prePopulate(ORDER, OrderSection.CHILDREN_DETAILS, CASE_DATA);
+
+        assertThat(actual).isEqualTo(Map.of("field1", "value1"));
     }
 
     @Test

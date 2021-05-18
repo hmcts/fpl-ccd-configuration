@@ -118,9 +118,9 @@
         "id": "681458fa-9c6b-4c25-a275-77b23a3375aa",
         "value": {
           "document": {
-            "document_url": "http://dm-store:8080/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
+            "document_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b",
             "document_filename": "solicitor-role-tech.docx",
-            "document_binary_url": "http://dm-store:8080/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
+            "document_binary_url": "${DM_STORE_URL}/documents/17dfcfa7-13a3-4257-8582-3b85a756160b/binary"
           },
           "uploadedBy": null,
           "documentName": null,

@@ -1,5 +1,6 @@
 const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 // Fields
 const operations = {
@@ -13,6 +14,7 @@ const orders = {
   group: '#manageOrdersType',
   options: {
     c32: 'C32_CARE_ORDER',
+    c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
   },
 };
@@ -20,6 +22,7 @@ const orders = {
 const section2 = {
   judge: '#judgeAndLegalAdvisor_judgeAndLegalAdvisor',
   approvalDate: '#manageOrdersApprovalDate',
+  approvalDateTime: '#manageOrdersApprovalDateTime',
 };
 
 const section3 = {
@@ -39,6 +42,31 @@ const section4 = {
   title: '#manageOrdersTitle',
   directions: '#manageOrdersDirections',
   furtherDirections: '#manageOrdersFurtherDirections',
+  epoTypes: {
+    group: '#manageOrdersEpoType',
+    options: {
+      removeAccommodation: 'REMOVE_TO_ACCOMMODATION',
+      preventRemoval: 'PREVENT_REMOVAL',
+    },
+  },
+  includePhrase: {
+    group: '#manageOrdersIncludePhrase',
+    options: {
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
+  exclusionRequirement: {
+    group: '#manageOrdersExclusionRequirement',
+    options: {
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
+  whoIsExcluded: '#manageOrdersWhoIsExcluded',
+  exclusionStartDate: '#manageOrdersExclusionStartDate',
+  powerOfArrest: '#manageOrdersPowerOfArrest',
+  endDate: '#manageOrdersEndDateTime',
 };
 
 const preview = {
@@ -66,6 +94,16 @@ const enterApprovalDate = async (date) => {
   await I.runAccessibilityTest();
 };
 
+const enterApprovalDateTime = async (dateTime) => {
+  await I.fillDateAndTime(dateTime, section2.approvalDateTime);
+  await I.runAccessibilityTest();
+};
+
+const enterEPOEndDateTime = async (dateTime) => {
+  await I.fillDateAndTime(dateTime, section4.endDate);
+  await I.runAccessibilityTest();
+};
+
 const selectChildren = async (option, indexes = []) => {
   I.click(`${section3.allChildren.group}-${option}`);
 
@@ -87,6 +125,34 @@ const enterDirections = async (text) => {
   await I.runAccessibilityTest();
 };
 
+const selectIncludePhrase = (includePhrase) => {
+  I.click(`${section4.includePhrase.group}-${includePhrase}`);
+};
+
+const selectEpoType = (epoType) => {
+  I.click(`${section4.epoTypes.group}-${epoType}`);
+};
+
+const selectExclusionRequirement = (exclusionRequirement) => {
+  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+};
+
+const enterWhoIsExcluded = (text) => {
+  I.fillField(section4.whoIsExcluded, text);
+};
+
+const enterExclusionStartDate = async (date) => {
+  await I.fillDate(date, section4.exclusionStartDate);
+};
+
+const uploadPowerOfArrest = (file) => {
+  I.attachFile(section4.powerOfArrest, file);
+};
+
+const enterRemovalAddress = (address) => {
+  postcodeLookup.enterAddressManually(address);
+};
+
 const enterFurtherDirections = async (text) => {
   I.fillField(section4.furtherDirections, text);
   await I.runAccessibilityTest();
@@ -100,5 +166,6 @@ const checkPreview = async () => {
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview,
+  enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
 };
