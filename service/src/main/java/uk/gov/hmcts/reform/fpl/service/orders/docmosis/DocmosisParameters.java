@@ -1,14 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.orders.docmosis;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Value
@@ -20,8 +17,7 @@ public abstract class DocmosisParameters {
     String childrenAct;
     String familyManCaseNumber;
     String ccdCaseNumber;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateFormatterHelper.DATE)
-    LocalDate dateOfIssue;
+    String dateOfIssue;
     DocmosisJudgeAndLegalAdvisor judgeAndLegalAdvisor;
     String courtName;
     List<DocmosisChild> children;
