@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -65,6 +66,7 @@ public class C23EPODocumentParameterGenerator implements DocmosisParameterGenera
             .epoEndDateTime(formatDateTime(eventData.getManageOrdersEndDateTime()))
             .removalAddress(formatAddress(eventData.getManageOrdersEpoRemovalAddress()))
             .exclusionRequirement(buildExclusionRequirement(eventData))
+            .powerOfArrestFileAttached(Objects.nonNull(eventData.getManageOrdersPowerOfArrest()))
             .build();
     }
 
