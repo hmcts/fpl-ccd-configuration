@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import java.util.Map;
 import java.util.Optional;
 
-
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderDocumentGenerator {
@@ -25,12 +24,14 @@ public class OrderDocumentGenerator {
     private final ObjectMapper objectMapper;
     private final OrderDocumentGeneratorHolder holder;
     private final DocmosisCommonElementDecorator decorator;
+    private final DocumentMerger documentMerger;
 
     public DocmosisDocument generate(Order orderType, CaseData caseData, OrderStatus orderStatus, RenderFormat format) {
         DocmosisParameterGenerator documentGenerator = holder.getTypeToGenerator().get(orderType);
+        AdditionalDocumentsCollector documentsHolder = holder.getTypeToAdditionalDocumentsCollector().get(orderType);
 
         DocmosisParameters docmosisParameters = Optional.ofNullable(documentGenerator)
-            .map(generator ->  {
+            .map(generator -> {
                 DocmosisParameters customParameters = generator.generate(caseData);
                 return decorator.decorate(customParameters, caseData, orderStatus, generator.accept());
             })
@@ -38,8 +39,14 @@ public class OrderDocumentGenerator {
 
         Map<String, Object> templateData = objectMapper.convertValue(docmosisParameters, new TypeReference<>() {});
 
-        return docmosisDocumentGeneratorService.generateDocmosisDocument(
+        DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
             templateData, documentGenerator.template(), format
         );
+
+        if (documentsHolder != null && OrderStatus.SEALED == orderStatus) {
+            return documentMerger.mergeDocuments(docmosisDocument, documentsHolder.additionalDocuments(caseData));
+        }
+
+        return docmosisDocument;
     }
 }

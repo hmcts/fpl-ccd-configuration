@@ -33,6 +33,7 @@ public class OrderSectionAndQuestionsPrePopulator {
                 .prePopulate(caseData)
                 .entrySet()
                 .stream())
+            .filter(entry -> entry.getValue() != null)
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
         return items;

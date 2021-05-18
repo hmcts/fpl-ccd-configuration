@@ -35,10 +35,11 @@ module.exports = {
         }
 
         if (await this.hasSelector(signedInSelector)) {
-          this.click('Sign out');
+          await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
         }
 
-        await loginPage.signIn(user);
+        await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+
       }, signedInSelector, false, 10);
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;

@@ -152,4 +152,21 @@ module.exports = class BrowserHelpers extends Helper {
     }
     return true;
   }
+
+  async scrollToElement(selector) {
+    const helper = this.getHelper();
+    const elements = await this.locateSelector(selector);
+
+    if (elements.length > 1) {
+      throw new Error(`More than one element found for locator ${selector}`);
+    }
+    if(elements.length === 0){
+      throw new Error(`No element found for locator ${selector}`);
+    }
+    if(this.isPuppeteer()){
+      await helper.page.evaluate(selectorArg => document.querySelector(selectorArg).scrollIntoView(), selector);
+    } else {
+      await helper.executeScript('arguments[0].scrollIntoView()', elements[0]);
+    }
+  }
 };
