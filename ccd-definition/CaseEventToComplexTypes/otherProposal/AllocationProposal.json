@@ -5,6 +5,7 @@
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "proposal",
+    "EventElementLabel": "*Which level of judge do you recommend for this case?",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
@@ -14,6 +15,7 @@
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
     "ListElementCode": "proposalReason",
+    "EventElementLabel": "*Give reason",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   }
