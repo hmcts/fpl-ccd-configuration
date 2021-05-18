@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
@@ -29,7 +28,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
@@ -58,9 +56,6 @@ class RespondentControllerTest extends AbstractCallbackTest {
     RespondentControllerTest() {
         super("enter-respondents");
     }
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     @MockBean
     private NotificationClient notificationClient;
@@ -186,8 +181,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldAllowAdminToUpdateRespondentSolicitorOrganisationWhenNoCIsEnabled() {
-        when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
+    void shouldAllowAdminToUpdateRespondentSolicitorOrganisation() {
 
         Element<Respondent> respondent = element(respondent(dateNow(), "test@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
@@ -216,8 +210,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisationWhenNoCIsEnabled() {
-        when(featureToggleService.isNoticeOfChangeEnabled()).thenReturn(true);
+    void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisation() {
 
         Element<Respondent> respondent = element(respondent(dateNow(), "respondent1@test.com"));
         Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()

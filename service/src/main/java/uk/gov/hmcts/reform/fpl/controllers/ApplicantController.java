@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.service.ApplicantService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.OrganisationService;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
@@ -38,7 +37,6 @@ public class ApplicantController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final OrganisationService organisationService;
     private final ValidateEmailService validateEmailService;
-    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
@@ -104,12 +102,8 @@ public class ApplicantController extends CallbackController {
         boolean isCaseOutsourced = caseData.getOutsourcingPolicy() != null;
 
         if (isCaseOutsourced) {
-            if (featureToggleService.isRetrievingOrganisationEnabled()) {
-                String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
-                return organisationService.findOrganisation(organisationId);
-            } else {
-                return Optional.empty();
-            }
+            String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
+            return organisationService.findOrganisation(organisationId);
         }
 
         return organisationService.findOrganisation();
