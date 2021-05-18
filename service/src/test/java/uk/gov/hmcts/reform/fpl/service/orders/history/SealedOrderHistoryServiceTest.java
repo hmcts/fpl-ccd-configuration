@@ -44,6 +44,7 @@ class SealedOrderHistoryServiceTest {
     private static final LocalDate TODAY = LocalDate.of(2012, 12, 22);
     private static final LocalDateTime NOW = TODAY.atStartOfDay();
     private static final LocalDate APPROVAL_DATE = LocalDate.of(2010, 11, 6);
+    private static final LocalDateTime APPROVAL_DATE_TIME = LocalDateTime.of(2010, 11, 6, 11, 10, 10);
     private static final String CHILD_1_FULLNAME = "child1fullname";
     private static final String CHILD_2_FULLNAME = "child1fullname";
     private static final JudgeAndLegalAdvisor JUDGE_AND_LEGAL_ADVISOR = mock(JudgeAndLegalAdvisor.class);
@@ -57,9 +58,9 @@ class SealedOrderHistoryServiceTest {
         GeneratedOrder.builder()
             .approvalDate(APPROVAL_DATE.plusDays(1))
             .build());
-    private static final Element<GeneratedOrder> ORDER_APPROVED_FOR_SAME_DAY = element(UUID_1,
+    private static final Element<GeneratedOrder> ORDER_APPROVED_DATE_TIME_FOR_SAME_DAY = element(UUID_1,
         GeneratedOrder.builder()
-            .approvalDate(APPROVAL_DATE)
+            .approvalDateTime(APPROVAL_DATE_TIME)
             .dateTimeIssued(NOW.minusSeconds(1))
             .build());
     private static final Element<GeneratedOrder> ORDER_APPROVED_LEGACY = element(UUID_1,
@@ -151,8 +152,8 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        ORDER_APPROVED_IN_THE_PAST,
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
+                        ORDER_APPROVED_IN_THE_PAST
                     )
                 ));
             }
@@ -174,8 +175,8 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
-                        ORDER_APPROVED_IN_THE_FUTURE
+                        ORDER_APPROVED_IN_THE_FUTURE,
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
                     )
                 ));
             }
@@ -188,7 +189,7 @@ class SealedOrderHistoryServiceTest {
                 mockHelper(jalMock);
                 CaseData caseData = caseData()
                     .orderCollection(newArrayList(
-                        ORDER_APPROVED_FOR_SAME_DAY,
+                        ORDER_APPROVED_DATE_TIME_FOR_SAME_DAY,
                         ORDER_APPROVED_IN_THE_FUTURE,
                         ORDER_APPROVED_LEGACY
                     )).build();
@@ -199,10 +200,10 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        ORDER_APPROVED_LEGACY,
-                        ORDER_APPROVED_FOR_SAME_DAY,
+                        ORDER_APPROVED_IN_THE_FUTURE,
+                        ORDER_APPROVED_DATE_TIME_FOR_SAME_DAY,
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
-                        ORDER_APPROVED_IN_THE_FUTURE
+                        ORDER_APPROVED_LEGACY
                     )
                 ));
             }
@@ -224,8 +225,8 @@ class SealedOrderHistoryServiceTest {
 
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
-                        ORDER_APPROVED_LEGACY,
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build()),
+                        ORDER_APPROVED_LEGACY
                     )
                 ));
             }
