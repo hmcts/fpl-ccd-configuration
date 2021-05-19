@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -69,7 +69,7 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
         Integer numOfMonths = null;
         String courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until %s.";
 
-        switch (eventData.getManageSupervisionOrderEndDateType()) {
+        switch (eventData.getManageOrderEndDateTypeWithMonth()) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
             case SET_CALENDAR_DAY:
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
@@ -89,11 +89,11 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
                 break;
             default:
                 throw new IllegalStateException("Unexpected supervision order event data type: "
-                    + eventData.getManageSupervisionOrderEndDateType());
+                    + eventData.getManageOrderEndDateTypeWithMonth());
         }
 
         final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
-        boolean isMonthOptionSelected = eventData.getManageSupervisionOrderEndDateType().equals(SET_NUMBER_OF_MONTHS);
+        boolean isMonthOptionSelected = eventData.getManageOrderEndDateTypeWithMonth().equals(SET_NUMBER_OF_MONTHS);
 
         if (isMonthOptionSelected) {
             return getMonthMessage(

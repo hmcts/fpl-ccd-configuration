@@ -167,7 +167,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageSupervisionOrderEndDateType",
+    "ID": "manageOrderEndDateTypeWithMonth",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "SupervisionOrderEndDateType",

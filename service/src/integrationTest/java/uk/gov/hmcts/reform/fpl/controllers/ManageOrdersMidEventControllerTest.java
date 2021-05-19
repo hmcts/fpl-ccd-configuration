@@ -41,8 +41,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
@@ -341,7 +341,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrderEndDateTypeWithMonth(SET_CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(testInvalidDate)
                 .build())
             .build();
@@ -359,7 +359,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrderEndDateTypeWithMonth(SET_NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(testInvalidMonth)
                 .build())
             .build();
@@ -377,7 +377,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrderEndDateTypeWithMonth(SET_NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(testInvalidMonth)
                 .build())
             .build();
