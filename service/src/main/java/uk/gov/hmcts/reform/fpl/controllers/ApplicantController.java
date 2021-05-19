@@ -99,9 +99,7 @@ public class ApplicantController extends CallbackController {
     }
 
     private Optional<Organisation> getOrganisation(CaseData caseData) {
-        boolean isCaseOutsourced = caseData.getOutsourcingPolicy() != null;
-
-        if (isCaseOutsourced) {
+        if (caseData.isOutsourced()) {
             String organisationId = caseData.getLocalAuthorityPolicy().getOrganisation().getOrganisationID();
             return organisationService.findOrganisation(organisationId);
         }
