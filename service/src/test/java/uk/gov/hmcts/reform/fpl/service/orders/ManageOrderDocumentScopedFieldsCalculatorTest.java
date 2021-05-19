@@ -28,7 +28,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersExclusionStartDate",
             "manageOrdersPowerOfArrest",
             "manageOrdersFurtherDirections",
-            "manageSupervisionOrderEndDateType",
+            "manageOrdersEndDateTypeWithMonth",
             "manageOrdersSetDateEndDate",
             "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate",

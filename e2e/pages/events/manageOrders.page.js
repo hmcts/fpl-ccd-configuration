@@ -65,7 +65,7 @@ const section4 = {
     },
   },
   supervisionOrderType: {
-    group: '#manageSupervisionOrderEndDateType',
+    group: '#manageOrdersEndDateTypeWithMonth',
     options: {
       calendarDay: 'SET_CALENDAR_DAY',
       calendarDayAndTime: 'SET_CALENDAR_DAY_AND_TIME',
