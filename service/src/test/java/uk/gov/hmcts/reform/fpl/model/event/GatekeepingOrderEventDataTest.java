@@ -8,8 +8,8 @@ class GatekeepingOrderEventDataTest {
 
     @Test
     void temporaryFields() {
-//        assertThat(GatekeepingOrderEventData.temporaryFields()).containsExactly(
-//            "urgentHearingOrderDocument", "urgentHearingAllocation", "showUrgentHearingAllocation"
-//        );
+        assertThat(GatekeepingOrderEventData.temporaryFields()).containsExactly(
+            "urgentHearingOrderDocument", "urgentHearingAllocation", "showUrgentHearingAllocation"
+        );
     }
 }

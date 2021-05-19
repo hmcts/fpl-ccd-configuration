@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,11 +29,13 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -48,8 +49,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -65,24 +66,27 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
     private static final byte[] PDF = testDocumentBinaries();
     private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
-    private static final Document DOCUMENT = document();
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.buildFromDocument(DOCUMENT);
+    private static final Document C6_DOCUMENT = testDocument();
+    private static final Document SDO = testDocument();
+    private static final DocumentReference C6_REFERENCE = DocumentReference.buildFromDocument(C6_DOCUMENT);
+    private static final DocumentReference SDO_REFERENCE = DocumentReference.buildFromDocument(SDO);
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
     private static final LocalDateTime HEARING_END_DATE = LocalDateTime.of(2020, 2, 20, 11, 11, 11);
     private static final String DIRECTION_TYPE = "Identify alternative carers";
     private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
-        + "showing family members who could be alternative carers.";
+                                                 + "showing family members who could be alternative carers.";
     private static final String LA_NAME = "example";
     private static final String COURT_NAME = "Family Court";
     private static final String COURT_CODE = "11";
@@ -102,9 +106,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    @Captor
-    private ArgumentCaptor<String> filename;
-
     StandardDirectionsOrderControllerAboutToSubmitTest() {
         super("draft-standard-directions");
     }
@@ -114,17 +115,11 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
 
         given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(eq(PDF), filename.capture())).willReturn(DOCUMENT);
-
-        given(docmosisService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
-            .willReturn(docmosisDocument);
-
-        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
-            .willReturn(DOCUMENT);
-
-        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
-            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
-                COURT_CODE));
+        given(uploadDocumentService.uploadPDF(PDF, SEALED_ORDER_FILE_NAME)).willReturn(SDO);
+        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle())).willReturn(C6_DOCUMENT);
+        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME)).willReturn(
+            new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE)
+        );
     }
 
     @Test
@@ -137,7 +132,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         assertThat(caseData.getStandardDirectionOrder()).isEqualTo(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
-        assertThat(filename.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
     }
 
     @Test
@@ -193,13 +187,10 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
         CaseData responseCaseData = extractCaseData(response);
 
-        DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
-            .getDocument();
-
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
-        assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
-        assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
-        assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(DOCUMENT.links.binary.href);
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1)
+            .first()
+            .extracting(element -> element.getValue().getDocument())
+            .isEqualTo(C6_REFERENCE);
 
         assertThat(response.getData())
             .containsEntry("state", "PREPARE_FOR_HEARING")
@@ -219,11 +210,61 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         );
 
         assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1).first()
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1)
+            .first()
             .extracting(element -> element.getValue().getDocument())
-            .isEqualTo(DOCUMENT_REFERENCE);
+            .isEqualTo(C6_REFERENCE);
         assertThat(responseCaseData.getState()).isEqualTo(State.CASE_MANAGEMENT);
         assertThat(responseCaseData.getSdoRouter()).isNull();
+    }
+
+    @Test
+    void shouldBuildUrgentHearingOrderAndAddAllocationDecision() {
+        final DocumentReference urgentReference = testDocumentReference();
+        final DocumentReference sealedUrgentReference = testDocumentReference();
+        final Allocation allocation = Allocation.builder()
+            .judgeLevelRadio("No")
+            .proposal("Section 9 circuit judge")
+            .proposalReason("some reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .startDate(now())
+                .endDate(now().plusDays(1))
+                .venue("EXAMPLE")
+                .build()))
+            .caseLocalAuthority(LA_NAME)
+            .familyManCaseNumber("1234")
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .sdoRouter(SDORoute.URGENT)
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .urgentHearingAllocation(allocation)
+                .urgentHearingOrderDocument(urgentReference)
+                .build())
+            .state(GATEKEEPING)
+            .id(1234123412341234L)
+            .build();
+
+        when(sealingService.sealDocument(urgentReference)).thenReturn(sealedUrgentReference);
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        Allocation expectedAllocation = allocation.toBuilder().judgeLevelRadio(null).build();
+
+        assertThat(responseData.getAllocationDecision()).isEqualTo(expectedAllocation);
+        assertThat(responseData.getNoticeOfProceedingsBundle()).extracting(Element::getValue).containsExactly(
+            DocumentBundle.builder().document(C6_REFERENCE).build()
+        );
+        assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
+            UrgentHearingOrder.builder()
+                .allocation(expectedAllocation)
+                .order(sealedUrgentReference)
+                .unsealedOrder(urgentReference)
+                .dateAdded(dateNow())
+                .build()
+        );
     }
 
     @Test
@@ -373,11 +414,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         return StandardDirectionOrder.builder()
             .directions(fullyPopulatedDirections())
             .orderStatus(SEALED)
-            .orderDoc(DocumentReference.builder()
-                .url(DOCUMENT.links.self.href)
-                .binaryUrl(DOCUMENT.links.binary.href)
-                .filename("file.pdf")
-                .build())
+            .orderDoc(SDO_REFERENCE.toBuilder().filename("file.pdf").build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(MAGISTRATES)
                 .judgeFullName("John Walker")
