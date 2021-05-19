@@ -158,7 +158,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   });
 });
 
-Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+xScenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   /*
  UserflowforInterimcareorder
  Createanorder
