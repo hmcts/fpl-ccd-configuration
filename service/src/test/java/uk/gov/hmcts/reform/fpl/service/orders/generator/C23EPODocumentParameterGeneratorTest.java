@@ -36,10 +36,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class C23EPODocumentParameterGeneratorTest {
+
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
     private static final String FURTHER_DIRECTIONS = "further directions";
@@ -90,7 +92,7 @@ class C23EPODocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
-        DocmosisParameters expectedParameters = expectedParameters(EPOType.REMOVE_TO_ACCOMMODATION, false);
+        DocmosisParameters expectedParameters = expectedParameters(EPOType.REMOVE_TO_ACCOMMODATION, false, false);
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
@@ -107,12 +109,14 @@ class C23EPODocumentParameterGeneratorTest {
         when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
-        DocmosisParameters expectedParameters = expectedParameters(EPOType.PREVENT_REMOVAL, true);
+        DocmosisParameters expectedParameters = expectedParameters(EPOType.PREVENT_REMOVAL, true, true);
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    private DocmosisParameters expectedParameters(EPOType type, boolean exclusionRequired) {
+    private DocmosisParameters expectedParameters(EPOType type,
+                                                  boolean exclusionRequired,
+                                                  boolean powerOfArrestFileAttached) {
         final String exclusionRequirement = String.format("The Court directs that %s be excluded from %s from %s "
                 + "so that the child may continue to live "
                 + "there, consent to the exclusion requirement having been given by %s.",
@@ -133,6 +137,7 @@ class C23EPODocumentParameterGeneratorTest {
             .epoEndDateTime(formatLocalDateTimeBaseUsingFormat(END_DATE_TIME, DATE_TIME_AT))
             .removalAddress(exclusionRequired ? REMOVAL_ADDRESS.getAddressAsString(", ") : EMPTY)
             .exclusionRequirement(exclusionRequired ? exclusionRequirement : null)
+            .powerOfArrestFileAttached(powerOfArrestFileAttached)
             .build();
     }
 
@@ -150,6 +155,8 @@ class C23EPODocumentParameterGeneratorTest {
             .manageOrdersExclusionRequirement(exclusionRequired ? "Yes" : "No")
             .manageOrdersWhoIsExcluded(exclusionRequired ? EXCLUDE_PERSON : null)
             .manageOrdersExclusionStartDate(exclusionRequired ? EXCLUSION_DATE : null)
+            .manageOrdersPowerOfArrest(type.equals(EPOType.PREVENT_REMOVAL) ? testDocumentReference() : null)
             .build();
     }
+
 }
