@@ -605,6 +605,7 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
 
 Scenario('local authority adds multiple application documents @cross-browser', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
   const browser = await I.getBrowser();
+  // Both edge and safari fail to upload files in Saucelabs. Excluded for now.
   if (browser !== 'MicrosoftEdge' && browser !== 'safari') {
     await caseViewPage.goToNewActions(config.applicationActions.addApplicationDocuments);
 
