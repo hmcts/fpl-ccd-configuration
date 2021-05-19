@@ -68,6 +68,7 @@ module.exports = {
         this.fillField('//input[@type="password"]', config.hmctsUser.password);
         this.wait(0.2);
         this.click('Sign in');
+        this.click('Yes');
       });
     }
   },
@@ -271,7 +272,7 @@ module.exports = {
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
     const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
     await apiHelper.populateWithData(caseId, data);
-    if (!this.isPuppeteer()) {
+    if (this.isPuppeteer()) {
       await this.refreshPage();
     }
     output.print(`Case #${caseId} has been populated with data`);
