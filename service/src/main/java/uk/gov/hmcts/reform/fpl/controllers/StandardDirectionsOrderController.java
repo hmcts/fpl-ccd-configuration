@@ -49,8 +49,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
@@ -130,8 +130,9 @@ public class StandardDirectionsOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
-    @PostMapping("/pre-populate/mid-event")
-    public CallbackResponse handleMidEventRoutePrePopulation(@RequestBody CallbackRequest request) {
+    // keeping the populate-date-of-issue mapping in case of any lag between merge and upload of ccd defs
+    @PostMapping({"populate-date-of-issue", "/pre-populate/mid-event"})
+    public CallbackResponse handleMidEventPrePopulation(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -299,18 +300,15 @@ public class StandardDirectionsOrderController extends CallbackController {
             tempFields.add("sdoRouter");
 
             if (GATEKEEPING == caseData.getState()) {
-                List<DocmosisTemplates> docmosisTemplateTypes;
-                if (URGENT == sdoRouter) {
-                    docmosisTemplateTypes = List.of(C6, C6A);
-                } else {
-                    docmosisTemplateTypes = caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
-                }
+                List<DocmosisTemplates> docmosisTemplateTypes = URGENT == sdoRouter
+                    ? urgentOrderService.getNoticeOfProceedingsTemplates(caseData)
+                    : caseData.getNoticeOfProceedings().mapProceedingTypesToDocmosisTemplate();
 
-                List<Element<DocumentBundle>> newNOP = nopService.uploadAndPrepareNoticeOfProceedingBundle(
+                List<Element<DocumentBundle>> newNoP = nopService.uploadAndPrepareNoticeOfProceedingBundle(
                     caseData, docmosisTemplateTypes
                 );
 
-                caseDetails.getData().put("noticeOfProceedingsBundle", newNOP);
+                caseDetails.getData().put("noticeOfProceedingsBundle", newNoP);
             }
         }
 
@@ -327,9 +325,9 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         event.ifPresent(eventToPublish -> {
             coreCaseDataService.triggerEvent(
-                callbackRequest.getCaseDetails().getJurisdiction(),
-                callbackRequest.getCaseDetails().getCaseTypeId(),
-                callbackRequest.getCaseDetails().getId(),
+                JURISDICTION,
+                CASE_TYPE,
+                caseData.getId(),
                 "internal-change-SEND_DOCUMENT",
                 Map.of("documentToBeSent", eventToPublish.getOrder())
             );

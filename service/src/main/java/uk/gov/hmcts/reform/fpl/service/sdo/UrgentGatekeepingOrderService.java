@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.sdo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -12,7 +13,9 @@ import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -64,6 +67,17 @@ public class UrgentGatekeepingOrderService {
         returnedData.put("urgentHearingOrder", order);
 
         return returnedData;
+    }
+
+    public List<DocmosisTemplates> getNoticeOfProceedingsTemplates(CaseData caseData) {
+        List<DocmosisTemplates> templates = new ArrayList<>();
+        templates.add(DocmosisTemplates.C6);
+
+        if (!caseData.getAllOthers().isEmpty()) {
+            templates.add(DocmosisTemplates.C6A);
+        }
+
+        return templates;
     }
 
     private boolean noPreExistingAllocationDecision(CaseData caseData) {
