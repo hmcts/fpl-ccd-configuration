@@ -18,6 +18,13 @@ const orders = {
     c21: 'C21_BLANK_ORDER',
     c35a: 'C35A_SUPERVISION_ORDER',
   },
+  title: {
+    c32: 'C32 - Care order',
+    c33: 'C33 - Interim care order',
+    c23: 'C23 - Emergency protection order',
+    c21: 'C21 - Blank order',
+    c35a: 'C35a - Supervision order',
+  },
 };
 
 const section2 = {
@@ -32,6 +39,9 @@ const section3 = {
     options: {
       all: 'Yes',
       select: 'No',
+    },
+    children: {
+      child1: 'Timothy Jones',
     },
   },
   childSelector: {
@@ -64,7 +74,7 @@ const section4 = {
       no: 'No',
     },
   },
-  supervisionOrderType: {
+  orderTypeWithMonth: {
     group: '#manageOrdersEndDateTypeWithMonth',
     options: {
       calendarDay: 'SET_CALENDAR_DAY',
@@ -72,8 +82,17 @@ const section4 = {
       numberOfMonths: 'SET_NUMBER_OF_MONTHS',
     },
   },
+  orderTypeWithEndOfProceedings: {
+    group: '#manageOrdersEndDateTypeWithEndOfProceedings',
+    options: {
+      calendarDay: 'SET_CALENDAR_DAY',
+      calendarDayAndTime: 'SET_CALENDAR_DAY_AND_TIME',
+      endOfProceedings: 'SET_END_OF_PROCEEDINGS',
+    },
+  },
   whoIsExcluded: '#manageOrdersWhoIsExcluded',
   exclusionStartDate: '#manageOrdersExclusionStartDate',
+  exclusionDetails: '#manageOrdersExclusionDetails',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
@@ -149,6 +168,10 @@ const selectExclusionRequirement = (exclusionRequirement) => {
   I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
 };
 
+const enterExclusionDetails = (text) => {
+  I.fillField(section4.exclusionDetails, text);
+};
+
 const enterWhoIsExcluded = (text) => {
   I.fillField(section4.whoIsExcluded, text);
 };
@@ -166,7 +189,7 @@ const enterRemovalAddress = (address) => {
 };
 
 const selectSupervisionType = (option) => {
-  I.click(`${section4.supervisionOrderType.group}-${option}`);
+  I.click(`${section4.orderTypeWithMonth.group}-${option}`);
 };
 
 const enterSuperVisionOrderEndDate = async (date) => {
@@ -181,8 +204,12 @@ const enterSuperVisionNumOfMonths = async (months) => {
   I.fillField(section4.supervisionOrderNumOfMonths, months);
 };
 
-const selectSupervisionOrder = async (orderDateType) => {
-  I.click(`${section4.supervisionOrderType.group}-${orderDateType}`);
+const selectOrderTypeWithMonth = async (orderDateType) => {
+  I.click(`${section4.orderTypeWithMonth.group}-${orderDateType}`);
+};
+
+const selectOrderTypeWithEndOfProceedings = async (orderDateType) => {
+  I.click(`${section4.orderTypeWithEndOfProceedings.group}-${orderDateType}`);
 };
 
 const enterFurtherDirections = async (text) => {
@@ -201,5 +228,5 @@ module.exports = {
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
-  selectSupervisionOrder,
+  selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings,
 };

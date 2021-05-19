@@ -143,7 +143,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.enterFurtherDirections('Supervision order further details.');
-  await manageOrdersEventPage.selectSupervisionOrder(manageOrdersEventPage.section4.supervisionOrderType.options.numberOfMonths);
+  await manageOrdersEventPage.selectOrderTypeWithMonth(manageOrdersEventPage.section4.orderTypeWithMonth.options.numberOfMonths);
   await manageOrdersEventPage.enterSuperVisionNumOfMonths(10);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
@@ -158,6 +158,46 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   });
 });
 
+Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  /*
+ UserflowforInterimcareorder
+ Createanorder
+ >SelectInterimcareorder(C33)
+ >Issuingdetails(judgeandstartdate)
+ >Selectchildren
+ >Otherdetailspage(enterenddate/timeoptions);
+
+ Exclusionclause(freetextentry);
+ Enteradditionaldirectionsifrequired
+
+ >Previeworder
+ >CYA
+ */
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c33);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
+  await manageOrdersEventPage.enterExclusionDetails('I need an exclusion because of X,Y and Z');
+  await manageOrdersEventPage.enterFurtherDirections('Further details.');
+  await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I,caseViewPage,{
+    orderIndex:3,
+    orderType:manageOrdersEventPage.orders.title.c33,
+    approvalDate:today,
+    allocatedJudge:allocatedJudge,
+    children:manageOrdersEventPage.section3.children.child1,
+  });
+});
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
   const dateOfApproval = order.approvalDate !== undefined ? order.approvalDate : order.approvalDateTime;
