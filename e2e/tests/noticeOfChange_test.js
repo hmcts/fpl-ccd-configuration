@@ -108,7 +108,7 @@ const assertRepresentative = (I, user, organisation, index = 1) => {
   I.seeInTab(['Representative', 'Email address'], user.email);
 
   if (organisation) {
-    I.waitForText(organisation);
+    I.waitForText(organisation, 40);
     I.seeOrganisationInTab([`Respondents ${index}`, 'Representative', 'Name'], organisation);
   }
 };
@@ -127,7 +127,7 @@ const assertChangeOfRepresentative = (I, index, method, respondentName, actingUs
     I.seeInTab([representative, 'Added representative', 'First name'], addedUser.forename);
     I.seeInTab([representative, 'Added representative', 'Last name'], addedUser.surname);
     I.seeInTab([representative, 'Added representative', 'Email'], addedUser.email);
-    I.waitForText(addedUser.organisation);
+    I.waitForText(addedUser.organisation, 40);
     I.seeOrganisationInTab([representative, 'Added representative', 'Name'], addedUser.organisation);
   }
 
@@ -135,7 +135,7 @@ const assertChangeOfRepresentative = (I, index, method, respondentName, actingUs
     I.seeInTab([representative, 'Removed representative', 'First name'], removedUser.forename);
     I.seeInTab([representative, 'Removed representative', 'Last name'], removedUser.surname);
     I.seeInTab([representative, 'Removed representative', 'Email'], removedUser.email);
-    I.waitForText(removedUser.organisation);
+    I.waitForText(removedUser.organisation, 40);
     I.seeOrganisationInTab([representative, 'Removed representative', 'Name'], removedUser.organisation);
   }
 };
