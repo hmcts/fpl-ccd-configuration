@@ -14,7 +14,7 @@ public class GatekeepingOrderRouteValidator {
 
     private static final String URGENT_ROUTE_VALIDATION_MESSAGE = "An urgent hearing order has already been added to"
         + " this case. You can still add a gatekeeping order, if needed.";
-    private static final String EVENT_ACCESS_VALIDATION_MESSAGE = "The gatekeeping order has already been done";
+    private static final String EVENT_ACCESS_VALIDATION_MESSAGE = "There is already a gatekeeping order for this case";
 
     public List<String> allowAccessToEvent(CaseData caseData) {
         StandardDirectionOrder sdo = defaultIfNull(
