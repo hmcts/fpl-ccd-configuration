@@ -1,23 +1,23 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SupervisionOrderEndDateType",
+    "ID": "ManageOrdersEndDateTypeWithEndOfProceedings",
     "ListElementCode": "SET_CALENDAR_DAY",
     "ListElement": "On a set calendar day",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SupervisionOrderEndDateType",
+    "ID": "ManageOrdersEndDateTypeWithEndOfProceedings",
     "ListElementCode": "SET_CALENDAR_DAY_AND_TIME",
     "ListElement": "On a set calendar day and time",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SupervisionOrderEndDateType",
-    "ListElementCode": "SET_NUMBER_OF_MONTHS",
-    "ListElement": "In a set number of months",
+    "ID": "ManageOrdersEndDateTypeWithEndOfProceedings",
+    "ListElementCode": "SET_END_OF_PROCEEDINGS",
+    "ListElement": "The end of proceedings",
     "DisplayOrder": 3
   }
 ]
