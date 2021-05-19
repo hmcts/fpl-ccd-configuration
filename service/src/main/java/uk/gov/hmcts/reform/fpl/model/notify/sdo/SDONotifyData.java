@@ -1,20 +1,19 @@
 package uk.gov.hmcts.reform.fpl.model.notify.sdo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 
 import java.util.Map;
 
-@Data
+@Value
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SDONotifyData implements NotifyData {
-    private final String familyManCaseNumber;
-    private final String leadRespondentsName;
-    private final String hearingDate;
-    private final String reference;
-    private final String caseUrl;
-    private final String title;
-    private final Map<String, Object> documentLink;
-    private final String callout;
+    String leadRespondentsName;
+    String respondentLastName; // only here because the ctsc was designed with this instead of leadRespondentsName
+    String caseUrl; // optional, not in the cafcass version due to it having the below field instead
+    Map<String, Object> documentLink; // optional, only the cafcass version has this populated
+    String callout;
 }
