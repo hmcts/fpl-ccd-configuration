@@ -6,7 +6,7 @@ const event = require('codeceptjs').event;
 const delays = {
   'click': 200,
   'doubleClick': 200,
-  'selectOption': 200,
+  'selectOption': 400,
   'fillField': 100,
   'checkOption': 200,
   'attachFile': 2000,
