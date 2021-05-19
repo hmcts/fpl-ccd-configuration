@@ -105,69 +105,6 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   });
 });
 
-Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
-  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
-  await I.goToNextPage();
-  manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDateTime(today);
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
-  await I.goToNextPage();
-  manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.removeAccommodation);
-  manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
-  await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
-  await manageOrdersEventPage.enterFurtherDirections('some text');
-  await I.goToNextPage();
-  await manageOrdersEventPage.checkPreview();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, {
-    orderIndex: 1,
-    orderType: 'C23 - Emergency protection order',
-    approvalDateTime: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
-  });
-});
-
-Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
-  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
-  await I.goToNextPage();
-  manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDateTime(today);
-  await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
-  await I.goToNextPage();
-  manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
-  manageOrdersEventPage.enterRemovalAddress(removalAddress);
-  manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
-  manageOrdersEventPage.enterWhoIsExcluded('John Doe');
-  await manageOrdersEventPage.enterExclusionStartDate(approvalDate);
-  manageOrdersEventPage.uploadPowerOfArrest(config.testPdfFile);
-  manageOrdersEventPage.selectIncludePhrase(manageOrdersEventPage.section4.includePhrase.options.yes);
-  await manageOrdersEventPage.enterEPOEndDateTime(futureDate);
-  await manageOrdersEventPage.enterFurtherDirections('some text');
-  await I.goToNextPage();
-  await manageOrdersEventPage.checkPreview();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I, caseViewPage, {
-    orderIndex: 1,
-    orderType: 'C23 - Emergency protection order',
-    approvalDateTime: today,
-    allocatedJudge: allocatedJudge,
-    children: 'Timothy Jones',
-  });
-});
-
 Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
