@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 @Value
 @SuperBuilder(toBuilder = true)
 public class C23EPODocmosisParameters extends DocmosisParameters {
+
     GeneratedOrderType orderType;
     String orderDetails;
     String furtherDirections;
@@ -23,4 +24,6 @@ public class C23EPODocmosisParameters extends DocmosisParameters {
     String epoEndDateTime;
     String removalAddress;
     String exclusionRequirement;
+    boolean powerOfArrestFileAttached;
+
 }
