@@ -2,34 +2,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "TestComplexType",
-    "ListElementCode": "label1",
-    "ElementLabel": "Here is a label in a complex type",
-    "FieldType": "Label",
+    "ListElementCode": "testYesNo",
+    "ElementLabel": "Would you like to reveal some content?",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "TestComplexType",
     "ListElementCode": "label2",
-    "ElementLabel": "Here is another label in a complex type",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "TestComplexType",
-    "ListElementCode": "hiddenLabel",
-    "ElementLabel": "This label is hidden",
-    "FieldType": "Label",
+    "ElementLabel": "Here is your revealed content. Please fill in the text box.",
+    "FieldType": "Text",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "label2=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "TestComplexType",
-    "ListElementCode": "text",
-    "ElementLabel": "Enter some text here",
-    "FieldType": "TextArea",
-    "SecurityClassification": "Public"
+    "FieldShowCondition": "testYesNo=\"Yes\""
   }
 ]
