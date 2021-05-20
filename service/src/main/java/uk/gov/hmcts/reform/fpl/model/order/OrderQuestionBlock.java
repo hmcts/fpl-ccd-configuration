@@ -31,9 +31,11 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersTitle", "manageOrdersDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
-    SUPERVISION_ORDER_END_DATE("supervisionOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
+    MANAGE_ORDER_END_DATE_WITH_MONTH("manageOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
-            "manageOrdersSetMonthsEndDate"));
+            "manageOrdersSetMonthsEndDate")),
+    ICO_EXCLUSION("exclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersExclusionRequirement", "manageOrdersExclusionDetails"));
 
     private final String showHideField;
     private final String question;

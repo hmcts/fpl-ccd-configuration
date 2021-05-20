@@ -18,8 +18,9 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @Getter
@@ -47,7 +48,20 @@ public enum Order {
             APPROVAL_DATE,
             WHICH_CHILDREN,
             FURTHER_DIRECTIONS,
-            SUPERVISION_ORDER_END_DATE,
+            MANAGE_ORDER_END_DATE_WITH_MONTH,
+            REVIEW_DRAFT_ORDER)
+    ),
+    C33_INTERIM_CARE_ORDER(
+        "Interim care order",
+        "[GET INFO]",
+        "C33 - Interim care order",
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            ICO_EXCLUSION,
+            FURTHER_DIRECTIONS,
+            MANAGE_ORDER_END_DATE_WITH_MONTH,
             REVIEW_DRAFT_ORDER)
     );
 

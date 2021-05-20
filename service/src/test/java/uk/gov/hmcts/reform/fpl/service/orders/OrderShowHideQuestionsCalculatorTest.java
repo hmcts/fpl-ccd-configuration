@@ -42,7 +42,7 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoExpiryDate", "NO",
             "epoTypeAndPreventRemoval", "NO",
             "orderDetails", "NO",
-            "supervisionOrderExpiryDate", "NO"
+            "manageOrderExpiryDate", "NO"
         ));
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
@@ -55,7 +55,7 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoExpiryDate", "YES",
             "epoTypeAndPreventRemoval", "YES",
             "orderDetails", "NO",
-            "supervisionOrderExpiryDate", "NO"
+            "manageOrderExpiryDate", "NO"
         ));
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
@@ -68,7 +68,7 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoChildrenDescription", "NO",
             "epoExpiryDate", "NO",
             "epoTypeAndPreventRemoval", "NO",
-            "supervisionOrderExpiryDate", "NO"
+            "manageOrderExpiryDate", "NO"
         ));
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
@@ -81,7 +81,7 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoChildrenDescription", "NO",
             "epoExpiryDate", "NO",
             "epoTypeAndPreventRemoval", "NO",
-            "supervisionOrderExpiryDate", "YES"
+            "manageOrderExpiryDate", "YES"
         ));
 
         return Stream.of(

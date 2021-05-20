@@ -212,5 +212,14 @@
     "SecurityClassification": "PUBLIC",
     "Searchable": "N",
     "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersExclusionDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Add exclusion details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalTime.MIDNIGHT;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValidator {
+public class ManageOrderEndDateWithMonthValidator implements QuestionBlockOrderValidator {
     private static final Integer MINIMUM_MONTHS_VALID = 1;
     private static final Integer MAXIMUM_MONTHS_VALID = 12;
     private static final String INVALID_TIME_MESSAGE = "Enter a valid time";
@@ -31,7 +31,7 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
 
     @Override
     public OrderQuestionBlock accept() {
-        return SUPERVISION_ORDER_END_DATE;
+        return MANAGE_ORDER_END_DATE_WITH_MONTH;
     }
 
     @Override

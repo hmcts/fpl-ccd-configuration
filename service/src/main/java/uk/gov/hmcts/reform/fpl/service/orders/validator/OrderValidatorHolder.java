@@ -18,7 +18,7 @@ public class OrderValidatorHolder {
     private final ApprovalDateTimeValidator approvalDateTimeValidator;
     private final WhichChildrenValidator whichChildrenValidator;
     private final EPOEndDateValidator epoEndDateValidator;
-    private final SupervisionOrderEndDateValidator supervisionOrderEndDateValidator;
+    private final ManageOrderEndDateWithMonthValidator manageOrderEndDateWithMonthValidator;
 
     private Map<OrderQuestionBlock, QuestionBlockOrderValidator> blockToValidator;
 
@@ -31,7 +31,7 @@ public class OrderValidatorHolder {
             approvalDateValidator,
             approvalDateTimeValidator,
             epoEndDateValidator,
-            supervisionOrderEndDateValidator
+            manageOrderEndDateWithMonthValidator
         ).stream().collect(Collectors.toMap(QuestionBlockOrderValidator::accept, Function.identity()));
 
         return blockToValidator;

@@ -16,9 +16,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_CALENDAR_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_CALENDAR_DAY_AND_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
-class SupervisionOrderEndDateValidatorTest {
+class ManageOrderEndDateWithMonthValidatorTest {
     private static final String TEST_INVALID_TIME_MESSAGE = "Enter a valid time";
     private static final String TEST_FUTURE_DATE_MESSAGE = "Enter an end date in the future";
     private static final String TEST_END_DATE_RANGE_MESSAGE = "Supervision orders cannot last longer than 12 months";
@@ -29,11 +29,11 @@ class SupervisionOrderEndDateValidatorTest {
 
     private final Time time = new FixedTimeConfiguration().stoppedTime();
 
-    private final SupervisionOrderEndDateValidator underTest = new SupervisionOrderEndDateValidator(time);
+    private final ManageOrderEndDateWithMonthValidator underTest = new ManageOrderEndDateWithMonthValidator(time);
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(SUPERVISION_ORDER_END_DATE);
+        assertThat(underTest.accept()).isEqualTo(MANAGE_ORDER_END_DATE_WITH_MONTH);
     }
 
     @Test

@@ -87,7 +87,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.epoTypeAndPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\"",
+    "FieldShowCondition": "orderTempQuestions.epoTypeAndPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\" OR ",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -191,7 +191,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.supervisionOrderExpiryDate=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.manageOrderExpiryDate=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -231,6 +231,19 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "FieldShowCondition": "manageOrdersEndDateTypeWithMonth=\"SET_NUMBER_OF_MONTHS\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersExclusionDetails",
+    "PageFieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.epoTypeAndPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\" AND manageOrdersExclusionRequirement=\"Yes\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
