@@ -246,6 +246,9 @@ public class StandardDirectionsOrderController extends CallbackController {
         switch (sdoRouter) {
             case URGENT:
                 caseDetails.getData().putAll(urgentOrderService.finalise(caseData));
+                // assigning default value to make sonar happy
+                // its code analysis can't seem to pick up on the fact that the npe can't occur in the upcoming if
+                order = StandardDirectionOrder.builder().build();
                 break;
             case SERVICE:
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
@@ -294,7 +297,6 @@ public class StandardDirectionsOrderController extends CallbackController {
             "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings"
         ));
 
-        // order is only null when sdoRouter is URGENT
         if (URGENT == sdoRouter || order.isSealed()) {
             caseDetails.getData().put("state", CASE_MANAGEMENT);
             tempFields.add("sdoRouter");
