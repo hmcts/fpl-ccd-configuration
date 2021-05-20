@@ -33,6 +33,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersOperation",
             "manageOrdersType",
             "orderTempQuestions",
+            "issuingDetailsPreSectionSubHeader",
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
             "orderDetailsSectionSubHeader"

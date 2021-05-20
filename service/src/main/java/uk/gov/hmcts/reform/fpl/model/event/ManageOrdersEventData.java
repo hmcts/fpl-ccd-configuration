@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Jacksonized
 public class ManageOrdersEventData {
     Order manageOrdersType;
+    Object manageOrdersApprovedAtHearingList;
     LocalDate manageOrdersApprovalDate;
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;

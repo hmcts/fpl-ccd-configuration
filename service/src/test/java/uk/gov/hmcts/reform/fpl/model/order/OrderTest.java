@@ -15,6 +15,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS_PART_1;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
@@ -32,8 +33,8 @@ class OrderTest {
 
     @Test
     void firstSection() {
-        assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
-        assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS);
+        assertThat(C21_BLANK_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS_PART_1);
+        assertThat(C32_CARE_ORDER.firstSection()).isEqualTo(ISSUING_DETAILS_PART_1);
     }
 
     @ParameterizedTest
@@ -44,14 +45,17 @@ class OrderTest {
 
     private static Stream<Arguments> sectionsWithNext() {
         return Stream.of(
+            Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS_PART_1, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C32_CARE_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C32_CARE_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C32_CARE_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C21_BLANK_ORDER, ISSUING_DETAILS_PART_1, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C21_BLANK_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C21_BLANK_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C21_BLANK_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C21_BLANK_ORDER, REVIEW, Optional.empty()),
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ISSUING_DETAILS_PART_1, Optional.of(ISSUING_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, ORDER_DETAILS, Optional.of(REVIEW)),

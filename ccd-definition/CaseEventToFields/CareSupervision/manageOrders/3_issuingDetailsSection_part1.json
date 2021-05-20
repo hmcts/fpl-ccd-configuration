@@ -1,0 +1,66 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "orderTempQuestions",
+    "DisplayContext": "READONLY",
+    "PageID": "IssuingDetailsPart1",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 1,
+    "PageShowCondition": "orderTempQuestions.linkedToHearing=\"YES\"",
+    "FieldShowCondition": "manageOrdersOperation=\"DO_NOT_SHOW\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/issuing-details-part-1/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "issuingDetailsPart1SectionHeader",
+    "DisplayContext": "READONLY",
+    "PageID": "IssuingDetailsPart1",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 2,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "issuingDetailsPart1SectionSubHeader",
+    "DisplayContext": "READONLY",
+    "PageID": "IssuingDetailsPart1",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 3,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersApprovedAtHearing",
+    "DisplayContext": "MANDATORY",
+    "PageID": "IssuingDetailsPart1",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 4,
+    "FieldShowCondition": "orderTempQuestions.linkedToHearing=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersApprovedAtHearingList",
+    "DisplayContext": "MANDATORY",
+    "PageID": "IssuingDetailsPart1",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "PageFieldDisplayOrder": 4,
+    "FieldShowCondition": "orderTempQuestions.linkedToHearing=\"YES\" AND manageOrdersApprovedAtHearing=\"Yes\"",
+    "ShowSummaryChangeOption": "Y"
+  }
+]

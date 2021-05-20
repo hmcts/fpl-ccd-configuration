@@ -1,9 +1,16 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -11,6 +18,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getHearingJudge;
@@ -20,6 +28,14 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.prepareJu
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.removeAllocatedJudgeProperties;
 
 class JudgeAndLegalAdvisorHelperTest {
+
+    private static final Optional<Element<HearingBooking>> NO_HEARING = Optional.empty();
+    private static final Judge ALLOCATED_JUDGE = Judge.builder()
+        .judgeTitle(HIS_HONOUR_JUDGE)
+        .judgeLastName("JudgeLastName")
+        .build();
+    private static final JudgeOrMagistrateTitle ANOTHER_JUDGE_TITLE = JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
+    private final JudgeAndLegalAdvisorHelper underTest = new JudgeAndLegalAdvisorHelper();
 
     @Test
     void shouldReturnEmptyLegalAdvisorNameWhenJudgeAndLegalAdvisorIsNull() {
@@ -246,5 +262,85 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeEmailAddress("dread@example.com")
             .build();
     }
+
+    @Nested
+    class BuildForHearing {
+
+        private static final String JUDGE_CASE_ASSIGNED_LABEL = "Case assigned to: His Honour Judge JudgeLastName";
+        private static final String ANOTHER_JUDGE_LAST_NAME = "anotherJudgeLastName";
+
+        @Test
+        void noHearingAndNoAllocatedJudge() {
+            Optional<JudgeAndLegalAdvisor> actual = underTest.buildForHearing(
+                CaseData.builder()
+                    .allocatedJudge(null)
+                    .build(),
+                NO_HEARING);
+
+            assertThat(actual).isEqualTo(Optional.empty());
+        }
+
+        @Test
+        void noHearingAndAllocatedJudge() {
+            Optional<JudgeAndLegalAdvisor> actual = underTest.buildForHearing(
+                CaseData.builder()
+                    .allocatedJudge(ALLOCATED_JUDGE)
+                    .build(),
+                NO_HEARING);
+
+            assertThat(actual).isEqualTo(Optional.of(
+                JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel(JUDGE_CASE_ASSIGNED_LABEL)
+                    .build())
+            );
+        }
+
+        @Test
+        void hearingAndAllocatedJudge() {
+            Optional<JudgeAndLegalAdvisor> actual = underTest.buildForHearing(
+                CaseData.builder()
+                    .allocatedJudge(ALLOCATED_JUDGE)
+                    .build(),
+                Optional.of(element(HearingBooking.builder()
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeLastName(ANOTHER_JUDGE_LAST_NAME)
+                        .judgeTitle(ANOTHER_JUDGE_TITLE)
+                        .build())
+                    .build())));
+
+            assertThat(actual).isEqualTo(Optional.of(
+                JudgeAndLegalAdvisor.builder()
+                    .allocatedJudgeLabel(JUDGE_CASE_ASSIGNED_LABEL)
+                    .judgeLastName(ANOTHER_JUDGE_LAST_NAME)
+                    .judgeTitle(ANOTHER_JUDGE_TITLE)
+                    .useAllocatedJudge("No")
+                    .build())
+            );
+        }
+
+        @Test
+        void hearingAndNoAllocatedJudge() {
+            Optional<JudgeAndLegalAdvisor> actual = underTest.buildForHearing(
+                CaseData.builder()
+                    .build(),
+                Optional.of(element(HearingBooking.builder()
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .judgeLastName(ANOTHER_JUDGE_LAST_NAME)
+                        .judgeTitle(ANOTHER_JUDGE_TITLE)
+                        .build())
+                    .build())));
+
+            assertThat(actual).isEqualTo(Optional.of(
+                JudgeAndLegalAdvisor.builder()
+                    .judgeLastName(ANOTHER_JUDGE_LAST_NAME)
+                    .judgeTitle(ANOTHER_JUDGE_TITLE)
+                    .build())
+            );
+        }
+
+
+    }
+
+
 }
 

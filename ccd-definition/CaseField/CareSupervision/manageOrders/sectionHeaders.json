@@ -10,6 +10,24 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "issuingDetailsPart1SectionHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Label",
+    "Label": "## Add issuing details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "issuingDetailsPart1SectionSubHeader",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "issuingDetailsSectionHeader",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Label",

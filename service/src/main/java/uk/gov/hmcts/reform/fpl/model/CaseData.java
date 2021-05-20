@@ -839,6 +839,10 @@ public class CaseData {
         return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
     }
 
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearingDetails, UUID selected) {
+        return asDynamicList(hearingDetails, selected, HearingBooking::toLabel);
+    }
+
     private final HearingType hearingType;
     private final String hearingTypeDetails;
     private final String hearingVenue;
