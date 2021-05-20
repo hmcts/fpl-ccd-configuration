@@ -263,7 +263,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         );
         assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
             UrgentHearingOrder.builder()
-                .allocation(expectedAllocation)
+                .allocation("Section 9 circuit judge")
                 .order(sealedUrgentReference)
                 .unsealedOrder(urgentReference)
                 .dateAdded(dateNow())

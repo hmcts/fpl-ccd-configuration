@@ -100,11 +100,12 @@ class UrgentGatekeepingOrderServiceTest {
 
         when(sealingService.sealDocument(UPLOADED_ORDER)).thenReturn(SEALED_ORDER);
         when(allocationService.setAllocationDecisionIfNull(caseData, enteredAllocation)).thenReturn(updatedAllocation);
+        when(updatedAllocation.getProposal()).thenReturn("some allocation level");
 
         UrgentHearingOrder expectedOrder = UrgentHearingOrder.builder()
             .order(SEALED_ORDER)
             .unsealedOrder(UPLOADED_ORDER)
-            .allocation(updatedAllocation)
+            .allocation("some allocation level")
             .dateAdded(time.now().toLocalDate())
             .build();
 

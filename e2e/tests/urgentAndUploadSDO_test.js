@@ -22,8 +22,7 @@ Scenario('Gatekeeper uploads urgent hearing order', async ({I, caseViewPage, dra
   await I.completeEvent('Save and continue');
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
-  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Allocation decision', 'Give reason'], 'some reason');
+  I.seeInTab(['Gatekeeping order - urgent hearing order', 'Allocation decision'], 'Magistrate');
   I.seeInTab(['Gatekeeping order - urgent hearing order', 'Order'], 'mockFile.pdf');
   I.seeInTab(['Gatekeeping order - urgent hearing order', 'Date added'], dateFormat('d mmm yyyy'));
 

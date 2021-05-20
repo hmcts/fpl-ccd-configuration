@@ -47,12 +47,14 @@ public class UrgentGatekeepingOrderService {
         final DocumentReference orderDocument = eventData.getUrgentHearingOrderDocument();
         final Map<String, Object> returnedData = new HashMap<>();
 
-        Allocation allocationDecision = null;
+        String allocation = null;
 
         if (noPreExistingAllocationDecision(caseData)) {
-            allocationDecision = allocationService.setAllocationDecisionIfNull(
+            Allocation allocationDecision = allocationService.setAllocationDecisionIfNull(
                 caseData, eventData.getUrgentHearingAllocation()
             );
+
+            allocation = allocationDecision.getProposal();
 
             returnedData.put("allocationDecision", allocationDecision);
         }
@@ -61,7 +63,7 @@ public class UrgentGatekeepingOrderService {
             .order(sealingService.sealDocument(orderDocument))
             .unsealedOrder(orderDocument)
             .dateAdded(time.now().toLocalDate())
-            .allocation(allocationDecision)
+            .allocation(allocation)
             .build();
 
         returnedData.put("urgentHearingOrder", order);
