@@ -31,7 +31,7 @@ class ApprovalDateBlockPrePopulatorTest {
     private final ApprovalDateBlockPrePopulator underTest = new ApprovalDateBlockPrePopulator(hearingService);
 
     @Test
-    public void accept() {
+    void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.APPROVAL_DATE);
     }
 

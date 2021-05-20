@@ -30,8 +30,7 @@ public class HearingService {
         }
 
         UUID selectedHearingCode = getDynamicListSelectedValue(fieldSelector, mapper);
-        Optional<Element<HearingBooking>> hearingBooking = caseData.findHearingBookingElement(selectedHearingCode);
-        return hearingBooking;
+        return caseData.findHearingBookingElement(selectedHearingCode);
     }
 
     public List<Element<HearingBooking>> findOnlyHearingsInPast(CaseData caseData) {

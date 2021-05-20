@@ -36,12 +36,12 @@ class ApproverBlockPrePopulatorTest {
         hearingService, judgeAndLegalAdvisorHelper);
 
     @Test
-    public void accept() {
+    void accept() {
         assertThat(underTest.accept()).isEqualTo(OrderQuestionBlock.APPROVER);
     }
 
     @Test
-    public void prePopulateWithNoHearing() {
+    void prePopulateWithNoHearing() {
 
         when(hearingService.findHearing(CASE_DATA, SELECTED_HEARING)).thenReturn(HEARING);
         when(judgeAndLegalAdvisorHelper.buildForHearing(CASE_DATA,HEARING)).thenReturn(Optional.empty());
@@ -52,7 +52,7 @@ class ApproverBlockPrePopulatorTest {
     }
 
     @Test
-    public void prePopulateWithSelectedHearing() {
+    void prePopulateWithSelectedHearing() {
 
         when(hearingService.findHearing(CASE_DATA, SELECTED_HEARING)).thenReturn(HEARING);
         when(judgeAndLegalAdvisorHelper.buildForHearing(CASE_DATA,HEARING)).thenReturn(Optional.of(

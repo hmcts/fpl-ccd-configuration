@@ -37,7 +37,7 @@ class HearingServiceTest {
         void noSelector() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder().build(), null);
 
-            assertThat(actual).isEqualTo(Optional.empty());
+            assertThat(actual).isEmpty();
         }
 
         @Test
@@ -47,7 +47,7 @@ class HearingServiceTest {
                     .build(),
                 FIELD_SELECTOR.toString());
 
-            assertThat(actual).isEqualTo(Optional.empty());
+            assertThat(actual).isEmpty();
         }
 
         @Test

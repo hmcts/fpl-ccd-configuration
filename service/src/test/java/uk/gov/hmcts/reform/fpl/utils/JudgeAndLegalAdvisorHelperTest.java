@@ -277,7 +277,7 @@ class JudgeAndLegalAdvisorHelperTest {
                     .build(),
                 NO_HEARING);
 
-            assertThat(actual).isEqualTo(Optional.empty());
+            assertThat(actual).isEmpty();
         }
 
         @Test
