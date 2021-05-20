@@ -74,7 +74,9 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldPopulateServiceRoutingPageConditionVariableWhenRouterIsService() {
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(buildCaseDetailsWithDateOfIssueAndRoute("13 March 2020", SERVICE));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(
+            buildCaseDetailsWithDateOfIssueAndRoute("13 March 2020", SERVICE)
+        );
 
         assertThat(response.getData())
             .doesNotContainKey("useUploadRoute")

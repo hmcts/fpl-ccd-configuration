@@ -25,8 +25,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 
 class UrgentGatekeepingOrderServiceTest {
-    private final static DocumentReference UPLOADED_ORDER = mock(DocumentReference.class);
-    private final static DocumentReference SEALED_ORDER = mock(DocumentReference.class);
+    private static final DocumentReference UPLOADED_ORDER = mock(DocumentReference.class);
+    private static final DocumentReference SEALED_ORDER = mock(DocumentReference.class);
 
     private final Time time = new FixedTime();
     private final DocumentSealingService sealingService = mock(DocumentSealingService.class);

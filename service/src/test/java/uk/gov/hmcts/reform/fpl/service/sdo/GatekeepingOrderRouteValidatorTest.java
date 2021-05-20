@@ -47,7 +47,9 @@ class GatekeepingOrderRouteValidatorTest {
     void allowAccessToUrgentHearingRouteShouldReturnErrorWhenStateIsCaseManagement() {
         CaseData caseData = CaseData.builder().state(State.CASE_MANAGEMENT).build();
 
-        assertThat(underTest.allowAccessToUrgentHearingRoute(caseData)).isEqualTo(List.of(URGENT_ROUTE_VALIDATION_MESSAGE));
+        assertThat(underTest.allowAccessToUrgentHearingRoute(caseData)).isEqualTo(List.of(
+            URGENT_ROUTE_VALIDATION_MESSAGE
+        ));
     }
 
     @Test
