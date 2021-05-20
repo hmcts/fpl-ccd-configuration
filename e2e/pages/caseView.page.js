@@ -114,7 +114,10 @@ module.exports = {
     I.see(this.tasksErrorsTitle);
     I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
 
-    const errors = (await I.grabTextFrom('details div')).split('\n\n');
+    const errors = (await I.grabTextFrom('details div'))
+      .replace('\n\n','\n')
+      .split('\n')
+      .filter(item => item);
 
     assert.deepStrictEqual(errors, tasksErrors);
   },
