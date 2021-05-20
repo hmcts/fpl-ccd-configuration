@@ -27,6 +27,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private static Stream<Arguments> orderWithExpectedMap() {
         Map<String, String> commonQuestions = Map.of(
+            "linkedToHearing", "YES",
             "approver", "YES",
             "previewOrder", "YES",
             "whichChildren", "YES");
