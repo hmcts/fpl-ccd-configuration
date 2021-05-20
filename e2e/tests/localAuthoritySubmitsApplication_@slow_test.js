@@ -47,7 +47,7 @@ Scenario('local authority sees task list', async ({caseViewPage}) => {
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async ({I, caseViewPage, changeCaseNameEventPage}) => {
+Scenario('local authority changes case name @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, changeCaseNameEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   await changeCaseNameEventPage.changeCaseName('New case name');
   await I.seeCheckAnswersAndCompleteEvent('Save and continue');
@@ -62,7 +62,7 @@ Scenario('local authority changes case name @create-case-with-mandatory-sections
   await caseViewPage.checkTaskIsUnavailable(config.applicationActions.submitCase);
 });
 
-Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
+Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterOrdersAndDirectionsNeededEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   await enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
@@ -117,7 +117,7 @@ Scenario('local authority enters orders and directions @create-case-with-mandato
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters hearing @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
+Scenario('local authority enters hearing @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterHearingNeededEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
   await enterHearingNeededEventPage.enterTimeFrame();
   enterHearingNeededEventPage.enterHearingType();
@@ -148,7 +148,7 @@ Scenario('local authority enters hearing @create-case-with-mandatory-sections-on
     'Add the allocation proposal in the Allocation proposal']);
 });
 
-Scenario('local authority enters children @create-case-with-mandatory-sections-only', async ({I, caseViewPage, enterChildrenEventPage}) => {
+Scenario('local authority enters children @create-case-with-mandatory-sections-only @cross-browser', async ({I, caseViewPage, enterChildrenEventPage}) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   await enterChildrenEventPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
   await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
@@ -603,30 +603,34 @@ Scenario('local authority enters attending hearing', async ({I, caseViewPage, en
   await caseViewPage.checkTaskIsAvailable(config.applicationActions.enterAttendingHearing);
 });
 
-Scenario('local authority adds multiple application documents', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.addApplicationDocuments);
+Scenario('local authority adds multiple application documents @cross-browser', async ({I, caseViewPage, addApplicationDocumentsEventPage}) => {
+  const browser = await I.getBrowser();
+  // Both edge and safari fail to upload files in Saucelabs. Excluded for now.
+  if (browser !== 'MicrosoftEdge' && browser !== 'safari') {
+    await caseViewPage.goToNewActions(config.applicationActions.addApplicationDocuments);
 
-  await addApplicationDocumentsEventPage.addApplicationDocument('Threshold', config.testPdfFile);
-  await addApplicationDocumentsEventPage.addApplicationDocument('SWET', config.testPdfFile, undefined, 'Genogram included');
-  await addApplicationDocumentsEventPage.addApplicationDocument('Other', config.testPdfFile, 'Medical report');
-  await I.seeCheckAnswersAndCompleteEvent('Save and continue');
+    await addApplicationDocumentsEventPage.addApplicationDocument('Threshold', config.testPdfFile);
+    await addApplicationDocumentsEventPage.addApplicationDocument('SWET', config.testPdfFile, undefined, 'Genogram included');
+    await addApplicationDocumentsEventPage.addApplicationDocument('Other', config.testPdfFile, 'Medical report');
+    await I.seeCheckAnswersAndCompleteEvent('Save and continue');
 
-  I.seeEventSubmissionConfirmation(config.applicationActions.addApplicationDocuments);
-  caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
-  I.seeInTab(['Documents 1', 'Type of document'], 'Threshold');
-  I.seeInTab(['Documents 1', 'File'], 'mockFile.pdf');
-  I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
+    I.seeEventSubmissionConfirmation(config.applicationActions.addApplicationDocuments);
+    caseViewPage.selectTab(caseViewPage.tabs.viewApplication);
+    I.seeInTab(['Documents 1', 'Type of document'], 'Threshold');
+    I.seeInTab(['Documents 1', 'File'], 'mockFile.pdf');
+    I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
 
-  I.seeInTab(['Documents 2', 'Type of document'], 'SWET');
-  I.seeInTab(['Documents 2', 'File'], 'mockFile.pdf');
-  I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
+    I.seeInTab(['Documents 2', 'Type of document'], 'SWET');
+    I.seeInTab(['Documents 2', 'File'], 'mockFile.pdf');
+    I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
 
-  I.seeInTab(['Documents 3', 'Type of document'], 'Other');
-  I.seeInTab(['Documents 3', 'File'], 'mockFile.pdf');
-  I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
+    I.seeInTab(['Documents 3', 'Type of document'], 'Other');
+    I.seeInTab(['Documents 3', 'File'], 'mockFile.pdf');
+    I.seeInTab(['Documents 3', 'Uploaded by'], 'kurt@swansea.gov.uk');
 
-  caseViewPage.selectTab(caseViewPage.tabs.startApplication);
-  caseViewPage.checkTaskIsInProgress(config.applicationActions.uploadDocuments);
+    caseViewPage.selectTab(caseViewPage.tabs.startApplication);
+    caseViewPage.checkTaskIsInProgress(config.applicationActions.uploadDocuments);
+  }
 });
 
 let feeToPay = '2055'; //Need to remember this between tests.. default in case the test below fails
