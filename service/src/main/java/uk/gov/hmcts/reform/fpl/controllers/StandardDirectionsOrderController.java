@@ -251,13 +251,12 @@ public class StandardDirectionsOrderController extends CallbackController {
             }
         }
 
-        StandardDirectionOrder order = null;
+        // assigning default value to make sonar happy
+        // its code analysis can't seem to pick up on the fact that the npe can't occur in the upcoming if
+        StandardDirectionOrder order = StandardDirectionOrder.builder().build();
         switch (sdoRouter) {
             case URGENT:
                 caseDetails.getData().putAll(urgentOrderService.finalise(caseData));
-                // assigning default value to make sonar happy
-                // its code analysis can't seem to pick up on the fact that the npe can't occur in the upcoming if
-                order = StandardDirectionOrder.builder().build();
                 break;
             case SERVICE:
                 JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
