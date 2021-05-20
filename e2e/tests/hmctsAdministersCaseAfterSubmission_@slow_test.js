@@ -65,6 +65,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('OTHER_ORDER');
   uploadAdditionalApplicationsEventPage.selectAdditionalApplicationType('C2_ORDER');
   uploadAdditionalApplicationsEventPage.selectC2Type('WITH_NOTICE');
+  uploadAdditionalApplicationsEventPage.selectApplicantList('Someone else');
+  uploadAdditionalApplicationsEventPage.enterOtherApplicantName('Jonathon Walker');
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('PARENTAL_RESPONSIBILITY');
@@ -90,6 +92,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Applicant'], 'Jonathon Walker');
   I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
@@ -108,6 +111,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'C2 application', 'Additional orders requested'], 'Parental responsibility');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
 
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Applicant'], 'Jonathon Walker');
   I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Application type'], 'C1 - Parental responsibility');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
