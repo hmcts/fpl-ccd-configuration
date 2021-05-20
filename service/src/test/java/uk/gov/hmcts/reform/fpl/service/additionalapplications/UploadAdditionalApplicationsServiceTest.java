@@ -102,7 +102,7 @@ class UploadAdditionalApplicationsServiceTest {
             .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
             .temporaryPbaPayment(pbaPayment)
-            .temporaryApplicantsList(applicantsList)
+            .applicantsList(applicantsList)
             .c2Type(WITH_NOTICE)
             .build();
 
@@ -131,8 +131,8 @@ class UploadAdditionalApplicationsServiceTest {
             .additionalApplicationType(List.of(OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
             .temporaryPbaPayment(pbaPayment)
-            .temporaryApplicantsList(applicantsList)
-            .temporaryOtherApplicant("some other name")
+            .applicantsList(applicantsList)
+            .otherApplicant("some other name")
             .build();
 
         given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
@@ -166,7 +166,7 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
-            .temporaryApplicantsList(applicantsList)
+            .applicantsList(applicantsList)
             .build();
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);

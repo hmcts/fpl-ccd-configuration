@@ -43,7 +43,7 @@ public class UploadAdditionalApplicationsService {
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
         final String applicantName = getSelectedApplicantName(
-            caseData.getTemporaryApplicantsList(), caseData.getTemporaryOtherApplicant());
+            caseData.getApplicantsList(), caseData.getOtherApplicant());
 
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();

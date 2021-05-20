@@ -60,7 +60,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("temporaryApplicantsList", applicantsListGenerator.buildApplicantsList(caseData));
+        caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
     }
@@ -114,8 +114,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
-            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "temporaryApplicantsList",
-            "temporaryOtherApplicant");
+            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
+            "otherApplicant");
 
         return respond(caseDetails);
     }

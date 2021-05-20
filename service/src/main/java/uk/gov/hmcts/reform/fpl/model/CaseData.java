@@ -301,8 +301,8 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
-    private final Object temporaryApplicantsList;
-    private final String temporaryOtherApplicant;
+    private final Object applicantsList;
+    private final String otherApplicant;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {

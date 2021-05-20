@@ -30,11 +30,11 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -267,8 +267,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getTemporaryPbaPayment()).isNull();
         assertThat(caseData.getC2ApplicationType()).isNull();
         assertThat(caseData.getAmountToPay()).isNull();
-        assertThat(caseData.getTemporaryApplicantsList()).isNull();
-        assertThat(caseData.getTemporaryOtherApplicant()).isNull();
+        assertThat(caseData.getApplicantsList()).isNull();
+        assertThat(caseData.getOtherApplicant()).isNull();
     }
 
     private void assertDocument(DocumentReference actualDocument) {
@@ -345,12 +345,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         DynamicListElement other = DynamicListElement.builder()
             .code(APPLICANT_SOMEONE_ELSE).label("Someone else").build();
 
-        data.put("temporaryApplicantsList", DynamicList.builder()
+        data.put("applicantsList", DynamicList.builder()
             .value(APPLICANT.equals(selected) ? applicant : other)
             .listItems(List.of(applicant, other)).build());
 
         if (APPLICANT_SOMEONE_ELSE.equals(selected)) {
-            data.put("temporaryOtherApplicant", OTHER_APPLICANT_NAME);
+            data.put("otherApplicant", OTHER_APPLICANT_NAME);
         }
 
         return data;
@@ -402,7 +402,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .surname("Hudson")
             .forename("Steve")
             .email("steve.hudson@gov.uk")
-            .roles(asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }

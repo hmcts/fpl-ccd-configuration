@@ -53,7 +53,7 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
 
         DynamicList actualDynamicList = mapper.convertValue(
-            response.getData().get("temporaryApplicantsList"), DynamicList.class
+            response.getData().get("applicantsList"), DynamicList.class
         );
 
         Assertions.assertThat(actualDynamicList.getListItems())
