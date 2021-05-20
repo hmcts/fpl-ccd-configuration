@@ -103,8 +103,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
-
         Map<String, String> expectedQuestions = new HashMap<>();
         expectedQuestions.put("linkedToHearing", "YES");
         expectedQuestions.put("approver", "YES");
@@ -118,6 +116,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         expectedQuestions.put("epoChildrenDescription", "NO");
         expectedQuestions.put("epoExpiryDate", "NO");
         expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
