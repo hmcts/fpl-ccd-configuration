@@ -23,6 +23,6 @@ public class IsStateMigratableValidator implements ConstraintValidator<IsStateMi
     }
 
     private boolean hasFinalFields(Child child) {
-        return child.getFinalOrderIssuedType() != null || child.getFinalOrderIssued() != null;
+        return child.getFinalOrderIssuedType() != null || "Yes".equals(child.getFinalOrderIssued());
     }
 }
