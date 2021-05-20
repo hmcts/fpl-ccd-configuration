@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
@@ -52,14 +53,14 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     private final PbaNumberService pbaNumberService;
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
+    private final ApplicantsListGenerator applicantsListGenerator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("temporaryApplicantsList",
-            uploadAdditionalApplicationsService.buildApplicantsList(caseData));
+        caseDetails.getData().put("temporaryApplicantsList", applicantsListGenerator.buildApplicantsList(caseData));
 
         return respond(caseDetails);
     }
@@ -113,7 +114,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
-            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE);
+            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "temporaryApplicantsList",
+            "temporaryOtherApplicant");
 
         return respond(caseDetails);
     }

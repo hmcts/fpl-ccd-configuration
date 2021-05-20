@@ -5,11 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Supplement;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
@@ -20,12 +16,11 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
-import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
@@ -35,63 +30,21 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
 
+    public static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final ObjectMapper mapper;
 
-    public DynamicList buildApplicantsList(CaseData caseData) {
-
-        List<Element<String>> applicantsFullNames = buildApplicantElements(caseData.getAllApplicants());
-        applicantsFullNames.addAll(buildRespondentNameElements(caseData.getAllRespondents()));
-        applicantsFullNames.addAll(buildChildElements(caseData.getAllChildren()));
-        applicantsFullNames.addAll(buildOthersElements(caseData.getAllOthers()));
-
-        return asDynamicList(applicantsFullNames, null, s -> s);
-    }
-
-    private List<Element<String>> buildOthersElements(List<Element<Other>> others) {
-        IncrementalInteger i = new IncrementalInteger(1);
-
-        return others.stream()
-            .map(other -> element(other.getId(),
-                "Other " + i.getAndIncrement() + " - " + other.getValue().getName()))
-            .collect(Collectors.toList());
-    }
-
-    private List<Element<String>> buildApplicantElements(List<Element<Applicant>> applicants) {
-        return applicants.stream()
-            .map(applicant -> element(applicant.getId(),
-                "Applicant " + " - " + (isNotEmpty(applicant.getValue().getParty().getFullName())
-                    ? applicant.getValue().getParty().getFullName()
-                    : applicant.getValue().getParty().getOrganisationName())))
-            .collect(Collectors.toList());
-    }
-
-    private List<Element<String>> buildChildElements(List<Element<Child>> children) {
-        return children.stream()
-            .map(child -> element(child.getId(),
-                "Child " + " - " + child.getValue().getParty().getFullName()))
-            .collect(Collectors.toList());
-    }
-
-    private List<Element<String>> buildRespondentNameElements(List<Element<Respondent>> respondents) {
-        IncrementalInteger i = new IncrementalInteger(1);
-
-        return respondents.stream()
-            .map(respondent -> element(respondent.getId(),
-                "Respondent " + i.getAndIncrement() + " - " + respondent.getValue().getParty().getFullName()))
-            .collect(Collectors.toList());
-    }
-
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
-        final String applicantName = getSelectedApplicantName(caseData.getTemporaryApplicantsList());
+        final String applicantName = getSelectedApplicantName(
+            caseData.getTemporaryApplicantsList(), caseData.getTemporaryOtherApplicant());
+
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();
 
@@ -116,10 +69,18 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    private String getSelectedApplicantName(Object applicantsList) {
-        DynamicListElement selectedElement = mapper.convertValue(applicantsList, DynamicList.class).getValue();
-        if (isNotEmpty(selectedElement)) {
-            return selectedElement.getLabel();
+    private String getSelectedApplicantName(Object applicantsList, String otherApplicant) {
+        DynamicList dynamicList = mapper.convertValue(applicantsList, DynamicList.class);
+
+        if (Objects.nonNull(dynamicList)) {
+            DynamicListElement selectedElement = dynamicList.getValue();
+
+            if (isNotEmpty(selectedElement)) {
+                if (APPLICANT_SOMEONE_ELSE.equals(selectedElement.getCode())) {
+                    return otherApplicant;
+                }
+                return selectedElement.getLabel();
+            }
         }
         return EMPTY;
     }

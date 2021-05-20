@@ -302,6 +302,7 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
     private final Object temporaryApplicantsList;
+    private final String temporaryOtherApplicant;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {

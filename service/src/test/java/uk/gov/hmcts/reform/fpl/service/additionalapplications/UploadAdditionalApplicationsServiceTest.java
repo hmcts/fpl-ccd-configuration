@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
@@ -59,16 +62,26 @@ class UploadAdditionalApplicationsServiceTest {
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
     @Autowired
-    private UploadAdditionalApplicationsService underTest;
-
-    @Autowired
     private Time time;
+
+    @MockBean
+    private ObjectMapper objectMapper;
 
     @MockBean
     private IdamClient idamClient;
 
     @MockBean
     private RequestData requestData;
+
+    @Autowired
+    private UploadAdditionalApplicationsService underTest;
+
+    public static final String APPLICANT_NAME = "Swansea local authority, Applicant";
+    public static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+
+    private static final List<DynamicListElement> DYNAMIC_LIST_ELEMENTS = List.of(
+        DynamicListElement.builder().code("applicant").label(APPLICANT_NAME).build(),
+        DynamicListElement.builder().code(APPLICANT_SOMEONE_ELSE).label("Someone else").build());
 
     @BeforeEach()
     void init() {
@@ -82,37 +95,53 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
 
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0)).listItems(DYNAMIC_LIST_ELEMENTS).build();
+
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
             .temporaryPbaPayment(pbaPayment)
+            .temporaryApplicantsList(applicantsList)
             .c2Type(WITH_NOTICE)
             .build();
+
+        given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
     }
 
     @Test
-    void shouldBuildOtherApplicationsBundle() {
+    void shouldBuildOtherApplicationsBundleWithOtherApplicantName() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
+
+        // select "Someone else"
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
             .temporaryPbaPayment(pbaPayment)
+            .temporaryApplicantsList(applicantsList)
+            .temporaryOtherApplicant("some other name")
             .build();
+
+        given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
 
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
     }
@@ -126,18 +155,26 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
         PBAPayment pbaPayment = buildPBAPayment();
 
+        // no value selected
+        DynamicList applicantsList = DynamicList.builder().listItems(DYNAMIC_LIST_ELEMENTS).build();
+
+        given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
+
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .c2Type(WITH_NOTICE)
             .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
+            .temporaryApplicantsList(applicantsList)
             .build();
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEmpty();
+        assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEmpty();
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(

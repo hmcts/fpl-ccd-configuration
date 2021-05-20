@@ -22,17 +22,19 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -54,6 +56,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final String USER_NAME = "HMCTS";
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference document = testDocumentReference();
+    private static final String LOCAL_AUTHORITY_NAME = "Swansea local authority";
+    private static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+    private static final String APPLICANT = "applicant";
+    private static final String OTHER_APPLICANT_NAME = "some other name";
 
     @Autowired
     private IdamClient idamClient;
@@ -82,6 +88,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryC2Document());
         PBAPayment temporaryPbaPayment = createPbaPayment();
         data.put("temporaryPbaPayment", temporaryPbaPayment);
+        data.putAll(createApplicantsDynamicList(APPLICANT));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -92,6 +99,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
 
         assertC2DocumentBundle(uploadedC2DocumentBundle);
+        assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
         assertTemporaryFieldsAreRemoved(caseData);
     }
@@ -103,13 +111,18 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryOtherApplicationDocument());
         PBAPayment temporaryPbaPayment = createPbaPayment();
         data.put("temporaryPbaPayment", temporaryPbaPayment);
+        data.putAll(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         AdditionalApplicationsBundle additionalApplicationsBundle
             = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+
         assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
+            .isEqualTo(OTHER_APPLICANT_NAME);
+
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
         assertTemporaryFieldsAreRemoved(caseData);
     }
@@ -123,6 +136,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryC2Document());
         data.putAll(createTemporaryOtherApplicationDocument());
         data.put("temporaryPbaPayment", temporaryPbaPayment);
+        data.putAll(createApplicantsDynamicList(APPLICANT));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -134,6 +148,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertOtherApplicationsBundle(additionalApplicationsBundle.getOtherApplicationsBundle());
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
 
+        assertThat(additionalApplicationsBundle.getC2DocumentBundle().getApplicantName())
+            .isEqualTo(LOCAL_AUTHORITY_NAME);
+        assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
+            .isEqualTo(LOCAL_AUTHORITY_NAME);
         assertTemporaryFieldsAreRemoved(caseData);
     }
 
@@ -177,12 +195,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(callbackResponse.getData().get("c2Type")).isNull();
-        assertThat(caseData.getC2ApplicationType()).isNull();
-        assertThat(caseData.getTemporaryPbaPayment()).isNull();
-        assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
-        assertThat(caseData.getAmountToPay()).isNull();
+        assertTemporaryFieldsAreRemoved(caseData);
     }
 
     @Test
@@ -251,6 +265,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getTemporaryOtherApplicationsBundle()).isNull();
         assertThat(caseData.getTemporaryPbaPayment()).isNull();
+        assertThat(caseData.getC2ApplicationType()).isNull();
+        assertThat(caseData.getAmountToPay()).isNull();
+        assertThat(caseData.getTemporaryApplicantsList()).isNull();
+        assertThat(caseData.getTemporaryOtherApplicant()).isNull();
     }
 
     private void assertDocument(DocumentReference actualDocument) {
@@ -318,6 +336,26 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
     }
 
+    private Map<String, Object> createApplicantsDynamicList(String selected) {
+        Map<String, Object> data = new HashMap<>();
+
+        DynamicListElement applicant = DynamicListElement.builder()
+            .code(APPLICANT).label(LOCAL_AUTHORITY_NAME).build();
+
+        DynamicListElement other = DynamicListElement.builder()
+            .code(APPLICANT_SOMEONE_ELSE).label("Someone else").build();
+
+        data.put("temporaryApplicantsList", DynamicList.builder()
+            .value(APPLICANT.equals(selected) ? applicant : other)
+            .listItems(List.of(applicant, other)).build());
+
+        if (APPLICANT_SOMEONE_ELSE.equals(selected)) {
+            data.put("temporaryOtherApplicant", OTHER_APPLICANT_NAME);
+        }
+
+        return data;
+    }
+
     private Map<String, Object> createTemporaryOtherApplicationDocument() {
         return Map.of(
             "temporaryOtherApplicationsBundle", Map.of(
@@ -364,7 +402,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .surname("Hudson")
             .forename("Steve")
             .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .roles(asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
             .build();
     }
 }
