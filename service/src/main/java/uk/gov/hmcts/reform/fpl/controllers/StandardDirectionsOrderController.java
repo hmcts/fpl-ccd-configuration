@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -212,6 +213,10 @@ public class StandardDirectionsOrderController extends CallbackController {
         order.setOrderDocReferenceFromDocument(document);
 
         caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, order);
+        // work around as I could not get the page hiding when using the [STATE] metadata field
+        caseDetails.getData().put(
+            "showNoticeOfProceedings", YesNo.from(GATEKEEPING == caseData.getState())
+        );
 
         return respond(caseDetails);
     }
@@ -225,6 +230,10 @@ public class StandardDirectionsOrderController extends CallbackController {
         StandardDirectionOrder sdo = sdoService.buildTemporarySDO(caseData, caseDataBefore.getStandardDirectionOrder());
 
         caseDetails.getData().put(STANDARD_DIRECTION_ORDER_KEY, sdo);
+        // work around as I could not get the page hiding when using the [STATE] metadata field
+        caseDetails.getData().put(
+            "showNoticeOfProceedings", YesNo.from(GATEKEEPING == caseData.getState())
+        );
 
         return respond(caseDetails);
     }
@@ -294,7 +303,7 @@ public class StandardDirectionsOrderController extends CallbackController {
 
         List<String> tempFields = new ArrayList<>(List.of(GatekeepingOrderEventData.temporaryFields()));
         tempFields.addAll(List.of(JUDGE_AND_LEGAL_ADVISOR_KEY, DATE_OF_ISSUE_KEY, "preparedSDO", "currentSDO",
-            "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings"
+            "replacementSDO", "useServiceRoute", "useUploadRoute", "noticeOfProceedings", "showNoticeOfProceedings"
         ));
 
         if (URGENT == sdoRouter || order.isSealed()) {

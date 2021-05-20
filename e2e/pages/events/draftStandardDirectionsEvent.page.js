@@ -110,7 +110,6 @@ module.exports = {
   async markAsFinal() {
     await I.runAccessibilityTest();
     I.click(this.fields.statusRadioGroup.sealed);
-    await I.goToNextPage();
   },
 
   checkC6() {
