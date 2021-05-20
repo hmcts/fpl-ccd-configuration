@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -61,19 +63,17 @@ class ApplicantsListGeneratorTest {
                 "Someone else");
     }
 
-    @Test
-    void shouldReturnLocalAuthorityNameAndSomeoneElseWhenRespondentsAndOthersDoNotExist() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthorityName("Swansea local authority")
-            .build();
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldReturnSomeoneElseWhenLocalAuthorityNameAndRespondentsAndOthersDoNotExist(String caseLocalAuthority) {
+        CaseData caseData = CaseData.builder().caseLocalAuthorityName(caseLocalAuthority).build();
 
         DynamicList actualDynamicList = underTest.buildApplicantsList(caseData);
 
         Assertions.assertThat(actualDynamicList).isEqualTo(DynamicList.builder()
             .value(DynamicListElement.builder().build())
-            .listItems(List.of(
-                DynamicListElement.builder().code("applicant").label("Swansea local authority, Applicant").build(),
-                DynamicListElement.builder().code("someoneelse").label("Someone else").build())).build());
+            .listItems(List.of(DynamicListElement.builder().code("someoneelse").label("Someone else").build()))
+            .build());
     }
 
 }
