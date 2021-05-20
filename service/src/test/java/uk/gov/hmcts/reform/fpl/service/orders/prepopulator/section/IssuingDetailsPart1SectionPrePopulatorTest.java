@@ -31,6 +31,8 @@ class IssuingDetailsPart1SectionPrePopulatorTest {
 
         when(mockOrder.getHistoryTitle()).thenReturn(ORDER_NAME);
 
-        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of("issuingDetailsPart1SectionSubHeader", ORDER_NAME));
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of(
+            "issuingDetailsPart1SectionSubHeader", ORDER_NAME
+        ));
     }
 }
