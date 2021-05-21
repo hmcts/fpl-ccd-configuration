@@ -57,16 +57,13 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldNotRemoveSupportingEvidenceBundles() {
             AdditionalApplicationsBundle additionalApplicationsBundle = buildExpectedAdditionalApplicationsBundle();
 
-            AdditionalApplicationsBundle expectedAdditionalApplicationsBundle =
-                buildExpectedAdditionalApplicationsBundle();
-
             CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, migrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
             AdditionalApplicationsBundle extractedAdditionalApplicationsBundle =
                 extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
 
-            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(expectedAdditionalApplicationsBundle);
+            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(additionalApplicationsBundle);
         }
 
         @Test
