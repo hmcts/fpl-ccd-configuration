@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -24,6 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -38,6 +40,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
     @Mock
     private ApproverBlockPrePopulator approverBlockPrePopulator;
+    @Mock
+    private EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
 
     // Section blocks
     @Mock
@@ -61,11 +65,12 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     @BeforeEach
     void setUp() {
         questionPrepopulators = List.of(
-            whichChildrenBlockPrePopulator, approverBlockPrePopulator
+            whichChildrenBlockPrePopulator, approverBlockPrePopulator, epoTypeAndPreventRemovalBlockPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.of(
             APPROVER, approverBlockPrePopulator,
-            WHICH_CHILDREN, whichChildrenBlockPrePopulator
+            WHICH_CHILDREN, whichChildrenBlockPrePopulator,
+            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator
         );
 
         sectionPrepopulatorMapping = Map.of(

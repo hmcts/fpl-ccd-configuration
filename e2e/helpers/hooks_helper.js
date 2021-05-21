@@ -24,7 +24,7 @@ module.exports = class HooksHelpers extends Helper {
 
   _beforeStep() {
     const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    return helper.waitForInvisible('xuilib-loading-spinner', 20);
+    return helper.waitForInvisible('xuilib-loading-spinner', 30);
   }
 
 };

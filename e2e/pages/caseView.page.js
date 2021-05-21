@@ -39,6 +39,7 @@ module.exports = {
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
       if(await I.waitForSelector(this.actionsDropdown, 60) != null) {
+        await I.scrollToElement(this.actionsDropdown);
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
       } else {
@@ -113,7 +114,10 @@ module.exports = {
     I.see(this.tasksErrorsTitle);
     I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
 
-    const errors = (await I.grabTextFrom('details div')).split('\n\n');
+    const errors = (await I.grabTextFrom('details div'))
+      .replace('\n\n','\n')
+      .split('\n')
+      .filter(item => item);
 
     assert.deepStrictEqual(errors, tasksErrors);
   },
