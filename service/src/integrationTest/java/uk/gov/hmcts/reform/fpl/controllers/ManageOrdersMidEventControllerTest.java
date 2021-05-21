@@ -92,21 +92,21 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
-
-        Map<String, String> expectedQuestions = new HashMap<>(Map.of(
-            "approver", "YES",
-            "previewOrder", "YES",
-            "furtherDirections", "YES",
-            "orderDetails", "NO",
-            "whichChildren", "YES",
-            "approvalDate", "YES",
-            "approvalDateTime", "NO",
-            "epoIncludePhrase", "NO",
-            "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO"
-        ));
+        Map<String, String> expectedQuestions = new HashMap<>();
+        expectedQuestions.put("approver", "YES");
+        expectedQuestions.put("previewOrder", "YES");
+        expectedQuestions.put("furtherDirections", "YES");
+        expectedQuestions.put("orderDetails", "NO");
+        expectedQuestions.put("whichChildren", "YES");
+        expectedQuestions.put("approvalDate", "YES");
+        expectedQuestions.put("approvalDateTime", "NO");
+        expectedQuestions.put("epoIncludePhrase", "NO");
+        expectedQuestions.put("epoChildrenDescription", "NO");
+        expectedQuestions.put("epoExpiryDate", "NO");
+        expectedQuestions.put("cafcassJurisdictions", "NO");
         expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }

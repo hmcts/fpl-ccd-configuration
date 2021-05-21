@@ -37,6 +37,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.CafcassEnglandRegions.BOURNEMOUTH;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -193,7 +194,9 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .manageOrdersApprovalDateTime(now())
                 .manageOrdersEndDateTime(now().plusDays(1))
                 .manageOrdersPowerOfArrest(UPLOADED_POWER_OF_ARREST)
-                .manageOrdersFurtherDirections("further directions").build())
+                .manageOrdersFurtherDirections("further directions")
+                .manageOrdersJurisdictionRegion("ENGLAND")
+                .manageOrdersEnglandRegions(BOURNEMOUTH).build())
             .build();
 
         CaseDetails caseDetails = asCaseDetails(caseData);
@@ -218,7 +221,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
             "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
             "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",
             "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement", "manageOrdersWhoIsExcluded",
-            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest", "manageOrdersTitle", "manageOrdersDirections"
+            "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest", "manageOrdersTitle",
+            "manageOrdersDirections", "manageOrdersEnglandRegions", "manageOrdersJurisdictionRegion"
         );
     }
 

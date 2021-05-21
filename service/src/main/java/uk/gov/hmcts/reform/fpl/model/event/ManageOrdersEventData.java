@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model.event;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.CafcassEnglandRegions;
+import uk.gov.hmcts.reform.fpl.enums.CafcassWalesRegions;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -30,4 +32,7 @@ public class ManageOrdersEventData {
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
+    String manageOrdersJurisdictionRegion;
+    CafcassEnglandRegions manageOrdersEnglandRegions;
+    CafcassWalesRegions manageOrdersWalesRegions;
 }

@@ -13,6 +13,7 @@ const operations = {
 const orders = {
   group: '#manageOrdersType',
   options: {
+    c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
     c32: 'C32_CARE_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
@@ -67,6 +68,15 @@ const section4 = {
   exclusionStartDate: '#manageOrdersExclusionStartDate',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
+  jurisdictionRegion: {
+    group: '#manageOrdersJurisdictionRegion',
+    options: {
+      england: 'ENGLAND',
+      wales: 'WALES',
+    },
+  },
+  englandRegions: '#manageOrdersEnglandRegions',
+  walesRegions: '#manageOrdersWalesRegions',
 };
 
 const preview = {
@@ -163,9 +173,18 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
+const selectJurisdictionRegion = jurisdictionRegion => {
+  I.click(`${section4.jurisdictionRegion.group}-${jurisdictionRegion}`);
+};
+
+const selectEnglandRegion = region => {
+  I.selectOption(section4.englandRegions, region);
+};
+
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  selectJurisdictionRegion, selectEnglandRegion,
 };
