@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 
@@ -38,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.InterimEndDateType.NAMED_DATE;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 
@@ -123,15 +121,11 @@ class SupervisionOrderGenerationServiceTest extends AbstractOrderGenerationServi
                 .orderDetails(format("It is ordered that %s supervises the child until 11:59pm on the %s.",
                     LOCAL_AUTHORITY_NAME, detailsDate));
         } else if (subtype == FINAL) {
-            LocalDateTime expiryDate = time.now().plusMonths(5);
-            final String formattedDateTime = formatLocalDateTimeBaseUsingFormat(expiryDate,
-                "h:mma 'on the' d'" + getDayOfMonthSuffix(expiryDate.getDayOfMonth()) + "' MMMM y");
-
             orderBuilder
                 .orderTitle("Supervision order")
                 .childrenAct("Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                 .orderDetails(format("It is ordered that %s supervises the child for 5 months "
-                    + "from the date of this order until %s.", LOCAL_AUTHORITY_NAME, formattedDateTime));
+                    + "from the date of this order.", LOCAL_AUTHORITY_NAME));
         }
         return enrichWithStandardData(SUPERVISION_ORDER, orderStatus, orderBuilder.build());
     }
