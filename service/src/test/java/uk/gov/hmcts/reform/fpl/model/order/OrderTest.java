@@ -30,10 +30,14 @@ class OrderTest {
         assertThat(C21_BLANK_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c21_blank_order.doc");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c32_care_order.pdf");
         assertThat(C32_CARE_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c32_care_order.doc");
-        assertThat(C23_EMERGENCY_PROTECTION_ORDER.fileName(RenderFormat.PDF)).isEqualTo("c23_emergency_protection_order.pdf");
-        assertThat(C23_EMERGENCY_PROTECTION_ORDER.fileName(RenderFormat.WORD)).isEqualTo("c23_emergency_protection_order.doc");
-        assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.fileName(RenderFormat.PDF)).isEqualTo("c47a_appointment_of_a_childrens_guardian.pdf");
-        assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.fileName(RenderFormat.WORD)).isEqualTo("c47a_appointment_of_a_childrens_guardian.doc");
+        assertThat(C23_EMERGENCY_PROTECTION_ORDER.fileName(RenderFormat.PDF))
+            .isEqualTo("c23_emergency_protection_order.pdf");
+        assertThat(C23_EMERGENCY_PROTECTION_ORDER.fileName(RenderFormat.WORD))
+            .isEqualTo("c23_emergency_protection_order.doc");
+        assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.fileName(RenderFormat.PDF))
+            .isEqualTo("c47a_appointment_of_a_childrens_guardian.pdf");
+        assertThat(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN.fileName(RenderFormat.WORD))
+            .isEqualTo("c47a_appointment_of_a_childrens_guardian.doc");
     }
 
     @Test
