@@ -35,7 +35,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "orderTempQuestions",
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
-            "orderDetailsSectionSubHeader"
+            "orderDetailsSectionSubHeader",
+            "manageOrdersJurisdictionRegion",
+            "manageOrdersEnglandRegions",
+            "manageOrdersWalesRegions"
         );
     }
 }
