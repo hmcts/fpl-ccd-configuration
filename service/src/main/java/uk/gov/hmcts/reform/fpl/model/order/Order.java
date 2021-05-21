@@ -38,8 +38,8 @@ public enum Order {
         List.of(APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
-    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a children's guardian", "Section 41(1) Children Act 1989",
-        "C47A - Appointment of a children's guardian",
+    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a Children's Guardian", "Section 41(1) Children Act 1989",
+        "C47A - Appointment of a Children's Guardian",
         List.of(APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
