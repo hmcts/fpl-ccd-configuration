@@ -57,18 +57,6 @@ public class MigrateCaseController extends CallbackController {
                         .toString()
                         .equals("4885a0e2-fd88-4614-9c35-6c61d6b5e422")
                     );
-
-                c2DocumentBundle.getSupportingEvidenceLA()
-                    .removeIf(supportingEvidenceLa -> supportingEvidenceLa.getId()
-                        .toString()
-                        .equals("4885a0e2-fd88-4614-9c35-6c61d6b5e422")
-                    );
-
-                c2DocumentBundle.getSupportingEvidenceNC()
-                    .removeIf(supportingEvidenceNc -> supportingEvidenceNc.getId()
-                        .toString()
-                        .equals("4885a0e2-fd88-4614-9c35-6c61d6b5e422")
-                    );
             }
         );
 
