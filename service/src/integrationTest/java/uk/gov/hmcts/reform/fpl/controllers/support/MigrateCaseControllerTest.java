@@ -31,14 +31,31 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     class Fpla3037 {
-        UUID uuid = UUID.randomUUID();
-        UUID supportingEvidenceToRemoveUuid = UUID.fromString("4885a0e2-fd88-4614-9c35-6c61d6b5e422");
+        UUID c2DocumentBundleUuid = UUID.randomUUID();
+        UUID supportingEvidenceBundleUuid = UUID.randomUUID();
+        UUID supportingEvidenceBundleToRemoveUuid = UUID.fromString("4885a0e2-fd88-4614-9c35-6c61d6b5e422");
         LocalDateTime localDateTime = LocalDateTime.now();
         String migrationId = "FPLA-3037";
 
         @Test
         void shouldRemoveExpectedSupportingEvidenceBundles() {
             AdditionalApplicationsBundle additionalApplicationsBundle = buildAdditionalApplicationsBundle();
+
+            AdditionalApplicationsBundle expectedAdditionalApplicationsBundle =
+                buildExpectedAdditionalApplicationsBundle();
+
+            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, migrationId);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+            AdditionalApplicationsBundle extractedAdditionalApplicationsBundle =
+                extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(expectedAdditionalApplicationsBundle);
+        }
+
+        @Test
+        void shouldNotRemoveSupportingEvidenceBundles() {
+            AdditionalApplicationsBundle additionalApplicationsBundle = buildExpectedAdditionalApplicationsBundle();
 
             AdditionalApplicationsBundle expectedAdditionalApplicationsBundle =
                 buildExpectedAdditionalApplicationsBundle();
@@ -81,10 +98,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .builder()
                 .c2DocumentBundle(
                     C2DocumentBundle.builder()
-                        .id(uuid)
+                        .id(c2DocumentBundleUuid)
                         .author("author")
                         .supportingEvidenceBundle(List.of(
-                            element(uuid, SupportingEvidenceBundle.builder()
+                            element(supportingEvidenceBundleUuid, SupportingEvidenceBundle.builder()
                                 .uploadedBy("test@test.co.uk")
                                 .dateTimeUploaded(localDateTime)
                                 .document(DocumentReference.builder().build())
@@ -98,14 +115,14 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .builder()
                 .c2DocumentBundle(
                     C2DocumentBundle.builder()
-                        .id(uuid)
+                        .id(c2DocumentBundleUuid)
                         .author("author")
                         .supportingEvidenceBundle(List.of(
-                            element(supportingEvidenceToRemoveUuid, SupportingEvidenceBundle.builder()
+                            element(supportingEvidenceBundleToRemoveUuid, SupportingEvidenceBundle.builder()
                                 .uploadedBy("test@test.co.uk")
                                 .dateTimeUploaded(localDateTime)
                                 .build()),
-                            element(uuid, SupportingEvidenceBundle.builder()
+                            element(supportingEvidenceBundleUuid, SupportingEvidenceBundle.builder()
                                 .uploadedBy("test@test.co.uk")
                                 .dateTimeUploaded(localDateTime)
                                 .document(DocumentReference.builder().build())
