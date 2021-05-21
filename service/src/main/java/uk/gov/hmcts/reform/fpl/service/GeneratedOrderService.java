@@ -218,7 +218,7 @@ public class GeneratedOrderService {
     }
 
     private String getManageOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
-                                                 InterimEndDate interimEndDate) {
+                                            InterimEndDate interimEndDate) {
         switch (typeAndDocument.getSubtype()) {
             case INTERIM:
                 requireNonNull(interimEndDate);

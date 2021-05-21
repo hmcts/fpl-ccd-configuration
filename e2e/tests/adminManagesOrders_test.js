@@ -136,7 +136,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35a);
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35A);
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();

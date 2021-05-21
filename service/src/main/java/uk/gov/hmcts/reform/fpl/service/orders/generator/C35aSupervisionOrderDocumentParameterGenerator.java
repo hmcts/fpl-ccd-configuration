@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;

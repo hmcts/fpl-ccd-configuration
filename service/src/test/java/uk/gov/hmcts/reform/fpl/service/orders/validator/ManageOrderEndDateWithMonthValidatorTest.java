@@ -13,9 +13,9 @@ import java.util.List;
 
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
 class ManageOrderEndDateWithMonthValidatorTest {

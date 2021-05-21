@@ -31,11 +31,23 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersTitle", "manageOrdersDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
-    MANAGE_ORDER_END_DATE_WITH_MONTH("manageOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
+    MANAGE_ORDER_END_DATE_WITH_MONTH(
+        "manageOrderExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate")),
-    ICO_EXCLUSION("exclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersExclusionRequirement", "manageOrdersExclusionDetails"));
+    MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS(
+        "manageOrderExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
+        List.of(
+            "manageOrdersEndDateTypeWithEndOfProceedings",
+            "manageOrdersSetDateEndDate",
+            "manageOrdersSetDateAndTimeEndDate"
+        )),
+    ICO_EXCLUSION(
+        "exclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
+        List.of(
+            "manageOrdersExclusionRequirement",
+            "manageOrdersExclusionDetails"
+        ));
 
     private final String showHideField;
     private final String question;

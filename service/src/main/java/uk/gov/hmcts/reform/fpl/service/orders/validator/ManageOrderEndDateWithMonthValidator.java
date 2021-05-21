@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrderEndDateTypeWithMonth;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
@@ -37,7 +37,7 @@ public class ManageOrderEndDateWithMonthValidator implements QuestionBlockOrderV
     @Override
     public List<String> validate(CaseData caseData) {
         final ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
-        final ManageOrderEndDateTypeWithMonth type = manageOrdersEventData.getManageOrdersEndDateTypeWithMonth();
+        final ManageOrdersEndDateTypeWithMonth type = manageOrdersEventData.getManageOrdersEndDateTypeWithMonth();
         final LocalDate endDate = manageOrdersEventData.getManageOrdersSetDateEndDate();
         final LocalDateTime endDateTime = manageOrdersEventData.getManageOrdersSetDateAndTimeEndDate();
         final Integer expireInNumberOfMonths = manageOrdersEventData.getManageOrdersSetMonthsEndDate();

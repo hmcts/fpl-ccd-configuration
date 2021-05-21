@@ -16,14 +16,14 @@ const orders = {
     c32: 'C32_CARE_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
-    c35a: 'C35A_SUPERVISION_ORDER',
+    c35A: 'C35A_SUPERVISION_ORDER',
   },
   title: {
-    c32: 'C32 - Care order',
-    c33: 'C33 - Interim care order',
-    c23: 'C23 - Emergency protection order',
-    c21: 'C21 - Blank order',
-    c35a: 'C35a - Supervision order',
+    c32: 'Care order (C32)',
+    c33: 'Interim care order (C33)',
+    c23: 'Emergency protection order (C23)',
+    c21: 'Blank order (C21)',
+    c35A: 'Supervision order (C35A)',
   },
 };
 
