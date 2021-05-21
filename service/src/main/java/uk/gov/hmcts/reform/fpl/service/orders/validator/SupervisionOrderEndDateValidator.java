@@ -22,10 +22,9 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION
 public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValidator {
     private static final Integer MINIMUM_MONTHS_VALID = 1;
     private static final Integer MAXIMUM_MONTHS_VALID = 12;
-    private static final String INVALID_TIME_MESSAGE = "Enter a valid time";
-    private static final String FUTURE_DATE_MESSAGE = "Enter an end date in the future";
-    private static final String END_DATE_MAX_RANGE_MESSAGE = "Supervision orders cannot last longer than 12 months";
-    private static final String END_DATE_MIN_RANGE_MESSAGE = "*******Supervision orders in months should be at least 1";
+    private static final String AFTER_APPROVAL_DATE_MESSAGE = "Enter an end date after the approval date";
+    private static final String END_DATE_MAX_RANGE_MESSAGE = "This order cannot last longer than 12 months";
+    private static final String END_DATE_MIN_RANGE_MESSAGE = "This order must last for at least 1 month";
 
     private final Time time;
 
@@ -41,12 +40,13 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
         final LocalDate endDate = manageOrdersEventData.getManageOrdersSetDateEndDate();
         final LocalDateTime endDateTime = manageOrdersEventData.getManageOrdersSetDateAndTimeEndDate();
         final Integer expireInNumberOfMonths = manageOrdersEventData.getManageOrdersSetMonthsEndDate();
+        final LocalDate approvalDate = manageOrdersEventData.getManageOrdersApprovalDate();
 
         switch (type) {
             case SET_CALENDAR_DAY:
-                return validateDate(endDate);
+                return validateDate(approvalDate, endDate);
             case SET_CALENDAR_DAY_AND_TIME:
-                return validateEndDateTime(endDateTime);
+                return validateDateTime(approvalDate, endDateTime);
             case SET_NUMBER_OF_MONTHS:
                 return validateMonth(expireInNumberOfMonths);
             default:
@@ -68,14 +68,14 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
         return errors;
     }
 
-    private List<String> validateDate(LocalDate endDate) {
+    private List<String> validateDate(LocalDate approvalDate, LocalDate endDate) {
         List<String> errors = new ArrayList<>();
 
-        if (!endDate.isAfter(time.now().toLocalDate())) {
-            errors.add(FUTURE_DATE_MESSAGE);
+        if (!endDate.isAfter(approvalDate)) {
+            errors.add(AFTER_APPROVAL_DATE_MESSAGE);
         }
 
-        if (endDate.isAfter(time.now().toLocalDate().plusMonths(MAXIMUM_MONTHS_VALID))) {
+        if (endDate.isAfter(approvalDate.plusMonths(MAXIMUM_MONTHS_VALID))) {
             errors.add(END_DATE_MAX_RANGE_MESSAGE);
         }
 
@@ -83,19 +83,16 @@ public class SupervisionOrderEndDateValidator implements QuestionBlockOrderValid
     }
 
 
-    private List<String> validateEndDateTime(LocalDateTime endDate) {
+    private List<String> validateDateTime(LocalDate approvalDate, LocalDateTime endDate) {
         List<String> errors = new ArrayList<>();
+        LocalDateTime approvalDateTime = approvalDate.atStartOfDay();
 
-        if (!endDate.isAfter(time.now())) {
-            errors.add(FUTURE_DATE_MESSAGE);
+        if (!endDate.isAfter(approvalDateTime)) {
+            errors.add(AFTER_APPROVAL_DATE_MESSAGE);
         }
 
-        if (endDate.isAfter(time.now().plusMonths(MAXIMUM_MONTHS_VALID))) {
+        if (endDate.isAfter(approvalDateTime.plusMonths(MAXIMUM_MONTHS_VALID))) {
             errors.add(END_DATE_MAX_RANGE_MESSAGE);
-        }
-
-        if (endDate.toLocalTime().equals(MIDNIGHT)) {
-            errors.add(INVALID_TIME_MESSAGE);
         }
 
         return errors;
