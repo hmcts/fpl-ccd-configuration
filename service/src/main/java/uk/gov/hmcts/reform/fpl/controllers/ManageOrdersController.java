@@ -76,7 +76,6 @@ public class ManageOrdersController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();

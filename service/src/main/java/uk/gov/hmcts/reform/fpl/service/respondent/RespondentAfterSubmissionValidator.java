@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class RespondentAfterSubmissionValidator {
 
-    private final FeatureToggleService featureToggleService;
     private final UserService userService;
 
     public List<String> validateLegalRepresentation(CaseData caseData) {
@@ -58,7 +56,7 @@ public class RespondentAfterSubmissionValidator {
             errors.add("You cannot remove a respondent from the case");
         }
 
-        if (!(featureToggleService.isNoticeOfChangeEnabled() && userService.isHmctsAdminUser())) {
+        if (!userService.isHmctsAdminUser()) {
             Map<UUID, Respondent> currentRespondents = getIdRespondentMap(caseData.getAllRespondents());
 
             Map<UUID, Respondent> previousRespondents = getIdRespondentMap(caseDataBefore.getAllRespondents());

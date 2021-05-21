@@ -8,6 +8,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -20,7 +22,11 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +36,12 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
@@ -69,6 +77,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     private DocmosisDocumentGeneratorService docmosisGenerationService;
 
     @MockBean
+    private DocumentMerger documentMerger;
+
+    @MockBean
     private UploadDocumentService uploadService;
 
     ManageOrdersMidEventControllerTest() {
@@ -83,16 +94,21 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(
-            Map.of(
-                "approvalDate", "YES",
-                "approver", "YES",
-                "previewOrder", "YES",
-                "furtherDirections", "YES",
-                "orderDetails","NO",
-                "whichChildren", "YES"
-            )
-        );
+        Map<String, String> expectedQuestions = new HashMap<>(Map.of(
+            "approver", "YES",
+            "previewOrder", "YES",
+            "furtherDirections", "YES",
+            "orderDetails", "NO",
+            "whichChildren", "YES",
+            "approvalDate", "YES",
+            "approvalDateTime", "NO",
+            "epoIncludePhrase", "NO",
+            "epoChildrenDescription", "NO",
+            "epoExpiryDate", "NO"
+        ));
+        expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
+
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
     @Test
@@ -197,7 +213,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
-        Map<String, String> mappedDocument = mapper.convertValue(DOCUMENT_REFERENCE, new TypeReference<>() {});
+        Map<String, String> mappedDocument = mapper.convertValue(DOCUMENT_REFERENCE, new TypeReference<>() {
+        });
 
         assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
     }
@@ -216,10 +233,122 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
+    void epoEndDateShouldReturnErrorForPastDate() {
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
+            buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        assertThat(response.getErrors()).containsOnly("Enter an end date in the future");
+    }
+
+    @Test
+    void epoEndDateShouldReturnErrorWhenEndDateIsNotInRangeWithApprovalDate() {
+        final LocalDateTime approvalDate = LocalDateTime.now().minusDays(5);
+
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
+            buildRemoveToAccommodationEventData(approvalDate, approvalDate.plusDays(8).plusSeconds(1))).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        assertThat(response.getErrors()).containsOnly("Emergency protection orders cannot last longer than 8 days");
+    }
+
+    @Test
+    void epoEndDateShouldReturnErrorWhenEndDateTimeIsMidnight() {
+        final LocalDateTime endDateTime = LocalDateTime.of(dateNow().plusDays(1), LocalTime.MIDNIGHT);
+
+        CaseData caseData = CaseData.builder().manageOrdersEventData(
+            buildRemoveToAccommodationEventData(now(), endDateTime)).build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        assertThat(response.getErrors()).containsOnly("Enter a valid time");
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenEPOOrderDetailsAreValidForRemoveToAccommodation() {
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
+            buildRemoveToAccommodationEventData(now().minusDays(4), now().plusDays(1))).build();
+
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+            .thenReturn(DOCMOSIS_DOCUMENT);
+
+        when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
+            .thenReturn(UPLOADED_DOCUMENT);
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        Map<String, String> mappedDocument = mapper.convertValue(DOCUMENT_REFERENCE, new TypeReference<>() {
+        });
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
+    }
+
+    @Test
+    void shouldNotReturnErrorsWhenEPOOrderDetailsAreValidForPreventRemoval() {
+        CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
+            buildPreventRemovalEventData(Address.builder().addressLine1("test").postcode("SW").build()))
+            .build();
+
+        when(docmosisGenerationService.generateDocmosisDocument(anyMap(), eq(EPO), eq(PDF)))
+            .thenReturn(DOCMOSIS_DOCUMENT);
+        when(uploadService.uploadDocument(DOCUMENT_BINARIES, "Preview order.pdf", "application/pdf"))
+            .thenReturn(UPLOADED_DOCUMENT);
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        Map<String, String> mappedDocument = mapper.convertValue(DOCUMENT_REFERENCE, new TypeReference<>() {
+        });
+
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
+    }
+
+    @Test
     void shouldThrowExceptionWhenMidEventUrlParameterDoesNotMatchSectionNames() {
         assertThatThrownBy(() -> postMidEvent(CaseData.builder().build(), "does-not-match"))
             .getRootCause()
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.model.order.OrderSection.DOES_NOT_MATCH");
+    }
+
+    private CaseData buildCaseData() {
+        return CaseData.builder()
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .id(CCD_CASE_NUMBER)
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .children1(CHILDREN)
+            .orderAppliesToAllChildren("Yes")
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
+            .allocatedJudge(JUDGE)
+            .build();
+    }
+
+    private ManageOrdersEventData buildRemoveToAccommodationEventData(
+        LocalDateTime approvalDateTime, LocalDateTime endDateTime) {
+        return ManageOrdersEventData.builder()
+            .manageOrdersApprovalDateTime(approvalDateTime)
+            .manageOrdersEndDateTime(endDateTime)
+            .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
+            .manageOrdersEpoType(EPOType.REMOVE_TO_ACCOMMODATION)
+            .manageOrdersChildrenDescription("Children Description")
+            .build();
+    }
+
+    private ManageOrdersEventData buildPreventRemovalEventData(Address removalAddress) {
+        return ManageOrdersEventData.builder()
+            .manageOrdersApprovalDateTime(now())
+            .manageOrdersEndDateTime(now().plusDays(1))
+            .manageOrdersType(C23_EMERGENCY_PROTECTION_ORDER)
+            .manageOrdersEpoType(EPOType.PREVENT_REMOVAL)
+            .manageOrdersEpoRemovalAddress(removalAddress)
+            .manageOrdersChildrenDescription("Children Description")
+            .manageOrdersExclusionRequirement("Yes")
+            .manageOrdersWhoIsExcluded("John")
+            .manageOrdersExclusionStartDate(dateNow().plusDays(2))
+            .manageOrdersPowerOfArrest(DOCUMENT_REFERENCE)
+            .build();
     }
 }
