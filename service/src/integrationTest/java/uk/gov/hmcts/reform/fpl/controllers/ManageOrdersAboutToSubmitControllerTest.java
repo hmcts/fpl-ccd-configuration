@@ -202,7 +202,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         caseDetails.getData().putAll(Map.of(
             "manageOrdersOperation", "CREATE",
             "orderTempQuestions", Map.of("holderObject", "forQuestionConditions"),
-            "issuingDetailsPart1SectionSubHeader", "some heading",
+            "hearingDetailsSectionSubHeader", "some heading",
             "issuingDetailsSectionSubHeader", "some heading",
             "childrenDetailsSectionSubHeader", "some heading",
             "children_label", "some label about the children",
@@ -215,7 +215,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(response.getData()).doesNotContainKeys(
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
             "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
-            "issuingDetailsSectionSubHeader", "issuingDetailsPart1SectionSubHeader",
+            "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
             "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
             "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",

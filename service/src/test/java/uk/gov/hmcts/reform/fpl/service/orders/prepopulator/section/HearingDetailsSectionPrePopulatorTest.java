@@ -12,15 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class IssuingDetailsPart1SectionPrePopulatorTest {
+class HearingDetailsSectionPrePopulatorTest {
 
-    private final IssuingDetailsPart1SectionPrePopulator underTest = new IssuingDetailsPart1SectionPrePopulator();
+    private final HearingDetailsSectionPrePopulator underTest = new HearingDetailsSectionPrePopulator();
     private final Order mockOrder = mock(Order.class);
     private static final String ORDER_NAME = "Mock order pls ignore";
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(OrderSection.ISSUING_DETAILS_PART_1);
+        assertThat(underTest.accept()).isEqualTo(OrderSection.HEARING_DETAILS);
     }
 
     @Test
@@ -32,7 +32,7 @@ class IssuingDetailsPart1SectionPrePopulatorTest {
         when(mockOrder.getHistoryTitle()).thenReturn(ORDER_NAME);
 
         assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of(
-            "issuingDetailsPart1SectionSubHeader", ORDER_NAME
+            "hearingDetailsSectionSubHeader", ORDER_NAME
         ));
     }
 }

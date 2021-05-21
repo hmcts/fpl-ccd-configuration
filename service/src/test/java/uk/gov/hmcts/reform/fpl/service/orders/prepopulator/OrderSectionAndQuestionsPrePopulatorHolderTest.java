@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBloc
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsPart1SectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_H
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS_PART_1;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ORDER_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.REVIEW;
 
@@ -59,7 +59,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
 
     // Section blocks
     @Mock
-    private IssuingDetailsPart1SectionPrePopulator issuingDetailsPart1SectionPrePopulator;
+    private HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
     @Mock
     private IssuingDetailsSectionPrePopulator issuingDetailsSectionPrePopulator;
     @Mock
@@ -94,14 +94,14 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
         );
 
         sectionPrepopulatorMapping = Map.of(
-            ISSUING_DETAILS_PART_1, issuingDetailsPart1SectionPrePopulator,
+            HEARING_DETAILS, hearingDetailsSectionPrePopulator,
             ISSUING_DETAILS, issuingDetailsSectionPrePopulator,
             CHILDREN_DETAILS, childrenDetailsSectionPrePopulator,
             ORDER_DETAILS, orderDetailsSectionPrePopulator,
             REVIEW, draftOrderPreviewSectionPrePopulator
         );
         sectionPrePopulators = List.of(
-            issuingDetailsPart1SectionPrePopulator,
+            hearingDetailsSectionPrePopulator,
             issuingDetailsSectionPrePopulator, childrenDetailsSectionPrePopulator, orderDetailsSectionPrePopulator,
             draftOrderPreviewSectionPrePopulator
         );

@@ -104,7 +104,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .build();
 
         Map<String, String> expectedQuestions = new HashMap<>();
-        expectedQuestions.put("linkedToHearing", "YES");
+        expectedQuestions.put("hearingDetails", "YES");
         expectedQuestions.put("approver", "YES");
         expectedQuestions.put("previewOrder", "YES");
         expectedQuestions.put("furtherDirections", "YES");
@@ -145,7 +145,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         CaseData responseCaseData = extractCaseData(response);
 
-        assertThat(response.getData().get("issuingDetailsPart1SectionSubHeader")).isEqualTo("C32 - Care order");
+        assertThat(response.getData().get("hearingDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
         assertThat(responseCaseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList())
             .isEqualTo(
                 mapper.convertValue(asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel), Map.class)

@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBloc
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsPart1SectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
@@ -37,7 +37,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
 
     // Sections
-    private final IssuingDetailsPart1SectionPrePopulator issuingDetailsPart1SectionPrePopulator;
+    private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
     private final IssuingDetailsSectionPrePopulator issuingDetailsPrePopulator;
     private final ChildrenDetailsSectionPrePopulator childrenDetailsPrePopulator;
     private final OrderDetailsSectionPrePopulator orderDetailsPrePopulator;
@@ -72,7 +72,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
         }
 
         sectionPrePopulatorMap = List.of(
-            issuingDetailsPart1SectionPrePopulator,
+            hearingDetailsSectionPrePopulator,
             issuingDetailsPrePopulator,
             childrenDetailsPrePopulator,
             orderDetailsPrePopulator,

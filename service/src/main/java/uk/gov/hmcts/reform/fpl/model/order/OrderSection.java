@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OrderSection {
     ORDER_SELECTION,
-    ISSUING_DETAILS_PART_1,
+    HEARING_DETAILS,
     ISSUING_DETAILS,
     CHILDREN_DETAILS,
     ORDER_DETAILS,

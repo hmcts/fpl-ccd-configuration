@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "issuingDetailsPart1SectionHeader",
+    "ID": "hearingDetailsSectionHeader",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Label",
     "Label": "## Add issuing details",
@@ -19,7 +19,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "issuingDetailsPart1SectionSubHeader",
+    "ID": "hearingDetailsSectionSubHeader",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Text",
     "Label": " ",

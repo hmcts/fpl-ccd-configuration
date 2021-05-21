@@ -8,7 +8,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public enum OrderQuestionBlock {
-    LINKED_TO_HEARING("linkedToHearing", "Linked to hearing", OrderSection.ISSUING_DETAILS_PART_1,
+    LINKED_TO_HEARING("hearingDetails", "Linked to hearing", OrderSection.HEARING_DETAILS,
         List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",
             "manageOrdersApprovalDate", "manageOrdersApprovalDateTime", "judgeAndLegalAdvisor")),
     APPROVER("approver", "Approver", OrderSection.ISSUING_DETAILS,
