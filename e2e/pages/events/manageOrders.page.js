@@ -27,6 +27,7 @@ const hearingDetails = {
       no: 'No',
     },
   },
+  hearingList: '#manageOrdersApprovedAtHearingList',
 };
 
 const section2 = {
@@ -92,6 +93,11 @@ const selectOperation = async (operationType) => {
 
 const selectRelatedToHearing = async (answer) => {
   I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
+};
+
+const selectHearing = async (hearing) => {
+  I.waitForElement(hearingDetails.hearingList);
+  I.selectOption(hearingDetails.hearingList, hearing);
 };
 
 const selectOrder = async (orderType) => {
@@ -179,7 +185,7 @@ const checkPreview = async () => {
 
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
-  selectOperation, selectOrder, selectRelatedToHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
+  selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
 };

@@ -1,6 +1,6 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
-const caseData = require('../fixtures/caseData/gatekeepingFullDetails.json');
+const caseData = require('../fixtures/caseData/gatekeepinhWithPastHearingDetails.json');
 
 const approvalDate = new Date(2021, 3, 9);
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
@@ -16,17 +16,17 @@ BeforeSuite(async ({I}) => caseId = await I.submitNewCaseWithData(caseData));
 
 Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
-Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C32 care order (with pre filled hearing details)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c32);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
+  await manageOrdersEventPage.selectHearing('Case management hearing, 3 November 2012');
   await I.goToNextPage();
-  manageOrdersEventPage.enterJudge();
-  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  // Judge and approval date is already preFilled
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
@@ -38,8 +38,8 @@ Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
     orderType: 'C32 - Care order',
-    approvalDate: approvalDate,
-    allocatedJudge: allocatedJudge,
+    approvalDate: new Date(2012, 10, 3),
+    allocatedJudge: {title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
     children: 'Timothy Jones',
   });
 });
@@ -151,6 +151,9 @@ function assertOrder(I, caseViewPage, order) {
   I.seeInTab([orderElement, 'Approval date'], dateFormat(dateOfApproval, mask));
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
   I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
+  if (order.allocatedJudge.legalAdviserFullName) {
+    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.allocatedJudge.legalAdviserFullName);
+  }
   I.seeInTab([orderElement, 'Children'], order.children);
 
   if (order.title !== undefined) {
