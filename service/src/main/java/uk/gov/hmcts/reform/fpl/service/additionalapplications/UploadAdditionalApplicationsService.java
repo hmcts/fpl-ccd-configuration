@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
@@ -35,15 +35,15 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
 
-    public static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
 
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
-    private final ObjectMapper mapper;
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
-        final String applicantName = getSelectedApplicantName(
-            caseData.getApplicantsList(), caseData.getOtherApplicant());
+        final Optional<String> applicantName = getSelectedApplicantName(
+            caseData.getApplicantsList(), caseData.getOtherApplicant()
+        );
 
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();
@@ -52,12 +52,13 @@ public class UploadAdditionalApplicationsService {
         OtherApplicationsBundle otherApplicationsBundle = null;
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
-            c2DocumentBundle = buildC2DocumentBundle(caseData, applicantName, uploadedBy, currentDateTime);
+            c2DocumentBundle = buildC2DocumentBundle(
+                caseData, applicantName.orElse(EMPTY), uploadedBy, currentDateTime);
         }
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER)) {
             otherApplicationsBundle = buildOtherApplicationsBundle(
-                caseData, applicantName, uploadedBy, currentDateTime);
+                caseData, applicantName.orElse(EMPTY), uploadedBy, currentDateTime);
         }
 
         return AdditionalApplicationsBundle.builder()
@@ -69,20 +70,18 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    private String getSelectedApplicantName(Object applicantsList, String otherApplicant) {
-        DynamicList dynamicList = mapper.convertValue(applicantsList, DynamicList.class);
-
-        if (Objects.nonNull(dynamicList)) {
-            DynamicListElement selectedElement = dynamicList.getValue();
+    private Optional<String> getSelectedApplicantName(DynamicList applicantsList, String otherApplicant) {
+        if (Objects.nonNull(applicantsList)) {
+            DynamicListElement selectedElement = applicantsList.getValue();
 
             if (isNotEmpty(selectedElement)) {
                 if (APPLICANT_SOMEONE_ELSE.equals(selectedElement.getCode())) {
-                    return otherApplicant;
+                    return Optional.of(otherApplicant);
                 }
-                return selectedElement.getLabel();
+                return Optional.of(selectedElement.getLabel());
             }
         }
-        return EMPTY;
+        return Optional.empty();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,

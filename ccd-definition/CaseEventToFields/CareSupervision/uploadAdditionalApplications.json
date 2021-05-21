@@ -58,7 +58,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "applicantsList=\"someoneelse\"",
+    "FieldShowCondition": "applicantsList=\"SOMEONE_ELSE\"",
     "ShowSummaryChangeOption": "Y"
   },
   {

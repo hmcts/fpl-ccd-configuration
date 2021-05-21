@@ -72,7 +72,7 @@ class ApplicantsListGeneratorTest {
 
         Assertions.assertThat(actualDynamicList).isEqualTo(DynamicList.builder()
             .value(DynamicListElement.builder().build())
-            .listItems(List.of(DynamicListElement.builder().code("someoneelse").label("Someone else").build()))
+            .listItems(List.of(DynamicListElement.builder().code("SOMEONE_ELSE").label("Someone else").build()))
             .build());
     }
 

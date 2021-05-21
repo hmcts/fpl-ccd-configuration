@@ -57,7 +57,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final Long CASE_ID = 12345L;
     private static final DocumentReference document = testDocumentReference();
     private static final String LOCAL_AUTHORITY_NAME = "Swansea local authority";
-    private static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+    private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private static final String APPLICANT = "applicant";
     private static final String OTHER_APPLICANT_NAME = "some other name";
 

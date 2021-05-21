@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.utils.IncrementalInteger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -22,7 +21,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ApplicantsListGenerator {
 
-    public static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private final DynamicListService dynamicLists;
 
     public DynamicList buildApplicantsList(CaseData caseData) {
@@ -50,21 +49,29 @@ public class ApplicantsListGenerator {
 
     private List<InterlocutoryApplicant> buildOthersElements(List<Element<Other>> others) {
         IncrementalInteger i = new IncrementalInteger(1);
-        return others.stream()
-            .map(other -> InterlocutoryApplicant.builder()
+        List<InterlocutoryApplicant> applicants = new ArrayList<>();
+
+        others.forEach(other -> applicants.add(
+            InterlocutoryApplicant.builder()
                 .code(String.valueOf(other.getId()))
                 .name(other.getValue().getName() + ", Other to be given notice " + i.getAndIncrement())
                 .build())
-            .collect(Collectors.toList());
+        );
+
+        return applicants;
     }
 
     private List<InterlocutoryApplicant> buildRespondentNameElements(List<Element<Respondent>> respondents) {
         IncrementalInteger i = new IncrementalInteger(1);
-        return respondents.stream()
-            .map(respondent -> InterlocutoryApplicant.builder().code(respondent.getId().toString())
+        List<InterlocutoryApplicant> applicants = new ArrayList<>();
+
+        respondents.forEach(respondent -> applicants.add(
+            InterlocutoryApplicant.builder().code(respondent.getId().toString())
                 .name(respondent.getValue().getParty().getFullName() + ", Respondent " + i.getAndIncrement())
                 .build())
-            .collect(Collectors.toList());
+        );
+
+        return applicants;
     }
 
 }

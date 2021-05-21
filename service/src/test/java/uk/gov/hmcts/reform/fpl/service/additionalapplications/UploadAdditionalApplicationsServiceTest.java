@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,9 +64,6 @@ class UploadAdditionalApplicationsServiceTest {
     private Time time;
 
     @MockBean
-    private ObjectMapper objectMapper;
-
-    @MockBean
     private IdamClient idamClient;
 
     @MockBean
@@ -77,7 +73,7 @@ class UploadAdditionalApplicationsServiceTest {
     private UploadAdditionalApplicationsService underTest;
 
     public static final String APPLICANT_NAME = "Swansea local authority, Applicant";
-    public static final String APPLICANT_SOMEONE_ELSE = "someoneelse";
+    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
 
     private static final List<DynamicListElement> DYNAMIC_LIST_ELEMENTS = List.of(
         DynamicListElement.builder().code("applicant").label(APPLICANT_NAME).build(),
@@ -106,8 +102,6 @@ class UploadAdditionalApplicationsServiceTest {
             .c2Type(WITH_NOTICE)
             .build();
 
-        given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
-
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -135,8 +129,6 @@ class UploadAdditionalApplicationsServiceTest {
             .otherApplicant("some other name")
             .build();
 
-        given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
-
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -157,8 +149,6 @@ class UploadAdditionalApplicationsServiceTest {
 
         // no value selected
         DynamicList applicantsList = DynamicList.builder().listItems(DYNAMIC_LIST_ELEMENTS).build();
-
-        given(objectMapper.convertValue(applicantsList, DynamicList.class)).willReturn(applicantsList);
 
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))

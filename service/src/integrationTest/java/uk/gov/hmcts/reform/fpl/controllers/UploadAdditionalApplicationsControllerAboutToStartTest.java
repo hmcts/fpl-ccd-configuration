@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ActiveProfiles("integration-test")
@@ -45,7 +45,6 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
             .caseLocalAuthorityName("Swansea local authority")
             .respondents1(respondents)
             .others(Others.builder()
-                .firstOther(Other.builder().name("Ross").build())
                 .additionalOthers(others)
                 .build())
             .build();
@@ -56,15 +55,21 @@ class UploadAdditionalApplicationsControllerAboutToStartTest extends AbstractCal
             response.getData().get("applicantsList"), DynamicList.class
         );
 
-        Assertions.assertThat(actualDynamicList.getListItems())
-            .extracting(DynamicListElement::getLabel)
-            .containsExactly("Swansea local authority, Applicant",
-                respondent1Party.getFullName() + ", Respondent 1",
-                respondent2Party.getFullName() + ", Respondent 2",
-                "Ross, Other to be given notice 1",
-                "Bob, Other to be given notice 2",
-                "Tom, Other to be given notice 3",
-                "Someone else");
+        DynamicList expectedDynamicList = DynamicList.builder()
+            .listItems(List.of(
+                DynamicListElement.builder().code("applicant").label("Swansea local authority, Applicant").build(),
+                DynamicListElement.builder().code(respondents.get(0).getId().toString())
+                    .label(respondent1Party.getFullName() + ", Respondent 1").build(),
+                DynamicListElement.builder().code(respondents.get(1).getId().toString())
+                    .label(respondent2Party.getFullName() + ", Respondent 2").build(),
+                DynamicListElement.builder().code(caseData.getAllOthers().get(0).getId().toString())
+                    .label("Bob, Other to be given notice 1").build(),
+                DynamicListElement.builder().code(caseData.getAllOthers().get(1).getId().toString())
+                    .label("Tom, Other to be given notice 2").build(),
+                DynamicListElement.builder().code("SOMEONE_ELSE").label("Someone else").build()))
+            .value(DynamicListElement.EMPTY).build();
+
+        assertThat(actualDynamicList).isEqualTo(expectedDynamicList);
     }
 
 }
