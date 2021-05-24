@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -21,13 +20,12 @@ import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCal
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.preselector.ManageOrderInitialTypePreSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 
 @Api
 @RestController
@@ -40,21 +38,13 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
+    private final ManageOrderInitialTypePreSelector manageOrderInitialTypePreSelector;
+    private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
 
     @PostMapping("/initial-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse populateInitialSection(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (caseData.getState() == CLOSED) {
-            data.put("manageOrdersState", CLOSED);
-            data.put("manageOrdersType", C21_BLANK_ORDER);
-            data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(C21_BLANK_ORDER));
-            data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
-                C21_BLANK_ORDER, C21_BLANK_ORDER.firstSection(), getCaseData(caseDetails)));
-        }
-
+        caseDetails.getData().putAll(manageOrderInitialTypePreSelector.preSelect(caseDetails));
         return respond(caseDetails);
     }
 
@@ -62,7 +52,7 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
@@ -77,11 +67,10 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleSectionMidEvent(@PathVariable String section,
                                                                       @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
         Map<String, Object> data = caseDetails.getData();
 
-        Order order = CLOSED == caseData.getState() ? C21_BLANK_ORDER
-            : caseData.getManageOrdersEventData().getManageOrdersType();
+        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
         OrderSection currentSection = OrderSection.from(section);
 
@@ -102,9 +91,8 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
 
-        data.put("manageOrdersType", C21_BLANK_ORDER);
         data.putAll(sealedOrderHistoryService.generate(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
