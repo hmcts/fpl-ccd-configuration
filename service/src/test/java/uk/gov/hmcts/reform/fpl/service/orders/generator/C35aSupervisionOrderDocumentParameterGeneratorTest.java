@@ -47,6 +47,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final LocalDateTime NEXT_WEEK_DATE_TIME = time.now().plusDays(7);
     private String dayOrdinalSuffix;
+    private String courtOrderMessage;
 
     @Mock
     private ChildrenService childrenService;
@@ -71,17 +72,18 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     void shouldReturnContentForSingleChildAndSpecifiedDate() {
         CaseData caseData = buildCaseDataWithDateSpecified();
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = "The Court orders " + LA_NAME
-            + " supervises the " + CHILDREN_GRAMMAR
-            + " until " + formattedDate + ".";
+
+        courtOrderMessage = getSingularChildMessageDate(formattedDate);
+
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
 
         when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
 
@@ -101,9 +103,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = "The Court orders " + LA_NAME
-            + " supervises the " + CHILDREN_GRAMMAR
-            + " until " + formattedDate + ".";
+
+        courtOrderMessage = getMultipleChildMessageDate(formattedDate);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -130,10 +131,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             futureDate,
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = "The Court orders " + LA_NAME
-            + " supervises the " + CHILD_GRAMMAR
-            + " for " + numOfMonths + " months from the date of this order"
-            + " until " + formattedDate + ".";
+
+        courtOrderMessage = getSingularChildMessageMonths(formattedDate, numOfMonths);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -160,10 +159,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             futureDate,
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = "The Court orders " + LA_NAME
-            + " supervises the " + CHILDREN_GRAMMAR
-            + " for " + numOfMonths + " months from the date of this order"
-            + " until " + formattedDate + ".";
+
+        courtOrderMessage = getMultipleChildMessageMonths(formattedDate, numOfMonths);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -187,9 +184,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = "The Court orders " + LA_NAME
-            + " supervises the " + CHILD_GRAMMAR
-            + " until " + formattedDate + ".";
+        String courtOrderMessage = getSingularChildMessageDate(formattedDate);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -213,9 +208,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = "The Court orders " + LA_NAME
-            + " supervises the " + CHILDREN_GRAMMAR
-            + " until " + formattedDate + ".";
+
+        courtOrderMessage = getMultipleChildMessageDate(formattedDate);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -229,6 +223,32 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    private String getMultipleChildMessageDate(String formattedDate) {
+        return "The Court orders " + LA_NAME
+            + " supervises the " + CHILDREN_GRAMMAR
+            + " until " + formattedDate + ".";
+    }
+
+    private String getMultipleChildMessageMonths(String formattedDate, int numOfMonths) {
+        return "The Court orders " + LA_NAME
+            + " supervises the " + CHILDREN_GRAMMAR
+            + " for " + numOfMonths + " months from the date of this order"
+            + " until " + formattedDate + ".";
+    }
+
+    private String getSingularChildMessageDate(String formattedDate) {
+        return "The Court orders " + LA_NAME
+            + " supervises the " + CHILD_GRAMMAR
+            + " until " + formattedDate + ".";
+    }
+
+    private String getSingularChildMessageMonths(String formattedDate, int numOfMonths) {
+        return "The Court orders " + LA_NAME
+            + " supervises the " + CHILD_GRAMMAR
+            + " for " + numOfMonths + " months from the date of this order"
+            + " until " + formattedDate + ".";
     }
 
     private C35aSupervisionOrderDocmosisParameters.C35aSupervisionOrderDocmosisParametersBuilder<?,?>
