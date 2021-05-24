@@ -107,7 +107,10 @@ class SupervisionOrderEndDateValidatorTest {
     // DateTime
     @Test
     void shouldAcceptDateTimeOnBoundaryOfMaxAllowedEndDateTime() {
-        LocalDateTime onBoundaryDateTime = approvalDateTime.plusMonths(MAXIMUM_MONTHS_ACCEPTED).toLocalDate().atStartOfDay();
+        LocalDateTime onBoundaryDateTime = approvalDateTime
+            .plusMonths(MAXIMUM_MONTHS_ACCEPTED)
+            .toLocalDate()
+            .atStartOfDay();
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
