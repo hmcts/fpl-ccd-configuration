@@ -335,11 +335,12 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     @Test
     void supervisionOrderEndDateShouldNotAllowCurrentDate() {
-        final LocalDate testInvalidDate = dateNow();
-        final String testFutureDateMessage = "Enter an end date in the future";
+        final LocalDate testInvalidDate = dateNow().minusDays(1);
+        final String testFutureDateMessage = "Enter an end date after the approval date";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(dateNow())
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
                 .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(testInvalidDate)
@@ -354,7 +355,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     @Test
     void supervisionOrderNumberOfMonthsShouldNotAllowInvalidFutureDate() {
         final int testInvalidMonth = 16;
-        final String testEndDateRangeMessage = "Supervision orders cannot last longer than 12 months";
+        final String testEndDateRangeMessage = "This order cannot last longer than 12 months";
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
