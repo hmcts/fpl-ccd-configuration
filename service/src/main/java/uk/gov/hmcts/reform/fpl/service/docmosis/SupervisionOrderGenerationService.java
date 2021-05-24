@@ -11,12 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisGeneratedOrder.DocmosisGen
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDateTime;
-
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.OrderHelper.getFullOrderType;
 
 @Service
@@ -63,15 +58,11 @@ public class SupervisionOrderGenerationService extends GeneratedOrderTemplateDat
     private String getFormattedFinalSupervisionOrderDetails(int numOfChildren,
                                                             String caseLocalAuthority,
                                                             int numOfMonths) {
-        final LocalDateTime orderExpiration = time.now().plusMonths(numOfMonths);
-        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
         return String.format(
-            "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
+            "It is ordered that %s supervises the %s for %d months from the date of this order.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : CHILDREN,
-            numOfMonths,
-            formatLocalDateTimeBaseUsingFormat(orderExpiration,
-                String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)));
+            numOfMonths);
     }
 
 }
