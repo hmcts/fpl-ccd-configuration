@@ -33,6 +33,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     private final String pbaNumber;
     private final String clientCode;
     private final String customerReference;
+    private final String legalTeamManager;
 
     @Override
     @NotBlank(message = "Enter the applicant's full name")
@@ -69,7 +70,8 @@ public class ApplicantParty extends Party implements TelephoneContacts {
                            String jobTitle,
                            String pbaNumber,
                            String clientCode,
-                           String customerReference) {
+                           String customerReference,
+                           String legalTeamManager) {
         super(partyId, partyType, firstName, lastName, organisationName, dateOfBirth, address,
             email, telephoneNumber);
 
@@ -78,5 +80,6 @@ public class ApplicantParty extends Party implements TelephoneContacts {
         this.pbaNumber = pbaNumber;
         this.clientCode = clientCode;
         this.customerReference = customerReference;
+        this.legalTeamManager = legalTeamManager;
     }
 }
