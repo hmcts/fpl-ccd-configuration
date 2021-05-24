@@ -70,8 +70,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnContentForSingleChildAndSpecifiedDate() {
-        CaseData caseData = buildCaseDataWithDateSpecified();
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+        CaseData caseData = buildCaseDataWithDateSpecified();
 
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             NEXT_WEEK_DATE_TIME,
@@ -97,8 +97,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnContentForChildrenAndSpecifiedDate() {
-        CaseData caseData = buildCaseDataWithDateSpecified();
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+        CaseData caseData = buildCaseDataWithDateSpecified();
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
@@ -124,8 +124,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     void shouldReturnContentForSingleChildAndMonthsSpecified() {
         Integer numOfMonths = 4;
         LocalDateTime futureDate = time.now().plusMonths(numOfMonths);
-        CaseData caseData = buildCaseDataWithMonthsSpecified(numOfMonths);
         dayOrdinalSuffix = getDayOfMonthSuffix(futureDate.getDayOfMonth());
+        CaseData caseData = buildCaseDataWithMonthsSpecified(numOfMonths);
 
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             futureDate,
@@ -152,8 +152,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     void shouldReturnContentForChildrenAndMonthsSpecified() {
         Integer numOfMonths = 4;
         LocalDateTime futureDate = time.now().plusMonths(numOfMonths);
-        CaseData caseData = buildCaseDataWithMonthsSpecified(numOfMonths);
         dayOrdinalSuffix = getDayOfMonthSuffix(futureDate.getDayOfMonth());
+        CaseData caseData = buildCaseDataWithMonthsSpecified(numOfMonths);
 
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             futureDate,
@@ -202,8 +202,8 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnMessageForChildrenAndSetDateAndTime() {
-        CaseData caseData = buildCaseDataWithDateTimeSpecified();
         dayOrdinalSuffix = getDayOfMonthSuffix(NEXT_WEEK_DATE_TIME.getDayOfMonth());
+        CaseData caseData = buildCaseDataWithDateTimeSpecified();
         String formattedDate = formatLocalDateTimeBaseUsingFormat(
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
