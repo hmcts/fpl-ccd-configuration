@@ -26,80 +26,72 @@ class OrderShowHideQuestionsCalculatorTest {
     }
 
     private static Stream<Arguments> orderWithExpectedMap() {
-        Map<String, String> commonQuestions = Map.of(
-            "approver", "YES",
-            "previewOrder", "YES",
-            "whichChildren", "YES");
-
         Map<String, String> careOrderQuestions = Map.ofEntries(
-            Map.entry("approver", "YES"),
-            Map.entry("previewOrder", "YES"),
-            Map.entry("whichChildren", "YES"),
-            Map.entry("furtherDirections", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
-            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("approver", "YES"),
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("orderDetails", "NO"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("exclusionRequirementDetails", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES")
         );
 
         Map<String, String> epoQuestions = Map.ofEntries(
-            Map.entry("approver", "YES"),
-            Map.entry("previewOrder", "YES"),
-            Map.entry("whichChildren", "YES"),
-
             Map.entry("approvalDate", "NO"),
-            Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails", "NO"),
             Map.entry("approvalDateTime", "YES"),
-            Map.entry("epoIncludePhrase", "YES"),
+            Map.entry("approver", "YES"),
             Map.entry("epoChildrenDescription", "YES"),
             Map.entry("epoExpiryDate", "YES"),
+            Map.entry("epoIncludePhrase", "YES"),
             Map.entry("epoTypeAndPreventRemoval", "YES"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("exclusionRequirementDetails", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES")
         );
 
         Map<String, String> blankOrderQuestions = Map.ofEntries(
-            Map.entry("approver", "YES"),
-            Map.entry("previewOrder", "YES"),
-            Map.entry("whichChildren", "YES"),
-
             Map.entry("approvalDate", "YES"),
-            Map.entry("furtherDirections", "NO"),
-            Map.entry("orderDetails", "YES"),
             Map.entry("approvalDateTime", "NO"),
-            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("approver", "YES"),
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("exclusionRequirementDetails", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+            Map.entry("furtherDirections", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("orderDetails", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES")
         );
 
         Map<String, String> supervisionOrderQuestions = Map.ofEntries(
-            Map.entry("approver", "YES"),
-            Map.entry("previewOrder", "YES"),
-            Map.entry("whichChildren", "YES"),
-
             Map.entry("approvalDate", "YES"),
-            Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails", "NO"),
             Map.entry("approvalDateTime", "NO"),
-            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("approver", "YES"),
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("exclusionRequirementDetails", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES")
         );
 
         return Stream.of(
