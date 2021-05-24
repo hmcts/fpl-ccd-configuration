@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -24,7 +25,8 @@ public class OrderCreationService {
     private final UploadDocumentService uploadService;
 
     public DocumentReference createOrderDocument(CaseData caseData, OrderStatus status, RenderFormat format) {
-        Order orderType = caseData.getManageOrdersEventData().getManageOrdersType();
+        Order orderType = State.CLOSED == caseData.getState() ? Order.C21_BLANK_ORDER
+            : caseData.getManageOrdersEventData().getManageOrdersType();
 
         DocmosisDocument docmosisDocument = generator.generate(orderType, caseData, status, format);
 

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 
 @Api
@@ -46,8 +47,8 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        if (caseData.getState() == State.CLOSED) {
-            data.put("manageOrdersState", State.CLOSED);
+        if (caseData.getState() == CLOSED) {
+            data.put("manageOrdersState", CLOSED);
             data.put("manageOrdersType", C21_BLANK_ORDER);
             data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(C21_BLANK_ORDER));
             data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
@@ -79,7 +80,8 @@ public class ManageOrdersController extends CallbackController {
         CaseData caseData = getCaseData(caseDetails);
         Map<String, Object> data = caseDetails.getData();
 
-        Order order = caseData.getManageOrdersEventData().getManageOrdersType();
+        Order order = CLOSED == caseData.getState() ? C21_BLANK_ORDER
+            : caseData.getManageOrdersEventData().getManageOrdersType();
 
         OrderSection currentSection = OrderSection.from(section);
 
@@ -102,6 +104,7 @@ public class ManageOrdersController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
+        data.put("manageOrdersType", C21_BLANK_ORDER);
         data.putAll(sealedOrderHistoryService.generate(caseData));
 
         fieldsCalculator.calculate().forEach(data::remove);
