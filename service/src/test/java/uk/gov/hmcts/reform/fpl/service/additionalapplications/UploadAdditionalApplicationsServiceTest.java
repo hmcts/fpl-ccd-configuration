@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -138,6 +141,24 @@ class UploadAdditionalApplicationsServiceTest {
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
     }
 
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldThrowIllegalArgumentExceptionWhenApplicantIsNullOrEmpty(String otherApplicantName) {
+        // select applicant "Someone else"
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(applicantsList)
+            .otherApplicant(otherApplicantName)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
     @Test
     void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
@@ -147,8 +168,9 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
         PBAPayment pbaPayment = buildPBAPayment();
 
-        // no value selected
-        DynamicList applicantsList = DynamicList.builder().listItems(DYNAMIC_LIST_ELEMENTS).build();
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS).build();
 
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
@@ -163,8 +185,8 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
-        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEmpty();
-        assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEmpty();
+        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
+        assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(

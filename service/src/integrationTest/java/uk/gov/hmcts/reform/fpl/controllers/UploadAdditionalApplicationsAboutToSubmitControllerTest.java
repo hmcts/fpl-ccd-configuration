@@ -88,7 +88,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryC2Document());
         PBAPayment temporaryPbaPayment = createPbaPayment();
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.putAll(createApplicantsDynamicList(APPLICANT));
+        data.put("applicantsList", createApplicantsDynamicList(APPLICANT));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -111,7 +111,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryOtherApplicationDocument());
         PBAPayment temporaryPbaPayment = createPbaPayment();
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.putAll(createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE));
+        data.put("applicantsList", createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE));
+        data.put("otherApplicant", OTHER_APPLICANT_NAME);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -136,7 +137,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryC2Document());
         data.putAll(createTemporaryOtherApplicationDocument());
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.putAll(createApplicantsDynamicList(APPLICANT));
+        data.put("applicantsList", createApplicantsDynamicList(APPLICANT));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -158,6 +159,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        caseDetails.getData().put("applicantsList", createApplicantsDynamicList(APPLICANT));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -185,6 +187,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
                 "c2Type", WITHOUT_NOTICE,
+                "applicantsList", createApplicantsDynamicList(APPLICANT),
                 "additionalApplicationType", List.of("C2_ORDER"),
                 "temporaryPbaPayment", createPbaPayment(),
                 "amountToPay", "Yes",
@@ -223,8 +226,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
                 .build()).build();
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("c2DocumentBundle", wrapElements(firstBundleAdded,
-                secondBundleAdded, thirdBundleAdded)))
+            .data(Map.of(
+                "c2DocumentBundle", wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded),
+                "applicantsList", createApplicantsDynamicList(APPLICANT)))
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -336,24 +340,16 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         );
     }
 
-    private Map<String, Object> createApplicantsDynamicList(String selected) {
-        Map<String, Object> data = new HashMap<>();
-
+    private DynamicList createApplicantsDynamicList(String selected) {
         DynamicListElement applicant = DynamicListElement.builder()
             .code(APPLICANT).label(LOCAL_AUTHORITY_NAME).build();
 
         DynamicListElement other = DynamicListElement.builder()
             .code(APPLICANT_SOMEONE_ELSE).label("Someone else").build();
 
-        data.put("applicantsList", DynamicList.builder()
+        return DynamicList.builder()
             .value(APPLICANT.equals(selected) ? applicant : other)
-            .listItems(List.of(applicant, other)).build());
-
-        if (APPLICANT_SOMEONE_ELSE.equals(selected)) {
-            data.put("otherApplicant", OTHER_APPLICANT_NAME);
-        }
-
-        return data;
+            .listItems(List.of(applicant, other)).build();
     }
 
     private Map<String, Object> createTemporaryOtherApplicationDocument() {

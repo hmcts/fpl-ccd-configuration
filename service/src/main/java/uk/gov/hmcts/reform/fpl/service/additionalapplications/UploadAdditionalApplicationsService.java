@@ -28,6 +28,7 @@ import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -42,8 +43,12 @@ public class UploadAdditionalApplicationsService {
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
         final Optional<String> applicantName = getSelectedApplicantName(
-            caseData.getApplicantsList(), caseData.getOtherApplicant()
+            caseData.getApplicantsList(), defaultIfNull(caseData.getOtherApplicant(), EMPTY)
         );
+
+        if (applicantName.isEmpty()) {
+            throw new IllegalArgumentException("Applicant should not be empty");
+        }
 
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();
@@ -53,12 +58,12 @@ public class UploadAdditionalApplicationsService {
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.C2_ORDER)) {
             c2DocumentBundle = buildC2DocumentBundle(
-                caseData, applicantName.orElse(EMPTY), uploadedBy, currentDateTime);
+                caseData, applicantName.get(), uploadedBy, currentDateTime);
         }
 
         if (caseData.getAdditionalApplicationType().contains(AdditionalApplicationType.OTHER_ORDER)) {
             otherApplicationsBundle = buildOtherApplicationsBundle(
-                caseData, applicantName.orElse(EMPTY), uploadedBy, currentDateTime);
+                caseData, applicantName.get(), uploadedBy, currentDateTime);
         }
 
         return AdditionalApplicationsBundle.builder()
@@ -76,9 +81,10 @@ public class UploadAdditionalApplicationsService {
 
             if (isNotEmpty(selectedElement)) {
                 if (APPLICANT_SOMEONE_ELSE.equals(selectedElement.getCode())) {
-                    return Optional.of(otherApplicant);
+                    return isBlank(otherApplicant) ? Optional.empty() : Optional.of(otherApplicant);
+                } else {
+                    return Optional.of(selectedElement.getLabel());
                 }
-                return Optional.of(selectedElement.getLabel());
             }
         }
         return Optional.empty();
