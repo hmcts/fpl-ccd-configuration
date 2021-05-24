@@ -148,7 +148,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         assertThat(response.getData().get("hearingDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
         assertThat(responseCaseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList())
             .isEqualTo(
-                mapper.convertValue(asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel), Map.class)
+               asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
             );
     }
 
