@@ -51,13 +51,14 @@ idam-pr:
 
 xui-webapp:
   enabled: true
+  redis:
+    enabled: true
   nodejs:
     imagePullPolicy: Always
+    replicas: 2
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
     image: hmctspublic.azurecr.io/xui/webapp:latest
     ingressHost: xui-${SERVICE_FQDN}
-    memoryLimits: 1836Mi
-    cpuLimits: 1900m
     readinessPeriod: 5
     livenessPeriod: 3
     livenessDelay: 10
@@ -72,7 +73,7 @@ xui-webapp:
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-      FEATURE_REDIS_ENABLED: false
+      FEATURE_REDIS_ENABLED: true
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
       FEATURE_PROXY_ENABLED: false
@@ -80,8 +81,7 @@ xui-webapp:
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
       NOW: false
-      REDISCLOUD_URL: http://dummyrediscloudurl
-      UV_THREADPOOL_SIZE: 128
+      REDISCLOUD_URL: redis://ignore:fake-password@${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http
     keyVaults:
       rpx:
