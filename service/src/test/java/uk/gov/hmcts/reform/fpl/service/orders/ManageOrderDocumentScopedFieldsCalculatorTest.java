@@ -36,9 +36,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
             "orderDetailsSectionSubHeader",
-            "manageOrdersJurisdictionRegion",
-            "manageOrdersEnglandRegions",
-            "manageOrdersWalesRegions"
+            "manageOrdersCafcassRegion",
+            "manageOrdersCafcassOfficesEngland",
+            "manageOrdersCafcassOfficesWales"
         );
     }
 }

@@ -2116,21 +2116,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageOrdersJurisdictionRegion",
+    "CaseFieldID": "manageOrdersCafcassRegion",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageOrdersEnglandRegions",
+    "CaseFieldID": "manageOrdersCafcassOfficesEngland",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "manageOrdersWalesRegions",
+    "CaseFieldID": "manageOrdersCafcassOfficesWales",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }

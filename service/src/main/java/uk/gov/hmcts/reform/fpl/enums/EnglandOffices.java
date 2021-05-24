@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum CafcassEnglandRegions {
+public enum EnglandOffices {
     BIRMINGHAM("Birmingham"),
     BLACKPOOL("Blackpool"),
     BOURNEMOUTH("Bournemouth"),

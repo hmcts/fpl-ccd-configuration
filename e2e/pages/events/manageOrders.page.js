@@ -68,15 +68,15 @@ const section4 = {
   exclusionStartDate: '#manageOrdersExclusionStartDate',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
-  jurisdictionRegion: {
-    group: '#manageOrdersJurisdictionRegion',
+  cafcassRegion: {
+    group: '#manageOrdersCafcassRegion',
     options: {
       england: 'ENGLAND',
       wales: 'WALES',
     },
   },
-  englandRegions: '#manageOrdersEnglandRegions',
-  walesRegions: '#manageOrdersWalesRegions',
+  englandOffices: '#manageOrdersCafcassOfficesEngland',
+  walesOffices: '#manageOrdersCafcassOfficesWales',
 };
 
 const preview = {
@@ -173,12 +173,12 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
-const selectJurisdictionRegion = jurisdictionRegion => {
-  I.click(`${section4.jurisdictionRegion.group}-${jurisdictionRegion}`);
+const selectCafcassRegion = region => {
+  I.click(`${section4.cafcassRegion.group}-${region}`);
 };
 
-const selectEnglandRegion = region => {
-  I.selectOption(section4.englandRegions, region);
+const selectEnglandOffice= office => {
+  I.selectOption(section4.englandOffices, office);
 };
 
 module.exports = {
@@ -186,5 +186,5 @@ module.exports = {
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
-  selectJurisdictionRegion, selectEnglandRegion,
+  selectCafcassRegion, selectEnglandOffice,
 };

@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.fpl.enums.CafcassEnglandRegions;
-import uk.gov.hmcts.reform.fpl.enums.CafcassWalesRegions;
+import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
+import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C47ADocmosisParameters;
@@ -32,40 +32,40 @@ class C47AAppointmentOfAChildrensGuardianParameterGeneratorTest {
     }
 
     @Test
-    void shouldBuildOrderDetailsWhenAnEnglandCafcassRegionHasBeenSelected() {
-        CafcassEnglandRegions region = CafcassEnglandRegions.BOURNEMOUTH;
+    void shouldBuildOrderDetailsWhenAnEnglandCafcassOfficeHasBeenSelected() {
+        EnglandOffices office = EnglandOffices.BOURNEMOUTH;
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersJurisdictionRegion("ENGLAND")
-                .manageOrdersEnglandRegions(region)
+                .manageOrdersCafcassRegion("ENGLAND")
+                .manageOrdersCafcassOfficesEngland(office)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .build())
             .build();
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(buildOrderDetailsLabel(region.getLabel()))
+            .orderDetails(buildOrderDetailsLabel(office.getLabel()))
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
     @Test
-    void shouldBuildOrderDetailsWhenAWalesCafcassRegionHasBeenSelected() {
-        CafcassWalesRegions region = CafcassWalesRegions.LLANDRINDOD_WELLS;
+    void shouldBuildOrderDetailsWhenAWalesCafcassOfficeHasBeenSelected() {
+        WalesOffices office = WalesOffices.LLANDRINDOD_WELLS;
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersJurisdictionRegion("WALES")
-                .manageOrdersWalesRegions(region)
+                .manageOrdersCafcassRegion("WALES")
+                .manageOrdersCafcassOfficesWales(office)
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .build())
             .build();
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(buildOrderDetailsLabel(region.getLabel()))
+            .orderDetails(buildOrderDetailsLabel(office.getLabel()))
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);

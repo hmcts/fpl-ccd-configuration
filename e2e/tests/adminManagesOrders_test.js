@@ -143,15 +143,15 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
-  manageOrdersEventPage.selectJurisdictionRegion('ENGLAND');
-  manageOrdersEventPage.selectEnglandRegion('Hull');
+  manageOrdersEventPage.selectCafcassRegion('ENGLAND');
+  manageOrdersEventPage.selectEnglandOffice('Hull');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 4,
-    orderType: 'C47A - Appointment of a children\'s guardian',
+    orderType: 'C47A - Appointment of a Children\'s Guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,

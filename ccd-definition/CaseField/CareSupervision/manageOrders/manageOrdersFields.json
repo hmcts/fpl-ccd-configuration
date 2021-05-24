@@ -167,7 +167,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersJurisdictionRegion",
+    "ID": "manageOrdersCafcassRegion",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CafcassJurisdictionRegion",
@@ -177,20 +177,20 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersEnglandRegions",
+    "ID": "manageOrdersCafcassOfficesEngland",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "CafcassEnglandRegions",
+    "FieldTypeParameter": "CafcassEnglandOffices",
     "Label": "Select region",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersWalesRegions",
+    "ID": "manageOrdersCafcassOfficesWales",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "CafcassWalesRegions",
+    "FieldTypeParameter": "CafcassWalesOffices",
     "Label": "Select region",
     "SecurityClassification": "Public",
     "Searchable": "N"

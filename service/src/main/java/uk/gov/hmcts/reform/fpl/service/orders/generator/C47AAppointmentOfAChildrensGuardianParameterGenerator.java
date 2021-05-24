@@ -38,17 +38,17 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
     }
 
     private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData) {
-        String region = getJurisdictionRegion(manageOrdersEventData);
+        String office = getCafcassOffice(manageOrdersEventData);
 
         return String.format("The court appoints Cafcass %s as a Children's Guardian for the child in the"
-            + " proceedings.", region);
+            + " proceedings.", office);
     }
 
-    private String getJurisdictionRegion(ManageOrdersEventData manageOrdersEventData) {
-        if ("ENGLAND".equals(manageOrdersEventData.getManageOrdersJurisdictionRegion())) {
-            return manageOrdersEventData.getManageOrdersEnglandRegions().getLabel();
+    private String getCafcassOffice(ManageOrdersEventData manageOrdersEventData) {
+        if ("ENGLAND".equals(manageOrdersEventData.getManageOrdersCafcassRegion())) {
+            return manageOrdersEventData.getManageOrdersCafcassOfficesEngland().getLabel();
         }
 
-        return manageOrdersEventData.getManageOrdersWalesRegions().getLabel();
+        return manageOrdersEventData.getManageOrdersCafcassOfficesWales().getLabel();
     }
 }
