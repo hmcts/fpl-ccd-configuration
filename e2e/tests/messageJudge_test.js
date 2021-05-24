@@ -11,7 +11,7 @@ BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCaseWithData(mandatoryWithAdditionalApplicationsBundle);
 });
 
-Scenario('HMCTS admin messages the judge', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
+Scenario('HMCTS admin messages the judge @cross-browser', async ({I, caseViewPage, messageJudgeOrLegalAdviserEventPage}) => {
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.messageJudge);
   messageJudgeOrLegalAdviserEventPage.selectMessageRelatedToAdditionalApplication();
