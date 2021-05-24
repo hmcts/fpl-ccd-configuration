@@ -60,6 +60,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.endsWith;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.enums.ChildLivingSituation.fromString;
 import static uk.gov.hmcts.reform.fpl.enums.EPOType.PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.DONT_KNOW;
@@ -113,7 +114,7 @@ public class CaseSubmissionGenerationService
                 ? buildGroundsThresholdReason(caseData.getGrounds().getThresholdReason()) : DEFAULT_STRING)
             .thresholdDetails(getThresholdDetails(caseData.getGrounds()))
             .annexDocuments(annexGenerator.generate(caseData))
-            .userFullName(idamClient.getUserInfo(requestData.authorisation()).getName());
+            .userFullName(getSigneeName(caseData.getAllApplicants()));
 
         return applicationFormBuilder.build();
     }
@@ -282,6 +283,16 @@ public class CaseSubmissionGenerationService
         }
 
         return StringUtils.isNotEmpty(stringBuilder.toString()) ? stringBuilder.toString().trim() : DEFAULT_STRING;
+    }
+
+    public String getSigneeName(final List<Element<Applicant>> applicants) {
+        String legalTeamManager = applicants.get(0).getValue().getParty().getLegalTeamManager();
+
+        if (isNotBlank(legalTeamManager)) {
+            return legalTeamManager;
+        } else {
+            return idamClient.getUserInfo(requestData.authorisation()).getName();
+        }
     }
 
     private List<DocmosisRespondent> buildDocmosisRespondents(final List<Element<Respondent>> respondents) {

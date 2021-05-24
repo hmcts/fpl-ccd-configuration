@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
@@ -250,6 +251,25 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             .respondentPolicy8(buildOrganisationPolicy(SolicitorRole.SOLICITORI))
             .respondentPolicy9(buildOrganisationPolicy(SolicitorRole.SOLICITORJ))
             .build());
+    }
+
+    @Test
+    void shouldRemoveTransientFields() {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
+            .id(2313L)
+            .data(Map.of(
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                "applicants", List.of(element(buildApplicant())),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build()),
+                "draftApplicationDocument", DocumentReference.buildFromDocument(document),
+                "submissionConsentLabel", "Test"
+            ))
+            .build());
+
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "draftApplicationDocument",
+            "submissionConsentLabel"
+        );
     }
 
     private RespondentParty buildRespondentParty() {
