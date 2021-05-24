@@ -12,11 +12,10 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
-import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
-import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.Map;
@@ -28,55 +27,40 @@ import java.util.Map;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final RespondentRepresentationService respondentRepresentationService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2961".equals(migrationId)) {
-            run2961(caseDetails);
+        if ("FPLA-3037".equals(migrationId)) {
+            run3037(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2961(CaseDetails caseDetails) {
+    private void run3037(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
-
-        if (isUnsupportedState(caseData.getState()) || containsNoCFields(caseData)) {
-            throw new IllegalStateException(String.format("Migration failed on case %s: Unexpected migration",
-                caseDetails.getId()));
-        }
-
-        if (caseData.getRespondents1().size() > 10) {
-            throw new IllegalStateException(String.format("Migration failed on case %s: Case has %s respondents",
-                caseDetails.getId(), caseData.getRespondents1().size()));
-        }
-
         Map<String, Object> data = caseDetails.getData();
 
-        data.putAll(respondentRepresentationService.generate(caseData));
-    }
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles =
+            caseData.getAdditionalApplicationsBundle();
 
-    private boolean isUnsupportedState(State state) {
-        List<State> unsupportedStates = List.of(
-            State.OPEN,
-            State.CLOSED,
-            State.DELETED
+        additionalApplicationsBundles.forEach(
+            additionalApplicationsBundle -> {
+                C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getValue().getC2DocumentBundle();
+
+                c2DocumentBundle.getSupportingEvidenceBundle()
+                    .removeIf(supportingEvidenceBundle -> supportingEvidenceBundle.getId()
+                        .toString()
+                        .equals("4885a0e2-fd88-4614-9c35-6c61d6b5e422")
+                    );
+            }
         );
 
-        return unsupportedStates.contains(state);
+        data.put("additionalApplicationsBundle", additionalApplicationsBundles);
+        caseDetails.setData(data);
     }
-
-    private boolean containsNoCFields(CaseData caseData) {
-        RespondentPolicyData emptyRespondentPolicyData = RespondentPolicyData.builder().build();
-        NoticeOfChangeAnswersData emptyNoCAnswerData = NoticeOfChangeAnswersData.builder().build();
-
-        return !emptyNoCAnswerData.equals(caseData.getNoticeOfChangeAnswersData())
-            || !emptyRespondentPolicyData.equals(caseData.getRespondentPolicyData());
-    }
-
 }
