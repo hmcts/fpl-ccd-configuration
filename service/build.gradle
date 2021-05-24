@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.24")
     classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
       exclude group: 'com.vladsch.flexmark'
     }
@@ -260,7 +260,7 @@ def versions = [
   log4j           : '2.13.2',
   pdfbox          : '2.0.23',
   mockito         : '3.7.7',
-  serenity        : '2.3.4',
+  serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1'
 ]
@@ -318,6 +318,8 @@ dependencies {
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.3'
+  
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
@@ -424,6 +426,6 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
   }
 }
