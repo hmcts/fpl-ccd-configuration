@@ -98,6 +98,7 @@ const selectRelatedToHearing = (answer) => {
 const selectHearing = async (hearing) => {
   I.waitForElement(hearingDetails.hearingList);
   I.selectOption(hearingDetails.hearingList, hearing);
+  await I.runAccessibilityTest();
 };
 
 const selectOrder = async (orderType) => {
