@@ -92,7 +92,7 @@ const section4 = {
   },
   whoIsExcluded: '#manageOrdersWhoIsExcluded',
   exclusionStartDate: '#manageOrdersExclusionStartDate',
-  exclusionDetails: '#manageOrdersExclusionDetails',
+  exclusionDetails: '#manageOrdersICOExclusionDetails',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDate: '#manageOrdersEndDateTime',

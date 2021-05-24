@@ -28,7 +28,7 @@ public class ManageOrdersEventData {
     String manageOrdersIncludePhrase;
     String manageOrdersChildrenDescription;
     String manageOrdersExclusionRequirement;
-    String manageOrdersExclusionDetails;
+    String manageOrdersICOExclusionDetails;
     String manageOrdersWhoIsExcluded;
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;

@@ -23,7 +23,6 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersChildrenDescription",
             "manageOrdersEndDateTime",
             "manageOrdersEpoRemovalAddress",
-            "manageOrdersExclusionDetails",
             "manageOrdersExclusionRequirement",
             "manageOrdersWhoIsExcluded",
             "manageOrdersExclusionStartDate",
@@ -41,7 +40,9 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "orderTempQuestions",
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
-            "orderDetailsSectionSubHeader"
+            "orderDetailsSectionSubHeader",
+            "manageOrdersICOExclusionDetails",
+            "manageOrdersICOExclusionRequirement"
         );
     }
 }

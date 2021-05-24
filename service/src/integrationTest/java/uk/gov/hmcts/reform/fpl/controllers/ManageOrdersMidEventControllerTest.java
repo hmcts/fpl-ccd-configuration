@@ -113,7 +113,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-            Map.entry("exclusionRequirementDetails", "NO")
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -413,7 +413,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-            Map.entry("exclusionRequirementDetails", "NO")
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -439,7 +439,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("exclusionRequirementDetails", "YES"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES")
         );

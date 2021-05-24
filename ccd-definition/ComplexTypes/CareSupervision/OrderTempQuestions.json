@@ -110,7 +110,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "exclusionRequirementDetails",
+    "ListElementCode": "manageOrdersExclusionRequirementDetails",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",

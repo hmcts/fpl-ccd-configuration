@@ -215,9 +215,18 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersExclusionDetails",
+    "ID": "manageOrdersICOExclusionRequirement",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "FieldType": "Text",
+    "FieldType": "YesOrNo",
+    "Label": "Add exclusion details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersICOExclusionDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
     "Label": "Add exclusion details",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
