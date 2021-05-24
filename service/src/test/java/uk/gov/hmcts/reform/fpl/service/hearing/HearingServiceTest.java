@@ -43,7 +43,9 @@ class HearingServiceTest {
 
         @Test
         void noSelectorSelected() {
-            Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder().build(), selectedItem(null));
+            Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder().build(),
+                selectedItem(null)
+            );
 
             assertThat(actual).isEmpty();
         }
