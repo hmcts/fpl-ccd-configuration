@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -25,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
+
 @Api
 @RestController
 @RequestMapping("/callback/manage-orders")
@@ -36,6 +39,23 @@ public class ManageOrdersController extends CallbackController {
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
+
+    @PostMapping("/initial-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse populateInitialSection(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getState() == State.CLOSED) {
+            data.put("manageOrdersState", State.CLOSED);
+            data.put("manageOrdersType", C21_BLANK_ORDER);
+            data.put("orderTempQuestions", showHideQuestionsCalculator.calculate(C21_BLANK_ORDER));
+            data.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
+                C21_BLANK_ORDER, C21_BLANK_ORDER.firstSection(), getCaseData(caseDetails)));
+        }
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/order-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {

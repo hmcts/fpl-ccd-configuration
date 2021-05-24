@@ -164,5 +164,14 @@
     "SecurityClassification": "PUBLIC",
     "RegularExpression": ".doc,.docx,.pdf",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersState",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]
