@@ -101,7 +101,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "manageOrderExpiryDateWithMonth",
+    "ListElementCode": "manageOrdersExpiryDateWithMonth",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
@@ -119,7 +119,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "manageOrderExpiryDateWithEndOfProceedings",
+    "ListElementCode": "manageOrdersExpiryDateWithEndOfProceedings",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",

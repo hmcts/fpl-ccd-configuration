@@ -5,7 +5,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -32,57 +31,76 @@ class OrderShowHideQuestionsCalculatorTest {
             "previewOrder", "YES",
             "whichChildren", "YES");
 
-        Map<String, String> careOrderQuestions = new HashMap<>(commonQuestions);
-        careOrderQuestions.putAll(Map.of(
-            "furtherDirections", "YES",
-            "approvalDate", "YES",
-            "approvalDateTime", "NO",
-            "epoIncludePhrase", "NO",
-            "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO",
-            "epoTypeAndPreventRemoval", "NO",
-            "orderDetails", "NO",
-            "manageOrderExpiryDateWithMonth", "NO"
-        ));
+        Map<String, String> careOrderQuestions = Map.ofEntries(
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES"),
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("approvalDate", "YES"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("exclusionRequirementDetails", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+        );
 
-        Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
-        epoQuestions.putAll(Map.of(
-            "furtherDirections", "YES",
-            "approvalDate", "NO",
-            "approvalDateTime", "YES",
-            "epoIncludePhrase", "YES",
-            "epoChildrenDescription", "YES",
-            "epoExpiryDate", "YES",
-            "epoTypeAndPreventRemoval", "YES",
-            "orderDetails", "NO",
-            "manageOrderExpiryDateWithMonth", "NO"
-        ));
+        Map<String, String> epoQuestions = Map.ofEntries(
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES"),
 
-        Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
-        blankOrderQuestions.putAll(Map.of(
-            "approvalDate", "YES",
-            "furtherDirections", "NO",
-            "orderDetails", "YES",
-            "approvalDateTime", "NO",
-            "epoIncludePhrase", "NO",
-            "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO",
-            "epoTypeAndPreventRemoval", "NO",
-            "manageOrderExpiryDateWithMonth", "NO"
-        ));
+            Map.entry("approvalDate", "NO"),
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("approvalDateTime", "YES"),
+            Map.entry("epoIncludePhrase", "YES"),
+            Map.entry("epoChildrenDescription", "YES"),
+            Map.entry("epoExpiryDate", "YES"),
+            Map.entry("epoTypeAndPreventRemoval", "YES"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("exclusionRequirementDetails", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+        );
 
-        Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
-        supervisionOrderQuestions.putAll(Map.of(
-            "approvalDate", "YES",
-            "furtherDirections", "YES",
-            "orderDetails", "NO",
-            "approvalDateTime", "NO",
-            "epoIncludePhrase", "NO",
-            "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO",
-            "epoTypeAndPreventRemoval", "NO",
-            "manageOrderExpiryDateWithMonth", "YES"
-        ));
+        Map<String, String> blankOrderQuestions = Map.ofEntries(
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES"),
+
+            Map.entry("approvalDate", "YES"),
+            Map.entry("furtherDirections", "NO"),
+            Map.entry("orderDetails", "YES"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("exclusionRequirementDetails", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+        );
+
+        Map<String, String> supervisionOrderQuestions = Map.ofEntries(
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("whichChildren", "YES"),
+
+            Map.entry("approvalDate", "YES"),
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
+            Map.entry("exclusionRequirementDetails", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO")
+        );
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),

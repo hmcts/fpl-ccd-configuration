@@ -32,11 +32,11 @@ public enum OrderQuestionBlock {
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
     MANAGE_ORDER_END_DATE_WITH_MONTH(
-        "manageOrderExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
+        "manageOrdersExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate")),
     MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS(
-        "manageOrderExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
+        "manageOrdersExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
         List.of(
             "manageOrdersEndDateTypeWithEndOfProceedings",
             "manageOrdersSetDateEndDate",

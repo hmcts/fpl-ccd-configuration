@@ -20,6 +20,9 @@ module.exports = {
     I.click('Add new');
     await I.runAccessibilityTest();
     I.selectOption(this.fields.reportList, expertReportLog.reportList.value);
+
+    I.wait(0.5);
+
     I.fillField(this.fields.reportRequestDate.day, expertReportLog.reportRequestDate.day);
     I.fillField(this.fields.reportRequestDate.month, expertReportLog.reportRequestDate.month);
     I.fillField(this.fields.reportRequestDate.year, expertReportLog.reportRequestDate.year);

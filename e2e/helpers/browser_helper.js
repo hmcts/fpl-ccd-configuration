@@ -7,8 +7,16 @@ module.exports = class BrowserHelpers extends Helper {
     return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
   }
 
-  isPuppeteer(){
+  isPuppeteer() {
     return this.helpers['Puppeteer'];
+  }
+
+  async getBrowser() {
+    const helper = this.getHelper();
+    if (this.isPuppeteer()) {
+      return (await helper.options.browser);
+    }
+    return (await helper.config.browser);
   }
 
   clickBrowserBack() {
@@ -95,11 +103,7 @@ module.exports = class BrowserHelpers extends Helper {
       return (await element.getProperty('innerText')).jsonValue();
     });
 
-    if (texts.length > 1) {
-      throw new Error(`More than one element found for locator ${locator}`);
-    } else {
-      return texts[0];
-    }
+    return texts[0];
   }
 
   async grabAttribute(locator, attr) {
@@ -117,8 +121,9 @@ module.exports = class BrowserHelpers extends Helper {
 
     if (texts.length > 1) {
       throw new Error(`More than one element found for locator ${locator}`);
+    } else {
+      return texts[0];
     }
-    return texts[0];
   }
 
   async runAccessibilityTest() {

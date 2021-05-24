@@ -272,7 +272,9 @@ module.exports = {
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
     const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
     await apiHelper.populateWithData(caseId, data);
-    await this.refreshPage();
+    if (this.isPuppeteer()) {
+      await this.refreshPage();
+    }
     output.print(`Case #${caseId} has been populated with data`);
 
     return caseId;

@@ -191,7 +191,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.manageOrderExpiryDateWithMonth=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.manageOrdersExpiryDateWithMonth=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -256,7 +256,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.manageOrderExpiryDateWithEndOfProceedings=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.manageOrdersExpiryDateWithEndOfProceedings=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
