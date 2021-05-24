@@ -23,7 +23,7 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({I, c
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c32);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
   await manageOrdersEventPage.selectHearing('Case management hearing, 3 November 2012');
   await I.goToNextPage();
   // Judge and approval date is already preFilled
@@ -51,7 +51,7 @@ Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) =>
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDateTime(today);
@@ -82,7 +82,7 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDateTime(today);
@@ -118,7 +118,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c21);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);

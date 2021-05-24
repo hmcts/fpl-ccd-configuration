@@ -337,10 +337,7 @@ class JudgeAndLegalAdvisorHelperTest {
                     .build())
             );
         }
-
-
     }
-
 
 }
 

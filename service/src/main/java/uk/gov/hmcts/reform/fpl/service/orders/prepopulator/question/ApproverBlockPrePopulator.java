@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
@@ -33,7 +34,7 @@ public class ApproverBlockPrePopulator implements QuestionBlockOrderPrePopulator
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
 
-        Object selectedHearing = caseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList();
+        DynamicList selectedHearing = caseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList();
         Optional<Element<HearingBooking>> hearing = hearingService.findHearing(caseData, selectedHearing);
 
 

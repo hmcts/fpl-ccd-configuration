@@ -91,7 +91,7 @@ const selectOperation = async (operationType) => {
   await I.runAccessibilityTest();
 };
 
-const selectRelatedToHearing = async (answer) => {
+const selectRelatedToHearing = (answer) => {
   I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
 };
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 class ApprovalDateTimeBlockPrePopulatorTest {
-    private static final Object MANAGE_ORDERS_APPROVED_AT_HEARING_LIST = new Object();
+    private static final DynamicList MANAGE_ORDERS_APPROVED_AT_HEARING_LIST = mock(DynamicList.class);
     private static final LocalDateTime END_DATE = LocalDateTime.now();
     private static final CaseData CASE_DATA = CaseData.builder()
         .manageOrdersEventData(ManageOrdersEventData.builder()

@@ -20,7 +20,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 class LinkedToHearingBlockPrePopulatorTest {
 
     private static final List<Element<HearingBooking>> HEARINGS = List.of(
-        element(UUID.randomUUID(), mock(HearingBooking.class)));
+        element(UUID.randomUUID(), mock(HearingBooking.class))
+    );
     private static final DynamicList DYNAMIC_LIST = mock(DynamicList.class);
     private final HearingService hearingService = mock(HearingService.class);
 

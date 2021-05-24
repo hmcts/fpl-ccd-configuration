@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.service.hearing.HearingService;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 class ApproverBlockPrePopulatorTest {
 
-    private static final Object SELECTED_HEARING = new Object();
+    private static final DynamicList SELECTED_HEARING = mock(DynamicList.class);
     private static final CaseData CASE_DATA = CaseData.builder()
         .manageOrdersEventData(ManageOrdersEventData.builder()
             .manageOrdersApprovedAtHearingList(SELECTED_HEARING)

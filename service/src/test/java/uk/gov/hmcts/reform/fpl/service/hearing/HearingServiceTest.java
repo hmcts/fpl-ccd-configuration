@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.hearing;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -8,6 +7,8 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ class HearingServiceTest {
 
     private final Time time = mock(Time.class);
 
-    private final HearingService underTest = new HearingService(new ObjectMapper(), time);
+    private final HearingService underTest = new HearingService(time);
 
     @Nested
     class FindHearing {
@@ -41,11 +42,19 @@ class HearingServiceTest {
         }
 
         @Test
+        void noSelectorSelected() {
+            Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder().build(), selectedItem(null));
+
+            assertThat(actual).isEmpty();
+        }
+
+        @Test
         void selectorWhenNoBookings() {
             Optional<Element<HearingBooking>> actual = underTest.findHearing(CaseData.builder()
                     .hearingDetails(List.of())
                     .build(),
-                FIELD_SELECTOR.toString());
+                selectedItem(FIELD_SELECTOR)
+            );
 
             assertThat(actual).isEmpty();
         }
@@ -58,7 +67,8 @@ class HearingServiceTest {
                             element(ANOTHER_SELECTOR, HEARING_BOOKING)
                         ))
                     .build(),
-                FIELD_SELECTOR.toString());
+                selectedItem(FIELD_SELECTOR)
+            );
 
             assertThat(actual).isEqualTo(Optional.empty());
         }
@@ -70,9 +80,14 @@ class HearingServiceTest {
                         element(FIELD_SELECTOR, HEARING_BOOKING)
                     ))
                     .build(),
-                FIELD_SELECTOR.toString());
+                selectedItem(FIELD_SELECTOR)
+            );
 
             assertThat(actual).isEqualTo(Optional.of(element(FIELD_SELECTOR, HEARING_BOOKING)));
+        }
+
+        private DynamicList selectedItem(UUID fieldSelector) {
+            return DynamicList.builder().value(DynamicListElement.builder().code(fieldSelector).build()).build();
         }
     }
 
