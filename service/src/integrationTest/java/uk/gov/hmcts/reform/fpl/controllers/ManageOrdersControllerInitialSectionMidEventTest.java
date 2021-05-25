@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ManageOrdersAboutToStartControllerTest extends AbstractCallbackTest {
+class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
@@ -40,7 +40,7 @@ class ManageOrdersAboutToStartControllerTest extends AbstractCallbackTest {
     @MockBean
     private UploadDocumentService uploadService;
 
-    ManageOrdersAboutToStartControllerTest() {
+    ManageOrdersControllerInitialSectionMidEventTest() {
         super("manage-orders");
     }
 
