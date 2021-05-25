@@ -130,6 +130,7 @@ ccd:
       keyVaults: []
   ccd-data-store-api:
     java:
+      image: hmctspublic.azurecr.io/ccd/data-store-api:prod-665dc8a9
       imagePullPolicy: Always
       memoryRequests: '1524Mi'
       cpuRequests: '900m'
@@ -156,6 +157,7 @@ ccd:
       autoscaling:
         enabled: false
       imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/definition-store-api:prod-cf6a1a9f
       environment:
         DEFINITION_STORE_DB_HOST: ${SERVICE_NAME}-postgresql
         DEFINITION_STORE_IDAM_KEY: ${CCD_DEFINITION_STORE_S2S_SECRET}
@@ -168,6 +170,7 @@ ccd:
   ccd-user-profile-api:
     java:
       imagePullPolicy: Always
+      image: hmctspublic.azurecr.io/ccd/user-profile-api:prod-c11442ce
       enviroment:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults: []
