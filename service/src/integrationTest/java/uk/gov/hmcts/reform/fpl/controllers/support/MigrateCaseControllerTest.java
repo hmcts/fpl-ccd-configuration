@@ -3,35 +3,30 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.model.Organisation;
-import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
 import uk.gov.hmcts.reform.fpl.enums.State;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.NoticeOfChangeAnswersData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
-import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
-import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
+import uk.gov.hmcts.reform.fpl.model.PBAPayment;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -42,310 +37,84 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla2961 {
-        Long caseId = 1111L;
-        String migrationId = "FPLA-2961";
-        NoticeOfChangeAnswersData emptyNoticeOfChangeAnswersData = NoticeOfChangeAnswersData.builder().build();
-        RespondentPolicyData emptyRespondentPolicyData = RespondentPolicyData.builder().build();
+    class Fpla3080 {
+        String familyManNumber = "SA21C50024";
+        String migrationId = "FPLA-3080";
 
-        private Stream<Arguments> invalidStates() {
-            return Stream.of(
-                Arguments.of(State.OPEN),
-                Arguments.of(State.CLOSED),
-                Arguments.of(State.DELETED)
-            );
-        }
+        private DocumentReference supportingDocument = testDocumentReference("Correct c2 document");
+        private DocumentReference c2Document = testDocumentReference("Incorrect c2 document");
 
         @Test
-        void shouldGenerateRespondentPoliciesAndNoticeOfChangeAnswersFromFullyPopulatedCaseData() {
-            List<Element<Applicant>> applicants = buildApplicants();
+        void shouldReplaceC2DocumentWithSupportingDocument() {
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(buildAdditionalApplicationsBundle(YES));
 
-            Organisation respondentTwoOrganisation = Organisation.builder()
-                .organisationID("SA123")
-                .organisationName("Private solicitor")
-                .build();
-
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("Sarah")
-                        .lastName("Simpson")
-                        .build())
-                    .build()),
-                element(Respondent.builder()
-                    .solicitor(RespondentSolicitor.builder()
-                        .organisation(respondentTwoOrganisation)
-                        .build())
-                    .party(RespondentParty.builder()
-                        .firstName("Mark")
-                        .lastName("Watson")
-                        .build())
-                    .build()),
-                element(Respondent.builder()
-                    .solicitor(RespondentSolicitor.builder()
-                        .unregisteredOrganisation(UnregisteredOrganisation.builder()
-                            .name("Some address")
-                            .build())
-                        .build())
-                    .party(RespondentParty.builder()
-                        .firstName("Gareth")
-                        .lastName("Simmons")
-                        .build())
-                    .build()));
-
-            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
+            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            NoticeOfChangeAnswersData expectedNoticeOfChangeAnswers = NoticeOfChangeAnswersData.builder()
-                .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
-                    .applicantName("Swansea City Council")
-                    .respondentFirstName("Sarah")
-                    .respondentLastName("Simpson")
-                    .build())
-                .noticeOfChangeAnswers1(NoticeOfChangeAnswers.builder()
-                    .applicantName("Swansea City Council")
-                    .respondentFirstName("Mark")
-                    .respondentLastName("Watson")
-                    .build())
-                .noticeOfChangeAnswers2(NoticeOfChangeAnswers.builder()
-                    .applicantName("Swansea City Council")
-                    .respondentFirstName("Gareth")
-                    .respondentLastName("Simmons")
-                    .build())
+            C2DocumentBundle expectedBundle = C2DocumentBundle.builder().document(supportingDocument)
+                .type(WITH_NOTICE)
                 .build();
 
-            RespondentPolicyData expectedRespondentPolicyData = RespondentPolicyData.builder()
-                .respondentPolicy0(buildOrganisationPolicy(SolicitorRole.SOLICITORA))
-                .respondentPolicy1(OrganisationPolicy.builder()
-                    .organisation(respondentTwoOrganisation)
-                    .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORB.getCaseRoleLabel())
-                    .build())
-                .respondentPolicy2(buildOrganisationPolicy(SolicitorRole.SOLICITORC))
-                .respondentPolicy3(buildOrganisationPolicy(SolicitorRole.SOLICITORD))
-                .respondentPolicy4(buildOrganisationPolicy(SolicitorRole.SOLICITORE))
-                .respondentPolicy5(buildOrganisationPolicy(SolicitorRole.SOLICITORF))
-                .respondentPolicy6(buildOrganisationPolicy(SolicitorRole.SOLICITORG))
-                .respondentPolicy7(buildOrganisationPolicy(SolicitorRole.SOLICITORH))
-                .respondentPolicy8(buildOrganisationPolicy(SolicitorRole.SOLICITORI))
-                .respondentPolicy9(buildOrganisationPolicy(SolicitorRole.SOLICITORJ))
-                .build();
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue().getPbaPayment())
+                .isEqualTo(additionalApplications.get(0).getValue().getPbaPayment());
 
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedNoticeOfChangeAnswers);
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(expectedRespondentPolicyData);
-        }
-
-        @Test
-        void shouldGenerateRespondentPoliciesAndNoticeOfChangeAnswersFromPartiallyPopulatedCaseData() {
-            List<Element<Applicant>> applicants = List.of(
-                element(Applicant.builder()
-                    .party(ApplicantParty.builder()
-                        .build())
-                    .build()));
-
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .lastName("Simpson")
-                        .build())
-                    .build()),
-                element(Respondent.builder()
-                    .solicitor(RespondentSolicitor.builder()
-                        .organisation(Organisation.builder().build())
-                        .build())
-                    .party(RespondentParty.builder()
-                        .firstName("Mark")
-                        .build())
-                    .build()),
-                element(Respondent.builder()
-                    .solicitor(RespondentSolicitor.builder()
-                        .unregisteredOrganisation(UnregisteredOrganisation.builder()
-                            .name("Some address")
-                            .build())
-                        .build())
-                    .party(RespondentParty.builder()
-                        .build())
-                    .build()));
-
-            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            NoticeOfChangeAnswersData expectedNoticeOfChangeAnswers = NoticeOfChangeAnswersData.builder()
-                .noticeOfChangeAnswers0(NoticeOfChangeAnswers.builder()
-                    .applicantName(null)
-                    .respondentFirstName(null)
-                    .respondentLastName("Simpson")
-                    .build())
-                .noticeOfChangeAnswers1(NoticeOfChangeAnswers.builder()
-                    .applicantName(null)
-                    .respondentFirstName("Mark")
-                    .respondentLastName(null)
-                    .build())
-                .noticeOfChangeAnswers2(NoticeOfChangeAnswers.builder()
-                    .applicantName(null)
-                    .respondentFirstName(null)
-                    .respondentLastName(null)
-                    .build())
-                .build();
-
-            RespondentPolicyData expectedRespondentPolicyData = RespondentPolicyData.builder()
-                .respondentPolicy0(buildOrganisationPolicy(SolicitorRole.SOLICITORA))
-                .respondentPolicy1(buildOrganisationPolicy(SolicitorRole.SOLICITORB))
-                .respondentPolicy2(buildOrganisationPolicy(SolicitorRole.SOLICITORC))
-                .respondentPolicy3(buildOrganisationPolicy(SolicitorRole.SOLICITORD))
-                .respondentPolicy4(buildOrganisationPolicy(SolicitorRole.SOLICITORE))
-                .respondentPolicy5(buildOrganisationPolicy(SolicitorRole.SOLICITORF))
-                .respondentPolicy6(buildOrganisationPolicy(SolicitorRole.SOLICITORG))
-                .respondentPolicy7(buildOrganisationPolicy(SolicitorRole.SOLICITORH))
-                .respondentPolicy8(buildOrganisationPolicy(SolicitorRole.SOLICITORI))
-                .respondentPolicy9(buildOrganisationPolicy(SolicitorRole.SOLICITORJ))
-                .build();
-
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(expectedNoticeOfChangeAnswers);
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(expectedRespondentPolicyData);
+            System.out.println("Here's what it is" + additionalApplications.get(0).getValue().getC2DocumentBundle());
+//            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue().getC2DocumentBundle())
+//                .isEqualTo(additionalApplications.get(0).getValue().getC2DocumentBundle()).isEqualTo(expectedBundle);
+            //assert supporting evidence is gone
+            //assert document is changed
+            //assert that no other additional application bundles are changed
         }
 
         @Test
         void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
             String incorrectMigrationId = "FPLA-1111";
-            List<Element<Applicant>> applicants = buildApplicants();
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(buildAdditionalApplicationsBundle(YES));
 
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .lastName("Simpson")
-                        .build())
-                    .build()));
-
-            CaseDetails caseDetails = caseDetails(respondents, applicants, incorrectMigrationId);
+            CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getRespondents1()).isEqualTo(respondents);
-            assertThat(extractedCaseData.getApplicants()).isEqualTo(applicants);
-            assertThat(extractedCaseData.getRespondentPolicyData()).isEqualTo(emptyRespondentPolicyData);
-            assertThat(extractedCaseData.getNoticeOfChangeAnswersData()).isEqualTo(emptyNoticeOfChangeAnswersData);
-        }
-
-        @ParameterizedTest
-        @MethodSource("invalidStates")
-        void shouldThrowAnExceptionIfStateIsUnsupported(State caseState) {
-            List<Element<Applicant>> applicants = buildApplicants();
-
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .lastName("Simpson")
-                        .build())
-                    .build()));
-
-            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
-            caseDetails.setState(caseState.getValue());
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Unexpected migration", caseId));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(additionalApplications);
         }
 
         @Test
-        void shouldThrowAnExceptionIfCaseContainsNoticeOfChangeAnswerData() {
-            List<Element<Applicant>> applicants = buildApplicants();
+        void shouldThrowAnExceptionIfCaseContainsNoAdditionalApplications() {
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = Collections.emptyList();
 
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .lastName("Simpson")
-                        .build())
-                    .build()));
-
-            NoticeOfChangeAnswers noticeOfChangeAnswers0 = NoticeOfChangeAnswers.builder()
-                .applicantName("Swansea City Council")
-                .respondentLastName("Simpson")
-                .build();
-
-            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
-            caseDetails.getData().put("noticeOfChangeAnswers0", noticeOfChangeAnswers0);
+            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Unexpected migration", caseId));
+                .hasMessage(String.format("Migration failed on case %s: Case has %s additional applications", familyManNumber,
+                    additionalApplications.size()));
         }
 
-        @Test
-        void shouldThrowAnExceptionIfCaseContainsRespondentPolicyData() {
-            List<Element<Applicant>> applicants = buildApplicants();
-
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .lastName("Simpson")
-                        .build())
-                    .build()));
-
-            OrganisationPolicy respondentPolicy0 = OrganisationPolicy.builder()
-                .orgPolicyCaseAssignedRole(SolicitorRole.SOLICITORA.getCaseRoleLabel())
-                .organisation(Organisation.builder()
-                    .organisationName("Some org")
-                    .organisationID("WA123")
-                    .build())
-                .build();
-
-            CaseDetails caseDetails = caseDetails(respondents, applicants, migrationId);
-            caseDetails.getData().put("respondentPolicy0", respondentPolicy0);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Unexpected migration", caseId));
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfCaseContainsMoreThanTenRespondents() {
-            List<Element<Respondent>> respondents = List.of(
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()),
-                element(Respondent.builder().build()));
-
-            CaseDetails caseDetails = caseDetails(respondents, null, migrationId);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Case has %s respondents", caseId,
-                    respondents.size()));
-        }
-
-        private CaseDetails caseDetails(List<Element<Respondent>> respondents,
-                                        List<Element<Applicant>> applicants,
+        private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
                                         String migrationId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .state(State.SUBMITTED)
-                .respondents1(respondents)
-                .applicants(applicants)
-                .id(caseId)
+                .state(State.CASE_MANAGEMENT)
+                .additionalApplicationsBundle(additionalApplications)
+                .familyManCaseNumber(familyManNumber)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
         }
 
-        private List<Element<Applicant>> buildApplicants() {
-            return List.of(element(Applicant.builder()
-                .party(ApplicantParty.builder()
-                    .organisationName("Swansea City Council")
-                    .build())
-                .build()));
+        private AdditionalApplicationsBundle buildAdditionalApplicationsBundle(YesNo usePbaPayment) {
+                    return AdditionalApplicationsBundle.builder()
+                        .pbaPayment(PBAPayment.builder().usePbaPayment(usePbaPayment.getValue()).build())
+                        .c2DocumentBundle(C2DocumentBundle.builder()
+                            .type(WITH_NOTICE)
+                            .document(c2Document)
+                            .supplementsBundle(new ArrayList<>())
+                            .usePbaPayment(usePbaPayment.getValue())
+                            .supportingEvidenceBundle(wrapElements(SupportingEvidenceBundle.builder()
+                            .document(supportingDocument)
+                                .build()))
+                            .build())
+                        .build();
         }
 
-        private OrganisationPolicy buildOrganisationPolicy(SolicitorRole solicitorRole) {
-            return OrganisationPolicy.builder()
-                .organisation(Organisation.builder().build())
-                .orgPolicyCaseAssignedRole(solicitorRole.getCaseRoleLabel())
-                .build();
-        }
     }
 }
