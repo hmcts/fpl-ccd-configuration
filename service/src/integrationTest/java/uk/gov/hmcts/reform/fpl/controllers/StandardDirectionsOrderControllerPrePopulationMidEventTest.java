@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -36,14 +38,15 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testJudge;
 
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractCallbackTest {
+class StandardDirectionsOrderControllerPrePopulationMidEventTest extends AbstractCallbackTest {
 
-    StandardDirectionsOrderControllerDateOfIssueMidEventTest() {
+    StandardDirectionsOrderControllerPrePopulationMidEventTest() {
         super("draft-standard-directions");
     }
 
@@ -183,6 +186,9 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
 
     @Nested
     class PrePopulation {
+
+        private List<Element<HearingBooking>> hearings = List.of(element(mock(HearingBooking.class)));
+
         @Test
         void shouldPopulateDateOfIssue() {
             CaseData caseData = CaseData.builder()
@@ -234,9 +240,21 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
         }
 
         @Test
+        void shouldReturnErrorWhenNoHearingsAndInGatekeeping() {
+            CaseData caseData = CaseData.builder().state(State.GATEKEEPING).sdoRouter(SDORoute.URGENT).build();
+
+            AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "pre-populate");
+
+            assertThat(response.getErrors()).isEqualTo(List.of(
+                "You need to add hearing details for the notice of proceedings"
+            ));
+        }
+
+        @Test
         void shouldPrePopulateAllocationDecision() {
             CaseData caseData = CaseData.builder()
                 .state(State.GATEKEEPING)
+                .hearingDetails(hearings)
                 .allocationProposal(Allocation.builder().proposal("District judge").build())
                 .sdoRouter(SDORoute.URGENT)
                 .build();
@@ -254,6 +272,7 @@ class StandardDirectionsOrderControllerDateOfIssueMidEventTest extends AbstractC
         void shouldPrePopulateFieldToHideAllocationPageWhenAllocationDecisionAlreadyMade() {
             CaseData caseData = CaseData.builder()
                 .state(State.GATEKEEPING)
+                .hearingDetails(hearings)
                 .allocationDecision(Allocation.builder()
                     .judgeLevelRadio("District judge")
                     .proposalReason("blah")
