@@ -175,6 +175,8 @@ ccd:
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
 
   postgresql:
+    enviroment:
+      POSTGRESQL_POSTGRES_CONNECTION_LIMIT: 400
     persistence:
       enabled: false
     postgresConfig:
