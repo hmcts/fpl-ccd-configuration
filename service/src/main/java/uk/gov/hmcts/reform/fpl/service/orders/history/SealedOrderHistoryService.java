@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
@@ -27,7 +26,6 @@ import static java.util.Comparator.comparing;
 import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static java.util.Objects.isNull;
-import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -51,11 +49,9 @@ public class SealedOrderHistoryService {
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
 
         pastOrders.add(element(identityService.generateId(), GeneratedOrder.builder()
-            .orderType(CLOSED == caseData.getState() ? Order.C21_BLANK_ORDER.name()
-                : manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
+            .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
             .title(manageOrdersEventData.getManageOrdersTitle())
-            .type(CLOSED == caseData.getState() ? Order.C21_BLANK_ORDER.getHistoryTitle()
-                : manageOrdersEventData.getManageOrdersType().getHistoryTitle())
+            .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
