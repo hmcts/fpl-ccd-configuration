@@ -23,73 +23,69 @@ class GatekeepingOrderEventNotificationDeciderTest {
     private final GatekeepingOrderEventNotificationDecider underTest = new GatekeepingOrderEventNotificationDecider();
 
     @Test
-    void buildEventToPublishForUnsealedSDOAndNoHearingOrder() {
+    void buildEventToPublishForUnsealedSDOAndNoHearingOrderInGatekeepingState() {
         CaseData caseData = CaseData.builder()
             .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(OrderStatus.DRAFT).build())
             .build();
 
-        assertThat(underTest.buildEventToPublish(caseData)).isEmpty();
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).isEmpty();
     }
 
     @Test
     void buildEventToPublishForUnsealedSDOWhenInCaseManagement() {
         CaseData caseData = CaseData.builder()
-            .state(CASE_MANAGEMENT)
             .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(OrderStatus.DRAFT).build())
             .urgentHearingOrder(mock(UrgentHearingOrder.class))
             .build();
 
-        assertThat(underTest.buildEventToPublish(caseData)).isEmpty();
+        assertThat(underTest.buildEventToPublish(caseData, CASE_MANAGEMENT)).isEmpty();
     }
 
     @Test
     void buildEventToPublishForUrgentHearingOrder() {
         CaseData caseData = CaseData.builder()
-            .state(GATEKEEPING)
             .urgentHearingOrder(UrgentHearingOrder.builder().order(ORDER).build())
             .build();
 
-        assertThat(underTest.buildEventToPublish(caseData)).contains(GatekeepingOrderEvent.builder()
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(URGENT_AND_NOP)
-                .order(ORDER)
-                .caseData(caseData)
-                .build()
+            .order(ORDER)
+            .caseData(caseData)
+            .build()
         );
     }
 
     @Test
     void buildEventToPublishForSDOAndNoPWhenInGateKeeping() {
         CaseData caseData = CaseData.builder()
-            .state(GATEKEEPING)
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .orderDoc(ORDER)
                 .build())
             .build();
 
-        assertThat(underTest.buildEventToPublish(caseData)).contains(GatekeepingOrderEvent.builder()
+        assertThat(underTest.buildEventToPublish(caseData, GATEKEEPING)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(SDO_AND_NOP)
-                .order(ORDER)
-                .caseData(caseData)
-                .build()
+            .order(ORDER)
+            .caseData(caseData)
+            .build()
         );
     }
 
     @Test
     void buildEventToPublishForSDOOnlyWhenInCaseManagement() {
         CaseData caseData = CaseData.builder()
-            .state(CASE_MANAGEMENT)
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(OrderStatus.SEALED)
                 .orderDoc(ORDER)
                 .build())
             .build();
 
-        assertThat(underTest.buildEventToPublish(caseData)).contains(GatekeepingOrderEvent.builder()
+        assertThat(underTest.buildEventToPublish(caseData, CASE_MANAGEMENT)).contains(GatekeepingOrderEvent.builder()
             .notificationGroup(SDO)
-                .order(ORDER)
-                .caseData(caseData)
-                .build()
+            .order(ORDER)
+            .caseData(caseData)
+            .build()
         );
     }
 }

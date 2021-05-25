@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -44,6 +43,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_CTSC
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.URGENT_AND_NOP_ISSUED_LA;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
@@ -58,6 +59,8 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
     private static final DocumentReference URGENT_HEARING_ORDER_DOCUMENT = testDocumentReference();
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
     private static final byte[] APPLICATION_BINARY = DOCUMENT_CONTENT;
+    private static final CaseData GATEKEEPING_CASE_DATA = CaseData.builder().state(GATEKEEPING).build();
+    private static final CaseData CASE_MANAGEMENT_CASE_DATA = CaseData.builder().state(CASE_MANAGEMENT).build();
 
     @SpyBean
     private EventService eventService;
@@ -82,7 +85,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     @Test
     void shouldNotTriggerEventsWhenDraft() {
-        postSubmittedEvent(buildCaseDataWithSDO(DRAFT));
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(DRAFT), GATEKEEPING_CASE_DATA));
 
         verify(eventService, never()).publishEvent(any());
         verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
@@ -90,7 +93,9 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     @Test
     void shouldNotTriggerEventsWhenDraftAfterUrgentHearingOrder() {
-        postSubmittedEvent(buildCaseDataWithUrgentHearingOrderAndSDO(DRAFT));
+        postSubmittedEvent(toCallBackRequest(
+            buildCaseDataWithUrgentHearingOrderAndSDO(DRAFT), CASE_MANAGEMENT_CASE_DATA
+        ));
 
         verify(eventService, never()).publishEvent(any());
         verify(coreCaseDataService, never()).triggerEvent(any(), any(), any(), any(), any());
@@ -98,28 +103,30 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     @Test
     void shouldTriggerEventWhenUrgentHearingSubmitted() {
-        postSubmittedEvent(buildCaseDataWithUrgentHearingOrder());
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
         verifyEmails(URGENT_AND_NOP_ISSUED_CAFCASS, URGENT_AND_NOP_ISSUED_CTSC, URGENT_AND_NOP_ISSUED_LA);
     }
 
     @Test
     void shouldTriggerEventWhenSDOSubmitted() {
-        postSubmittedEvent(buildCaseDataWithSDO(SEALED));
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
 
         verifyEmails(SDO_AND_NOP_ISSUED_CAFCASS, SDO_AND_NOP_ISSUED_CTSC, SDO_AND_NOP_ISSUED_LA);
     }
 
     @Test
     void shouldTriggerEventWhenSDOSubmittedAfterUrgentHearingOrder() {
-        postSubmittedEvent(buildCaseDataWithUrgentHearingOrderAndSDO(SEALED));
+        postSubmittedEvent(toCallBackRequest(
+            buildCaseDataWithUrgentHearingOrderAndSDO(SEALED), CASE_MANAGEMENT_CASE_DATA
+        ));
 
         verifyEmails(SDO_ISSUED_CAFCASS, SDO_ISSUED_CTSC, SDO_ISSUED_LA);
     }
 
     @Test
     void shouldTriggerSendDocumentEventWhenSubmitted() {
-        postSubmittedEvent(buildCaseDataWithSDO(SEALED));
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithSDO(SEALED), GATEKEEPING_CASE_DATA));
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
@@ -132,7 +139,7 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     @Test
     void shouldTriggerSendDocumentEventForUrgentHearingOrder() {
-        postSubmittedEvent(buildCaseDataWithUrgentHearingOrder());
+        postSubmittedEvent(toCallBackRequest(buildCaseDataWithUrgentHearingOrder(), GATEKEEPING_CASE_DATA));
 
         verify(coreCaseDataService).triggerEvent(
             JURISDICTION,
@@ -170,7 +177,6 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     private CaseData buildCaseDataWithUrgentHearingOrderAndSDO(OrderStatus status) {
         return buildCaseDataWithUrgentHearingOrder().toBuilder()
-            .state(State.CASE_MANAGEMENT)
             .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(status)
                 .orderDoc(SDO_DOCUMENT)
@@ -197,7 +203,6 @@ class StandardDirectionsOrderControllerSubmittedTest extends AbstractCallbackTes
 
     private CaseData.CaseDataBuilder baseCaseData() {
         return CaseData.builder()
-            .state(State.GATEKEEPING)
             .id(CASE_ID)
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .hearingDetails(wrapElements(HearingBooking.builder()

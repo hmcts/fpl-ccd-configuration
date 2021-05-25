@@ -328,10 +328,13 @@ public class StandardDirectionsOrderController extends CallbackController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = getCaseData(callbackRequest);
+    public void handleSubmittedEvent(@RequestBody CallbackRequest request) {
+        CaseData caseData = getCaseData(request);
+        CaseData caseDataBefore = getCaseDataBefore(request);
 
-        Optional<GatekeepingOrderEvent> event = notificationDecider.buildEventToPublish(caseData);
+        Optional<GatekeepingOrderEvent> event = notificationDecider.buildEventToPublish(
+            caseData, caseDataBefore.getState()
+        );
 
         event.ifPresent(eventToPublish -> {
             coreCaseDataService.triggerEvent(

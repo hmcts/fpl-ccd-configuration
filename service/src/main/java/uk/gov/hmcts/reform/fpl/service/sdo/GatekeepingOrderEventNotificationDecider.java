@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.sdo;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -17,21 +18,21 @@ import static uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotific
 @Component
 public class GatekeepingOrderEventNotificationDecider {
 
-    public Optional<GatekeepingOrderEvent> buildEventToPublish(CaseData caseData) {
+    public Optional<GatekeepingOrderEvent> buildEventToPublish(CaseData caseData, State previousState) {
         GatekeepingOrderEvent.GatekeepingOrderEventBuilder event = GatekeepingOrderEvent.builder().caseData(caseData);
         StandardDirectionOrder sdo = defaultIfNull(
             caseData.getStandardDirectionOrder(), StandardDirectionOrder.builder().build()
         );
         UrgentHearingOrder urgentHearingOrder = caseData.getUrgentHearingOrder();
 
-        if (sdo.isDraft() && (null == urgentHearingOrder || !isInGatekeeping(caseData))) {
+        if (sdo.isDraft() && (null == urgentHearingOrder || !isInGatekeeping(previousState))) {
             return Optional.empty();
         }
 
         if (null != sdo.getOrderDoc()) {
             event.order(sdo.getOrderDoc());
             // if we are in the gatekeeping state send the NoP related notifications
-            event.notificationGroup(isInGatekeeping(caseData) ? SDO_AND_NOP : SDO);
+            event.notificationGroup(isInGatekeeping(previousState) ? SDO_AND_NOP : SDO);
         } else {
             event.order(urgentHearingOrder.getOrder());
             event.notificationGroup(URGENT_AND_NOP);
@@ -40,7 +41,7 @@ public class GatekeepingOrderEventNotificationDecider {
         return Optional.of(event.build());
     }
 
-    private boolean isInGatekeeping(CaseData caseData) {
-        return GATEKEEPING == caseData.getState();
+    private boolean isInGatekeeping(State previousState) {
+        return GATEKEEPING == previousState;
     }
 }
