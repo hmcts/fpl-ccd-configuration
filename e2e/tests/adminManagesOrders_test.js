@@ -132,7 +132,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   });
 });
 
-Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -151,7 +151,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 3,
-    orderType: 'C35a - Supervision order',
+    orderType: 'Supervision order (C35A)',
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',

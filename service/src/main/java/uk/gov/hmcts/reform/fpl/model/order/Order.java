@@ -41,7 +41,7 @@ public enum Order {
     C35A_SUPERVISION_ORDER(
         "Supervision order",
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
-        "C35a - Supervision order",
+        "Supervision order (C35A)",
         List.of(
             APPROVER,
             APPROVAL_DATE,
