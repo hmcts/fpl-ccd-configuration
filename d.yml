@@ -1,0 +1,2 @@
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS                      IMAGES                                                     SELECTOR
+fpl-case-service-pr-2661-java   1/1     1            1           22h   fpl-case-service-pr-2661-java   hmctspublic.azurecr.io/fpl/case-service:pr-2661-4e1b7204   app.kubernetes.io/name=fpl-case-service-pr-2661-java

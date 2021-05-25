@@ -57,7 +57,7 @@ xui-webapp:
     imagePullPolicy: Always
     replicas: 2
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:latest
+    image: hmctspublic.azurecr.io/xui/webapp:prod-6a440523
     ingressHost: xui-${SERVICE_FQDN}
     readinessPeriod: 5
     livenessPeriod: 3
@@ -130,7 +130,6 @@ ccd:
       keyVaults: []
   ccd-data-store-api:
     java:
-      image: hmctspublic.azurecr.io/ccd/data-store-api:prod-665dc8a9
       imagePullPolicy: Always
       memoryRequests: '1524Mi'
       cpuRequests: '900m'
@@ -177,10 +176,25 @@ ccd:
   postgresql:
     enviroment:
       POSTGRESQL_POSTGRES_CONNECTION_LIMIT: 400
+    args: ["-c", "max_connections=500"]
     persistence:
       enabled: false
-    postgresConfig:
-      maxConnections: "300"
+    resources:
+      requests:
+        cpu: 25m
+    initdbScripts:
+      init.sql: |-
+        CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+        CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+        CREATE DATABASE "user-profile" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+        CREATE DATABASE "draftstore" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+        CREATE DATABASE "payment" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+        CREATE DATABASE "evidence" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+        CREATE DATABASE "annotation" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+    postgresqlUsername: hmcts
+    postgresqlPassword: hmcts
+    postgresqlDatabase: ccd
+    postgresqlMaxConnections: 500
 
   elasticsearch:
     clusterName: "es"
