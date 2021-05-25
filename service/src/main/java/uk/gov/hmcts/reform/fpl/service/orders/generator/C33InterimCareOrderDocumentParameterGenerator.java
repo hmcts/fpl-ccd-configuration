@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -15,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -70,7 +70,8 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
         String formatString;
         String courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until %s.";
 
-        switch (eventData.getManageOrdersEndDateTypeWithEndOfProceedings()) {
+        ManageOrdersEndDateTypeWithEndOfProceedings type = eventData.getManageOrdersEndDateTypeWithEndOfProceedings();
+        switch (type) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
             case SET_CALENDAR_DAY:
                 // TODO: DOUBLE CHECK THE END OF THIS MATCHES THE VALIDATOR
@@ -83,26 +84,22 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
                 break;
             case SET_END_OF_PROCEEDINGS:
                 courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until "
-                    + "the end of the proceedings or further order";
-                orderExpiration = null;
+                    + "the end of the proceedings or further order.";
                 formatString = null;
+                orderExpiration = null;
                 break;
             default:
-                throw new IllegalStateException("Unexpected order event data type: "
-                    + eventData.getManageOrdersEndDateTypeWithEndOfProceedings());
+                throw new IllegalStateException("Unexpected order event data type: " + type);
         }
 
-        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
-        boolean isEndOfProceeding = eventData
-            .getManageOrdersEndDateTypeWithEndOfProceedings()
-            .equals(SET_END_OF_PROCEEDINGS);
-
-        if (isEndOfProceeding) {
+        if (type == SET_END_OF_PROCEEDINGS) {
             return getEndOfProceedingsMessage(
                 numOfChildren,
                 localAuthorityName,
-                courtResponsibilityAssignmentMessage + "ToDo ± end of proceedings");
+                courtResponsibilityAssignmentMessage
+            );
         } else {
+            final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
             return getDateTimeAndDateMessage(
                 numOfChildren, localAuthorityName,
                 orderExpiration,

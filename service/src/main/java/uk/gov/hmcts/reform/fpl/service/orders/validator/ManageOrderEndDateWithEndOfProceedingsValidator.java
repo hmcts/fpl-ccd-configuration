@@ -46,7 +46,7 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
             case SET_END_OF_PROCEEDINGS:
                 return validateEndOfProceedings();
             default:
-                throw new IllegalStateException("Unexpected supervision order end date type: " + type);
+                throw new IllegalStateException("Unexpected order end date type: " + type);
         }
     }
 
@@ -84,7 +84,6 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
         List<String> errors = new ArrayList<>();
 
         log.info("No validation needed for SET_END_OF_PROCEEDINGS");
-        errors.add(null);
 
         return errors;
     }

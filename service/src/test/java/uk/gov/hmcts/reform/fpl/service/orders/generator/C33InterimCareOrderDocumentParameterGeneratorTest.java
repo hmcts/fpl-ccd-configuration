@@ -1,39 +1,39 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
-    import org.junit.jupiter.api.Test;
-    import org.junit.jupiter.api.extension.ExtendWith;
-    import org.mockito.InjectMocks;
-    import org.mockito.Mock;
-    import org.mockito.junit.jupiter.MockitoExtension;
-    import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-    import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-    import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-    import uk.gov.hmcts.reform.fpl.model.CaseData;
-    import uk.gov.hmcts.reform.fpl.model.Child;
-    import uk.gov.hmcts.reform.fpl.model.common.Element;
-    import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-    import uk.gov.hmcts.reform.fpl.model.order.Order;
-    import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-    import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
-    import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
-    import uk.gov.hmcts.reform.fpl.service.time.Time;
-    import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-    import java.time.LocalDateTime;
-    import java.util.List;
+import java.time.LocalDateTime;
+import java.util.List;
 
-    import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-    import static org.mockito.Mockito.mock;
-    import static org.mockito.Mockito.when;
-    import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY;
-    import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY_AND_TIME;
-    import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_END_OF_PROCEEDINGS;
-    import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
-    import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
-    import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
-    import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-    import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
-    import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith({MockitoExtension.class})
 class C33InterimCareOrderDocumentParameterGeneratorTest {
@@ -370,8 +370,8 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
     }
 
     private C33InterimCareOrderDocmosisParameters.C33InterimCareOrderDocmosisParametersBuilder<?,?>
-    expectedCommonParameters(boolean hasExclusionDetails) {
-        if (hasExclusionDetails){
+        expectedCommonParameters(boolean hasExclusionDetails) {
+        if (hasExclusionDetails) {
             return C33InterimCareOrderDocmosisParameters.builder()
                 .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
                 .orderType(TYPE)
