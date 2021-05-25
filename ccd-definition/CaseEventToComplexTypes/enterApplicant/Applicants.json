@@ -29,6 +29,14 @@
     "ID": "Applicants",
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "applicants",
+    "ListElementCode": "party.legalTeamManager",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
     "ListElementCode": "party.pbaNumber",
     "EventElementLabel": "*Payment by account (PBA) number",
     "HintText": "For example, PBA1234567",
