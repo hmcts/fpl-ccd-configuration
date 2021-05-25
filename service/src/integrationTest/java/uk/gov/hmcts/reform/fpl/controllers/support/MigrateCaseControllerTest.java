@@ -44,7 +44,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldReplaceC2DocumentWithSupportingDocument() {
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(buildAdditionalApplicationsBundle());
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
+                buildAdditionalApplicationsBundle());
 
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -56,14 +57,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .usePbaPayment(YES.getValue())
                 .build();
 
-            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData.getAdditionalApplicationsBundle());
+            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
+                .getAdditionalApplicationsBundle());
 
             assertThat(extractedApplicationBundle.get(0).getC2DocumentBundle()).isEqualTo(expectedBundle);
         }
 
         @Test
         void shouldReplaceC2DocumentWithSupportingDocumentAtIndex0AndLeaveOtherElementsUnModified() {
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(buildAdditionalApplicationsBundle(), buildAdditionalApplicationsBundle());
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
+                buildAdditionalApplicationsBundle(), buildAdditionalApplicationsBundle());
 
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -75,7 +78,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .usePbaPayment(YES.getValue())
                 .build();
 
-            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData.getAdditionalApplicationsBundle());
+            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
+                .getAdditionalApplicationsBundle());
 
             assertThat(extractedApplicationBundle.size()).isEqualTo(2);
             assertThat(extractedApplicationBundle.get(0).getC2DocumentBundle()).isEqualTo(expectedBundle);
@@ -85,7 +89,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
             String incorrectMigrationId = "FPLA-1111";
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(buildAdditionalApplicationsBundle());
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
+                buildAdditionalApplicationsBundle());
 
             CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -101,8 +106,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Case has %s additional applications", familyManNumber,
-                    additionalApplications.size()));
+                .hasMessage(String.format("Migration failed on case %s: Case has %s additional applications",
+                    familyManNumber, additionalApplications.size()));
         }
 
         private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
@@ -118,16 +123,16 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         private AdditionalApplicationsBundle buildAdditionalApplicationsBundle() {
-                    return AdditionalApplicationsBundle.builder()
-                        .c2DocumentBundle(C2DocumentBundle.builder()
-                            .type(WITH_NOTICE)
-                            .document(c2Document)
-                            .usePbaPayment(YES.getValue())
-                            .supportingEvidenceBundle(wrapElements(SupportingEvidenceBundle.builder()
-                            .document(supportingDocument)
-                                .build()))
-                            .build())
-                        .build();
+            return AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .type(WITH_NOTICE)
+                    .document(c2Document)
+                    .usePbaPayment(YES.getValue())
+                    .supportingEvidenceBundle(wrapElements(SupportingEvidenceBundle.builder()
+                        .document(supportingDocument)
+                        .build()))
+                    .build())
+                .build();
         }
 
     }

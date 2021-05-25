@@ -49,15 +49,20 @@ public class MigrateCaseController extends CallbackController {
     private void run3080(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
-        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData.getAdditionalApplicationsBundle();
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
+            .getAdditionalApplicationsBundle();
 
         if (caseData.getAdditionalApplicationsBundle().size() < 1) {
-            throw new IllegalStateException(String.format("Migration failed on case %s: Case has %s additional applications", caseData.getFamilyManCaseNumber(), additionalApplicationsBundle.size()));
+            throw new IllegalStateException(String
+                .format("Migration failed on case %s: Case has %s additional applications",
+                caseData.getFamilyManCaseNumber(), additionalApplicationsBundle.size()));
         }
 
-        AdditionalApplicationsBundle application = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+        AdditionalApplicationsBundle application = caseData.getAdditionalApplicationsBundle()
+            .get(0).getValue();
         C2DocumentBundle c2DocumentBundle = application.getC2DocumentBundle();
-        Element<SupportingEvidenceBundle> supportingEvidenceBundle = c2DocumentBundle.getSupportingEvidenceBundle().get(0);
+        Element<SupportingEvidenceBundle> supportingEvidenceBundle = c2DocumentBundle
+            .getSupportingEvidenceBundle().get(0);
 
         application.setC2DocumentBundle(c2DocumentBundle.toBuilder()
             .document(supportingEvidenceBundle
