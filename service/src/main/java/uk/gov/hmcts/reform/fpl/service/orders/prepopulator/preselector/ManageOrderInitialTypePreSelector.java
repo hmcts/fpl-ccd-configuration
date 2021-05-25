@@ -27,10 +27,7 @@ public class ManageOrderInitialTypePreSelector {
         CaseData caseData = caseConverter.convert(caseDetails);
 
         if (caseData.getState() == State.CLOSED) {
-            Map<String, Object> defaultClosedStateData = new HashMap<>();
-            defaultClosedStateData.put("manageOrdersState", State.CLOSED);
-            defaultClosedStateData.put("manageOrdersType", C21_BLANK_ORDER);
-            defaultClosedStateData.put("orderTempQuestions", showHideQuestionsCalculator.calculate(C21_BLANK_ORDER));
+            Map<String, Object> defaultClosedStateData = defaultDataForClosedState();
 
             defaultClosedStateData.putAll(orderSectionAndQuestionsPrePopulator.prePopulate(
                 C21_BLANK_ORDER,
@@ -42,6 +39,14 @@ public class ManageOrderInitialTypePreSelector {
         }
 
         return Map.of();
+    }
+
+    private Map<String, Object> defaultDataForClosedState() {
+        Map<String, Object> defaultClosedStateData = new HashMap<>();
+        defaultClosedStateData.put("manageOrdersState", State.CLOSED);
+        defaultClosedStateData.put("manageOrdersType", C21_BLANK_ORDER);
+        defaultClosedStateData.put("orderTempQuestions", showHideQuestionsCalculator.calculate(C21_BLANK_ORDER));
+        return defaultClosedStateData;
     }
 
     private CaseData caseDataWithDefaults(CaseDetails caseDetails, Map<String, Object> defaultClosedDate) {
