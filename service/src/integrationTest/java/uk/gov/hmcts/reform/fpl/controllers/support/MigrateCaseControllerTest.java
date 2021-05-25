@@ -1,25 +1,36 @@
 package uk.gov.hmcts.reform.fpl.controllers.support;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -27,6 +38,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
     MigrateCaseControllerTest() {
         super("migrate-case");
     }
+
+    @MockBean
+    private CaseSubmissionService caseSubmissionService;
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
@@ -126,6 +140,65 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                                 .build())
                         )).build()
                 ).build();
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Fpla3087 {
+        private final long caseId = 1618497329043582L;
+        private final String migrationId = "FPLA-3087";
+        private final Document document = testDocument();
+        private final DocumentReference c110a = buildFromDocument(document);
+        private final DocumentReference oldC110a = testDocumentReference();
+
+
+        @BeforeEach
+        void setUp() {
+            when(caseSubmissionService.generateSubmittedFormPDF(any(CaseData.class), eq(false)))
+                .thenReturn(document);
+        }
+
+        @Test
+        void shouldRegenerateC110a() {
+            Map<String, Object> data = Map.of(
+                "migrationId", migrationId,
+                "submittedForm", oldC110a
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder().id(caseId).data(data).build();
+
+            CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(caseData.getSubmittedForm()).isEqualTo(c110a);
+        }
+
+        @Test
+        void shouldNotRegenerateC110aWhenCaseIdDoesNotMatch() {
+            Map<String, Object> data = Map.of(
+                "migrationId", migrationId,
+                "submittedForm", oldC110a
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder().id(2L).data(data).build();
+
+            CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(caseData.getSubmittedForm()).isEqualTo(oldC110a);
+        }
+
+        @Test
+        void shouldNotRegenerateC110aWhenMigrationIdDoesNotMatch() {
+            Map<String, Object> data = Map.of(
+                "migrationId", "YYYY",
+                "submittedForm", oldC110a
+            );
+
+            CaseDetails caseDetails = CaseDetails.builder().id(caseId).data(data).build();
+
+            CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(caseData.getSubmittedForm()).isEqualTo(oldC110a);
         }
     }
 }
