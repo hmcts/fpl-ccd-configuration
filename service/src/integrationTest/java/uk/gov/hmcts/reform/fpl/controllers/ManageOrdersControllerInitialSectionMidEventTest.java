@@ -6,7 +6,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 
@@ -23,11 +21,6 @@ import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
-
-    private static final Judge JUDGE = Judge.builder()
-        .judgeLastName("Judy")
-        .judgeTitle(DISTRICT_JUDGE)
-        .build();
 
     private static final long CCD_CASE_NUMBER = 1234123412341234L;
 
