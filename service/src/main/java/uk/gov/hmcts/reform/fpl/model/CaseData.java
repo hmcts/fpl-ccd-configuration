@@ -921,4 +921,7 @@ public class CaseData {
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
+
+    private final List<Element<CustomDirection>> sdoDirectionCustom;
+    private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
 }

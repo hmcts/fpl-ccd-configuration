@@ -1,0 +1,28 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SaveOrSendGatekeepingOrder",
+    "ListElementCode": "draftDocument",
+    "FieldType": "Document",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SaveOrSendGatekeepingOrder",
+    "ListElementCode": "orderStatus",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Do you want to send this order now?",
+    "FieldTypeParameter": "OrderStatus",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SaveOrSendGatekeepingOrder",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Date",
+    "ElementLabel": "Order issue date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"SEALED\""
+  }
+]

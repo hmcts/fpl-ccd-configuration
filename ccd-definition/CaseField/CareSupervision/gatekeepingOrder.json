@@ -1,0 +1,41 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderRouter",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "GatekeepingOrderRoutes",
+    "Label": "Order type",
+    "HintText": "What do you want to do?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sdoDirectionCustom",
+    "Label": "Further directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CustomDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "saveOrSendGatekeepingOrder",
+    "Label": "Check, save or send the order",
+    "FieldType": "SaveOrSendGatekeepingOrder",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sdoHearingDate",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]
