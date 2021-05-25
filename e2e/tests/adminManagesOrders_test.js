@@ -144,7 +144,7 @@ Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrder
   await I.goToNextPage();
   await manageOrdersEventPage.enterFurtherDirections('Supervision order further details.');
   await manageOrdersEventPage.selectSupervisionOrder(manageOrdersEventPage.section4.supervisionOrderType.options.numberOfMonths);
-  await manageOrdersEventPage.enterSuperVisionNumOfMonths(10);
+  await manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
