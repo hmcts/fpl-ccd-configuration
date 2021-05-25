@@ -37,6 +37,9 @@ Scenario('Gatekeeper make allocation decision based on proposal', async ({I, cas
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District Judge');
 });
 
 Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
@@ -46,6 +49,10 @@ Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enter
   await enterAllocationDecisionEventPage.enterProposalReason('new information was acquired');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
+  I.seeInTab(['Allocation decision', 'Give reason'], 'new information was acquired');
 });
 
 Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
