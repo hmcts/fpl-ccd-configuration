@@ -178,7 +178,7 @@ withPipeline(type, product, component) {
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=2
+    env.PARALLEL_CHUNKS=4
     env.TEST_RETRIES=2
   }
 
