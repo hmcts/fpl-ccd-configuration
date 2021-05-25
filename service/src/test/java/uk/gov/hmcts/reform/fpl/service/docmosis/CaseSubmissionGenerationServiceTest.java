@@ -126,6 +126,38 @@ class CaseSubmissionGenerationServiceTest {
     }
 
     @Nested
+    class DocmosisCaseSubmissionSigneeNameTest {
+        @Test
+        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerPresent() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager("legal team manager")
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("legal team manager");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnCurrentUserWhenLegalTeamManagerIsEmptyOrNotPresent(String legalTeamManager) {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager(legalTeamManager)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
+        }
+    }
+
+    @Nested
     class DocmosisCaseSubmissionOrdersNeededTest {
         @Test
         void shouldReturnDefaultValueForOrdersNeededWhenOrderTypeEmpty() {

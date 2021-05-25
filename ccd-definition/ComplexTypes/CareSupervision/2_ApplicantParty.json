@@ -30,6 +30,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
+    "ListElementCode": "legalTeamManager",
+    "FieldType": "Text",
+    "ElementLabel": "Name of legal team manager or authorising officer",
+    "HintText": "The statement of truth will be signed in this person's name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
     "ListElementCode": "pbaNumber",
     "FieldType": "Text",
     "ElementLabel": "Payment by account (PBA) number",
