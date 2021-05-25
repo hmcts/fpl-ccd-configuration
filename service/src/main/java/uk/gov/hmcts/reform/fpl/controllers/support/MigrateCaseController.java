@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import java.util.Map;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final CaseSubmissionService caseSubmissionService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -35,6 +39,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-3037".equals(migrationId)) {
             run3037(caseDetails);
+        }
+
+        if ("FPLA-3087".equals(migrationId)) {
+            run3087(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -62,5 +70,15 @@ public class MigrateCaseController extends CallbackController {
 
         data.put("additionalApplicationsBundle", additionalApplicationsBundles);
         caseDetails.setData(data);
+    }
+
+    private void run3087(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+        if (1618497329043582L == caseData.getId()) {
+            log.info("Regenerating C110a for {}", caseData.getId());
+            Document document = caseSubmissionService.generateSubmittedFormPDF(caseData, false);
+            log.info("Regenerated C110a for {}", caseData.getId());
+            caseDetails.getData().put("submittedForm", DocumentReference.buildFromDocument(document));
+        }
     }
 }
