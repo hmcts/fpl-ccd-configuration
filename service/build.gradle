@@ -34,6 +34,9 @@ apply plugin: 'au.com.dius.pact'
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
+def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory";
+def mirrorUrl = "https://${mirrorHost}.platform.hmcts.net/artifactory/maven-remotes"
+
 sourceSets {
   functionalTest {
     java {
@@ -240,12 +243,11 @@ repositories {
   maven {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
-  //maven {
-  //  url "https://jitpack.io"
-  //}
-
   maven {
     url "https://repo.spring.io/milestone"
+  }
+  maven {
+    url mirrorUrl
   }
 }
 
@@ -294,7 +296,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.1'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -312,7 +314,7 @@ dependencies {
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.9.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 

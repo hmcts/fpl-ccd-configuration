@@ -1,7 +1,7 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.20
+version: 1.12.21
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
@@ -16,7 +16,7 @@ dependencies:
     tags:
       - fpl-ccd-stack
   - name: xui-webapp
-    version: ~0.2.1
+    version: 0.2.13
     repository: '@hmctspublic'
     condition: xui-webapp.enabled
   - name: idam-pr
