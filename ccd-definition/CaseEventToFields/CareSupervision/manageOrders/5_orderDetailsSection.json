@@ -100,7 +100,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.epoTypeAndPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\"",
+    "FieldShowCondition": "orderTempQuestions.epoTypeAndPreventRemoval=\"YES\" AND manageOrdersEpoType=\"PREVENT_REMOVAL\"AND manageOrdersExclusionRequirement=\"Yes\",
     "ShowSummaryChangeOption": "Y"
   },
   {

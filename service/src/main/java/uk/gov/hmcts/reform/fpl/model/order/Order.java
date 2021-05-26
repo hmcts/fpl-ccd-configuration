@@ -54,7 +54,7 @@ public enum Order {
     ),
     C33_INTERIM_CARE_ORDER(
         "Interim care order",
-        "Section 44 Children Act 1989",
+        "Section 38 Children Act 1989",
         "Interim care order (C33)",
         List.of(
             APPROVER,

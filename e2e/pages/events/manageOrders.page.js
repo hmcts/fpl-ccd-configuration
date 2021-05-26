@@ -216,7 +216,7 @@ const selectOrderTypeWithMonth = async (orderDateType) => {
   I.click(`${section4.orderTypeWithMonth.group}-${orderDateType}`);
 };
 
-const selectOrderTypeWithEndOfProceedings = async (orderDateType) => {
+const selectOrderTypeWithEndOfProceedings = (orderDateType) => {
   I.click(`${section4.orderTypeWithEndOfProceedings.group}-${orderDateType}`);
 };
 
@@ -240,5 +240,5 @@ module.exports = {
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
-  selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectICOExclusionRequirement: selectExclusionRequirementICO,
+  selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
 };

@@ -10,13 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY_AND_TIME;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
 class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
     private static final String TEST_AFTER_APPROVAL_DATE_MESSAGE = "Enter an end date after the approval date";
@@ -32,7 +30,8 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
     private final LocalDate approvalDate = todayDate;
     private final LocalDateTime approvalDateTime = time.now();
 
-    private final ManageOrderEndDateWithEndOfProceedingsValidator underTest = new ManageOrderEndDateWithEndOfProceedingsValidator(time);
+    private final ManageOrderEndDateWithEndOfProceedingsValidator underTest =
+        new ManageOrderEndDateWithEndOfProceedingsValidator(time);
 
     @Test
     void accept() {

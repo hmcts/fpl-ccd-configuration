@@ -168,7 +168,7 @@ Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrder
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectICOExclusionRequirement(manageOrdersEventPage.section4.ICOExclusionRequirement.options.yes);
+  await manageOrdersEventPage.selectExclusionRequirementICO(manageOrdersEventPage.section4.ICOExclusionRequirement.options.yes);
   await manageOrdersEventPage.enterExclusionDetails('I need an exclusion because of X,Y and Z');
   await manageOrdersEventPage.enterFurtherDirections('Further details.');
   await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
