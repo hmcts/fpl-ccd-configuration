@@ -151,7 +151,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 3,
-    orderType: 'C35a - Supervision order',
+    orderType: 'Supervision order (C35A)',
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
