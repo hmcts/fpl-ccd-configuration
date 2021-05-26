@@ -246,7 +246,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "urgentHearingOrderInfo",
-    "Label": "### Next steps\n\nBefore the next hearing you must add:\n\n* the judge or magistrate allocated to this case in 'Allocated judge'\n\n* details of this urgent hearing in 'Manage hearings'\n\nYou can also add a gatekeeping order later, if needed.",
+    "Label": "### Next steps\n\nBefore the next hearing you must add the judge or magistrate allocated to this case in 'Allocated judge'.\n\nYou can also add a gatekeeping order later, if needed.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
