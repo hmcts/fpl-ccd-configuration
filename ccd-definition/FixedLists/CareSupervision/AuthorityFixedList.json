@@ -443,6 +443,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "NHB",
+    "ListElement": "Northumberland County Council",
+    "DisplayOrder": 267
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NHC",
     "ListElement": "Nottingham City Council",
     "DisplayOrder": 270
@@ -580,6 +587,13 @@
     "ListElementCode": "STF",
     "ListElement": "Staffordshire County Council",
     "DisplayOrder": 355
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STH",
+    "ListElement": "St Helens Borough Council",
+    "DisplayOrder": 357
   },
   {
     "LiveFrom": "01/01/2017",

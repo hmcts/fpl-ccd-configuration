@@ -4,17 +4,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
@@ -34,28 +34,38 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
     }
 
     @Test
+    void shouldReturnErrorWhenSDOSealedAndUrgentHearingOrderPopulated() {
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(OrderStatus.SEALED).build())
+            .urgentHearingOrder(UrgentHearingOrder.builder().build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseData);
+
+        assertThat(response.getErrors()).isEqualTo(List.of("There is already a gatekeeping order for this case"));
+    }
+
+    @Test
     void shouldPopulateDateOfIssueWithPreviouslyEnteredDateWhenRouterIsService() {
-        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssueAndRoute("20 March 2020", SERVICE);
+        CaseData responseData = extractCaseData(postAboutToStartEvent(buildCaseDetailsWithDateOfIssueAndRoute(
+            "20 March 2020", SERVICE
+        )));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
-
-        assertThat(response.getData().get("dateOfIssue")).isEqualTo(LocalDate.of(2020, 3, 20).toString());
+        assertThat(responseData.getDateOfIssue()).isEqualTo(LocalDate.of(2020, 3, 20).toString());
     }
 
     @Test
     void shouldNotPopulateDateOfIssueWhenRouterIsUpload() {
-        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssueAndRoute("20 March 2020", UPLOAD);
+        CaseData responseData = extractCaseData(postAboutToStartEvent(buildCaseDetailsWithDateOfIssueAndRoute(
+            "20 March 2020", UPLOAD
+        )));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
-
-        assertThat(response.getData().get("dateOfIssue")).isNull();
+        assertThat(responseData.getDateOfIssue()).isNull();
     }
 
     @Test
     void shouldPopulateCurrentSDOFieldWithDocumentFromSDOWhenRouterIsUpload() {
-        CaseDetails caseDetails = buildCaseDetailsWithUploadedDocument();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(buildCaseDetailsWithUploadedDocument());
 
         DocumentReference doc = mapper.convertValue(response.getData().get("currentSDO"), DocumentReference.class);
 
@@ -64,9 +74,9 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldPopulateServiceRoutingPageConditionVariableWhenRouterIsService() {
-        CaseDetails caseDetails = buildCaseDetailsWithDateOfIssueAndRoute("13 March 2020", SERVICE);
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(
+            buildCaseDetailsWithDateOfIssueAndRoute("13 March 2020", SERVICE)
+        );
 
         assertThat(response.getData())
             .doesNotContainKey("useUploadRoute")
@@ -75,9 +85,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
 
     @Test
     void shouldPopulateUploadRoutingPageConditionVariableWhenRouterIsUpload() {
-        CaseDetails caseDetails = buildCaseDetailsWithUploadedDocument();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(buildCaseDetailsWithUploadedDocument());
 
         assertThat(response.getData())
             .doesNotContainKey("useServiceRoute")
@@ -88,16 +96,12 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
     void shouldPopulateJudgeAndLegalAdvisorInUploadRoute() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = buildJudgeAndLegalAdvisor();
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of(
-                "sdoRouter", UPLOAD,
-                "standardDirectionOrder", StandardDirectionOrder.builder()
-                    .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-                    .build()
-            )).build();
+        CaseData caseData = CaseData.builder()
+            .sdoRouter(UPLOAD)
+            .standardDirectionOrder(StandardDirectionOrder.builder().judgeAndLegalAdvisor(judgeAndLegalAdvisor).build())
+            .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
-        CaseData responseCaseData = mapper.convertValue(response.getData(), CaseData.class);
+        CaseData responseCaseData = extractCaseData(postAboutToStartEvent(caseData));
 
         assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(judgeAndLegalAdvisor);
     }
@@ -133,23 +137,18 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
         assertThat(actualCaseData.getCourtDirections()).isEqualTo(originalCaseData.getCourtDirections());
     }
 
-    private CaseDetails buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
+    private CaseData buildCaseDetailsWithDateOfIssueAndRoute(String date, SDORoute route) {
         return buildCaseDetails(date, null, route);
     }
 
-    private CaseDetails buildCaseDetailsWithUploadedDocument() {
+    private CaseData buildCaseDetailsWithUploadedDocument() {
         return buildCaseDetails(null, SDO, UPLOAD);
     }
 
-    private CaseDetails buildCaseDetails(String date, DocumentReference doc, SDORoute route) {
-        Map<String, Object> data = new HashMap<>(Map.of(
-            "standardDirectionOrder", StandardDirectionOrder.builder().dateOfIssue(date).orderDoc(doc).build()
-        ));
-
-        data.put("sdoRouter", route);
-
-        return CaseDetails.builder()
-            .data(data)
+    private CaseData buildCaseDetails(String date, DocumentReference doc, SDORoute route) {
+        return CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder().dateOfIssue(date).orderDoc(doc).build())
+            .sdoRouter(route)
             .build();
     }
 
