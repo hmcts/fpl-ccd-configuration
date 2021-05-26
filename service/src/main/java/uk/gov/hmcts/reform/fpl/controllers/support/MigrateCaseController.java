@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -22,6 +23,8 @@ import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Api
 @RestController
@@ -43,6 +46,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-3087".equals(migrationId)) {
             run3087(caseDetails);
+        }
+
+        if ("FPLA-3080".equals(migrationId)) {
+            run3080(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -80,5 +87,36 @@ public class MigrateCaseController extends CallbackController {
             log.info("Regenerated C110a for {}", caseData.getId());
             caseDetails.getData().put("submittedForm", DocumentReference.buildFromDocument(document));
         }
+    }
+
+    private void run3080(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
+            .getAdditionalApplicationsBundle();
+
+        if (caseData.getAdditionalApplicationsBundle().size() < 1) {
+            throw new IllegalStateException(String
+                .format("Migration failed on case %s: Case has %s additional applications",
+                    caseData.getFamilyManCaseNumber(), additionalApplicationsBundle.size()));
+        }
+
+        AdditionalApplicationsBundle application = caseData.getAdditionalApplicationsBundle()
+            .get(0).getValue();
+        C2DocumentBundle c2DocumentBundle = application.getC2DocumentBundle();
+        Element<SupportingEvidenceBundle> supportingEvidenceBundle = c2DocumentBundle
+            .getSupportingEvidenceBundle().get(0);
+
+        application.setC2DocumentBundle(c2DocumentBundle.toBuilder()
+            .document(supportingEvidenceBundle
+                .getValue().getDocument())
+            .supportingEvidenceBundle(null)
+            .build());
+
+        additionalApplicationsBundle.set(0, element(application));
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.put("additionalApplicationsBundle", additionalApplicationsBundle);
     }
 }
