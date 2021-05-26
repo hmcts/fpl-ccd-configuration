@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProc
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
     private static final Integer MAXIMUM_MONTHS_VALID = 12;
     private static final String AFTER_APPROVAL_DATE_MESSAGE = "Enter an end date after the approval date";
     private static final String END_DATE_MAX_RANGE_MESSAGE = "This order cannot last longer than 12 months";
+
+    private final Time time;
 
     @Override
     public OrderQuestionBlock accept() {

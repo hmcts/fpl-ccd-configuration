@@ -20,10 +20,10 @@ const orders = {
     c35A: 'C35A_SUPERVISION_ORDER',
   },
   title: {
+    c21: 'Blank order (C21)',
+    c23: 'Emergency protection order (C23)',
     c32: 'Care order (C32)',
     c33: 'Interim care order (C33)',
-    c23: 'Emergency protection order (C23)',
-    c21: 'Blank order (C21)',
     c35A: 'Supervision order (C35A)',
   },
 };
