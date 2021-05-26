@@ -74,7 +74,6 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
         switch (type) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
             case SET_CALENDAR_DAY:
-                // TODO: DOUBLE CHECK THE END OF THIS MATCHES THE VALIDATOR
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
                 orderExpiration = LocalDateTime.of(eventData.getManageOrdersSetDateEndDate(), LocalTime.MIDNIGHT);
                 break;

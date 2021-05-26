@@ -158,21 +158,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   });
 });
 
-xScenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
-  /*
- UserflowforInterimcareorder
- Createanorder
- >SelectInterimcareorder(C33)
- >Issuingdetails(judgeandstartdate)
- >Selectchildren
- >Otherdetailspage(enterenddate/timeoptions);
-
- Exclusionclause(freetextentry);
- Enteradditionaldirectionsifrequired
-
- >Previeworder
- >CYA
- */
+Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -182,7 +168,7 @@ xScenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrde
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
+  await manageOrdersEventPage.selectICOExclusionRequirement(manageOrdersEventPage.section4.ICOExclusionRequirement.options.yes);
   await manageOrdersEventPage.enterExclusionDetails('I need an exclusion because of X,Y and Z');
   await manageOrdersEventPage.enterFurtherDirections('Further details.');
   await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
@@ -193,9 +179,9 @@ xScenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrde
   assertOrder(I,caseViewPage,{
     orderIndex:3,
     orderType:manageOrdersEventPage.orders.title.c33,
-    approvalDate:today,
-    allocatedJudge:allocatedJudge,
-    children:manageOrdersEventPage.section3.children.child1,
+    approvalDate: today,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
   });
 });
 function assertOrder(I, caseViewPage, order) {

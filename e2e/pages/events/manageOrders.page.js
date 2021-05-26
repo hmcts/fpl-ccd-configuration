@@ -13,9 +13,10 @@ const operations = {
 const orders = {
   group: '#manageOrdersType',
   options: {
-    c32: 'C32_CARE_ORDER',
-    c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
+    c23: 'C23_EMERGENCY_PROTECTION_ORDER',
+    c32: 'C32_CARE_ORDER',
+    c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
   },
   title: {
@@ -69,6 +70,13 @@ const section4 = {
   },
   exclusionRequirement: {
     group: '#manageOrdersExclusionRequirement',
+    options: {
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
+  ICOExclusionRequirement: {
+    group: '#manageOrdersICOExclusionRequirement',
     options: {
       yes: 'Yes',
       no: 'No',
@@ -222,11 +230,15 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
+const selectExclusionRequirementICO = async (exclusionRequirement) => {
+  I.click(`${section4.ICOExclusionRequirement.group}-${exclusionRequirement}`);
+};
+
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
-  selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings,
+  selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectICOExclusionRequirement: selectExclusionRequirementICO,
 };
