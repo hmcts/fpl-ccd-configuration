@@ -34,29 +34,31 @@ public class CourtLevelAllocationService {
         return decisionBuilder.build();
     }
 
-    private Allocation.AllocationBuilder populateDecision(Allocation allocationDecision) {
-        return ofNullable(allocationDecision)
-            .map(Allocation::toBuilder)
-            .orElse(Allocation.builder());
+    public Allocation setAllocationDecisionIfNull(CaseData caseData) {
+        return setAllocationDecisionIfNull(caseData, caseData.getAllocationDecision());
+    }
+
+    public Allocation setAllocationDecisionIfNull(CaseData caseData, Allocation allocationDecision) {
+        Allocation.AllocationBuilder decisionBuilder = populateDecision(allocationDecision);
+
+        if (allocationDecision.getProposal() == null) {
+            decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
+            decisionBuilder.proposalReason(caseData.getAllocationProposal().getProposalReason());
+        }
+
+        // Setting radio here as to not display the question in tab
+        decisionBuilder.judgeLevelRadio(null);
+
+        return decisionBuilder.build();
     }
 
     private boolean hasAllocationPresent(Allocation data) {
         return data != null && isNotEmpty(data.getProposal());
     }
 
-    public Allocation setAllocationDecisionIfNull(CaseData caseData) {
-        Allocation.AllocationBuilder decisionBuilder =
-            populateDecision(caseData.getAllocationDecision());
-
-        if (caseData.getAllocationDecision().getProposal() == null) {
-            decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
-            decisionBuilder.proposalReason(caseData.getAllocationProposal().getProposalReason());
-            decisionBuilder.judgeLevelRadio(null);
-        } else {
-            // Setting radio here as to not display the question in tab
-            decisionBuilder.judgeLevelRadio(null);
-        }
-
-        return decisionBuilder.build();
+    private Allocation.AllocationBuilder populateDecision(Allocation allocationDecision) {
+        return ofNullable(allocationDecision)
+            .map(Allocation::toBuilder)
+            .orElse(Allocation.builder());
     }
 }
