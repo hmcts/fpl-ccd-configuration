@@ -591,6 +591,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "STH",
+    "ListElement": "St Helens Borough Council",
+    "DisplayOrder": 357
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "STC",
     "ListElement": "Stockport Metropolitan Borough Council",
     "DisplayOrder": 360
