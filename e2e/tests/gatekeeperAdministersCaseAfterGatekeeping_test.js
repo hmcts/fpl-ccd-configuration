@@ -37,6 +37,9 @@ Scenario('Gatekeeper make allocation decision based on proposal', async ({I, cas
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('Yes');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'District Judge');
 });
 
 Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enterAllocationDecisionEventPage}) => {
@@ -46,6 +49,10 @@ Scenario('Gatekeeper enters allocation decision', async ({I, caseViewPage, enter
   await enterAllocationDecisionEventPage.enterProposalReason('new information was acquired');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
+
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+  I.seeInTab(['Allocation decision', 'Which level of judge is needed for this case?'], 'Magistrate');
+  I.seeInTab(['Allocation decision', 'Give reason'], 'new information was acquired');
 });
 
 Scenario('Gatekeeper drafts standard directions', async ({I, caseViewPage, draftStandardDirectionsEventPage}) => {
@@ -72,7 +79,8 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   await I.goToNextPage();
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
   await draftStandardDirectionsEventPage.markAsFinal();
-  await draftStandardDirectionsEventPage.checkC6();
+  await I.goToNextPage();
+  draftStandardDirectionsEventPage.checkC6();
   draftStandardDirectionsEventPage.checkC6A();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
@@ -85,16 +93,6 @@ Scenario('Gatekeeper submits final version of standard directions', async ({I, c
   I.seeInTab(['Gatekeeping order', 'File'], 'standard-directions-order.pdf');
   I.seeInTab(['Gatekeeping order', 'Date of issue'], '11 January 2020');
 
-  await caseViewPage.checkActionsAreAvailable([
-    config.administrationActions.manageHearings,
-  ]);
-  await caseViewPage.checkActionsAreNotAvailable([
-    config.applicationActions.enterAllocationDecision,
-    config.administrationActions.amendChildren,
-    config.administrationActions.amendRespondents,
-    config.administrationActions.amendOther,
-    config.administrationActions.amendInternationalElement,
-    config.administrationActions.amendAttendingHearing,
-    config.administrationActions.draftStandardDirections,
-  ]);
+  caseViewPage.selectTab(caseViewPage.tabs.history);
+  I.seeEndStateForEvent(config.administrationActions.draftStandardDirections, 'Case management');
 }).retry(1); //async processing in prev test

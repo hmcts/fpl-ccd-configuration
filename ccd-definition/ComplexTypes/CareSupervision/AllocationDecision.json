@@ -6,7 +6,7 @@
     "ElementLabel": "The proposed allocation is ${allocationProposal.proposal}.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"No\""
+    "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -15,7 +15,7 @@
     "ElementLabel": "${allocationProposal.proposalReason}",
     "FieldType": "Label",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"No\""
+    "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,7 +24,7 @@
     "ElementLabel": "The local authority has not made an allocation proposal.",
     "FieldType": "Label",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"Yes\""
+    "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +33,7 @@
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this the right level of judge?",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"No\""
+    "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -42,8 +42,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
     "ElementLabel": "Which level of judge is needed for this case?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"Yes\" OR judgeLevelRadio=\"No\""
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -51,8 +50,7 @@
     "ListElementCode": "proposalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"Yes\" OR judgeLevelRadio=\"No\""
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
