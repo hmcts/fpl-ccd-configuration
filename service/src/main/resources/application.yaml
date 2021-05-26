@@ -144,7 +144,7 @@ fees-register:
       event: miscellaneous
       jurisdiction1: family
       jurisdiction2: family court
-      keyword: ${WARRANT_TO_ASSIST_PERSION_KEYWORD:HIJ}
+      keyword: ${WARRANT_TO_ASSIST_PERSON_KEYWORD:HIJ}
       service: private law
     CHILD_ASSESSMENT:
       channel: default
