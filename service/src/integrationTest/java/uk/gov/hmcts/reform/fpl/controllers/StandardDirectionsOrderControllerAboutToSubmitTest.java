@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -17,7 +14,9 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -30,11 +29,14 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -48,10 +50,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -59,31 +58,32 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
-import static uk.gov.hmcts.reform.fpl.service.ManageHearingsService.HEARING_DETAILS_KEY;
+import static uk.gov.hmcts.reform.fpl.enums.State.GATEKEEPING;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(StandardDirectionsOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
-    private static final byte[] PDF = testDocumentBinaries();
-    private static final String SEALED_ORDER_FILE_NAME = "standard-directions-order.pdf";
-    private static final Document DOCUMENT = document();
+    private static final Document C6_DOCUMENT = testDocument();
+    private static final Document SDO = testDocument();
+    private static final DocumentReference C6_REFERENCE = DocumentReference.buildFromDocument(C6_DOCUMENT);
+    private static final DocumentReference SDO_REFERENCE = DocumentReference.buildFromDocument(SDO);
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2020, 1, 20, 11, 11, 11);
     private static final LocalDateTime HEARING_END_DATE = LocalDateTime.of(2020, 2, 20, 11, 11, 11);
     private static final String DIRECTION_TYPE = "Identify alternative carers";
     private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
-        + "showing family members who could be alternative carers.";
+                                                 + "showing family members who could be alternative carers.";
     private static final String LA_NAME = "example";
     private static final String COURT_NAME = "Family Court";
     private static final String COURT_CODE = "11";
@@ -103,29 +103,29 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    @Captor
-    private ArgumentCaptor<String> filename;
-
     StandardDirectionsOrderControllerAboutToSubmitTest() {
         super("draft-standard-directions");
     }
 
     @BeforeEach
     void setup() {
-        DocmosisDocument docmosisDocument = new DocmosisDocument(SEALED_ORDER_FILE_NAME, PDF);
+        final byte[] sdoBinaries = testDocumentBinaries();
+        final byte[] c6Binaries = testDocumentBinaries();
+        final String sdoFileName = "sdo.pdf";
+        final String c6FileName = "c6.pdf";
 
-        given(docmosisService.generateDocmosisDocument(any(DocmosisData.class), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(eq(PDF), filename.capture())).willReturn(DOCUMENT);
+        DocmosisDocument sdoDocument = new DocmosisDocument(sdoFileName, sdoBinaries);
+        DocmosisDocument c6Document = new DocmosisDocument(c6FileName, c6Binaries);
 
-        given(docmosisService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), eq(C6)))
-            .willReturn(docmosisDocument);
-
-        given(uploadDocumentService.uploadPDF(PDF, C6.getDocumentTitle()))
-            .willReturn(DOCUMENT);
-
-        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME))
-            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com",
-                COURT_CODE));
+        given(docmosisService.generateDocmosisDocument(any(DocmosisStandardDirectionOrder.class), any()))
+            .willReturn(sdoDocument);
+        given(docmosisService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
+            .willReturn(c6Document);
+        given(uploadDocumentService.uploadPDF(sdoBinaries, sdoFileName)).willReturn(SDO);
+        given(uploadDocumentService.uploadPDF(c6Binaries, c6FileName)).willReturn(C6_DOCUMENT);
+        given(hmctsCourtLookupConfiguration.getCourt(LA_NAME)).willReturn(
+            new HmctsCourtLookupConfiguration.Court(COURT_NAME, "hmcts-non-admin@test.com", COURT_CODE)
+        );
     }
 
     @Test
@@ -133,27 +133,28 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
             .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
 
-        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
-
-        CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+        CaseData caseData = extractCaseData(postAboutToSubmitEvent(validSealedCaseDetailsForServiceRoute()));
 
         assertThat(caseData.getStandardDirectionOrder()).isEqualTo(expectedOrder());
         assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(caseData);
-        assertThat(filename.getValue()).isEqualTo(SEALED_ORDER_FILE_NAME);
     }
 
     @Test
     void shouldReturnErrorsWhenNoHearingDetailsExistsForSealedOrder() {
-        ImmutableMap<String, Object> build = mapWithDirections()
-            .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
-            .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
-            .put("allocatedJudge", Judge.builder().build())
+        CaseData caseData = CaseData.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(SEALED).build())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+            .allocatedJudge(Judge.builder().build())
+            .localAuthorityDirections(buildDirections(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
+            .allParties(buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
+            .respondentDirections(buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
+            .cafcassDirections(buildDirections(Direction.builder().assignee(CAFCASS).build()))
+            .otherPartiesDirections(buildDirections(Direction.builder().assignee(OTHERS).build()))
+            .courtDirections(buildDirections(Direction.builder().assignee(COURT).build()))
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder().data(build).build();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
 
         assertThat(response.getErrors()).containsOnly("You need to enter a hearing date.");
     }
@@ -174,7 +175,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         CaseData data = extractCaseData(postAboutToSubmitEvent(validCaseDetailsForUploadRoute(order, DRAFT)));
 
         StandardDirectionOrder expected = StandardDirectionOrder.builder()
-            .dateOfUpload(now().toLocalDate())
+            .dateOfUpload(dateNow())
             .uploader("adam")
             .orderStatus(DRAFT)
             .orderDoc(order)
@@ -188,19 +189,13 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         given(bankHolidaysApi.retrieveAll()) // there are no holidays :(
             .willReturn(BankHolidays.builder().englandAndWales(Division.builder().events(List.of()).build()).build());
 
-        CaseDetails caseDetails = validSealedCaseDetailsForServiceRoute();
-
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(validSealedCaseDetailsForServiceRoute());
 
         CaseData responseCaseData = extractCaseData(response);
 
-        DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
-            .getDocument();
-
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
-        assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
-        assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
-        assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(DOCUMENT.links.binary.href);
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle())
+            .extracting(Element::getValue)
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
 
         assertThat(response.getData())
             .containsEntry("state", "PREPARE_FOR_HEARING")
@@ -211,28 +206,69 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     void shouldUpdateStateAndOrderDocWhenSDOIsSealedThroughUploadRouteAndRemoveRouterAndSendNoticeOfProceedings() {
         DocumentReference sealedDocument = DocumentReference.builder().filename("sealed.pdf").build();
         DocumentReference document = DocumentReference.builder().filename("final.docx").build();
-        CaseDetails caseDetails = validCaseDetailsForUploadRoute(document, SEALED);
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         givenCurrentUserWithName("adam");
         given(sealingService.sealDocument(document)).willReturn(sealedDocument);
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
-
-        CaseData responseCaseData = extractCaseData(response);
-
-        DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
-            .getDocument();
+        CaseData responseCaseData = extractCaseData(
+            postAboutToSubmitEvent(validCaseDetailsForUploadRoute(document, SEALED))
+        );
 
         assertThat(responseCaseData.getStandardDirectionOrder().getLastUploadedOrder()).isEqualTo(document);
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
-        assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(DOCUMENT.links.self.href);
-        assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(DOCUMENT.originalDocumentName);
-        assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(DOCUMENT.links.binary.href);
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle())
+            .extracting(Element::getValue)
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
+        assertThat(responseCaseData.getState()).isEqualTo(State.CASE_MANAGEMENT);
+        assertThat(responseCaseData.getSdoRouter()).isNull();
+    }
 
-        assertThat(response.getData())
-            .containsEntry("state", "PREPARE_FOR_HEARING")
-            .doesNotContainKey("sdoRouter");
+    @Test
+    void shouldBuildUrgentHearingOrderAndAddAllocationDecision() {
+        final DocumentReference urgentReference = testDocumentReference();
+        final DocumentReference sealedUrgentReference = testDocumentReference();
+        final Allocation allocation = Allocation.builder()
+            .judgeLevelRadio("No")
+            .proposal("Section 9 circuit judge")
+            .proposalReason("some reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .startDate(now())
+                .endDate(now().plusDays(1))
+                .venue("EXAMPLE")
+                .build()))
+            .caseLocalAuthority(LA_NAME)
+            .familyManCaseNumber("1234")
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .sdoRouter(SDORoute.URGENT)
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .urgentHearingAllocation(allocation)
+                .urgentHearingOrderDocument(urgentReference)
+                .build())
+            .state(GATEKEEPING)
+            .id(1234123412341234L)
+            .build();
+
+        given(sealingService.sealDocument(urgentReference)).willReturn(sealedUrgentReference);
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        Allocation expectedAllocation = allocation.toBuilder().judgeLevelRadio(null).build();
+
+        assertThat(responseData.getAllocationDecision()).isEqualTo(expectedAllocation);
+        assertThat(responseData.getNoticeOfProceedingsBundle()).extracting(Element::getValue).containsExactly(
+            DocumentBundle.builder().document(C6_REFERENCE).build()
+        );
+        assertThat(responseData.getUrgentHearingOrder()).isEqualTo(
+            UrgentHearingOrder.builder()
+                .allocation("Section 9 circuit judge")
+                .order(sealedUrgentReference)
+                .unsealedOrder(urgentReference)
+                .dateAdded(dateNow())
+                .build()
+        );
     }
 
     @Test
@@ -241,7 +277,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
 
         givenCurrentUserWithName("adam");
 
-        CaseDetails caseDetails = validCaseDetailsForUploadRoute(order, DRAFT);
+        CaseDetails caseDetails = asCaseDetails(validCaseDetailsForUploadRoute(order, DRAFT));
         Map<String, Object> dataMap = new HashMap<>(caseDetails.getData());
 
         dataMap.putAll(Map.of(
@@ -284,102 +320,87 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         assertThat(unwrapElements(caseData.getCourtDirections())).containsOnly(fullyPopulatedDirection(COURT));
     }
 
-    private CaseDetails validSealedCaseDetailsForServiceRoute() {
-        ImmutableMap.Builder<String, Object> data = directionsWithShowHideValuesRemoved()
-            .put("dateOfIssue", dateNow())
-            .put("noticeOfProceedings", buildNoticeOfProceedings())
-            .put("standardDirectionOrder", StandardDirectionOrder.builder().orderStatus(SEALED).build())
-            .putAll(buildJudgeAndLegalAdvisorDetails())
-            .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
-                .endDate(LocalDateTime.now().plusDays(1))
+    private CaseData validSealedCaseDetailsForServiceRoute() {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
+            .id(1234123412341234L)
+            .state(GATEKEEPING)
+            .dateOfIssue(dateNow())
+            .noticeOfProceedings(buildNoticeOfProceedings())
+            .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(SEALED).build())
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .startDate(now())
+                .endDate(now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
-            .put("caseLocalAuthority", LA_NAME)
-            .put("dateSubmitted", dateNow())
-            .put("applicants", getApplicant())
-            .put("familyManCaseNumber", "1234")
-            .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
-            .put("sdoRouter", SDORoute.SERVICE);
+            .caseLocalAuthority(LA_NAME)
+            .dateSubmitted(dateNow())
+            .applicants(getApplicant())
+            .familyManCaseNumber("1234")
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .sdoRouter(SDORoute.SERVICE)
+            .allParties(buildDirection(ALL_PARTIES))
+            .localAuthorityDirections(buildDirection(LOCAL_AUTHORITY))
+            .respondentDirections(buildDirection(PARENTS_AND_RESPONDENTS))
+            .cafcassDirections(buildDirection(CAFCASS))
+            .otherPartiesDirections(buildDirection(OTHERS))
+            .courtDirections(buildDirection(COURT));
 
-        return CaseDetails.builder()
-            .data(data.build())
-            .id(1234123412341234L)
-            .build();
+        buildJudgeAndLegalAdvisorDetails(builder);
+
+        return builder.build();
     }
 
-    private CaseDetails validCaseDetailsForUploadRoute(DocumentReference document, OrderStatus status) {
-        ImmutableMap.Builder<String, Object> data = ImmutableMap.<String, Object>builder()
-            .putAll(buildJudgeAndLegalAdvisorDetails())
-            .put(HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
-                .startDate(LocalDateTime.now())
-                .endDate(LocalDateTime.now().plusDays(1))
+    private CaseData validCaseDetailsForUploadRoute(DocumentReference document, OrderStatus status) {
+        CaseData.CaseDataBuilder builder = CaseData.builder()
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .startDate(now())
+                .endDate(now().plusDays(1))
                 .venue("EXAMPLE")
                 .build()))
-            .put("standardDirectionOrder", StandardDirectionOrder.builder()
+            .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(status)
                 .orderDoc(document)
                 .build())
-            .put("caseLocalAuthority", LA_NAME)
-            .put("familyManCaseNumber", "1234")
-            .put("id", 1234123412341234L)
-            .put("orders", Orders.builder().orderType(List.of(CARE_ORDER)).build())
-            .put("noticeOfProceedings", buildNoticeOfProceedings())
-            .put("sdoRouter", SDORoute.UPLOAD);
+            .caseLocalAuthority(LA_NAME)
+            .familyManCaseNumber("1234")
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
+            .noticeOfProceedings(buildNoticeOfProceedings())
+            .sdoRouter(SDORoute.UPLOAD)
+            .state(GATEKEEPING)
+            .id(1234123412341234L);
 
-        return CaseDetails.builder()
-            .data(data.build())
-            .build();
+        buildJudgeAndLegalAdvisorDetails(builder);
+
+        return builder.build();
     }
 
-    private CaseDetails invalidCaseDetails() {
-        Map<String, Object> data = Map.of(
-            HEARING_DETAILS_KEY, wrapElements(HearingBooking.builder()
+    private CaseData invalidCaseDetails() {
+        return CaseData.builder()
+            .hearingDetails(wrapElements(HearingBooking.builder()
                 .startDate(HEARING_START_DATE)
                 .endDate(HEARING_END_DATE)
-                .build()),
-            "respondents1", wrapElements(Respondent.builder()
+                .build()))
+            .respondents1(wrapElements(Respondent.builder()
                 .party(RespondentParty.builder()
                     .dateOfBirth(dateNow().plusDays(1))
                     .lastName("Moley")
                     .relationshipToChild("Uncle")
                     .build())
-                .build()),
-            "standardDirectionOrder", StandardDirectionOrder.builder()
+                .build()))
+            .standardDirectionOrder(StandardDirectionOrder.builder()
                 .orderStatus(SEALED)
                 .orderDoc(DocumentReference.builder().build())
-                .build(),
-            "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
-
-        return CaseDetails.builder()
-            .id(1L)
-            .jurisdiction(JURISDICTION)
-            .caseTypeId(CASE_TYPE)
-            .data(data)
+                .build())
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .build();
     }
 
-    private Map<String, Object> buildJudgeAndLegalAdvisorDetails() {
-        JudgeAndLegalAdvisor legalAdvisorWithAllocatedJudge = JudgeAndLegalAdvisor.builder()
-            .useAllocatedJudge("Yes")
-            .legalAdvisorName("Chris Newport")
-            .build();
-
-        Judge allocatedJudge = Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build();
-
-        return Map.of(
-            "judgeAndLegalAdvisor", legalAdvisorWithAllocatedJudge,
-            "allocatedJudge", allocatedJudge
+    private void buildJudgeAndLegalAdvisorDetails(CaseData.CaseDataBuilder builder) {
+        builder.judgeAndLegalAdvisor(
+            JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").legalAdvisorName("Chris Newport").build()
+        ).allocatedJudge(
+            Judge.builder().judgeTitle(MAGISTRATES).judgeFullName("John Walker").build()
         );
-    }
-
-    private ImmutableMap.Builder<String, Object> directionsWithShowHideValuesRemoved() {
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
-
-        Stream.of(DirectionAssignee.values())
-            .forEach(assignee -> builder.put(assignee.getValue(), buildDirection(assignee)));
-
-        return builder;
     }
 
     private List<Element<Direction>> buildDirection(DirectionAssignee assignee) {
@@ -397,11 +418,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         return StandardDirectionOrder.builder()
             .directions(fullyPopulatedDirections())
             .orderStatus(SEALED)
-            .orderDoc(DocumentReference.builder()
-                .url(DOCUMENT.links.self.href)
-                .binaryUrl(DOCUMENT.links.binary.href)
-                .filename("file.pdf")
-                .build())
+            .orderDoc(SDO_REFERENCE)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(MAGISTRATES)
                 .judgeFullName("John Walker")
@@ -419,7 +436,7 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .directionRemovable("Yes")
             .directionNeeded("Yes")
             .readOnly("Yes")
-            .dateToBeCompletedBy(LocalDateTime.now().toLocalDate().atStartOfDay())
+            .dateToBeCompletedBy(dateNow().atStartOfDay())
             .build();
     }
 
@@ -427,19 +444,6 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         return Stream.of(DirectionAssignee.values())
             .map(assignee -> element(null, fullyPopulatedDirection(assignee)))
             .collect(toList());
-    }
-
-    private ImmutableMap.Builder<String, Object> mapWithDirections() {
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
-
-        return builder
-            .put(LOCAL_AUTHORITY.getValue(), buildDirections(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
-            .put(ALL_PARTIES.getValue(), buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
-            .put(PARENTS_AND_RESPONDENTS.getValue(),
-                buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
-            .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
-            .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
-            .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
     }
 
     private List<Element<Direction>> buildDirections(Direction direction) {
