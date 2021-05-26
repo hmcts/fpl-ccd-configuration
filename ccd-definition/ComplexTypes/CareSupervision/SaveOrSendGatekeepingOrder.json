@@ -24,5 +24,13 @@
     "ElementLabel": "Order issue date",
     "SecurityClassification": "Public",
     "FieldShowCondition": "orderStatus=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SaveOrSendGatekeepingOrder",
+    "ListElementCode": "nextSteps",
+    "FieldType": "Text",
+    "ElementLabel": "Next steps",
+    "SecurityClassification": "Public"
   }
 ]

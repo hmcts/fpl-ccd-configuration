@@ -16,7 +16,7 @@
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "sdoDirectionCustom",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "COMPLEX",
     "PageID": "customDirections",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
@@ -55,5 +55,17 @@
     "PageID": "saveOrSend",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "nextStepsLabel",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "saveOrSend",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "saveOrSendGatekeepingOrder.nextSteps=\"*\""
   }
 ]

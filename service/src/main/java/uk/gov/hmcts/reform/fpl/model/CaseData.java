@@ -930,5 +930,11 @@ public class CaseData {
     private final ChangeOrganisationRequest changeOrganisationRequestField;
 
     private final List<Element<CustomDirection>> sdoDirectionCustom;
+
     private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
+
+    @JsonIgnore
+    public SaveOrSendGatekeepingOrder getSaveOrSendGatekeepingOrder() {
+        return defaultIfNull(saveOrSendGatekeepingOrder, SaveOrSendGatekeepingOrder.builder().build());
+    }
 }

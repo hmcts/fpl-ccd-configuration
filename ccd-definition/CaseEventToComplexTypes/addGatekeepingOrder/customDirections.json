@@ -3,8 +3,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "saveOrSendGatekeepingOrder",
-    "ListElementCode": "draftDocument",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "id",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY"
   },
@@ -12,18 +12,17 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "saveOrSendGatekeepingOrder",
-    "ListElementCode": "orderStatus",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "title",
     "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "nextSteps=\"\""
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "saveOrSendGatekeepingOrder",
-    "ListElementCode": "dateOfIssue",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "description",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
@@ -31,10 +30,18 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "saveOrSendGatekeepingOrder",
-    "ListElementCode": "nextSteps",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "assignee",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "READONLY",
-    "FieldShowCondition": "nextSteps=\"DO_NOT_SHOW\""
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
   }
 ]

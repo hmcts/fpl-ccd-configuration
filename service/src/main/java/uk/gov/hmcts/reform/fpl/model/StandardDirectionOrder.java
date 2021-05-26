@@ -38,6 +38,8 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
+
+    //New gatekeeping order fields
     private List<Element<CustomDirection>> customDirections;
 
     @JsonIgnore
