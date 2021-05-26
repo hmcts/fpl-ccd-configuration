@@ -42,11 +42,11 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
         final LocalDate approvalDate = manageOrdersEventData.getManageOrdersApprovalDate();
 
         switch (type) {
-            case SET_CALENDAR_DAY:
+            case CALENDAR_DAY:
                 return validateDate(approvalDate, endDate);
-            case SET_CALENDAR_DAY_AND_TIME:
+            case CALENDAR_DAY_AND_TIME:
                 return validateDateTime(approvalDate, endDateTime);
-            case SET_END_OF_PROCEEDINGS:
+            case END_OF_PROCEEDINGS:
                 return validateEndOfProceedings();
             default:
                 throw new IllegalStateException("Unexpected order end date type: " + type);

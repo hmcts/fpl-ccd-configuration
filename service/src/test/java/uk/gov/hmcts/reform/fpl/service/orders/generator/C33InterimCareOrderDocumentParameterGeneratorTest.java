@@ -25,9 +25,9 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
@@ -397,7 +397,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersICOExclusionDetails(EXCLUSION_DETAILS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
-                    .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                    .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                     .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
                     .build())
                 .build();
@@ -408,7 +408,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .manageOrdersApprovalDate(time.now().toLocalDate())
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
-                    .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                    .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                     .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
                     .build())
                 .build();
@@ -424,7 +424,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
                     .manageOrdersICOExclusionDetails(EXCLUSION_DETAILS)
-                    .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                    .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                     .manageOrdersSetDateAndTimeEndDate(NEXT_WEEK_DATE_TIME)
                     .build())
                 .build();
@@ -435,7 +435,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .manageOrdersApprovalDate(time.now().toLocalDate())
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
-                    .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                    .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                     .manageOrdersSetDateAndTimeEndDate(NEXT_WEEK_DATE_TIME)
                     .build())
                 .build();
@@ -451,7 +451,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersICOExclusionDetails(EXCLUSION_DETAILS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
-                    .manageOrdersEndDateTypeWithEndOfProceedings(SET_END_OF_PROCEEDINGS)
+                    .manageOrdersEndDateTypeWithEndOfProceedings(END_OF_PROCEEDINGS)
                     .build())
                 .build();
         } else {
@@ -461,7 +461,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                     .manageOrdersApprovalDate(time.now().toLocalDate())
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
-                    .manageOrdersEndDateTypeWithEndOfProceedings(SET_END_OF_PROCEEDINGS)
+                    .manageOrdersEndDateTypeWithEndOfProceedings(END_OF_PROCEEDINGS)
                     .build())
                 .build();
         }

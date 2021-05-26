@@ -14,9 +14,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
 @Component
@@ -45,11 +42,11 @@ public class ManageOrderEndDateWithMonthValidator implements QuestionBlockOrderV
         final LocalDate approvalDate = manageOrdersEventData.getManageOrdersApprovalDate();
 
         switch (type) {
-            case SET_CALENDAR_DAY:
+            case CALENDAR_DAY:
                 return validateDate(approvalDate, endDate);
-            case SET_CALENDAR_DAY_AND_TIME:
+            case CALENDAR_DAY_AND_TIME:
                 return validateDateTime(approvalDate, endDateTime);
-            case SET_NUMBER_OF_MONTHS:
+            case NUMBER_OF_MONTHS:
                 return validateMonth(expireInNumberOfMonths);
             default:
                 throw new IllegalStateException("Unexpected supervision order end date type: " + type);

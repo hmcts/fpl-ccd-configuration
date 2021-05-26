@@ -85,17 +85,17 @@ const section4 = {
   orderTypeWithMonth: {
     group: '#manageOrdersEndDateTypeWithMonth',
     options: {
-      calendarDay: 'SET_CALENDAR_DAY',
-      calendarDayAndTime: 'SET_CALENDAR_DAY_AND_TIME',
-      numberOfMonths: 'SET_NUMBER_OF_MONTHS',
+      calendarDay: 'CALENDAR_DAY',
+      calendarDayAndTime: 'CALENDAR_DAY_AND_TIME',
+      numberOfMonths: 'NUMBER_OF_MONTHS',
     },
   },
   orderTypeWithEndOfProceedings: {
     group: '#manageOrdersEndDateTypeWithEndOfProceedings',
     options: {
-      calendarDay: 'SET_CALENDAR_DAY',
-      calendarDayAndTime: 'SET_CALENDAR_DAY_AND_TIME',
-      endOfProceedings: 'SET_END_OF_PROCEEDINGS',
+      calendarDay: 'CALENDAR_DAY',
+      calendarDayAndTime: 'CALENDAR_DAY_AND_TIME',
+      endOfProceedings: 'END_OF_PROCEEDINGS',
     },
   },
   whoIsExcluded: '#manageOrdersWhoIsExcluded',

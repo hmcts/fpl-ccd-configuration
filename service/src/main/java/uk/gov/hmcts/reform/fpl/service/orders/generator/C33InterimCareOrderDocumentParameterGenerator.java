@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -68,21 +68,21 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
     private String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
         LocalDateTime orderExpiration;
         String formatString;
-        String courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until %s.";
+        String childCustodyMessage = "The Court orders %s supervises the %s until %s.";
 
         ManageOrdersEndDateTypeWithEndOfProceedings type = eventData.getManageOrdersEndDateTypeWithEndOfProceedings();
         switch (type) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
-            case SET_CALENDAR_DAY:
+            case CALENDAR_DAY:
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
                 orderExpiration = LocalDateTime.of(eventData.getManageOrdersSetDateEndDate(), LocalTime.MIDNIGHT);
                 break;
-            case SET_CALENDAR_DAY_AND_TIME:
+            case CALENDAR_DAY_AND_TIME:
                 formatString = DATE_TIME_WITH_ORDINAL_SUFFIX;
                 orderExpiration = eventData.getManageOrdersSetDateAndTimeEndDate();
                 break;
-            case SET_END_OF_PROCEEDINGS:
-                courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until "
+            case END_OF_PROCEEDINGS:
+                childCustodyMessage = "The Court orders %s supervises the %s until "
                     + "the end of the proceedings or further order.";
                 formatString = null;
                 orderExpiration = null;
@@ -91,11 +91,11 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
                 throw new IllegalStateException("Unexpected order event data type: " + type);
         }
 
-        if (type == SET_END_OF_PROCEEDINGS) {
+        if (type == END_OF_PROCEEDINGS) {
             return getEndOfProceedingsMessage(
                 numOfChildren,
                 localAuthorityName,
-                courtResponsibilityAssignmentMessage
+                childCustodyMessage
             );
         } else {
             final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
@@ -103,7 +103,7 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
                 numOfChildren, localAuthorityName,
                 orderExpiration,
                 formatString,
-                courtResponsibilityAssignmentMessage,
+                childCustodyMessage,
                 dayOrdinalSuffix);
         }
     }

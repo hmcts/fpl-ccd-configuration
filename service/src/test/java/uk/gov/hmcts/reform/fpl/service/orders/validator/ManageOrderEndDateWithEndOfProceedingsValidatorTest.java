@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.SET_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 
 class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
@@ -44,7 +44,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(todayDate.plusMonths(6))
                 .build())
             .build();
@@ -57,7 +57,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(tomorrowDate)
                 .build())
             .build();
@@ -70,7 +70,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(approvalDate.plusMonths(MAXIMUM_MONTHS_ACCEPTED).minusDays(1))
                 .build())
             .build();
@@ -83,7 +83,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(approvalDate.minusDays(1))
                 .build())
             .build();
@@ -96,7 +96,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(approvalDate.plusMonths(MAXIMUM_MONTHS_ACCEPTED + 1))
                 .build())
             .build();
@@ -115,7 +115,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -133,7 +133,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -148,7 +148,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -163,7 +163,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -181,7 +181,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(endDate)
                 .build())
             .build();
@@ -196,7 +196,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(endDate.minusSeconds(2))
                 .build())
             .build();
@@ -211,7 +211,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(endDate.plusSeconds(2))
                 .build())
             .build();
@@ -224,7 +224,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithEndOfProceedings(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(approvalDateTime.minusMonths(4))
                 .build())
             .build();
@@ -238,7 +238,7 @@ class ManageOrderEndDateWithEndOfProceedingsValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageOrdersEndDateTypeWithEndOfProceedings(SET_END_OF_PROCEEDINGS)
+                .manageOrdersEndDateTypeWithEndOfProceedings(END_OF_PROCEEDINGS)
                 .build())
             .build();
 

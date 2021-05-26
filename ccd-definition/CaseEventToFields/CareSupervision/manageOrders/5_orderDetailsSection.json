@@ -256,7 +256,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEndDateTypeWithMonth=\"SET_CALENDAR_DAY\" OR manageOrdersEndDateTypeWithEndOfProceedings=\"SET_CALENDAR_DAY\"",
+    "FieldShowCondition": "manageOrdersEndDateTypeWithMonth=\"CALENDAR_DAY\" OR manageOrdersEndDateTypeWithEndOfProceedings=\"CALENDAR_DAY\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -269,7 +269,7 @@
     "PageID": "OrderDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersEndDateTypeWithMonth=\"SET_CALENDAR_DAY_AND_TIME\" OR manageOrdersEndDateTypeWithEndOfProceedings=\"SET_CALENDAR_DAY_AND_TIME\"",
+    "FieldShowCondition": "manageOrdersEndDateTypeWithMonth=\"CALENDAR_DAY_AND_TIME\" OR manageOrdersEndDateTypeWithEndOfProceedings=\"CALENDAR_DAY_AND_TIME\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]
