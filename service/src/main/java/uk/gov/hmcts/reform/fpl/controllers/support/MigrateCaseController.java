@@ -76,7 +76,6 @@ public class MigrateCaseController extends CallbackController {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
             .getAdditionalApplicationsBundle();
 
-
         if (caseData.getAdditionalApplicationsBundle().size() < 1) {
             throw new IllegalStateException(String
                 .format("Migration failed on case %s: Case has %s additional applications",

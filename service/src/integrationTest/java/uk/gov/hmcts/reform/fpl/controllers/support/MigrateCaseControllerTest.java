@@ -167,8 +167,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
                 bundle1, bundle2);
 
-            assertThat(additionalApplications.size()).isEqualTo(2);
-
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
