@@ -19,12 +19,12 @@ class IsStateMigratableValidatorTest extends AbstractValidationTest {
         + " relevant orders before changing the case state.";
 
     @Test
-    void shouldReturnAnErrorWhenAChildContainsAFinalOrderProperty() {
+    void shouldReturnAnErrorWhenAChildContainsAFinalOrder() {
         CaseData caseData = CaseData.builder()
             .state(CLOSED)
             .children1(wrapElements(
                 Child.builder()
-                    .finalOrderIssued("Some data")
+                    .finalOrderIssued("Yes")
                     .build(),
                 Child.builder().build()))
             .build();
@@ -39,7 +39,7 @@ class IsStateMigratableValidatorTest extends AbstractValidationTest {
             .state(CLOSED)
             .children1(wrapElements(
                 Child.builder()
-                    .finalOrderIssued("Some data")
+                    .finalOrderIssued("Yes")
                     .finalOrderIssuedType("Some data")
                     .build(),
                 Child.builder().build()))
@@ -55,6 +55,23 @@ class IsStateMigratableValidatorTest extends AbstractValidationTest {
             .state(CLOSED)
             .children1(wrapElements(
                 Child.builder()
+                    .party(ChildParty.builder()
+                        .gender("Male")
+                        .build())
+                    .build()))
+            .build();
+
+        List<String> validationErrors = validate(caseData, MigrateStateGroup.class);
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenChildrenHaveFinalOrderAsNo() {
+        CaseData caseData = CaseData.builder()
+            .state(CLOSED)
+            .children1(wrapElements(
+                Child.builder()
+                    .finalOrderIssued("No")
                     .party(ChildParty.builder()
                         .gender("Male")
                         .build())

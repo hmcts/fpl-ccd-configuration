@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "allocationDecision_Label",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "allocationDecision_LabelReason",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "missingAllocationDecision_Label",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "judgeLevelRadio",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "proposal",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\" OR allocationDecision.judgeLevelRadio=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "proposalReason",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"No\" OR allocationDecision.judgeLevelRadio=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "CaseEventID": "otherAllocationDecision",
+    "CaseFieldID": "allocationDecision",
+    "ListElementCode": "allocationProposalPresent",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "allocationDecision.allocationProposalPresent=\"DO_NOT_SHOW\""
+  }
+]
