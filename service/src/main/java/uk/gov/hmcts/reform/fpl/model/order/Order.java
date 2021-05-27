@@ -44,6 +44,7 @@ public enum Order {
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Supervision order (C35A)",
         List.of(
+            LINKED_TO_HEARING,
             APPROVER,
             APPROVAL_DATE,
             WHICH_CHILDREN,
