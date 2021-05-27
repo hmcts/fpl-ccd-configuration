@@ -44,10 +44,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequestMapping("/callback/upload-additional-applications")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsController extends CallbackController {
+
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
+
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
@@ -60,7 +62,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         if (!isNull(caseData.getTemporaryC2Document())) {
             caseData.getTemporaryC2Document().setType(caseData.getC2Type());
-            caseDetails.getData().put("temporaryC2Document", caseData.getTemporaryC2Document());
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, caseData.getTemporaryC2Document());
         }
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
@@ -80,8 +82,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -89,8 +90,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
         );
 
-        additionalApplications.add(0, element(
-            uploadAdditionalApplicationsService.buildAdditionalApplicationsBundle(caseData)));
+        AdditionalApplicationsBundle additionalApplicationsBundle =
+            uploadAdditionalApplicationsService.buildAdditionalApplicationsBundle(caseData);
+        additionalApplications.add(0, element(additionalApplicationsBundle));
 
         caseDetails.getData().put("additionalApplicationsBundle", additionalApplications);
 
