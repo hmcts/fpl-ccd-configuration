@@ -144,7 +144,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   await I.goToNextPage();
   await manageOrdersEventPage.enterFurtherDirections('Supervision order further details.');
   await manageOrdersEventPage.selectOrderTypeWithMonth(manageOrdersEventPage.section4.orderTypeWithMonth.options.numberOfMonths);
-  await manageOrdersEventPage.enterSuperVisionNumOfMonths(10);
+  await manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
@@ -177,8 +177,8 @@ Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrder
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I,caseViewPage,{
-    orderIndex:3,
-    orderType:manageOrdersEventPage.orders.title.c33,
+    orderIndex: 3,
+    orderType: manageOrdersEventPage.orders.title.c33,
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',

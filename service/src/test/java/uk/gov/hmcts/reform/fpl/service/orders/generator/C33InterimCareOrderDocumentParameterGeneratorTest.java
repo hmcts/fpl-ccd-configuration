@@ -376,7 +376,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
                 .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
                 .orderType(TYPE)
                 .furtherDirections(FURTHER_DIRECTIONS)
-                .exclusionDetails(EXCLUSION_DETAILS)
+                .exclusionClause(EXCLUSION_DETAILS)
                 .localAuthorityName(LA_NAME);
         } else {
             return C33InterimCareOrderDocmosisParameters.builder()

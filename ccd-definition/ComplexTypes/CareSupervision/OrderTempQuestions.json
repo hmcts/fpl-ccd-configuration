@@ -104,7 +104,7 @@
     "ListElementCode": "manageOrdersExpiryDateWithMonth",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "manageOrdersExpiryDateWithMonth=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -113,7 +113,7 @@
     "ListElementCode": "manageOrdersExclusionRequirementDetails",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "manageOrdersExclusionRequirementDetails=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -122,7 +122,7 @@
     "ListElementCode": "manageOrdersExpiryDateWithEndOfProceedings",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "manageOrdersExpiryDateWithEndOfProceedings=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

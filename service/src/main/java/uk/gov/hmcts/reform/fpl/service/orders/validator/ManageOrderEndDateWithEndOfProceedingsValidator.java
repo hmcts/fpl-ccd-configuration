@@ -24,6 +24,7 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
     private static final Integer MAXIMUM_MONTHS_VALID = 12;
     private static final String AFTER_APPROVAL_DATE_MESSAGE = "Enter an end date after the approval date";
     private static final String END_DATE_MAX_RANGE_MESSAGE = "This order cannot last longer than 12 months";
+    private static final List<String> NO_VALIDATION = List.of();
 
     private final Time time;
 
@@ -47,7 +48,7 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
             case CALENDAR_DAY_AND_TIME:
                 return validateDateTime(approvalDate, endDateTime);
             case END_OF_PROCEEDINGS:
-                return validateEndOfProceedings();
+                return NO_VALIDATION;
             default:
                 throw new IllegalStateException("Unexpected order end date type: " + type);
         }
@@ -79,14 +80,6 @@ public class ManageOrderEndDateWithEndOfProceedingsValidator implements Question
         if (endDate.isAfter(approvalDateTime.plusMonths(MAXIMUM_MONTHS_VALID))) {
             errors.add(END_DATE_MAX_RANGE_MESSAGE);
         }
-
-        return errors;
-    }
-
-    private List<String> validateEndOfProceedings() {
-        List<String> errors = new ArrayList<>();
-
-        log.info("No validation needed for SET_END_OF_PROCEEDINGS");
 
         return errors;
     }

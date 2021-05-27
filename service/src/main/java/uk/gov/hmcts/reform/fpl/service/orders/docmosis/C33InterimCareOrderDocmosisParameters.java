@@ -14,6 +14,6 @@ public class C33InterimCareOrderDocmosisParameters extends DocmosisParameters {
     GeneratedOrderType orderType;
     String orderDetails;
     String furtherDirections;
-    String exclusionDetails;
+    String exclusionClause;
     String localAuthorityName;
 }
