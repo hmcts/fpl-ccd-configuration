@@ -16,7 +16,7 @@
     "ListElementCode": "orderStatus",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "nextSteps=\"\""
+    "FieldShowCondition": "nextSteps!=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",

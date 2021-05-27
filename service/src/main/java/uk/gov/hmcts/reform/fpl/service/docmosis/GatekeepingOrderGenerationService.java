@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumbe
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -35,10 +37,13 @@ public class GatekeepingOrderGenerationService extends
 
         SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getSaveOrSendGatekeepingOrder();
 
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
+        );
+
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
             DocmosisStandardDirectionOrder.builder()
-                // is this the right judge?
-                .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor((caseData.getJudgeAndLegalAdvisor())))
+                .judgeAndLegalAdvisor(dataService.getJudgeAndLegalAdvisor((judgeAndLegalAdvisor)))
                 .courtName(dataService.getCourtName(caseData.getCaseLocalAuthority()))
                 .familyManCaseNumber(caseData.getFamilyManCaseNumber())
                 .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
@@ -56,6 +61,7 @@ public class GatekeepingOrderGenerationService extends
             orderBuilder.dateOfIssue(formatLocalDateToString(saveOrSendGatekeepingOrder.getDateOfIssue(), DATE));
         } else {
             orderBuilder.draftbackground(getDraftWaterMarkData());
+            orderBuilder.dateOfIssue("<date of issue TBA>");
         }
         return orderBuilder.build();
     }

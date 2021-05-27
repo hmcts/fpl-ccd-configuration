@@ -931,6 +931,7 @@ public class CaseData {
 
     private final List<Element<CustomDirection>> sdoDirectionCustom;
 
+    private final JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
     private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
 
     @JsonIgnore

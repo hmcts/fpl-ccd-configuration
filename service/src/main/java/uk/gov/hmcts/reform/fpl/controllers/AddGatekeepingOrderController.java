@@ -11,12 +11,16 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
+import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
@@ -27,12 +31,17 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Api
 @RestController
@@ -43,6 +52,20 @@ public class AddGatekeepingOrderController extends CallbackController {
     private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
     private final CoreCaseDataService coreCaseDataService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final GatekeepingOrderService service;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseData.getAllocatedJudge() != null) {
+            data.put("gatekeepingOrderIssuingJudge", service.setAllocatedJudgeLabel(caseData.getAllocatedJudge()));
+        }
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/generate-draft/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleGenerateDraftMidEvent(
@@ -53,20 +76,8 @@ public class AddGatekeepingOrderController extends CallbackController {
         DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
-        //generate draft document
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getSaveOrSendGatekeepingOrder().toBuilder()
-            .draftDocument(buildFromDocument(document))
-            .orderStatus(null)
-            .build();
+        caseDetails.getData().put("saveOrSendGatekeepingOrder", service.buildSaveOrSendPage(caseData, document));
 
-        //check if missing fields for seal and send
-        if (caseData.getFirstHearing().isEmpty() || isEmpty(caseData.getAllocatedJudge())) {
-            saveOrSendGatekeepingOrder = saveOrSendGatekeepingOrder.toBuilder()
-                .nextSteps(buildNextStepsLabel(caseData))
-                .build();
-        }
-
-        caseDetails.getData().put("saveOrSendGatekeepingOrder", saveOrSendGatekeepingOrder);
         return respond(caseDetails);
     }
 
@@ -76,21 +87,37 @@ public class AddGatekeepingOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        //generate document
-        DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(
-            caseData);
-        Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
+            caseData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
+        );
 
-        //generate sdo for tab
-        caseDetails.getData().put("standardDirectionOrder", StandardDirectionOrder.builder()
+        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getSaveOrSendGatekeepingOrder();
+
+        StandardDirectionOrder.StandardDirectionOrderBuilder gatekeepingOrderBuilder = StandardDirectionOrder.builder()
             .customDirections(caseData.getSdoDirectionCustom())
-            .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
-            .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor()) //use transient SDO-only judge field instead?
-            .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
-            .orderDoc(buildFromDocument(document))
-            .build());
+            .orderStatus(caseData.getSaveOrSendGatekeepingOrder().getOrderStatus())
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
-        //remove temp fields here
+        if (saveOrSendGatekeepingOrder.getOrderStatus() == SEALED) {
+            //generate document
+            DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(
+                caseData);
+            Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
+
+            gatekeepingOrderBuilder
+                .dateOfIssue(formatLocalDateToString(caseData.getDateOfIssue(), DATE))
+                .orderDoc(buildFromDocument(document));
+
+            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "sdoDirectionCustom",
+                "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
+
+        } else {
+            //no need to regenerate draft
+            gatekeepingOrderBuilder.orderDoc(saveOrSendGatekeepingOrder.getDraftDocument());
+        }
+
+        caseDetails.getData().put("standardDirectionOrder", gatekeepingOrderBuilder.build());
+
         return respond(caseDetails);
     }
 
@@ -114,25 +141,5 @@ public class AddGatekeepingOrderController extends CallbackController {
 
             publishEvent(eventToPublish);
         });
-    }
-
-    private String buildNextStepsLabel(CaseData caseData) {
-        List<String> requiredMissingInformation = new ArrayList<>();
-        requiredMissingInformation.add("## Next steps");
-        requiredMissingInformation.add("Your order will be saved as a draft in 'Draft orders'.");
-        requiredMissingInformation.add("You cannot seal and send the order until adding:");
-
-        if (caseData.getFirstHearing().isEmpty()) {
-            requiredMissingInformation.add("* hearing details (1st or 2nd?)");
-        }
-
-        if (isEmpty(caseData.getAllocatedJudge())) {
-            requiredMissingInformation.add("* the allocated judge");
-            if (isEmpty(caseData.getAllocationDecision())) {
-                requiredMissingInformation.add("* the allocation decision");
-            }
-        }
-
-        return String.join("\n\n", requiredMissingInformation);
     }
 }
