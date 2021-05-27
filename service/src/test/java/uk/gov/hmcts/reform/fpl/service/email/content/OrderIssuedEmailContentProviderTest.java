@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -39,9 +38,11 @@ import static uk.gov.hmcts.reform.fpl.utils.OrderIssuedNotificationTestHelper.ge
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
-@ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class,
-    OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class, IdentityService.class})
+@ContextConfiguration(classes = {
+    OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
+    FixedTimeConfiguration.class, OrderIssuedEmailContentProviderTypeOfOrderCalculator.class,
+    SealedOrderHistoryService.class, IdentityService.class
+})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final CaseData caseData = createCase();

@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
@@ -32,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
-@ContextConfiguration(classes = {ReviewDraftOrdersEmailContentProvider.class, EmailNotificationHelper.class,
+@ContextConfiguration(classes = {ReviewDraftOrdersEmailContentProvider.class,
     FixedTimeConfiguration.class, JacksonAutoConfiguration.class})
 class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
