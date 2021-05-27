@@ -158,7 +158,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   });
 });
 
-Scenario('Create Interim care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
