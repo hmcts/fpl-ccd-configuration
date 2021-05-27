@@ -24,12 +24,13 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -40,10 +41,13 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -118,6 +122,20 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
                 .allocatedJudgeLabel("Case assigned to: District Judge Judy")
                 .build()
         );
+    }
+
+    @Test
+    void issuingDetailsShouldAutoPopulateApprovalDateWithCurrentDate() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageOrdersApprovalDate(dateNow())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
+
+        deepEquals(response.getData().get("manageOrdersApprovalDate"), dateNow());
     }
 
     @Test
@@ -325,8 +343,63 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.model.order.OrderSection.DOES_NOT_MATCH");
     }
 
+    @Test
+    void supervisionOrderEndDateShouldNotAllowCurrentDate() {
+        final LocalDate testInvalidDate = dateNow().minusDays(1);
+        final String testFutureDateMessage = "Enter an end date after the approval date";
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(dateNow())
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersSetDateEndDate(testInvalidDate)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        assertThat(response.getErrors()).containsOnly(testFutureDateMessage);
+    }
+
+    @Test
+    void supervisionOrderNumberOfMonthsShouldNotAllowInvalidFutureDate() {
+        final int testInvalidMonth = 16;
+        final String testEndDateRangeMessage = "This order cannot last longer than 12 months";
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersSetMonthsEndDate(testInvalidMonth)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        assertThat(response.getErrors()).containsOnly(testEndDateRangeMessage);
+    }
+
+    @Test
+    void supervisionOrderNumberOfMonthsShouldNotAllowInvalidPastDate() {
+        final int testInvalidMonth = -1;
+        final String testUnderDateRangeMessage = "Supervision orders in months should be at least 1";
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C35A_SUPERVISION_ORDER)
+                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersSetMonthsEndDate(testInvalidMonth)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
+
+        deepEquals(response.getErrors(), testUnderDateRangeMessage);
+    }
+
     private Map<String, String> getExpectedQuestions() {
-        return new HashMap<>(Map.of(
+        return new Map.of(
             "approver", "YES",
             "previewOrder", "YES",
             "furtherDirections", "YES",
@@ -336,8 +409,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             "approvalDateTime", "NO",
             "epoIncludePhrase", "NO",
             "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO"
-        ));
+            "epoExpiryDate", "NO",
+            "epoTypeAndPreventRemoval", "NO",
+            "supervisionOrderExpiryDate", "NO"
+        );
     }
 
     private CaseData buildCaseData() {
