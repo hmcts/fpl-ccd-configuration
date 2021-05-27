@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
@@ -23,22 +22,24 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherApplicationType.C1_WITH_SUPPLEMENT;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -51,15 +52,17 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @WebMvcTest(UploadAdditionalApplicationsController.class)
 @OverrideAutoConfiguration(enabled = true)
 class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCallbackTest {
+
     private static final String USER_NAME = "HMCTS";
     private static final Long CASE_ID = 12345L;
-    private static final DocumentReference document = testDocumentReference();
-
-    @Autowired
-    private IdamClient idamClient;
+    private static final DocumentReference uploadedDocument = testDocumentReference();
+    private static final DocumentReference sealedDocument = testDocumentReference();
 
     @MockBean
     private RequestData requestData;
+
+    @MockBean
+    private DocumentSealingService documentSealingService;
 
     @Autowired
     private Time time;
@@ -70,9 +73,9 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
     @BeforeEach
     void before() {
-        given(idamClient.getUserInfo(USER_AUTH_TOKEN)).willReturn(UserInfo.builder().name(USER_NAME).build());
-        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(idamClient.getUserDetails(eq(USER_AUTH_TOKEN))).willReturn(createUserDetailsWithHmctsRole());
+        given(documentSealingService.sealDocument(uploadedDocument)).willReturn(sealedDocument);
     }
 
     @Test
@@ -140,25 +143,25 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
+        caseDetails.getData().put("temporaryC2Document", Map.of("document", uploadedDocument));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData returnedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         AdditionalApplicationsBundle appendedApplicationsBundle
-            = caseData.getAdditionalApplicationsBundle().get(0).getValue();
+            = returnedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
         AdditionalApplicationsBundle existingApplicationsBundle
-            = caseData.getAdditionalApplicationsBundle().get(1).getValue();
+            = returnedCaseData.getAdditionalApplicationsBundle().get(1).getValue();
 
         C2DocumentBundle existingC2Document = existingApplicationsBundle.getC2DocumentBundle();
         C2DocumentBundle appendedC2Document = appendedApplicationsBundle.getC2DocumentBundle();
 
         String expectedDateTime = formatLocalDateTimeBaseUsingFormat(now(), DATE_TIME);
-
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(expectedDateTime);
-        assertDocument(existingC2Document.getDocument());
-        assertDocument(appendedC2Document.getDocument());
+        assertDocument(existingC2Document.getDocument(), buildFromDocument(document()));
+        assertDocument(appendedC2Document.getDocument(), sealedDocument);
 
-        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(returnedCaseData.getTemporaryC2Document()).isNull();
         assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
     }
 
@@ -228,7 +231,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(expectedDateTime);
 
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
-        assertDocument(uploadedC2DocumentBundle.getDocument());
+        assertDocument(uploadedC2DocumentBundle.getDocument(), sealedDocument);
         assertSupportingEvidenceBundle(uploadedC2DocumentBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedC2DocumentBundle.getSupplementsBundle());
     }
@@ -245,6 +248,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertSupportingEvidenceBundle(uploadedOtherApplicationsBundle.getSupportingEvidenceBundle());
         assertSupplementsBundle(uploadedOtherApplicationsBundle.getSupplementsBundle());
 
+        assertThat(uploadedOtherApplicationsBundle.getDocument()).isEqualTo(sealedDocument);
     }
 
     private void assertTemporaryFieldsAreRemoved(CaseData caseData) {
@@ -253,12 +257,10 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(caseData.getTemporaryPbaPayment()).isNull();
     }
 
-    private void assertDocument(DocumentReference actualDocument) {
-        Document expectedDocument = document();
-
-        assertThat(actualDocument.getUrl()).isEqualTo(expectedDocument.links.self.href);
-        assertThat(actualDocument.getFilename()).isEqualTo(expectedDocument.originalDocumentName);
-        assertThat(actualDocument.getBinaryUrl()).isEqualTo(expectedDocument.links.binary.href);
+    private void assertDocument(DocumentReference actualDocument, DocumentReference expectedDocument) {
+        assertThat(actualDocument.getUrl()).isEqualTo(expectedDocument.getUrl());
+        assertThat(actualDocument.getFilename()).isEqualTo(expectedDocument.getFilename());
+        assertThat(actualDocument.getBinaryUrl()).isEqualTo(expectedDocument.getBinaryUrl());
     }
 
     private void assertSupportingEvidenceBundle(List<Element<SupportingEvidenceBundle>> documentBundle) {
@@ -275,7 +277,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             "Supporting document",
             "Document notes",
             time.now(),
-            document,
+            uploadedDocument,
             USER_NAME
         );
     }
@@ -294,7 +296,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             SupplementType.C13A_SPECIAL_GUARDIANSHIP,
             "Supplement notes",
             time.now(),
-            document,
+            sealedDocument,
             USER_NAME
         );
     }
@@ -307,11 +309,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         return Map.of(
             "temporaryC2Document", Map.of(
                 "type", C2ApplicationType.WITH_NOTICE,
-                "document", Map.of(
-                    "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
-                    "document_binary_url",
-                    "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
-                    "document_filename", "file.pdf"),
+                "document", uploadedDocument,
                 "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
                 "supplementsBundle", wrapElements(createSupplementsBundle())
             )
@@ -322,11 +320,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         return Map.of(
             "temporaryOtherApplicationsBundle", Map.of(
                 "applicationType", OtherApplicationType.C1_APPOINTMENT_OF_A_GUARDIAN.name(),
-                "document", Map.of(
-                    "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
-                    "document_binary_url",
-                    "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
-                    "document_filename", "file.pdf"),
+                "document", uploadedDocument,
                 "supportingEvidenceBundle", wrapElements(createSupportingEvidenceBundle()),
                 "supplementsBundle", wrapElements(createSupplementsBundle())
             )
@@ -345,7 +339,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .name("Supporting document")
             .notes("Document notes")
             .dateTimeUploaded(time.now())
-            .document(document)
+            .document(uploadedDocument)
             .build();
     }
 
@@ -354,7 +348,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .name(SupplementType.C13A_SPECIAL_GUARDIANSHIP)
             .notes("Supplement notes")
             .dateTimeUploaded(time.now())
-            .document(document)
+            .document(uploadedDocument)
             .build();
     }
 
@@ -364,7 +358,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
             .surname("Hudson")
             .forename("Steve")
             .email("steve.hudson@gov.uk")
-            .roles(Arrays.asList("caseworker-publiclaw-courtadmin", "caseworker-publiclaw-judiciary"))
+            .roles(asList(HMCTS_ADMIN.getRoleName(), JUDICIARY.getRoleName()))
             .build();
     }
+
 }
