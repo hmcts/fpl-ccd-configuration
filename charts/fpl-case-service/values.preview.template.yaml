@@ -53,6 +53,16 @@ xui-webapp:
   enabled: true
   redis:
     enabled: true
+    sysctlImage:
+      enabled: true
+      mountHostSys: true
+      command:
+        - /bin/sh
+        - -c
+        - |-
+          install_packages procps
+          sysctl -w net.core.somaxconn=10000
+          echo never > /host-sys/kernel/mm/transparent_hugepage/enabled
   nodejs:
     imagePullPolicy: Always
     replicas: 2
@@ -67,11 +77,13 @@ xui-webapp:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
       HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      HEALTH_CCD_ACTIVITY_API:               http://ccd-case-activity-api-${SERVICE_FQDN}/health
+      HEALTH_WORK_ALLOCATION_TASK_API:       http://gateway-${SERVICE_FQDN}/health
       SERVICES_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://aac-${SERVICE_FQDN}
+      SERVICES_CCD_ACTIVITY_API: http://ccd-case-activity-api-${SERVICE_FQDN}
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
-      SERVICES_CCD_ACTIVITY_API:
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
       FEATURE_REDIS_ENABLED: true
@@ -81,6 +93,7 @@ xui-webapp:
       FEATURE_TERMS_AND_CONDITIONS_ENABLED: false
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
+      FEATURE_WORKALLOCATION_ENABLED: false
       NOW: false
       REDISCLOUD_URL: redis://ignore:fake-password@${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http
@@ -106,6 +119,8 @@ ccd:
       enabled: false
     elastic:
       enabled: true
+    activityApi:
+      enabled: true
 
   global:
     ccdApiGatewayIngress: gateway-${SERVICE_FQDN}
@@ -126,6 +141,7 @@ ccd:
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
+        PROXY_CASE_ACTIVITY: http://ccd-case-activity-api-${SERVICE_FQDN}
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       keyVaults: []
@@ -173,6 +189,19 @@ ccd:
         USER_PROFILE_DB_HOST: ${SERVICE_NAME}-postgresql
       keyVaults: []
       ingressHost: ccd-user-profile-api-${SERVICE_FQDN}
+  ccd-case-activity-api:
+    nodejs:
+      releaseNameOverride: ${SERVICE_NAME}-ccd-case-activity-api
+      ingressHost: ccd-case-activity-api-${SERVICE_FQDN}
+      environment:
+        CORS_ORIGIN_WHITELIST: http://xui-${SERVICE_FQDN}
+        AUTH_WHITE_LIST: "^.*$"
+        AUTH_BLACK_LIST: null
+        REDIS_SSL_ENABLED: ""
+        REDIS_HOST: ${SERVICE_NAME}-redis-master
+        REDIS_PORT: 6379
+        REDIS_PASSWORD: fake-password
+      keyVaults: []
 
   postgresql:
     persistence:
