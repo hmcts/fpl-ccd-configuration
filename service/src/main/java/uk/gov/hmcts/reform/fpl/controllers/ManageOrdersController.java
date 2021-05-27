@@ -32,7 +32,6 @@ import java.util.Map;
 @RequestMapping("/callback/manage-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageOrdersController extends CallbackController {
-
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;

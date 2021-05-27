@@ -12,5 +12,5 @@ module.exports = {
     second: 0,
   },
   secureAccommodationType: 'ENGLAND',
-  document: config.testFile,
+  document: config.testWordFile,
 };

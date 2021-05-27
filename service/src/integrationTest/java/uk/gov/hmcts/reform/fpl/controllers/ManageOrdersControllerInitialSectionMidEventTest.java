@@ -38,7 +38,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
     }
 
     @Test
-    void shouldPrepopulateIssueDetailsSectionDataWhenCreatingBlackOrderForClosedCase() {
+    void shouldPrepopulateIssueDetailsSectionDataWhenCreatingBlankOrderForClosedCase() {
         CaseData caseData = CaseData.builder()
             .id(CCD_CASE_NUMBER)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
@@ -56,9 +56,10 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
-            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("epoExpiryDate", "NO")
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("supervisionOrderExpiryDate", "NO")
         );
 
         assertThat(response.getData()).containsAllEntriesOf(

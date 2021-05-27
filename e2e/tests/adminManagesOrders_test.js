@@ -108,7 +108,6 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
 
 Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
-
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c21);
@@ -158,6 +157,32 @@ Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manag
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
+Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35a);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterFurtherDirections('Supervision order further details.');
+  await manageOrdersEventPage.selectSupervisionOrder(manageOrdersEventPage.section4.supervisionOrderType.options.numberOfMonths);
+  await manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 3,
+    orderType: 'Supervision order (C35A)',
+    approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
   });
