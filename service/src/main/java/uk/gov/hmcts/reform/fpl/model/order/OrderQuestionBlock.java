@@ -37,17 +37,11 @@ public enum OrderQuestionBlock {
             "manageOrdersSetMonthsEndDate")),
     MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS(
         "manageOrdersExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
-        List.of(
-            "manageOrdersEndDateTypeWithEndOfProceedings",
-            "manageOrdersSetDateEndDate",
-            "manageOrdersSetDateAndTimeEndDate"
-        )),
+        List.of("manageOrdersEndDateTypeWithEndOfProceedings", "manageOrdersSetDateEndDate",
+            "manageOrdersSetDateAndTimeEndDate")),
     ICO_EXCLUSION(
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
-        List.of(
-            "manageOrdersICOExclusionRequirement",
-            "manageOrdersICOExclusionDetails"
-        ));
+        List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails"));
 
     private final String showHideField;
     private final String question;

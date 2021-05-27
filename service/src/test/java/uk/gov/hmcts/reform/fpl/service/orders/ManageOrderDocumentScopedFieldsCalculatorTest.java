@@ -41,8 +41,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
             "orderDetailsSectionSubHeader",
-            "manageOrdersICOExclusionDetails",
-            "manageOrdersICOExclusionRequirement"
+            "manageOrdersExclusionDetails",
+            "manageOrdersHasExclusionRequirement"
         );
     }
 }

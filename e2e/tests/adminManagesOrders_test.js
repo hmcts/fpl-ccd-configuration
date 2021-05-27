@@ -85,7 +85,7 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await I.goToNextPage();
   manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
   manageOrdersEventPage.enterRemovalAddress(removalAddress);
-  manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
+  manageOrdersEventPage.selectExclusionRequirementEPO(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
   manageOrdersEventPage.enterWhoIsExcluded('John Doe');
   await manageOrdersEventPage.enterExclusionStartDate(approvalDate);
   manageOrdersEventPage.uploadPowerOfArrest(config.testPdfFile);
@@ -158,7 +158,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   });
 });
 
-Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create Interim care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
@@ -168,7 +168,7 @@ Scenario('Create Interim care order (C33)', async ({I, caseViewPage, manageOrder
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectExclusionRequirementICO(manageOrdersEventPage.section4.ICOExclusionRequirement.options.yes);
+  manageOrdersEventPage.selectExclusionRequirementICO(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
   await manageOrdersEventPage.enterExclusionDetails('I need an exclusion because of X,Y and Z');
   await manageOrdersEventPage.enterFurtherDirections('Further details.');
   await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);

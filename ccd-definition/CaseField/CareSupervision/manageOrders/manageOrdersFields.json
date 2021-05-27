@@ -215,7 +215,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersICOExclusionRequirement",
+    "ID": "manageOrdersHasExclusionRequirement",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "YesOrNo",
     "Label": "Add exclusion details",
@@ -224,7 +224,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageOrdersICOExclusionDetails",
+    "ID": "manageOrdersExclusionDetails",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "TextArea",
     "Label": "Add exclusion details",

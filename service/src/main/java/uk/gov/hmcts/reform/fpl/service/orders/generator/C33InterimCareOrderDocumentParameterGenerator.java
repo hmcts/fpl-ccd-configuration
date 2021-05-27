@@ -54,7 +54,7 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
             .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
             .orderType(TYPE)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
-            .exclusionClause(eventData.getManageOrdersICOExclusionDetails())
+            .exclusionClause(eventData.getManageOrdersExclusionDetails())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName, eventData))
             .localAuthorityName(localAuthorityName)
             .build();

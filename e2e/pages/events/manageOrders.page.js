@@ -68,15 +68,15 @@ const section4 = {
       no: 'No',
     },
   },
-  exclusionRequirement: {
+  exclusionRequirementEPO: {
     group: '#manageOrdersExclusionRequirement',
     options: {
       yes: 'Yes',
       no: 'No',
     },
   },
-  ICOExclusionRequirement: {
-    group: '#manageOrdersICOExclusionRequirement',
+  exclusionRequirement: {
+    group: '#manageOrdersHasExclusionRequirement',
     options: {
       yes: 'Yes',
       no: 'No',
@@ -100,7 +100,7 @@ const section4 = {
   },
   whoIsExcluded: '#manageOrdersWhoIsExcluded',
   exclusionStartDate: '#manageOrdersExclusionStartDate',
-  exclusionDetails: '#manageOrdersICOExclusionDetails',
+  exclusionDetails: '#manageOrdersExclusionDetails',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
@@ -172,8 +172,8 @@ const selectEpoType = (epoType) => {
   I.click(`${section4.epoTypes.group}-${epoType}`);
 };
 
-const selectExclusionRequirement = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+const selectExclusionRequirementEPO = (exclusionRequirement) => {
+  I.click(`${section4.exclusionRequirementEPO.group}-${exclusionRequirement}`);
 };
 
 const enterExclusionDetails = (text) => {
@@ -230,15 +230,15 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
-const selectExclusionRequirementICO = async (exclusionRequirement) => {
-  I.click(`${section4.ICOExclusionRequirement.group}-${exclusionRequirement}`);
+const selectExclusionRequirementICO = (exclusionRequirement) => {
+  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
 };
 
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
-  enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
 };
