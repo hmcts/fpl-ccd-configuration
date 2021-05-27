@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -32,4 +33,8 @@ public class ManageOrdersEventData {
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
+    SupervisionOrderEndDateType manageSupervisionOrderEndDateType;
+    LocalDate manageOrdersSetDateEndDate;
+    LocalDateTime manageOrdersSetDateAndTimeEndDate;
+    Integer manageOrdersSetMonthsEndDate;
 }

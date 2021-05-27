@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AN
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @Getter
@@ -37,6 +38,18 @@ public enum Order {
         "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order",
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C35A_SUPERVISION_ORDER(
+        "Supervision order",
+        "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
+        "Supervision order (C35A)",
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            FURTHER_DIRECTIONS,
+            SUPERVISION_ORDER_END_DATE,
+            REVIEW_DRAFT_ORDER)
     );
 
     private final String title;

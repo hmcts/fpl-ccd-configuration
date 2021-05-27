@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDate
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.IssuingDetailsApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
@@ -56,6 +57,7 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private ApprovalDateBlockPrePopulator approvalDateBlockPrePopulator;
     @Mock
     private ApprovalDateTimeBlockPrePopulator approvalDateTimeBlockPrePopulator;
+    private IssuingDetailsApprovalDateBlockPrePopulator issuingDetailsApprovalDateBlockPrePopulator;
 
     // Section blocks
     @Mock
@@ -81,8 +83,13 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     @BeforeEach
     void setUp() {
         questionPrepopulators = List.of(
-            linkedToHearingBlockPrePopulator, approvalDateBlockPrePopulator, approvalDateTimeBlockPrePopulator,
-            whichChildrenBlockPrePopulator, approverBlockPrePopulator, epoTypeAndPreventRemovalBlockPrePopulator
+            linkedToHearingBlockPrePopulator, 
+            approvalDateBlockPrePopulator, 
+            approvalDateTimeBlockPrePopulator,
+            whichChildrenBlockPrePopulator,
+            approverBlockPrePopulator,
+            epoTypeAndPreventRemovalBlockPrePopulator,
+            issuingDetailsApprovalDateBlockPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.of(
             LINKED_TO_HEARING, linkedToHearingBlockPrePopulator,
@@ -90,7 +97,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator,
             APPROVER, approverBlockPrePopulator,
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
-            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator
+            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
+            APPROVAL_DATE, issuingDetailsApprovalDateBlockPrePopulator
         );
 
         sectionPrepopulatorMapping = Map.of(
