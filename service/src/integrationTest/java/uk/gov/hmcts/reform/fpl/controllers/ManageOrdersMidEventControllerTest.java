@@ -52,9 +52,9 @@ import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.S
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -113,7 +113,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails","NO"),
+            Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -154,7 +154,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         assertThat(response.getData().get("hearingDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
         assertThat(responseCaseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList())
             .isEqualTo(
-               asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
+                asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
             );
     }
 
