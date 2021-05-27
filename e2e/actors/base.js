@@ -31,7 +31,7 @@ module.exports = {
         await this.goToPage(baseUrl);
 
         if (await this.waitForAnySelector([signedOutSelector, signedInSelector], 30) == null) {
-          return;
+          await this.refreshPage();
         }
 
         if (await this.hasSelector(signedInSelector)) {

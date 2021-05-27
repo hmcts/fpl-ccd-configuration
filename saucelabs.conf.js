@@ -66,17 +66,16 @@ const setupConfig = {
     },
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
-    }
+    },
+    StepListener: {
+      require: './e2e/helpers/stepListener.js',
+    },
   },
   plugins: {
     retryFailedStep: {
       enabled: true,
       retries: 2,
-    },
-    autoDelay: {
-      enabled: true,
-      delayAfter: 2000,
-    },
+    }
   },
   include: {
     config: './e2e/config.js',
