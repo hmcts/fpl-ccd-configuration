@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,12 +34,18 @@ class OrderDocumentGeneratorHolderTest {
     // Parameter Generators
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+
     @Mock
     private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
+
     @Mock
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
+
     @Mock
     private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
+
+    @Mock
+    private C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
 
     // Additional Document Collectors
     @Mock
@@ -51,6 +58,7 @@ class OrderDocumentGeneratorHolderTest {
     void setUp() {
         generators = List.of(
             c32CareOrderDocumentParameterGenerator, c21BlankOrderDocumentParameterGenerator,
+            c23EPODocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
             c23EPODocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
@@ -59,6 +67,7 @@ class OrderDocumentGeneratorHolderTest {
             C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator,
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
             C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator,
+            C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator,
             C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
 

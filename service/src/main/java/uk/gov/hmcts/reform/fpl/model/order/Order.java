@@ -20,15 +20,12 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @Getter
 @RequiredArgsConstructor
 public enum Order {
-    C32_CARE_ORDER(
-        "Care order", "Section 31 Children Act 1989", "C32 - Care order",
-        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
-    ),
     C21_BLANK_ORDER(
         "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
@@ -38,8 +35,24 @@ public enum Order {
         List.of(APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
-    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a Children's Guardian", "Section 41(1) Children Act 1989",
-        "C47A - Appointment of a Children's Guardian",
+    C32_CARE_ORDER(
+        "Care order", "Section 31 Children Act 1989", "C32 - Care order",
+        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C35A_SUPERVISION_ORDER(
+        "Supervision order",
+        "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
+        "Supervision order (C35A)",
+        List.of(
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            FURTHER_DIRECTIONS,
+            SUPERVISION_ORDER_END_DATE,
+            REVIEW_DRAFT_ORDER)
+    ),
+    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a Children's Guardian",
+        "Section 41(1) Children Act 1989", "C47A - Appointment of a Children's Guardian",
         List.of(APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
