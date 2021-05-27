@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.ManagingOrganisationRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ManagingOrganisationService;
+import uk.gov.hmcts.reform.fpl.service.SystemUserService;
 import uk.gov.hmcts.reform.rd.model.Organisation;
 
 import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
@@ -26,10 +26,10 @@ import static uk.gov.hmcts.reform.aac.model.DecisionRequest.decisionRequest;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ManagingOrganisationRemovalController extends CallbackController {
 
-    private final RequestData requestData;
     private final AuthTokenGenerator tokenGenerator;
     private final CaseAssignmentApi caseAssignmentApi;
     private final ManagingOrganisationService organisationService;
+    private final SystemUserService systemUserService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -51,7 +51,7 @@ public class ManagingOrganisationRemovalController extends CallbackController {
         caseDetails.getData().remove("managingOrganisationName");
         caseDetails.getData().put("changeOrganisationRequestField", organisationService.getRemovalRequest(caseData));
 
-        return caseAssignmentApi.applyDecision(requestData.authorisation(), tokenGenerator.generate(),
+        return caseAssignmentApi.applyDecision(systemUserService.getSysUserToken(), tokenGenerator.generate(),
             decisionRequest(caseDetails));
     }
 
