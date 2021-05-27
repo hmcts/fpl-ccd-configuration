@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
@@ -111,7 +111,7 @@ public abstract class GeneratedOrderTemplateDataGeneration
             .or(interimEndDate::toLocalDateTime)
             .map(dateTime -> {
                 final String dayOrdinalSuffix = getDayOfMonthSuffix(dateTime.getDayOfMonth());
-                return formatLocalDateTimeBaseUsingFormat(dateTime, String.format(DATE_WITH_ORDINAL_SUFFIX,
+                return formatLocalDateTimeBaseUsingFormat(dateTime, String.format(DATE_TIME_WITH_ORDINAL_SUFFIX,
                     dayOrdinalSuffix));
             })
             .orElse("the end of the proceedings, or until a further order is made");
