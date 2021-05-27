@@ -35,8 +35,8 @@ class LinkedToHearingBlockPrePopulatorTest {
     @Test
     void prePopulate() {
         CaseData caseData = mock(CaseData.class);
-        when(hearingService.findOnlyHearingsInPast(caseData)).thenReturn(HEARINGS);
-        when(caseData.buildDynamicHearingList(HEARINGS,null)).thenReturn(DYNAMIC_LIST);
+        when(hearingService.findOnlyHearingsTodayOrInPastNonVacated(caseData)).thenReturn(HEARINGS);
+        when(caseData.buildDynamicHearingList(HEARINGS, null)).thenReturn(DYNAMIC_LIST);
 
         Map<String, Object> actual = underTest.prePopulate(caseData);
 

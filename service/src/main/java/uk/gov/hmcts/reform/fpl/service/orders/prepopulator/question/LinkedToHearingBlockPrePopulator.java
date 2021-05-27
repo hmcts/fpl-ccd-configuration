@@ -27,7 +27,8 @@ public class LinkedToHearingBlockPrePopulator implements QuestionBlockOrderPrePo
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
-        List<Element<HearingBooking>> onlyHearingsInPast = hearingService.findOnlyHearingsInPast(caseData);
+        List<Element<HearingBooking>> onlyHearingsInPast =
+            hearingService.findOnlyHearingsTodayOrInPastNonVacated(caseData);
 
         return Map.of(
             MANAGE_ORDERS_APPROVED_AT_HEARING_LIST, caseData.buildDynamicHearingList(onlyHearingsInPast, null)

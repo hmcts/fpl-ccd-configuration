@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
@@ -37,8 +38,13 @@ public class HearingService {
         return caseData.findHearingBookingElement(selectedHearingCode);
     }
 
-    public List<Element<HearingBooking>> findOnlyHearingsInPast(CaseData caseData) {
-        return nullSafeList(caseData.getHearingDetails()).stream()
+    public List<Element<HearingBooking>> findOnlyHearingsTodayOrInPastNonVacated(CaseData caseData) {
+
+        List<Element<HearingBooking>> activeHearings = nullSafeList(caseData.getHearingDetails());
+        List<Element<HearingBooking>> cancelledHearings = nullSafeList(caseData.getCancelledHearingDetails());
+
+        return Stream.concat(activeHearings.stream(), cancelledHearings.stream())
+            .filter(it -> !it.getValue().isVacated())
             .filter(it -> it.getValue().getEndDate().compareTo(time.now()) <= 0)
             .collect(toList());
     }

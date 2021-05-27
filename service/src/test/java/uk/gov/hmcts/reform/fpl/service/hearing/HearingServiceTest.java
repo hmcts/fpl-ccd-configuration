@@ -3,7 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.hearing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.Mockito;
+import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -94,7 +98,7 @@ class HearingServiceTest {
     }
 
     @Nested
-    class FindOnlyHearingsInPast {
+    class FindOnlyHearingsTodayOrInPastNonVacated {
 
         @BeforeEach
         void setUp() {
@@ -104,8 +108,8 @@ class HearingServiceTest {
         @Test
         void whenNoHearingDetails() {
 
-            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsInPast(CaseData.builder()
-                .hearingDetails(null).build());
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
+                .hearingDetails(null).cancelledHearingDetails(null).build());
 
             assertThat(actual).isEqualTo(List.of());
         }
@@ -113,8 +117,8 @@ class HearingServiceTest {
         @Test
         void whenEmptyHearingDetails() {
 
-            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsInPast(CaseData.builder()
-                .hearingDetails(List.of()).build());
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
+                .hearingDetails(List.of()).cancelledHearingDetails(List.of()).build());
 
             assertThat(actual).isEqualTo(List.of());
         }
@@ -123,8 +127,20 @@ class HearingServiceTest {
         void returnInThePast() {
             Element<HearingBooking> hearing = hearing(NOW.minusSeconds(1));
 
-            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsInPast(CaseData.builder()
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
                 .hearingDetails(List.of(
+                    hearing
+                )).build());
+
+            assertThat(actual).isEqualTo(List.of(hearing));
+        }
+
+        @Test
+        void returnInThePastCancelled() {
+            Element<HearingBooking> hearing = hearing(NOW.minusSeconds(1));
+
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
+                .cancelledHearingDetails(List.of(
                     hearing
                 )).build());
 
@@ -135,7 +151,36 @@ class HearingServiceTest {
         void returnNow() {
             Element<HearingBooking> hearing = hearing(NOW);
 
-            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsInPast(CaseData.builder()
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
+                .hearingDetails(List.of(
+                    hearing
+                )).build());
+
+            assertThat(actual).isEqualTo(List.of(hearing));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = HearingStatus.class,
+            names = {"VACATED", "VACATED_AND_RE_LISTED", "VACATED_TO_BE_RE_LISTED"})
+        void doNotReturnIfStatus(HearingStatus hearingStatus) {
+            Element<HearingBooking> hearing = hearing(NOW.minusSeconds(1), hearingStatus);
+
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
+                .hearingDetails(List.of(
+                    hearing
+                )).build());
+
+            assertThat(actual).isEqualTo(List.of());
+        }
+
+        @ParameterizedTest
+        @NullSource
+        @EnumSource(value = HearingStatus.class,
+            names = {"ADJOURNED", "ADJOURNED_TO_BE_RE_LISTED", "ADJOURNED_AND_RE_LISTED"})
+        void returnIfStatus(HearingStatus hearingStatus) {
+            Element<HearingBooking> hearing = hearing(NOW.minusSeconds(1), hearingStatus);
+
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
                 .hearingDetails(List.of(
                     hearing
                 )).build());
@@ -148,7 +193,7 @@ class HearingServiceTest {
         void doNotReturnInFuture() {
             Element<HearingBooking> hearing = hearing(NOW.plusSeconds(1));
 
-            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsInPast(CaseData.builder()
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
                 .hearingDetails(List.of(
                     hearing
                 )).build());
@@ -158,6 +203,10 @@ class HearingServiceTest {
 
         private Element<HearingBooking> hearing(LocalDateTime localDateTime) {
             return element(FIELD_SELECTOR, HearingBooking.builder().endDate(localDateTime).build());
+        }
+
+        private Element<HearingBooking> hearing(LocalDateTime localDateTime, HearingStatus status) {
+            return element(FIELD_SELECTOR, HearingBooking.builder().endDate(localDateTime).status(status).build());
         }
     }
 }
