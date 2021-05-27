@@ -9,12 +9,15 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
@@ -30,27 +33,45 @@ class EmailNotificationHelperTest {
     private static final List<Element<Respondent>> RESPONDENTS = createRespondents();
     private static final String FAMILY_MAN_CASE_NUMBER = "FamilyManCaseNumber";
     private static final HearingBooking CURRENT_HEARING = HearingBooking.builder().startDate(CURRENT_DATE).build();
+    private static final List<Element<Child>> CHILDREN = wrapElements(
+        Child.builder()
+            .party(ChildParty.builder()
+                .lastName("Davies")
+                .dateOfBirth(CURRENT_DATE.toLocalDate())
+                .build())
+            .build(),
+        Child.builder()
+            .party(ChildParty.builder()
+                .lastName("Ross")
+                .dateOfBirth(PAST_DATE.toLocalDate())
+                .build())
+            .build()
+    );
 
-    private final EmailNotificationHelper underTest = new EmailNotificationHelper();
+    private final FeatureToggleService toggleService = mock(FeatureToggleService.class);
+    private final EmailNotificationHelper underTest = new EmailNotificationHelper(toggleService);
+
+    @Test
+    void shouldReturnRespondentLastNameWhenToggleDisabled() {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(false);
+
+        CaseData caseData = CaseData.builder().children1(CHILDREN).respondents1(RESPONDENTS).build();
+
+        assertThat(underTest.getSubjectLineLastName(caseData)).isEqualTo("Jones");
+    }
+
+    @Test
+    void shouldReturnRespondentLastNameWhenToggleEnabled() {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(true);
+
+        CaseData caseData = CaseData.builder().children1(CHILDREN).respondents1(RESPONDENTS).build();
+
+        assertThat(underTest.getSubjectLineLastName(caseData)).isEqualTo("Ross");
+    }
 
     @Test
     void shouldReturnLastNameOfEldestChild() {
-        List<Element<Child>> children = wrapElements(
-            Child.builder()
-                .party(ChildParty.builder()
-                    .lastName("Jones")
-                    .dateOfBirth(CURRENT_DATE.toLocalDate())
-                    .build())
-                .build(),
-            Child.builder()
-                .party(ChildParty.builder()
-                    .lastName("Ross")
-                    .dateOfBirth(PAST_DATE.toLocalDate())
-                    .build())
-                .build()
-        );
-
-        assertThat(underTest.getEldestChildLastName(children)).isEqualTo("Ross");
+        assertThat(underTest.getEldestChildLastName(CHILDREN)).isEqualTo("Ross");
     }
 
     @Test
