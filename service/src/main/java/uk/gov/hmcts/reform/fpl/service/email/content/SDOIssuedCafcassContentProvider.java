@@ -14,7 +14,7 @@ public class SDOIssuedCafcassContentProvider extends AbstractEmailContentProvide
     public SDONotifyData getNotifyData(CaseData caseData, DocumentReference order) {
         return SDONotifyData.builder()
             .documentLink(linkToAttachedDocument(order))
-            .leadRespondentsName(getFirstRespondentLastName(caseData.getAllRespondents()))
+            .lastName(getFirstRespondentLastName(caseData.getRespondents1()))
             .callout(buildCallout(caseData))
             .build();
     }

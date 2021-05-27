@@ -40,8 +40,7 @@ class SDOIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest
 
         SDONotifyData expectedData = SDONotifyData.builder()
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
-            .leadRespondentsName("Smith")
-            .respondentLastName("Smith")
+            .lastName("Smith")
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .build();
 

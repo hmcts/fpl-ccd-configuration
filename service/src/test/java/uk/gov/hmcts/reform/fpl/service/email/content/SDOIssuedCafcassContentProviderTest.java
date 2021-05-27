@@ -46,7 +46,7 @@ class SDOIssuedCafcassContentProviderTest extends AbstractEmailContentProviderTe
         when(documentDownloadService.downloadDocument(ORDER.getBinaryUrl())).thenReturn(ORDER_BINARY);
 
         NotifyData expectedParameters = SDONotifyData.builder()
-            .leadRespondentsName("Smith")
+            .lastName("Smith")
             .documentLink(Map.of("file", ENCODED_BINARY, "is_csv", false))
             .callout("Smith, FAM NUM, hearing 1 Jan 2020")
             .build();
