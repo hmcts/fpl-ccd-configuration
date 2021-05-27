@@ -68,7 +68,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   uploadAdditionalApplicationsEventPage.selectApplicantList('Someone else');
   uploadAdditionalApplicationsEventPage.enterOtherApplicantName('Jonathon Walker');
   await I.goToNextPage();
-  uploadAdditionalApplicationsEventPage.uploadC2Document(config.testFile);
+  uploadAdditionalApplicationsEventPage.uploadC2Document(config.testWordFile);
   uploadAdditionalApplicationsEventPage.selectC2AdditionalOrdersRequested('PARENTAL_RESPONSIBILITY');
   uploadAdditionalApplicationsEventPage.selectC2ParentalResponsibilityType('PR_BY_FATHER');
   await uploadAdditionalApplicationsEventPage.uploadC2Supplement(supplements);
@@ -76,7 +76,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   await I.goToNextPage();
   uploadAdditionalApplicationsEventPage.selectOtherApplication('C1 - Parental responsibility');
   uploadAdditionalApplicationsEventPage.selectOtherParentalResponsibilityType('PR_BY_FATHER');
-  uploadAdditionalApplicationsEventPage.uploadDocument(config.testFile);
+  uploadAdditionalApplicationsEventPage.uploadDocument(config.testWordFile);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupplement(supplements);
   await uploadAdditionalApplicationsEventPage.uploadOtherSupportingDocument(supportingDocuments);
   await I.goToNextPage();
@@ -92,8 +92,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
 
   caseViewPage.selectTab(caseViewPage.tabs.otherApplications);
 
+  I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Applicant'], 'Jonathon Walker');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Application type'], 'Application with notice. The other party will be notified about this application, even if there is no hearing.');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Date and time of upload']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Uploaded by'], 'HMCTS');
@@ -102,7 +102,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Notes'], 'This is a note about supplement');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Date and time uploaded']);
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'Uploaded by'], 'HMCTS');
-  I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'C2 application', 'Supplements 1', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Document name'], 'Supporting document');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');
   I.seeTextInTab(['Additional applications 1', 'C2 application', 'Supporting documents 1', 'Date and time uploaded']);
@@ -111,8 +111,8 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'C2 application', 'Additional orders requested'], 'Parental responsibility');
   I.seeInTab(['Additional applications 1', 'C2 application', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
 
+  I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Applicant'], 'Jonathon Walker');
-  I.seeInTab(['Additional applications 1', 'Other applications', 'File'], 'mockFile.txt');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Application type'], 'C1 - Parental responsibility');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Who\'s seeking parental responsibility?'], 'Parental responsibility by the father');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Date and time of upload']);
@@ -121,7 +121,7 @@ Scenario('HMCTS admin uploads additional applications to the case', async ({I, c
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Which jurisdiction?'], 'England');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Notes'], 'This is a note about supplement');
   I.seeTextInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Date and time uploaded']);
-  I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'File'], 'mockFile.txt');
+  I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'File'], 'mockFile.pdf');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supplements 1', 'Uploaded by'], 'HMCTS');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Document name'], 'Supporting document');
   I.seeInTab(['Additional applications 1', 'Other applications', 'Supporting documents 1', 'Notes'], 'This is a note about supporting doc');

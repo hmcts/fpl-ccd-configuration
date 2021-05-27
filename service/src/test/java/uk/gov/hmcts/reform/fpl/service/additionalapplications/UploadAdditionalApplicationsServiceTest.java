@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
+import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
@@ -57,10 +58,16 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     DocumentUploadHelper.class
 })
 class UploadAdditionalApplicationsServiceTest {
+
     private static final String USER_ID = "1";
     private static final String HMCTS = "HMCTS";
+
     private static final DocumentReference DOCUMENT = testDocumentReference("TestDocument.doc");
+    private static final DocumentReference SEALED_CONVERTED_DOCUMENT = testDocumentReference("TestDocument.pdf");
+
     private static final DocumentReference SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.doc");
+    private static final DocumentReference SEALED_SUPPLEMENT_DOCUMENT = testDocumentReference("SupplementFile.pdf");
+
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
     @Autowired
@@ -71,6 +78,9 @@ class UploadAdditionalApplicationsServiceTest {
 
     @MockBean
     private RequestData requestData;
+
+    @MockBean
+    private DocumentSealingService documentSealingService;
 
     @Autowired
     private UploadAdditionalApplicationsService underTest;
@@ -86,6 +96,8 @@ class UploadAdditionalApplicationsServiceTest {
     void init() {
         given(idamClient.getUserDetails(USER_AUTH_TOKEN)).willReturn(createUserDetailsWithHmctsRole());
         given(requestData.authorisation()).willReturn(USER_AUTH_TOKEN);
+        given(documentSealingService.sealDocument(DOCUMENT)).willReturn(SEALED_CONVERTED_DOCUMENT);
+        given(documentSealingService.sealDocument(SUPPLEMENT_DOCUMENT)).willReturn(SEALED_SUPPLEMENT_DOCUMENT);
     }
 
     @Test
@@ -189,8 +201,7 @@ class UploadAdditionalApplicationsServiceTest {
         assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
-        assertOtherDocumentBundle(
-            actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
+        assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
     }
 
     private void assertC2DocumentBundle(
@@ -199,7 +210,7 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle expectedSupportingEvidence
     ) {
         assertThat(actualC2Bundle.getId()).isNotNull();
-        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actualC2Bundle.getDocument().getFilename()).isEqualTo(SEALED_CONVERTED_DOCUMENT.getFilename());
         assertThat(actualC2Bundle.getType()).isEqualTo(WITH_NOTICE);
         assertThat(actualC2Bundle.getSupportingEvidenceBundle()).hasSize(1);
         assertThat(actualC2Bundle.getSupplementsBundle()).hasSize(1);
@@ -215,7 +226,7 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle expectedSupportingDocument
     ) {
         assertThat(actual.getId()).isNotNull();
-        assertThat(actual.getDocument().getFilename()).isEqualTo(DOCUMENT.getFilename());
+        assertThat(actual.getDocument().getFilename()).isEqualTo(SEALED_CONVERTED_DOCUMENT.getFilename());
         assertThat(actual.getApplicationType()).isEqualTo(C1_PARENTAL_RESPONSIBILITY);
         assertThat(actual.getParentalResponsibilityType()).isEqualTo(PR_BY_FATHER);
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
@@ -264,10 +275,13 @@ class UploadAdditionalApplicationsServiceTest {
             .getUploadedDateTime());
     }
 
-    private void assertSupplementsBundle(Supplement actual, Supplement expected) {
-        assertThat(actual).isEqualTo(expected.toBuilder()
+    private void assertSupplementsBundle(Supplement actual, Supplement exampleOfExpectedSupplement) {
+        Supplement expectedSupplement = exampleOfExpectedSupplement.toBuilder()
             .dateTimeUploaded(time.now())
-            .uploadedBy(HMCTS).build());
+            .uploadedBy(HMCTS)
+            .document(SEALED_SUPPLEMENT_DOCUMENT)
+            .build();
+        assertThat(actual).isEqualTo(expectedSupplement);
     }
 
     private void assertSupportingEvidenceBundle(SupportingEvidenceBundle actual, SupportingEvidenceBundle expected) {
