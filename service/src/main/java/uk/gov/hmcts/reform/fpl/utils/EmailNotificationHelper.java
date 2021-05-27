@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -13,15 +16,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
+@Component
 public class EmailNotificationHelper {
 
-    private EmailNotificationHelper() {
+    public String getEldestChildLastName(List<Element<Child>> children) {
+        return unwrapElements(children).stream()
+            .map(Child::getParty)
+            .filter(child -> null != child.getDateOfBirth())
+            .min(comparing(ChildParty::getDateOfBirth, nullsLast(naturalOrder())))
+            .map(ChildParty::getLastName)
+            .orElse("");
     }
 
     public static String buildSubjectLine(final String familyManCaseNumber,
