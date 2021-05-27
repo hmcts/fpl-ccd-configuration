@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
@@ -39,6 +40,10 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 @Import(EmailTemplateTest.TestConfiguration.class)
 //@Slf4j
 public class EmailTemplateTest {
+
+    protected static final String CAFCASS_NAME = "cafcass";
+    protected static final String CAFCASS_EMAIL = "cafcass@example.com";
+    protected static final String GOV_NOTIFY_DOC_URL = "https://documents.service.gov.uk/d/";
 
     @SpyBean
     private NotificationClient client;
@@ -75,13 +80,17 @@ public class EmailTemplateTest {
 
     @BeforeEach
     void lookupServiceSetUp() {
-        when(inboxLookupService.getRecipients(any()))
-            .thenReturn(Set.of("test@example.com"));
+        when(inboxLookupService.getRecipients(any())).thenReturn(Set.of("test@example.com"));
         when(hmctsCourtLookupConfiguration.getCourt(any()))
             .thenReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "court@test.com", COURT_CODE));
         when(hmctsAdminNotificationHandler.getHmctsAdminEmail(any())).thenReturn("hmcts-admin@test.com");
-        when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any()))
-            .thenReturn(LOCAL_AUTHORITY_NAME);
+        when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(any())).thenReturn(LOCAL_AUTHORITY_NAME);
+        when(cafcassLookupConfiguration.getCafcass(anyString()))
+            .thenReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL));
+    }
+
+    protected String caseDetailsUrl(Long id, TabUrlAnchor tab) {
+        return String.format("http://fake-url/cases/case-details/%s#%s", id.toString(), tab.getAnchor());
     }
 
     public static class TestConfiguration {

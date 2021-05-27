@@ -13,11 +13,14 @@ import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 @Component
 public class CaseDetailsHelper {
 
+    private CaseDetailsHelper() {
+    }
+
     public static boolean isCaseNumber(String caseNumber) {
         return StringUtils.isNumeric(caseNumber) && caseNumber.length() == 16;
     }
 
-    public String formatCCDCaseNumber(Long caseNumber) {
+    public static String formatCCDCaseNumber(Long caseNumber) {
         String ccdCaseNumber = String.valueOf(caseNumber);
 
         if (!isCaseNumber(ccdCaseNumber)) {

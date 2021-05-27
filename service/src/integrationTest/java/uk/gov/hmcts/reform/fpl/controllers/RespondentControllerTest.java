@@ -3,14 +3,20 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.service.notify.NotificationClient;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +24,19 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -27,15 +45,23 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @OverrideAutoConfiguration(enabled = true)
 class RespondentControllerTest extends AbstractCallbackTest {
 
+    private static final String SOLICITOR_ORG_ID = "Organisation ID";
+    private static final String SOLICITOR_EMAIL = "solicitor@email.com";
+    private static final String DOB_ERROR = "Date of birth for respondent 1 cannot be in the future";
+    private static final String DOB_ERROR_2 = "Date of birth for respondent 2 cannot be in the future";
+    private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
+    private static final String CASE_ID = "1234567890123456";
+    private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
+
     RespondentControllerTest() {
         super("enter-respondents");
     }
 
-    private static final String DOB_ERROR = "Date of birth cannot be in the future";
-    private static final String MAX_RESPONDENTS_ERROR = "Maximum number of respondents is 10";
+    @MockBean
+    private NotificationClient notificationClient;
 
     @Test
-    void aboutToStartShouldPrepopulateRespondent() {
+    void aboutToStartShouldPrePopulateRespondent() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of("data", "some data"))
             .build();
@@ -74,17 +100,19 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
         CaseData caseData = CaseData.builder()
             .respondents1(buildRespondents())
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
-        assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR);
+        assertThat(callbackResponse.getErrors()).containsExactly(DOB_ERROR, DOB_ERROR_2);
     }
 
     @Test
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().minusDays(1))))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -96,6 +124,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnEmailAddressErrorsForRespondentSolicitorEmailWhenInvalid() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow().plusDays(1), "Test User <e.test@test.com>")))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -111,6 +140,7 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 respondent(dateNow(), "Test User <e.test@test.com>"),
                 respondent(dateNow(), "Second Test User <e.test-second@test.com>")
             ))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
@@ -124,11 +154,115 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void shouldReturnNoEmailErrorsForRespondentSolicitorWhenValidEmail() {
         CaseData caseData = CaseData.builder()
             .respondents1(wrapElements(respondent(dateNow(), "test@test.com")))
+            .state(OPEN)
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseData);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnRespondentRemovedValidationErrorsWhenRespondentRemoved() {
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(element(respondent(dateNow(), "test@test.com"))))
+            .state(SUBMITTED)
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(List.of())
+            .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(callbackRequest);
+
+        assertThat(callbackResponse.getErrors()).isEqualTo(List.of("You cannot remove a respondent from the case"));
+    }
+
+    @Test
+    void shouldAllowAdminToUpdateRespondentSolicitorOrganisation() {
+
+        Element<Respondent> respondent = element(respondent(dateNow(), "test@test.com"));
+        Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
+            .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
+                .organisation(Organisation.organisation("NEW"))
+                .build())
+            .build());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(respondent))
+            .state(SUBMITTED)
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .respondents1(List.of(updatedRespondent))
+            .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        List<String> errors = postMidEventWithUserRole(callbackRequest, HMCTS_ADMIN.getRoleName()).getErrors();
+
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldNotAllowLocalAuthorityToUpdateRespondentSolicitorOrganisation() {
+
+        Element<Respondent> respondent = element(respondent(dateNow(), "respondent1@test.com"));
+        Element<Respondent> updatedRespondent = element(respondent.getId(), respondent.getValue().toBuilder()
+            .solicitor(respondent.getValue().getSolicitor().toBuilder()
+                .firstName("James")
+                .lastName("Smith")
+                .email("test@mail.com")
+                .organisation(Organisation.organisation("NEW_ORG"))
+                .build())
+            .build());
+
+        CaseData caseDataBefore = CaseData.builder()
+            .respondents1(List.of(respondent))
+            .state(SUBMITTED)
+            .build();
+
+        CaseData caseData = caseDataBefore.toBuilder()
+            .respondents1(List.of(updatedRespondent))
+            .build();
+
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        List<String> errors = postMidEventWithUserRole(callbackRequest, LOCAL_AUTHORITY.getRoleName()).getErrors();
+
+        assertThat(errors)
+            .isEqualTo(List.of("You cannot change organisation details for respondent 1's legal representative"));
+    }
+
+    @Test
+    void shouldGenerateRespondentPoliciesWhenToggleOnAndStateIsNotOpen() {
+        Respondent respondentWithRepresentative = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .organisation(Organisation.builder()
+                    .organisationID(SOLICITOR_ORG_ID)
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .state(SUBMITTED)
+            .applicants(wrapElements(Applicant.builder()
+                .party(ApplicantParty.builder()
+                    .organisationName("Applicant org name").build())
+                .build()))
+            .respondents1(wrapElements(respondentWithRepresentative))
+            .build();
+
+        CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseData.getRespondentPolicyData().getRespondentPolicy0().getOrganisation().getOrganisationID())
+            .isEqualTo(SOLICITOR_ORG_ID);
     }
 
     @Test
@@ -142,15 +276,17 @@ class RespondentControllerTest extends AbstractCallbackTest {
                 element(oldRespondent.getId(), respondent(dateNow())),
                 element(respondent(dateNow()))
             ))
+            .state(OPEN)
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
             .respondents1(List.of(oldRespondent))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(
-            toCallBackRequest(asCaseDetails(caseData), asCaseDetails(caseDataBefore))
-        );
+        CallbackRequest callbackRequest = toCallBackRequest(caseData, caseDataBefore);
+
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(callbackRequest);
+
         CaseData responseData = extractCaseData(response);
 
         Respondent firstRespondent = responseData.getRespondents1().get(0).getValue();
@@ -164,13 +300,89 @@ class RespondentControllerTest extends AbstractCallbackTest {
     void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() {
         CallbackRequest callbackRequest = callbackRequest();
         CaseData caseData = extractCaseData(postAboutToSubmitEvent(callbackRequest));
-        CaseData initialData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData initialData = extractCaseData(callbackRequest);
 
         assertThat(caseData.getConfidentialRespondents())
             .containsOnly(retainConfidentialDetails(initialData.getAllRespondents().get(0)));
 
         assertThat(caseData.getRespondents1().get(0).getValue().getParty().getAddress()).isNull();
         assertThat(caseData.getRespondents1().get(1).getValue().getParty().getAddress()).isNotNull();
+    }
+
+    @Test
+    void shouldPublishRespondentsUpdatedEventIfNotOpenState() {
+        Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .organisation(Organisation.builder().organisationID("Registered Org ID").build())
+                .build())
+            .build();
+
+        Respondent respondentWithUnregisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .unregisteredOrganisation(UnregisteredOrganisation.builder()
+                    .name("Unregistered Org")
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_ID))
+            .state(SUBMITTED)
+            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .build();
+
+        postSubmittedEvent(caseData);
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(REGISTERED_RESPONDENT_SOLICITOR_TEMPLATE),
+            eq(SOLICITOR_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+
+        checkUntil(() -> verify(notificationClient).sendEmail(
+            eq(UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE),
+            eq(SOLICITOR_EMAIL),
+            anyMap(),
+            eq(NOTIFICATION_REFERENCE)
+        ));
+    }
+
+    @Test
+    void shouldNotPublishRespondentsUpdatedEventIfOpenState() {
+        Respondent respondentWithRegisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .organisation(Organisation.builder().organisationID("Registered Org ID").build())
+                .build())
+            .build();
+
+        Respondent respondentWithUnregisteredSolicitor = respondent(dateNow()).toBuilder()
+            .legalRepresentation(YES.getValue())
+            .solicitor(RespondentSolicitor.builder()
+                .email(SOLICITOR_EMAIL)
+                .unregisteredOrganisation(UnregisteredOrganisation.builder()
+                    .name("Unregistered Org")
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = CaseData.builder()
+            .id(Long.valueOf(CASE_ID))
+            .state(OPEN)
+            .respondents1(wrapElements(respondentWithRegisteredSolicitor, respondentWithUnregisteredSolicitor))
+            .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
+            .build();
+
+        postSubmittedEvent(caseData);
+
+        verifyNoInteractions(notificationClient);
     }
 
     private List<Element<Respondent>> buildRespondents() {

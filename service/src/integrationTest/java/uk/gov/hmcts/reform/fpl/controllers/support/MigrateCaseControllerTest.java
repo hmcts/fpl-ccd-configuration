@@ -2,24 +2,34 @@ package uk.gov.hmcts.reform.fpl.controllers.support;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
+import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -28,112 +38,193 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         super("migrate-case");
     }
 
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla2982 {
-        String migrationId = "FPLA-2982";
+    class Fpla3037 {
+        UUID c2DocumentBundleUuid = UUID.randomUUID();
+        UUID supportingEvidenceBundleUuid = UUID.randomUUID();
+        UUID supportingEvidenceBundleToRemoveUuid = UUID.fromString("4885a0e2-fd88-4614-9c35-6c61d6b5e422");
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String migrationId = "FPLA-3037";
 
-        @ParameterizedTest
-        @ValueSource(longs = {
-            1598429153622508L,
-            1615191831533551L,
-            1594384486007055L,
-            1601977974423857L,
-            1615571327261140L,
-            1615476016828466L,
-            1616507805759840L,
-            1610015759403189L,
-            1615994076934396L,
-            1611613172339094L,
-            1612440806991994L,
-            1607004182103389L,
-            1617045146450299L,
-            1612433400114865L,
-            1615890702114702L,
-            1610018233059619L})
-        void shouldMigrateMissingC2IdCase(Long caseId) {
-            CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
-                    createOtherApplicationBundle(null))), caseId);
+        @Test
+        void shouldRemoveExpectedSupportingEvidenceBundles() {
+            AdditionalApplicationsBundle additionalApplicationsBundle = buildAdditionalApplicationsBundle();
+
+            AdditionalApplicationsBundle expectedAdditionalApplicationsBundle =
+                buildExpectedAdditionalApplicationsBundle();
+
+            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, migrationId);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+            AdditionalApplicationsBundle extractedAdditionalApplicationsBundle =
+                extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(expectedAdditionalApplicationsBundle);
+        }
+
+        @Test
+        void shouldNotRemoveSupportingEvidenceBundles() {
+            AdditionalApplicationsBundle additionalApplicationsBundle = buildExpectedAdditionalApplicationsBundle();
+
+            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, migrationId);
+
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+            AdditionalApplicationsBundle extractedAdditionalApplicationsBundle =
+                extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
+
+            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(additionalApplicationsBundle);
+        }
+
+        @Test
+        void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
+            String incorrectMigrationId = "FPLA-1111";
+
+            AdditionalApplicationsBundle additionalApplicationsBundle = buildAdditionalApplicationsBundle();
+
+            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, incorrectMigrationId);
 
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(!extractedCaseData.getAdditionalApplicationsBundle().isEmpty());
-
-            extractedCaseData.getAdditionalApplicationsBundle()
-                .forEach(bundle -> assertThat(bundle.getValue().getC2DocumentBundle().getId() != null));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(wrapElements(
+                additionalApplicationsBundle));
         }
 
-        @Test
-        void shouldThrowExceptionForInvalidCaseId() {
-            CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
-                    null)), 1234L);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("Invalid case Id");
-        }
-
-        @Test
-        void shouldThrowExceptionIfNoNullIdsFound() {
-            CaseDetails caseDetails = caseDetails(migrationId,
-                wrapElements(
-                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
-                        createOtherApplicationBundle(UUID.randomUUID())),
-                    createAdditionalApplicationBundle(createC2DocumentBundle(UUID.randomUUID()),
-                        null),
-                    createAdditionalApplicationBundle(null,
-                        createOtherApplicationBundle(UUID.randomUUID()))
-                ), 1601977974423857L);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
-        }
-
-        @Test
-        void shouldNotChangeCaseIfNotExpectedMigrationId() {
-            String incorrectMigrationId = "FPLA-9876";
-
-            CaseDetails caseDetails = caseDetails(incorrectMigrationId,
-                wrapElements(createAdditionalApplicationBundle(createC2DocumentBundle(null),
-                    createOtherApplicationBundle(null))), 1615890702114702L);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(!extractedCaseData.getAdditionalApplicationsBundle().isEmpty());
-
-            extractedCaseData.getAdditionalApplicationsBundle()
-                .forEach(bundle -> assertThat(bundle.getValue().getC2DocumentBundle().getId() == null));
-        }
-
-        private C2DocumentBundle createC2DocumentBundle(UUID id) {
-            return C2DocumentBundle.builder().id(id).build();
-        }
-
-        private OtherApplicationsBundle createOtherApplicationBundle(UUID id) {
-            return OtherApplicationsBundle.builder().id(id).build();
-        }
-
-        private AdditionalApplicationsBundle createAdditionalApplicationBundle(
-            C2DocumentBundle c2DocumentBundle,
-            OtherApplicationsBundle otherApplicationsBundle) {
-            return AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(c2DocumentBundle)
-                .otherApplicationsBundle(otherApplicationsBundle)
-                .build();
-        }
-
-        private CaseDetails caseDetails(String migrationId,
-                                        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle,
-                                        Long caseId) {
+        private CaseDetails caseDetails(AdditionalApplicationsBundle additionalApplicationsBundle,
+                                        String migrationId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .additionalApplicationsBundle(additionalApplicationsBundle)
-                .id(caseId)
+                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
         }
+
+        private AdditionalApplicationsBundle buildExpectedAdditionalApplicationsBundle() {
+            return AdditionalApplicationsBundle
+                .builder()
+                .c2DocumentBundle(
+                    C2DocumentBundle.builder()
+                        .id(c2DocumentBundleUuid)
+                        .author("author")
+                        .supportingEvidenceBundle(List.of(
+                            element(supportingEvidenceBundleUuid, SupportingEvidenceBundle.builder()
+                                .uploadedBy("test@test.co.uk")
+                                .dateTimeUploaded(localDateTime)
+                                .document(DocumentReference.builder().build())
+                                .build())
+                        )).build()
+                ).build();
+        }
+
+        private AdditionalApplicationsBundle buildAdditionalApplicationsBundle() {
+            return AdditionalApplicationsBundle
+                .builder()
+                .c2DocumentBundle(
+                    C2DocumentBundle.builder()
+                        .id(c2DocumentBundleUuid)
+                        .author("author")
+                        .supportingEvidenceBundle(List.of(
+                            element(supportingEvidenceBundleToRemoveUuid, SupportingEvidenceBundle.builder()
+                                .uploadedBy("test@test.co.uk")
+                                .dateTimeUploaded(localDateTime)
+                                .build()),
+                            element(supportingEvidenceBundleUuid, SupportingEvidenceBundle.builder()
+                                .uploadedBy("test@test.co.uk")
+                                .dateTimeUploaded(localDateTime)
+                                .document(DocumentReference.builder().build())
+                                .build())
+                        )).build()
+                ).build();
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    class Fpla3093 {
+        String familyManNumber = "SA21C50024";
+        String migrationId = "FPLA-3093";
+
+        private DocumentReference supportingDocument = testDocumentReference("Correct c2 document");
+        private DocumentReference c2Document = testDocumentReference("Incorrect c2 document");
+
+        @Test
+        void shouldRemoveC2DocumentAtIndex0() {
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
+                buildAdditionalApplicationsBundle(WITH_NOTICE));
+
+            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEmpty();
+        }
+
+        @Test
+        void shouldRemoveC2DocumentAtIndex0AndLeaveOtherElementsUnModified() {
+            AdditionalApplicationsBundle bundle1 = buildAdditionalApplicationsBundle(WITH_NOTICE);
+            AdditionalApplicationsBundle bundle2 = buildAdditionalApplicationsBundle(WITHOUT_NOTICE);
+
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
+                bundle1, bundle2);
+
+            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
+                .getAdditionalApplicationsBundle());
+
+            assertThat(extractedApplicationBundle.size()).isEqualTo(1);
+            assertThat(extractedApplicationBundle.get(0)).isEqualTo(bundle2);
+        }
+
+        @Test
+        void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
+            String incorrectMigrationId = "FPLA-1111";
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
+                buildAdditionalApplicationsBundle(WITH_NOTICE));
+
+            CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(additionalApplications);
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfCaseContainsNoAdditionalApplications() {
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = Collections.emptyList();
+
+            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Migration failed on case %s: Case has %s additional applications",
+                    familyManNumber, additionalApplications.size()));
+        }
+
+        private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
+                                        String migrationId) {
+            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
+                .state(State.CASE_MANAGEMENT)
+                .additionalApplicationsBundle(additionalApplications)
+                .familyManCaseNumber(familyManNumber)
+                .build());
+
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+
+        private AdditionalApplicationsBundle buildAdditionalApplicationsBundle(C2ApplicationType type) {
+            return AdditionalApplicationsBundle.builder()
+                .c2DocumentBundle(C2DocumentBundle.builder()
+                    .type(type)
+                    .document(c2Document)
+                    .usePbaPayment(YES.getValue())
+                    .supportingEvidenceBundle(wrapElements(SupportingEvidenceBundle.builder()
+                        .document(supportingDocument)
+                        .build()))
+                    .build())
+                .build();
+        }
+
     }
 }

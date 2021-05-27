@@ -5,7 +5,8 @@
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "solicitor",
     "ListElementCode": "solicitorLabel",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "solicitorLabel!=\"SHOW_LABEL\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -13,6 +14,7 @@
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "solicitor",
     "ListElementCode": "name",
+    "EventElementLabel": "*Solicitor's full name",
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -37,6 +39,7 @@
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "solicitor",
     "ListElementCode": "email",
+    "EventElementLabel": "*Solicitor's email",
     "DisplayContext": "MANDATORY"
   },
   {

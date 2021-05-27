@@ -16,12 +16,15 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Component
@@ -30,7 +33,6 @@ public class DocmosisCommonElementDecorator {
 
     private final ChildrenService childrenService;
     private final CaseDataExtractionService extractionService;
-    private final CaseDetailsHelper caseDetailsHelper;
 
     public DocmosisParameters decorate(DocmosisParameters currentParameters, CaseData caseData,
                                        OrderStatus status, Order orderType) {
@@ -46,14 +48,15 @@ public class DocmosisCommonElementDecorator {
         DocmosisJudgeAndLegalAdvisor docmosisJudgeAndLegalAdvisor =
             extractionService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
 
+        String dateOfIssue = currentParameters.getDateOfIssue();
         return currentParameters.toBuilder()
-            .orderTitle(orderType.getTitle())
             .childrenAct(orderType.getChildrenAct())
             .familyManCaseNumber(caseData.getFamilyManCaseNumber())
-            .ccdCaseNumber(caseDetailsHelper.formatCCDCaseNumber(caseData.getId()))
+            .ccdCaseNumber(formatCCDCaseNumber(caseData.getId()))
             .judgeAndLegalAdvisor(docmosisJudgeAndLegalAdvisor)
             .courtName(extractionService.getCourtName(localAuthorityCode))
-            .dateOfIssue(eventData.getManageOrdersApprovalDate())
+            .dateOfIssue(isBlank(dateOfIssue)
+                ? formatLocalDateToString(eventData.getManageOrdersApprovalDate(), DATE) : dateOfIssue)
             .children(children)
             .crest(DocmosisImages.CREST.getValue())
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)

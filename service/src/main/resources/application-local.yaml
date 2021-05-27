@@ -43,6 +43,10 @@ core_case_data:
   api:
     url: http://localhost:4452
 
+case-assignment:
+  api:
+    url: http://localhost:4454
+
 docmosis:
   tornado:
     url: http://localhost:5433

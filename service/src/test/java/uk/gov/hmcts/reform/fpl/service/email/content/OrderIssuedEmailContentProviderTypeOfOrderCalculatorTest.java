@@ -31,7 +31,7 @@ class OrderIssuedEmailContentProviderTypeOfOrderCalculatorTest {
         when(legacyOrder2.isNewVersion()).thenReturn(false);
         when(legacyOrder2.getType()).thenReturn("legacyOrDer2");
         when(newGeneratedOrder1.isNewVersion()).thenReturn(true);
-        when(newGeneratedOrder1.getTitle()).thenReturn("newOrderTitle1");
+        when(newGeneratedOrder1.getType()).thenReturn("newOrderTitle1");
     }
 
     @Test

@@ -16,13 +16,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
+import java.util.Map;
 
 @Api
 @RestController
@@ -31,80 +28,64 @@ import static java.util.Objects.isNull;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final CaseSubmissionService caseSubmissionService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-2982".equals(migrationId)) {
-            run2982(caseDetails);
+        if ("FPLA-3037".equals(migrationId)) {
+            run3037(caseDetails);
+        }
+
+        if ("FPLA-3093".equals(migrationId)) {
+            run3093(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run2982(CaseDetails caseDetails) {
-        final List<Long> validCases = List.of(
-            1598429153622508L,
-            1615191831533551L,
-            1594384486007055L,
-            1601977974423857L,
-            1615571327261140L,
-            1615476016828466L,
-            1616507805759840L,
-            1610015759403189L,
-            1615994076934396L,
-            1611613172339094L,
-            1612440806991994L,
-            1607004182103389L,
-            1617045146450299L,
-            1612433400114865L,
-            1615890702114702L,
-            1610018233059619L
-        );
-
+    private void run3037(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
+        Map<String, Object> data = caseDetails.getData();
 
-        if (!validCases.contains(caseData.getId())) {
-            throw new IllegalArgumentException("Invalid case Id");
-        }
-
-        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle =
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles =
             caseData.getAdditionalApplicationsBundle();
 
-        if (additionalApplicationsBundle.stream()
-            .noneMatch(this::checkNullIds)) {
-            throw new IllegalArgumentException("No c2DocumentBundle or otherApplicationsBundle found with missing Id");
-        }
+        additionalApplicationsBundles.forEach(
+            additionalApplicationsBundle -> {
+                C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getValue().getC2DocumentBundle();
 
-        List<Element<AdditionalApplicationsBundle>> fixedAdditionalApplicationsBundle =
-            additionalApplicationsBundle.stream().map(this::fixMissingIds).collect(Collectors.toList());
+                c2DocumentBundle.getSupportingEvidenceBundle()
+                    .removeIf(supportingEvidenceBundle -> supportingEvidenceBundle.getId()
+                        .toString()
+                        .equals("4885a0e2-fd88-4614-9c35-6c61d6b5e422")
+                    );
+            }
+        );
 
-        caseDetails.getData().put("additionalApplicationsBundle", fixedAdditionalApplicationsBundle);
+        data.put("additionalApplicationsBundle", additionalApplicationsBundles);
+        caseDetails.setData(data);
     }
 
-    private boolean checkNullIds(Element<AdditionalApplicationsBundle> documentBundle) {
-        AdditionalApplicationsBundle value = documentBundle.getValue();
-        C2DocumentBundle c2DocumentBundle = value.getC2DocumentBundle();
-        OtherApplicationsBundle otherApplicationsBundle = value.getOtherApplicationsBundle();
+    private void run3093(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
 
-        return (!isNull(c2DocumentBundle) && isNull(c2DocumentBundle.getId()))
-            || (!isNull(otherApplicationsBundle) && isNull(otherApplicationsBundle.getId()));
-    }
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
+            .getAdditionalApplicationsBundle();
 
-    private Element<AdditionalApplicationsBundle> fixMissingIds(Element<AdditionalApplicationsBundle> bundle) {
-        C2DocumentBundle c2DocumentBundle = bundle.getValue().getC2DocumentBundle();
-        OtherApplicationsBundle otherApplicationsBundle = bundle.getValue().getOtherApplicationsBundle();
-
-        if (!isNull(c2DocumentBundle) && isNull(c2DocumentBundle.getId())) {
-            bundle.getValue().getC2DocumentBundle().setId(UUID.randomUUID());
+        if (caseData.getAdditionalApplicationsBundle().size() < 1) {
+            throw new IllegalStateException(String
+                .format("Migration failed on case %s: Case has %s additional applications",
+                    caseData.getFamilyManCaseNumber(), additionalApplicationsBundle.size()));
         }
 
-        if (!isNull(otherApplicationsBundle) && isNull(otherApplicationsBundle.getId())) {
-            bundle.getValue().getOtherApplicationsBundle().setId(UUID.randomUUID());
-        }
-        return bundle;
+        additionalApplicationsBundle.remove(0);
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.put("additionalApplicationsBundle", additionalApplicationsBundle);
     }
 }

@@ -14,21 +14,35 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderDocumentGeneratorHolder {
 
+    // parameter generators
+    private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+    private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
+
+    // additional document collectors
+    private final C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
 
     private Map<Order, DocmosisParameterGenerator> typeToGenerator;
+    private Map<Order, AdditionalDocumentsCollector> typeToAdditionalDocsCollector;
 
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
-                c32CareOrderDocumentParameterGenerator
-            ).stream().collect(Collectors.toMap(
-                DocmosisParameterGenerator::accept,
-                Function.identity()
-            ));
+                c21BlankOrderDocumentParameterGenerator,
+                c32CareOrderDocumentParameterGenerator,
+                c23EPODocumentParameterGenerator
+            ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;
     }
 
+    public Map<Order, AdditionalDocumentsCollector> getTypeToAdditionalDocumentsCollector() {
+        if (typeToAdditionalDocsCollector == null) {
+            typeToAdditionalDocsCollector = List.of(
+                c23EPOAdditionalDocumentsCollector
+            ).stream().collect(Collectors.toMap(AdditionalDocumentsCollector::accept, Function.identity()));
+        }
+        return typeToAdditionalDocsCollector;
+    }
 
 }

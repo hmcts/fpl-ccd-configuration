@@ -23,15 +23,14 @@ import static uk.gov.hmcts.reform.fpl.model.tasklist.TaskState.NOT_STARTED;
 public class TaskListService {
 
     private final EventsChecker eventsChecker;
-    private final FeatureToggleService featureToggleService;
 
     public List<Task> getTasksForOpenCase(CaseData caseData) {
         return eventsInState(OPEN).stream()
-                .map(event -> Task.builder()
-                        .event(event)
-                        .state(getTaskState(caseData, event))
-                        .build())
-                .collect(toList());
+            .map(event -> Task.builder()
+                .event(event)
+                .state(getTaskState(caseData, event))
+                .build())
+            .collect(toList());
     }
 
     private TaskState getTaskState(CaseData caseData, Event event) {

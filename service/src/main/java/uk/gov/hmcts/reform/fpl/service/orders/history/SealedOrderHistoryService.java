@@ -15,12 +15,17 @@ import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.nullsLast;
+import static java.util.Comparator.reverseOrder;
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -45,39 +50,52 @@ public class SealedOrderHistoryService {
 
         pastOrders.add(element(identityService.generateId(), GeneratedOrder.builder()
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
-            .title(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
+            .title(manageOrdersEventData.getManageOrdersTitle())
+            .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())
+            .approvalDateTime(manageOrdersEventData.getManageOrdersApprovalDateTime())
             .childrenDescription(getChildrenForOrder(selectedChildren))
             .document(sealedPdfOrder)
             .unsealedDocumentCopy(plainWordOrder)
             .build()));
 
-        pastOrders.sort(legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc());
+        pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
         return Map.of("orderCollection", pastOrders);
     }
 
     public GeneratedOrder lastGeneratedOrder(CaseData caseData) {
         return caseData.getOrderCollection().stream()
-            .sorted(legacyLastAndThenByDateAndTimeIssuedDesc())
-            .findFirst()
+            .min(legacyLastAndThenByDateAndTimeIssuedDesc())
             .orElseThrow(() -> new IllegalStateException("Element not present"))
             .getValue();
     }
 
-    private Comparator<Element<GeneratedOrder>> legacyFirstAndThenByApprovalDateAndIssuedDateTimeAsc() {
-        Comparator<Element<GeneratedOrder>> comparingApprovalDate = Comparator.comparing(
-            e -> e.getValue().getApprovalDate(), Comparator.nullsFirst(Comparator.naturalOrder()));
-        return comparingApprovalDate.thenComparing(e -> e.getValue().getDateTimeIssued(),
-            Comparator.nullsFirst(Comparator.naturalOrder()));
+    private Comparator<Element<GeneratedOrder>> legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc() {
+        Comparator<Element<GeneratedOrder>> comparingApprovalDate = comparing(
+            this::getOrderApprovalDateTime, nullsLast(reverseOrder())
+        );
+        return comparingApprovalDate.thenComparing(
+            e -> e.getValue().getDateTimeIssued(), nullsLast(reverseOrder())
+        );
+    }
+
+    private LocalDateTime getOrderApprovalDateTime(Element<GeneratedOrder> orderElement) {
+        if (isNull(orderElement.getValue().getApprovalDateTime())) {
+            if (!isNull(orderElement.getValue().getApprovalDate())) {
+                return orderElement.getValue().getApprovalDate().atStartOfDay();
+            }
+        }
+
+        return orderElement.getValue().getApprovalDateTime();
     }
 
     private Comparator<Element<GeneratedOrder>> legacyLastAndThenByDateAndTimeIssuedDesc() {
-        return Comparator.comparing(e -> e.getValue().getDateTimeIssued(),
-            Comparator.nullsLast(Comparator.reverseOrder()));
+        return comparing(e -> e.getValue().getDateTimeIssued(),
+            Comparator.nullsLast(reverseOrder()));
     }
 
     private String getChildrenForOrder(List<Element<Child>> selectedChildren) {
@@ -87,6 +105,5 @@ public class SealedOrderHistoryService {
             ).collect(Collectors.joining(", "))
         ).orElse(null);
     }
-
 }
 

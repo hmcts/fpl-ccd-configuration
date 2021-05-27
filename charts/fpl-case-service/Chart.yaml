@@ -1,36 +1,28 @@
 name: fpl-case-service
 apiVersion: v2
 home: https://github.com/hmcts/fpl-ccd-configuration
-version: 1.12.16
+version: 1.12.21
 description: FPL Case Service
 maintainers:
   - name: HMCTS Family Public Law team
     email: fpl-developers@HMCTS.NET
 dependencies:
   - name: java
-    version: 3.4.5
+    version: 3.4.7
     repository: '@hmctspublic'
   - name: ccd
-    version: 4.3.5
+    version: 5.0.2
     repository: '@hmctspublic'
     tags:
       - fpl-ccd-stack
   - name: xui-webapp
-    version: ~0.2.1
+    version: 0.2.13
     repository: '@hmctspublic'
     condition: xui-webapp.enabled
   - name: idam-pr
     version: 2.2.6
     repository: '@hmctspublic'
     condition: idam-pr.enabled
-  - name: elasticsearch
-    version: 7.8.1
-    repository: '@hmctspublic'
-    condition: elastic.enabled
-  - name: logstash
-    version: 2.4.1
-    repository: '@hmctspublic'
-    condition: elastic.enabled
   - name: aac-manage-case-assignment
     version: ~0.1.6
     repository: '@hmctspublic'

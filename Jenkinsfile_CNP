@@ -139,9 +139,12 @@ withPipeline(type, product, component) {
 
             git fetch origin demo:demo
             git push --force origin HEAD:demo
+
+            git fetch origin perftest:perftest
+            git push --force origin HEAD:perftest
           '''
         } catch (err) {
-          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo branch'
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo or perftest branch'
         }
       }
     }
@@ -175,8 +178,8 @@ withPipeline(type, product, component) {
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=3
-    env.TEST_RETRIES=1
+    env.PARALLEL_CHUNKS=4
+    env.TEST_RETRIES=2
   }
 
   after('smoketest:saat') {

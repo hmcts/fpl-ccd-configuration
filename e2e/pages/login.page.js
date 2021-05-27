@@ -9,11 +9,12 @@ module.exports = {
   submitButton: 'input[value="Sign in"]',
 
   async signIn(user) {
-    if(!await I.waitForSelector(this.submitButton)){
-      throw `Element ${this.submitButton} not found`;
-    }
+    await I.waitForSelector(this.fields.username);
     I.fillField(this.fields.username, user.email);
     I.fillField(this.fields.password, user.password);
+
+    await I.waitForSelector(this.submitButton);
     I.click(this.submitButton);
   },
+
 };

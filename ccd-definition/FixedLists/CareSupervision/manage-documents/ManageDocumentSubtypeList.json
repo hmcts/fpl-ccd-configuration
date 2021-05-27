@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentSubtypeList",
+    "ListElementCode": "RESPONDENT_STATEMENT",
+    "ListElement": "Respondent statement",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentSubtypeList",
+    "ListElementCode": "OTHER",
+    "ListElement": "Any other document",
+    "DisplayOrder": 2
+  }
+]

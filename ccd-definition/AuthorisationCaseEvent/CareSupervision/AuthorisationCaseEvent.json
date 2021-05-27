@@ -199,28 +199,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendRespondents",
-    "AccessControl": [
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-courtadmin"
-        ],
-        "CRUD": "CR"
-      },
-      {
-        "UserRoles": [
-          "caseworker-publiclaw-solicitor",
-          "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
-        ],
-        "CRUD": "R"
-      }
-    ]
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "attachScannedDocs",
     "AccessControl": [
       {
@@ -786,7 +764,8 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-magistrate",
-          "caseworker-publiclaw-solicitor"
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-systemupdate"
         ],
         "CRUD": "R"
       }
@@ -983,7 +962,8 @@
       {
         "UserRoles": [
           "caseworker-publiclaw-gatekeeper",
-          "caseworker-publiclaw-judiciary"
+          "caseworker-publiclaw-judiciary",
+          "caseworker-publiclaw-superuser"
         ],
         "CRUD": "CR"
       },
@@ -1056,6 +1036,17 @@
       {
         "UserRoles": [
           "[LASOLICITOR]",
+          "[SOLICITOR]",
+          "[SOLICITORA]",
+          "[SOLICITORB]",
+          "[SOLICITORC]",
+          "[SOLICITORD]",
+          "[SOLICITORE]",
+          "[SOLICITORF]",
+          "[SOLICITORG]",
+          "[SOLICITORH]",
+          "[SOLICITORI]",
+          "[SOLICITORJ]",
           "[EPSMANAGING]",
           "[LAMANAGING]",
           "[LABARRISTER]"
@@ -1180,6 +1171,71 @@
           "caseworker-publiclaw-gatekeeper"
         ],
         "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendRespondents",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-courtadmin",
+          "[LASOLICITOR]",
+          "[EPSMANAGING]",
+          "[LAMANAGING]"
+        ],
+        "CRUD": "CR"
+      },
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-solicitor",
+          "caseworker-publiclaw-magistrate",
+          "caseworker-publiclaw-gatekeeper",
+          "caseworker-publiclaw-judiciary"
+        ],
+        "CRUD": "R"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "nocRequest",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-caa",
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "applyNocDecision",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-approver"
+        ],
+        "CRUD": "CRUD"
+      }
+    ]
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "updateRepresentation",
+    "AccessControl": [
+      {
+        "UserRoles": [
+          "caseworker-publiclaw-systemupdate"
+        ],
+        "CRUD": "CRUD"
       }
     ]
   }

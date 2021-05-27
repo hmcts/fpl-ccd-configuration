@@ -10,7 +10,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -21,6 +27,15 @@ public enum Order {
     C32_CARE_ORDER(
         "Care order", "Section 31 Children Act 1989", "C32 - Care order",
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C21_BLANK_ORDER(
+        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
+        List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
+    ),
+    C23_EMERGENCY_PROTECTION_ORDER(
+        "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order",
+        List.of(APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
+            EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
     private final String title;

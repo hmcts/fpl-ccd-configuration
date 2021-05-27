@@ -140,18 +140,6 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForRetrievingOrganisation(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.isRetrievingOrganisationEnabled()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("retrieve-organisation"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
     void shouldMakeCorrectCallForIsFurtherEvidenceUploadNotificationEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
@@ -164,24 +152,12 @@ class FeatureToggleServiceTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForRespondentJourneyEnabled(Boolean toggleState) {
+    void shouldMakeCorrectCallForIsFurtherEvidenceDocumentTabEnabled(Boolean toggleState) {
         givenToggle(toggleState);
 
-        assertThat(service.isRespondentJourneyEnabled()).isEqualTo(toggleState);
+        assertThat(service.isFurtherEvidenceDocumentTabEnabled()).isEqualTo(toggleState);
         verify(ldClient).boolVariation(
-            eq("respondent-journey"),
-            argThat(ldUser(ENVIRONMENT).build()),
-            eq(false));
-    }
-
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    void shouldMakeCorrectCallForHasRSOCaseAccessEnabled(Boolean toggleState) {
-        givenToggle(toggleState);
-
-        assertThat(service.hasRSOCaseAccess()).isEqualTo(toggleState);
-        verify(ldClient).boolVariation(
-            eq("rso-case-access"),
+            eq("further-evidence-document-tab"),
             argThat(ldUser(ENVIRONMENT).build()),
             eq(false));
     }

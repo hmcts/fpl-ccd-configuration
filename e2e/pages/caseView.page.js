@@ -12,8 +12,8 @@ module.exports = {
     draftOrders: 'Draft orders',
     hearings: 'Hearings',
     casePeople: 'People in the case',
+    changeOfRepresentatives: 'Change of representatives',
     legalBasis: 'Legal basis',
-    documents: 'Documents',
     documentsSentToParties: 'Documents sent to parties',
     c2: 'C2',
     confidential: 'Confidential information',
@@ -28,15 +28,18 @@ module.exports = {
     courtBundle: 'Court bundle',
     judicialMessages: 'Judicial messages',
     otherApplications: 'Other applications',
+    furtherEvidence: 'Further evidence',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
   caseTitle: '.case-title .markdown',
+  tasksErrorsTitle: 'Why can\'t I submit my application?',
 
   async goToNewActions(actionSelected) {
     const currentUrl = await I.grabCurrentUrl();
     await I.retryUntilExists(async () => {
       if(await I.waitForSelector(this.actionsDropdown, 60) != null) {
+        await I.scrollToElement(this.actionsDropdown);
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
       } else {
@@ -103,8 +106,24 @@ module.exports = {
 
   async checkTaskIsUnavailable(task) {
     this.checkTaskStatus(task, 'Cannot send yet');
-    const taskTarget = await I.grabAttributeFrom(`//p/a[text()="${task}"]`,'href');
-    assert.strictEqual(taskTarget, null);
+    const taskTarget = await I.grabAttribute(`//p/a[text()="${task}"]`, 'href');
+    assert.strictEqual(!!taskTarget, false);
+  },
+
+  async checkTasksHaveErrors(tasksErrors) {
+    I.see(this.tasksErrorsTitle);
+    I.click(`//p[text() = "${this.tasksErrorsTitle}"]`);
+
+    const errors = (await I.grabTextFrom('details div'))
+      .replace('\n\n','\n')
+      .split('\n')
+      .filter(item => item);
+
+    assert.deepStrictEqual(errors, tasksErrors);
+  },
+
+  async checkTasksHaveNoErrors() {
+    I.dontSee(this.tasksErrorsTitle);
   },
 
   async startTask(task) {

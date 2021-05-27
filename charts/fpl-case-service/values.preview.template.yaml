@@ -8,6 +8,7 @@ java:
   environment:
     FPL_ENV: preview
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-ccd-data-store-api
+    CASE_ASSIGNMENT_API_URL: http://aac-${SERVICE_FQDN}
     IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     SPRING_SECURITY_ENABLED: true
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
@@ -50,13 +51,18 @@ idam-pr:
 
 xui-webapp:
   enabled: true
+  redis:
+    enabled: true
   nodejs:
     imagePullPolicy: Always
+    replicas: 2
     releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-    image: hmctspublic.azurecr.io/xui/webapp:latest
+    image: hmctspublic.azurecr.io/xui/webapp:prod-33b53c93
     ingressHost: xui-${SERVICE_FQDN}
-    memoryLimits: 1836Mi
-    cpuLimits: 1900m
+    readinessPeriod: 5
+    livenessPeriod: 3
+    livenessDelay: 10
+    livenessFailureThreshold: 2
     environment:
       HEALTH_CCD_COMPONENT_API: http://gateway-${SERVICE_FQDN}/health
       HEALTH_CCD_DATA_API: http://${SERVICE_NAME}-ccd-data-store-api/health
@@ -67,7 +73,7 @@ xui-webapp:
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
-      FEATURE_REDIS_ENABLED: false
+      FEATURE_REDIS_ENABLED: true
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
       FEATURE_PROXY_ENABLED: false
@@ -75,8 +81,7 @@ xui-webapp:
       FEATURE_HELMET_ENABLED: false
       FEATURE_OIDC_ENABLED: false
       NOW: false
-      REDISCLOUD_URL: http://dummyrediscloudurl
-      UV_THREADPOOL_SIZE: 128
+      REDISCLOUD_URL: redis://ignore:fake-password@${SERVICE_NAME}-redis-master:6379
       PROTOCOL: http
     keyVaults:
       rpx:
@@ -174,47 +179,45 @@ ccd:
     postgresConfig:
       maxConnections: "300"
 
-elastic:
-  enabled: true
-
-elasticsearch:
-  clusterName: "es"
-  imageTag: "6.4.2"
-  replicas: 1
-  minimumMasterNodes: 1
-  antiAffinity: "soft"
-  esJavaOpts: "-Xmx512m -Xms512m"
-  persistence:
-    enabled: false
-  ingress:
-    enabled: true
-    annotations:
-      kubernetes.io/ingress.class: traefik
-    path: /
-    hosts:
-      - es-${SERVICE_FQDN}
-logstash:
-  image:
-    repository: hmctspublic.azurecr.io/ccd/logstash
-    tag: latest
-    pullPolicy: Always
-  logstashJavaOpts: -Xmx1g -Xms512M
-  persistence:
-    enabled: false
-  volumeMounts:
-    - name: pipeline
-      mountPath: /usr/share/logstash/files
   elasticsearch:
-    host: ${SERVICE_NAME}-es-master
-    port: 9200
-  configTpl:
-    xpack.monitoring.enabled: "false"
-    db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
-    db.user: hmcts
-    db.pwd: hmcts
-    es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
-  livenessProbe:
-    initialDelaySeconds: 90
+    clusterName: "es"
+    imageTag: "6.4.2"
+    replicas: 1
+    minimumMasterNodes: 1
+    antiAffinity: "soft"
+    esJavaOpts: "-Xmx512m -Xms512m"
+    persistence:
+      enabled: false
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: traefik
+      path: /
+      hosts:
+        - es-${SERVICE_FQDN}
+
+  logstash:
+    image:
+      repository: hmctspublic.azurecr.io/ccd/logstash
+      tag: latest
+      pullPolicy: Always
+    logstashJavaOpts: -Xmx1g -Xms512M
+    persistence:
+      enabled: false
+    volumeMounts:
+      - name: pipeline
+        mountPath: /usr/share/logstash/files
+    elasticsearch:
+      host: ${SERVICE_NAME}-es-master
+      port: 9200
+    configTpl:
+      xpack.monitoring.enabled: "false"
+      db.url: jdbc:postgresql://${SERVICE_NAME}-postgresql:5432/data-store?ssl=disable&stringtype=unspecified
+      db.user: hmcts
+      db.pwd: hmcts
+      es.data.nodes.url: http://${SERVICE_NAME}-es-master:9200
+    livenessProbe:
+      initialDelaySeconds: 90
 
 aac-manage-case-assignment:
   enabled: true

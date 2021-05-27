@@ -74,9 +74,6 @@ withNightlyPipeline(type, product, component) {
   }
 
   after('mutationTest') {
-    withSonarQubeEnv('SonarQube') {
-      sh './gradlew --info sonarqube'
-    }
     teardownSecretsForIntegrationTests()
   }
 
@@ -93,5 +90,9 @@ withNightlyPipeline(type, product, component) {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
+  }
+
+  after('crossBrowserTest') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }

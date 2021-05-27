@@ -7,9 +7,21 @@ module.exports = class BrowserHelpers extends Helper {
     return this.helpers['Puppeteer'] || this.helpers['WebDriver'];
   }
 
+  isPuppeteer() {
+    return this.helpers['Puppeteer'];
+  }
+
+  async getBrowser() {
+    const helper = this.getHelper();
+    if (this.isPuppeteer()) {
+      return (await helper.options.browser);
+    }
+    return (await helper.config.browser);
+  }
+
   clickBrowserBack() {
     const helper = this.getHelper();
-    if (this.helpers['Puppeteer']) {
+    if (this.isPuppeteer()) {
       return helper.page.goBack();
     } else {
       return helper.browser.back();
@@ -50,7 +62,7 @@ module.exports = class BrowserHelpers extends Helper {
     const helper = this.getHelper();
     const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
     try {
-      if (this.helpers['Puppeteer']) {
+      if (this.isPuppeteer()) {
         const context = await helper._getContext();
         return await context.waitForSelector(locator, {timeout: waitTimeout});
       } else {
@@ -65,7 +77,7 @@ module.exports = class BrowserHelpers extends Helper {
     return this.waitForSelector([].concat(selectors).join(','), maxWaitInSecond);
   }
 
-  async canSee(selector){
+  async canSee(selector) {
     const helper = this.getHelper();
     try {
       const numVisible = await helper.grabNumberOfVisibleElements(selector);
@@ -91,12 +103,26 @@ module.exports = class BrowserHelpers extends Helper {
       return (await element.getProperty('innerText')).jsonValue();
     });
 
+    return texts[0];
+  }
+
+  async grabAttribute(locator, attr) {
+    const elements = await this.locateSelector(locator);
+
+    let getAttribute;
+
+    if(this.isPuppeteer()){
+      getAttribute = async (element, attr) =>  (await element.getProperty(attr)).jsonValue();
+    } else {
+      getAttribute = async (element, attr) => await element.getAttribute(attr);
+    }
+
+    const texts = elements.map(async element => getAttribute(element, attr));
+
     if (texts.length > 1) {
       throw new Error(`More than one element found for locator ${locator}`);
-    } else if (texts.length === 1) {
-      return texts[0];
     } else {
-      return undefined;
+      return texts[0];
     }
   }
 
@@ -110,5 +136,37 @@ module.exports = class BrowserHelpers extends Helper {
     const {page} = await helper;
 
     runAccessibility(url, page);
+  }
+
+  async canClick(selector){
+    const elements = await this.locateSelector(selector);
+
+    if (elements.length > 1) {
+      throw new Error(`More than one element found for locator ${selector}`);
+    }
+    if(elements.length === 0){
+      throw new Error(`No element found for locator ${selector}`);
+    }
+    else if(elements[0].isClickable) {
+      return await elements[0].isClickable();
+    }
+    return true;
+  }
+
+  async scrollToElement(selector) {
+    const helper = this.getHelper();
+    const elements = await this.locateSelector(selector);
+
+    if (elements.length > 1) {
+      throw new Error(`More than one element found for locator ${selector}`);
+    }
+    if(elements.length === 0){
+      throw new Error(`No element found for locator ${selector}`);
+    }
+    if(this.isPuppeteer()){
+      await helper.page.evaluate(selectorArg => document.querySelector(selectorArg).scrollIntoView(), selector);
+    } else {
+      await helper.executeScript('arguments[0].scrollIntoView()', elements[0]);
+    }
   }
 };

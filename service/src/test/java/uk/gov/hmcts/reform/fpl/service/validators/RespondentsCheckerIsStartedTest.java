@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.validators;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,29 +17,29 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
+import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.respondent.RespondentAfterSubmissionValidator;
 
 import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.model.RespondentParty.builder;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class})
+@ContextConfiguration(classes = {RespondentsChecker.class, LocalValidatorFactoryBean.class,
+    RespondentAfterSubmissionValidator.class})
 class RespondentsCheckerIsStartedTest {
 
     @Autowired
     private RespondentsChecker respondentsChecker;
 
     @MockBean
-    private FeatureToggleService featureToggleService;
+    private UserService userService;
 
-    @BeforeEach
-    void featureToggleMock() {
-        given(featureToggleService.isRespondentJourneyEnabled()).willReturn(true);
-    }
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @ParameterizedTest
     @MethodSource("emptyRespondents")
