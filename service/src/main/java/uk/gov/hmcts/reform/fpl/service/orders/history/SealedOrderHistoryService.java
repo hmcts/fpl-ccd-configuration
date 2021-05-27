@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
@@ -39,6 +40,7 @@ public class SealedOrderHistoryService {
     private final ChildrenService childrenService;
     private final OrderCreationService orderCreationService;
     private final Time time;
+    private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
 
     public Map<String, Object> generate(CaseData caseData) {
         List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
@@ -64,7 +66,9 @@ public class SealedOrderHistoryService {
 
         pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
-        return Map.of("orderCollection", pastOrders);
+        Map<String, Object> data = manageOrdersClosedCaseFieldGenerator.generate(caseData);
+        data.put("orderCollection", pastOrders);
+        return data;
     }
 
     public GeneratedOrder lastGeneratedOrder(CaseData caseData) {

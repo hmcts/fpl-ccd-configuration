@@ -25,15 +25,15 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILD
 @RequiredArgsConstructor
 public enum Order {
     C32_CARE_ORDER(
-        "Care order", "Section 31 Children Act 1989", "C32 - Care order",
+        "Care order", "Section 31 Children Act 1989", "C32 - Care order", true,
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C21_BLANK_ORDER(
-        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
+        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order", false,
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
-        "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order",
+        "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order", false,
         List.of(APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
@@ -41,6 +41,7 @@ public enum Order {
     private final String title;
     private final String childrenAct;
     private final String historyTitle;
+    private final boolean finalOrder;
     private final List<OrderQuestionBlock> questions;
 
     public String fileName(RenderFormat format) {

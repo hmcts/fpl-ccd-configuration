@@ -72,6 +72,13 @@ const section4 = {
 const preview = {
   label: '#orderPreviewSectionHeader',
   documentName: 'Preview order.pdf',
+  closeCase: {
+    group: '#manageOrdersCloseCase',
+    options: {
+      yes: '#manageOrdersCloseCase-Yes',
+      no: '#manageOrdersCloseCase-No',
+    },
+  },
 };
 
 // Actions
@@ -163,9 +170,14 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
+const selectCloseCase = async () => {
+  I.checkOption(preview.closeCase.options.yes);
+};
+
 module.exports = {
   operations, orders, section2, section3, section4,
   selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
-  enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  enterFurtherDirections, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase,
+  enterEPOEndDateTime, enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate,
+  uploadPowerOfArrest,
 };

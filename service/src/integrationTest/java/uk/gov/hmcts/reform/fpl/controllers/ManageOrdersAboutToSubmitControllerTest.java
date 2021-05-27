@@ -43,8 +43,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.WORD;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -121,7 +121,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
     void shouldBuildNewOrderObject() {
         CaseData caseData = buildCaseData().toBuilder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
+                .manageOrdersType(C21_BLANK_ORDER)
                 .manageOrdersApprovalDate(dateNow())
                 .manageOrdersFurtherDirections("Some further directions")
                 .build())
@@ -131,8 +131,8 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
         assertThat(responseCaseData.getOrderCollection()).containsOnly(
             element(ELEMENT_ID, GeneratedOrder.builder()
-                .orderType("C32_CARE_ORDER")
-                .type("C32 - Care order")
+                .orderType("C21_BLANK_ORDER")
+                .type("C21 - Blank order")
                 .children(CHILDREN)
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HIS_HONOUR_JUDGE)

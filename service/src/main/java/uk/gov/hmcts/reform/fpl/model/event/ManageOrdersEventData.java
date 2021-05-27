@@ -30,4 +30,6 @@ public class ManageOrdersEventData {
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
+    String manageOrdersShowCloseCase;
+    String manageOrdersCloseCase;
 }

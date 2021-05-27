@@ -31,6 +31,7 @@ Scenario('Create C32 care order', async ({I, caseViewPage, manageOrdersEventPage
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase('No');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {

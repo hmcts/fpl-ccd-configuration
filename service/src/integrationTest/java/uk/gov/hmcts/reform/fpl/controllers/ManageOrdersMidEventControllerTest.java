@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -94,18 +95,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        Map<String, String> expectedQuestions = new HashMap<>(Map.of(
-            "approver", "YES",
-            "previewOrder", "YES",
-            "furtherDirections", "YES",
-            "orderDetails", "NO",
-            "whichChildren", "YES",
-            "approvalDate", "YES",
-            "approvalDateTime", "NO",
-            "epoIncludePhrase", "NO",
-            "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO"
-        ));
+        Map<String, String> expectedQuestions = getExpectedQuestions();
         expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
@@ -163,6 +153,27 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .isEqualTo("Child 1: first1 last1\nChild 2: first2 last2\n");
 
         assertThat(response.getData().get("childrenDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
+    }
+
+    @Test
+    void childrenDetailsShouldPopulateShowCloseQuestion() {
+        CaseData caseData = CaseData.builder()
+            .orderAppliesToAllChildren("Yes")
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C21_BLANK_ORDER)
+                .manageOrdersShowCloseCase("No")
+                .build()
+            ).build();
+
+        Map<String, String> expectedQuestions = getExpectedQuestions();
+        expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
+        expectedQuestions.put("furtherDirections", "NO");
+        expectedQuestions.put("orderDetails", "YES");
+        expectedQuestions.put("showCloseCaseQuestion", "NO");
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
+
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
     @Test
@@ -312,6 +323,21 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .getRootCause()
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.model.order.OrderSection.DOES_NOT_MATCH");
+    }
+
+    private Map<String, String> getExpectedQuestions() {
+        return new HashMap<>(Map.of(
+            "approver", "YES",
+            "previewOrder", "YES",
+            "furtherDirections", "YES",
+            "orderDetails", "NO",
+            "whichChildren", "YES",
+            "approvalDate", "YES",
+            "approvalDateTime", "NO",
+            "epoIncludePhrase", "NO",
+            "epoChildrenDescription", "NO",
+            "epoExpiryDate", "NO"
+        ));
     }
 
     private CaseData buildCaseData() {
