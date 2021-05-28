@@ -228,6 +228,34 @@ Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrde
     children: 'Timothy Jones',
   });
 });
+Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectCafcassRegion('ENGLAND');
+  manageOrdersEventPage.selectEnglandOffice('Hull');
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 4,
+    orderType: 'C47A - Appointment of a Children\'s Guardian',
+    orderTitle: orderTitle,
+    approvalDate: approvalDate,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
   const dateOfApproval = order.approvalDate !== undefined ? order.approvalDate : order.approvalDateTime;

@@ -124,9 +124,8 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-            Map.entry("manageOrdersExclusionRequirementDetails", "NO")
+            Map.entry("supervisionOrderExpiryDate", "NO"),
+            Map.entry("cafcassJurisdictions", "NO")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);

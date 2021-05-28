@@ -62,7 +62,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "NO")
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("cafcassJurisdictions", "NO")
         );
 
         assertThat(response.getData()).containsAllEntriesOf(

@@ -18,6 +18,7 @@ const orders = {
     c32: 'C32_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
+    c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
   },
   title: {
     c21: 'Blank order (C21)',
@@ -25,6 +26,7 @@ const orders = {
     c32: 'Care order (C32)',
     c33: 'Interim care order (C33)',
     c35A: 'Supervision order (C35A)',
+    c47a: 'Appointment of a children\'s guardian (C47A)',
   },
 };
 
@@ -117,6 +119,15 @@ const section4 = {
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDateAndTime: '#manageOrdersSetDateAndTimeEndDate',
   supervisionOrderNumOfMonths: '#manageOrdersSetMonthsEndDate',
+  cafcassRegion: {
+    group: '#manageOrdersCafcassRegion',
+    options: {
+      england: 'ENGLAND',
+      wales: 'WALES',
+    },
+  },
+  englandOffices: '#manageOrdersCafcassOfficesEngland',
+  walesOffices: '#manageOrdersCafcassOfficesWales',
 };
 
 const preview = {
@@ -255,6 +266,14 @@ const selectExclusionRequirementICO = (exclusionRequirement) => {
   I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
 };
 
+const selectCafcassRegion = region => {
+  I.click(`${section4.cafcassRegion.group}-${region}`);
+};
+
+const selectEnglandOffice= office => {
+  I.selectOption(section4.englandOffices, office);
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
@@ -262,4 +281,5 @@ module.exports = {
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
+  selectCafcassRegion, selectEnglandOffice,
 };

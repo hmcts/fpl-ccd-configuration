@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
@@ -67,6 +68,11 @@ public enum Order {
             FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
             REVIEW_DRAFT_ORDER)
+    ),
+    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a Children's Guardian",
+        "Section 41(1) Children Act 1989", "C47A - Appointment of a Children's Guardian",
+        List.of(
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
     private final String title;

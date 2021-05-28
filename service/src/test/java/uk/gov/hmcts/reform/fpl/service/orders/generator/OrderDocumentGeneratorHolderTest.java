@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -39,9 +40,12 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     @Mock
+    private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
+    @Mock
     private C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
     @Mock
     private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
+
     // Additional Document Collectors
     @Mock
     private C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
@@ -54,7 +58,7 @@ class OrderDocumentGeneratorHolderTest {
         generators = List.of(
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
             c32CareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
-            c35aSupervisionOrderDocumentParameterGenerator
+            c35aSupervisionOrderDocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -64,6 +68,7 @@ class OrderDocumentGeneratorHolderTest {
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
             C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,
             C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator
+            C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
 
         typeToAdditionalDocsCollector = Map.of(
