@@ -2,6 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C2DocumentBundle",
+    "ListElementCode": "applicantName",
+    "FieldType": "Text",
+    "ElementLabel": "Applicant",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C2DocumentBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
