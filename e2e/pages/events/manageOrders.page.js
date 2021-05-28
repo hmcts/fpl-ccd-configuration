@@ -13,6 +13,7 @@ const operations = {
 const orders = {
   group: '#manageOrdersType',
   options: {
+    c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
     c32: 'C32_CARE_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
@@ -90,6 +91,15 @@ const section4 = {
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDateAndTime: '#manageOrdersSetDateAndTimeEndDate',
   supervisionOrderNumOfMonths: '#manageOrdersSetMonthsEndDate',
+  cafcassRegion: {
+    group: '#manageOrdersCafcassRegion',
+    options: {
+      england: 'ENGLAND',
+      wales: 'WALES',
+    },
+  },
+  englandOffices: '#manageOrdersCafcassOfficesEngland',
+  walesOffices: '#manageOrdersCafcassOfficesWales',
 };
 
 const preview = {
@@ -227,11 +237,19 @@ const selectCloseCase = async () => {
   I.checkOption(preview.closeCase.options.yes);
 };
 
+const selectCafcassRegion = region => {
+  I.click(`${section4.cafcassRegion.group}-${region}`);
+};
+
+const selectEnglandOffice= office => {
+  I.selectOption(section4.englandOffices, office);
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
-  selectSupervisionOrder,
+  selectSupervisionOrder, selectCafcassRegion, selectEnglandOffice,
 };

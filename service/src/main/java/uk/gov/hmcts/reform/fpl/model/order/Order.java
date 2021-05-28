@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
@@ -28,10 +29,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILD
 @RequiredArgsConstructor
 public enum Order {
     C21_BLANK_ORDER(
-        "Blank order",
-        "Section 31 Children Act 1989",
-        "C21 - Blank order",
-        IsFinalOrder.MAYBE,
+        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
+        IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
@@ -65,8 +64,18 @@ public enum Order {
             FURTHER_DIRECTIONS,
             SUPERVISION_ORDER_END_DATE,
             REVIEW_DRAFT_ORDER,
-            CLOSE_CASE)
-    );
+            CLOSE_CASE,
+            REVIEW_DRAFT_ORDER
+        ),
+        C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+            "Appointment of a Children's Guardian",
+            "Section 41(1) Children Act 1989",
+            "C47A - Appointment of a Children's Guardian",
+            IsFinalOrder.NO,
+            List.of(
+                LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS,
+                FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+        );
 
     private final String title;
     private final String childrenAct;

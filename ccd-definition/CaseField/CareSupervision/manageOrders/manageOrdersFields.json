@@ -238,5 +238,44 @@
     "SecurityClassification": "PUBLIC",
     "Searchable": "N",
     "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassRegion",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CafcassJurisdictionRegion",
+    "Label": "Select jurisdiction",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassOfficesEngland",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassEnglandOffices",
+    "Label": "Select region",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassOfficesWales",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassWalesOffices",
+    "Label": "Select region",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersState",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   }
 ]

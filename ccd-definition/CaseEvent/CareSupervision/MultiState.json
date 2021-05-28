@@ -102,7 +102,7 @@
     "Name": "Manage orders",
     "Description": "Manage orders",
     "DisplayOrder": 10,
-    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
+    "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING;CLOSED",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
