@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const caseData = require('../fixtures/caseData/gatekeepinhWithPastHearingDetails.json');
+const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
 const approvalDate = new Date(2021, 3, 9);
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
@@ -132,6 +133,37 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 3,
+    orderType: 'C21 - Blank order',
+    orderTitle: orderTitle,
+    approvalDate: approvalDate,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
+Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  const newCaseId = await I.submitNewCaseWithData(closedCaseData);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
+
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterTitle(orderTitle);
+  await manageOrdersEventPage.enterDirections('some text');
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
