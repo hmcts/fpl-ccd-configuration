@@ -109,12 +109,11 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        Map<String, String> expectedQuestions = getExpectedQuestions();
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(getExpectedQuestions());
     }
 
     @Test
-    void orderSelectionShouldPrePopulateFirstSectionDetails() throws JsonProcessingException {
+    void orderSelectionShouldPrePopulateFirstSectionDetails() {
         Element<HearingBooking> pastHearing = element(UUID.randomUUID(),
             HearingBooking.builder().type(HearingType.CASE_MANAGEMENT)
                 .startDate(now().minusDays(2))
@@ -190,24 +189,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .isEqualTo("Child 1: first1 last1\nChild 2: first2 last2\n");
 
         assertThat(response.getData().get("childrenDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
-    }
-
-    @Test
-    void childrenDetailsShouldPopulateShowCloseQuestion() {
-        CaseData caseData = CaseData.builder()
-            .orderAppliesToAllChildren("Yes")
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
-                .manageOrdersShowCloseCase("No")
-                .build()
-            ).build();
-
-        Map<String, String> expectedQuestions = getExpectedQuestions();
-        expectedQuestions.put("closeCase", "YES");
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
-
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
     @Test
@@ -422,6 +403,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("furtherDirections", "YES"),
             Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("closeCase", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
