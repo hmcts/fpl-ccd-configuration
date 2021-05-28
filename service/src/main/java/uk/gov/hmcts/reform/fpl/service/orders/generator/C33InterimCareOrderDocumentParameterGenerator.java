@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
-import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithEndOfProceedings.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -70,7 +70,7 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
         String formatString;
         String childCustodyMessage = "The Court orders %s supervises the %s until %s.";
 
-        ManageOrdersEndDateTypeWithEndOfProceedings type = eventData.getManageOrdersEndDateTypeWithEndOfProceedings();
+        ManageOrdersEndDateType type = eventData.getManageOrdersEndDateTypeWithEndOfProceedings();
         switch (type) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
             case CALENDAR_DAY:

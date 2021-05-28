@@ -12,9 +12,9 @@ import java.util.List;
 
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateTypeWithMonth.NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
 class ManageOrderEndDateWithMonthValidatorTest {
@@ -31,7 +31,9 @@ class ManageOrderEndDateWithMonthValidatorTest {
     private final LocalDate approvalDate = todayDate;
     private final LocalDateTime approvalDateTime = time.now();
 
-    private final ManageOrderEndDateWithMonthValidator underTest = new ManageOrderEndDateWithMonthValidator(time);
+    private final ManageOrderEndDateWithMonthValidator underTest = new ManageOrderEndDateWithMonthValidator(
+        new ManageOrderEndDateCommonValidator(time)
+    );
 
     @Test
     void accept() {
@@ -158,7 +160,7 @@ class ManageOrderEndDateWithMonthValidatorTest {
 
     @Test
     void shouldAcceptOrderDateTimeWhenOnLowestBoundary() {
-        LocalDateTime onBoundaryDateTime = approvalDate.plusMonths(1).atTime(0,0,1);
+        LocalDateTime onBoundaryDateTime = approvalDate.plusMonths(1).atTime(0, 0, 1);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -174,7 +176,7 @@ class ManageOrderEndDateWithMonthValidatorTest {
     @Test
     void shouldAcceptOrderDateTimeWhenOnHighestBoundary() {
         LocalDateTime endDate = approvalDate
-            .atTime(23,59,59)
+            .atTime(23, 59, 59)
             .plusMonths(MAXIMUM_MONTHS_ACCEPTED)
             .minusDays(1);
 
@@ -191,7 +193,7 @@ class ManageOrderEndDateWithMonthValidatorTest {
 
     @Test
     void shouldReturnErrorForOrderDateTimeWhenBelowEarliestBoundary() {
-        LocalDateTime endDate = approvalDate.atTime(0,0,1);
+        LocalDateTime endDate = approvalDate.atTime(0, 0, 1);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
@@ -206,7 +208,7 @@ class ManageOrderEndDateWithMonthValidatorTest {
 
     @Test
     void shouldReturnErrorForOrderDateTimeWhenAboveLatestBoundary() {
-        LocalDateTime endDate = approvalDate.atTime(23,59,59).plusMonths(MAXIMUM_MONTHS_ACCEPTED);
+        LocalDateTime endDate = approvalDate.atTime(23, 59, 59).plusMonths(MAXIMUM_MONTHS_ACCEPTED);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
