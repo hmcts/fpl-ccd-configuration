@@ -36,6 +36,7 @@ public class OtherApplicationsBundle implements ApplicationsBundle {
     private final String author;
     private List<Element<SupportingEvidenceBundle>> supportingEvidenceBundle;
     private final List<Element<Supplement>> supplementsBundle;
+    private final String applicantName;
 
     public String toLabel() {
         return format("%s, %s",

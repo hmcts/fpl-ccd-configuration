@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -31,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.USER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType.C2_ORDER;
@@ -66,9 +71,6 @@ class UploadAdditionalApplicationsServiceTest {
     private static final DocumentReference SUPPORTING_DOCUMENT = testDocumentReference("SupportingEvidenceFile.doc");
 
     @Autowired
-    private UploadAdditionalApplicationsService underTest;
-
-    @Autowired
     private Time time;
 
     @MockBean
@@ -79,6 +81,16 @@ class UploadAdditionalApplicationsServiceTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
+
+    @Autowired
+    private UploadAdditionalApplicationsService underTest;
+
+    public static final String APPLICANT_NAME = "Swansea local authority, Applicant";
+    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
+
+    private static final List<DynamicListElement> DYNAMIC_LIST_ELEMENTS = List.of(
+        DynamicListElement.builder().code("applicant").label(APPLICANT_NAME).build(),
+        DynamicListElement.builder().code(APPLICANT_SOMEONE_ELSE).label("Someone else").build());
 
     @BeforeEach()
     void init() {
@@ -94,10 +106,14 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
 
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0)).listItems(DYNAMIC_LIST_ELEMENTS).build();
+
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
             .temporaryPbaPayment(pbaPayment)
+            .applicantsList(applicantsList)
             .c2Type(WITH_NOTICE)
             .build();
 
@@ -105,28 +121,54 @@ class UploadAdditionalApplicationsServiceTest {
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), supplement, supportingEvidenceBundle);
     }
 
     @Test
-    void shouldBuildOtherApplicationsBundle() {
+    void shouldBuildOtherApplicationsBundleWithOtherApplicantName() {
         Supplement supplement = createSupplementsBundle();
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
+
+        // select "Someone else"
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
             .temporaryPbaPayment(pbaPayment)
+            .applicantsList(applicantsList)
+            .otherApplicant("some other name")
             .build();
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo("some other name");
 
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), supplement, supportingDocument);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void shouldThrowIllegalArgumentExceptionWhenApplicantIsNullOrEmpty(String otherApplicantName) {
+        // select applicant "Someone else"
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
+
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(applicantsList)
+            .otherApplicant(otherApplicantName)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
     }
 
     @Test
@@ -138,18 +180,25 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
         PBAPayment pbaPayment = buildPBAPayment();
 
+        DynamicList applicantsList = DynamicList.builder()
+            .value(DYNAMIC_LIST_ELEMENTS.get(0))
+            .listItems(DYNAMIC_LIST_ELEMENTS).build();
+
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
             .c2Type(WITH_NOTICE)
             .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
+            .applicantsList(applicantsList)
             .build();
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
         assertThat(actual.getAuthor()).isEqualTo(HMCTS);
         assertThat(actual.getPbaPayment()).isEqualTo(pbaPayment);
+        assertThat(actual.getC2DocumentBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
+        assertThat(actual.getOtherApplicationsBundle().getApplicantName()).isEqualTo(APPLICANT_NAME);
 
         assertC2DocumentBundle(actual.getC2DocumentBundle(), c2Supplement, c2SupportingDocument);
         assertOtherDocumentBundle(actual.getOtherApplicationsBundle(), otherSupplement, otherSupportingDocument);
