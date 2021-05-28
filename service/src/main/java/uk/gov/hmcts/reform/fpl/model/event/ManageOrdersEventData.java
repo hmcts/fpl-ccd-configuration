@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
 import uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 @Jacksonized
 public class ManageOrdersEventData {
     Order manageOrdersType;
+    DynamicList manageOrdersApprovedAtHearingList;
     LocalDate manageOrdersApprovalDate;
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;

@@ -21,6 +21,17 @@ const orders = {
   },
 };
 
+const hearingDetails = {
+  linkedToHearing: {
+    group: '#manageOrdersApprovedAtHearing',
+    options: {
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
+  hearingList: '#manageOrdersApprovedAtHearingList',
+};
+
 const section2 = {
   judge: '#judgeAndLegalAdvisor_judgeAndLegalAdvisor',
   approvalDate: '#manageOrdersApprovalDate',
@@ -99,6 +110,16 @@ const preview = {
 // Actions
 const selectOperation = async (operationType) => {
   I.click(`${operations.group}-${operationType}`);
+  await I.runAccessibilityTest();
+};
+
+const selectRelatedToHearing = (answer) => {
+  I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
+};
+
+const selectHearing = async (hearing) => {
+  I.waitForElement(hearingDetails.hearingList);
+  I.selectOption(hearingDetails.hearingList, hearing);
   await I.runAccessibilityTest();
 };
 
@@ -214,8 +235,8 @@ const selectEnglandOffice= office => {
 };
 
 module.exports = {
-  operations, orders, section2, section3, section4,
-  selectOperation, selectOrder, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
+  operations, hearingDetails, orders, section2, section3, section4,
+  selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
