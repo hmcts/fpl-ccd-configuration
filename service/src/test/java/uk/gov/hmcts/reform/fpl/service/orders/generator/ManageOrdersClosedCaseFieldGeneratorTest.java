@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
@@ -39,12 +38,11 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
     @Test
     void shouldCloseCase() {
-        when(time.now()).thenReturn(NOW);
-
-        when(childrenService.updateFinalOrderIssued((ManageOrdersEventData) any(), any(), any(), any(), any()))
-            .thenReturn(Collections.emptyList());
-
         CaseData caseData = buildCaseData("Yes", C32_CARE_ORDER);
+
+        when(childrenService.updateFinalOrderIssued(caseData))
+            .thenReturn(Collections.emptyList());
+        when(time.now()).thenReturn(NOW);
 
         Map<String, Object> generatedData = underTest.generate(caseData);
         Map<String, Object> expectedData = Map.of(
@@ -58,10 +56,10 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
     @Test
     void shouldUpdateChildrenAndNotCloseCase() {
-        when(childrenService.updateFinalOrderIssued((ManageOrdersEventData) any(), any(), any(), any(), any()))
-            .thenReturn(Collections.emptyList());
 
         CaseData caseData = buildCaseData("No", C32_CARE_ORDER);
+        when(childrenService.updateFinalOrderIssued(caseData))
+            .thenReturn(Collections.emptyList());
 
         Map<String, Object> generatedData = underTest.generate(caseData);
 

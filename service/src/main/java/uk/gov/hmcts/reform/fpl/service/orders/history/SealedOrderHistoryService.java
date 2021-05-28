@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,6 +41,8 @@ public class SealedOrderHistoryService {
     private final ChildrenService childrenService;
     private final OrderCreationService orderCreationService;
     private final Time time;
+
+    // That should go in a similar strategy if more are coming
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
 
     public Map<String, Object> generate(CaseData caseData) {
@@ -66,7 +69,7 @@ public class SealedOrderHistoryService {
 
         pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
-        Map<String, Object> data = manageOrdersClosedCaseFieldGenerator.generate(caseData);
+        Map<String, Object> data = new HashMap<>(manageOrdersClosedCaseFieldGenerator.generate(caseData));
         data.put("orderCollection", pastOrders);
         return data;
     }

@@ -36,7 +36,9 @@ public enum OrderQuestionBlock {
         List.of("orderPreview")),
     SUPERVISION_ORDER_END_DATE("supervisionOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageSupervisionOrderEndDateType", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
-            "manageOrdersSetMonthsEndDate"));
+            "manageOrdersSetMonthsEndDate")),
+    CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
+        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseInformation"));
 
     private final String showHideField;
     private final String question;

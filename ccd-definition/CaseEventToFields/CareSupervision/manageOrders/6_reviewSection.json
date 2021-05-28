@@ -34,7 +34,7 @@
     "PageID": "review",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.showCloseCaseQuestion=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\"",
     "ShowSummaryChangeOption": "N"
   },
   {
@@ -47,7 +47,7 @@
     "PageID": "review",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "manageOrdersCloseCase=\"Yes\"",
+    "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\" AND manageOrdersCloseCase=\"Yes\"",
     "ShowSummaryChangeOption": "N"
   }
 ]

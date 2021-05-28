@@ -120,6 +120,29 @@ class SealedOrderHistoryServiceTest {
         }
 
         @Test
+        void generateWithOtherClosingExtras() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().build();
+                mockDocumentUpload(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
+                    Map.of("somethingClose", "closeCaseValue")
+                );
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
+                    ),
+                    "somethingClose", "closeCaseValue"
+                ));
+            }
+        }
+
+        @Test
         void generateWhenNoPreviousOrdersWithMultipleChildren() {
             try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
                      Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {

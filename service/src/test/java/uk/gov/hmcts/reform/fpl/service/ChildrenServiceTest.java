@@ -183,9 +183,15 @@ class ChildrenServiceTest {
 
         @Test
         void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-            List<Element<Child>> result = service.updateFinalOrderIssued(
-                manageOrdersEventData, testChildren(), "Yes", null, null
-            );
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(manageOrdersEventData)
+                .children1(testChildren())
+                .orderAppliesToAllChildren("Yes")
+                .childSelector(null)
+                .remainingChildIndex(null)
+                .build();
+
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
 
             assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
                 .containsExactly("Yes", "Yes", "Yes");
@@ -196,16 +202,19 @@ class ChildrenServiceTest {
 
         @Test
         void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
-            List<Element<Child>> children = testChildren();
 
-            Selector childSelector = Selector.builder()
-                .count("1")
-                .selected(List.of(1))
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(manageOrdersEventData)
+                .children1(testChildren())
+                .orderAppliesToAllChildren("No")
+                .childSelector(Selector.builder()
+                    .count("1")
+                    .selected(List.of(1))
+                    .build())
+                .remainingChildIndex(null)
                 .build();
 
-            List<Element<Child>> result = service.updateFinalOrderIssued(
-                manageOrdersEventData, children, "No", childSelector, null
-            );
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
 
             assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
                 .containsExactly("No", "Yes", "No");
@@ -216,6 +225,7 @@ class ChildrenServiceTest {
 
         @Test
         void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChildren() {
+
             List<Element<Child>> children = List.of(childWithoutFinalOrderIssued(),
                 childWithFinalOrderIssued(),
                 childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued());
@@ -225,9 +235,15 @@ class ChildrenServiceTest {
                 .selected(List.of(0, 2))
                 .build();
 
-            List<Element<Child>> result = service.updateFinalOrderIssued(
-                manageOrdersEventData, children, "No", childSelector, null
-            );
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(manageOrdersEventData)
+                .children1(children)
+                .orderAppliesToAllChildren("No")
+                .childSelector(childSelector)
+                .remainingChildIndex(null)
+                .build();
+
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
 
             assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
                 .containsExactly("Yes", "Yes", "Yes", "No", "No");
@@ -242,13 +258,17 @@ class ChildrenServiceTest {
                 childWithoutFinalOrderIssued(),
                 childWithFinalOrderIssued());
 
-            manageOrdersEventData = ManageOrdersEventData.builder()
-                .manageOrdersType(Order.C35A_SUPERVISION_ORDER)
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .manageOrdersType(Order.C35A_SUPERVISION_ORDER)
+                    .build())
+                .children1(children)
+                .orderAppliesToAllChildren("No")
+                .childSelector(null)
+                .remainingChildIndex("1")
                 .build();
 
-            List<Element<Child>> result = service.updateFinalOrderIssued(
-                manageOrdersEventData, children, "No", null, "1"
-            );
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
 
             assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
                 .containsExactly("Yes", "Yes", "Yes");

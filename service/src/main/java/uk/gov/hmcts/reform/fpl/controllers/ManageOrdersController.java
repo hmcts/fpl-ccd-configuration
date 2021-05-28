@@ -72,10 +72,6 @@ public class ManageOrdersController extends CallbackController {
             }
         );
 
-        if ("children-details".equals(section)) {
-            data.put("orderTempQuestions", showHideQuestionsCalculator.showCloseCaseQuestion(caseData));
-        }
-
         return respond(caseDetails, errors);
     }
 

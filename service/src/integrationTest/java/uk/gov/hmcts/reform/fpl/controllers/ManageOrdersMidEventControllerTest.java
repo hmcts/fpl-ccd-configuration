@@ -203,7 +203,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             ).build();
 
         Map<String, String> expectedQuestions = getExpectedQuestions();
-        expectedQuestions.put("showCloseCaseQuestion", "YES");
+        expectedQuestions.put("closeCase", "YES");
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
 
@@ -430,7 +430,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("supervisionOrderExpiryDate", "NO")));
     }
-  
+
     private CaseData buildCaseData() {
         return CaseData.builder()
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)

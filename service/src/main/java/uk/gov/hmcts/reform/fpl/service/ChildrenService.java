@@ -81,7 +81,18 @@ public class ChildrenService {
         return children;
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(ManageOrdersEventData manageOrdersEventData,
+    public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
+        return updateFinalOrderIssued(
+            caseData.getManageOrdersEventData(),
+            caseData.getAllChildren(),
+            caseData.getOrderAppliesToAllChildren(),
+            caseData.getChildSelector(),
+            caseData.getRemainingChildIndex()
+        );
+    }
+
+
+    private List<Element<Child>> updateFinalOrderIssued(ManageOrdersEventData manageOrdersEventData,
                                                        List<Element<Child>> children, String orderAppliesToAllChildren,
                                                        Selector childSelector, String remainingChildIndex) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {

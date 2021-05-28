@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 @Builder
 @Jacksonized
 public class ManageOrdersEventData {
+
+    OrderTempQuestions orderTempQuestions;
     Order manageOrdersType;
     DynamicList manageOrdersApprovedAtHearingList;
     LocalDate manageOrdersApprovalDate;

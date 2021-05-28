@@ -101,7 +101,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "showCloseCaseQuestion",
+    "ListElementCode": "closeCase",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
