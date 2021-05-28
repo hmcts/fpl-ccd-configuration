@@ -67,7 +67,7 @@ class OrderDocumentGeneratorHolderTest {
             C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator,
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
             C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,
-            C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator
+            C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator,
             C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
 
