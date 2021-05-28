@@ -176,6 +176,8 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
