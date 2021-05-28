@@ -61,8 +61,7 @@ class ManageOrderInitialTypePreSelectorTest {
         assertThat(actual).isEqualTo(Map.of(
             "manageOrdersState", CLOSED,
             "manageOrdersType", C21_BLANK_ORDER,
-            "orderTempQuestions", SHOW_HIDE,
-            "sectionAndQuestions", "value"
+            "orderTempQuestions", SHOW_HIDE
         ));
     }
 }
