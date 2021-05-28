@@ -13,12 +13,16 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,9 @@ import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 
@@ -33,11 +40,21 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsService {
 
+    public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
+
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
+        final Optional<String> applicantName = getSelectedApplicantName(
+            caseData.getApplicantsList(), defaultIfNull(caseData.getOtherApplicant(), EMPTY)
+        );
+
+        if (applicantName.isEmpty()) {
+            throw new IllegalArgumentException("Applicant should not be empty");
+        }
+
         final String uploadedBy = documentUploadHelper.getUploadedDocumentUserDetails();
         final LocalDateTime currentDateTime = time.now();
 
@@ -49,20 +66,38 @@ public class UploadAdditionalApplicationsService {
         List<AdditionalApplicationType> additionalApplicationTypeList = caseData.getAdditionalApplicationType();
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.C2_ORDER)) {
             additionalApplicationsBundleBuilder.c2DocumentBundle(
-                buildC2DocumentBundle(caseData, uploadedBy, currentDateTime)
+                buildC2DocumentBundle(caseData, applicantName.get(), uploadedBy, currentDateTime)
             );
         }
 
         if (additionalApplicationTypeList.contains(AdditionalApplicationType.OTHER_ORDER)) {
             additionalApplicationsBundleBuilder.otherApplicationsBundle(
-                buildOtherApplicationsBundle(caseData, uploadedBy, currentDateTime)
+                buildOtherApplicationsBundle(caseData, applicantName.get(), uploadedBy, currentDateTime)
             );
         }
 
         return additionalApplicationsBundleBuilder.build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(CaseData caseData, String uploadedBy, LocalDateTime uploadedTime) {
+    private Optional<String> getSelectedApplicantName(DynamicList applicantsList, String otherApplicant) {
+        if (Objects.nonNull(applicantsList)) {
+            DynamicListElement selectedElement = applicantsList.getValue();
+
+            if (isNotEmpty(selectedElement)) {
+                if (APPLICANT_SOMEONE_ELSE.equals(selectedElement.getCode())) {
+                    return isBlank(otherApplicant) ? Optional.empty() : Optional.of(otherApplicant);
+                } else {
+                    return Optional.of(selectedElement.getLabel());
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private C2DocumentBundle buildC2DocumentBundle(CaseData caseData,
+                                                   String applicantName,
+                                                   String uploadedBy,
+                                                   LocalDateTime uploadedTime) {
         C2DocumentBundle temporaryC2Document = caseData.getTemporaryC2Document();
 
         DocumentReference sealedDocument = documentSealingService.sealDocument(temporaryC2Document.getDocument());
@@ -76,6 +111,7 @@ public class UploadAdditionalApplicationsService {
 
         return temporaryC2Document.toBuilder()
             .id(UUID.randomUUID())
+            .applicantName(applicantName)
             .author(uploadedBy)
             .document(sealedDocument)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
@@ -85,8 +121,10 @@ public class UploadAdditionalApplicationsService {
             .build();
     }
 
-    private OtherApplicationsBundle buildOtherApplicationsBundle(
-        CaseData caseData, String uploadedBy, LocalDateTime uploadedTime) {
+    private OtherApplicationsBundle buildOtherApplicationsBundle(CaseData caseData,
+                                                                 String applicantName,
+                                                                 String uploadedBy,
+                                                                 LocalDateTime uploadedTime) {
 
         OtherApplicationsBundle temporaryOtherApplicationsBundle = caseData.getTemporaryOtherApplicationsBundle();
 
@@ -102,6 +140,7 @@ public class UploadAdditionalApplicationsService {
         return temporaryOtherApplicationsBundle.toBuilder()
             .author(uploadedBy)
             .id(UUID.randomUUID())
+            .applicantName(applicantName)
             .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(uploadedTime, DATE_TIME))
             .applicationType(temporaryOtherApplicationsBundle.getApplicationType())
             .document(sealedDocument)
