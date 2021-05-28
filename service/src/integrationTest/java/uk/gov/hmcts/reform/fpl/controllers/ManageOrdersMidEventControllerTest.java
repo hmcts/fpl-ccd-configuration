@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,9 +60,6 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
-
-    @Autowired
-    private Time time;
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
