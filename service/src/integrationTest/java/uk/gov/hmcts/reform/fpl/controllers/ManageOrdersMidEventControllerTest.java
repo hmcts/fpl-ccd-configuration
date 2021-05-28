@@ -122,7 +122,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("supervisionOrderExpiryDate", "NO"),
-            Map.entry("cafcassJurisdictions", "NO"));
+            Map.entry("cafcassJurisdictions", "NO"),
             Map.entry("hearingDetails", "YES")
         );
 
