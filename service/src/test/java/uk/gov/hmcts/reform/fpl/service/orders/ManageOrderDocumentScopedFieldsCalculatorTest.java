@@ -43,7 +43,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "hearingDetailsSectionSubHeader",
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
-            "orderDetailsSectionSubHeader"
+            "orderDetailsSectionSubHeader",
+            "manageOrdersCafcassRegion",
+            "manageOrdersCafcassOfficesEngland",
+            "manageOrdersCafcassOfficesWales"
         );
     }
 }
