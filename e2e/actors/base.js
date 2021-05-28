@@ -128,6 +128,14 @@ module.exports = {
     }
   },
 
+  async dontSeeEvent(eventName) {
+    await within('ccd-event-trigger', () => this.dontSee(eventName));
+  },
+
+  async seeEvent(eventName) {
+    await within('ccd-event-trigger', () => this.see(eventName));
+  },
+
   async startEventViaHyperlink(linkLabel) {
     await this.retryUntilExists(() => {
       this.click(locate(`//p/a[text()="${linkLabel}"]`));
