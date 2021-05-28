@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,10 +11,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -23,12 +27,14 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +54,8 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -56,6 +64,9 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @WebMvcTest(ManageOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
+
+    @Autowired
+    private Time time;
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
@@ -103,7 +114,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails","NO"),
+            Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -111,29 +122,41 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoChildrenDescription", "NO"),
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("supervisionOrderExpiryDate", "NO")
+            Map.entry("supervisionOrderExpiryDate", "NO"),
+            Map.entry("hearingDetails", "YES")
         );
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
     @Test
-    void orderSelectionShouldPrePopulateFirstSectionDetails() {
+    void orderSelectionShouldPrePopulateFirstSectionDetails() throws JsonProcessingException {
+        Element<HearingBooking> pastHearing = element(UUID.randomUUID(),
+            HearingBooking.builder().type(HearingType.CASE_MANAGEMENT)
+                .startDate(now().minusDays(2))
+                .endDate(now().minusDays(2)).build());
+
+        Element<HearingBooking> futureHearing = element(UUID.randomUUID(),
+            HearingBooking.builder().type(HearingType.CASE_MANAGEMENT)
+                .startDate(now().plusDays(2))
+                .endDate(now().plusDays(2)).build());
+
         CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
-            .allocatedJudge(JUDGE)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C32_CARE_ORDER)
+                .build())
+            .hearingDetails(List.of(pastHearing, futureHearing))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         CaseData responseCaseData = extractCaseData(response);
 
-        assertThat(response.getData().get("issuingDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
-        assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(
-            JudgeAndLegalAdvisor.builder()
-                .allocatedJudgeLabel("Case assigned to: District Judge Judy")
-                .build()
-        );
+        assertThat(response.getData().get("hearingDetailsSectionSubHeader")).isEqualTo("C32 - Care order");
+        assertThat(responseCaseData.getManageOrdersEventData().getManageOrdersApprovedAtHearingList())
+            .isEqualTo(
+                asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
+            );
     }
 
     @Test

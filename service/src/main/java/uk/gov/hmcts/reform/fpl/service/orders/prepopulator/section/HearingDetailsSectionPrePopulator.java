@@ -7,18 +7,19 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 
 @Component
-public class IssuingDetailsSectionPrePopulator implements OrderSectionPrePopulator {
+public class HearingDetailsSectionPrePopulator implements OrderSectionPrePopulator {
+
     @Override
     public OrderSection accept() {
-        return ISSUING_DETAILS;
+        return HEARING_DETAILS;
     }
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
         Order type = caseData.getManageOrdersEventData().getManageOrdersType();
-        return Map.of("issuingDetailsSectionSubHeader", type.getHistoryTitle());
+        return Map.of("hearingDetailsSectionSubHeader", type.getHistoryTitle());
     }
 }

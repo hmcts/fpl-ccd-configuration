@@ -53,6 +53,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("furtherDirections", "NO"),
             Map.entry("orderDetails", "YES"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -65,8 +66,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
         assertThat(response.getData()).containsAllEntriesOf(
             Map.of("orderTempQuestions", expectedTempQuestions,
                 "manageOrdersState", "CLOSED",
-                "manageOrdersType", "C21_BLANK_ORDER",
-                "issuingDetailsSectionSubHeader", "C21 - Blank order"));
+                "manageOrdersType", "C21_BLANK_ORDER"));
     }
 
     @Test
