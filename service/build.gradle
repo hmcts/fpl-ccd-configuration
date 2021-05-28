@@ -364,7 +364,7 @@ dependencies {
   contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.2'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
-  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
+  contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.3'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-netflix-ribbon', version: '2.2.7.RELEASE'
   contractTestImplementation group: 'com.netflix.ribbon', name: 'ribbon-core', version: '2.7.18'
   contractTestCompile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.6'
