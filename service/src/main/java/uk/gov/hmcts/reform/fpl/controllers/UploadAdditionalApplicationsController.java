@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.PbaNumberService;
+import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicantsListGenerator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.ApplicationsFeeCalculator;
 import uk.gov.hmcts.reform.fpl.service.additionalapplications.UploadAdditionalApplicationsService;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
@@ -44,14 +45,27 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @RequestMapping("/callback/upload-additional-applications")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UploadAdditionalApplicationsController extends CallbackController {
+
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String AMOUNT_TO_PAY = "amountToPay";
     private static final String TEMPORARY_C2_DOCUMENT = "temporaryC2Document";
     private static final String TEMPORARY_OTHER_APPLICATIONS_BUNDLE = "temporaryOtherApplicationsBundle";
+
     private final PaymentService paymentService;
     private final PbaNumberService pbaNumberService;
     private final UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
     private final ApplicationsFeeCalculator applicationsFeeCalculator;
+    private final ApplicantsListGenerator applicantsListGenerator;
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = getCaseData(caseDetails);
+
+        caseDetails.getData().put("applicantsList", applicantsListGenerator.buildApplicantsList(caseData));
+
+        return respond(caseDetails);
+    }
 
     @PostMapping("/get-fee/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
@@ -60,7 +74,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
 
         if (!isNull(caseData.getTemporaryC2Document())) {
             caseData.getTemporaryC2Document().setType(caseData.getC2Type());
-            caseDetails.getData().put("temporaryC2Document", caseData.getTemporaryC2Document());
+            caseDetails.getData().put(TEMPORARY_C2_DOCUMENT, caseData.getTemporaryC2Document());
         }
 
         caseDetails.getData().putAll(applicationsFeeCalculator.calculateFee(caseData));
@@ -80,8 +94,7 @@ public class UploadAdditionalApplicationsController extends CallbackController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
@@ -89,8 +102,9 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             caseData.getAdditionalApplicationsBundle(), new ArrayList<>()
         );
 
-        additionalApplications.add(0, element(
-            uploadAdditionalApplicationsService.buildAdditionalApplicationsBundle(caseData)));
+        AdditionalApplicationsBundle additionalApplicationsBundle =
+            uploadAdditionalApplicationsService.buildAdditionalApplicationsBundle(caseData);
+        additionalApplications.add(0, element(additionalApplicationsBundle));
 
         caseDetails.getData().put("additionalApplicationsBundle", additionalApplications);
 
@@ -102,7 +116,8 @@ public class UploadAdditionalApplicationsController extends CallbackController {
             .sortOldC2DocumentCollection(oldC2DocumentCollection));
 
         removeTemporaryFields(caseDetails, TEMPORARY_C2_DOCUMENT, "c2Type", "additionalApplicationType",
-            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE);
+            AMOUNT_TO_PAY, "temporaryPbaPayment", TEMPORARY_OTHER_APPLICATIONS_BUNDLE, "applicantsList",
+            "otherApplicant");
 
         return respond(caseDetails);
     }

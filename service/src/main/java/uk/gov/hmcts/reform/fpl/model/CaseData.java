@@ -40,6 +40,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
@@ -49,6 +50,7 @@ import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
 import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -196,6 +198,7 @@ public class CaseData {
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
+    private final UrgentHearingOrder urgentHearingOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
 
     public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
@@ -301,6 +304,8 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
+    private final DynamicList applicantsList;
+    private final String otherApplicant;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -839,6 +844,10 @@ public class CaseData {
         return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
     }
 
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearingDetails, UUID selected) {
+        return asDynamicList(hearingDetails, selected, HearingBooking::toLabel);
+    }
+
     private final HearingType hearingType;
     private final String hearingTypeDetails;
     private final String hearingVenue;
@@ -918,6 +927,10 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;

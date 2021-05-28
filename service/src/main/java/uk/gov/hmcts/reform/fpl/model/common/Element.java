@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Element<T> {

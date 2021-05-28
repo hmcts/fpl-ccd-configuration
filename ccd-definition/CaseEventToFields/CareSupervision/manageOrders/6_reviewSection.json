@@ -7,7 +7,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "PageShowCondition": "orderTempQuestions.previewOrder=\"YES\"",
     "ShowSummaryChangeOption": "N"
@@ -20,7 +20,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "review",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "N"
   }

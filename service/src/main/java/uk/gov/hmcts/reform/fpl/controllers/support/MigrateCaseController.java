@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.Map;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final CaseSubmissionService caseSubmissionService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -35,6 +37,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-3037".equals(migrationId)) {
             run3037(caseDetails);
+        }
+
+        if ("FPLA-3093".equals(migrationId)) {
+            run3093(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -62,5 +68,24 @@ public class MigrateCaseController extends CallbackController {
 
         data.put("additionalApplicationsBundle", additionalApplicationsBundles);
         caseDetails.setData(data);
+    }
+
+    private void run3093(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
+            .getAdditionalApplicationsBundle();
+
+        if (caseData.getAdditionalApplicationsBundle().size() < 1) {
+            throw new IllegalStateException(String
+                .format("Migration failed on case %s: Case has %s additional applications",
+                    caseData.getFamilyManCaseNumber(), additionalApplicationsBundle.size()));
+        }
+
+        additionalApplicationsBundle.remove(0);
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.put("additionalApplicationsBundle", additionalApplicationsBundle);
     }
 }
