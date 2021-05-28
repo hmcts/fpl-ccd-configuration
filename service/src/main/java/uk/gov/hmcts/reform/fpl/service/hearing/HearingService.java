@@ -9,9 +9,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -45,9 +47,16 @@ public class HearingService {
 
         return Stream.concat(activeHearings.stream(), cancelledHearings.stream())
             .filter(it -> !it.getValue().isVacated())
-            .filter(it -> it.getValue().getEndDate().compareTo(time.now()) <= 0)
+            .filter(endsBeforeTodayAtMidnight())
             .collect(toList());
     }
 
+    private Predicate<Element<HearingBooking>> endsBeforeTodayAtMidnight() {
+        return it -> it.getValue().getEndDate().compareTo(todaysMidnight()) < 0;
+    }
+
+    private LocalDateTime todaysMidnight() {
+        return time.now().toLocalDate().plusDays(1).atStartOfDay();
+    }
 
 }

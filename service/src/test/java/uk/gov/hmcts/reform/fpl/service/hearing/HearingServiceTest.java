@@ -188,10 +188,21 @@ class HearingServiceTest {
             assertThat(actual).isEqualTo(List.of(hearing));
         }
 
+        @Test
+        void doReturnInFutureIfJustBeforeTodayMidnight() {
+            Element<HearingBooking> hearing = hearing(NOW.toLocalDate().plusDays(1).atStartOfDay().minusSeconds(1));
+
+            List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
+                .hearingDetails(List.of(
+                    hearing
+                )).build());
+
+            assertThat(actual).isEqualTo(List.of(hearing));
+        }
 
         @Test
-        void doNotReturnInFuture() {
-            Element<HearingBooking> hearing = hearing(NOW.plusSeconds(1));
+        void doNotReturnInFutureIfAfterTodayMidnight() {
+            Element<HearingBooking> hearing = hearing(NOW.toLocalDate().plusDays(1).atStartOfDay());
 
             List<Element<HearingBooking>> actual = underTest.findOnlyHearingsTodayOrInPastNonVacated(CaseData.builder()
                 .hearingDetails(List.of(
