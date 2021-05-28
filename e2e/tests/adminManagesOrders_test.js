@@ -174,6 +174,8 @@ Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrde
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c33);
   await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);

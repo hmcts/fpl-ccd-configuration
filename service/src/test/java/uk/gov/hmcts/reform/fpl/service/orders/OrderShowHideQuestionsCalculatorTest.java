@@ -27,6 +27,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private static Stream<Arguments> orderWithExpectedMap() {
         Map<String, String> careOrderQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("approver", "YES"),
@@ -44,6 +45,7 @@ class OrderShowHideQuestionsCalculatorTest {
         );
 
         Map<String, String> epoQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "NO"),
             Map.entry("approvalDateTime", "YES"),
             Map.entry("approver", "YES"),
@@ -61,6 +63,7 @@ class OrderShowHideQuestionsCalculatorTest {
         );
 
         Map<String, String> blankOrderQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("approver", "YES"),
@@ -78,6 +81,7 @@ class OrderShowHideQuestionsCalculatorTest {
         );
 
         Map<String, String> supervisionOrderQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("approver", "YES"),
