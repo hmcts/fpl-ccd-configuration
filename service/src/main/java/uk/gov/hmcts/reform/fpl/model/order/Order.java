@@ -55,7 +55,8 @@ public enum Order {
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a Children's Guardian",
         "Section 41(1) Children Act 1989", "C47A - Appointment of a Children's Guardian",
-        List.of(APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+        List.of(
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );
 
     private final String title;
