@@ -15,8 +15,10 @@ public class AssertionHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AssertionHelper.class);
 
-    private static final Duration ASYNC_MAX_DELAY = Duration.ofSeconds(1);
     private static final Duration POLL_INTERVAL = Duration.ofMillis(100);
+
+    private static final Duration ASYNC_MAX_DELAY = Duration.ofSeconds(1);
+    public static final long ASYNC_MAX_TIMEOUT = ASYNC_MAX_DELAY.toMillis();
 
     private AssertionHelper() {
     }
