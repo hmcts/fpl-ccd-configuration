@@ -423,6 +423,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
@@ -451,6 +452,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
