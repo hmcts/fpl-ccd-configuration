@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -182,6 +183,36 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
                 .build()));
+    }
+
+    @Test
+    void shouldBuildNewBlankOrderForClosedCase() {
+        CaseData caseData = buildCaseData().toBuilder()
+            .state(State.CLOSED)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(dateNow())
+                .manageOrdersDirections("Some directions")
+                .build())
+            .build();
+
+        CaseData responseCaseData = extractCaseData(postAboutToSubmitEvent(caseData));
+
+        assertThat(responseCaseData.getOrderCollection()).containsOnly(
+            element(ELEMENT_ID, GeneratedOrder.builder()
+                .orderType("C21_BLANK_ORDER")
+                .type("C21 - Blank order")
+                .children(CHILDREN)
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Dredd")
+                    .build())
+                .dateTimeIssued(now())
+                .approvalDate(dateNow())
+                .childrenDescription("first1 last1, first2 last2")
+                .document(DOCUMENT_PDF_REFERENCE)
+                .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
+                .build())
+        );
     }
 
     @Test
