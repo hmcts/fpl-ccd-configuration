@@ -43,6 +43,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
+    private final String applicantName;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);

@@ -306,6 +306,8 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
+    private final DynamicList applicantsList;
+    private final String otherApplicant;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -842,6 +844,10 @@ public class CaseData {
 
     public DynamicList buildDynamicHearingList(UUID selected) {
         return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
+    }
+
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearingDetails, UUID selected) {
+        return asDynamicList(hearingDetails, selected, HearingBooking::toLabel);
     }
 
     private final HearingType hearingType;

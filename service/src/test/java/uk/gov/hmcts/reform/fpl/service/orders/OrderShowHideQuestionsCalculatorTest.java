@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 
 class OrderShowHideQuestionsCalculatorTest {
 
@@ -27,6 +28,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
     private static Stream<Arguments> orderWithExpectedMap() {
         Map<String, String> commonQuestions = Map.of(
+            "hearingDetails", "YES",
             "approver", "YES",
             "previewOrder", "YES",
             "whichChildren", "YES");
@@ -40,7 +42,8 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoChildrenDescription", "NO",
             "epoExpiryDate", "NO",
             "epoTypeAndPreventRemoval", "NO",
-            "orderDetails", "NO"
+            "orderDetails", "NO",
+            "supervisionOrderExpiryDate", "NO"
         ));
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
@@ -52,7 +55,8 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoChildrenDescription", "YES",
             "epoExpiryDate", "YES",
             "epoTypeAndPreventRemoval", "YES",
-            "orderDetails", "NO"
+            "orderDetails", "NO",
+            "supervisionOrderExpiryDate", "NO"
         ));
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
@@ -64,13 +68,28 @@ class OrderShowHideQuestionsCalculatorTest {
             "epoIncludePhrase", "NO",
             "epoChildrenDescription", "NO",
             "epoExpiryDate", "NO",
-            "epoTypeAndPreventRemoval", "NO"
+            "epoTypeAndPreventRemoval", "NO",
+            "supervisionOrderExpiryDate", "NO"
+        ));
+
+        Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
+        supervisionOrderQuestions.putAll(Map.of(
+            "approvalDate", "YES",
+            "furtherDirections", "YES",
+            "orderDetails", "NO",
+            "approvalDateTime", "NO",
+            "epoIncludePhrase", "NO",
+            "epoChildrenDescription", "NO",
+            "epoExpiryDate", "NO",
+            "epoTypeAndPreventRemoval", "NO",
+            "supervisionOrderExpiryDate", "YES"
         ));
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
-            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions)
+            Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
+            Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions)
         );
     }
 }
