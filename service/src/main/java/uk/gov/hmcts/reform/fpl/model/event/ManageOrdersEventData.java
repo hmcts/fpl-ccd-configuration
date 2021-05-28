@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
+import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -14,11 +15,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 @Jacksonized
 public class ManageOrdersEventData {
     Order manageOrdersType;
     DynamicList manageOrdersApprovedAtHearingList;
+    State manageOrdersState;
     LocalDate manageOrdersApprovalDate;
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;

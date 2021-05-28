@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
@@ -346,6 +347,27 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         assertThat(response.getErrors()).isEmpty();
         assertThat(response.getData().get("orderPreview")).isEqualTo(mappedDocument);
+    }
+
+    @Test
+    void shouldPopulateNextSectionDataWhenCreatingBlankOrderForTheClosedCase() {
+        CaseData caseData = CaseData.builder()
+            .id(CCD_CASE_NUMBER)
+            .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
+            .children1(CHILDREN)
+            .orderAppliesToAllChildren("Yes")
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
+            .allocatedJudge(JUDGE)
+            .state(CLOSED)
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersApprovalDate(dateNow())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "issuing-details");
+        assertThat(response.getErrors()).isEmpty();
+        assertThat(response.getData())
+            .containsKeys("children_label", "childSelector", "childrenDetailsSectionSubHeader");
     }
 
     @Test
