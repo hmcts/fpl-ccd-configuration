@@ -102,7 +102,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("cafcassJurisdictions", "YES");
         appointmentOfChildrensGuardianQuestions.put("whichChildren", "NO");
         appointmentOfChildrensGuardianQuestions.put("supervisionOrderExpiryDate", "NO");
-        blankOrderQuestions.put("closeCase", "NO");
+        appointmentOfChildrensGuardianQuestions.put("closeCase", "NO");
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
