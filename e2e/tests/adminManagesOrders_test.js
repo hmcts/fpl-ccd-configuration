@@ -228,6 +228,7 @@ Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrde
     children: 'Timothy Jones',
   });
 });
+
 Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
@@ -247,7 +248,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 4,
+    orderIndex: 5,
     orderType: 'C47A - Appointment of a Children\'s Guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
