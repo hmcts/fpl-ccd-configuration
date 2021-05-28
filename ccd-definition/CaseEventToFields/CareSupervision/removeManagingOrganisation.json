@@ -1,0 +1,32 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "removeManagingOrganisation",
+    "CaseFieldID": "managingOrganisationRemovalInfo",
+    "DisplayContext": "READONLY",
+    "PageID": "Confirmation",
+    "PageFieldDisplayOrder": 1,
+    "ShowSummaryChangeOption": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "removeManagingOrganisation",
+    "PageID": "Confirmation",
+    "CaseFieldID": "managingOrganisationName",
+    "DisplayContext": "READONLY",
+    "PageFieldDisplayOrder": 2,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "removeManagingOrganisation",
+    "PageID": "Confirmation",
+    "CaseFieldID": "managingOrganisationRemovalConfirmation",
+    "DisplayContext": "READONLY",
+    "PageFieldDisplayOrder": 3,
+    "ShowSummaryChangeOption": "N"
+  }
+]

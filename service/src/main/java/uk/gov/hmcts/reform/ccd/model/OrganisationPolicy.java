@@ -7,7 +7,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrganisationPolicy {
 

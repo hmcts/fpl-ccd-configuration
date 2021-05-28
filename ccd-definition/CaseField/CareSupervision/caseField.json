@@ -1681,5 +1681,32 @@
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "managingOrganisationRemovalInfo",
+    "Label": "Use this page to remove case access from the third party that created this case for you.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "managingOrganisationRemovalConfirmation",
+    "Label": "Press 'Continue' to remove this organisation, or use the 'Cancel' link below to return to the case details page.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "managingOrganisationName",
+    "Label": "Current managing organisation:",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]
