@@ -38,6 +38,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersApprovalDateTime",
             "manageOrdersOperation",
             "manageOrdersType",
+            "manageOrdersState",
             "orderTempQuestions",
             "hearingDetailsSectionSubHeader",
             "issuingDetailsSectionSubHeader",
