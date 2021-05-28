@@ -22,6 +22,8 @@ module.exports = {
       c2TypePrefix: '#c2Type-',
       additionalApplicationTypePrefix: '#additionalApplicationType-',
     },
+    applicantsList: '#applicantsList',
+    otherApplicant: '#otherApplicant',
     otherApplicationPrefix: '#temporaryOtherApplicationsBundle_applicationType',
     uploadOtherApplication: '#temporaryOtherApplicationsBundle_document',
     otherSecureAccommodationTypePrefix: '#temporaryOtherApplicationsBundle_supplementsBundle_0_secureAccommodationType-',
@@ -31,6 +33,15 @@ module.exports = {
 
   selectAdditionalApplicationType(type) {
     I.click(this.fields.applicationType.additionalApplicationTypePrefix + type);
+  },
+
+  selectApplicantList(applicantName) {
+    I.waitForElement(this.fields.applicantsList);
+    I.selectOption(this.fields.applicantsList, applicantName);
+  },
+
+  enterOtherApplicantName(applicantName) {
+    I.fillField(this.fields.otherApplicant,applicantName);
   },
 
   selectC2Type(type) {

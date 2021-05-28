@@ -60,12 +60,14 @@ module.exports = class BrowserHelpers extends Helper {
    */
   async waitForSelector(locator, sec) {
     const helper = this.getHelper();
-    const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
+
     try {
       if (this.isPuppeteer()) {
+        const waitTimeout = sec ? sec * 1000 : helper.options.waitForTimeout;
         const context = await helper._getContext();
         return await context.waitForSelector(locator, {timeout: waitTimeout});
       } else {
+        const waitTimeout = sec ? sec : helper.options.waitForTimeout;
         return await helper.waitForElement(locator, waitTimeout);
       }
     } catch (error) {
