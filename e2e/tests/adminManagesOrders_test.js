@@ -148,6 +148,7 @@ Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrder
   await manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase('No');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {

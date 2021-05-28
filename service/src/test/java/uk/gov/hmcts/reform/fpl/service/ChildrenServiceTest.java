@@ -235,6 +235,27 @@ class ChildrenServiceTest {
             assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
                 .containsExactly("Care order", "Care order", "Care order", null, null);
         }
+
+        @Test
+        void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndOneRemainingChild() {
+            List<Element<Child>> children = List.of(childWithFinalOrderIssued(),
+                childWithoutFinalOrderIssued(),
+                childWithFinalOrderIssued());
+
+            manageOrdersEventData = ManageOrdersEventData.builder()
+                .manageOrdersType(Order.C35A_SUPERVISION_ORDER)
+                .build();
+
+            List<Element<Child>> result = service.updateFinalOrderIssued(
+                manageOrdersEventData, children, "No", null, "1"
+            );
+
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+                .containsExactly("Yes", "Yes", "Yes");
+
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+                .containsExactly("Care order", "Supervision order", "Care order");
+        }
     }
 
     @Test

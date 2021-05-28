@@ -35,20 +35,20 @@ public enum Order {
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C32_CARE_ORDER(
-        "Care order", "Section 31 Children Act 1989", "C32 - Care order", true
+        "Care order", "Section 31 Children Act 1989", "C32 - Care order", true,
         List.of(APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
         "Supervision order",
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Supervision order (C35A)",
+        true,
         List.of(APPROVER,
             APPROVAL_DATE,
             WHICH_CHILDREN,
             FURTHER_DIRECTIONS,
             SUPERVISION_ORDER_END_DATE,
-            REVIEW_DRAFT_ORDER),
-        true
+            REVIEW_DRAFT_ORDER)
     );
 
     private final String title;

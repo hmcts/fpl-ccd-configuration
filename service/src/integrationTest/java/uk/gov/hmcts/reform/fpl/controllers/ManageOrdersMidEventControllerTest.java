@@ -44,7 +44,6 @@ import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
 import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
@@ -100,7 +99,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
         Map<String, String> expectedQuestions = getExpectedQuestions();
-        expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
 
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
@@ -178,16 +176,13 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("Yes")
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C21_BLANK_ORDER)
+                .manageOrdersType(C32_CARE_ORDER)
                 .manageOrdersShowCloseCase("No")
                 .build()
             ).build();
 
         Map<String, String> expectedQuestions = getExpectedQuestions();
-        expectedQuestions.put("epoTypeAndPreventRemoval", "NO");
-        expectedQuestions.put("furtherDirections", "NO");
-        expectedQuestions.put("orderDetails", "YES");
-        expectedQuestions.put("showCloseCaseQuestion", "NO");
+        expectedQuestions.put("showCloseCaseQuestion", "YES");
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
 
@@ -399,20 +394,19 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     private Map<String, String> getExpectedQuestions() {
-        return new Map.of(
-            "approver", "YES",
-            "previewOrder", "YES",
-            "furtherDirections", "YES",
-            "orderDetails", "NO",
-            "whichChildren", "YES",
-            "approvalDate", "YES",
-            "approvalDateTime", "NO",
-            "epoIncludePhrase", "NO",
-            "epoChildrenDescription", "NO",
-            "epoExpiryDate", "NO",
-            "epoTypeAndPreventRemoval", "NO",
-            "supervisionOrderExpiryDate", "NO"
-        );
+        return new java.util.HashMap<>(Map.ofEntries(
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("orderDetails", "NO"),
+            Map.entry("whichChildren", "YES"),
+            Map.entry("approvalDate", "YES"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("supervisionOrderExpiryDate", "NO")));
     }
 
     private CaseData buildCaseData() {
