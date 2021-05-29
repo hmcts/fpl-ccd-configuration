@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +19,4 @@ public class SaveOrSendGatekeepingOrder {
     private final LocalDate dateOfIssue;
     private final OrderStatus orderStatus;
     private final String nextSteps;
-
-    @JsonIgnore
-    public OrderStatus getOrderStatus() {
-        return defaultIfNull(orderStatus, DRAFT);
-    }
 }

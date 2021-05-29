@@ -929,12 +929,16 @@ public class CaseData {
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
 
+    //move to event data
     private final List<Element<CustomDirection>> sdoDirectionCustom;
 
     private final JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
     private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
 
-    @JsonIgnore
+    public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
+        return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
+    }
+
     public SaveOrSendGatekeepingOrder getSaveOrSendGatekeepingOrder() {
         return defaultIfNull(saveOrSendGatekeepingOrder, SaveOrSendGatekeepingOrder.builder().build());
     }

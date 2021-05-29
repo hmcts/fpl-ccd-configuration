@@ -40,7 +40,8 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private String removalReason;
 
     //New gatekeeping order fields
-    private List<Element<CustomDirection>> customDirections;
+    private final DocumentReference unsealedDocumentCopy;
+    private final List<Element<CustomDirection>> customDirections;
 
     @JsonIgnore
     public boolean isSealed() {
