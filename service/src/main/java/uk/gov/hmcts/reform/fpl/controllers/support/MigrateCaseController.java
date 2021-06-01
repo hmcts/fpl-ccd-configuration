@@ -93,7 +93,7 @@ public class MigrateCaseController extends CallbackController {
         }
 
         Element<AdditionalApplicationsBundle> firstBundle = additionalApplicationsBundle.get(0);
-        String ID_FIRST_BUNDLE = "94de5661-bd45-463a-8557-e3f6c4fc63d0";
+        String ID_FIRST_BUNDLE = "5f84fdcc-e3c2-4ffe-9178-0cabfd5dba5b";
         if (firstBundle.getId().equals(UUID.fromString(ID_FIRST_BUNDLE))) {
 
             firstBundle.getValue().setC2DocumentBundle(firstBundle.getValue()
@@ -116,7 +116,7 @@ public class MigrateCaseController extends CallbackController {
         }
 
         Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(1);
-        String ID_SECOND_BUNDLE = "ff827f79-f013-485f-8a31-0c56e2632834";
+        String ID_SECOND_BUNDLE = "4e4def36-2323-4e95-b93a-2f46fc4d6fc0";
 
         if (secondBundle.getId().equals(UUID.fromString(ID_SECOND_BUNDLE))) {
             swapC2WithSupportingDocument(secondBundle.getValue(), additionalApplicationsBundle);
@@ -172,12 +172,15 @@ public class MigrateCaseController extends CallbackController {
                                                                                      List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
         C2DocumentBundle c2DocumentBundle = application.getC2DocumentBundle();
 
-        Optional<DocumentReference> documentReference = c2DocumentBundle.getSupportingEvidenceBundle().stream().filter(
-            supportingEvidenceBundle -> supportingEvidenceBundle.getId().equals("3f3a183e-44ab-4e63-ac27-0ca40f3058ff")
-        ).map(Element::getValue).map(SupportingEvidenceBundle::getDocument).findFirst();
+        Optional<Element<SupportingEvidenceBundle>> bundle = c2DocumentBundle.getSupportingEvidenceBundle().stream().filter(
+            supportingEvidenceBundle -> supportingEvidenceBundle.getId().equals(UUID.fromString("3f3a183e-44ab-4e63-ac27-0ca40f3058ff"))
+        ).findFirst();
 
-        if (documentReference.isPresent()) {
-            application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder().document(documentReference.get()).build());
+
+        if(bundle.isPresent()) {
+
+            application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder().document(bundle.get().getValue().getDocument()).build());
+
         }
 
         c2DocumentBundle.getSupportingEvidenceBundle()
