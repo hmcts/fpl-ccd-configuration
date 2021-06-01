@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -69,6 +70,9 @@ public class EmailTemplateTest {
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
+    @MockBean
+    private RepresentativesInbox inbox;
+
     private ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
     @BeforeEach
@@ -76,6 +80,7 @@ public class EmailTemplateTest {
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn("File --- content --- pdf --- attachment".getBytes());
         doAnswer(resultsCaptor).when(client).sendEmail(any(), any(), any(), any());
+        when(inbox.getEmailsByPreference(any(), any())).thenReturn(Set.of("representative@example.com"));
     }
 
     @BeforeEach
