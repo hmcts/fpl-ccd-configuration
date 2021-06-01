@@ -8,6 +8,9 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public enum OrderQuestionBlock {
+    LINKED_TO_HEARING("hearingDetails", "Linked to hearing", OrderSection.HEARING_DETAILS,
+        List.of("manageOrdersApprovedAtHearing", "manageOrdersApprovedAtHearingList",
+            "manageOrdersApprovalDate", "manageOrdersApprovalDateTime", "judgeAndLegalAdvisor")),
     APPROVER("approver", "Approver", OrderSection.ISSUING_DETAILS,
         List.of("judgeAndLegalAdvisor")),
     APPROVAL_DATE("approvalDate", "Approval Date", OrderSection.ISSUING_DETAILS,
@@ -27,10 +30,15 @@ public enum OrderQuestionBlock {
             "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
+    CAFCASS_JURISDICTIONS("cafcassJurisdictions", "Select jurisdiction", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersCafcassRegion", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassOfficesWales")),
     DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersTitle", "manageOrdersDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
-        List.of("orderPreview"));
+        List.of("orderPreview")),
+    SUPERVISION_ORDER_END_DATE("supervisionOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
+        List.of("manageSupervisionOrderEndDateType", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
+            "manageOrdersSetMonthsEndDate"));
 
     private final String showHideField;
     private final String question;

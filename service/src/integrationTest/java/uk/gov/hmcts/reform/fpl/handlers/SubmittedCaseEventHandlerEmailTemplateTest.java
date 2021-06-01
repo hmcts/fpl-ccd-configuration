@@ -68,7 +68,10 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
             .orders(Orders.builder().orderType(List.of(CARE_ORDER, SUPERVISION_ORDER)).build())
             .hearing(Hearing.builder().timeFrame("Same day").build())
             .outsourcingPolicy(OrganisationPolicy.builder()
-                .organisation(Organisation.builder().organisationName("Third party org").build())
+                .organisation(Organisation.builder()
+                    .organisationID("ORG1")
+                    .organisationName("Third party org")
+                    .build())
                 .build())
             .build();
 

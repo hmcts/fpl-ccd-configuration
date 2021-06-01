@@ -4,7 +4,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
+import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.HearingOrderType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -33,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.LocalDateTime.now;
@@ -1880,6 +1885,28 @@ class CaseDataTest {
         }
     }
 
+    @Test
+    void shouldReturnTrueIfCaseHasProperOutsourcingPolicy() {
+        CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(OrganisationPolicy.builder()
+                .organisation(Organisation.builder().organisationID("1").build())
+                .build())
+            .build();
+
+        assertThat(caseData.isOutsourced()).isTrue();
+    }
+
+    @ParameterizedTest
+    @MethodSource("incompleteOutsourcingPolicy")
+    @NullSource
+    void shouldReturnFalseIfCaseHasIncompleteOutsourcingPolicy(OrganisationPolicy outsourcingPolicy) {
+        CaseData caseData = CaseData.builder()
+            .outsourcingPolicy(outsourcingPolicy)
+            .build();
+
+        assertThat(caseData.isOutsourced()).isFalse();
+    }
+
     private HearingOrder buildHearingOrder(HearingOrderType type) {
         return HearingOrder.builder().type(type).build();
     }
@@ -1893,5 +1920,17 @@ class CaseDataTest {
             .id(randomUUID())
             .uploadedDateTime(formattedDateTime)
             .build());
+    }
+
+    private static Stream<OrganisationPolicy> incompleteOutsourcingPolicy() {
+        return Stream.of(
+            OrganisationPolicy.builder().build(),
+            OrganisationPolicy.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().build())
+                .build(),
+            OrganisationPolicy.builder()
+                .organisation(uk.gov.hmcts.reform.ccd.model.Organisation.builder().organisationID("").build())
+                .build()
+        );
     }
 }

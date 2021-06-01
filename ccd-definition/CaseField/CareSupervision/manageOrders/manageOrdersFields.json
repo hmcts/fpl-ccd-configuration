@@ -29,6 +29,24 @@
     "Searchable": "N"
   },
   {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersApprovedAtHearing",
+    "Label": "Was the order approved at a hearing?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersApprovedAtHearingList",
+    "FieldType": "DynamicList",
+    "Label": "Which hearing?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "ID": "manageOrdersApprovalDate",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -163,6 +181,83 @@
     "FieldType": "Document",
     "SecurityClassification": "PUBLIC",
     "RegularExpression": ".doc,.docx,.pdf",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageSupervisionOrderEndDateType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "SupervisionOrderEndDateType",
+    "Label": "When does the order end?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSetDateEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSetDateAndTimeEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSetMonthsEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Number",
+    "Label": "Order length, in months",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N",
+    "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassRegion",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CafcassJurisdictionRegion",
+    "Label": "Select jurisdiction",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassOfficesEngland",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassEnglandOffices",
+    "Label": "Select region",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassOfficesWales",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassWalesOffices",
+    "Label": "Select region",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersState",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }
 ]

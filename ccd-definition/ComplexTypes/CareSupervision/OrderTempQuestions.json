@@ -2,6 +2,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
+    "ListElementCode": "hearingDetails",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "hearingDetails=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
     "ListElementCode": "approver",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
@@ -96,6 +105,24 @@
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "supervisionOrderExpiryDate",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "cafcassJurisdictions",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "cafcassJurisdictions=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

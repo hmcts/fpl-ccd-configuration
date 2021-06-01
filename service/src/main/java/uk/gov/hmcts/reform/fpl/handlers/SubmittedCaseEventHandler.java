@@ -74,7 +74,7 @@ public class SubmittedCaseEventHandler {
     public void notifyManagedLA(SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (caseData.getOutsourcingPolicy() == null) {
+        if (!caseData.isOutsourced()) {
             return;
         }
 
