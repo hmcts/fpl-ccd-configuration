@@ -10,6 +10,9 @@ xui-webapp:
 elastic:
   enabled: false
 
+fpl-mock:
+  enabled: false
+
 aac-manage-case-assignment:
   enabled: false
 

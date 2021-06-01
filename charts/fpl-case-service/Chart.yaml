@@ -27,3 +27,7 @@ dependencies:
     version: ~0.1.6
     repository: '@hmctspublic'
     condition: aac-manage-case-assignment.enabled
+  - name: fpl-mock
+    version: 1.0.0
+    condition: fpl-mock.enabled
+    repository: "file://subcharts/fpl-mock"

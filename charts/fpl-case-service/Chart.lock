@@ -1,0 +1,6 @@
+dependencies:
+- name: fpl-mock
+  repository: file://subcharts/fpl-mock
+  version: 1.0.0
+digest: sha256:3ade22535e81acfafe30bba16c1aef7b911597bc29813b0591c54a9c3a4779a2
+generated: "2021-06-01T13:59:31.529309+01:00"

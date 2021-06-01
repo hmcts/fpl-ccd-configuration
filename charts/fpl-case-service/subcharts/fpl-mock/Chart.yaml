@@ -1,0 +1,7 @@
+name: fpl-mock
+apiVersion: v1
+version: 1.0.0
+description: FPL Professional Reference Data Mock
+maintainers:
+  - name: HMCTS Family Public Law team
+    email: fpl-developers@HMCTS.NET

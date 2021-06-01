@@ -1,6 +1,9 @@
 tags:
   fpl-ccd-stack: true
 
+fpl-mock:
+  enabled: true
+
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
@@ -83,6 +86,7 @@ xui-webapp:
       SERVICES_CCD_DATA_STORE_API: http://${SERVICE_NAME}-ccd-data-store-api
       SERVICES_CCD_CASE_ASSIGNMENT_API: http://aac-${SERVICE_FQDN}
       SERVICES_CCD_ACTIVITY_API: http://ccd-case-activity-api-${SERVICE_FQDN}
+      SERVICES_WORK_ALLOCATION_TASK_API: http://${SERVICE_NAME}-mock-service
       SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
       JURISDICTIONS: PUBLICLAW
       LAUNCH_DARKLY_CLIENT_ID: 5de6610b23ce5408280f2268
@@ -141,7 +145,7 @@ ccd:
         IDAM_SERVICE_KEY: ${CCD_API_GATEWAY_S2S_SECRET}
         IDAM_OAUTH2_CLIENT_SECRET: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
         PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
-        PROXY_CASE_ACTIVITY: http://ccd-case-activity-api-${SERVICE_FQDN}
+        PROXY_CASE_ACTIVITY: http://${SERVICE_NAME}-mock-service
       ingressHost: gateway-${SERVICE_FQDN}
       ingressIP: ${INGRESS_IP}
       keyVaults: []

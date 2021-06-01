@@ -1,0 +1,7 @@
+tags:
+  fpl-ccd-stack: true
+
+fpl-mock:
+  enabled: true
+  prd:
+    url: http://rd-professional-api-aat.service.core-compute-aat.internal

@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mock-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mock
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mock
+    spec:
+      containers:
+        - name: fpl-mock
+          image: rodolpheche/wiremock
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: fpl-mock-mappings-volume
+              mountPath: /home/wiremock/mappings
+      volumes:
+        - name: fpl-mock-mappings-volume
+          configMap:
+            name: {{ .Release.Name }}-mock-mappings
