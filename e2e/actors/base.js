@@ -179,7 +179,7 @@ module.exports = {
 
   async navigateToCaseDetails(caseId) {
     const currentUrl = await this.grabCurrentUrl();
-    if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
+    if (!currentUrl.endsWith(caseId)) {
       await this.retryUntilExists(async () => {
         await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
       }, signedInSelector);
