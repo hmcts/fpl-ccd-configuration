@@ -52,7 +52,7 @@ public class GatekeepingOrderGenerationService extends
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
-                .directions(buildCustomDirections(caseData.getSdoDirectionCustom()))
+                .directions(buildDirections(caseData))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
@@ -64,6 +64,11 @@ public class GatekeepingOrderGenerationService extends
             orderBuilder.dateOfIssue("<date of issue TBA>");
         }
         return orderBuilder.build();
+    }
+
+    private List<DocmosisDirection> buildDirections(CaseData caseData) {
+        //add future directions here
+        return buildCustomDirections(caseData.getSdoDirectionCustom());
     }
 
     private List<DocmosisDirection> buildCustomDirections(List<Element<CustomDirection>> elements) {

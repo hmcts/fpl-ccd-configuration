@@ -73,7 +73,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         return respond(caseDetails);
     }
 
-    //Need to redesign to accommodate for upload + urgent upload routes
+    //Need to redesign for upload + urgent upload routes
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {

@@ -75,7 +75,8 @@
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "judgeAndLegalAdvisor.judgeTitle=\"*\""
+    "FieldShowCondition": "judgeAndLegalAdvisor.judgeTitle=\"*\" OR judgeAndLegalAdvisor.legalAdvisorName=\"*\"",
+    "Comment": "Show condition is workaround for bug where judgeAndLegalAdvisor is not hidden even when empty (due to judgeSubHeading label)"
   },
   {
     "LiveFrom": "01/01/2017",

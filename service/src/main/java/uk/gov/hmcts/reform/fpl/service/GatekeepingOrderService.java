@@ -42,13 +42,7 @@ public class GatekeepingOrderService {
     public JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge, JudgeAndLegalAdvisor issuingJudge) {
         String assignedJudgeLabel = buildAllocatedJudgeLabel(allocatedJudge);
 
-        if (allocatedJudge.hasEqualJudgeFields(issuingJudge)) {
-            return issuingJudge.reset().toBuilder()
-                .allocatedJudgeLabel(assignedJudgeLabel).build();
-        } else {
-            return issuingJudge.toBuilder()
-                .allocatedJudgeLabel(assignedJudgeLabel).build();
-        }
+        return issuingJudge.toBuilder().allocatedJudgeLabel(assignedJudgeLabel).build();
     }
 
     private boolean hasEnteredIssuingJudge(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
@@ -64,7 +58,7 @@ public class GatekeepingOrderService {
         }
     }
 
-    //this constructs a label which then hides the option to seal if mandatory information is missing
+    //this constructs a label which hides the option to seal if mandatory information is missing
     //previous button can break this functionality as logic uses a hidden field (EUI-3922)
     private String buildNextStepsLabel(CaseData caseData) {
         List<String> requiredMissingInformation = new ArrayList<>();
@@ -99,10 +93,9 @@ public class GatekeepingOrderService {
             getJudgeForTabView(caseData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
 
         return StandardDirectionOrder.builder()
-            //question - do we even need to store directions?
             .customDirections(caseData.getSdoDirectionCustom())
             .orderStatus(defaultIfNull(caseData.getSaveOrSendGatekeepingOrder().getOrderStatus(), DRAFT))
-            .judgeAndLegalAdvisor(!isEmpty(judgeAndLegalAdvisor.getJudgeTitle()) ? judgeAndLegalAdvisor : null)
+            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .build();
     }
 }

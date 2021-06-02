@@ -19,9 +19,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
 class GatekeepingOrderServiceTest {
-    private final String NEXT_STEPS = "## Next steps\n\n" +
-        "Your order will be saved as a draft in 'Draft orders'.\n\n" +
-        "You cannot seal and send the order until adding:\n\n";
+    private final String NEXT_STEPS = "## Next steps\n\n"
+        + "Your order will be saved as a draft in 'Draft orders'.\n\n"
+        + "You cannot seal and send the order until adding:\n\n";
 
     private GatekeepingOrderService underTest;
 
@@ -140,11 +140,27 @@ class GatekeepingOrderServiceTest {
         SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
             .draftDocument(reference)
             .orderStatus(null)
-            .nextSteps(NEXT_STEPS + "* the first hearing details\n\n" +
-                "* the allocated judge\n\n" +
-                "* the judge issuing the order")
+            .nextSteps(NEXT_STEPS + "* the first hearing details\n\n"
+                + "* the allocated judge\n\n"
+                + "* the judge issuing the order")
             .build();
 
         assertThat(underTest.buildSaveOrSendPage(caseData, document)).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldSetAllocatedJudgeLabel() {
+        Judge allocatedJudge = Judge.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Hastings")
+            .build();
+        JudgeAndLegalAdvisor issuingJudge = JudgeAndLegalAdvisor.builder()
+            .build();
+
+        JudgeAndLegalAdvisor expectedJudge = issuingJudge.toBuilder()
+            .allocatedJudgeLabel("Case assigned to: His Honour Judge Hastings")
+            .build();
+
+        assertThat(underTest.setAllocatedJudgeLabel(allocatedJudge, issuingJudge)).isEqualTo(expectedJudge);
     }
 }
