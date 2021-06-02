@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,7 +35,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final CaseSubmissionService caseSubmissionService;
+    private final String ID_FIRST_BUNDLE = "fbf05208-f5dd-4942-b735-9aa226d73a2e";
+    private final String ID_SECOND_BUNDLE = "4e4def36-2323-4e95-b93a-2f46fc4d6fc0";
+    private final String ID_SUPPORTING_EVIDENCE = "3f3a183e-44ab-4e63-ac27-0ca40f3058ff";
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -85,7 +86,6 @@ public class MigrateCaseController extends CallbackController {
             .getAdditionalApplicationsBundle();
 
         Element<AdditionalApplicationsBundle> firstBundle = additionalApplicationsBundle.get(0);
-        String ID_FIRST_BUNDLE = "fbf05208-f5dd-4942-b735-9aa226d73a2e";
         if (firstBundle.getId().equals(UUID.fromString(ID_FIRST_BUNDLE))) {
 
             firstBundle.getValue().setC2DocumentBundle(firstBundle.getValue()
@@ -94,11 +94,11 @@ public class MigrateCaseController extends CallbackController {
                 .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                 .document(DocumentReference.builder()
                     .filename("S45C-921052410100.pdf")
-                    .url("http://dm-store:8080/documents/5ddafb9c-1396-44c1-a4dc-25204b0989f0")
-                    .binaryUrl("http://dm-store:8080/documents/5ddafb9c-1396-44c1-a4dc-25204b0989f0/binary")
-                    .build()).build());
+                    .url("http://dm-store-prod.service.core-compute-prod.internal/documents/5ddafb9c-1396-44c1-a4dc-25204b0989f0")
+                    .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/5ddafb9c-1396-44c1-a4dc-25204b0989f0/binary")
+                    .build())
+                .build());
 
-            //DO I NEED TO ADD LA
             additionalApplicationsBundle.set(0, firstBundle);
 
         } else {
@@ -108,7 +108,6 @@ public class MigrateCaseController extends CallbackController {
         }
 
         Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(1);
-        String ID_SECOND_BUNDLE = "4e4def36-2323-4e95-b93a-2f46fc4d6fc0";
 
         if (secondBundle.getId().equals(UUID.fromString(ID_SECOND_BUNDLE))) {
             swapC2WithSupportingDocument(secondBundle.getValue(), additionalApplicationsBundle);
@@ -123,12 +122,11 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
-        //CHANGE TO PROD LINKS
         SupportingEvidenceBundle firstBundle = SupportingEvidenceBundle.builder()
             .name("Position Statement for C2")
             .document(DocumentReference.builder()
-                .url("http://dm-store:8080/documents/d448738d-51fe-439e-9a0b-5ecc0bb378b6")
-                .binaryUrl("http://dm-store:8080/documents/d448738d-51fe-439e-9a0b-5ecc0bb378b6/binary")
+                .url("http://dm-store-prod.service.core-compute-prod.internal/documents/d448738d-51fe-439e-9a0b-5ecc0bb378b6")
+                .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/d448738d-51fe-439e-9a0b-5ecc0bb378b6/binary")
                 .filename("Position Statement for C2.docx")
                 .build())
             .uploadedBy("HMCTS")
@@ -138,8 +136,8 @@ public class MigrateCaseController extends CallbackController {
         SupportingEvidenceBundle secondBundle = SupportingEvidenceBundle.builder()
             .name("Draft LOI")
             .document(DocumentReference.builder()
-                .url("http://dm-store:8080/documents/d8357dbc-e3bd-464f-8edb-aac0fe1c58c2")
-                .binaryUrl("http://dm-store:8080/documents/d8357dbc-e3bd-464f-8edb-aac0fe1c58c2/binary")
+                .url("http://dm-store-prod.service.core-compute-prod.internal/documents/d8357dbc-e3bd-464f-8edb-aac0fe1c58c2")
+                .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/d8357dbc-e3bd-464f-8edb-aac0fe1c58c2/binary")
                 .filename("AMO0030002 Draft LOI.docx")
                 .build())
             .uploadedBy("HMCTS")
@@ -149,8 +147,8 @@ public class MigrateCaseController extends CallbackController {
         SupportingEvidenceBundle thirdBundle = SupportingEvidenceBundle.builder()
             .name("CV")
             .document(DocumentReference.builder()
-                .url("http://dm-store:8080/documents/6b6b5071-e097-4074-b317-b00dc3cfa89c")
-                .binaryUrl("http://dm-store:8080/documents/6b6b5071-e097-4074-b317-b00dc3cfa89c/binary")
+                .url("http://dm-store-prod.service.core-compute-prod.internal/documents/6b6b5071-e097-4074-b317-b00dc3cfa89c")
+                .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/6b6b5071-e097-4074-b317-b00dc3cfa89c/binary")
                 .filename("AMO0030002 Medico-legal_CV-May2021.doc")
                 .build())
             .uploadedBy("HMCTS")
@@ -161,29 +159,25 @@ public class MigrateCaseController extends CallbackController {
 
     }
 
-    private List<Element<AdditionalApplicationsBundle>> swapC2WithSupportingDocument(AdditionalApplicationsBundle application,
-                                                                                     List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
+    private void swapC2WithSupportingDocument(AdditionalApplicationsBundle application,
+                                              List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
         C2DocumentBundle c2DocumentBundle = application.getC2DocumentBundle();
-
-        Optional<Element<SupportingEvidenceBundle>> bundle = c2DocumentBundle.getSupportingEvidenceBundle().stream().filter(
-            supportingEvidenceBundle -> supportingEvidenceBundle.getId().equals(UUID.fromString("3f3a183e-44ab-4e63-ac27-0ca40f3058ff"))
+        Optional<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = c2DocumentBundle.getSupportingEvidenceBundle().stream().filter(
+            bundle -> bundle.getId().equals(UUID.fromString(ID_SUPPORTING_EVIDENCE))
         ).findFirst();
 
-
-        if(bundle.isPresent()) {
-
-            application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder().document(bundle.get().getValue().getDocument()).build());
-
+        if(supportingEvidenceBundle.isPresent()) {
+            application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder()
+                .document(supportingEvidenceBundle.get().getValue().getDocument())
+                .build());
         }
 
         c2DocumentBundle.getSupportingEvidenceBundle()
-            .removeIf(supportingEvidenceBundle -> supportingEvidenceBundle.getId()
+            .removeIf(bundle -> bundle.getId()
                 .toString()
-                .equals("3f3a183e-44ab-4e63-ac27-0ca40f3058ff")
+                .equals(ID_SUPPORTING_EVIDENCE)
             );
 
         additionalApplicationsBundle.set(1, element(application));
-
-        return additionalApplicationsBundle;
     }
 }
