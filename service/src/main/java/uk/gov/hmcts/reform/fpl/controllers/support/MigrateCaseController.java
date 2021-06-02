@@ -48,8 +48,8 @@ public class MigrateCaseController extends CallbackController {
         }
 
         //CHANGE JIRA NUM
-        if ("FPLA-3093".equals(migrationId)) {
-            run3093(caseDetails);
+        if ("FPLA-3080".equals(migrationId)) {
+            run3080(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -80,7 +80,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     //CHANGE JIRA NUM
-    private void run3093(CaseDetails caseDetails) {
+    private void run3080(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
