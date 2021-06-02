@@ -78,7 +78,6 @@ public class MigrateCaseController extends CallbackController {
         caseDetails.setData(data);
     }
 
-    //CHANGE JIRA NUM
     private void run3080(CaseDetails caseDetails) {
         CaseData caseData = getCaseData(caseDetails);
 
@@ -86,8 +85,7 @@ public class MigrateCaseController extends CallbackController {
             .getAdditionalApplicationsBundle();
 
         Element<AdditionalApplicationsBundle> firstBundle = additionalApplicationsBundle.get(0);
-        //change this
-        String ID_FIRST_BUNDLE = "4fff0430-0764-47e4-9e07-d69d5b65699d";
+        String ID_FIRST_BUNDLE = "fbf05208-f5dd-4942-b735-9aa226d73a2e";
         if (firstBundle.getId().equals(UUID.fromString(ID_FIRST_BUNDLE))) {
 
             firstBundle.getValue().setC2DocumentBundle(firstBundle.getValue()
