@@ -35,9 +35,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final String ID_FIRST_BUNDLE = "fbf05208-f5dd-4942-b735-9aa226d73a2e";
-    private final String ID_SECOND_BUNDLE = "4e4def36-2323-4e95-b93a-2f46fc4d6fc0";
-    private final String ID_SUPPORTING_EVIDENCE = "3f3a183e-44ab-4e63-ac27-0ca40f3058ff";
+    private static final String ID_FIRST_BUNDLE = "fbf05208-f5dd-4942-b735-9aa226d73a2e";
+    private static final String ID_SECOND_BUNDLE = "4e4def36-2323-4e95-b93a-2f46fc4d6fc0";
+    private static final String ID_SUPPORTING_EVIDENCE = "3f3a183e-44ab-4e63-ac27-0ca40f3058ff";
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -159,13 +159,15 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private void swapC2WithSupportingDocument(AdditionalApplicationsBundle application,
-                                              List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
+              List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
         C2DocumentBundle c2DocumentBundle = application.getC2DocumentBundle();
-        Optional<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = c2DocumentBundle.getSupportingEvidenceBundle().stream().filter(
-            bundle -> bundle.getId().equals(UUID.fromString(ID_SUPPORTING_EVIDENCE))
-        ).findFirst();
+        Optional<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = c2DocumentBundle
+            .getSupportingEvidenceBundle()
+            .stream()
+            .filter(bundle -> bundle.getId().equals(UUID.fromString(ID_SUPPORTING_EVIDENCE)))
+            .findFirst();
 
-        if(supportingEvidenceBundle.isPresent()) {
+        if (supportingEvidenceBundle.isPresent()) {
             application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder()
                 .document(supportingEvidenceBundle.get().getValue().getDocument())
                 .build());
