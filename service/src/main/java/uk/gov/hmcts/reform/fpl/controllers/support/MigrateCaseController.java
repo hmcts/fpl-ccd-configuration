@@ -47,7 +47,6 @@ public class MigrateCaseController extends CallbackController {
             run3037(caseDetails);
         }
 
-        //CHANGE JIRA NUM
         if ("FPLA-3080".equals(migrationId)) {
             run3080(caseDetails);
         }
@@ -86,14 +85,9 @@ public class MigrateCaseController extends CallbackController {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
             .getAdditionalApplicationsBundle();
 
-        if (caseData.getAdditionalApplicationsBundle().size() < 1) {
-            throw new IllegalStateException(String
-                .format("Migration failed on case %s: Case has %s additional applications",
-                    caseData.getFamilyManCaseNumber(), additionalApplicationsBundle.size()));
-        }
-
         Element<AdditionalApplicationsBundle> firstBundle = additionalApplicationsBundle.get(0);
-        String ID_FIRST_BUNDLE = "5f84fdcc-e3c2-4ffe-9178-0cabfd5dba5b";
+        //change this
+        String ID_FIRST_BUNDLE = "4fff0430-0764-47e4-9e07-d69d5b65699d";
         if (firstBundle.getId().equals(UUID.fromString(ID_FIRST_BUNDLE))) {
 
             firstBundle.getValue().setC2DocumentBundle(firstBundle.getValue()
@@ -131,6 +125,7 @@ public class MigrateCaseController extends CallbackController {
     }
 
     private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
+        //CHANGE TO PROD LINKS
         SupportingEvidenceBundle firstBundle = SupportingEvidenceBundle.builder()
             .name("Position Statement for C2")
             .document(DocumentReference.builder()
