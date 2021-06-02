@@ -229,6 +229,33 @@ Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrde
   });
 });
 
+Scenario('Interim supervision order (C35B)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35B);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterFurtherDirections('Further details.');
+  await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I,caseViewPage,{
+    orderIndex: 3,
+    orderType: manageOrdersEventPage.orders.title.c35B,
+    approvalDate: today,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
 Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.orders.generator;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
@@ -17,7 +18,6 @@ import java.util.List;
 @Component
 public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProceedingsDocumentParameterGenerator {
 
-    private C35bInterimSupervisionOrderDocmosisParameters c35bInterimSupervisionOrderDocmosisParameters;
     private static Order ORDER = Order.C35B_INTERIM_SUPERVISION_ORDER;
 
     public C35bISODocumentParameterGenerator(
@@ -40,16 +40,11 @@ public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProce
                                                     String localAuthorityCode,
                                                     String localAuthorityName,
                                                     List<Element<Child>> selectedChildren) {
-        return c35bInterimSupervisionOrderDocmosisParameters.builder()
+        return C35bInterimSupervisionOrderDocmosisParameters.builder()
             .orderTitle(ORDER.getTitle())
-            .orderType(TYPE)
+            .orderType(GeneratedOrderType.SUPERVISION_ORDER)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName, eventData))
             .build();
-    }
-
-    @Override
-    protected String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
-        return super.orderDetails(numOfChildren, localAuthorityName, eventData);
     }
 }

@@ -1,16 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator.generics;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisParameterGenerator;
@@ -25,21 +20,19 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINA
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 
-@Component
-@RequiredArgsConstructor
 public abstract class ManageOrderWithEndOfProceedingsDocumentParameterGenerator implements DocmosisParameterGenerator {
-    protected static GeneratedOrderType TYPE;
-    protected static Order ORDER;
-    protected static final String CHILD = "child";
-    protected static final String CHILDREN = "children";
-    protected static DocmosisTemplates DOCMOSIS_TEMPALTE;
-    protected static DocmosisParameters DOCMOSIS_PARAMETERS;
 
     private final ChildrenService childrenService;
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
 
-    public Order accept() {
-        return ORDER;
+    private static final String CHILD = "child";
+    private static final String CHILDREN = "children";
+
+    protected ManageOrderWithEndOfProceedingsDocumentParameterGenerator(
+        ChildrenService childrenService, LocalAuthorityNameLookupConfiguration laNameLookup) {
+
+        this.childrenService = childrenService;
+        this.laNameLookup = laNameLookup;
     }
 
     public DocmosisParameters generate(CaseData caseData) {
@@ -54,16 +47,8 @@ public abstract class ManageOrderWithEndOfProceedingsDocumentParameterGenerator 
         return docmosisParameters(eventData,localAuthorityCode, localAuthorityName, selectedChildren);
     }
 
-    protected DocmosisParameters docmosisParameters(ManageOrdersEventData eventData,
-                                                    String localAuthorityCode,
-                                                    String localAuthorityName,
-                                                    List<Element<Child>> selectedChildren) {
-        return DOCMOSIS_PARAMETERS;
-    }
-
-    public DocmosisTemplates template() {
-        return DOCMOSIS_TEMPALTE;
-    }
+    protected abstract DocmosisParameters docmosisParameters(ManageOrdersEventData eventData, String localAuthorityCode,
+                                                    String localAuthorityName, List<Element<Child>> selectedChildren);
 
     protected String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
         LocalDateTime orderExpiration;
@@ -108,8 +93,7 @@ public abstract class ManageOrderWithEndOfProceedingsDocumentParameterGenerator 
         }
     }
 
-    private String getEndOfProceedingsMessage(int numOfChildren,
-                                              String localAuthorityName,
+    private String getEndOfProceedingsMessage(int numOfChildren, String localAuthorityName,
                                               String courtResponsibilityAssignmentMessage) {
         return String.format(
             courtResponsibilityAssignmentMessage,
