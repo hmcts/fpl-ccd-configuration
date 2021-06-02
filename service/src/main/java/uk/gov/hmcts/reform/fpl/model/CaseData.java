@@ -7,7 +7,9 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -304,6 +306,8 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
+    private final DynamicList applicantsList;
+    private final String otherApplicant;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -842,6 +846,10 @@ public class CaseData {
         return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
     }
 
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearingDetails, UUID selected) {
+        return asDynamicList(hearingDetails, selected, HearingBooking::toLabel);
+    }
+
     private final HearingType hearingType;
     private final String hearingTypeDetails;
     private final String hearingVenue;
@@ -928,6 +936,15 @@ public class CaseData {
 
     private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
     private final ChangeOrganisationRequest changeOrganisationRequestField;
+
+    @JsonIgnore
+    public boolean isOutsourced() {
+        return Optional.ofNullable(outsourcingPolicy)
+            .map(OrganisationPolicy::getOrganisation)
+            .map(Organisation::getOrganisationID)
+            .filter(StringUtils::isNotEmpty)
+            .isPresent();
+    }
 
     //move to event data
     private final List<Element<CustomDirection>> sdoDirectionCustom;
