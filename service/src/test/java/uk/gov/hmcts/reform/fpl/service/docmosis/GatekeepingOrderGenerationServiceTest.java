@@ -8,9 +8,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -31,31 +30,24 @@ import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 import static java.time.LocalTime.NOON;
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.time.format.FormatStyle.LONG;
-import static java.util.Locale.UK;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_AT;
-import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
@@ -84,13 +76,53 @@ class GatekeepingOrderGenerationServiceTest {
     }
 
     @Test
-    void shouldGeneratedSealedOrder() {
-        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(fullCaseData());
-        DocmosisStandardDirectionOrder expectedData = fullDocmosisOrder();
+    void shouldGenerateSealedOrder() {
+        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForSealed());
+        DocmosisStandardDirectionOrder expectedData = fullSealedOrder();
+
         assertThat(templateData).usingRecursiveComparison().isEqualTo(expectedData);
     }
 
-    private DocmosisStandardDirectionOrder fullDocmosisOrder() {
+    @Test
+    void shouldGenerateDraftOrder() {
+        DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForDraft());
+        DocmosisStandardDirectionOrder expectedData = fullDraftOrder();
+
+        assertThat(templateData).usingRecursiveComparison().isEqualTo(expectedData);
+    }
+
+    private DocmosisStandardDirectionOrder fullSealedOrder() {
+        return baseDocmosisOrder().toBuilder()
+            .courtseal("[userImage:familycourtseal.png]")
+            .dateOfIssue("29 November 2019")
+            .build();
+    }
+
+    private DocmosisStandardDirectionOrder fullDraftOrder() {
+        return baseDocmosisOrder().toBuilder()
+            .draftbackground("[userImage:draft-watermark.png]")
+            .dateOfIssue("<date of issue TBA>")
+            .build();
+    }
+
+    private CaseData caseDataForSealed() {
+        return baseCaseData().toBuilder()
+            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                .dateOfIssue(LocalDate.of(2019, 11, 29))
+                .orderStatus(SEALED)
+                .build())
+            .build();
+    }
+
+    private CaseData caseDataForDraft() {
+        return baseCaseData().toBuilder()
+            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                .orderStatus(DRAFT)
+                .build())
+            .build();
+    }
+
+    private DocmosisStandardDirectionOrder baseDocmosisOrder() {
         LocalDate today = time.now().toLocalDate();
 
         return DocmosisStandardDirectionOrder.builder()
@@ -101,10 +133,9 @@ class GatekeepingOrderGenerationServiceTest {
                 .build())
             .courtName(DEFAULT_LA_COURT)
             .familyManCaseNumber("123")
-            .dateOfIssue("29 November 2019")
             .complianceDeadline(formatLocalDateToString(today.plusWeeks(26), LONG))
             .children(getExpectedChildren())
-            .directions(List.of())
+            .directions(getExpectedDirections())
             .hearingBooking(DocmosisHearingBooking.builder()
                 .hearingDate(formatLocalDateToString(today, LONG))
                 .hearingVenue("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW")
@@ -117,11 +148,10 @@ class GatekeepingOrderGenerationServiceTest {
             .respondentsProvided(true)
             .applicantName("Bran Stark")
             .crest("[userImage:crest.png]")
-            .courtseal("[userImage:familycourtseal.png]")
             .build();
     }
 
-    private CaseData fullCaseData() {
+    private CaseData baseCaseData() {
         LocalDate today = time.now().toLocalDate();
 
         return CaseData.builder()
@@ -133,52 +163,30 @@ class GatekeepingOrderGenerationServiceTest {
             .dateSubmitted(LocalDate.now())
             .respondents1(createRespondents())
             .applicants(createPopulatedApplicants())
+            .sdoDirectionCustom(wrapElements(CustomDirection.builder()
+                .title("Test custom direction")
+                .description("Test description")
+                .assignee(LOCAL_AUTHORITY
+                ).build()))
             .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Smith")
                 .legalAdvisorName("Bob Ross")
                 .build())
-            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
-                .dateOfIssue(LocalDate.of(2019, 11, 29))
-                .orderStatus(SEALED)
-                .build())
             .build();
     }
 
     private List<DocmosisDirection> getExpectedDirections() {
-        LocalDate today = time.now().toLocalDate();
-
-        return List.of(
-            DocmosisDirection.builder()
-                .assignee(ALL_PARTIES)
-                .title("2. Test SDO type 1 on " + today.atStartOfDay().format(ofPattern(DATE_TIME_AT, UK)))
-                .body("Test body 1")
-                .build(),
-            DocmosisDirection.builder()
-                .assignee(ALL_PARTIES)
-                .title("3. Test SDO type 2 by " + today.atStartOfDay().format(ofPattern(TIME_DATE, UK)))
-                .body("Test body 2")
-                .build());
+        //add future directions here
+        return getExpectedCustomDirections();
     }
 
-    private List<Element<Direction>> getDirections() {
-        return Stream.of(DirectionAssignee.values())
-            .map(assignee -> element(Direction.builder()
-                .directionType("Direction")
-                .assignee(assignee)
-                .build()))
-            .collect(toList());
-    }
-
-    private List<DocmosisDirection> expectedDirections() {
-        AtomicInteger at = new AtomicInteger(2);
-
-        return getDirections().stream()
-            .map(direction -> DocmosisDirection.builder()
-                .title(at.getAndIncrement() + ". " + direction.getValue().getDirectionType())
-                .assignee(direction.getValue().getAssignee())
-                .build())
-            .collect(toList());
+    private List<DocmosisDirection> getExpectedCustomDirections() {
+        return List.of(DocmosisDirection.builder()
+            .assignee(LOCAL_AUTHORITY)
+            .title("Test custom direction")
+            .body("Test description")
+            .build());
     }
 
     private List<DocmosisChild> getExpectedChildren() {

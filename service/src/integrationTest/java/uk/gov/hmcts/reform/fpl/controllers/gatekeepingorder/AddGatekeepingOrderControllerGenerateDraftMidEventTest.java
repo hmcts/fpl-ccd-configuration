@@ -57,10 +57,11 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
     @BeforeEach
     void setup() {
         final byte[] pdf = testDocumentBinaries();
+        final String sealedOrderFileName = "standard-directions-order.pdf";
         final String draftOrderFileName = "draft-standard-directions-order.pdf";
 
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(new DocmosisDocument(draftOrderFileName, pdf));
+            .willReturn(new DocmosisDocument(sealedOrderFileName, pdf));
 
         given(uploadDocumentService.uploadPDF(pdf, draftOrderFileName)).willReturn(DOCUMENT);
     }

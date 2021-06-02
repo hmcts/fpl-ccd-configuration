@@ -53,7 +53,7 @@ public class GatekeepingOrderService {
         if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
             return true;
         } else {
-            //after judge title selected, other fields are mandatory, so checking title verifies judge entry
+            //after judge title selected the other fields are mandatory, so checking title verifies judge entry (?)
             return isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle());
         }
     }

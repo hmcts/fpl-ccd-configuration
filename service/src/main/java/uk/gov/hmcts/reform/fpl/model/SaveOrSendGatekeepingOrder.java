@@ -8,9 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.time.LocalDate;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
-
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
