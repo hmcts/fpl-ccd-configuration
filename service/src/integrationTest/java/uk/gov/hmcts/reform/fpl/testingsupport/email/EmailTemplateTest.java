@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.handlers.HmctsAdminNotificationHandler;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
@@ -39,7 +38,6 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 @ActiveProfiles({"integration-test", "email-template-test"})
 @OverrideAutoConfiguration(enabled = true)
 @Import(EmailTemplateTest.TestConfiguration.class)
-//@Slf4j
 public class EmailTemplateTest {
 
     protected static final String CAFCASS_NAME = "cafcass";
@@ -68,23 +66,20 @@ public class EmailTemplateTest {
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @MockBean
-    private CoreCaseDataService coreCaseDataService;
-
-    @MockBean
     private RepresentativesInbox inbox;
 
-    private ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
+    private final ResultsCaptor<SendEmailResponse> resultsCaptor = new ResultsCaptor<>();
 
     @BeforeEach
-    void setUp() throws NotificationClientException {
+    void notificationMocks() throws NotificationClientException {
         when(documentDownloadService.downloadDocument(anyString()))
             .thenReturn("File --- content --- pdf --- attachment".getBytes());
         doAnswer(resultsCaptor).when(client).sendEmail(any(), any(), any(), any());
-        when(inbox.getEmailsByPreference(any(), any())).thenReturn(Set.of("representative@example.com"));
     }
 
     @BeforeEach
     void lookupServiceSetUp() {
+        when(inbox.getEmailsByPreference(any(), any())).thenReturn(Set.of("representative@example.com"));
         when(inboxLookupService.getRecipients(any())).thenReturn(Set.of("test@example.com"));
         when(hmctsCourtLookupConfiguration.getCourt(any()))
             .thenReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, "court@test.com", COURT_CODE));

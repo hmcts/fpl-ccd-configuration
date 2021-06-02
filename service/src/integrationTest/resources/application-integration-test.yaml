@@ -128,3 +128,11 @@ survey:
 resources:
   images:
     baseUrl: 'https://fake.images.url'
+
+logging:
+  level:
+    uk:
+      gov:
+        hmcts:
+          reform:
+            fpl: debug

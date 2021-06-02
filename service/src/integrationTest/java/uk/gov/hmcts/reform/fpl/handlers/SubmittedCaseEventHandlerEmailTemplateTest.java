@@ -1,93 +1,109 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.OutsourcedCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.respondentsolicitor.RegisteredRespondentSolicitorContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
+import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_NAME;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@SpringBootTest(classes = {
-    SubmittedCaseEventHandler.class,
-    NotificationService.class,
-    OutsourcedCaseContentProvider.class,
-    RegisteredRespondentSolicitorContentProvider.class,
-    CaseUrlService.class,
-    ObjectMapper.class,
+@ContextConfiguration(classes = {
+    SubmittedCaseEventHandler.class, OutsourcedCaseContentProvider.class,
+    RegisteredRespondentSolicitorContentProvider.class, CaseUrlService.class, CafcassEmailContentProvider.class,
+    HmctsEmailContentProvider.class, EmailNotificationHelper.class
 })
-class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
+@MockBeans({@MockBean(PaymentService.class), @MockBean(EventService.class), @MockBean(FeatureToggleService.class)})
+public class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Watson";
-    private static final Respondent RESPONDENT = Respondent.builder().party(RespondentParty.builder()
-        .lastName(RESPONDENT_LAST_NAME).build())
+    private static final String CHILD_LAST_NAME = "Holmes";
+    private static final DocumentReference C110A = mock(DocumentReference.class);
+    private static final String BINARY_URL = "/some-uuid/binary";
+    private static final CaseData CASE_DATA_BEFORE = CaseData.builder().state(OPEN).build();
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .id(123L)
+        .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
+        .respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build())
+            .build()))
+        .children1(wrapElements(Child.builder()
+            .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
+            .build()))
+        .orders(Orders.builder().orderType(List.of(CARE_ORDER, SUPERVISION_ORDER)).build())
+        .hearing(Hearing.builder().timeFrame("Same day").build())
+        .outsourcingPolicy(OrganisationPolicy.builder()
+            .organisation(Organisation.builder()
+                .organisationID("ORG1")
+                .organisationName("Third party org")
+                .build())
+            .build())
+        .submittedForm(C110A)
         .build();
 
     @Autowired
     private SubmittedCaseEventHandler underTest;
 
-    @MockBean
-    private PaymentService paymentService;
+    @Autowired
+    private FeatureToggleService toggleService;
 
-    //tech-debt: add test for admin email - a1562b56-4ff7-4e3e-b62d-5fb9f086ee8f
-    @MockBean
-    private HmctsEmailContentProvider hmctsEmailContentProvider;
+    @BeforeEach
+    void setUp() {
+        when(C110A.getBinaryUrl()).thenReturn(BINARY_URL);
+    }
 
-    //tech-debt: add test for cafcass email - e5630e8b-3b25-4773-a41a-a42af123bebc
-    @MockBean
-    private CafcassEmailContentProvider cafcassEmailContentProvider;
+    @ParameterizedTest
+    @MethodSource("subjectLineSource")
+    void notifyManagedLA(boolean toggle, String name) {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
 
-    @Test
-    void notifyManagedLA() {
-        CaseData caseData = CaseData.builder()
-            .id(123L)
-            .respondents1(wrapElements(RESPONDENT))
-            .orders(Orders.builder().orderType(List.of(CARE_ORDER, SUPERVISION_ORDER)).build())
-            .hearing(Hearing.builder().timeFrame("Same day").build())
-            .outsourcingPolicy(OrganisationPolicy.builder()
-                .organisation(Organisation.builder()
-                    .organisationID("ORG1")
-                    .organisationName("Third party org")
-                    .build())
-                .build())
-            .build();
-
-        CaseData caseDataBefore = CaseData.builder()
-            .state(OPEN)
-            .build();
-
-        underTest.notifyManagedLA(new SubmittedCaseEvent(caseData, caseDataBefore));
+        underTest.notifyManagedLA(new SubmittedCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
 
         assertThat(response())
-            .hasSubject("Urgent application – same day hearing, " + RESPONDENT_LAST_NAME)
+            .hasSubject("Urgent application – same day hearing, " + name)
             .hasBody(emailContent()
                 .start()
                 .line("Third party org has made a new application for:")
                 .line()
-                .line("\n\n* Care order\n* Supervision order")
+                .line()
+                .list("Care order", "Supervision order")
                 .line()
                 .line("Hearing date requested: same day")
                 .line()
@@ -96,14 +112,93 @@ class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("CCD case number: 123")
                 .line()
                 .line("Your organisation’s case access administrator should now assign the case "
-                    + "to the relevant person.")
+                      + "to the relevant person.")
                 .line()
                 .line("They can view the application at https://manage-org.platform.hmcts.net")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, "
-                    + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
             );
+    }
+
+    @ParameterizedTest
+    @MethodSource("subjectLineSource")
+    void notifyAdmin(boolean toggle, String name) {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+
+        underTest.notifyAdmin(new SubmittedCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
+
+        assertThat(response())
+            .hasSubject("Urgent application – same day hearing, " + name)
+            .hasBody(emailContent()
+                .start()
+                .line(LOCAL_AUTHORITY_NAME + " has made a new application for:")
+                .line()
+                .line()
+                .list("Care order", "Supervision order")
+                .line()
+                .line("Hearing date requested: same day")
+                .line()
+                .line("Respondents surname: " + RESPONDENT_LAST_NAME)
+                .line()
+                .line("CCD case number: 123.")
+                .line()
+                .h1("Next steps")
+                .line()
+                .line("You now need to check:")
+                .line()
+                .list("the application is complete", "if payment has been made")
+                .line()
+                .line("You can review the order by:")
+                .line()
+                .list(
+                    "signing into http://fake-url/cases/case-details/123",
+                    "using this link http://fake-url" + BINARY_URL
+                )
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("subjectLineSource")
+    void notifyCafcass(boolean toggle, String name) {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+
+        underTest.notifyCafcass(new SubmittedCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
+
+        assertThat(response())
+            .hasSubject("Urgent application – same day hearing, " + name)
+            .hasBody(emailContent()
+                .start()
+                .line(LOCAL_AUTHORITY_NAME + " has made a new application for:")
+                .line()
+                .line()
+                .list("Care order", "Supervision order")
+                .line()
+                .line("Hearing date requested: same day")
+                .line()
+                .line("Respondents surname: " + RESPONDENT_LAST_NAME)
+                .line()
+                .line("CCD case number: 123.")
+                .line()
+                .h1("Next steps")
+                .line()
+                .line("You can now start to prepare for the hearing.")
+                .line()
+                .line("You can review the application by using this link " + GOV_NOTIFY_DOC_URL + ".")
+                .line()
+                .line("HM Courts & Tribunals Service")
+                .line()
+                .end("Do not reply to this email. If you need to contact us, "
+                     + "call 0330 808 4424 or email contactfpl@justice.gov.uk")
+            );
+    }
+
+    private static Stream<Arguments> subjectLineSource() {
+        return Stream.of(
+            Arguments.of(true, CHILD_LAST_NAME),
+            Arguments.of(false, RESPONDENT_LAST_NAME)
+        );
     }
 }

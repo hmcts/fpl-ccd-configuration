@@ -10,6 +10,10 @@ public final class NotifyTemplates {
     public static final String CAFCASS_SUBMISSION_TEMPLATE = "e5630e8b-3b25-4773-a41a-a42af123bebc";
     public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "0aa6f272-9c96-468e-bffd-ea6e7369c762";
     public static final String OUTSOURCED_CASE_TEMPLATE = "13516685-155c-4da3-9aaf-32f3f943bbcf";
+    public static final String HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME = "b125f8a1-f8d2-4704-bb5e-90c819b70117";
+    public static final String CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME = "6fe52d5c-e661-4c05-9fd7-2a0202e9736d";
+    public static final String GATEKEEPER_SUBMISSION_TEMPLATE_CHILD_NAME = "df37a22a-616b-4fc1-a20d-7bb115664081";
+    public static final String OUTSOURCED_CASE_TEMPLATE_CHILD_NAME = "c4d612a3-8384-468b-9b83-532e7e857c63";
     public static final String C2_UPLOAD_NOTIFICATION_TEMPLATE = "3c422258-7a6e-4aa0-8d4b-56f50f42d0eb";
     public static final String C2_UPLOAD_PBA_PAYMENT_NOT_TAKEN_TEMPLATE = "137255d6-69c8-4eab-9971-ec788275c390";
     public static final String INTERLOCUTORY_UPLOAD_NOTIFICATION_TEMPLATE
