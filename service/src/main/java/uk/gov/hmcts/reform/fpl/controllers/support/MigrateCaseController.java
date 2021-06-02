@@ -103,7 +103,7 @@ public class MigrateCaseController extends CallbackController {
 
         } else {
             throw new IllegalStateException(String
-                .format("Migration failed on case %s: Expected" + ID_FIRST_BUNDLE + "but got %s",
+                .format("Migration failed on case %s: Expected " + ID_FIRST_BUNDLE + " but got %s",
                     caseData.getFamilyManCaseNumber(), firstBundle.getId()));
         }
 
@@ -113,7 +113,7 @@ public class MigrateCaseController extends CallbackController {
             swapC2WithSupportingDocument(secondBundle.getValue(), additionalApplicationsBundle);
         } else {
             throw new IllegalStateException(String
-                .format("Migration failed on case %s: Expected" + ID_SECOND_BUNDLE + "but got %s",
+                .format("Migration failed on case %s: Expected " + ID_SECOND_BUNDLE + " but got %s",
                     caseData.getFamilyManCaseNumber(), secondBundle.getId()));
         }
 
@@ -156,7 +156,6 @@ public class MigrateCaseController extends CallbackController {
             .build();
 
         return wrapElements(firstBundle, secondBundle, thirdBundle);
-
     }
 
     private void swapC2WithSupportingDocument(AdditionalApplicationsBundle application,
