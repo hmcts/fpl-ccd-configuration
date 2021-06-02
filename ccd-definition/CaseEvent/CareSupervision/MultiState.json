@@ -724,9 +724,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "testCollectionEvent",
-    "Name": "Collection element removal",
-    "Description": "Demonstration of removing collection element bug",
+    "ID": "testComplexTypeEvent",
+    "Name": "Complex type with label",
+    "Description": "Add a complex type with a hidden label",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted;Gatekeeping;PREPARE_FOR_HEARING;FINAL_HEARING",
     "PostConditionState": "*",

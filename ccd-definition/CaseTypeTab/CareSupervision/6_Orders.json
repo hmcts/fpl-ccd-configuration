@@ -6,6 +6,16 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 6,
+    "CaseFieldID": "testComplexTypeField",
+    "TabFieldDisplayOrder": 0
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 6,
     "CaseFieldID": "orderTabHeading",
     "TabFieldDisplayOrder": 0
   },
