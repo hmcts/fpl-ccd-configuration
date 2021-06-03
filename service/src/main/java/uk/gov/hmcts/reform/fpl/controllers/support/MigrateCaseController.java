@@ -35,9 +35,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private static final String ID_FIRST_BUNDLE = "fbf05208-f5dd-4942-b735-9aa226d73a2e";
-    private static final String ID_SECOND_BUNDLE = "4e4def36-2323-4e95-b93a-2f46fc4d6fc0";
-    private static final String ID_SUPPORTING_EVIDENCE = "3f3a183e-44ab-4e63-ac27-0ca40f3058ff";
+    private static final UUID FIRST_BUNDLE_ID = UUID.fromString("fbf05208-f5dd-4942-b735-9aa226d73a2e");
+    private static final UUID SECOND_BUNDLE_ID = UUID.fromString("4e4def36-2323-4e95-b93a-2f46fc4d6fc0");
+    private static final UUID SUPPORTING_EVIDENCE_ID = UUID.fromString("3f3a183e-44ab-4e63-ac27-0ca40f3058ff");
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -86,7 +86,7 @@ public class MigrateCaseController extends CallbackController {
             .getAdditionalApplicationsBundle();
 
         Element<AdditionalApplicationsBundle> firstBundle = additionalApplicationsBundle.get(0);
-        if (firstBundle.getId().equals(UUID.fromString(ID_FIRST_BUNDLE))) {
+        if (firstBundle.getId().equals(FIRST_BUNDLE_ID)) {
 
             firstBundle.getValue().setC2DocumentBundle(firstBundle.getValue()
                 .getC2DocumentBundle()
@@ -103,18 +103,18 @@ public class MigrateCaseController extends CallbackController {
 
         } else {
             throw new IllegalStateException(String
-                .format("Migration failed on case %s: Expected " + ID_FIRST_BUNDLE + " but got %s",
-                    caseData.getFamilyManCaseNumber(), firstBundle.getId()));
+                .format("Migration failed on case %s: Expected %s but got %s",
+                    caseData.getFamilyManCaseNumber(), FIRST_BUNDLE_ID, firstBundle.getId()));
         }
 
         Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(1);
 
-        if (secondBundle.getId().equals(UUID.fromString(ID_SECOND_BUNDLE))) {
+        if (secondBundle.getId().equals(SECOND_BUNDLE_ID)) {
             swapC2WithSupportingDocument(secondBundle.getValue(), additionalApplicationsBundle);
         } else {
             throw new IllegalStateException(String
-                .format("Migration failed on case %s: Expected " + ID_SECOND_BUNDLE + " but got %s",
-                    caseData.getFamilyManCaseNumber(), secondBundle.getId()));
+                .format("Migration failed on case %s: Expected %s but got %s",
+                    caseData.getFamilyManCaseNumber(), SECOND_BUNDLE_ID, secondBundle.getId()));
         }
 
         Map<String, Object> data = caseDetails.getData();
@@ -164,7 +164,7 @@ public class MigrateCaseController extends CallbackController {
         Optional<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = c2DocumentBundle
             .getSupportingEvidenceBundle()
             .stream()
-            .filter(bundle -> bundle.getId().equals(UUID.fromString(ID_SUPPORTING_EVIDENCE)))
+            .filter(bundle -> bundle.getId().equals(SUPPORTING_EVIDENCE_ID))
             .findFirst();
 
         if (supportingEvidenceBundle.isPresent()) {
@@ -175,8 +175,7 @@ public class MigrateCaseController extends CallbackController {
 
         c2DocumentBundle.getSupportingEvidenceBundle()
             .removeIf(bundle -> bundle.getId()
-                .toString()
-                .equals(ID_SUPPORTING_EVIDENCE)
+                .equals(SUPPORTING_EVIDENCE_ID)
             );
 
         additionalApplicationsBundle.set(1, element(application));
