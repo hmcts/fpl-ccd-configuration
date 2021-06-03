@@ -36,7 +36,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersSetMonthsEndDate",
             "orderPreview",
             "manageOrdersCloseCase",
-            "manageOrdersCloseCaseInformation",
+            "manageOrdersCloseCaseWarning",
             "manageOrdersApprovalDateTime",
             "manageOrdersOperation",
             "manageOrdersType",

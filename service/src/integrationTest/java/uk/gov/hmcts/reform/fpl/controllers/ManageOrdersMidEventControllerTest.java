@@ -62,6 +62,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
+    private static final Map<String, String> EXPECTED_QUESTIONS = getExpectedQuestions();
+
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
     private static final Judge JUDGE = Judge.builder()
@@ -104,7 +106,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(getExpectedQuestions());
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(EXPECTED_QUESTIONS);
     }
 
     @Test
@@ -411,7 +413,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         deepEquals(response.getErrors(), testUnderDateRangeMessage);
     }
 
-    private Map<String, String> getExpectedQuestions() {
+    private static Map<String, String> getExpectedQuestions() {
         return new java.util.HashMap<>(Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
             Map.entry("approver", "YES"),

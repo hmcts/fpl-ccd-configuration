@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
@@ -34,7 +33,7 @@ public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulato
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         Order order = manageOrdersEventData.getManageOrdersType();
 
-        if (IsFinalOrder.YES == order.getFinalOrder() && !allChildrenHaveFinalOrder(updatedChildren)) {
+        if (Order.isOrderFinal(order) && !allChildrenHaveFinalOrder(updatedChildren)) {
             OrderTempQuestions orderTempQuestions = manageOrdersEventData.getOrderTempQuestions();
             return Map.of("orderTempQuestions", orderTempQuestions.toBuilder().closeCase("NO").build());
         }

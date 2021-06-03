@@ -4,9 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
@@ -51,13 +49,13 @@ public class ChildrenService {
         return children.stream().allMatch(child -> YES.getValue().equals(child.getValue().getFinalOrderIssued()));
     }
 
-    public List<Element<Child>> updateFinalOrderIssued(OrderTypeAndDocument orderType, List<Element<Child>> children,
+    public List<Element<Child>> updateFinalOrderIssued(String orderLabel, List<Element<Child>> children,
                                                        String orderAppliesToAllChildren, Selector childSelector,
                                                        String remainingChildIndex) {
         if (YES.getValue().equals(orderAppliesToAllChildren)) {
             children.forEach(child -> {
                 child.getValue().setFinalOrderIssued(YES.getValue());
-                child.getValue().setFinalOrderIssuedType(orderType.getTypeLabel());
+                child.getValue().setFinalOrderIssuedType(orderLabel);
             });
         } else {
             List<Integer> selectedChildren;
@@ -72,7 +70,7 @@ public class ChildrenService {
                 Child child = children.get(i).getValue();
                 if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
                     child.setFinalOrderIssued(YES.getValue());
-                    child.setFinalOrderIssuedType(orderType.getTypeLabel());
+                    child.setFinalOrderIssuedType(orderLabel);
                 } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
                     child.setFinalOrderIssued(NO.getValue());
                 }
@@ -83,44 +81,12 @@ public class ChildrenService {
 
     public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
         return updateFinalOrderIssued(
-            caseData.getManageOrdersEventData(),
+            caseData.getManageOrdersEventData().getManageOrdersType().getHistoryTitle(),
             caseData.getAllChildren(),
             caseData.getOrderAppliesToAllChildren(),
             caseData.getChildSelector(),
             caseData.getRemainingChildIndex()
         );
-    }
-
-
-    private List<Element<Child>> updateFinalOrderIssued(ManageOrdersEventData manageOrdersEventData,
-                                                       List<Element<Child>> children, String orderAppliesToAllChildren,
-                                                       Selector childSelector, String remainingChildIndex) {
-        if (YES.getValue().equals(orderAppliesToAllChildren)) {
-            children.forEach(child -> {
-                child.getValue().setFinalOrderIssued(YES.getValue());
-                child.getValue().setFinalOrderIssuedType(manageOrdersEventData.getManageOrdersType().getTitle());
-            });
-        } else {
-            List<Integer> selectedChildren;
-            if (StringUtils.isNotBlank(remainingChildIndex)) {
-                selectedChildren = List.of(Integer.parseInt(remainingChildIndex));
-            } else if (childSelector != null) {
-                selectedChildren = childSelector.getSelected();
-            } else {
-                selectedChildren = new ArrayList<>();
-            }
-            for (int i = 0; i < children.size(); i++) {
-                Child child = children.get(i).getValue();
-                if (!selectedChildren.isEmpty() && selectedChildren.contains(i)) {
-                    child.setFinalOrderIssued(YES.getValue());
-                    child.setFinalOrderIssuedType(manageOrdersEventData.getManageOrdersType().getTitle());
-                } else if (StringUtils.isEmpty(child.getFinalOrderIssued())) {
-                    child.setFinalOrderIssued(NO.getValue());
-                }
-            }
-        }
-
-        return children;
     }
 
     /**

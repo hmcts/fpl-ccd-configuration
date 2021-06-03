@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 
@@ -46,7 +47,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
         Map<String, Object> generatedData = underTest.generate(caseData);
         Map<String, Object> expectedData = Map.of(
-            "state", "CLOSED",
+            "state", CLOSED,
             "closeCaseTabField", CloseCase.builder().date(time.now().toLocalDate()).build()
         );
 

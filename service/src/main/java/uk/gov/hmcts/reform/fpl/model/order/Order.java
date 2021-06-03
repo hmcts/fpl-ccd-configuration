@@ -29,58 +29,44 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILD
 @RequiredArgsConstructor
 public enum Order {
     C21_BLANK_ORDER(
-        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
-        IsFinalOrder.NO,
+        "Blank order",
+        "Section 31 Children Act 1989",
+        "C21 - Blank order",
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         "Emergency protection order",
         "Section 44 Children Act 1989",
         "C23 - Emergency protection order",
-        IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C32_CARE_ORDER(
-        "Care order", "Section 31 Children Act 1989", "C32 - Care order", IsFinalOrder.YES,
-        List.of(LINKED_TO_HEARING,
-            APPROVER,
-            APPROVAL_DATE,
-            WHICH_CHILDREN,
-            FURTHER_DIRECTIONS,
-            REVIEW_DRAFT_ORDER,
+        "Care order",
+        "Section 31 Children Act 1989",
+        "C32 - Care order",
+        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER,
             CLOSE_CASE)
     ),
     C35A_SUPERVISION_ORDER(
         "Supervision order",
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Supervision order (C35A)",
-        IsFinalOrder.YES,
         List.of(
-            LINKED_TO_HEARING,
-            APPROVER,
-            APPROVAL_DATE,
-            WHICH_CHILDREN,
-            FURTHER_DIRECTIONS,
-            SUPERVISION_ORDER_END_DATE,
-            REVIEW_DRAFT_ORDER,
-            CLOSE_CASE,
-            REVIEW_DRAFT_ORDER)
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, SUPERVISION_ORDER_END_DATE,
+            REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
-        C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
-            "Appointment of a Children's Guardian",
-            "Section 41(1) Children Act 1989",
-            "C47A - Appointment of a Children's Guardian",
-            IsFinalOrder.NO,
-            List.of(
-                LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS,
-                FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
-        );
+    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+        "Appointment of a Children's Guardian",
+        "Section 41(1) Children Act 1989",
+        "C47A - Appointment of a Children's Guardian",
+        List.of(
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    );
 
     private final String title;
     private final String childrenAct;
     private final String historyTitle;
-    private final IsFinalOrder finalOrder;
     private final List<OrderQuestionBlock> questions;
 
     public String fileName(RenderFormat format) {
@@ -108,5 +94,11 @@ public enum Order {
         }
 
         return Optional.empty();
+    }
+
+    public static boolean isOrderFinal(Order order) {
+        List<Order> finalOrders = List.of(C32_CARE_ORDER, C35A_SUPERVISION_ORDER);
+
+        return finalOrders.contains(order);
     }
 }

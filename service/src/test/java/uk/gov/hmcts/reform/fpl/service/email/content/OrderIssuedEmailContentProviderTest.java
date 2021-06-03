@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ContextConfiguration(classes = {OrderIssuedEmailContentProvider.class, LookupTestConfig.class,
-    EmailNotificationHelper.class, FixedTimeConfiguration.class,
+    EmailNotificationHelper.class, FixedTimeConfiguration.class, ManageOrdersClosedCaseFieldGenerator.class,
     OrderIssuedEmailContentProviderTypeOfOrderCalculator.class, SealedOrderHistoryService.class, IdentityService.class})
 class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
@@ -55,9 +55,6 @@ class OrderIssuedEmailContentProviderTest extends AbstractEmailContentProviderTe
 
     @MockBean
     private OrderCreationService orderCreationService;
-
-    @MockBean
-    private ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
 
     @Test
     void shouldBuildGeneratedOrderParametersWithCaseUrl() {

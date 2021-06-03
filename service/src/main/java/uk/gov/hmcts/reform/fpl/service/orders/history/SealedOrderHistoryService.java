@@ -42,7 +42,6 @@ public class SealedOrderHistoryService {
     private final OrderCreationService orderCreationService;
     private final Time time;
 
-    // That should go in a similar strategy if more are coming
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
 
     public Map<String, Object> generate(CaseData caseData) {
