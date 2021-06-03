@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,12 +72,11 @@ class ManageOrderWithEndOfProceedingsDocumentParameterGeneratorTest {
             @Override
             protected DocmosisParameters docmosisParameters(ManageOrdersEventData eventData,
                                                             String localAuthorityCode,
-                                                            String localAuthorityName,
-                                                            List<Element<Child>> selectedChildren) {
+                                                            String localAuthorityName, int size) {
                 return C35bInterimSupervisionOrderDocmosisParameters.builder()
                     .orderTitle(ORDER.getTitle())
                     .orderType(GeneratedOrderType.SUPERVISION_ORDER)
-                    .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName, eventData))
+                    .orderDetails(orderDetails(size, localAuthorityName, eventData))
                     .furtherDirections(eventData.getManageOrdersFurtherDirections())
                     .build();
             }

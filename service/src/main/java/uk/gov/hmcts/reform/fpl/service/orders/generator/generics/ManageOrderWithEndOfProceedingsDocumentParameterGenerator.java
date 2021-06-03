@@ -44,11 +44,11 @@ public abstract class ManageOrderWithEndOfProceedingsDocumentParameterGenerator 
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
 
-        return docmosisParameters(eventData,localAuthorityCode, localAuthorityName, selectedChildren);
+        return docmosisParameters(eventData,localAuthorityCode, localAuthorityName, selectedChildren.size());
     }
 
     protected abstract DocmosisParameters docmosisParameters(ManageOrdersEventData eventData, String localAuthorityCode,
-                                                    String localAuthorityName, List<Element<Child>> selectedChildren);
+                                                             String localAuthorityName, int size);
 
     protected String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
         LocalDateTime orderExpiration;
