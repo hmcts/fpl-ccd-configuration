@@ -81,7 +81,7 @@ public class ChildrenService {
 
     public List<Element<Child>> updateFinalOrderIssued(CaseData caseData) {
         return updateFinalOrderIssued(
-            caseData.getManageOrdersEventData().getManageOrdersType().getHistoryTitle(),
+            caseData.getManageOrdersEventData().getManageOrdersType().getTitle(),
             caseData.getAllChildren(),
             caseData.getOrderAppliesToAllChildren(),
             caseData.getChildSelector(),
