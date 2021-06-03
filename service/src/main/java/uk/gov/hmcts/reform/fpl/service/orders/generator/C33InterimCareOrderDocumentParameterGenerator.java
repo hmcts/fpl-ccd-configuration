@@ -84,7 +84,7 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
                 break;
             case END_OF_PROCEEDINGS:
                 childCustodyMessage = "The Court orders that the %s placed in the care of %s until "
-                    + "the end of the proceedings or further order.";
+                    + "the end of the proceedings or until a further order is made.";
                 formatString = null;
                 orderExpiration = null;
                 break;
