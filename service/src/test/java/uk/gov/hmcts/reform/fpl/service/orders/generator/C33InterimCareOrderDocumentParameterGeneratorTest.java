@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ExtendWith({MockitoExtension.class})
 class C33InterimCareOrderDocumentParameterGeneratorTest {
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
-    private static final String CHILD_GRAMMAR = "child";
-    private static final String CHILDREN_GRAMMAR = "children";
+    private static final String CHILD_GRAMMAR = "child is";
+    private static final String CHILDREN_GRAMMAR = "children are";
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Sheffield City Council";
     private static final Child CHILD = mock(Child.class);
@@ -79,7 +79,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
 
-        courtOrderMessage = getSingularChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
@@ -105,7 +105,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
 
-        courtOrderMessage = getSingularChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
 
@@ -130,7 +130,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
 
-        courtOrderMessage = getMultipleChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -155,7 +155,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             String.format(DATE_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
 
-        courtOrderMessage = getMultipleChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -179,7 +179,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = getSingularChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -203,7 +203,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = getSingularChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILD_GRAMMAR);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -227,7 +227,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = getMultipleChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -251,7 +251,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             NEXT_WEEK_DATE_TIME,
             String.format(DATE_TIME_WITH_ORDINAL_SUFFIX, dayOrdinalSuffix)
         );
-        String courtOrderMessage = getMultipleChildMessageDate(formattedDate);
+        String courtOrderMessage = getChildMessageForDate(formattedDate, CHILDREN_GRAMMAR);
 
         when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
 
@@ -351,21 +351,15 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    private String getMultipleChildMessageDate(String formattedDate) {
-        return "The Court orders " + LA_NAME
-            + " supervises the " + CHILDREN_GRAMMAR
-            + " until " + formattedDate + ".";
-    }
-
-    private String getSingularChildMessageDate(String formattedDate) {
-        return "The Court orders " + LA_NAME
-            + " supervises the " + CHILD_GRAMMAR
+    private String getChildMessageForDate(String formattedDate, String childGrammar) {
+        return "The Court orders that the " + childGrammar
+            + " placed in the care of " + LA_NAME
             + " until " + formattedDate + ".";
     }
 
     private String getChildMessageForEndOfProceedings(String childGrammar) {
-        return "The Court orders " + LA_NAME
-            + " supervises the " + childGrammar
+        return "The Court orders that the " + childGrammar
+            + " placed in the care of " + LA_NAME
             + " until the end of the proceedings or further order.";
     }
 
@@ -419,8 +413,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         if (hasExclusionDetails) {
             return CaseData.builder()
                 .caseLocalAuthority(LA_CODE)
-                .manageOrdersEventData(ManageOrdersEventData.builder()
-                    .manageOrdersApprovalDate(time.now().toLocalDate())
+                .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersApprovalDate(time.now().toLocalDate())
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
                     .manageOrdersExclusionDetails(EXCLUSION_DETAILS)

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CtscEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.notification.GatekeepingOrderNotificationGroup;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -32,15 +33,13 @@ import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @ExtendWith(MockitoExtension.class)
 class GatekeepingOrderEventHandlerTest {
     private static final Long CASE_ID = 12345L;
     private static final SDONotifyData NOTIFY_DATA = mock(SDONotifyData.class);
-    private static final DocumentReference ORDER = mock(DocumentReference.class);
-    private static final GatekeepingOrderEvent.GatekeepingOrderEventBuilder BASE_EVENT = GatekeepingOrderEvent.builder()
-        .order(ORDER)
-        .notificationGroup(SDO_AND_NOP);
+    private static final DocumentReference ORDER = testDocumentReference();
 
     @Mock
     private NotificationService notificationService;
@@ -65,12 +64,14 @@ class GatekeepingOrderEventHandlerTest {
             .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
             .build();
 
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_AND_NOP, caseData);
+
         given(cafcassLookup.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
         given(cafcassContentProvider.getNotifyData(caseData, ORDER)).willReturn(NOTIFY_DATA);
 
-        underTest.notifyCafcass(BASE_EVENT.caseData(caseData).build());
+        underTest.notifyCafcass(event);
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_CAFCASS,
@@ -84,6 +85,8 @@ class GatekeepingOrderEventHandlerTest {
     void shouldNotifyLocalAuthorityOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(SDO_AND_NOP, caseData);
+
         given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
 
         given(inboxLookupService.getRecipients(
@@ -92,7 +95,7 @@ class GatekeepingOrderEventHandlerTest {
                 .build())
         ).willReturn(Set.of(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        underTest.notifyLocalAuthority(BASE_EVENT.caseData(caseData).build());
+        underTest.notifyLocalAuthority(event);
 
         verify(notificationService).sendEmail(
             SDO_AND_NOP_ISSUED_LA,
@@ -106,11 +109,13 @@ class GatekeepingOrderEventHandlerTest {
     void shouldNotifyCTSCOfIssuedSDO() {
         final CaseData caseData = CaseData.builder().id(CASE_ID).build();
 
+        final GatekeepingOrderEvent event = gatekeepingOrderEvent(URGENT_AND_NOP, caseData);
+
         given(standardContentProvider.buildNotificationParameters(caseData)).willReturn(NOTIFY_DATA);
 
         given(ctscLookup.getEmail()).willReturn(CTSC_INBOX);
 
-        underTest.notifyCTSC(BASE_EVENT.caseData(caseData).notificationGroup(URGENT_AND_NOP).build());
+        underTest.notifyCTSC(event);
 
         verify(notificationService).sendEmail(
             URGENT_AND_NOP_ISSUED_CTSC,
@@ -118,5 +123,13 @@ class GatekeepingOrderEventHandlerTest {
             NOTIFY_DATA,
             CASE_ID
         );
+    }
+
+    private GatekeepingOrderEvent gatekeepingOrderEvent(GatekeepingOrderNotificationGroup group, CaseData caseData) {
+        return GatekeepingOrderEvent.builder()
+            .order(ORDER)
+            .notificationGroup(group)
+            .caseData(caseData)
+            .build();
     }
 }
