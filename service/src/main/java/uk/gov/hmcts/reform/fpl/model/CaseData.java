@@ -186,17 +186,23 @@ public class CaseData {
     private final Allocation allocationDecision;
 
     private final List<Element<Direction>> allParties;
-    private final List<Element<Direction>> allPartiesCustom;
+    @JsonProperty
+    private List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
-    private final List<Element<Direction>> localAuthorityDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> localAuthorityDirectionsCustom;
     private final List<Element<Direction>> courtDirections;
-    private final List<Element<Direction>> courtDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> courtDirectionsCustom;
     private final List<Element<Direction>> cafcassDirections;
-    private final List<Element<Direction>> cafcassDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> cafcassDirectionsCustom;
     private final List<Element<Direction>> otherPartiesDirections;
-    private final List<Element<Direction>> otherPartiesDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> otherPartiesDirectionsCustom;
     private final List<Element<Direction>> respondentDirections;
-    private final List<Element<Direction>> respondentDirectionsCustom;
+    @JsonProperty
+    private List<Element<Direction>> respondentDirectionsCustom;
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
@@ -947,7 +953,10 @@ public class CaseData {
     }
 
     //move to event data
-    private final List<Element<CustomDirection>> sdoDirectionCustom;
+    @JsonProperty
+    private List<Element<CustomDirection>> sdoDirectionCustom;
+    @JsonProperty
+    private List<Element<StandardDirection>> standardDirections;
 
     private final JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
     private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;

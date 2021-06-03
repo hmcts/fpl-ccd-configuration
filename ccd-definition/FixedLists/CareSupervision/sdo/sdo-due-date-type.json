@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DueDateType",
+    "ListElementCode": "DATE",
+    "ListElement": "Date and time",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DueDateType",
+    "ListElementCode": "DAYS",
+    "ListElement": "Number of days before hearing",
+    "DisplayOrder": 2
+  }
+]

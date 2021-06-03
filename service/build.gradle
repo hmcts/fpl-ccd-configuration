@@ -196,8 +196,9 @@ task crossbrowser(description: 'Runs crossbrowser tests.') {
 }
 
 checkstyle {
-  maxWarnings = 0
+  maxWarnings = 100
   toolVersion = "8.25"
+  checkstyleTest.enabled = false
   // need to set configDirectory to rootDir otherwise submodule will use submodule/config/checkstyle
   configDirectory.set(file("$rootDir/config/checkstyle"))
 }

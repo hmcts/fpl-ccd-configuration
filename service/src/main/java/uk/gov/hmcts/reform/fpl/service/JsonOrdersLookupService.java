@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.exceptions.StandardDirectionNotFoundException;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.UncheckedIOException;
@@ -31,5 +34,12 @@ public class JsonOrdersLookupService implements OrdersLookupService {
             log.error("Could not read file " + ORDERS_CONFIG_FILENAME);
             throw new UncheckedIOException(e);
         }
+    }
+
+    public DirectionConfiguration getDirectionConfiguration(DirectionType directionType) {
+        return getStandardDirectionOrder().getDirections().stream()
+            .filter(directionConfig -> directionConfig.getId().equals(directionType))
+            .findFirst()
+            .orElseThrow(() -> new StandardDirectionNotFoundException(directionType));
     }
 }

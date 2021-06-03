@@ -1,17 +1,18 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.Builder;
-import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 
-import java.time.LocalDateTime;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.CUSTOM;
 
-@Data
-@Builder(toBuilder = true)
-public class CustomDirection {
-    private String id; //remove?
-    private String title;
-    private String description;
-    private DirectionAssignee assignee;
-    private LocalDateTime dateToBeCompletedBy;
+@SuperBuilder
+@Jacksonized
+public class CustomDirection extends StandardDirection {
+
+    @JsonIgnore
+    public DirectionType getType() {
+        return CUSTOM;
+    }
 }

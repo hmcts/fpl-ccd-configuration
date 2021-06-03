@@ -18,7 +18,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "customDirections",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -29,7 +29,7 @@
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
     "PageID": "issuingJudge",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "FieldShowCondition": "gatekeepingOrderRouter=\"DO_NOT_SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/generate-draft/mid-event"
@@ -42,7 +42,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "issuingJudge",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   },
   {
@@ -53,7 +53,7 @@
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "saveOrSend",
-    "PageDisplayOrder": 4,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
   {
@@ -64,7 +64,7 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
     "PageID": "saveOrSend",
-    "PageDisplayOrder": 4,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
     "FieldShowCondition": "saveOrSendGatekeepingOrder.nextSteps=\"*\""
   }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
@@ -166,6 +167,32 @@ public class CaseDataExtractionService {
 
         // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
         return format("%d. %s %s", index, direction.getDirectionType(),
+            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
+    }
+
+
+    public String formatTitle(int index, StandardDirection direction, List<DirectionConfiguration> directionConfigurations) {
+
+        // default values here cover edge case where direction title is not found in configuration.
+        class DateFormattingConfig {
+            private String pattern = TIME_DATE;
+            private Display.Due due = BY;
+        }
+
+        final DateFormattingConfig config = new DateFormattingConfig();
+
+        // find the date configuration values for the given direction
+        for (DirectionConfiguration directionConfiguration : directionConfigurations) {
+            if (directionConfiguration.getTitle().equals(direction.getType())) {
+                Display display = directionConfiguration.getDisplay();
+                config.pattern = display.getTemplateDateFormat();
+                config.due = display.getDue();
+                break;
+            }
+        }
+
+        // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
+        return format("%d. %s %s", index, direction.getType(),
             formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
     }
 

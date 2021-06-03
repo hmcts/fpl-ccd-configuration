@@ -1,6 +1,5 @@
 const config = require('../config.js');
 const directions = require('../fixtures/directions.js');
-const dateFormat = require('dateformat');
 const gatekeepingCaseData = require('../fixtures/caseData/gatekeepingNoAllocatedJudge.json');
 
 let caseId;

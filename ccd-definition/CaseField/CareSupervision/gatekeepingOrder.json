@@ -55,5 +55,15 @@
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "standardDirections",
+    "Label": "Further directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CustomDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

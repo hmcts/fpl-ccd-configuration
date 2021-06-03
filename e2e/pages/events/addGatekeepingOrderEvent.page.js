@@ -16,8 +16,8 @@ module.exports = {
         };
       },
     },
-    useAllocatedJudge: `#gatekeepingOrderIssuingJudge_useAllocatedJudge-Yes`,
-    legalAdvisorName: `#gatekeepingOrderIssuingJudge_legalAdvisorName`,
+    useAllocatedJudge: '#gatekeepingOrderIssuingJudge_useAllocatedJudge-Yes',
+    legalAdvisorName: '#gatekeepingOrderIssuingJudge_legalAdvisorName',
     statusRadioGroup: {
       groupName: '#saveOrSendGatekeepingOrder_orderStatus',
       sealed: 'Yes, seal it and send to the local authority',

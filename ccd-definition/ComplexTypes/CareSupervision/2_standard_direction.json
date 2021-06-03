@@ -1,0 +1,79 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "showDateOnly = \"NO\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "type",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "assignee",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "dueDateType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "DueDateType",
+    "ElementLabel": "Due date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Due date and time",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldType": "Number",
+    "ElementLabel": "Enter number of days",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DAYS\""
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "showDateOnly",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Enter number of days",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DO_NOT_SHOW\""
+  }
+]
+
