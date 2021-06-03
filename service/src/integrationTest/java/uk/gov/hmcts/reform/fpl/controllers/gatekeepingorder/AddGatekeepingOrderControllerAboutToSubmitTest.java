@@ -114,6 +114,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         StandardDirectionOrder responseSDO = extractCaseData(response).getStandardDirectionOrder();
 
         assertThat(responseSDO).isEqualTo(expectedSDO);
+        assertThat(response.getData().get("state")).isEqualTo("PREPARE_FOR_HEARING");
         assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "sdoDirectionCustom",
             "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
     }

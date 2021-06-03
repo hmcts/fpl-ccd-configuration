@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -94,6 +95,10 @@ public class AddGatekeepingOrderController extends CallbackController {
                 .dateOfIssue(formatLocalDateToString(caseData.getSaveOrSendGatekeepingOrder().getDateOfIssue(), DATE))
                 .orderDoc(buildFromDocument(document))
                 .build();
+
+            caseDetails.getData().put("state", CASE_MANAGEMENT);
+
+            //TODO: need to generate C6/C6a
 
             removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "sdoDirectionCustom",
                 "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
