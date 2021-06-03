@@ -360,7 +360,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
     private String getChildMessageForEndOfProceedings(String childGrammar) {
         return "The Court orders that the " + childGrammar
             + " placed in the care of " + LA_NAME
-            + " until the end of the proceedings or further order.";
+            + " until the end of the proceedings or until a further order is made.";
     }
 
     private C33InterimCareOrderDocmosisParameters.C33InterimCareOrderDocmosisParametersBuilder<?,?>
@@ -413,7 +413,8 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         if (hasExclusionDetails) {
             return CaseData.builder()
                 .caseLocalAuthority(LA_CODE)
-                .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersApprovalDate(time.now().toLocalDate())
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .manageOrdersApprovalDate(time.now().toLocalDate())
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
                     .manageOrdersExclusionDetails(EXCLUSION_DETAILS)
