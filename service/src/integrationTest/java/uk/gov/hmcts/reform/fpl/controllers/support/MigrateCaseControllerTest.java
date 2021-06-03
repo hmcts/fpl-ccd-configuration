@@ -176,7 +176,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldRevertC2DocumentAndSupportingDocumentsToOldValuesWithCorrectID() {
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
                 buildFirstAdditionalApplicationsBundle()), element(secondBundleID,
-                expectedSecondAdditionalApplicationsBundle()));
+                buildSecondAdditionalApplicationsBundle()));
 
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -184,7 +184,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
                 .getAdditionalApplicationsBundle());
 
-            assertThat(extractedApplicationBundle.get(1)).isEqualTo(additionalApplications.get(1).getValue());
             assertThat(extractedApplicationBundle.get(0)).isEqualTo(expectedFirstAdditionalApplicationsBundle());
         }
 
@@ -230,6 +229,20 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .hasMessage(String.format("Migration failed on case SA21C50024: Expected " + secondBundleID
                         + " but got " + wrongID,
                     familyManNumber, additionalApplications.get(1).getId()));
+        }
+
+        @Test
+        void shouldThrowAnExceptionIfSupportingDocumentIDIsNotPresent() {
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
+                expectedFirstAdditionalApplicationsBundle()), element(secondBundleID,
+                expectedSecondAdditionalApplicationsBundle()));
+
+            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format("Supporting evidence document with " + supportingEvidenceID
+                    + " does not exist"));
         }
 
         private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,

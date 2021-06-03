@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -87,7 +86,6 @@ public class MigrateCaseController extends CallbackController {
 
         Element<AdditionalApplicationsBundle> firstBundle = additionalApplicationsBundle.get(0);
         if (firstBundle.getId().equals(FIRST_BUNDLE_ID)) {
-
             firstBundle.getValue().setC2DocumentBundle(firstBundle.getValue()
                 .getC2DocumentBundle()
                 .toBuilder()
@@ -110,7 +108,8 @@ public class MigrateCaseController extends CallbackController {
         Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(1);
 
         if (secondBundle.getId().equals(SECOND_BUNDLE_ID)) {
-            swapC2WithSupportingDocument(secondBundle.getValue(), additionalApplicationsBundle);
+            AdditionalApplicationsBundle bundle = swapC2WithSupportingDocument(secondBundle.getValue());
+            additionalApplicationsBundle.set(1, element(bundle));
         } else {
             throw new IllegalStateException(String
                 .format("Migration failed on case %s: Expected %s but got %s",
@@ -158,26 +157,26 @@ public class MigrateCaseController extends CallbackController {
         return wrapElements(firstBundle, secondBundle, thirdBundle);
     }
 
-    private void swapC2WithSupportingDocument(AdditionalApplicationsBundle application,
-              List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle) {
+    private AdditionalApplicationsBundle swapC2WithSupportingDocument(AdditionalApplicationsBundle application) {
         C2DocumentBundle c2DocumentBundle = application.getC2DocumentBundle();
-        Optional<Element<SupportingEvidenceBundle>> supportingEvidenceBundle = c2DocumentBundle
+        Element<SupportingEvidenceBundle> supportingEvidenceBundle = c2DocumentBundle
             .getSupportingEvidenceBundle()
             .stream()
             .filter(bundle -> bundle.getId().equals(SUPPORTING_EVIDENCE_ID))
-            .findFirst();
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(String.format("Supporting evidence "
+                + "document with %s does not exist", SUPPORTING_EVIDENCE_ID)));
 
-        if (supportingEvidenceBundle.isPresent()) {
-            application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder()
-                .document(supportingEvidenceBundle.get().getValue().getDocument())
-                .build());
-        }
+        application.setC2DocumentBundle(application.getC2DocumentBundle().toBuilder()
+            .document(supportingEvidenceBundle.getValue().getDocument())
+            .build());
+
 
         c2DocumentBundle.getSupportingEvidenceBundle()
             .removeIf(bundle -> bundle.getId()
                 .equals(SUPPORTING_EVIDENCE_ID)
             );
 
-        additionalApplicationsBundle.set(1, element(application));
+        return application;
     }
 }
