@@ -28,7 +28,7 @@ public class ManageOrdersClosedCaseFieldGenerator {
 
         Map<String, Object> data = new HashMap<>();
 
-        if (Order.isOrderFinal(order)) {
+        if (order.getIsOrderFinal()) {
             data.put("children1", childrenService.updateFinalOrderIssued(caseData));
         }
 

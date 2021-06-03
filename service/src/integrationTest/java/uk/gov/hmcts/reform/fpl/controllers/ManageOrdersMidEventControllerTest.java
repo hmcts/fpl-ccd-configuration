@@ -62,7 +62,22 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
-    private static final Map<String, String> EXPECTED_QUESTIONS = getExpectedQuestions();
+    private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
+        Map.entry("hearingDetails", "YES"),
+        Map.entry("approver", "YES"),
+        Map.entry("previewOrder", "YES"),
+        Map.entry("furtherDirections", "YES"),
+        Map.entry("orderDetails", "NO"),
+        Map.entry("whichChildren", "YES"),
+        Map.entry("closeCase", "YES"),
+        Map.entry("approvalDate", "YES"),
+        Map.entry("approvalDateTime", "NO"),
+        Map.entry("epoIncludePhrase", "NO"),
+        Map.entry("epoChildrenDescription", "NO"),
+        Map.entry("epoExpiryDate", "NO"),
+        Map.entry("epoTypeAndPreventRemoval", "NO"),
+        Map.entry("cafcassJurisdictions", "NO"),
+        Map.entry("supervisionOrderExpiryDate", "NO")));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
@@ -411,25 +426,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-details");
 
         deepEquals(response.getErrors(), testUnderDateRangeMessage);
-    }
-
-    private static Map<String, String> getExpectedQuestions() {
-        return new java.util.HashMap<>(Map.ofEntries(
-            Map.entry("hearingDetails", "YES"),
-            Map.entry("approver", "YES"),
-            Map.entry("previewOrder", "YES"),
-            Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails", "NO"),
-            Map.entry("whichChildren", "YES"),
-            Map.entry("closeCase", "YES"),
-            Map.entry("approvalDate", "YES"),
-            Map.entry("approvalDateTime", "NO"),
-            Map.entry("epoIncludePhrase", "NO"),
-            Map.entry("epoChildrenDescription", "NO"),
-            Map.entry("epoExpiryDate", "NO"),
-            Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("cafcassJurisdictions", "NO"),
-            Map.entry("supervisionOrderExpiryDate", "NO")));
     }
 
     private CaseData buildCaseData() {
