@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,10 +15,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
 class ManageOrderInitialTypePreSelectorTest {
 
-    private static final CaseDetails CASE_DETAILS = CaseDetails.builder().data(new HashMap<>()).build();
     private static final Map<String, String> SHOW_HIDE = Map.of("showHide", "value");
     private static final CaseData MODIFIED_CASE_DATA = mock(CaseData.class);
 
@@ -36,16 +35,18 @@ class ManageOrderInitialTypePreSelectorTest {
 
     @Test
     void testWhenNotClosedState() {
-        when(caseConverter.convert(CASE_DETAILS)).thenReturn(CaseData.builder().build());
+        final CaseDetails caseDetails = emptyCaseDetails();
+        when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().build());
 
-        Map<String, Object> actual = underTest.preSelect(CASE_DETAILS);
+        Map<String, Object> actual = underTest.preSelect(caseDetails);
 
         assertThat(actual).isEqualTo(Map.of());
     }
 
     @Test
     void testWhenClosedState() {
-        when(caseConverter.convert(CASE_DETAILS)).thenReturn(CaseData.builder().state(CLOSED).build());
+        final CaseDetails caseDetails = emptyCaseDetails();
+        when(caseConverter.convert(caseDetails)).thenReturn(CaseData.builder().state(CLOSED).build());
         when(showHideQuestionsCalculator.calculate(C21_BLANK_ORDER)).thenReturn(SHOW_HIDE);
         when(caseConverter.convert(CaseDetails.builder().data(
             Map.of("manageOrdersState", CLOSED,
@@ -56,7 +57,7 @@ class ManageOrderInitialTypePreSelectorTest {
         when(orderSectionAndQuestionsPrePopulator.prePopulate(C21_BLANK_ORDER, ISSUING_DETAILS, MODIFIED_CASE_DATA))
             .thenReturn(Map.of("sectionAndQuestions", "value"));
 
-        Map<String, Object> actual = underTest.preSelect(CASE_DETAILS);
+        Map<String, Object> actual = underTest.preSelect(caseDetails);
 
         assertThat(actual).isEqualTo(Map.of(
             "manageOrdersState", CLOSED,
