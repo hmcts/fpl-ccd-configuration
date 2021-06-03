@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Api
 @RestController
@@ -41,6 +42,10 @@ public class MigrateCaseController extends CallbackController {
 
         if ("FPLA-3093".equals(migrationId)) {
             run3093(caseDetails);
+        }
+
+        if ("FPLA-2991".equals(migrationId)) {
+            run2991(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
@@ -86,6 +91,34 @@ public class MigrateCaseController extends CallbackController {
 
         Map<String, Object> data = caseDetails.getData();
 
+        data.put("additionalApplicationsBundle", additionalApplicationsBundle);
+    }
+
+    private void run2991(CaseDetails caseDetails) {
+        final UUID secondBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
+        final UUID supportingEvidenceID = UUID.fromString("045c1fd6-3fed-42d3-be0b-e47257f6c01c");
+
+        CaseData caseData = getCaseData(caseDetails);
+
+        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
+            .getAdditionalApplicationsBundle();
+
+        Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(1);
+        if (secondBundle.getId().equals(secondBundleID)) {
+            C2DocumentBundle c2DocumentBundle = secondBundle.getValue().getC2DocumentBundle();
+
+            c2DocumentBundle.getSupportingEvidenceBundle()
+                .removeIf(bundle -> bundle.getId()
+                    .equals(supportingEvidenceID)
+                );
+
+        } else {
+            throw new IllegalStateException(String
+                .format("Migration failed on case %s: Expected %s but got %s",
+                    caseData.getFamilyManCaseNumber(), secondBundleID, secondBundle.getId()));
+        }
+
+        Map<String, Object> data = caseDetails.getData();
         data.put("additionalApplicationsBundle", additionalApplicationsBundle);
     }
 }
