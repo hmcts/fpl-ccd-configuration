@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
@@ -13,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.AbstractEmailContentProviderTest;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -31,92 +35,104 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class DraftOrdersUploadedContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final Long CASE_NUMBER = 12345L;
-
-    @Autowired
-    private DraftOrdersUploadedContentProvider contentProvider;
-
-    private final CaseData caseData = CaseData.builder()
-        .respondents1(wrapElements(
-            Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName("White")
-                    .build())
-                .build()))
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().lastName("White").build())
+            .build()))
         .familyManCaseNumber("FMN")
         .id(CASE_NUMBER)
         .build();
 
+    @MockBean
+    private EmailNotificationHelper helper;
+    @Autowired
+    private DraftOrdersUploadedContentProvider underTest;
+
+    @BeforeEach
+    void setUp() {
+        when(helper.getSubjectLineLastName(CASE_DATA)).thenReturn("White");
+    }
 
     @Test
     void shouldCreateCustomizationWithHearing() {
-
         JudgeAndLegalAdvisor judge = judge(HER_HONOUR_JUDGE, "Black");
-
-        final HearingBooking hearing = HearingBooking.builder()
+        List<HearingOrder> orders = orders("order 1", "order 2");
+        HearingBooking hearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(LocalDateTime.of(2020, Month.FEBRUARY, 20, 0, 0, 0))
             .judgeAndLegalAdvisor(judge)
             .build();
 
-        final List<HearingOrder> orders = orders("order 1", "order 2");
 
-        DraftOrdersUploadedTemplate customization = contentProvider.buildContent(caseData, hearing, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, hearing, judge, orders);
 
-        assertThat(customization.getJudgeName()).isEqualTo("Black");
-        assertThat(customization.getJudgeTitle()).isEqualTo("Her Honour Judge");
-        assertThat(customization.getRespondentLastName()).isEqualTo("White");
-        assertThat(customization.getCaseUrl()).isEqualTo(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS));
-        assertThat(customization.getDraftOrders()).isEqualTo("order 1\norder 2");
-        assertThat(customization.getSubjectLineWithHearingDate())
-            .isEqualTo("White, FMN, case management hearing, 20 February 2020");
+        DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
+            .judgeName("Black")
+            .judgeTitle("Her Honour Judge")
+            .lastName("White")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS))
+            .draftOrders("order 1\norder 2")
+            .subjectLineWithHearingDate("White, FMN, case management hearing, 20 February 2020")
+            .build();
+
+        assertThat(customization).isEqualTo(expected);
     }
 
     @Test
     void shouldCreateCustomizationWithoutHearing() {
-        final List<HearingOrder> orders = orders("order 1");
-
+        List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(HIS_HONOUR_JUDGE, "White");
 
-        DraftOrdersUploadedTemplate customization = contentProvider.buildContent(caseData, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, null, judge, orders);
 
-        assertThat(customization.getJudgeName()).isEqualTo("White");
-        assertThat(customization.getJudgeTitle()).isEqualTo("His Honour Judge");
-        assertThat(customization.getRespondentLastName()).isEqualTo("White");
-        assertThat(customization.getCaseUrl()).isEqualTo(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS));
-        assertThat(customization.getDraftOrders()).isEqualTo("order 1");
-        assertThat(customization.getSubjectLineWithHearingDate()).isEqualTo("White, FMN");
+        DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
+            .judgeName("White")
+            .judgeTitle("His Honour Judge")
+            .lastName("White")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS))
+            .draftOrders("order 1")
+            .subjectLineWithHearingDate("White, FMN")
+            .build();
+
+        assertThat(customization).isEqualTo(expected);
     }
 
     @Test
     void shouldCreateCustomizationWhenMagistrateWithoutName() {
-        final List<HearingOrder> orders = orders("order 1");
-
+        List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, null);
 
-        DraftOrdersUploadedTemplate customization = contentProvider.buildContent(caseData, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, null, judge, orders);
 
-        assertThat(customization.getJudgeName()).isEmpty();
-        assertThat(customization.getJudgeTitle()).isEqualTo("Justice of the Peace");
-        assertThat(customization.getRespondentLastName()).isEqualTo("White");
-        assertThat(customization.getCaseUrl()).isEqualTo(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS));
-        assertThat(customization.getDraftOrders()).isEqualTo("order 1");
-        assertThat(customization.getSubjectLineWithHearingDate()).isEqualTo("White, FMN");
+        DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
+            .judgeName("")
+            .judgeTitle("Justice of the Peace")
+            .lastName("White")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS))
+            .draftOrders("order 1")
+            .subjectLineWithHearingDate("White, FMN")
+            .build();
+
+        assertThat(customization).isEqualTo(expected);
     }
 
     @Test
     void shouldCreateCustomizationWhenMagistrateWithName() {
-        final List<HearingOrder> orders = orders("order 1");
-
+        List<HearingOrder> orders = orders("order 1");
         JudgeAndLegalAdvisor judge = judge(MAGISTRATES, "Smith");
 
-        DraftOrdersUploadedTemplate customization = contentProvider.buildContent(caseData, null, judge, orders);
+        DraftOrdersUploadedTemplate customization = underTest.buildContent(CASE_DATA, null, judge, orders);
 
-        assertThat(customization.getJudgeName()).isEqualTo("Smith (JP)");
-        assertThat(customization.getJudgeTitle()).isEmpty();
-        assertThat(customization.getRespondentLastName()).isEqualTo("White");
-        assertThat(customization.getCaseUrl()).isEqualTo(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS));
-        assertThat(customization.getDraftOrders()).isEqualTo("order 1");
-        assertThat(customization.getSubjectLineWithHearingDate()).isEqualTo("White, FMN");
+        DraftOrdersUploadedTemplate expected = DraftOrdersUploadedTemplate.builder()
+            .judgeName("Smith (JP)")
+            .judgeTitle("")
+            .lastName("White")
+            .caseUrl(caseUrl(CASE_NUMBER.toString(), TabUrlAnchor.DRAFT_ORDERS))
+            .draftOrders("order 1")
+            .subjectLineWithHearingDate("White, FMN")
+            .build();
+
+        assertThat(customization).isEqualTo(expected);
     }
 
     private List<HearingOrder> orders(String... titles) {
