@@ -168,7 +168,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
                 .getAdditionalApplicationsBundle());
 
-            //assertThat(extractedApplicationBundle.get(0)).isEqualTo(additionalApplications.get(0).getValue());
+            assertThat(extractedApplicationBundle.get(0)).isEqualTo(additionalApplications.get(0).getValue());
             assertThat(extractedApplicationBundle.get(1).getC2DocumentBundle()).isEqualTo(expectedBundle);
         }
 
