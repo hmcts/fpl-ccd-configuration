@@ -30,8 +30,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
     private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
-    private static final String CHILD = "child";
-    private static final String CHILDREN = "children";
+    private static final String CHILD = "child is";
+    private static final String CHILDREN = "children are";
 
     private final ChildrenService childrenService;
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
@@ -68,7 +68,7 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
     private String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
         LocalDateTime orderExpiration;
         String formatString;
-        String childCustodyMessage = "The Court orders %s supervises the %s until %s.";
+        String childCustodyMessage = "The Court orders that the %s placed in the care of %s until %s.";
 
         ManageOrdersEndDateType type = eventData.getManageOrdersEndDateTypeWithEndOfProceedings();
         switch (type) {
@@ -80,9 +80,10 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
             case CALENDAR_DAY_AND_TIME:
                 formatString = DATE_TIME_WITH_ORDINAL_SUFFIX;
                 orderExpiration = eventData.getManageOrdersSetDateAndTimeEndDate();
+                childCustodyMessage = "The Court orders that the %s placed in the care of %s until %s.";
                 break;
             case END_OF_PROCEEDINGS:
-                childCustodyMessage = "The Court orders %s supervises the %s until "
+                childCustodyMessage = "The Court orders that the %s placed in the care of %s until "
                     + "the end of the proceedings or further order.";
                 formatString = null;
                 orderExpiration = null;
@@ -113,8 +114,8 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
                                               String courtResponsibilityAssignmentMessage) {
         return String.format(
             courtResponsibilityAssignmentMessage,
-            localAuthorityName,
-            getChildGrammar(numOfChildren)
+            getChildGrammar(numOfChildren),
+            localAuthorityName
         );
     }
 
@@ -123,8 +124,8 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
                                              String courtResponsibilityAssignmentMessage, String dayOrdinalSuffix) {
         return String.format(
             courtResponsibilityAssignmentMessage,
-            localAuthorityName,
             getChildGrammar(numOfChildren),
+            localAuthorityName,
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix))
         );
     }
