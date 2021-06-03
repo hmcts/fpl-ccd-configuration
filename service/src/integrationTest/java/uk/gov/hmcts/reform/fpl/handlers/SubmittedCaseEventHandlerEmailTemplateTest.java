@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     HmctsEmailContentProvider.class, EmailNotificationHelper.class
 })
 @MockBeans({@MockBean(PaymentService.class), @MockBean(EventService.class), @MockBean(FeatureToggleService.class)})
-public class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class SubmittedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String RESPONDENT_LAST_NAME = "Watson";
     private static final String CHILD_LAST_NAME = "Holmes";

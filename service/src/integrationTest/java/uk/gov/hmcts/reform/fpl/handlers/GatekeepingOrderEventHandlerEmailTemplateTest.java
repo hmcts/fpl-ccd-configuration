@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
     CtscEmailLookupConfiguration.class,
     EmailNotificationHelper.class
 })
-public class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final long ID = 1234567890123456L;

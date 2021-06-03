@@ -52,7 +52,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     @MockBean(ChildrenService.class), @MockBean(IdentityService.class), @MockBean(OrderCreationService.class),
     @MockBean(FeatureToggleService.class), @MockBean(SendDocumentService.class)
 })
-public class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);
     private static final DocumentReference ORDER_DOCUMENT = mock(DocumentReference.class);
     private static final String BINARY_URL = "/documents/some-random-string/binary";

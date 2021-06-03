@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     ReturnedCaseEventHandler.class,
     EmailNotificationHelper.class
 })
-public class ReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class ReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final long ID = 1234L;

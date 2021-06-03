@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     AmendedReturnedCaseEventHandler.class,
     EmailNotificationHelper.class
 })
-public class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final long ID = 1234L;
