@@ -413,7 +413,8 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
         if (hasExclusionDetails) {
             return CaseData.builder()
                 .caseLocalAuthority(LA_CODE)
-                .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersApprovalDate(time.now().toLocalDate())
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .manageOrdersApprovalDate(time.now().toLocalDate())
                     .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                     .manageOrdersType(C33_INTERIM_CARE_ORDER)
                     .manageOrdersExclusionDetails(EXCLUSION_DETAILS)
