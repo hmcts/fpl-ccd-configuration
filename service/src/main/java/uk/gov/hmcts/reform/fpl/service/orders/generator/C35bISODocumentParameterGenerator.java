@@ -18,8 +18,6 @@ import java.util.List;
 @Component
 public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProceedingsDocumentParameterGenerator {
 
-    private static Order ORDER = Order.C35B_INTERIM_SUPERVISION_ORDER;
-
     public C35bISODocumentParameterGenerator(
         ChildrenService childrenService, LocalAuthorityNameLookupConfiguration laNameLookup) {
         super(childrenService, laNameLookup);
@@ -27,7 +25,7 @@ public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProce
 
     @Override
     public Order accept() {
-        return ORDER;
+        return Order.C35B_INTERIM_SUPERVISION_ORDER;
     }
 
     @Override
@@ -36,15 +34,15 @@ public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProce
     }
 
     @Override
-    protected DocmosisParameters docmosisParameters(ManageOrdersEventData eventData,
+    protected DocmosisParameters docmosisParameters(ManageOrdersEventData manageOrdersEventData,
                                                     String localAuthorityCode,
                                                     String localAuthorityName,
                                                     List<Element<Child>> selectedChildren) {
         return C35bInterimSupervisionOrderDocmosisParameters.builder()
-            .orderTitle(ORDER.getTitle())
+            .orderTitle(Order.C35B_INTERIM_SUPERVISION_ORDER.getTitle())
             .orderType(GeneratedOrderType.SUPERVISION_ORDER)
-            .furtherDirections(eventData.getManageOrdersFurtherDirections())
-            .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName, eventData))
+            .furtherDirections(manageOrdersEventData.getManageOrdersFurtherDirections())
+            .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName, manageOrdersEventData))
             .build();
     }
 }

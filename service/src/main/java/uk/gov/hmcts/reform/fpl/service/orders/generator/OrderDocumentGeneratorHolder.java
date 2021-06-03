@@ -20,7 +20,7 @@ public class OrderDocumentGeneratorHolder {
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     private final C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
-    private final C35bISODocumentParameterGenerator c35BISODocumentParameterGenerator;
+    private final C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
     private final C47AAppointmentOfAChildrensGuardianParameterGenerator c47AParameterGenerator;
 
     // additional document collectors
@@ -33,11 +33,11 @@ public class OrderDocumentGeneratorHolder {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
                 c21BlankOrderDocumentParameterGenerator,
-                c32CareOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator,
-                c35BISODocumentParameterGenerator,
-                c35aSupervisionOrderDocumentParameterGenerator,
+                c32CareOrderDocumentParameterGenerator,
                 c33InterimCareOrderDocumentParameterGenerator,
+                c35aSupervisionOrderDocumentParameterGenerator,
+                c35bISODocumentParameterGenerator,
                 c47AParameterGenerator
             ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
