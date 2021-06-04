@@ -25,7 +25,6 @@ import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -37,11 +36,8 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
                                                              List<HearingOrder> orders,
                                                              RepresentativeServingPreferences servingPreference) {
 
-        if (servingPreference.equals(EMAIL)) {
-            return buildTemplateForEmailPreference(caseData, hearing, orders);
-        }
-
-        return buildTemplateForDigitalPreference(caseData, hearing, orders);
+        return servingPreference.equals(EMAIL) ? buildTemplateForEmailPreference(caseData, hearing, orders)
+                                               : buildTemplateForDigitalPreference(caseData, hearing, orders);
     }
 
     public RejectedOrdersTemplate buildOrdersRejectedContent(CaseData caseData, HearingBooking hearing,
@@ -63,7 +59,7 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .digitalPreference("Yes")
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .documentLinks(buildDocumentCaseLinks(orders))
-            .respondentLastName(getFirstRespondentLastName(caseData))
+            .lastName(helper.getSubjectLineLastName(caseData))
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))
@@ -79,7 +75,8 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .documentLinks(List.of())
             .attachedDocuments(orders.stream()
                 .map(order -> linkToAttachedDocument(order.getOrder()))
-                .collect(Collectors.toList())).respondentLastName(getFirstRespondentLastName(caseData))
+                .collect(Collectors.toList()))
+            .lastName(helper.getSubjectLineLastName(caseData))
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))

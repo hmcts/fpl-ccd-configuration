@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import org.apache.commons.codec.binary.Base64;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,9 +16,10 @@ import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -68,11 +67,13 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
         ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder()
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .orderList("Order 1\nOrder 2")
-            .respondentLastName("Jones")
+            .lastName("Davies")
             .subjectLineWithHearingDate("Jones, SN2000, case management hearing, 20 February 2020")
             .documentLinks(List.of("http://fake-url/testUrl1", "http://fake-url/testUrl2"))
             .digitalPreference("Yes")
             .build();
+
+        given(helper.getSubjectLineLastName(caseData)).willReturn("Davies");
 
         assertThat(underTest.buildOrdersApprovedContent(
             caseData, hearing, orders, DIGITAL_SERVICE)).isEqualTo(expectedTemplate);
@@ -105,20 +106,20 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
                 .order(orderDocument2)
                 .build());
 
-        String fileContent = new String(Base64.encodeBase64(new byte[] {1, 2, 3, 4, 5}), ISO_8859_1);
-        JSONObject jsonFileObject = new JSONObject()
-            .put("file", fileContent)
-            .put("is_csv", false);
+        String fileContent = Base64.getEncoder().encodeToString(DOCUMENT_CONTENT);
+        Map<String, Object> jsonFileObject =  Map.of("file", fileContent, "is_csv", false);
 
         ApprovedOrdersTemplate expectedTemplate = ApprovedOrdersTemplate.builder()
             .caseUrl("")
             .orderList("Order 1\nOrder 2")
-            .respondentLastName("Jones")
+            .lastName("Davies")
             .subjectLineWithHearingDate("Jones, SN2000, case management hearing, 20 February 2020")
-            .attachedDocuments(List.of(jsonFileObject.toMap(), jsonFileObject.toMap()))
+            .attachedDocuments(List.of(jsonFileObject, jsonFileObject))
             .digitalPreference("No")
             .documentLinks(List.of())
             .build();
+
+        given(helper.getSubjectLineLastName(caseData)).willReturn("Davies");
 
         assertThat(underTest.buildOrdersApprovedContent(caseData, hearing, orders, EMAIL)).isEqualTo(expectedTemplate);
     }
