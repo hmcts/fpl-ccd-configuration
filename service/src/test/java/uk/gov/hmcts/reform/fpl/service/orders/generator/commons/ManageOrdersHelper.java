@@ -65,7 +65,7 @@ public class ManageOrdersHelper {
     public static String getChildSupervisionMessageWithEndOfProceedings(String laName, int numOfChildren) {
         return "The Court orders " + laName
             + " supervises the " + getChildGrammar(numOfChildren)
-            + " until the end of the proceedings or further order.";
+            + " until the end of the proceedings or until a further order is made.";
     }
 
     private static String getChildGrammar(int numOfChildren) {
