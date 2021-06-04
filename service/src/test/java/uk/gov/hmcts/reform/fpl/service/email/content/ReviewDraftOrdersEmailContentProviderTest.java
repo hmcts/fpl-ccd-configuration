@@ -4,7 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.cmo.ReviewDraftOrdersEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,14 +31,14 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
-@ContextConfiguration(classes = {ReviewDraftOrdersEmailContentProvider.class,
-    FixedTimeConfiguration.class, JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {ReviewDraftOrdersEmailContentProvider.class})
 class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
-    @Autowired
-    private ReviewDraftOrdersEmailContentProvider reviewDraftOrdersEmailContentProvider;
-
     private static final LocalDate SOME_DATE = LocalDate.of(2020, 2, 20);
+    @MockBean
+    private EmailNotificationHelper helper;
+    @Autowired
+    private ReviewDraftOrdersEmailContentProvider underTest;
 
     @Test
     void shouldBuildApprovedOrdersContentForCaseAccessUsers() {
@@ -74,7 +74,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .digitalPreference("Yes")
             .build();
 
-        assertThat(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(
+        assertThat(underTest.buildOrdersApprovedContent(
             caseData, hearing, orders, DIGITAL_SERVICE)).isEqualTo(expectedTemplate);
     }
 
@@ -120,8 +120,7 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
             .documentLinks(List.of())
             .build();
 
-        assertThat(reviewDraftOrdersEmailContentProvider.buildOrdersApprovedContent(caseData, hearing, orders,
-            EMAIL)).isEqualTo(expectedTemplate);
+        assertThat(underTest.buildOrdersApprovedContent(caseData, hearing, orders, EMAIL)).isEqualTo(expectedTemplate);
     }
 
     @Test
@@ -151,12 +150,13 @@ class ReviewDraftOrdersEmailContentProviderTest extends AbstractEmailContentProv
                 "Order 1 - Missing information about XYZ",
                 "Order 2 - Please change ABC"))
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
-            .respondentLastName("Jones")
+            .lastName("Davies")
             .subjectLineWithHearingDate("Jones, SN2000, case management hearing, 20 February 2020")
             .build();
 
-        assertThat(reviewDraftOrdersEmailContentProvider.buildOrdersRejectedContent(caseData, hearing, orders))
-            .isEqualTo(expectedTemplate);
+        given(helper.getSubjectLineLastName(caseData)).willReturn("Davies");
+
+        assertThat(underTest.buildOrdersRejectedContent(caseData, hearing, orders)).isEqualTo(expectedTemplate);
     }
 
 }

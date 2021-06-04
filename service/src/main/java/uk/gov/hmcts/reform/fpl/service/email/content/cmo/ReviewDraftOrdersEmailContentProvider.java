@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -10,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.notify.cmo.ApprovedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.RejectedOrdersTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +27,10 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-@Service
+@Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentProvider {
+    private final EmailNotificationHelper helper;
 
     public ApprovedOrdersTemplate buildOrdersApprovedContent(CaseData caseData,
                                                              HearingBooking hearing,
@@ -37,6 +42,18 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
         }
 
         return buildTemplateForDigitalPreference(caseData, hearing, orders);
+    }
+
+    public RejectedOrdersTemplate buildOrdersRejectedContent(CaseData caseData, HearingBooking hearing,
+                                                             List<HearingOrder> hearingOrders) {
+        return RejectedOrdersTemplate.builder()
+            .lastName(helper.getSubjectLineLastName(caseData))
+            .subjectLineWithHearingDate(subject(
+                hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()
+            ))
+            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
+            .ordersAndRequestedChanges(ordersAndRequestedChanges(hearingOrders))
+            .build();
     }
 
     private ApprovedOrdersTemplate buildTemplateForDigitalPreference(CaseData caseData,
@@ -66,17 +83,6 @@ public class ReviewDraftOrdersEmailContentProvider extends AbstractEmailContentP
             .subjectLineWithHearingDate(
                 subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
             .orderList(formatOrders(orders))
-            .build();
-    }
-
-    public RejectedOrdersTemplate buildOrdersRejectedContent(CaseData caseData, HearingBooking hearing,
-                                                             List<HearingOrder> hearingOrders) {
-        return RejectedOrdersTemplate.builder()
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(),
-                caseData.getFamilyManCaseNumber()))
-            .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
-            .ordersAndRequestedChanges(ordersAndRequestedChanges(hearingOrders))
             .build();
     }
 
