@@ -68,7 +68,7 @@ public abstract class ManageOrderWithEndOfProceedingsDocumentParameterGenerator 
                 break;
             case END_OF_PROCEEDINGS:
                 childCustodyMessage = "The Court orders %s supervises the %s until "
-                    + "the end of the proceedings or further order.";
+                    + "the end of the proceedings or until a further order is made.";
                 formatString = null;
                 orderExpiration = null;
                 break;
