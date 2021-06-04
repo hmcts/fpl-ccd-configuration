@@ -271,8 +271,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
             String incorrectMigrationId = "FPLA-1111";
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = wrapElements(
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID));
+            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
+                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(secondBundleID,
+                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)));
 
             CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
