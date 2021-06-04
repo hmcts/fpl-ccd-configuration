@@ -72,7 +72,7 @@ public enum Order {
     private final String title;
     private final String childrenAct;
     private final String historyTitle;
-    private final Boolean isOrderFinal;
+    private final boolean isOrderFinal;
     private final List<OrderQuestionBlock> questions;
 
     public String fileName(RenderFormat format) {

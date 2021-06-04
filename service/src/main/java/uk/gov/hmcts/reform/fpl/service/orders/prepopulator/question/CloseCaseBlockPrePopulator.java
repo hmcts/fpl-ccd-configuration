@@ -33,7 +33,7 @@ public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulato
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         Order order = manageOrdersEventData.getManageOrdersType();
 
-        if (order.getIsOrderFinal() && !allChildrenHaveFinalOrder(updatedChildren)) {
+        if (order.isOrderFinal() && !allChildrenHaveFinalOrder(updatedChildren)) {
             OrderTempQuestions orderTempQuestions = manageOrdersEventData.getOrderTempQuestions();
             return Map.of("orderTempQuestions", orderTempQuestions.toBuilder().closeCase("NO").build());
         }
