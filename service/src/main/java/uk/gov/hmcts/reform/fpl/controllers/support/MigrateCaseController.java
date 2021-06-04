@@ -97,7 +97,6 @@ public class MigrateCaseController extends CallbackController {
     private void run2991(CaseDetails caseDetails) {
         final UUID secondBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
         final UUID supportingEvidenceID = UUID.fromString("045c1fd6-3fed-42d3-be0b-e47257f6c01c");
-
         CaseData caseData = getCaseData(caseDetails);
 
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
