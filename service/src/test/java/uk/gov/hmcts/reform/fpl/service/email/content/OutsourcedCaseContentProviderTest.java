@@ -42,7 +42,7 @@ class OutsourcedCaseContentProviderTest extends AbstractEmailContentProviderTest
 
     @BeforeEach
     void setUp() {
-        when(helper.getEldestChildLastName(anyList ())).thenReturn(CHILD_LAST_NAME);
+        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test

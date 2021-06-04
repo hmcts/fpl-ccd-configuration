@@ -40,6 +40,7 @@ public class GeneratedOrderEventHandler {
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
 
+    // REFACTOR: 04/06/2021 change private methods into their own event listeners
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();

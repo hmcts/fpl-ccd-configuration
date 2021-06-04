@@ -48,9 +48,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     SealedOrderHistoryService.class, CaseUrlService.class, GeneratedOrderEventHandler.class,
     RepresentativeNotificationService.class
 })
-@MockBeans( {
-    @MockBean(ChildrenService.class), @MockBean(IdentityService.class), @MockBean(OrderCreationService.class),
-    @MockBean(FeatureToggleService.class), @MockBean(SendDocumentService.class)
+@MockBeans({
+    // All but the feature toggle service are only mocked because they are dependencies that aren't used
+    @MockBean(FeatureToggleService.class), @MockBean(ChildrenService.class), @MockBean(IdentityService.class),
+    @MockBean(OrderCreationService.class), @MockBean(SendDocumentService.class)
 })
 class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final GeneratedOrder ORDER = mock(GeneratedOrder.class);
