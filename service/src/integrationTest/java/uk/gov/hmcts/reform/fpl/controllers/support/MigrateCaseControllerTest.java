@@ -242,7 +242,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             UUID secondBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
             UUID supportingEvidenceID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(UUID.randomUUID(),
-                buildAdditionalApplicationsBundle(supportingEvidenceID)), element(secondBundleID, buildAdditionalApplicationsBundle(supportingEvidenceID)));
+                buildAdditionalApplicationsBundle(supportingEvidenceID)), element(secondBundleID,
+                buildAdditionalApplicationsBundle(supportingEvidenceID)));
 
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -255,8 +256,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .usePbaPayment(YES.getValue())
                     .build()).build();
 
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0)).isEqualTo(additionalApplications.get(0));
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1)).isEqualTo(additionalApplications.get(1));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0))
+                .isEqualTo(additionalApplications.get(0));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1))
+                .isEqualTo(additionalApplications.get(1));
         }
 
         @Test
@@ -277,7 +280,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             UUID secondBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
             UUID supportingEvidenceID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(UUID.randomUUID(),
-                buildAdditionalApplicationsBundle(UUID.randomUUID())), element(wrongID, buildAdditionalApplicationsBundle(supportingEvidenceID)));
+                buildAdditionalApplicationsBundle(UUID.randomUUID())), element(wrongID,
+                buildAdditionalApplicationsBundle(supportingEvidenceID)));
 
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
 
