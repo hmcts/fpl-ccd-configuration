@@ -66,6 +66,7 @@
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-documents/submitted_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-orders/section/mid-event_POST": "ignore",
   "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/manage-orders/submitted_POST": "ignore",
+  "100000_A Server Error response code was returned by the server_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/remove-managing-organisation/about-to-submit_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/close-case/mid-event_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-hearing-bookings/about-to-submit_POST": "ignore",
   "90022_Application Error Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-hearing-bookings/mid-event_POST": "ignore",

@@ -130,6 +130,7 @@ module.exports = {
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
     messageJudge: 'Send and reply to messages',
+    removeManagingOrganisation: 'Remove managing organisation',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
