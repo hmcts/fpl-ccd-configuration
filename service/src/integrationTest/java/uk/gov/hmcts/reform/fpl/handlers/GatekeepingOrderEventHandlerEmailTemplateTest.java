@@ -90,14 +90,14 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .callout("Stevens, FAM_NUM, hearing 12 May 2021")
                 .line()
-                .h1("Next steps")
-                .line(" You should now check the order to see your directions and compliance dates.")
+                .h1("Next steps ")
+                .line("You should now check the order to see your directions and compliance dates.")
                 .line()
                 .line("You can review it by using this link " + GOV_NOTIFY_DOC_URL + ".")
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }
@@ -123,7 +123,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }
@@ -149,7 +149,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }
@@ -167,8 +167,8 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("The standard directions order and notice of proceedings have been issued for:")
                 .line()
                 .callout("Stevens, FAM_NUM, hearing 12 May 2021")
-                .line()
-                .line(" To view the order, sign into " + caseDetailsUrl(ID, ORDERS))
+                .line(" ")
+                .end("To view the order, sign into " + caseDetailsUrl(ID, ORDERS))
             );
     }
 
@@ -186,7 +186,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .callout("Stevens, FAM_NUM, hearing 12 May 2021")
                 .line()
-                .line("To view the order, sign into " + caseDetailsUrl(ID, ORDERS))
+                .end("To view the order, sign into " + caseDetailsUrl(ID, ORDERS))
             );
     }
 
@@ -208,9 +208,8 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
-
             );
     }
 
@@ -230,7 +229,6 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .h1("Next steps")
                 .line("You should now:")
-                .line()
                 .list("serve all parties with the SDO", "check your directions and compliance dates")
                 .line()
                 .line("To view the order, sign in to:")
@@ -238,7 +236,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }
@@ -259,7 +257,6 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .h1("Next steps")
                 .line("You should now:")
-                .line()
                 .list("serve all parties with the order", "check for directions and compliance dates")
                 .line()
                 .line("To view the order, sign in to:")
@@ -267,7 +264,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }
@@ -293,7 +290,7 @@ class GatekeepingOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .line("HM Courts & Tribunals Service")
                 .line()
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }

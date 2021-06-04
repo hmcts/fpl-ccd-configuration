@@ -34,14 +34,18 @@ public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAss
     public SendEmailResponseAssert hasBody(EmailContent emailContent) {
         isNotNull();
         String actualBody = cleanGovNotifyDocLink(actual.getBody());
-        actualBody = actualBody.replaceAll("\\P{Print}", "");
-        String expectedBody = emailContent.body().replaceAll("\\P{Print}", "");
+        actualBody = standardiseLineBreaks(actualBody);
+        String expectedBody = emailContent.body();
         if (!Objects.equals(actualBody, expectedBody)) {
             throw failureWithActualExpected(
                 actualBody, expectedBody, "\nExpected body to be\n<%s>\nbut was:\n<%s>", expectedBody, actualBody
             );
         }
         return this;
+    }
+
+    private String standardiseLineBreaks(String body) {
+        return body.replaceAll("\\r\\n", "\n");
     }
 
     private String cleanGovNotifyDocLink(String body) {

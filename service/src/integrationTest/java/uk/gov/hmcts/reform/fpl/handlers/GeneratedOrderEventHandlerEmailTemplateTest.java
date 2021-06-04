@@ -116,6 +116,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .list("signing into http://fake-url/cases/case-details/12345#Orders",
                     "using this link http://fake-url/documents/some-random-string/binary")
+                .line()
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
@@ -133,6 +134,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .list("signing into http://fake-url/cases/case-details/12345#Orders",
                     "using this link http://fake-url/documents/some-random-string/binary")
+                .line()
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
@@ -150,6 +152,7 @@ class GeneratedOrderEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line()
                 .list("signing into http://fake-url/cases/case-details/12345#Orders",
                     "using this link http://fake-url/documents/some-random-string/binary")
+                .line()
                 .line("HM Courts & Tribunal Service")
                 .line()
                 .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "

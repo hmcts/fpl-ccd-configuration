@@ -24,6 +24,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -102,5 +103,9 @@ public class EmailTemplateTest {
 
     protected SendEmailResponse response() {
         return resultsCaptor.getResult();
+    }
+
+    protected List<SendEmailResponse> allResponses() {
+        return resultsCaptor.getAllResults();
     }
 }

@@ -77,7 +77,7 @@ class CMORemovedEventHandlerEmailTemplateTest extends EmailTemplateTest {
                 .line("http://fake-url/cases/case-details/" + CASE_ID)
                 .line()
                 .line("HM Courts & Tribunals Service")
-                .line("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
+                .end("Do not reply to this email. If you need to contact us, call 0330 808 4424 or email "
                       + "contactfpl@justice.gov.uk")
             );
     }

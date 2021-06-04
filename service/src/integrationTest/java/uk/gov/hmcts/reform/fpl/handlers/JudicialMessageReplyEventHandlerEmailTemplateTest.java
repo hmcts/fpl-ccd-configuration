@@ -61,7 +61,7 @@ class JudicialMessageReplyEventHandlerEmailTemplateTest extends EmailTemplateTes
                 .line("You've received a message about:")
                 .line()
                 .callout(RESPONDENT_LAST_NAME)
-                .line()
+                .lines(3)
                 .line("Message: some reply")
                 .line()
                 .line("To respond, sign in to:")

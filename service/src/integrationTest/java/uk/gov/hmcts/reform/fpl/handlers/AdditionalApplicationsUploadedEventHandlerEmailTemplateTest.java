@@ -45,7 +45,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     AdditionalApplicationsUploadedEventHandler.class, EmailNotificationHelper.class,
     AdditionalApplicationsUploadedEmailContentProvider.class, CaseUrlService.class
 })
-public class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
+class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
     private static final String FAMILY_MAN_CASE_NUMBER = "FAM_NUM";
     private static final String CHILD_LAST_NAME = "Jones";

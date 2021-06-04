@@ -94,6 +94,7 @@ class AmendedReturnedCaseEventHandlerEmailTemplateTest extends EmailTemplateTest
                 .line("please fill section 1")
                 .line()
                 .line("To view the application, sign in to:")
+                .line()
                 .line("http://fake-url/cases/case-details/1234")
                 .line()
                 .line("HM Courts & Tribunals Service")

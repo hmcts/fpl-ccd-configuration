@@ -1,26 +1,28 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 
-@SpringBootTest(classes = {
+@ContextConfiguration(classes = {
     NoticeOfChangeEventHandler.class,
-    NotificationService.class,
     NoticeOfChangeContentProvider.class,
-    ObjectMapper.class,
     CaseUrlService.class,
+    EmailNotificationHelper.class
 })
 class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
@@ -37,6 +39,14 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Autowired
     private NoticeOfChangeEventHandler underTest;
+
+    @MockBean
+    private FeatureToggleService toggleService;
+
+    @BeforeEach
+    void setUp() {
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(false);
+    }
 
     @Test
     void notifySolicitorAccessGranted() {
