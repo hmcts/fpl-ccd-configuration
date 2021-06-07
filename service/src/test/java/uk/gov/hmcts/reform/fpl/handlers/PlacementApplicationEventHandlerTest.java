@@ -1,85 +1,61 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.PlacementApplicationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PlacementApplicationContentProvider;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.COURT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.CTSC_INBOX;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {PlacementApplicationEventHandler.class, LookupTestConfig.class,
-    HmctsAdminNotificationHandler.class})
+@ExtendWith(MockitoExtension.class)
 class PlacementApplicationEventHandlerTest {
+    private static final BaseCaseNotifyData NOTIFY_DATA = mock(BaseCaseNotifyData.class);
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final long CASE_ID = 123456L;
 
-    @MockBean
+    @Mock
     private NotificationService notificationService;
-
-    @MockBean
-    private PlacementApplicationContentProvider placementApplicationContentProvider;
-
-    @Autowired
-    private PlacementApplicationEventHandler placementApplicationEventHandler;
+    @Mock
+    private HmctsAdminNotificationHandler notificationHandler;
+    @Mock
+    private PlacementApplicationContentProvider contentProvider;
+    @InjectMocks
+    private PlacementApplicationEventHandler underTest;
 
     @Test
     void shouldNotifyHmctsAdminOfPlacementApplicationUploadWhenCtscIsDisabled() {
-        CaseData caseData = caseData();
+        given(contentProvider.buildPlacementApplicationNotificationParameters(CASE_DATA)).willReturn(NOTIFY_DATA);
+        given(notificationHandler.getHmctsAdminEmail(CASE_DATA)).willReturn(COURT_EMAIL_ADDRESS);
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
 
-        final BaseCaseNotifyData expectedParameters = getExpectedPlacementNotificationParameters();
-
-        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
-            .willReturn(expectedParameters);
-
-        placementApplicationEventHandler.notifyAdmin(new PlacementApplicationEvent(caseData));
+        underTest.notifyAdmin(new PlacementApplicationEvent(CASE_DATA));
 
         verify(notificationService).sendEmail(
-            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-            COURT_EMAIL_ADDRESS,
-            expectedParameters,
-            caseData.getId());
+            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, COURT_EMAIL_ADDRESS, NOTIFY_DATA, CASE_ID
+        );
     }
 
     @Test
     void shouldNotifyCtscAdminOfPlacementApplicationUploadWhenCtscIsEnabled() {
-        CaseData caseData = CaseData.builder()
-            .id(RandomUtils.nextLong())
-            .sendToCtsc("Yes")
-            .build();
+        given(contentProvider.buildPlacementApplicationNotificationParameters(CASE_DATA)).willReturn(NOTIFY_DATA);
+        given(notificationHandler.getHmctsAdminEmail(CASE_DATA)).willReturn(CTSC_INBOX);
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
 
-        final BaseCaseNotifyData expectedParameters = getExpectedPlacementNotificationParameters();
-
-        given(placementApplicationContentProvider.buildPlacementApplicationNotificationParameters(caseData))
-            .willReturn(expectedParameters);
-
-        placementApplicationEventHandler.notifyAdmin(new PlacementApplicationEvent(caseData));
+        underTest.notifyAdmin(new PlacementApplicationEvent(CASE_DATA));
 
         verify(notificationService).sendEmail(
-            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE,
-            CTSC_INBOX,
-            expectedParameters,
-            caseData.getId());
-    }
-
-    private BaseCaseNotifyData getExpectedPlacementNotificationParameters() {
-        return BaseCaseNotifyData.builder()
-            .respondentLastName("Moley")
-            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+            PLACEMENT_APPLICATION_NOTIFICATION_TEMPLATE, CTSC_INBOX, NOTIFY_DATA, CASE_ID
+        );
     }
 }
