@@ -1,23 +1,23 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C35bInterimSupervisionOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.generics.ManageOrderWithEndOfProceedingsDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeMessages;
 
 @Component
-public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProceedingsDocumentParameterGenerator {
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class C35bISODocumentParameterGenerator implements DocmosisParameterGenerator {
 
-    public C35bISODocumentParameterGenerator(
-        ChildrenService childrenService, LocalAuthorityNameLookupConfiguration laNameLookup) {
-        super(childrenService, laNameLookup);
-    }
+    private final OrderDetailsWithEndTypeGenerator orderDetailsWithEndTypeGenerator;
 
     @Override
     public Order accept() {
@@ -30,14 +30,26 @@ public class C35bISODocumentParameterGenerator extends ManageOrderWithEndOfProce
     }
 
     @Override
-    protected DocmosisParameters docmosisParameters(ManageOrdersEventData manageOrdersEventData,
-                                                    String localAuthorityCode,
-                                                    String localAuthorityName, int size) {
+    public DocmosisParameters generate(CaseData caseData) {
+        ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
+
         return C35bInterimSupervisionOrderDocmosisParameters.builder()
             .orderTitle(Order.C35B_INTERIM_SUPERVISION_ORDER.getTitle())
             .orderType(GeneratedOrderType.SUPERVISION_ORDER)
             .furtherDirections(manageOrdersEventData.getManageOrdersFurtherDirections())
-            .orderDetails(orderDetails(size, localAuthorityName, manageOrdersEventData))
+            .orderDetails(orderDetailsWithEndTypeGenerator.orderDetails(
+                manageOrdersEventData.getManageOrdersEndDateTypeWithEndOfProceedings(),
+                OrderDetailsWithEndTypeMessages.builder()
+                    .messageWithSpecifiedTime(
+                        "The Court orders ${localAuthorityName} supervises the ${childOrChildren} until ${endDate}.")
+                    .messageWithNumberOfMonths(
+                        "The Court orders ${localAuthorityName} supervises the ${childOrChildren} for ${numOfMonths} "
+                            + "months from the date of "
+                            + "this order until ${endDate}.")
+                    .messageWithEndOfProceedings(
+                        "The Court orders ${localAuthorityName} supervises the ${childOrChildren} until "
+                            + "the end of the proceedings or until a further order is made.").build(),
+                caseData))
             .build();
     }
 }
