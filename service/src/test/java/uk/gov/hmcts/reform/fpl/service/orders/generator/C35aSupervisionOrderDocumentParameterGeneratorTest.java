@@ -25,9 +25,9 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
@@ -265,7 +265,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
                 .build())
             .build();
@@ -278,7 +278,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(NEXT_WEEK_DATE_TIME)
                 .build())
             .build();
@@ -291,7 +291,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
                 .manageOrdersApprovalDate(time.now().toLocalDate())
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(numOfMonths)
                 .build())
             .build();
