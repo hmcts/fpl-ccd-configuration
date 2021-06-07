@@ -17,7 +17,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +37,9 @@ class OrderValidatorHolderTest {
     @Mock
     private EPOEndDateValidator epoEndDateValidator;
     @Mock
-    private SupervisionOrderEndDateValidator supervisionOrderEndDateValidator;
+    private ManageOrderEndDateWithMonthValidator manageOrderEndDateValidator;
+    @Mock
+    private ManageOrderEndDateWithEndOfProceedingsValidator manageOrderEndDateWithEndOfProceedingsValidator;
 
     @InjectMocks
     private OrderValidatorHolder underTest;
@@ -48,7 +51,8 @@ class OrderValidatorHolderTest {
             approvalDateTimeValidator,
             whichChildrenValidator,
             epoEndDateValidator,
-            supervisionOrderEndDateValidator
+            manageOrderEndDateValidator,
+            manageOrderEndDateWithEndOfProceedingsValidator
         );
 
         orderQuestionBlockValidators = Map.of(
@@ -56,7 +60,8 @@ class OrderValidatorHolderTest {
             APPROVAL_DATE_TIME, approvalDateTimeValidator,
             WHICH_CHILDREN, whichChildrenValidator,
             EPO_EXPIRY_DATE, epoEndDateValidator,
-            SUPERVISION_ORDER_END_DATE, supervisionOrderEndDateValidator
+            MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,
+            MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, manageOrderEndDateWithEndOfProceedingsValidator
         );
 
         validators.forEach(validator -> when(validator.accept()).thenCallRealMethod());
