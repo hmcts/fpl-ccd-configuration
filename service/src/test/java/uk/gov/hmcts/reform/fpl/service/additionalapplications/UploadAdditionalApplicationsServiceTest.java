@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +56,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference
 @ContextConfiguration(classes = {
     UploadAdditionalApplicationsService.class,
     FixedTimeConfiguration.class,
-    DocumentUploadHelper.class
+    DocumentUploadHelper.class,
+    ObjectMapper.class
 })
 class UploadAdditionalApplicationsServiceTest {
 
@@ -81,6 +83,9 @@ class UploadAdditionalApplicationsServiceTest {
 
     @MockBean
     private DocumentSealingService documentSealingService;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Autowired
     private UploadAdditionalApplicationsService underTest;

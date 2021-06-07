@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.additionalapplications;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.DocumentUploadHelper;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,6 +36,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedElement;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -45,6 +47,7 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
+    private final ObjectMapper mapper;
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
         final Optional<String> applicantName = getSelectedApplicantName(
@@ -79,9 +82,9 @@ public class UploadAdditionalApplicationsService {
         return additionalApplicationsBundleBuilder.build();
     }
 
-    private Optional<String> getSelectedApplicantName(DynamicList applicantsList, String otherApplicant) {
+    private Optional<String> getSelectedApplicantName(Object applicantsList, String otherApplicant) {
         if (Objects.nonNull(applicantsList)) {
-            DynamicListElement selectedElement = applicantsList.getValue();
+            DynamicListElement selectedElement = getDynamicListSelectedElement(applicantsList, mapper);
 
             if (isNotEmpty(selectedElement)) {
                 if (APPLICANT_SOMEONE_ELSE.equals(selectedElement.getCode())) {

@@ -132,4 +132,10 @@ public class ElementUtils {
             .orElse(null);
     }
 
+    public static DynamicListElement getDynamicListSelectedElement(Object dynamicList, ObjectMapper mapper) {
+        return ofNullable(mapper.convertValue(dynamicList, DynamicList.class))
+            .map(DynamicList::getValue)
+            .orElse(null);
+    }
+
 }

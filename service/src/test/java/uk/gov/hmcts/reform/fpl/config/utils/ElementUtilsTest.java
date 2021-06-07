@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -72,6 +73,35 @@ public class ElementUtilsTest {
             UUID valueCode = getDynamicListSelectedValue(dynamicListAsMap, mapper);
 
             assertThat(valueCode).isEqualTo(selectedID);
+        }
+    }
+
+    @Nested
+    @ExtendWith(SpringExtension.class)
+    @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+    class DynamicListSelectedElement {
+        @Autowired
+        private ObjectMapper mapper;
+
+        @Test
+        void shouldReturnSelectedElementFromTheDynamicList() {
+            DynamicListElement selectedElement = DynamicListElement.builder().code("code1").label("label1").build();
+            DynamicListElement anotherElement = DynamicListElement.builder().code("code2").label("label2").build();
+            DynamicList dynamicList = DynamicList.builder()
+                .value(selectedElement)
+                .listItems(List.of(selectedElement, anotherElement)).build();
+            DynamicListElement element = getDynamicListSelectedElement(dynamicList, mapper);
+
+            assertThat(element).isEqualTo(selectedElement);
+        }
+
+        @Test
+        void shouldReturnNullWhenDynamicListElementIsNotSelected() {
+            DynamicListElement element1 = DynamicListElement.builder().code("code1").label("label1").build();
+            DynamicList dynamicList = DynamicList.builder().listItems(List.of(element1)).build();
+            DynamicListElement element = getDynamicListSelectedElement(dynamicList, mapper);
+
+            assertThat(element).isNull();
         }
     }
 
