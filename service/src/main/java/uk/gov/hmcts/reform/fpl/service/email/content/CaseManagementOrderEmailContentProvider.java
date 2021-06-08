@@ -43,6 +43,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             .hearing(uncapitalize(cmo.getHearing()))
             .caseUrl(getCaseUrl(caseData.getId(), ORDERS))
             .requestedChanges(cmo.getRequestedChanges())
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
     }
 

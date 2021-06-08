@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,16 +31,34 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 @ContextConfiguration(classes = {CaseManagementOrderEmailContentProvider.class})
 class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentProviderTest {
     private static final String ENCODED_DOC = Base64.getEncoder().encodeToString(DOCUMENT_CONTENT);
+    private static final CaseData CASE_DATA = CaseData.builder()
+        .id(Long.valueOf(CASE_REFERENCE))
+        .familyManCaseNumber("11")
+        .caseName("case1")
+        .respondents1(wrapElements(Respondent.builder()
+            .party(RespondentParty.builder().lastName("lastName").build())
+            .build()))
+        .children1(wrapElements(mock(Child.class)))
+        .allocatedJudge(Judge.builder()
+            .judgeTitle(JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE)
+            .judgeLastName("JudgeLastName")
+            .judgeEmailAddress("JudgeEmailAddress")
+            .build())
+        .build();
 
     @MockBean
     private EmailNotificationHelper helper;
     @Autowired
     private CaseManagementOrderEmailContentProvider underTest;
 
+    @BeforeEach
+    void setUp() {
+        when(helper.getEldestChildLastName(CASE_DATA.getAllChildren())).thenReturn("Some last name");
+    }
+
     @Test
     void shouldBuildCMOIssuedExpectedParametersWithEmptyCaseUrl() {
         HearingOrder cmo = buildCmo();
-        CaseData caseData = createCase();
         IssuedCMOTemplate expectedTemplate = IssuedCMOTemplate.builder()
             .respondentLastName("lastName")
             .familyManCaseNumber("11")
@@ -55,9 +74,8 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
 
         when(documentDownloadService.downloadDocument(cmo.getOrder().getBinaryUrl()))
             .thenReturn(DOCUMENT_CONTENT);
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn("Some last name");
 
-        assertThat(underTest.buildCMOIssuedNotificationParameters(caseData, cmo, EMAIL))
+        assertThat(underTest.buildCMOIssuedNotificationParameters(CASE_DATA, cmo, EMAIL))
             .isEqualTo(expectedTemplate);
     }
 
@@ -72,9 +90,10 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .hearing("test hearing, 20th June")
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .documentLink(DOC_URL)
+            .childLastName("Some last name")
             .build();
 
-        assertThat(underTest.buildCMOIssuedNotificationParameters(createCase(), cmo, DIGITAL_SERVICE))
+        assertThat(underTest.buildCMOIssuedNotificationParameters(CASE_DATA, cmo, DIGITAL_SERVICE))
             .isEqualTo(expectedTemplate);
     }
 
@@ -89,9 +108,10 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
             .caseUrl(caseUrl(CASE_REFERENCE, ORDERS))
             .respondentLastName("lastName")
             .familyManCaseNumber("11")
+            .childLastName("Some last name")
             .build();
 
-        assertThat(underTest.buildCMORejectedByJudgeNotificationParameters(createCase(), cmo))
+        assertThat(underTest.buildCMORejectedByJudgeNotificationParameters(CASE_DATA, cmo))
             .isEqualTo(expectedTemplate);
     }
 
@@ -99,23 +119,6 @@ class CaseManagementOrderEmailContentProviderTest extends AbstractEmailContentPr
         return HearingOrder.builder()
             .order(testDocument)
             .hearing("Test hearing, 20th June")
-            .build();
-    }
-
-    private CaseData createCase() {
-        return CaseData.builder()
-            .id(Long.valueOf(CASE_REFERENCE))
-            .familyManCaseNumber("11")
-            .caseName("case1")
-            .respondents1(wrapElements(Respondent.builder()
-                .party(RespondentParty.builder().lastName("lastName").build())
-                .build()))
-            .children1(wrapElements(mock(Child.class)))
-            .allocatedJudge(Judge.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE)
-                .judgeLastName("JudgeLastName")
-                .judgeEmailAddress("JudgeEmailAddress")
-                .build())
             .build();
     }
 }
