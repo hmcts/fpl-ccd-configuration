@@ -87,8 +87,6 @@ class UploadAdditionalApplicationsServiceTest {
     @MockBean
     private ApplicantsListGenerator applicantsListGenerator;
 
-    private ObjectMapper mapper = new ObjectMapper();
-
     @Autowired
     private UploadAdditionalApplicationsService underTest;
 
