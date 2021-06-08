@@ -6,21 +6,21 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C35aSupervisionOrderDocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -28,17 +28,17 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuf
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
-    private static final GeneratedOrderType TYPE = GeneratedOrderType.SUPERVISION_ORDER;
-    private static final String CHILD = "child";
-    private static final String CHILDREN = "children";
+public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
+    private static final GeneratedOrderType TYPE = GeneratedOrderType.CARE_ORDER;
+    private static final String CHILD = "child is";
+    private static final String CHILDREN = "children are";
 
     private final ChildrenService childrenService;
     private final LocalAuthorityNameLookupConfiguration laNameLookup;
 
     @Override
     public Order accept() {
-        return Order.C35A_SUPERVISION_ORDER;
+        return Order.C33_INTERIM_CARE_ORDER;
     }
 
     @Override
@@ -50,11 +50,13 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
 
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
 
-        return C35aSupervisionOrderDocmosisParameters.builder()
-            .orderTitle(Order.C35A_SUPERVISION_ORDER.getTitle())
+        return C33InterimCareOrderDocmosisParameters.builder()
+            .orderTitle(Order.C33_INTERIM_CARE_ORDER.getTitle())
             .orderType(TYPE)
             .furtherDirections(eventData.getManageOrdersFurtherDirections())
+            .exclusionClause(eventData.getManageOrdersExclusionDetails())
             .orderDetails(orderDetails(selectedChildren.size(), localAuthorityName, eventData))
+            .localAuthorityName(localAuthorityName)
             .build();
     }
 
@@ -66,10 +68,10 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
     private String orderDetails(int numOfChildren, String localAuthorityName, ManageOrdersEventData eventData) {
         LocalDateTime orderExpiration;
         String formatString;
-        Integer numOfMonths = null;
-        String childCustodyMessage = "The Court orders %s supervises the %s until %s.";
+        String childCustodyMessage = "The Court orders that the %s placed in the care of %s until %s.";
 
-        switch (eventData.getManageOrdersEndDateTypeWithMonth()) {
+        ManageOrdersEndDateType type = eventData.getManageOrdersEndDateTypeWithEndOfProceedings();
+        switch (type) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
             case CALENDAR_DAY:
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
@@ -78,33 +80,26 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
             case CALENDAR_DAY_AND_TIME:
                 formatString = DATE_TIME_WITH_ORDINAL_SUFFIX;
                 orderExpiration = eventData.getManageOrdersSetDateAndTimeEndDate();
+                childCustodyMessage = "The Court orders that the %s placed in the care of %s until %s.";
                 break;
-            case NUMBER_OF_MONTHS:
-                formatString = DATE_WITH_ORDINAL_SUFFIX;
-                LocalDate approvalDate = eventData.getManageOrdersApprovalDate();
-                numOfMonths = eventData.getManageOrdersSetMonthsEndDate();
-                orderExpiration = LocalDateTime.of(approvalDate.plusMonths(numOfMonths), LocalTime.MIDNIGHT);
-                childCustodyMessage =
-                    "The Court orders %s supervises the %s for %s months from the date of this order until %s.";
+            case END_OF_PROCEEDINGS:
+                childCustodyMessage = "The Court orders that the %s placed in the care of %s until "
+                    + "the end of the proceedings or until a further order is made.";
+                formatString = null;
+                orderExpiration = null;
                 break;
             default:
-                throw new IllegalStateException("Unexpected supervision order event data type: "
-                    + eventData.getManageOrdersEndDateTypeWithMonth());
+                throw new IllegalStateException("Unexpected order event data type: " + type);
         }
 
-        final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
-        boolean isMonthOptionSelected = eventData.getManageOrdersEndDateTypeWithMonth().equals(NUMBER_OF_MONTHS);
-
-        if (isMonthOptionSelected) {
-            return getMonthMessage(
+        if (type == END_OF_PROCEEDINGS) {
+            return getEndOfProceedingsMessage(
                 numOfChildren,
                 localAuthorityName,
-                orderExpiration,
-                formatString,
-                numOfMonths,
-                childCustodyMessage,
-                dayOrdinalSuffix);
+                childCustodyMessage
+            );
         } else {
+            final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
             return getDateTimeAndDateMessage(
                 numOfChildren, localAuthorityName,
                 orderExpiration,
@@ -114,15 +109,13 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
         }
     }
 
-    private String getMonthMessage(int numOfChildren, String localAuthorityName, LocalDateTime orderExpiration,
-                                   String formatString, Integer numOfMonths,
-                                   String courtResponsibilityAssignmentMessage, String dayOrdinalSuffix) {
+    private String getEndOfProceedingsMessage(int numOfChildren,
+                                              String localAuthorityName,
+                                              String courtResponsibilityAssignmentMessage) {
         return String.format(
             courtResponsibilityAssignmentMessage,
-            localAuthorityName,
             getChildGrammar(numOfChildren),
-            numOfMonths,
-            formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix))
+            localAuthorityName
         );
     }
 
@@ -131,8 +124,8 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
                                              String courtResponsibilityAssignmentMessage, String dayOrdinalSuffix) {
         return String.format(
             courtResponsibilityAssignmentMessage,
-            localAuthorityName,
             getChildGrammar(numOfChildren),
+            localAuthorityName,
             formatLocalDateTimeBaseUsingFormat(orderExpiration, String.format(formatString, dayOrdinalSuffix))
         );
     }
