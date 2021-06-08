@@ -2,90 +2,75 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LegalRepresentativeAddedTemplate;
-import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-
-import java.util.List;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(MockitoExtension.class)
-class LegalRepresentativeAddedContentProviderTest {
-
-    public static final String REPRESENTATIVE_FULL_NAME = "representative full name";
-    public static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
+@ContextConfiguration(classes = {LegalRepresentativeAddedContentProvider.class})
+class LegalRepresentativeAddedContentProviderTest extends AbstractEmailContentProviderTest {
+    private static final String REPRESENTATIVE_FULL_NAME = "representative full name";
+    private static final LegalRepresentative LEGAL_REPRESENTATIVE = LegalRepresentative.builder()
         .fullName(REPRESENTATIVE_FULL_NAME)
         .build();
-    public static final String LOCAL_AUTHORITY_CODE = "LocalAuthorityCode";
-    public static final String RESPONDENT_LAST_NAME = "RespondentLastName";
-    public static final Element<Respondent> ANOTHER_RESPONDENT = element(mock(Respondent.class));
-    public static final String FAMILY_MAN_CASE_NUMBER = "1234556";
-    public static final long ID = 213432435L;
-    public static final CaseData CASE_DATA = CaseData.builder()
+    private static final String LOCAL_AUTHORITY_CODE = "LocalAuthorityCode";
+    private static final String RESPONDENT_LAST_NAME = "RespondentLastName";
+    private static final String FAMILY_MAN_CASE_NUMBER = "1234556";
+    private static final long ID = 213432435L;
+    private static final CaseData CASE_DATA = CaseData.builder()
         .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
-        .respondents1(List.of(
-            element(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .lastName(RESPONDENT_LAST_NAME).build())
-                .build()),
-            ANOTHER_RESPONDENT))
+        .respondents1(wrapElements(
+            Respondent.builder().party(RespondentParty.builder().lastName(RESPONDENT_LAST_NAME).build()).build()
+        ))
+        .children1(wrapElements(mock(Child.class)))
         .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
         .id(ID)
         .build();
-    private static final String CASE_URL = "caseUrl";
     private static final String LOCAL_AUTHORITY_NAME = "localAuthorityName";
+    private static final String CHILD_NAME = "Horus";
 
-    @Mock
-    private CaseUrlService caseUrlService;
+    @MockBean
+    private LocalAuthorityNameLookupConfiguration laNameLookup;
+    @MockBean
+    private EmailNotificationHelper helper;
 
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration = mock(
-        LocalAuthorityNameLookupConfiguration.class
-    );
-
-    @InjectMocks
-    private LegalRepresentativeAddedContentProvider underTest = new LegalRepresentativeAddedContentProvider(
-        localAuthorityNameLookupConfiguration
-    );
+    @Autowired
+    private LegalRepresentativeAddedContentProvider underTest;
 
     @BeforeEach
     void setUp() {
-        when(caseUrlService.getCaseUrl(ID)).thenReturn(CASE_URL);
-        when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .thenReturn(LOCAL_AUTHORITY_NAME);
+        when(laNameLookup.getLocalAuthorityName(LOCAL_AUTHORITY_CODE)).thenReturn(LOCAL_AUTHORITY_NAME);
+        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_NAME);
     }
 
     @Test
     void testGetParameters() {
-        LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(
-            LEGAL_REPRESENTATIVE,
-            CASE_DATA
-        );
+        LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(LEGAL_REPRESENTATIVE, CASE_DATA);
 
-        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedNotificationData(FAMILY_MAN_CASE_NUMBER));
+        assertThat(actual).isEqualTo(expectedNotificationData(FAMILY_MAN_CASE_NUMBER));
     }
 
     @Test
     void testGetParametersIfNullFamilyManCaseNumber() {
-
         LegalRepresentativeAddedTemplate actual = underTest.getNotifyData(
             LEGAL_REPRESENTATIVE,
             CASE_DATA.toBuilder().familyManCaseNumber(null).build()
         );
 
-        assertThat(actual).usingRecursiveComparison().isEqualTo(expectedNotificationData(""));
+        assertThat(actual).isEqualTo(expectedNotificationData(""));
     }
 
     private LegalRepresentativeAddedTemplate expectedNotificationData(String familyManId) {
@@ -94,7 +79,8 @@ class LegalRepresentativeAddedContentProviderTest {
             .localAuthority(LOCAL_AUTHORITY_NAME)
             .firstRespondentLastName(RESPONDENT_LAST_NAME)
             .familyManCaseNumber(familyManId)
-            .caseUrl(CASE_URL)
+            .caseUrl(caseUrl(String.valueOf(ID)))
+            .childLastName(CHILD_NAME)
             .build();
     }
 }
