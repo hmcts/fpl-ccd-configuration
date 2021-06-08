@@ -270,7 +270,7 @@ const checkPreview = async () => {
 };
 
 const selectCloseCase = async () => {
-  I.checkOption(preview.closeCase.options.yes);
+  I.checkOption(preview.closeCase.options.no);
 };
 
 const selectExclusionRequirementICO = (exclusionRequirement) => {
