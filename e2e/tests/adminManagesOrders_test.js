@@ -275,7 +275,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 5,
+    orderIndex: 6,
     orderType: 'C47A - Appointment of a Children\'s Guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
