@@ -10,20 +10,22 @@ function updateSauceLabsResult(result, sessionId) {
 }
 
 module.exports = function() {
+  let overallResult;
 
-  // Setting test success on SauceLabs
   event.dispatcher.on(event.test.passed, () => {
-
-    const sessionId = container.helpers('WebDriver').browser.sessionId;
-    exec(updateSauceLabsResult('true', sessionId));
-
+    // skip if the test run has already failed
+    if (overallResult === undefined) {
+      overallResult = true;
+    }
   });
 
-  // Setting test failure on SauceLabs
   event.dispatcher.on(event.test.failed, () => {
+    overallResult = false;
+  });
 
+  // Setting overall test result on SauceLabs
+  event.dispatcher.on(event.all.after, () => {
     const sessionId = container.helpers('WebDriver').browser.sessionId;
-    exec(updateSauceLabsResult('false', sessionId));
-
+    exec(updateSauceLabsResult(!!overallResult, sessionId));
   });
 };
