@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private static final UUID FIRST_BUNDLE_ID = UUID.fromString("fbf05208-f5dd-4942-b735-9aa226d73a2e");
+    private static final UUID FIRST_BUNDLE_ID = UUID.fromString("427ef017-f57a-4942-9d75-4dcf7b45de74");
     private static final UUID SECOND_BUNDLE_ID = UUID.fromString("4e4def36-2323-4e95-b93a-2f46fc4d6fc0");
     private static final UUID SUPPORTING_EVIDENCE_ID = UUID.fromString("3f3a183e-44ab-4e63-ac27-0ca40f3058ff");
 
@@ -133,7 +133,7 @@ public class MigrateCaseController extends CallbackController {
                 .filename("Position Statement for C2.docx")
                 .build())
             .uploadedBy("HMCTS")
-            .dateTimeUploaded(LocalDateTime.of(2021, 05, 24, 10, 23, 32))
+            .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
             .build();
 
         SupportingEvidenceBundle secondBundle = SupportingEvidenceBundle.builder()
@@ -144,7 +144,7 @@ public class MigrateCaseController extends CallbackController {
                 .filename("AMO0030002 Draft LOI.docx")
                 .build())
             .uploadedBy("HMCTS")
-            .dateTimeUploaded(LocalDateTime.of(2021, 05, 24, 10, 23, 32))
+            .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
             .build();
 
         SupportingEvidenceBundle thirdBundle = SupportingEvidenceBundle.builder()
@@ -155,7 +155,7 @@ public class MigrateCaseController extends CallbackController {
                 .filename("AMO0030002 Medico-legal_CV-May2021.doc")
                 .build())
             .uploadedBy("HMCTS")
-            .dateTimeUploaded(LocalDateTime.of(2021, 05, 24, 10, 23, 32))
+            .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
             .build();
 
         return wrapElements(firstBundle, secondBundle, thirdBundle);
@@ -192,7 +192,7 @@ public class MigrateCaseController extends CallbackController {
         List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle = caseData
             .getAdditionalApplicationsBundle();
 
-        Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(1);
+        Element<AdditionalApplicationsBundle> secondBundle = additionalApplicationsBundle.get(2);
         if (secondBundle.getId().equals(secondBundleID)) {
             C2DocumentBundle c2DocumentBundle = secondBundle.getValue().getC2DocumentBundle();
 
