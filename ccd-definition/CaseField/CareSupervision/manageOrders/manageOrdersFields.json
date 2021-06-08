@@ -185,10 +185,20 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "manageSupervisionOrderEndDateType",
+    "ID": "manageOrdersEndDateTypeWithMonth",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "SupervisionOrderEndDateType",
+    "FieldTypeParameter": "ManageOrdersEndDateTypeWithMonth",
+    "Label": "When does the order end?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEndDateTypeWithEndOfProceedings",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersEndDateTypeWithEndOfProceedings",
     "Label": "When does the order end?",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -220,6 +230,24 @@
     "SecurityClassification": "PUBLIC",
     "Searchable": "N",
     "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersHasExclusionRequirement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Add exclusion details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersExclusionDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add exclusion details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
   },
   {
     "LiveFrom": "01/01/2017",
