@@ -145,7 +145,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         data.putAll(createTemporaryC2Document());
         data.putAll(createTemporaryOtherApplicationDocument());
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.put("applicantsList", APPLICANT);
+        data.put("applicantsList", createApplicantsDynamicList(APPLICANT));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -168,7 +168,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
         caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_NAME);
-        caseDetails.getData().put("applicantsList", APPLICANT);
+        caseDetails.getData().put("applicantsList", createApplicantsDynamicList(APPLICANT));
         caseDetails.getData().put("temporaryC2Document", Map.of("document", uploadedDocument));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);

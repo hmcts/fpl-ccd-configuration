@@ -77,8 +77,6 @@ public class ElementUtilsTest {
     }
 
     @Nested
-    @ExtendWith(SpringExtension.class)
-    @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
     class DynamicListSelectedElementValue {
         private ObjectMapper mapper = new ObjectMapper();
 

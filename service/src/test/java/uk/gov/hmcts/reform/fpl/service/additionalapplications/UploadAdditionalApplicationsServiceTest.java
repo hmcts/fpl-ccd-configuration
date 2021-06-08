@@ -92,9 +92,10 @@ class UploadAdditionalApplicationsServiceTest {
 
     public static final String APPLICANT_NAME = "Swansea local authority, Applicant";
     public static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
+    public static final String APPLICANT = "applicant";
 
     private static final List<DynamicListElement> DYNAMIC_LIST_ELEMENTS = List.of(
-        DynamicListElement.builder().code("applicant").label(APPLICANT_NAME).build(),
+        DynamicListElement.builder().code(APPLICANT).label(APPLICANT_NAME).build(),
         DynamicListElement.builder().code(APPLICANT_SOMEONE_ELSE).label("Someone else").build());
 
     @BeforeEach()
@@ -117,7 +118,7 @@ class UploadAdditionalApplicationsServiceTest {
             .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
             .temporaryPbaPayment(pbaPayment)
-            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(0).getCode())
+            .applicantsList(APPLICANT)
             .c2Type(WITH_NOTICE)
             .build();
 
@@ -142,7 +143,7 @@ class UploadAdditionalApplicationsServiceTest {
             .additionalApplicationType(List.of(OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
             .temporaryPbaPayment(pbaPayment)
-            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(1).getCode()) // select "Someone else"
+            .applicantsList(APPLICANT_SOMEONE_ELSE)
             .otherApplicant("some other name")
             .build();
 
@@ -160,7 +161,7 @@ class UploadAdditionalApplicationsServiceTest {
     void shouldThrowIllegalArgumentExceptionWhenApplicantIsNullOrEmpty(String otherApplicantName) {
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(OTHER_ORDER))
-            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(1).getCode()) // select applicant "Someone else"
+            .applicantsList(APPLICANT_SOMEONE_ELSE)
             .otherApplicant(otherApplicantName)
             .build();
 
@@ -210,7 +211,7 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
-            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(0).getCode())
+            .applicantsList(APPLICANT)
             .build();
 
         given(applicantsListGenerator.buildApplicantsList(caseData)).willReturn(applicantsList);
