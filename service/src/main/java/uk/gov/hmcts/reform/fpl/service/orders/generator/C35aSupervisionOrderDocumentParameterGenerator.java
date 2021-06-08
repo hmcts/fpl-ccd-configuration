@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
@@ -67,33 +67,33 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
         LocalDateTime orderExpiration;
         String formatString;
         Integer numOfMonths = null;
-        String courtResponsibilityAssignmentMessage = "The Court orders %s supervises the %s until %s.";
+        String childCustodyMessage = "The Court orders %s supervises the %s until %s.";
 
-        switch (eventData.getManageSupervisionOrderEndDateType()) {
+        switch (eventData.getManageOrdersEndDateTypeWithMonth()) {
             // The DATE_WITH_ORDINAL_SUFFIX format ignores the time, so that it will not display even if captured.
-            case SET_CALENDAR_DAY:
+            case CALENDAR_DAY:
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
                 orderExpiration = LocalDateTime.of(eventData.getManageOrdersSetDateEndDate(), LocalTime.MIDNIGHT);
                 break;
-            case SET_CALENDAR_DAY_AND_TIME:
+            case CALENDAR_DAY_AND_TIME:
                 formatString = DATE_TIME_WITH_ORDINAL_SUFFIX;
                 orderExpiration = eventData.getManageOrdersSetDateAndTimeEndDate();
                 break;
-            case SET_NUMBER_OF_MONTHS:
+            case NUMBER_OF_MONTHS:
                 formatString = DATE_WITH_ORDINAL_SUFFIX;
                 LocalDate approvalDate = eventData.getManageOrdersApprovalDate();
                 numOfMonths = eventData.getManageOrdersSetMonthsEndDate();
                 orderExpiration = LocalDateTime.of(approvalDate.plusMonths(numOfMonths), LocalTime.MIDNIGHT);
-                courtResponsibilityAssignmentMessage =
+                childCustodyMessage =
                     "The Court orders %s supervises the %s for %s months from the date of this order until %s.";
                 break;
             default:
                 throw new IllegalStateException("Unexpected supervision order event data type: "
-                    + eventData.getManageSupervisionOrderEndDateType());
+                    + eventData.getManageOrdersEndDateTypeWithMonth());
         }
 
         final String dayOrdinalSuffix = getDayOfMonthSuffix(orderExpiration.getDayOfMonth());
-        boolean isMonthOptionSelected = eventData.getManageSupervisionOrderEndDateType().equals(SET_NUMBER_OF_MONTHS);
+        boolean isMonthOptionSelected = eventData.getManageOrdersEndDateTypeWithMonth().equals(NUMBER_OF_MONTHS);
 
         if (isMonthOptionSelected) {
             return getMonthMessage(
@@ -102,14 +102,14 @@ public class C35aSupervisionOrderDocumentParameterGenerator implements DocmosisP
                 orderExpiration,
                 formatString,
                 numOfMonths,
-                courtResponsibilityAssignmentMessage,
+                childCustodyMessage,
                 dayOrdinalSuffix);
         } else {
             return getDateTimeAndDateMessage(
                 numOfChildren, localAuthorityName,
                 orderExpiration,
                 formatString,
-                courtResponsibilityAssignmentMessage,
+                childCustodyMessage,
                 dayOrdinalSuffix);
         }
     }

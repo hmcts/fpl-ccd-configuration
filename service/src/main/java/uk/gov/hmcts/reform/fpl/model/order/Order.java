@@ -20,9 +20,11 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.FURTHER_DIRECTIONS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.ICO_EXCLUSION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
 
 @Getter
@@ -57,8 +59,17 @@ public enum Order {
         "Supervision order (C35A)",
         true,
         List.of(
-            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, SUPERVISION_ORDER_END_DATE,
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_MONTH,
             REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER)
+    ),
+    C33_INTERIM_CARE_ORDER(
+        "Interim care order",
+        "Section 38 Children Act 1989",
+        "Interim care order (C33)",
+        false,
+        List.of(
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION, FURTHER_DIRECTIONS,
+            MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
         "Appointment of a Children's Guardian",

@@ -45,11 +45,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 import static uk.gov.hmcts.reform.fpl.enums.docmosis.RenderFormat.PDF;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -76,6 +77,9 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("epoChildrenDescription", "NO"),
         Map.entry("epoExpiryDate", "NO"),
         Map.entry("epoTypeAndPreventRemoval", "NO"),
+        Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+        Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+        Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
         Map.entry("cafcassJurisdictions", "NO"),
         Map.entry("supervisionOrderExpiryDate", "NO")));
 
@@ -382,7 +386,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(dateNow())
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(testInvalidDate)
                 .build())
             .build();
@@ -400,7 +404,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(testInvalidMonth)
                 .build())
             .build();
@@ -418,7 +422,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(testInvalidMonth)
                 .build())
             .build();
@@ -427,6 +431,67 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         deepEquals(response.getErrors(), testUnderDateRangeMessage);
     }
+
+    @Test
+    void orderSelectionShouldPopulateQuestionConditionHolderForC35a() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C35A_SUPERVISION_ORDER).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
+
+        Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("orderDetails","NO"),
+            Map.entry("whichChildren", "YES"),
+            Map.entry("approvalDate", "YES"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO")
+        );
+
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
+    }
+
+    @Test
+    void orderSelectionShouldPopulateQuestionConditionHolderForC33() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C33_INTERIM_CARE_ORDER).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
+
+        Map<String, String> expectedQuestions = Map.ofEntries(
+            Map.entry("hearingDetails", "YES"),
+            Map.entry("approver", "YES"),
+            Map.entry("previewOrder", "YES"),
+            Map.entry("furtherDirections", "YES"),
+            Map.entry("orderDetails","NO"),
+            Map.entry("whichChildren", "YES"),
+            Map.entry("approvalDate", "YES"),
+            Map.entry("approvalDateTime", "NO"),
+            Map.entry("epoIncludePhrase", "NO"),
+            Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("epoExpiryDate", "NO"),
+            Map.entry("epoTypeAndPreventRemoval", "NO"),
+            Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES")
+        );
+
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
+    }
+
 
     private CaseData buildCaseData() {
         return CaseData.builder()
