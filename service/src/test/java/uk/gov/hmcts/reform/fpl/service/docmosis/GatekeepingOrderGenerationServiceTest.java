@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisHearingBooking;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisJudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisRespondent;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
@@ -107,17 +108,21 @@ class GatekeepingOrderGenerationServiceTest {
 
     private CaseData caseDataForSealed() {
         return baseCaseData().toBuilder()
-            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
-                .dateOfIssue(LocalDate.of(2019, 11, 29))
-                .orderStatus(SEALED)
+            .gatekeepingOrderEventData(baseCaseData().getGatekeepingOrderEventData().toBuilder()
+                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                    .dateOfIssue(LocalDate.of(2019, 11, 29))
+                    .orderStatus(SEALED)
+                    .build())
                 .build())
             .build();
     }
 
     private CaseData caseDataForDraft() {
         return baseCaseData().toBuilder()
-            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
-                .orderStatus(DRAFT)
+            .gatekeepingOrderEventData(baseCaseData().getGatekeepingOrderEventData().toBuilder()
+                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                    .orderStatus(DRAFT)
+                    .build())
                 .build())
             .build();
     }
@@ -163,15 +168,17 @@ class GatekeepingOrderGenerationServiceTest {
             .dateSubmitted(LocalDate.now())
             .respondents1(createRespondents())
             .applicants(createPopulatedApplicants())
-            .sdoDirectionCustom(wrapElements(CustomDirection.builder()
-                .title("Test custom direction")
-                .description("Test description")
-                .assignee(LOCAL_AUTHORITY
-                ).build()))
-            .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Smith")
-                .legalAdvisorName("Bob Ross")
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .sdoDirectionCustom(wrapElements(CustomDirection.builder()
+                    .title("Test custom direction")
+                    .description("Test description")
+                    .assignee(LOCAL_AUTHORITY
+                    ).build()))
+                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HER_HONOUR_JUDGE)
+                    .judgeLastName("Smith")
+                    .legalAdvisorName("Bob Ross")
+                    .build())
                 .build())
             .build();
     }

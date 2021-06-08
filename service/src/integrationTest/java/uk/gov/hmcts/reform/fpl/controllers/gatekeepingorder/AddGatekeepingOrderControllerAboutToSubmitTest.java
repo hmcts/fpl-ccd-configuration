@@ -13,13 +13,18 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfProceeding;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -34,6 +39,8 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -45,8 +52,10 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         super("add-gatekeeping-order");
     }
 
-    private static final Document DOCUMENT = testDocument();
-    private static final DocumentReference DOCUMENT_REFERENCE = DocumentReference.buildFromDocument(DOCUMENT);
+    private static final Document SDO_DOCUMENT = testDocument();
+    private static final Document C6_DOCUMENT = testDocument();
+    private static final DocumentReference SDO_REFERENCE = DocumentReference.buildFromDocument(SDO_DOCUMENT);
+    private static final DocumentReference C6_REFERENCE = DocumentReference.buildFromDocument(C6_DOCUMENT);
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -58,27 +67,35 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
 
     @BeforeEach
     void setup() {
-        final byte[] pdf = testDocumentBinaries();
+        final byte[] sdoBinaries = testDocumentBinaries();
+        final byte[] c6Binaries = testDocumentBinaries();
         final String sealedOrderFileName = "standard-directions-order.pdf";
+        final String c6FileName = "c6.pdf";
 
-        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(new DocmosisDocument(sealedOrderFileName, pdf));
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisStandardDirectionOrder.class), any()))
+            .willReturn(new DocmosisDocument(sealedOrderFileName, sdoBinaries));
 
-        given(uploadDocumentService.uploadPDF(pdf, sealedOrderFileName)).willReturn(DOCUMENT);
+        given(documentGeneratorService.generateDocmosisDocument(any(DocmosisNoticeOfProceeding.class), any()))
+            .willReturn(new DocmosisDocument(c6FileName, c6Binaries));
+
+        given(uploadDocumentService.uploadPDF(sdoBinaries, sealedOrderFileName)).willReturn(SDO_DOCUMENT);
+        given(uploadDocumentService.uploadPDF(c6Binaries, c6FileName)).willReturn(C6_DOCUMENT);
     }
 
     @Test
     void shouldBuildDraftSDOWithExistingDraftDocumentWhenOrderStatusIsDraft() {
         CaseData caseData = CaseData.builder()
-            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
-                .orderStatus(DRAFT)
-                .draftDocument(DOCUMENT_REFERENCE)
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                    .orderStatus(DRAFT)
+                    .draftDocument(SDO_REFERENCE)
+                    .build())
                 .build())
 
             .build();
 
         StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
-            .orderDoc(DOCUMENT_REFERENCE)
+            .orderDoc(SDO_REFERENCE)
             .orderStatus(DRAFT)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
             .build();
@@ -94,16 +111,25 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             CustomDirection.builder().title("Test direction").build());
 
         CaseData caseData = buildBaseCaseData().toBuilder()
-            .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().build())
-            .sdoDirectionCustom(customDirections)
-            .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
-                .orderStatus(SEALED)
-                .dateOfIssue(time.now().toLocalDate())
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().build())
+                .sdoDirectionCustom(customDirections)
+                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                    .orderStatus(SEALED)
+                    .dateOfIssue(time.now().toLocalDate())
+                    .draftDocument(SDO_REFERENCE)
+                    .build())
                 .build())
+            .hearingDetails(wrapElements(HearingBooking.builder()
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusDays(1))
+                .venue("Venue").build()))
+            .orders(Orders.builder().orderType(List.of(CARE_ORDER)).build())
             .build();
 
         StandardDirectionOrder expectedSDO = StandardDirectionOrder.builder()
-            .orderDoc(DOCUMENT_REFERENCE)
+            .orderDoc(SDO_REFERENCE)
+            .unsealedDocumentCopy(SDO_REFERENCE)
             .orderStatus(SEALED)
             .dateOfIssue("3 March 2021")
             .customDirections(customDirections)
@@ -111,10 +137,13 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
-        StandardDirectionOrder responseSDO = extractCaseData(response).getStandardDirectionOrder();
+        CaseData responseData = extractCaseData(response);
 
-        assertThat(responseSDO).isEqualTo(expectedSDO);
-        assertThat(response.getData().get("state")).isEqualTo("PREPARE_FOR_HEARING");
+        assertThat(responseData.getStandardDirectionOrder()).isEqualTo(expectedSDO);
+        assertThat(responseData.getState()).isEqualTo(CASE_MANAGEMENT);
+        assertThat(responseData.getNoticeOfProceedingsBundle())
+            .extracting(Element::getValue)
+            .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
         assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "sdoDirectionCustom",
             "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
     }

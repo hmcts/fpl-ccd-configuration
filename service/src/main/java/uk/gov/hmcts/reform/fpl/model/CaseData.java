@@ -945,18 +945,4 @@ public class CaseData {
             .filter(StringUtils::isNotEmpty)
             .isPresent();
     }
-
-    //move to event data
-    private final List<Element<CustomDirection>> sdoDirectionCustom;
-
-    private final JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
-    private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
-
-    public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
-        return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
-    }
-
-    public SaveOrSendGatekeepingOrder getSaveOrSendGatekeepingOrder() {
-        return defaultIfNull(saveOrSendGatekeepingOrder, SaveOrSendGatekeepingOrder.builder().build());
-    }
 }

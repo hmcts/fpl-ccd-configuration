@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 
 import java.util.ArrayList;
@@ -32,13 +33,14 @@ public class GatekeepingOrderGenerationService extends
     private final CaseDataExtractionService dataService;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
+        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
         HearingBooking firstHearing = caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT)
             .orElse(null);
 
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getSaveOrSendGatekeepingOrder();
+        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = eventData.getSaveOrSendGatekeepingOrder();
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
-            caseData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
+            eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
         );
 
         DocmosisStandardDirectionOrder.DocmosisStandardDirectionOrderBuilder<?, ?> orderBuilder =
@@ -52,7 +54,7 @@ public class GatekeepingOrderGenerationService extends
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
-                .directions(buildDirections(caseData))
+                .directions(buildDirections(caseData.getGatekeepingOrderEventData()))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
@@ -66,9 +68,9 @@ public class GatekeepingOrderGenerationService extends
         return orderBuilder.build();
     }
 
-    private List<DocmosisDirection> buildDirections(CaseData caseData) {
+    private List<DocmosisDirection> buildDirections(GatekeepingOrderEventData eventData) {
         //add future directions here
-        return buildCustomDirections(caseData.getSdoDirectionCustom());
+        return buildCustomDirections(eventData.getSdoDirectionCustom());
     }
 
     private List<DocmosisDirection> buildCustomDirections(List<Element<CustomDirection>> elements) {

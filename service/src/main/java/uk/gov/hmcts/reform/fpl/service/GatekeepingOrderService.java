@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,8 @@ public class GatekeepingOrderService {
 
     public SaveOrSendGatekeepingOrder buildSaveOrSendPage(CaseData caseData, Document document) {
         //add draft document
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getSaveOrSendGatekeepingOrder().toBuilder()
+        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getGatekeepingOrderEventData()
+            .getSaveOrSendGatekeepingOrder().toBuilder()
             .draftDocument(buildFromDocument(document))
             .orderStatus(null)
             .build();
@@ -71,7 +74,7 @@ public class GatekeepingOrderService {
             requiredMissingInformation.add("* the allocated judge");
         }
 
-        if (!hasEnteredIssuingJudge(caseData.getGatekeepingOrderIssuingJudge())) {
+        if (!hasEnteredIssuingJudge(caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge())) {
             requiredMissingInformation.add("* the judge issuing the order");
         }
 
@@ -89,13 +92,26 @@ public class GatekeepingOrderService {
     }
 
     public StandardDirectionOrder buildBaseGatekeepingOrder(CaseData caseData) {
+        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+
         JudgeAndLegalAdvisor judgeAndLegalAdvisor =
-            getJudgeForTabView(caseData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
+            getJudgeForTabView(eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
 
         return StandardDirectionOrder.builder()
-            .customDirections(caseData.getSdoDirectionCustom())
-            .orderStatus(defaultIfNull(caseData.getSaveOrSendGatekeepingOrder().getOrderStatus(), DRAFT))
+            .customDirections(eventData.getSdoDirectionCustom())
+            .orderStatus(defaultIfNull(eventData.getSaveOrSendGatekeepingOrder().getOrderStatus(), DRAFT))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .build();
+    }
+
+    public List<DocmosisTemplates> getNoticeOfProceedingsTemplates(CaseData caseData) {
+        List<DocmosisTemplates> templates = new ArrayList<>();
+        templates.add(DocmosisTemplates.C6);
+
+        if (!caseData.getAllOthers().isEmpty()) {
+            templates.add(DocmosisTemplates.C6A);
+        }
+
+        return templates;
     }
 }

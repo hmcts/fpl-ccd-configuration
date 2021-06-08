@@ -31,7 +31,8 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
 
         CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
 
-        assertThat(responseData.getGatekeepingOrderIssuingJudge()).isEqualTo(expectedJudge);
+        assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge())
+            .isEqualTo(expectedJudge);
     }
 
     @Test
@@ -40,6 +41,7 @@ class AddGatekeepingOrderControllerAboutToStartTest extends AbstractCallbackTest
 
         CaseData responseData = extractCaseData(postAboutToStartEvent(caseData));
 
-        assertThat(responseData.getGatekeepingOrderIssuingJudge()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge())
+            .isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 }
