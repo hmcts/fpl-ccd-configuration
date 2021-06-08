@@ -83,6 +83,7 @@ public class OrderDetailsWithEndTypeGenerator {
     private Map<String, String> commonContextElements(CaseData caseData) {
         Map<String, String> context = new HashMap<>();
         context.put("childOrChildren", getChildGrammar(childrenService.getSelectedChildren(caseData).size()));
+        context.put("childIsOrAre", getChildIsOrAreGrammar(childrenService.getSelectedChildren(caseData).size()));
         context.put("localAuthorityName", laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         return context;
     }
@@ -115,6 +116,10 @@ public class OrderDetailsWithEndTypeGenerator {
 
     private String getChildGrammar(int numOfChildren) {
         return (numOfChildren == 1) ? CHILD : CHILDREN;
+    }
+
+    private String getChildIsOrAreGrammar(int numOfChildren) {
+        return (numOfChildren == 1) ? "is" : "are";
     }
 
 }

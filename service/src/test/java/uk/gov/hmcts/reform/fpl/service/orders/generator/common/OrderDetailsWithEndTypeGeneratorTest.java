@@ -89,11 +89,11 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
         String actual = underTest.orderDetails(CALENDAR_DAY,
             OrderDetailsWithEndTypeMessages.builder()
-                .messageWithSpecifiedTime("blah ${childOrChildren} blah")
+                .messageWithSpecifiedTime("blah ${childIsOrAre} ${childOrChildren} blah")
                 .build(),
             caseData);
 
-        assertThat(actual).isEqualTo("blah child blah");
+        assertThat(actual).isEqualTo("blah is child blah");
 
     }
 
@@ -112,11 +112,11 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
         String actual = underTest.orderDetails(CALENDAR_DAY,
             OrderDetailsWithEndTypeMessages.builder()
-                .messageWithSpecifiedTime("blah ${childOrChildren} blah")
+                .messageWithSpecifiedTime("blah ${childIsOrAre} ${childOrChildren} blah")
                 .build(),
             caseData);
 
-        assertThat(actual).isEqualTo("blah children blah");
+        assertThat(actual).isEqualTo("blah are children blah");
 
     }
 
@@ -152,11 +152,12 @@ class OrderDetailsWithEndTypeGeneratorTest {
 
         String actual = underTest.orderDetails(END_OF_PROCEEDINGS,
             OrderDetailsWithEndTypeMessages.builder()
-                .messageWithEndOfProceedings("blah end of proceedings ${childOrChildren} ${localAuthorityName} blah")
+                .messageWithEndOfProceedings(
+                    "blah end of proceedings ${childIsOrAre} ${childOrChildren} ${localAuthorityName} blah")
                 .build(),
             caseData);
 
-        assertThat(actual).isEqualTo("blah end of proceedings children LA_NAME blah");
+        assertThat(actual).isEqualTo("blah end of proceedings are children LA_NAME blah");
 
     }
 
@@ -174,11 +175,12 @@ class OrderDetailsWithEndTypeGeneratorTest {
         String actual = underTest.orderDetails(NUMBER_OF_MONTHS,
             OrderDetailsWithEndTypeMessages.builder()
                 .messageWithNumberOfMonths(
-                    "blah months ${numOfMonths} ${endDate} ${childOrChildren} ${localAuthorityName} blah"
+                    "blah months ${numOfMonths} ${endDate} ${childIsOrAre} ${childOrChildren} ${localAuthorityName} "
+                        + "blah"
                 ).build(),
             caseData);
 
-        assertThat(actual).isEqualTo("blah months 4 8th March 2014 children LA_NAME blah");
+        assertThat(actual).isEqualTo("blah months 4 8th March 2014 are children LA_NAME blah");
 
     }
 
