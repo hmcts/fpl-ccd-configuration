@@ -147,6 +147,7 @@ class SendNoticeOfHearingHandlerEmailTemplateTest extends EmailTemplateTest {
                      + "contactfpl@justice.gov.uk")
             );
     }
+
     @ParameterizedTest
     @MethodSource("subjectLineSource")
     void notifyRepresentatives(boolean toggle, String name) {

@@ -30,7 +30,9 @@ public class AgreedCMOUploadedContentProvider extends AbstractEmailContentProvid
             .judgeName(getJudgeName((judge)))
             .judgeTitle(getJudgeTitle((judge)))
             .lastName(helper.getSubjectLineLastName(caseData))
-            .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()))
+            .subjectLineWithHearingDate(
+                subject(hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber())
+            )
             .build();
     }
 
