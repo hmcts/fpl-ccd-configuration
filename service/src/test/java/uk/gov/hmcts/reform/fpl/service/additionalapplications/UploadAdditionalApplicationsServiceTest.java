@@ -170,6 +170,30 @@ class UploadAdditionalApplicationsServiceTest {
     }
 
     @Test
+    void shouldThrowIllegalArgumentExceptionWhenApplicantDynamicListIsNullOrEmpty() {
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(null)
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenApplicantDynamicListHasNoValue() {
+        CaseData caseData = CaseData.builder()
+            .additionalApplicationType(List.of(OTHER_ORDER))
+            .applicantsList(DynamicList.builder().listItems(DYNAMIC_LIST_ELEMENTS).build())
+            .build();
+
+        assertThatThrownBy(() -> underTest.buildAdditionalApplicationsBundle(caseData))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Applicant should not be empty");
+    }
+
+    @Test
     void shouldBuildAdditionalApplicationsBundleWithC2ApplicationAndOtherApplicationsBundles() {
         Supplement c2Supplement = createSupplementsBundle();
         SupportingEvidenceBundle c2SupportingDocument = createSupportingEvidenceBundle();
