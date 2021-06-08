@@ -82,7 +82,7 @@ class CaseManagementOrderIssuedEventHandlerEmailTemplateTest extends EmailTempla
                 .party(ChildParty.builder().dateOfBirth(LocalDate.now()).lastName(CHILD_LAST_NAME).build())
                 .build()))
             .hearingDetails(List.of(element(hearingId, HearingBooking.builder()
-                .startDate(LocalDateTime.now().plusDays(1))
+                .startDate(LocalDateTime.of(2021, 6, 8, 0, 0, 0))
                 .build())))
             .lastHearingOrderDraftsHearingId(hearingId)
             .build();
