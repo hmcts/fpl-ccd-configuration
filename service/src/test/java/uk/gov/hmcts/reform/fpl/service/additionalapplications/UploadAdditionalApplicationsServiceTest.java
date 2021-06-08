@@ -84,8 +84,10 @@ class UploadAdditionalApplicationsServiceTest {
     @MockBean
     private DocumentSealingService documentSealingService;
 
-    @Autowired
-    private ObjectMapper mapper;
+    @MockBean
+    private ApplicantsListGenerator applicantsListGenerator;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private UploadAdditionalApplicationsService underTest;
@@ -111,16 +113,17 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle supportingEvidenceBundle = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
 
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(0)).listItems(DYNAMIC_LIST_ELEMENTS).build();
+        DynamicList applicantsList = DynamicList.builder().listItems(DYNAMIC_LIST_ELEMENTS).build();
 
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(C2_ORDER))
             .temporaryC2Document(createC2DocumentBundle(supplement, supportingEvidenceBundle))
             .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
+            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(0).getCode())
             .c2Type(WITH_NOTICE)
             .build();
+
+        given(applicantsListGenerator.buildApplicantsList(caseData)).willReturn(applicantsList);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 
@@ -137,15 +140,11 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle supportingDocument = createSupportingEvidenceBundle();
         PBAPayment pbaPayment = buildPBAPayment();
 
-        // select "Someone else"
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
-
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(OTHER_ORDER))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(supplement, supportingDocument))
             .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
+            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(1).getCode()) // select "Someone else"
             .otherApplicant("some other name")
             .build();
 
@@ -161,13 +160,9 @@ class UploadAdditionalApplicationsServiceTest {
     @ParameterizedTest
     @NullAndEmptySource
     void shouldThrowIllegalArgumentExceptionWhenApplicantIsNullOrEmpty(String otherApplicantName) {
-        // select applicant "Someone else"
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(1)).listItems(DYNAMIC_LIST_ELEMENTS).build();
-
         CaseData caseData = CaseData.builder()
             .additionalApplicationType(List.of(OTHER_ORDER))
-            .applicantsList(applicantsList)
+            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(1).getCode()) // select applicant "Someone else"
             .otherApplicant(otherApplicantName)
             .build();
 
@@ -185,9 +180,7 @@ class UploadAdditionalApplicationsServiceTest {
         SupportingEvidenceBundle otherSupportingDocument = createSupportingEvidenceBundle("other document");
         PBAPayment pbaPayment = buildPBAPayment();
 
-        DynamicList applicantsList = DynamicList.builder()
-            .value(DYNAMIC_LIST_ELEMENTS.get(0))
-            .listItems(DYNAMIC_LIST_ELEMENTS).build();
+        DynamicList applicantsList = DynamicList.builder().listItems(DYNAMIC_LIST_ELEMENTS).build();
 
         CaseData caseData = CaseData.builder().temporaryPbaPayment(pbaPayment)
             .additionalApplicationType(List.of(C2_ORDER, OTHER_ORDER))
@@ -195,8 +188,10 @@ class UploadAdditionalApplicationsServiceTest {
             .temporaryC2Document(createC2DocumentBundle(c2Supplement, c2SupportingDocument))
             .temporaryOtherApplicationsBundle(createOtherApplicationsBundle(otherSupplement, otherSupportingDocument))
             .temporaryPbaPayment(pbaPayment)
-            .applicantsList(applicantsList)
+            .applicantsList(DYNAMIC_LIST_ELEMENTS.get(0).getCode())
             .build();
+
+        given(applicantsListGenerator.buildApplicantsList(caseData)).willReturn(applicantsList);
 
         AdditionalApplicationsBundle actual = underTest.buildAdditionalApplicationsBundle(caseData);
 

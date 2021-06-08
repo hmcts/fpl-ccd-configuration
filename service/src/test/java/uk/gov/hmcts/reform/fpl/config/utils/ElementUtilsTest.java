@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElements;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedElementValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedValue;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -79,29 +79,35 @@ public class ElementUtilsTest {
     @Nested
     @ExtendWith(SpringExtension.class)
     @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
-    class DynamicListSelectedElement {
-        @Autowired
-        private ObjectMapper mapper;
+    class DynamicListSelectedElementValue {
+        private ObjectMapper mapper = new ObjectMapper();
 
         @Test
-        void shouldReturnSelectedElementFromTheDynamicList() {
-            DynamicListElement selectedElement = DynamicListElement.builder().code("code1").label("label1").build();
-            DynamicListElement anotherElement = DynamicListElement.builder().code("code2").label("label2").build();
-            DynamicList dynamicList = DynamicList.builder()
-                .value(selectedElement)
-                .listItems(List.of(selectedElement, anotherElement)).build();
-            DynamicListElement element = getDynamicListSelectedElement(dynamicList, mapper);
+        void shouldReturnStringWhenUUIDIsPassed() {
+            String selectedValue = "code1";
+            String valueCode = getDynamicListSelectedElementValue(selectedValue, mapper);
 
-            assertThat(element).isEqualTo(selectedElement);
+            assertThat(valueCode).isEqualTo(selectedValue);
         }
 
         @Test
-        void shouldReturnNullWhenDynamicListElementIsNotSelected() {
-            DynamicListElement element1 = DynamicListElement.builder().code("code1").label("label1").build();
-            DynamicList dynamicList = DynamicList.builder().listItems(List.of(element1)).build();
-            DynamicListElement element = getDynamicListSelectedElement(dynamicList, mapper);
+        void shouldReturnUuidWhenMapRepresentationOfDynamicListPassed() {
+            String selectedID = "selected-code";
 
-            assertThat(element).isNull();
+            Map<String, Object> dynamicListAsMap = Map.of(
+                "value", Map.of(
+                    "code", selectedID,
+                    "label", "selected label"
+                ),
+                "list_items", List.of(Map.of(
+                    "code", selectedID,
+                    "label", "selected label"
+                    )
+                )
+            );
+
+            String valueCode = getDynamicListSelectedElementValue(dynamicListAsMap, mapper);
+            assertThat(valueCode).isEqualTo(selectedID);
         }
     }
 

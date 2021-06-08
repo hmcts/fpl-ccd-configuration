@@ -61,6 +61,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     private static final String APPLICANT_SOMEONE_ELSE = "SOMEONE_ELSE";
     private static final String APPLICANT = "applicant";
     private static final String OTHER_APPLICANT_NAME = "some other name";
+    private static final String EXPECTED_LOCAL_AUTHORITY_NAME = "Swansea local authority, Applicant";
 
     private static final DocumentReference uploadedDocument = testDocumentReference();
     private static final DocumentReference sealedDocument = testDocumentReference();
@@ -88,11 +89,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldCreateAdditionalApplicationsBundleWithC2DocumentWhenC2OrderIsSelectedAndSupplementsIncluded() {
         Map<String, Object> data = new HashMap<>();
+        data.put("caseLocalAuthorityName", LOCAL_AUTHORITY_NAME);
         data.put("additionalApplicationType", List.of("C2_ORDER"));
         data.putAll(createTemporaryC2Document());
         PBAPayment temporaryPbaPayment = createPbaPayment();
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.put("applicantsList", createApplicantsDynamicList(APPLICANT));
+        data.put("applicantsList", APPLICANT);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -103,7 +105,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         C2DocumentBundle uploadedC2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
 
         assertC2DocumentBundle(uploadedC2DocumentBundle);
-        assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(LOCAL_AUTHORITY_NAME);
+        assertThat(uploadedC2DocumentBundle.getApplicantName()).isEqualTo(EXPECTED_LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
         assertTemporaryFieldsAreRemoved(caseData);
     }
@@ -111,11 +113,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldCreateAdditionalApplicationsBundleWithOtherApplicationsBundleWhenOtherOrderIsSelected() {
         Map<String, Object> data = new HashMap<>();
+        data.put("caseLocalAuthorityName", LOCAL_AUTHORITY_NAME);
         data.put("additionalApplicationType", List.of("OTHER_ORDER"));
         data.putAll(createTemporaryOtherApplicationDocument());
         PBAPayment temporaryPbaPayment = createPbaPayment();
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.put("applicantsList", createApplicantsDynamicList(APPLICANT_SOMEONE_ELSE));
+        data.put("applicantsList", APPLICANT_SOMEONE_ELSE);
         data.put("otherApplicant", OTHER_APPLICANT_NAME);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
@@ -137,11 +140,12 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         PBAPayment temporaryPbaPayment = createPbaPayment();
 
         Map<String, Object> data = new HashMap<>();
+        data.put("caseLocalAuthorityName", LOCAL_AUTHORITY_NAME);
         data.put("additionalApplicationType", List.of("C2_ORDER", "OTHER_ORDER"));
         data.putAll(createTemporaryC2Document());
         data.putAll(createTemporaryOtherApplicationDocument());
         data.put("temporaryPbaPayment", temporaryPbaPayment);
-        data.put("applicantsList", createApplicantsDynamicList(APPLICANT));
+        data.put("applicantsList", APPLICANT);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(createCase(data));
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -154,16 +158,17 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
         assertThat(additionalApplicationsBundle.getPbaPayment()).isEqualTo(temporaryPbaPayment);
 
         assertThat(additionalApplicationsBundle.getC2DocumentBundle().getApplicantName())
-            .isEqualTo(LOCAL_AUTHORITY_NAME);
+            .isEqualTo(EXPECTED_LOCAL_AUTHORITY_NAME);
         assertThat(additionalApplicationsBundle.getOtherApplicationsBundle().getApplicantName())
-            .isEqualTo(LOCAL_AUTHORITY_NAME);
+            .isEqualTo(EXPECTED_LOCAL_AUTHORITY_NAME);
         assertTemporaryFieldsAreRemoved(caseData);
     }
 
     @Test
     void shouldAppendAnAdditionalC2DocumentBundleWhenAdditionalDocumentsBundleIsPresent() {
         CaseDetails caseDetails = callbackRequest().getCaseDetails();
-        caseDetails.getData().put("applicantsList", createApplicantsDynamicList(APPLICANT));
+        caseDetails.getData().put("caseLocalAuthorityName", LOCAL_AUTHORITY_NAME);
+        caseDetails.getData().put("applicantsList", APPLICANT);
         caseDetails.getData().put("temporaryC2Document", Map.of("document", uploadedDocument));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
@@ -189,7 +194,8 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
     @Test
     void shouldRemoveTransientFieldsWhenNoLongerNeeded() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(Map.of("temporaryC2Document", createTemporaryC2Document(),
+            .data(Map.of("caseLocalAuthorityName", LOCAL_AUTHORITY_NAME,
+                "temporaryC2Document", createTemporaryC2Document(),
                 "c2Type", WITHOUT_NOTICE,
                 "applicantsList", createApplicantsDynamicList(APPLICANT),
                 "additionalApplicationType", List.of("C2_ORDER"),
@@ -231,6 +237,7 @@ class UploadAdditionalApplicationsAboutToSubmitControllerTest extends AbstractCa
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
+                "caseLocalAuthorityName", LOCAL_AUTHORITY_NAME,
                 "c2DocumentBundle", wrapElements(firstBundleAdded, secondBundleAdded, thirdBundleAdded),
                 "applicantsList", createApplicantsDynamicList(APPLICANT)))
             .build();

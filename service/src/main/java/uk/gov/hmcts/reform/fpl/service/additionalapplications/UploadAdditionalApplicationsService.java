@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DocumentSealingService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -35,7 +36,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedElement;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.getDynamicListSelectedElementValue;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -46,11 +47,14 @@ public class UploadAdditionalApplicationsService {
     private final Time time;
     private final DocumentUploadHelper documentUploadHelper;
     private final DocumentSealingService documentSealingService;
+    private final ApplicantsListGenerator applicantsListGenerator;
     private final ObjectMapper mapper;
 
     public AdditionalApplicationsBundle buildAdditionalApplicationsBundle(CaseData caseData) {
+
+        DynamicList applicantsList = applicantsListGenerator.buildApplicantsList(caseData);
         final Optional<String> applicantName = getSelectedApplicantName(
-            caseData.getApplicantsList(), defaultIfNull(caseData.getOtherApplicant(), EMPTY)
+            caseData.getApplicantsList(), applicantsList, defaultIfNull(caseData.getOtherApplicant(), EMPTY)
         );
 
         if (applicantName.isEmpty()) {
@@ -81,15 +85,21 @@ public class UploadAdditionalApplicationsService {
         return additionalApplicationsBundleBuilder.build();
     }
 
-    private Optional<String> getSelectedApplicantName(Object applicantsList, String otherApplicant) {
-        if (Objects.nonNull(applicantsList)) {
-            DynamicListElement selectedElement = getDynamicListSelectedElement(applicantsList, mapper);
+    private Optional<String> getSelectedApplicantName(
+        Object applicantsDynamicList,
+        DynamicList applicantsList,
+        String otherApplicant) {
+
+        if (Objects.nonNull(applicantsDynamicList)) {
+            String selectedElement = getDynamicListSelectedElementValue(applicantsDynamicList, mapper);
 
             if (isNotEmpty(selectedElement)) {
-                if (APPLICANT_SOMEONE_ELSE.equals(selectedElement.getCode())) {
+                if (APPLICANT_SOMEONE_ELSE.equals(selectedElement)) {
                     return isBlank(otherApplicant) ? Optional.empty() : Optional.of(otherApplicant);
                 } else {
-                    return Optional.of(selectedElement.getLabel());
+                    return applicantsList.getListItems().stream()
+                        .filter(element -> selectedElement.equals(element.getCode()))
+                        .findFirst().map(DynamicListElement::getLabel);
                 }
             }
         }
