@@ -208,10 +208,11 @@ public class StandardDirectionsService {
         List<Element<Direction>> allDirections = commonDirectionService.combineAllDirections(caseData);
         allDirections.forEach(direction -> direction.getValue().setDirectionNeeded(YesNo.NO.getValue()));
 
-        List<Element<CustomDirection>> customDirections = defaultIfNull(caseData.getSdoDirectionCustom(), new ArrayList<>());
+        List<Element<CustomDirection>> customDirections = defaultIfNull(
+            caseData.getGatekeepingOrderEventData().getSdoDirectionCustom(), new ArrayList<>());
         List<Element<StandardDirection>> directions = new ArrayList<>();
 
-        caseData.setSdoDirectionCustom(customDirections);
+        caseData.getGatekeepingOrderEventData().toBuilder().sdoDirectionCustom(customDirections);
         caseData.setStandardDirections(directions);
 
         Stream.of(DirectionType.values()).forEach(type -> {

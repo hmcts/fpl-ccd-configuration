@@ -30,7 +30,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersExclusionStartDate",
             "manageOrdersPowerOfArrest",
             "manageOrdersFurtherDirections",
-            "manageSupervisionOrderEndDateType",
+            "manageOrdersEndDateTypeWithMonth",
+            "manageOrdersEndDateTypeWithEndOfProceedings",
             "manageOrdersSetDateEndDate",
             "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate",
@@ -44,6 +45,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
             "orderDetailsSectionSubHeader",
+            "manageOrdersExclusionDetails",
+            "manageOrdersHasExclusionRequirement",
             "manageOrdersCafcassRegion",
             "manageOrdersCafcassOfficesEngland",
             "manageOrdersCafcassOfficesWales"

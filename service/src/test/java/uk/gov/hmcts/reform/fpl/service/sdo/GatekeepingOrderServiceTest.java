@@ -6,14 +6,21 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
@@ -42,7 +49,9 @@ class GatekeepingOrderServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
             .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
+                .build())
             .build();
 
         SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
@@ -65,7 +74,9 @@ class GatekeepingOrderServiceTest {
 
         CaseData caseData = CaseData.builder()
             .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
-            .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("Yes").build())
+                .build())
             .build();
 
         SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
@@ -88,9 +99,11 @@ class GatekeepingOrderServiceTest {
 
         CaseData caseData = CaseData.builder()
             .hearingDetails(wrapElements(HearingBooking.builder().startDate(LocalDateTime.now()).build()))
-            .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("No")
-                .judgeTitle(HIS_HONOUR_JUDGE)
-                .judgeLastName("Nelson")
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().useAllocatedJudge("No")
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Nelson")
+                    .build())
                 .build())
             .build();
 
@@ -162,5 +175,19 @@ class GatekeepingOrderServiceTest {
             .build();
 
         assertThat(underTest.setAllocatedJudgeLabel(allocatedJudge, issuingJudge)).isEqualTo(expectedJudge);
+    }
+
+    @Test
+    void getNoticeOfProceedingsTemplatesWithNoOthers() {
+        CaseData caseData = CaseData.builder().build();
+
+        assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6));
+    }
+
+    @Test
+    void getNoticeOfProceedingsTemplatesWithOthers() {
+        CaseData caseData = CaseData.builder().others(Others.builder().firstOther(mock(Other.class)).build()).build();
+
+        assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6, C6A));
     }
 }

@@ -952,20 +952,6 @@ public class CaseData {
             .isPresent();
     }
 
-    //move to event data
-    @JsonProperty
-    private List<Element<CustomDirection>> sdoDirectionCustom;
     @JsonProperty
     private List<Element<StandardDirection>> standardDirections;
-
-    private final JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
-    private final SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
-
-    public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
-        return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
-    }
-
-    public SaveOrSendGatekeepingOrder getSaveOrSendGatekeepingOrder() {
-        return defaultIfNull(saveOrSendGatekeepingOrder, SaveOrSendGatekeepingOrder.builder().build());
-    }
 }

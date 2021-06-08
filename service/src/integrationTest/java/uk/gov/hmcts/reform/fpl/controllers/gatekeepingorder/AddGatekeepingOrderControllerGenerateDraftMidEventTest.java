@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisData;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
@@ -82,14 +83,17 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));
 
-        assertThat(responseData.getSaveOrSendGatekeepingOrder()).isEqualTo(expectedSaveOrSendPage);
+        assertThat(responseData.getGatekeepingOrderEventData().getSaveOrSendGatekeepingOrder())
+            .isEqualTo(expectedSaveOrSendPage);
     }
 
     @Test
     void shouldSetOnlyDraftDocumentWhenOrderCanBeSealed() {
         CaseData caseData = buildBaseCaseData().toBuilder()
             .allocatedJudge(allocatedJudge())
-            .gatekeepingOrderIssuingJudge(issuingJudge())
+            .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
+                .gatekeepingOrderIssuingJudge(issuingJudge())
+                .build())
             .hearingDetails(hearingBookings())
             .build();
 
@@ -99,7 +103,8 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));
 
-        assertThat(responseData.getSaveOrSendGatekeepingOrder()).isEqualTo(expectedSaveOrSendPage);
+        assertThat(responseData.getGatekeepingOrderEventData().getSaveOrSendGatekeepingOrder())
+            .isEqualTo(expectedSaveOrSendPage);
     }
 
     private CaseData buildBaseCaseData() {

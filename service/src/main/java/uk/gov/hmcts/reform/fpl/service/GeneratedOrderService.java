@@ -97,7 +97,7 @@ public class GeneratedOrderService {
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                expiryDate = getSupervisionOrderExpiryDate(typeAndDocument, caseData.getOrderMonths(),
+                expiryDate = getManageOrderExpiryDate(typeAndDocument, caseData.getOrderMonths(),
                     caseData.getInterimEndDate());
                 break;
             case EMERGENCY_PROTECTION_ORDER:
@@ -217,8 +217,8 @@ public class GeneratedOrderService {
         return !(orderType.isClosable() && childrenService.allChildrenHaveFinalOrder(children));
     }
 
-    private String getSupervisionOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
-                                                 InterimEndDate interimEndDate) {
+    private String getManageOrderExpiryDate(OrderTypeAndDocument typeAndDocument, Integer orderMonths,
+                                            InterimEndDate interimEndDate) {
         switch (typeAndDocument.getSubtype()) {
             case INTERIM:
                 requireNonNull(interimEndDate);

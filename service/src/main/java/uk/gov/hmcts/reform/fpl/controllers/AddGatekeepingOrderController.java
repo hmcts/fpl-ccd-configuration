@@ -11,18 +11,24 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -45,6 +51,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
     private final CoreCaseDataService coreCaseDataService;
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
+    private final NoticeOfProceedingsService nopService;
     private final GatekeepingOrderService service;
     private final StandardDirectionsService standardDirectionsService;
 
@@ -58,7 +65,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         if (caseData.getAllocatedJudge() != null) {
             data.put("gatekeepingOrderIssuingJudge", service.setAllocatedJudgeLabel(caseData.getAllocatedJudge(),
-                caseData.getGatekeepingOrderIssuingJudge()));
+                caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
 
         return respond(caseDetails);
@@ -83,7 +90,6 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
 
-
         DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
@@ -98,13 +104,13 @@ public class AddGatekeepingOrderController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
+        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         StandardDirectionOrder gatekeepingOrder = service.buildBaseGatekeepingOrder(caseData);
 
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getSaveOrSendGatekeepingOrder();
+        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = eventData.getSaveOrSendGatekeepingOrder();
 
         standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
-
 
         if (saveOrSendGatekeepingOrder.getOrderStatus() == SEALED) {
             //generate document
@@ -113,13 +119,20 @@ public class AddGatekeepingOrderController extends CallbackController {
             Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
 
             gatekeepingOrder = gatekeepingOrder.toBuilder()
-                .dateOfIssue(formatLocalDateToString(caseData.getSaveOrSendGatekeepingOrder().getDateOfIssue(), DATE))
+                .dateOfIssue(formatLocalDateToString(eventData.getSaveOrSendGatekeepingOrder().getDateOfIssue(), DATE))
+                .unsealedDocumentCopy(saveOrSendGatekeepingOrder.getDraftDocument())
                 .orderDoc(buildFromDocument(document))
                 .build();
 
-            caseDetails.getData().put("state", CASE_MANAGEMENT);
+            List<DocmosisTemplates> docmosisTemplateTypes = service.getNoticeOfProceedingsTemplates(caseData);
 
-            //TODO: need to generate C6/C6a
+            List<Element<DocumentBundle>> newNoP = nopService.uploadAndPrepareNoticeOfProceedingBundle(
+                caseData, docmosisTemplateTypes
+            );
+
+            caseDetails.getData().put("noticeOfProceedingsBundle", newNoP);
+
+            caseDetails.getData().put("state", CASE_MANAGEMENT);
 
             removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "sdoDirectionCustom",
                 "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
