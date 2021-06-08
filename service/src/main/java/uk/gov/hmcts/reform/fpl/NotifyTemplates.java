@@ -37,8 +37,12 @@ public final class NotifyTemplates {
     public static final String NOTICE_OF_PLACEMENT_ORDER_UPLOADED_TEMPLATE = "190af4bf-50e7-44ca-b3df-22c8f3b1899c";
     public static final String PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE
         = "ca15c188-14d2-49a3-ac61-fdd7c6c7dc9b";
+    public static final String PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE_CHILD_NAME
+        = "38a4dba9-ab05-4a40-b72b-f26b05ea6e7b";
     public static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE
         = "f846a44e-9d1f-4cdb-aa3b-10af07bc4c66";
+    public static final String PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE_WITH_CHILD
+        = "a53da518-bb11-43eb-9824-ad5f39d8b61e";
     public static final String APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_LA
         = "b40328fe-c01e-4b7f-9542-4ef776140df9";
     public static final String APPLICATION_PBA_PAYMENT_FAILED_TEMPLATE_FOR_CTSC
