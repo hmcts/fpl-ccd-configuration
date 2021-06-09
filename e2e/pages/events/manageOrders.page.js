@@ -18,6 +18,7 @@ const orders = {
     c32: 'C32_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
+    c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
   },
   title: {
@@ -25,6 +26,7 @@ const orders = {
     c23: 'Emergency protection order (C23)',
     c32: 'Care order (C32)',
     c33: 'Interim care order (C33)',
+    c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
   },
