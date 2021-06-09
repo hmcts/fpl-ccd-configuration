@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C35B_INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,17 +35,19 @@ class OrderDocumentGeneratorHolderTest {
 
     // Parameter Generators
     @Mock
-    private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
-    @Mock
     private C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     @Mock
     private C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     @Mock
-    private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
+    private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+    @Mock
+    private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     @Mock
     private C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
     @Mock
-    private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
+    private C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
+    @Mock
+    private C47AAppointmentOfAChildrensGuardianParameterGenerator c47AAppointmentOfAChildrensGuardianParameterGenerator;
 
     // Additional Document Collectors
     @Mock
@@ -58,7 +61,8 @@ class OrderDocumentGeneratorHolderTest {
         generators = List.of(
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
             c32CareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
-            c35aSupervisionOrderDocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
+            c35aSupervisionOrderDocumentParameterGenerator, c35bISODocumentParameterGenerator,
+            c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -68,6 +72,7 @@ class OrderDocumentGeneratorHolderTest {
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
             C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,
             C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator,
+            C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator,
             C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
 
