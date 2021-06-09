@@ -1,4 +1,4 @@
-const LATEST_MAC = 'macOS 10.15';
+const LATEST_MAC = 'macOS 11.00';
 const LATEST_WINDOWS = 'Windows 10';
 
 const supportedBrowsers = {
@@ -25,7 +25,7 @@ const supportedBrowsers = {
   safari: {
     safari_mac_latest: {
       browserName: 'safari',
-      platformName: 'macOS 11.00',
+      platformName: LATEST_MAC,
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: MAC_SAFARI',
@@ -41,7 +41,7 @@ const supportedBrowsers = {
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: WIN_CHROME_LATEST',
-        screenResolution: '1400x1050',
+        screenResolution: '1600x1200',
       },
     },
     chrome_mac_latest: {
@@ -50,7 +50,7 @@ const supportedBrowsers = {
       browserVersion: 'latest',
       'sauce:options': {
         name: 'FPLA: MAC_CHROME_LATEST',
-        screenResolution: '1400x1050',
+        screenResolution: '1600x1200',
       },
     },
   },
