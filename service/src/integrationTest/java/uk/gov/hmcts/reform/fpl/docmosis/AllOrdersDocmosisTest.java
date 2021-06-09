@@ -31,11 +31,13 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterG
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32CareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35aSupervisionOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C35bISODocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C47AAppointmentOfAChildrensGuardianParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHolder;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
 
 import java.util.Set;
@@ -73,6 +75,8 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     C47AAppointmentOfAChildrensGuardianParameterGenerator.class,
     C33InterimCareOrderDocumentParameterGenerator.class,
     C23EPOAdditionalDocumentsCollector.class,
+    C35bISODocumentParameterGenerator.class,
+    OrderDetailsWithEndTypeGenerator.class,
     DocmosisDocumentGeneratorService.class,
     RestTemplate.class
 })
@@ -87,6 +91,7 @@ public class AllOrdersDocmosisTest extends AbstractDocmosisTest {
         Order.C32_CARE_ORDER,
         Order.C33_INTERIM_CARE_ORDER,
         Order.C35A_SUPERVISION_ORDER,
+        Order.C35B_INTERIM_SUPERVISION_ORDER,
         Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN
     );
 
