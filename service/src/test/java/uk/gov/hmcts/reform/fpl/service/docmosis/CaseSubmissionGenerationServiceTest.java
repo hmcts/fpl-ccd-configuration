@@ -145,7 +145,7 @@ class CaseSubmissionGenerationServiceTest {
 
         @ParameterizedTest
         @NullAndEmptySource
-        void shouldReturnIdamUserNameAsSigneeNameWhenApplicantDetailsAreNullOrEmpty(
+        void shouldReturnCurrentUserWhenApplicantsListIsNullOrEmpty(
             List<Element<Applicant>> applicants) {
 
             CaseData updatedCaseData = givenCaseData.toBuilder().applicants(applicants).build();
