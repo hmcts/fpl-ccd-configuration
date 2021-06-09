@@ -1,41 +1,10 @@
 /* eslint-disable no-console */
 
-const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
 const testConfig = require('./e2e/config');
 
 const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 45000;
 const smartWait = parseInt(process.env.SMART_WAIT) || 30000;
 const browser = process.env.SAUCELABS_BROWSER || 'chrome';
-const defaultSauceOptions = {
-  username: process.env.SAUCE_USERNAME,
-  accessKey: process.env.SAUCE_ACCESS_KEY,
-  tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
-  acceptSslCerts: true,
-  tags: ['FPL'],
-};
-
-function merge(intoObject, fromObject) {
-  return Object.assign({}, intoObject, fromObject);
-}
-
-function getBrowserConfig(browserGroup) {
-  const browserConfig = [];
-  for (const candidateBrowser in supportedBrowsers[browserGroup]) {
-    if (candidateBrowser) {
-      const candidateCapabilities = supportedBrowsers[browserGroup][candidateBrowser];
-      candidateCapabilities['sauce:options'] = merge(
-        defaultSauceOptions, candidateCapabilities['sauce:options']
-      );
-      browserConfig.push({
-        browser: candidateCapabilities.browserName,
-        capabilities: candidateCapabilities,
-      });
-    } else {
-      console.error('ERROR: supportedBrowsers.js is empty or incorrectly defined');
-    }
-  }
-  return browserConfig;
-}
 
 const setupConfig = {
   tests: './e2e/tests/*_test.js',
@@ -159,21 +128,7 @@ const setupConfig = {
       },
     },
   },
-  multiple: {
-    microsoft: {
-      browsers: getBrowserConfig('microsoft'),
-    },
-    chrome: {
-      browsers: getBrowserConfig('chrome'),
-    },
-    firefox: {
-      browsers: getBrowserConfig('firefox'),
-    },
-    safari: {
-      browsers: getBrowserConfig('safari'),
-    },
-  },
-  name: 'FPLA FrontEnd Cross-Browser Tests',
+  multiple: require('./e2e/crossbrowser/supportedBrowsers.js'),
 };
 
 exports.config = setupConfig;
