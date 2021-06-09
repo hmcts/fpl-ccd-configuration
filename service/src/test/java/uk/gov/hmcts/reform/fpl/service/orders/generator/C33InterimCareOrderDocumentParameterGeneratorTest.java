@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -16,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C33InterimCareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -35,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith({MockitoExtension.class})
 class C33InterimCareOrderDocumentParameterGeneratorTest {
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
     private static final String CHILD_GRAMMAR = "child is";
@@ -50,14 +46,14 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
     private String dayOrdinalSuffix;
     private String courtOrderMessage;
 
-    @Mock
-    private ChildrenService childrenService;
+    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final LocalAuthorityNameLookupConfiguration laNameLookup =
+        mock(LocalAuthorityNameLookupConfiguration.class);
 
-    @Mock
-    private LocalAuthorityNameLookupConfiguration laNameLookup;
-
-    @InjectMocks
-    private C33InterimCareOrderDocumentParameterGenerator underTest;
+    private C33InterimCareOrderDocumentParameterGenerator underTest =
+        new C33InterimCareOrderDocumentParameterGenerator(
+            laNameLookup, new OrderDetailsWithEndTypeGenerator(childrenService, laNameLookup)
+        );
 
     @Test
     void accept() {
@@ -363,7 +359,7 @@ class C33InterimCareOrderDocumentParameterGeneratorTest {
             + " until the end of the proceedings or until a further order is made.";
     }
 
-    private C33InterimCareOrderDocmosisParameters.C33InterimCareOrderDocmosisParametersBuilder<?,?>
+    private C33InterimCareOrderDocmosisParameters.C33InterimCareOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParameters(boolean hasExclusionDetails) {
         if (hasExclusionDetails) {
             return C33InterimCareOrderDocmosisParameters.builder()
