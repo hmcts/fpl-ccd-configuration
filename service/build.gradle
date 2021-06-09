@@ -318,6 +318,8 @@ dependencies {
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
+  implementation group: 'net.minidev', name:'json-smart', version: '2.3.1'
+
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
   testImplementation group: 'org.apache.pdfbox', name: 'pdfbox', version: versions.pdfbox
