@@ -20,7 +20,7 @@ properties([
   ])
 ])
 
-@Library('Infrastructure')
+@Library('Infrastructure@feature/parallel-crossbrowser-testing-java')   // TO REVERT ONCE FINISHED EXPERIMENTING!!!
 import uk.gov.hmcts.contino.AppPipelineConfig
 
 def type = 'java'
