@@ -110,8 +110,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case SA21C50024: Expected " + firstBundleID
-                    + " but got " + wrongID, familyManNumber, additionalApplications.get(0).getId()));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
+                    familyManNumber, firstBundleID, wrongID));
         }
 
         @Test
@@ -125,9 +125,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case SA21C50024: Expected " + secondBundleID
-                        + " but got " + wrongID,
-                    familyManNumber, additionalApplications.get(1).getId()));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
+                    familyManNumber, secondBundleID, wrongID));
         }
 
         @Test
@@ -279,9 +278,6 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .supportingEvidenceBundle(List.of(element(firstSupportingEvidenceID,
                         SupportingEvidenceBundle.builder()
                             .document(supportingDocument)
-                            .build()), element(secondSupportingEvidenceID,
-                        SupportingEvidenceBundle.builder()
-                            .document(supportingDocument)
                             .build())))
                     .usePbaPayment(YES.getValue())
                     .build())
@@ -289,7 +285,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0))
                 .isEqualTo(additionalApplications.get(0));
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1).getValue())
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1))
+                .isEqualTo(additionalApplications.get(1));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(2).getValue())
                 .isEqualTo(expectedBundle);
         }
 
@@ -308,7 +306,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
-        void shouldThrowAnExceptionIfIncorrectIDForSecondBundle() {
+        void shouldThrowAnExceptionIfIncorrectIDForThirdBundle() {
             UUID wrongID = UUID.randomUUID();
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(UUID.randomUUID(),
                 buildAdditionalApplicationsBundle(UUID.randomUUID())), element(UUID.randomUUID(),
@@ -319,9 +317,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case SA21C50011: Expected " + thirdBundleID
-                        + " but got " + wrongID,
-                    familyManNumber, additionalApplications.get(1).getId()));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
+                    familyManNumber, thirdBundleID, wrongID));
         }
 
         private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
