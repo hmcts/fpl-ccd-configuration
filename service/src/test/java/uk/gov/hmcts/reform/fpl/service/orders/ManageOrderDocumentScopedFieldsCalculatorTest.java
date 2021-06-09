@@ -30,7 +30,8 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersExclusionStartDate",
             "manageOrdersPowerOfArrest",
             "manageOrdersFurtherDirections",
-            "manageSupervisionOrderEndDateType",
+            "manageOrdersEndDateTypeWithMonth",
+            "manageOrdersEndDateTypeWithEndOfProceedings",
             "manageOrdersSetDateEndDate",
             "manageOrdersSetDateAndTimeEndDate",
             "manageOrdersSetMonthsEndDate",
@@ -43,7 +44,12 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "hearingDetailsSectionSubHeader",
             "issuingDetailsSectionSubHeader",
             "childrenDetailsSectionSubHeader",
-            "orderDetailsSectionSubHeader"
+            "orderDetailsSectionSubHeader",
+            "manageOrdersExclusionDetails",
+            "manageOrdersHasExclusionRequirement",
+            "manageOrdersCafcassRegion",
+            "manageOrdersCafcassOfficesEngland",
+            "manageOrdersCafcassOfficesWales"
         );
     }
 }

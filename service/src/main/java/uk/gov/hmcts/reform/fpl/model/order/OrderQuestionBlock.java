@@ -30,13 +30,23 @@ public enum OrderQuestionBlock {
             "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersFurtherDirections")),
+    CAFCASS_JURISDICTIONS("cafcassJurisdictions", "Select jurisdiction", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersCafcassRegion", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassOfficesWales")),
     DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersTitle", "manageOrdersDirections")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
-    SUPERVISION_ORDER_END_DATE("supervisionOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
-        List.of("manageSupervisionOrderEndDateType", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
-            "manageOrdersSetMonthsEndDate"));
+    MANAGE_ORDER_END_DATE_WITH_MONTH(
+        "manageOrdersExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
+            "manageOrdersSetMonthsEndDate")),
+    MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS(
+        "manageOrdersExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersEndDateTypeWithEndOfProceedings", "manageOrdersSetDateEndDate",
+            "manageOrdersSetDateAndTimeEndDate")),
+    ICO_EXCLUSION(
+        "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails"));
 
     private final String showHideField;
     private final String question;

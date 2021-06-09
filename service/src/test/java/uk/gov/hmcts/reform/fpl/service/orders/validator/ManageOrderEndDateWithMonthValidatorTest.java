@@ -12,12 +12,12 @@ import java.util.List;
 
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 
-class SupervisionOrderEndDateValidatorTest {
+class ManageOrderEndDateWithMonthValidatorTest {
     private static final String TEST_AFTER_APPROVAL_DATE_MESSAGE = "Enter an end date after the approval date";
     private static final String TEST_END_DATE_RANGE_MESSAGE = "This order cannot last longer than 12 months";
     private static final String TEST_UNDER_DATE_RANGE_MESSAGE = "This order must last for at least 1 month";
@@ -31,11 +31,13 @@ class SupervisionOrderEndDateValidatorTest {
     private final LocalDate approvalDate = todayDate;
     private final LocalDateTime approvalDateTime = time.now();
 
-    private final SupervisionOrderEndDateValidator underTest = new SupervisionOrderEndDateValidator(time);
+    private final ManageOrderEndDateWithMonthValidator underTest = new ManageOrderEndDateWithMonthValidator(
+        new ManageOrderEndDateCommonValidator(time)
+    );
 
     @Test
     void accept() {
-        assertThat(underTest.accept()).isEqualTo(SUPERVISION_ORDER_END_DATE);
+        assertThat(underTest.accept()).isEqualTo(MANAGE_ORDER_END_DATE_WITH_MONTH);
     }
 
     // Date
@@ -44,7 +46,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(todayDate.plusMonths(6))
                 .build())
             .build();
@@ -57,7 +59,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(tomorrowDate)
                 .build())
             .build();
@@ -70,7 +72,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(approvalDate.plusMonths(MAXIMUM_MONTHS_ACCEPTED).minusDays(1))
                 .build())
             .build();
@@ -83,7 +85,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(approvalDate.minusDays(1))
                 .build())
             .build();
@@ -96,7 +98,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(approvalDate.plusMonths(MAXIMUM_MONTHS_ACCEPTED + 1))
                 .build())
             .build();
@@ -115,7 +117,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -133,7 +135,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -148,7 +150,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -158,12 +160,12 @@ class SupervisionOrderEndDateValidatorTest {
 
     @Test
     void shouldAcceptOrderDateTimeWhenOnLowestBoundary() {
-        LocalDateTime onBoundaryDateTime = approvalDate.plusMonths(1).atTime(0,0,1);
+        LocalDateTime onBoundaryDateTime = approvalDate.plusMonths(1).atTime(0, 0, 1);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(onBoundaryDateTime)
                 .build())
             .build();
@@ -174,14 +176,14 @@ class SupervisionOrderEndDateValidatorTest {
     @Test
     void shouldAcceptOrderDateTimeWhenOnHighestBoundary() {
         LocalDateTime endDate = approvalDate
-            .atTime(23,59,59)
+            .atTime(23, 59, 59)
             .plusMonths(MAXIMUM_MONTHS_ACCEPTED)
             .minusDays(1);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(endDate)
                 .build())
             .build();
@@ -191,12 +193,12 @@ class SupervisionOrderEndDateValidatorTest {
 
     @Test
     void shouldReturnErrorForOrderDateTimeWhenBelowEarliestBoundary() {
-        LocalDateTime endDate = approvalDate.atTime(0,0,1);
+        LocalDateTime endDate = approvalDate.atTime(0, 0, 1);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(endDate.minusSeconds(2))
                 .build())
             .build();
@@ -206,12 +208,12 @@ class SupervisionOrderEndDateValidatorTest {
 
     @Test
     void shouldReturnErrorForOrderDateTimeWhenAboveLatestBoundary() {
-        LocalDateTime endDate = approvalDate.atTime(23,59,59).plusMonths(MAXIMUM_MONTHS_ACCEPTED);
+        LocalDateTime endDate = approvalDate.atTime(23, 59, 59).plusMonths(MAXIMUM_MONTHS_ACCEPTED);
 
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(endDate.plusSeconds(2))
                 .build())
             .build();
@@ -224,7 +226,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(approvalDateTime.minusMonths(4))
                 .build())
             .build();
@@ -238,7 +240,7 @@ class SupervisionOrderEndDateValidatorTest {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersApprovalDate(approvalDate)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(MAXIMUM_MONTHS_ACCEPTED)
                 .build())
             .build();
@@ -250,7 +252,7 @@ class SupervisionOrderEndDateValidatorTest {
     void shouldAcceptMonthsSelectedWhenBelowHighestBoundaryMaximum() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(MAXIMUM_MONTHS_ACCEPTED - 1)
                 .build())
             .build();
@@ -262,7 +264,7 @@ class SupervisionOrderEndDateValidatorTest {
     void shouldAcceptMonthsSelectedWhenOnLowestBoundaryMinimum() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(MINIMUM_MONTHS_ACCEPTED)
                 .build())
             .build();
@@ -274,7 +276,7 @@ class SupervisionOrderEndDateValidatorTest {
     void shouldAcceptMonthsSelectedWhenAboveLowestBoundaryMinimum() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(MINIMUM_MONTHS_ACCEPTED + 1)
                 .build())
             .build();
@@ -286,7 +288,7 @@ class SupervisionOrderEndDateValidatorTest {
     void shouldReturnErrorForNumberOfMonthsOverMaximumBoundary() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(MAXIMUM_MONTHS_ACCEPTED + 1)
                 .build())
             .build();
@@ -298,7 +300,7 @@ class SupervisionOrderEndDateValidatorTest {
     void shouldReturnErrorForNumberOfMonthsUnderBoundaryMinimum() {
         CaseData caseData = CaseData.builder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(MINIMUM_MONTHS_ACCEPTED - 1)
                 .build())
             .build();

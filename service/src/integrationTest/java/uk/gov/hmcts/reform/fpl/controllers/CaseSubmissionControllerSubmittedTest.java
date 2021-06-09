@@ -78,6 +78,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -262,7 +263,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() {
         CaseData caseData = CaseData.builder()
             .outsourcingPolicy(OrganisationPolicy.builder()
-                .organisation(Organisation.builder().organisationName("Third party").build())
+                .organisation(Organisation.builder()
+                    .organisationID("ORG1")
+                    .organisationName("Third party")
+                    .build())
                 .build())
             .caseLocalAuthority("example")
             .id(CASE_ID)
@@ -300,7 +304,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
                 .ccdNumber("1234-5678-9012-3456")
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .build(),
-            new TypeReference<>() {}
+            MAP_TYPE
         );
 
         checkUntil(() ->

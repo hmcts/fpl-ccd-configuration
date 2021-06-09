@@ -13,10 +13,20 @@ const operations = {
 const orders = {
   group: '#manageOrdersType',
   options: {
-    c32: 'C32_CARE_ORDER',
-    c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
-    c35a: 'C35A_SUPERVISION_ORDER',
+    c23: 'C23_EMERGENCY_PROTECTION_ORDER',
+    c32: 'C32_CARE_ORDER',
+    c33: 'C33_INTERIM_CARE_ORDER',
+    c35A: 'C35A_SUPERVISION_ORDER',
+    c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
+  },
+  title: {
+    c21: 'Blank order (C21)',
+    c23: 'Emergency protection order (C23)',
+    c32: 'Care order (C32)',
+    c33: 'Interim care order (C33)',
+    c35A: 'Supervision order (C35A)',
+    c47a: 'Appointment of a children\'s guardian (C47A)',
   },
 };
 
@@ -44,6 +54,9 @@ const section3 = {
       all: 'Yes',
       select: 'No',
     },
+    children: {
+      child1: 'Timothy Jones',
+    },
   },
   childSelector: {
     selector: index => `#childSelector_option${index}`,
@@ -68,28 +81,53 @@ const section4 = {
       no: 'No',
     },
   },
-  exclusionRequirement: {
+  exclusionRequirementEPO: {
     group: '#manageOrdersExclusionRequirement',
     options: {
       yes: 'Yes',
       no: 'No',
     },
   },
-  supervisionOrderType: {
-    group: '#manageSupervisionOrderEndDateType',
+  exclusionRequirement: {
+    group: '#manageOrdersHasExclusionRequirement',
     options: {
-      calendarDay: 'SET_CALENDAR_DAY',
-      calendarDayAndTime: 'SET_CALENDAR_DAY_AND_TIME',
-      numberOfMonths: 'SET_NUMBER_OF_MONTHS',
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
+  orderTypeWithMonth: {
+    group: '#manageOrdersEndDateTypeWithMonth',
+    options: {
+      calendarDay: 'CALENDAR_DAY',
+      calendarDayAndTime: 'CALENDAR_DAY_AND_TIME',
+      numberOfMonths: 'NUMBER_OF_MONTHS',
+    },
+  },
+  orderTypeWithEndOfProceedings: {
+    group: '#manageOrdersEndDateTypeWithEndOfProceedings',
+    options: {
+      calendarDay: 'CALENDAR_DAY',
+      calendarDayAndTime: 'CALENDAR_DAY_AND_TIME',
+      endOfProceedings: 'END_OF_PROCEEDINGS',
     },
   },
   whoIsExcluded: '#manageOrdersWhoIsExcluded',
   exclusionStartDate: '#manageOrdersExclusionStartDate',
+  exclusionDetails: '#manageOrdersExclusionDetails',
   powerOfArrest: '#manageOrdersPowerOfArrest',
   endDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDateAndTime: '#manageOrdersSetDateAndTimeEndDate',
   supervisionOrderNumOfMonths: '#manageOrdersSetMonthsEndDate',
+  cafcassRegion: {
+    group: '#manageOrdersCafcassRegion',
+    options: {
+      england: 'ENGLAND',
+      wales: 'WALES',
+    },
+  },
+  englandOffices: '#manageOrdersCafcassOfficesEngland',
+  walesOffices: '#manageOrdersCafcassOfficesWales',
 };
 
 const preview = {
@@ -166,8 +204,12 @@ const selectEpoType = (epoType) => {
   I.click(`${section4.epoTypes.group}-${epoType}`);
 };
 
-const selectExclusionRequirement = (exclusionRequirement) => {
-  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+const selectExclusionRequirementEPO = (exclusionRequirement) => {
+  I.click(`${section4.exclusionRequirementEPO.group}-${exclusionRequirement}`);
+};
+
+const enterExclusionDetails = (text) => {
+  I.fillField(section4.exclusionDetails, text);
 };
 
 const enterWhoIsExcluded = (text) => {
@@ -187,7 +229,7 @@ const enterRemovalAddress = (address) => {
 };
 
 const selectSupervisionType = (option) => {
-  I.click(`${section4.supervisionOrderType.group}-${option}`);
+  I.click(`${section4.orderTypeWithMonth.group}-${option}`);
 };
 
 const enterSuperVisionOrderEndDate = async (date) => {
@@ -202,8 +244,12 @@ const enterSuperVisionNumOfMonths = async (months) => {
   I.fillField(section4.supervisionOrderNumOfMonths, months);
 };
 
-const selectSupervisionOrder = async (orderDateType) => {
-  I.click(`${section4.supervisionOrderType.group}-${orderDateType}`);
+const selectOrderTypeWithMonth = async (orderDateType) => {
+  I.click(`${section4.orderTypeWithMonth.group}-${orderDateType}`);
+};
+
+const selectOrderTypeWithEndOfProceedings = (orderDateType) => {
+  I.click(`${section4.orderTypeWithEndOfProceedings.group}-${orderDateType}`);
 };
 
 const enterFurtherDirections = async (text) => {
@@ -216,11 +262,24 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
+const selectExclusionRequirementICO = (exclusionRequirement) => {
+  I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
+};
+
+const selectCafcassRegion = region => {
+  I.click(`${section4.cafcassRegion.group}-${region}`);
+};
+
+const selectEnglandOffice= office => {
+  I.selectOption(section4.englandOffices, office);
+};
+
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
   enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
-  enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
+  enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
-  selectSupervisionOrder,
+  selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
+  selectCafcassRegion, selectEnglandOffice,
 };

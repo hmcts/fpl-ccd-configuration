@@ -92,7 +92,7 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await I.goToNextPage();
   manageOrdersEventPage.selectEpoType(manageOrdersEventPage.section4.epoTypes.options.preventRemoval);
   manageOrdersEventPage.enterRemovalAddress(removalAddress);
-  manageOrdersEventPage.selectExclusionRequirement(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
+  manageOrdersEventPage.selectExclusionRequirementEPO(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
   manageOrdersEventPage.enterWhoIsExcluded('John Doe');
   await manageOrdersEventPage.enterExclusionStartDate(approvalDate);
   manageOrdersEventPage.uploadPowerOfArrest(config.testPdfFile);
@@ -172,11 +172,11 @@ Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manag
   });
 });
 
-Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35a);
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35A);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   await I.goToNextPage();
@@ -185,7 +185,7 @@ Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrder
   await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.enterFurtherDirections('Supervision order further details.');
-  await manageOrdersEventPage.selectSupervisionOrder(manageOrdersEventPage.section4.supervisionOrderType.options.numberOfMonths);
+  await manageOrdersEventPage.selectOrderTypeWithMonth(manageOrdersEventPage.section4.orderTypeWithMonth.options.numberOfMonths);
   await manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
@@ -195,6 +195,63 @@ Scenario('Create Supervision order (C35A)', async ({I, caseViewPage, manageOrder
     orderIndex: 3,
     orderType: 'Supervision order (C35A)',
     approvalDate: today,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
+Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c33);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterJudge();
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectExclusionRequirementICO(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
+  await manageOrdersEventPage.enterExclusionDetails('I need an exclusion because of X,Y and Z');
+  await manageOrdersEventPage.enterFurtherDirections('Further details.');
+  await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I,caseViewPage,{
+    orderIndex: 3,
+    orderType: manageOrdersEventPage.orders.title.c33,
+    approvalDate: today,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
+Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectCafcassRegion('ENGLAND');
+  manageOrdersEventPage.selectEnglandOffice('Hull');
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 5,
+    orderType: 'C47A - Appointment of a Children\'s Guardian',
+    orderTitle: orderTitle,
+    approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
   });
