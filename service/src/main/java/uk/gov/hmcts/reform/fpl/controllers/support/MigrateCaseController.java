@@ -43,10 +43,6 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-3037".equals(migrationId)) {
-            run3037(caseDetails);
-        }
-
         if ("FPLA-3080".equals(migrationId)) {
             run3080(caseDetails);
         }
@@ -57,29 +53,6 @@ public class MigrateCaseController extends CallbackController {
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
-    }
-
-    private void run3037(CaseDetails caseDetails) {
-        CaseData caseData = getCaseData(caseDetails);
-        Map<String, Object> data = caseDetails.getData();
-
-        List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundles =
-            caseData.getAdditionalApplicationsBundle();
-
-        additionalApplicationsBundles.forEach(
-            additionalApplicationsBundle -> {
-                C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getValue().getC2DocumentBundle();
-
-                c2DocumentBundle.getSupportingEvidenceBundle()
-                    .removeIf(supportingEvidenceBundle -> supportingEvidenceBundle.getId()
-                        .toString()
-                        .equals("4885a0e2-fd88-4614-9c35-6c61d6b5e422")
-                    );
-            }
-        );
-
-        data.put("additionalApplicationsBundle", additionalApplicationsBundles);
-        caseDetails.setData(data);
     }
 
     private void run3080(CaseDetails caseDetails) {
