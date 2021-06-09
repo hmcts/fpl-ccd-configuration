@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.time.LocalDate.now;
 import static java.util.List.of;
@@ -139,6 +141,17 @@ class CaseSubmissionGenerationServiceTest {
 
             DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
             assertThat(caseSubmission.getUserFullName()).isEqualTo("legal team manager");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnIdamUserNameAsSigneeNameWhenApplicantDetailsAreNullOrEmpty(
+            List<Element<Applicant>> applicants) {
+
+            CaseData updatedCaseData = givenCaseData.toBuilder().applicants(applicants).build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
         }
 
         @ParameterizedTest
