@@ -17,9 +17,11 @@ module.exports = {
       },
     },
     useAllocatedJudge: '#gatekeepingOrderIssuingJudge_useAllocatedJudge-Yes',
+    issuingJudgeTitle: '#gatekeepingOrderIssuingJudge_judgeTitle-HER_HONOUR_JUDGE',
+    issuingJudgeName: '#gatekeepingOrderIssuingJudge_judgeLastName',
+    issuingJudgeEmail: '#gatekeepingOrderIssuingJudge_judgeEmailAddress',
     legalAdvisorName: '#gatekeepingOrderIssuingJudge_legalAdvisorName',
     statusRadioGroup: {
-      groupName: '#saveOrSendGatekeepingOrder_orderStatus',
       sealed: 'Yes, seal it and send to the local authority',
       draft: 'No, just save it on the system',
     },
@@ -27,13 +29,22 @@ module.exports = {
 
   async createGatekeepingOrderThroughService() {
     I.click(this.fields.routingRadioGroup.service);
-    await I.runAccessibilityTest();
-    await I.goToNextPage();
   },
 
-  async enterIssuingJudge(legalAdvisorName) {
+  async enterIssuingJudge(judgeName, legalAdvisorName) {
+    I.click(this.fields.issuingJudgeTitle);
+    I.fillField(this.fields.issuingJudgeName, judgeName);
+    I.fillField(this.fields.issuingJudgeEmail, "test@mail.com");
+    I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
+  },
+
+  async selectAllocatedJudge(legalAdvisorName) {
     I.click(this.fields.useAllocatedJudge);
     I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
+  },
+
+  async verifyNextStepsLabel() {
+    I.see('the allocated judge')
   },
 
   async enterCustomDirections(direction) {
@@ -41,7 +52,7 @@ module.exports = {
     I.fillField(this.fields.customDirection.fields(elementIndex).title, direction.title);
     I.fillField(this.fields.customDirection.fields(elementIndex).description, direction.description);
     I.selectOption(this.fields.customDirection.fields(elementIndex).assignee, 'All parties');
-    I.fillDate(direction.dueDate, this.fields.customDirection.fields(elementIndex).date);
+    await I.fillDate(direction.dueDate, this.fields.customDirection.fields(elementIndex).date);
   },
 
   markAsDraft() {
@@ -49,9 +60,7 @@ module.exports = {
   },
 
   async markAsFinal(issueDate) {
-    await I.runAccessibilityTest();
     I.click(this.fields.statusRadioGroup.sealed);
-    await I.runAccessibilityTest();
     await I.fillDate(issueDate);
   },
 };

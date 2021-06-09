@@ -81,7 +81,7 @@ class GatekeepingOrderGenerationServiceTest {
         DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForSealed());
         DocmosisStandardDirectionOrder expectedData = fullSealedOrder();
 
-        assertThat(templateData).usingRecursiveComparison().isEqualTo(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
     @Test
@@ -89,7 +89,7 @@ class GatekeepingOrderGenerationServiceTest {
         DocmosisStandardDirectionOrder templateData = underTest.getTemplateData(caseDataForDraft());
         DocmosisStandardDirectionOrder expectedData = fullDraftOrder();
 
-        assertThat(templateData).usingRecursiveComparison().isEqualTo(expectedData);
+        assertThat(templateData).isEqualTo(expectedData);
     }
 
     private DocmosisStandardDirectionOrder fullSealedOrder() {

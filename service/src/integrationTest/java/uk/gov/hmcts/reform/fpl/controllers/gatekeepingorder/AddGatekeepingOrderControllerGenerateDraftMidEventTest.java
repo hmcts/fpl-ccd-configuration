@@ -58,11 +58,11 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
     @BeforeEach
     void setup() {
         final byte[] pdf = testDocumentBinaries();
-        final String sealedOrderFileName = "standard-directions-order.pdf";
+        final String baseFileName = "standard-directions-order.pdf";
         final String draftOrderFileName = "draft-standard-directions-order.pdf";
 
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(new DocmosisDocument(sealedOrderFileName, pdf));
+            .willReturn(new DocmosisDocument(baseFileName, pdf));
 
         given(uploadDocumentService.uploadPDF(pdf, draftOrderFileName)).willReturn(DOCUMENT);
     }
@@ -99,6 +99,7 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
         SaveOrSendGatekeepingOrder expectedSaveOrSendPage = SaveOrSendGatekeepingOrder.builder()
             .draftDocument(DOCUMENT_REFERENCE)
+            .nextSteps(null)
             .build();
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));

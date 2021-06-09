@@ -31,6 +31,7 @@
     "ListElementCode": "nextSteps",
     "FieldType": "Text",
     "ElementLabel": "Next steps",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
   }
 ]
