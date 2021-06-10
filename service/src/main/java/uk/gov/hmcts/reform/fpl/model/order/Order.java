@@ -83,6 +83,7 @@ public enum Order {
         "Interim supervision order",
         "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Interim supervision order (C35B)",
+        false,
         List.of(
             LINKED_TO_HEARING,
             APPROVER,
