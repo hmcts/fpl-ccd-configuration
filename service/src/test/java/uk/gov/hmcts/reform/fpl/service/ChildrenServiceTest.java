@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
@@ -26,8 +28,6 @@ import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.UPLOAD;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -84,89 +84,107 @@ class ChildrenServiceTest {
         assertThat(result).isTrue();
     }
 
-    @Test
-    void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(
-            orderOfType(CARE_ORDER), testChildren(), "Yes", null, null
-        );
-
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes", "Yes");
-
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
-            .containsExactly("Care order", "Care order", "Care order");
-    }
-
-    @Test
-    void shouldUseUploadDocumentLabelWhenTypeIsUpload() {
-        List<Element<Child>> result = service.updateFinalOrderIssued(
-            orderOfType(UPLOAD, UploadedOrderType.C37), testChildren(), "Yes", null, null
-        );
-
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes", "Yes");
-
-        assertThat(result).extracting(child -> child.getValue().getFinalOrderIssuedType())
-            .containsOnly("Education supervision order (C37)");
-    }
-
-    @Test
-    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
-        List<Element<Child>> children = testChildren();
-
-        Selector childSelector = Selector.builder()
-            .count("1")
-            .selected(List.of(1))
+    @Nested
+    class UpdateFinalOrderIssued {
+        ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
+            .manageOrdersType(Order.C32_CARE_ORDER)
             .build();
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(
-            orderOfType(CARE_ORDER), children, "No", childSelector, null
-        );
+        @Test
+        void shouldUpdateFinalOrderIssuedWhenAppliesToAllChildren() {
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(manageOrdersEventData)
+                .children1(testChildren())
+                .orderAppliesToAllChildren("Yes")
+                .childSelector(null)
+                .remainingChildIndex(null)
+                .build();
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("No", "Yes", "No");
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
-            .containsExactly(null, "Care order", null);
-    }
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+                .containsExactly("Yes", "Yes", "Yes");
 
-    @Test
-    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChildren() {
-        List<Element<Child>> children = List.of(childWithoutFinalOrderIssued(),
-            childWithFinalOrderIssued(),
-            childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued());
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+                .containsExactly("Care order", "Care order", "Care order");
+        }
 
-        Selector childSelector = Selector.builder()
-            .count("5")
-            .selected(List.of(0, 2))
-            .build();
+        @Test
+        void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildren() {
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(
-            orderOfType(CARE_ORDER), children, "No", childSelector, null
-        );
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(manageOrdersEventData)
+                .children1(testChildren())
+                .orderAppliesToAllChildren("No")
+                .childSelector(Selector.builder()
+                    .count("1")
+                    .selected(List.of(1))
+                    .build())
+                .remainingChildIndex(null)
+                .build();
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes", "Yes", "No", "No");
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
-            .containsExactly("Care order", "Care order", "Care order", null, null);
-    }
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+                .containsExactly("No", "Yes", "No");
 
-    @Test
-    void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndOneRemainingChild() {
-        List<Element<Child>> children = List.of(childWithFinalOrderIssued(),
-            childWithoutFinalOrderIssued(),
-            childWithFinalOrderIssued());
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+                .containsExactly(null, "Care order", null);
+        }
 
-        List<Element<Child>> result = service.updateFinalOrderIssued(
-            orderOfType(SUPERVISION_ORDER), children, "No", null, "1"
-        );
+        @Test
+        void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndAlreadyIssuedForOtherChildren() {
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
-            .containsExactly("Yes", "Yes", "Yes");
+            List<Element<Child>> children = List.of(childWithoutFinalOrderIssued(),
+                childWithFinalOrderIssued(),
+                childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued(), childWithoutFinalOrderIssued());
 
-        assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
-            .containsExactly("Care order", "Supervision order", "Care order");
+            Selector childSelector = Selector.builder()
+                .count("5")
+                .selected(List.of(0, 2))
+                .build();
+
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(manageOrdersEventData)
+                .children1(children)
+                .orderAppliesToAllChildren("No")
+                .childSelector(childSelector)
+                .remainingChildIndex(null)
+                .build();
+
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
+
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+                .containsExactly("Yes", "Yes", "Yes", "No", "No");
+
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+                .containsExactly("Care order", "Care order", "Care order", null, null);
+        }
+
+        @Test
+        void shouldUpdateFinalOrderIssuedWhenAppliesToSelectedChildrenAndOneRemainingChild() {
+            List<Element<Child>> children = List.of(childWithFinalOrderIssued(),
+                childWithoutFinalOrderIssued(),
+                childWithFinalOrderIssued());
+
+            CaseData caseData = CaseData.builder()
+                .manageOrdersEventData(ManageOrdersEventData.builder()
+                    .manageOrdersType(Order.C35A_SUPERVISION_ORDER)
+                    .build())
+                .children1(children)
+                .orderAppliesToAllChildren("No")
+                .childSelector(null)
+                .remainingChildIndex("1")
+                .build();
+
+            List<Element<Child>> result = service.updateFinalOrderIssued(caseData);
+
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssued())
+                .containsExactly("Yes", "Yes", "Yes");
+
+            assertThat(result).extracting(element -> element.getValue().getFinalOrderIssuedType())
+                .containsExactly("Care order", "Supervision order", "Care order");
+        }
     }
 
     @Test
