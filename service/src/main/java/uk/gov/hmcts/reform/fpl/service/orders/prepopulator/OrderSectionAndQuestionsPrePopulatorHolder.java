@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPr
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOrdersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
@@ -33,6 +34,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ApprovalDateBlockPrePopulator approvalDateBlockPrePopulator;
     private final ApprovalDateTimeBlockPrePopulator approvalDateTimeBlockPrePopulator;
     private final WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
+    private final WhichOrdersBlockPrePopulator whichOrdersBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
 
@@ -56,6 +58,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
+            whichOrdersBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator
         ).stream().collect(Collectors.toMap(

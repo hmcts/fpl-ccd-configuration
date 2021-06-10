@@ -15,6 +15,7 @@ const orders = {
   options: {
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
     c32: 'C32_CARE_ORDER',
+    c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c21: 'C21_BLANK_ORDER',
     c35a: 'C35A_SUPERVISION_ORDER',
@@ -49,12 +50,17 @@ const section3 = {
   childSelector: {
     selector: index => `#childSelector_option${index}`,
   },
+  careOrderSelector: {
+    selector: index => `#careOrderSelector_option${index}-SELECTED`,
+  },
 };
 
 const section4 = {
   title: '#manageOrdersTitle',
   directions: '#manageOrdersDirections',
   furtherDirections: '#manageOrdersFurtherDirections',
+  careOrderIssuedDate:  '#manageOrdersCareOrderIssuedDate',
+  careOrderIssuedVenue: '#manageOrdersCareOrderIssuedCourt',
   epoTypes: {
     group: '#manageOrdersEpoType',
     options: {
@@ -142,6 +148,14 @@ const enterApprovalDateTime = async (dateTime) => {
   await I.runAccessibilityTest();
 };
 
+const enterCareOrderIssuedDate = async (date) => {
+  await I.fillDate(date, section4.careOrderIssuedDate);
+};
+
+const enterCareOrderIssuedVenue = (hearingDetails) => {
+  I.selectOption(section4.careOrderIssuedVenue, hearingDetails.venue);
+};
+
 const enterEPOEndDateTime = async (dateTime) => {
   await I.fillDateAndTime(dateTime, section4.endDate);
   await I.runAccessibilityTest();
@@ -155,6 +169,14 @@ const selectChildren = async (option, indexes = []) => {
       I.checkOption(section3.childSelector.selector(selectorIndex));
     });
   }
+
+  await I.runAccessibilityTest();
+};
+
+const selectCareOrder = async (indexes = []) => {
+  indexes.forEach((selectorIndex) => {
+    I.checkOption(section3.careOrderSelector.selector(selectorIndex));
+  });
 
   await I.runAccessibilityTest();
 };
@@ -236,8 +258,8 @@ const selectEnglandOffice= office => {
 
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
-  selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, selectCareOrder, enterTitle, enterDirections,
+  enterFurtherDirections, checkPreview, enterApprovalDateTime, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirement, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectSupervisionOrder, selectCafcassRegion, selectEnglandOffice,

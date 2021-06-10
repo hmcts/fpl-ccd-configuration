@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
@@ -45,7 +46,24 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("orderDetails", "NO");
         careOrderQuestions.put("cafcassJurisdictions", "NO");
         careOrderQuestions.put("whichChildren", "YES");
+        careOrderQuestions.put("whichOrders", "NO");
         careOrderQuestions.put("supervisionOrderExpiryDate", "NO");
+        careOrderQuestions.put("dischargeOfCareDetails", "NO");
+
+        Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
+        dischargeOfCareQuestions.put("furtherDirections", "YES");
+        dischargeOfCareQuestions.put("approvalDate", "YES");
+        dischargeOfCareQuestions.put("approvalDateTime", "NO");
+        dischargeOfCareQuestions.put("epoIncludePhrase", "NO");
+        dischargeOfCareQuestions.put("epoChildrenDescription", "NO");
+        dischargeOfCareQuestions.put("epoExpiryDate", "NO");
+        dischargeOfCareQuestions.put("epoTypeAndPreventRemoval", "NO");
+        dischargeOfCareQuestions.put("orderDetails", "NO");
+        dischargeOfCareQuestions.put("cafcassJurisdictions", "NO");
+        dischargeOfCareQuestions.put("whichChildren", "NO");
+        dischargeOfCareQuestions.put("whichOrders", "YES");
+        dischargeOfCareQuestions.put("supervisionOrderExpiryDate", "NO");
+        dischargeOfCareQuestions.put("dischargeOfCareDetails", "YES");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("furtherDirections", "YES");
@@ -58,7 +76,9 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("orderDetails", "NO");
         epoQuestions.put("cafcassJurisdictions", "NO");
         epoQuestions.put("whichChildren", "YES");
+        epoQuestions.put("whichOrders", "NO");
         epoQuestions.put("supervisionOrderExpiryDate", "NO");
+        epoQuestions.put("dischargeOfCareDetails", "NO");
 
         Map<String, String> blankOrderQuestions = new HashMap<>(commonQuestions);
         blankOrderQuestions.put("approvalDate", "YES");
@@ -71,7 +91,9 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         blankOrderQuestions.put("supervisionOrderExpiryDate", "NO");
         blankOrderQuestions.put("whichChildren", "YES");
+        blankOrderQuestions.put("whichOrders", "NO");
         blankOrderQuestions.put("cafcassJurisdictions", "NO");
+        blankOrderQuestions.put("dischargeOfCareDetails", "NO");
 
         Map<String, String> supervisionOrderQuestions = new HashMap<>(commonQuestions);
         supervisionOrderQuestions.put("approvalDate", "YES");
@@ -84,7 +106,9 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         supervisionOrderQuestions.put("cafcassJurisdictions", "NO");
         supervisionOrderQuestions.put("whichChildren", "YES");
+        supervisionOrderQuestions.put("whichOrders", "NO");
         supervisionOrderQuestions.put("supervisionOrderExpiryDate", "YES");
+        supervisionOrderQuestions.put("dischargeOfCareDetails", "NO");
 
         Map<String, String> appointmentOfChildrensGuardianQuestions = new HashMap<>(commonQuestions);
         appointmentOfChildrensGuardianQuestions.put("approvalDate", "YES");
@@ -97,10 +121,13 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("epoTypeAndPreventRemoval", "NO");
         appointmentOfChildrensGuardianQuestions.put("cafcassJurisdictions", "YES");
         appointmentOfChildrensGuardianQuestions.put("whichChildren", "NO");
+        appointmentOfChildrensGuardianQuestions.put("whichOrders", "NO");
         appointmentOfChildrensGuardianQuestions.put("supervisionOrderExpiryDate", "NO");
+        appointmentOfChildrensGuardianQuestions.put("dischargeOfCareDetails", "NO");
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
             Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions),

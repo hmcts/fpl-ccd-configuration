@@ -17,6 +17,7 @@ public class OrderDocumentGeneratorHolder {
     // parameter generators
     private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+    private final C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
     private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
     private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
 
@@ -33,6 +34,7 @@ public class OrderDocumentGeneratorHolder {
             typeToGenerator = List.of(
                 c21BlankOrderDocumentParameterGenerator,
                 c32CareOrderDocumentParameterGenerator,
+                c32bDischargeOfCareOrderDocumentParameterGenerator,
                 c23EPODocumentParameterGenerator,
                 c35aSupervisionOrderDocumentParameterGenerator,
                 c47AParameterGenerator

@@ -23,15 +23,22 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
+    "ListElementCode": "C32B_DISCHARGE_OF_CARE_ORDER",
+    "ListElement": "Discharge of care order (C32B)",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
     "ListElementCode": "C23_EMERGENCY_PROTECTION_ORDER",
     "ListElement": "Emergency protection order (C23)",
-    "DisplayOrder": 4
+    "DisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/207",
     "ID": "ManageOrdersType",
     "ListElementCode": "C35A_SUPERVISION_ORDER",
     "ListElement": "Supervision order (C35a)",
-    "DisplayOrder": 5
+    "DisplayOrder": 6
   }
 ]

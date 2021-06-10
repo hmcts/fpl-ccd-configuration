@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DA
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CAFCASS_JURISDICTIONS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DETAILS;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_CHILDREN_DESCRIPTION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_EXPIRY_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_INCLUDE_PHRASE;
@@ -23,38 +24,49 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_H
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.SUPERVISION_ORDER_END_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_ORDERS;
 
 @Getter
 @RequiredArgsConstructor
 public enum Order {
-    C32_CARE_ORDER(
-        "Care order", "Section 31 Children Act 1989", "C32 - Care order",
-        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
-    ),
     C21_BLANK_ORDER(
-        "Blank order", "Section 31 Children Act 1989", "C21 - Blank order",
+        "Blank order",
+        "Section 31 Children Act 1989",
+        "C21 - Blank order",
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
-        "Emergency protection order", "Section 44 Children Act 1989", "C23 - Emergency protection order",
+        "Emergency protection order",
+        "Section 44 Children Act 1989",
+        "C23 - Emergency protection order",
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C32_CARE_ORDER(
+        "Care order",
+        "Section 31 Children Act 1989",
+        "C32 - Care order",
+        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
+    ),
+    C32B_DISCHARGE_OF_CARE_ORDER(
+        "Discharge of care order",
+        "Section 31 Children Act 1989",
+        "C32B - Discharge of care order",
+        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_ORDERS, DISCHARGE_DETAILS, FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
         "Supervision order",
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Supervision order (C35A)",
         List.of(
-            LINKED_TO_HEARING,
-            APPROVER,
-            APPROVAL_DATE,
-            WHICH_CHILDREN,
-            FURTHER_DIRECTIONS,
-            SUPERVISION_ORDER_END_DATE,
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, SUPERVISION_ORDER_END_DATE,
             REVIEW_DRAFT_ORDER)
     ),
-    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN("Appointment of a Children's Guardian",
-        "Section 41(1) Children Act 1989", "C47A - Appointment of a Children's Guardian",
+    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+        "Appointment of a Children's Guardian",
+        "Section 41(1) Children Act 1989",
+        "C47A - Appointment of a Children's Guardian",
         List.of(
             LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     );

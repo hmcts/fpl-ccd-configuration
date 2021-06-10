@@ -17,6 +17,8 @@ public class OrderValidatorHolder {
     private final ApprovalDateValidator approvalDateValidator;
     private final ApprovalDateTimeValidator approvalDateTimeValidator;
     private final WhichChildrenValidator whichChildrenValidator;
+    private final WhichOrderValidator whichOrderValidator;
+    private final DischargeOfCareDateValidator dischargeOfCareDateValidator;
     private final EPOEndDateValidator epoEndDateValidator;
     private final SupervisionOrderEndDateValidator supervisionOrderEndDateValidator;
 
@@ -28,8 +30,10 @@ public class OrderValidatorHolder {
         }
         blockToValidator = List.of(
             whichChildrenValidator,
+            whichOrderValidator,
             approvalDateValidator,
             approvalDateTimeValidator,
+            dischargeOfCareDateValidator,
             epoEndDateValidator,
             supervisionOrderEndDateValidator
         ).stream().collect(Collectors.toMap(QuestionBlockOrderValidator::accept, Function.identity()));

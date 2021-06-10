@@ -249,7 +249,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         assertThat(response.getData()).doesNotContainKeys(
             "judgeAndLegalAdvisor", "manageOrdersApprovalDate", "orderAppliesToAllChildren", "children_label",
             "childSelector", "manageOrdersFurtherDirections", "orderPreview", "manageOrdersType", "orderTempQuestions",
-            "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader",
+            "issuingDetailsSectionSubHeader", "hearingDetailsSectionSubHeader", "orders_label",
             "childrenDetailsSectionSubHeader", "orderDetailsSectionSubHeader",
             "manageOrdersOperation", "manageOrdersApprovalDateTime", "manageOrdersIncludePhrase",
             "manageOrdersChildrenDescription", "manageOrdersEndDateTime", "manageOrdersEpoType",

@@ -139,6 +139,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCareOrderIssuedDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "When was the care order issued?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCareOrderIssuedCourt",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HearingVenue",
+    "Label": "Which court issued the order?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "manageOrdersEpoRemovalAddress",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "AddressUK",
