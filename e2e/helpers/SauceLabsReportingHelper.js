@@ -14,12 +14,12 @@ module.exports = function () {
 
   event.dispatcher.on(event.test.passed, (test) => {
     console.log('Test Passed:', test.title);    // deleteme before merge
-    console.log('Failed Tests:', failedTests);  // deleteme before merge
+    console.log('Failed Tests Before:', failedTests);  // deleteme before merge
     if (failedTests.find(failedTest => failedTest === test.title)) {
       // Remove test from failedTests list once it passes
       failedTests = failedTests.filter(failedTest => failedTest !== test.title);
     }
-    return test;
+    console.log('Failed Tests After:', failedTests);  // deleteme before merge
   });
 
   event.dispatcher.on(event.test.failed, (test) => {
@@ -27,7 +27,6 @@ module.exports = function () {
     if (!failedTests.find(failedTest => failedTest === test.title)) {
       failedTests.push(test.title);
     }
-    return test;
   });
 
   // Setting overall test result on SauceLabs
