@@ -19,6 +19,7 @@ module.exports = function () {
       // Remove test from failedTests list once it passes
       failedTests = failedTests.filter(failedTest => failedTest === test.title);
     }
+    return test;
   });
 
   event.dispatcher.on(event.test.failed, (test) => {
@@ -26,6 +27,7 @@ module.exports = function () {
     if (!failedTests.find(failedTest => failedTest === test.title)) {
       failedTests.push(test.title);
     }
+    return test;
   });
 
   // Setting overall test result on SauceLabs
