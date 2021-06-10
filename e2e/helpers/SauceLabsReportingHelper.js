@@ -17,7 +17,7 @@ module.exports = function () {
     console.log('Failed Tests:', failedTests);  // deleteme before merge
     if (failedTests.find(failedTest => failedTest === test.title)) {
       // Remove test from failedTests list once it passes
-      failedTests = failedTests.filter(failedTest => failedTest === test.title);
+      failedTests = failedTests.filter(failedTest => failedTest !== test.title);
     }
     return test;
   });
