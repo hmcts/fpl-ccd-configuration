@@ -20,7 +20,7 @@ Warning
 It’s a criminal offence to intentionally obstruct a person who’s authorised under
 section 44(4)(b) Children Act 1989 either to remove a child or to prevent the removal
 of a child (section 44(15) Children Act 1989).
-An Emergency Protection Order is granted to the applicant, .
+An Emergency Protection Order is granted to the applicant, LocalAuthorityName.
 The order gives the applicant parental responsibility for the child.
 The Court authorises the applicant to remove the child to accommodation provided by or
 on behalf of the applicant.

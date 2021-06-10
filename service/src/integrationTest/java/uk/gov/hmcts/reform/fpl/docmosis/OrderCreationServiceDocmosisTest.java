@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHo
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -72,15 +71,7 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_COURT = "La Court";
-
-    // TO implement before merge
-    private static final Set<Object> EXCLUDED_ORDERS = Set.of(
-        Order.C32_CARE_ORDER,
-        Order.C33_INTERIM_CARE_ORDER,
-        Order.C35A_SUPERVISION_ORDER,
-        Order.C35B_INTERIM_SUPERVISION_ORDER,
-        Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN
-    );
+    private static final String LA_NAME = "LocalAuthorityName";
 
     private final DocmosisOrderCaseDataGenerator dataGenerator = new DocmosisOrderCaseDataGenerator();
 
@@ -105,18 +96,28 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
         String actualContent = getPdfContent(dataGenerator.generateForOrder(order));
 
         assertThat(actualContent)
-            .isEqualToNormalizingWhitespace(readString(format("order-generation/%s.txt", order.name())));
+            .isEqualToNormalizingWhitespace(getExpectedText(order));
+    }
+
+    private String getExpectedText(Order order) {
+        String fileName = format("order-generation/%s.txt", order.name());
+        try {
+            return readString(fileName);
+        } catch (Exception e) {
+            throw new RuntimeException("Missing assertion text for order " + order.name() + ". Please create a "
+                + "filename named " + fileName);
+        }
     }
 
     private static Stream<Arguments> allOrders() {
         return Stream.of(Order.values())
-            .filter(order -> !EXCLUDED_ORDERS.contains(order))
             .map(Arguments::of);
     }
 
     public String getPdfContent(CaseData caseData, String... ignores) throws IOException {
         when(hmctsCourtLookupConfiguration.getCourt(LA_CODE)).thenReturn(
             new HmctsCourtLookupConfiguration.Court(LA_COURT, null, null));
+        when(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
         when(uploadDocumentService.uploadDocument(any(byte[].class),
             anyString(),
             anyString())).thenReturn(testDocument());

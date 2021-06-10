@@ -17,14 +17,15 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.EnglandOffices.BRIGHTON;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 public class DocmosisOrderCaseDataGenerator {
 
-    private static final String DATA_REGION = "dataRegion";
     private static final String LA_CODE = "LA_CODE";
-    private static final String LA_COURT = "La Court";
 
     public CaseData generateForOrder(final Order order) {
 
@@ -122,6 +123,32 @@ public class DocmosisOrderCaseDataGenerator {
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
                         .manageOrdersFurtherDirections("Some further directions.")
+                        .build()
+                );
+            case ICO_EXCLUSION:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersExclusionDetails("Some exclusion details")
+                        .build()
+                );
+            case MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersEndDateTypeWithEndOfProceedings(END_OF_PROCEEDINGS)
+                        .build()
+                );
+            case MANAGE_ORDER_END_DATE_WITH_MONTH:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
+                        .manageOrdersSetMonthsEndDate(4)
+                        .build()
+                );
+            case CAFCASS_JURISDICTIONS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersCafcassOfficesEngland(BRIGHTON)
+                        .manageOrdersCafcassRegion("ENGLAND")
                         .build()
                 );
             default:
