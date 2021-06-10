@@ -2,16 +2,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CustomDirection",
-    "ListElementCode": "id",
-    "FieldType": "Text",
-    "ElementLabel": "Type",
-    "HintText": "You must include a brief direction summary",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "title CONTAINS \"DO NOT SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Title",

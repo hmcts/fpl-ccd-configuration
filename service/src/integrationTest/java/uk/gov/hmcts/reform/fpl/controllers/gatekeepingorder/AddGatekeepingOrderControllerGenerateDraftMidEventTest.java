@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -58,11 +58,11 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
     @BeforeEach
     void setup() {
         final byte[] pdf = testDocumentBinaries();
-        final String sealedOrderFileName = "standard-directions-order.pdf";
+        final String baseFileName = "standard-directions-order.pdf";
         final String draftOrderFileName = "draft-standard-directions-order.pdf";
 
         given(documentGeneratorService.generateDocmosisDocument(any(DocmosisData.class), any()))
-            .willReturn(new DocmosisDocument(sealedOrderFileName, pdf));
+            .willReturn(new DocmosisDocument(baseFileName, pdf));
 
         given(uploadDocumentService.uploadPDF(pdf, draftOrderFileName)).willReturn(DOCUMENT);
     }
@@ -76,15 +76,15 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
         CaseData caseData = buildBaseCaseData();
 
-        SaveOrSendGatekeepingOrder expectedSaveOrSendPage = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
             .nextSteps(nextSteps)
             .build();
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));
 
-        assertThat(responseData.getGatekeepingOrderEventData().getSaveOrSendGatekeepingOrder())
-            .isEqualTo(expectedSaveOrSendPage);
+        assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision())
+            .isEqualTo(expectedSealDecision);
     }
 
     @Test
@@ -97,14 +97,15 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
             .hearingDetails(hearingBookings())
             .build();
 
-        SaveOrSendGatekeepingOrder expectedSaveOrSendPage = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
+            .nextSteps(null)
             .build();
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));
 
-        assertThat(responseData.getGatekeepingOrderEventData().getSaveOrSendGatekeepingOrder())
-            .isEqualTo(expectedSaveOrSendPage);
+        assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision())
+            .isEqualTo(expectedSealDecision);
     }
 
     private CaseData buildBaseCaseData() {

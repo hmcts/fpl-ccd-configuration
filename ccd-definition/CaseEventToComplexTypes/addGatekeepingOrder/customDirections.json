@@ -4,17 +4,8 @@
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "sdoDirectionCustom",
-    "ListElementCode": "id",
-    "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
-    "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
     "ListElementCode": "title",
-    "FieldDisplayOrder": 2,
+    "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -23,7 +14,7 @@
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "sdoDirectionCustom",
     "ListElementCode": "description",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -32,7 +23,7 @@
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "sdoDirectionCustom",
     "ListElementCode": "assignee",
-    "FieldDisplayOrder": 4,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -41,7 +32,7 @@
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "sdoDirectionCustom",
     "ListElementCode": "dateToBeCompletedBy",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   }
 ]

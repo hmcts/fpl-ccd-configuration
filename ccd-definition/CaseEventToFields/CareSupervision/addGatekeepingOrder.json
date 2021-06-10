@@ -25,34 +25,22 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "allocatedJudge",
-    "PageFieldDisplayOrder": 0,
-    "DisplayContext": "READONLY",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
     "PageID": "issuingJudge",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "gatekeepingOrderRouter=\"DO_NOT_SHOW\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/generate-draft/mid-event"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "CaseFieldID": "gatekeepingOrderSealDecision",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
-    "PageID": "issuingJudge",
-    "PageDisplayOrder": 5,
-    "PageColumnNumber": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "saveOrSendGatekeepingOrder",
-    "PageFieldDisplayOrder": 1,
-    "DisplayContext": "COMPLEX",
-    "PageID": "saveOrSend",
+    "PageID": "sealDecision",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
@@ -63,9 +51,9 @@
     "CaseFieldID": "nextStepsLabel",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": "saveOrSend",
+    "PageID": "sealDecision",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "saveOrSendGatekeepingOrder.nextSteps=\"*\""
+    "FieldShowCondition": "gatekeepingOrderSealDecision.nextSteps=\"*\""
   }
 ]

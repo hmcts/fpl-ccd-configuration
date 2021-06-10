@@ -10,6 +10,7 @@ module.exports = [
     },
     title: 'Mock title',
     description: 'Mock description',
+    assignee: 'All parties',
   },
   {
     dueDate: {
@@ -22,5 +23,6 @@ module.exports = [
     },
     title: 'Mock title 2',
     description: 'Mock description 2',
+    assignee: 'Local authority',
   },
 ];

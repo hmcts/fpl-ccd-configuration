@@ -38,111 +38,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla3037 {
-        UUID c2DocumentBundleUuid = UUID.randomUUID();
-        UUID supportingEvidenceBundleUuid = UUID.randomUUID();
-        UUID supportingEvidenceBundleToRemoveUuid = UUID.fromString("4885a0e2-fd88-4614-9c35-6c61d6b5e422");
-        LocalDateTime localDateTime = LocalDateTime.now();
-        String migrationId = "FPLA-3037";
-
-        @Test
-        void shouldRemoveExpectedSupportingEvidenceBundles() {
-            AdditionalApplicationsBundle additionalApplicationsBundle = buildAdditionalApplicationsBundle();
-
-            AdditionalApplicationsBundle expectedAdditionalApplicationsBundle =
-                buildExpectedAdditionalApplicationsBundle();
-
-            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, migrationId);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-            AdditionalApplicationsBundle extractedAdditionalApplicationsBundle =
-                extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
-
-            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(expectedAdditionalApplicationsBundle);
-        }
-
-        @Test
-        void shouldNotRemoveSupportingEvidenceBundles() {
-            AdditionalApplicationsBundle additionalApplicationsBundle = buildExpectedAdditionalApplicationsBundle();
-
-            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, migrationId);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-            AdditionalApplicationsBundle extractedAdditionalApplicationsBundle =
-                extractedCaseData.getAdditionalApplicationsBundle().get(0).getValue();
-
-            assertThat(extractedAdditionalApplicationsBundle).isEqualTo(additionalApplicationsBundle);
-        }
-
-        @Test
-        void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
-            String incorrectMigrationId = "FPLA-1111";
-
-            AdditionalApplicationsBundle additionalApplicationsBundle = buildAdditionalApplicationsBundle();
-
-            CaseDetails caseDetails = caseDetails(additionalApplicationsBundle, incorrectMigrationId);
-
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(wrapElements(
-                additionalApplicationsBundle));
-        }
-
-        private CaseDetails caseDetails(AdditionalApplicationsBundle additionalApplicationsBundle,
-                                        String migrationId) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
-                .build());
-
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-
-        private AdditionalApplicationsBundle buildExpectedAdditionalApplicationsBundle() {
-            return AdditionalApplicationsBundle
-                .builder()
-                .c2DocumentBundle(
-                    C2DocumentBundle.builder()
-                        .id(c2DocumentBundleUuid)
-                        .author("author")
-                        .supportingEvidenceBundle(List.of(
-                            element(supportingEvidenceBundleUuid, SupportingEvidenceBundle.builder()
-                                .uploadedBy("test@test.co.uk")
-                                .dateTimeUploaded(localDateTime)
-                                .document(DocumentReference.builder().build())
-                                .build())
-                        )).build()
-                ).build();
-        }
-
-        private AdditionalApplicationsBundle buildAdditionalApplicationsBundle() {
-            return AdditionalApplicationsBundle
-                .builder()
-                .c2DocumentBundle(
-                    C2DocumentBundle.builder()
-                        .id(c2DocumentBundleUuid)
-                        .author("author")
-                        .supportingEvidenceBundle(List.of(
-                            element(supportingEvidenceBundleToRemoveUuid, SupportingEvidenceBundle.builder()
-                                .uploadedBy("test@test.co.uk")
-                                .dateTimeUploaded(localDateTime)
-                                .build()),
-                            element(supportingEvidenceBundleUuid, SupportingEvidenceBundle.builder()
-                                .uploadedBy("test@test.co.uk")
-                                .dateTimeUploaded(localDateTime)
-                                .document(DocumentReference.builder().build())
-                                .build())
-                        )).build()
-                ).build();
-        }
-    }
-
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
     class Fpla3080 {
         String familyManNumber = "SA21C50024";
         String migrationId = "FPLA-3080";
-        private UUID firstBundleID = UUID.fromString("fbf05208-f5dd-4942-b735-9aa226d73a2e");
+        private UUID firstBundleID = UUID.fromString("427ef017-f57a-4942-9d75-4dcf7b45de74");
         private UUID secondBundleID = UUID.fromString("4e4def36-2323-4e95-b93a-2f46fc4d6fc0");
         private UUID supportingEvidenceID = UUID.fromString("3f3a183e-44ab-4e63-ac27-0ca40f3058ff");
 
@@ -211,8 +110,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case SA21C50024: Expected " + firstBundleID
-                        + " but got " + wrongID, familyManNumber, additionalApplications.get(0).getId()));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
+                    familyManNumber, firstBundleID, wrongID));
         }
 
         @Test
@@ -226,9 +125,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case SA21C50024: Expected " + secondBundleID
-                        + " but got " + wrongID,
-                    familyManNumber, additionalApplications.get(1).getId()));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
+                    familyManNumber, secondBundleID, wrongID));
         }
 
         @Test
@@ -241,8 +139,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Supporting evidence document with " + supportingEvidenceID
-                    + " does not exist"));
+                .hasMessage(String.format("Supporting evidence document with %s does not exist",
+                    supportingEvidenceID));
         }
 
         private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
@@ -319,7 +217,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .filename("Position Statement for C2.docx")
                     .build())
                 .uploadedBy("HMCTS")
-                .dateTimeUploaded(LocalDateTime.of(2021, 05, 24, 10, 23, 32))
+                .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
                 .build();
 
             SupportingEvidenceBundle secondBundle = SupportingEvidenceBundle.builder()
@@ -330,7 +228,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .filename("AMO0030002 Draft LOI.docx")
                     .build())
                 .uploadedBy("HMCTS")
-                .dateTimeUploaded(LocalDateTime.of(2021, 05, 24, 10, 23, 32))
+                .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
                 .build();
 
             SupportingEvidenceBundle thirdBundle = SupportingEvidenceBundle.builder()
@@ -341,7 +239,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .filename("AMO0030002 Medico-legal_CV-May2021.doc")
                     .build())
                 .uploadedBy("HMCTS")
-                .dateTimeUploaded(LocalDateTime.of(2021, 05, 24, 10, 23, 32))
+                .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
                 .build();
 
             return wrapElements(firstBundle, secondBundle, thirdBundle);
@@ -355,8 +253,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         String migrationId = "FPLA-2991";
         UUID firstBundleID = UUID.randomUUID();
         UUID firstSupportingEvidenceID = UUID.randomUUID();
-        UUID secondBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
-        UUID secondSupportingEvidenceID = UUID.fromString("045c1fd6-3fed-42d3-be0b-e47257f6c01c");
+        UUID secondBundleID = UUID.randomUUID();
+        UUID secondSupportingEvidenceID = UUID.randomUUID();
+        UUID thirdBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
+        UUID thirdSupportingEvidenceID = UUID.fromString("045c1fd6-3fed-42d3-be0b-e47257f6c01c");
 
         private DocumentReference supportingDocument = testDocumentReference("Correct c2 document");
         private DocumentReference c2Document = testDocumentReference("Incorrect c2 document");
@@ -364,8 +264,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         @Test
         void shouldRemoveSupportingEvidenceDocumentWithCorrectID() {
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(secondBundleID,
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)));
+                buildAdditionalApplicationsBundle(thirdSupportingEvidenceID)), element(secondBundleID,
+                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(thirdBundleID,
+                buildAdditionalApplicationsBundle(thirdSupportingEvidenceID)));
 
             CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -376,15 +277,17 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .type(WITH_NOTICE)
                     .supportingEvidenceBundle(List.of(element(firstSupportingEvidenceID,
                         SupportingEvidenceBundle.builder()
-                        .document(supportingDocument)
-                        .build())))
+                            .document(supportingDocument)
+                            .build())))
                     .usePbaPayment(YES.getValue())
                     .build())
                 .build();
 
             assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0))
                 .isEqualTo(additionalApplications.get(0));
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1).getValue())
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1))
+                .isEqualTo(additionalApplications.get(1));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(2).getValue())
                 .isEqualTo(expectedBundle);
         }
 
@@ -392,8 +295,9 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
             String incorrectMigrationId = "FPLA-1111";
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(secondBundleID,
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)));
+                buildAdditionalApplicationsBundle(firstSupportingEvidenceID)), element(secondBundleID,
+                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(thirdBundleID,
+                buildAdditionalApplicationsBundle(thirdSupportingEvidenceID)));
 
             CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
@@ -402,9 +306,10 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         }
 
         @Test
-        void shouldThrowAnExceptionIfIncorrectIDForSecondBundle() {
+        void shouldThrowAnExceptionIfIncorrectIDForThirdBundle() {
             UUID wrongID = UUID.randomUUID();
             List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(UUID.randomUUID(),
+                buildAdditionalApplicationsBundle(UUID.randomUUID())), element(UUID.randomUUID(),
                 buildAdditionalApplicationsBundle(UUID.randomUUID())), element(wrongID,
                 buildAdditionalApplicationsBundle(UUID.randomUUID())));
 
@@ -412,9 +317,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case SA21C50011: Expected " + secondBundleID
-                        + " but got " + wrongID,
-                    familyManNumber, additionalApplications.get(1).getId()));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
+                    familyManNumber, thirdBundleID, wrongID));
         }
 
         private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
@@ -435,8 +339,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                     .type(WITH_NOTICE)
                     .supportingEvidenceBundle(List.of(element(firstSupportingEvidenceID,
                         SupportingEvidenceBundle.builder()
-                        .document(supportingDocument)
-                        .build()), element(id, SupportingEvidenceBundle.builder()
+                            .document(supportingDocument)
+                            .build()), element(id, SupportingEvidenceBundle.builder()
                         .document(supportingDocument).build())))
                     .usePbaPayment(YES.getValue())
                     .build()).build();

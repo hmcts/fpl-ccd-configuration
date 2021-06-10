@@ -8,11 +8,10 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
-import uk.gov.hmcts.reform.fpl.json.deserializer.DataDeserializer;
 import uk.gov.hmcts.reform.fpl.json.deserializer.StandardDirectionDeserializer;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -23,7 +22,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +42,7 @@ public class GatekeepingOrderEventData {
     YesNo showUrgentHearingAllocation;
 
     JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
-    SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
+    GatekeepingOrderSealDecision gatekeepingOrderSealDecision;
 
     List<DirectionType> sdoDirectionsForAll;
     List<DirectionType> sdoDirectionsForLocalAuthority;
@@ -134,8 +132,8 @@ public class GatekeepingOrderEventData {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
     }
 
-    public SaveOrSendGatekeepingOrder getSaveOrSendGatekeepingOrder() {
-        return defaultIfNull(saveOrSendGatekeepingOrder, SaveOrSendGatekeepingOrder.builder().build());
+    public GatekeepingOrderSealDecision getGatekeepingOrderSealDecision() {
+        return defaultIfNull(gatekeepingOrderSealDecision, GatekeepingOrderSealDecision.builder().build());
     }
 
     public List<DirectionType> getRequestedDirections() {

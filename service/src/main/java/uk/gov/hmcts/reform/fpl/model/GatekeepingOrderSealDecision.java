@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SaveOrSendGatekeepingOrder {
+public class GatekeepingOrderSealDecision {
     private final DocumentReference draftDocument;
     private final LocalDate dateOfIssue;
     private final OrderStatus orderStatus;

@@ -10,15 +10,17 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.exceptions.StandardDirectionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
+import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +33,7 @@ import java.util.stream.Stream;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -41,24 +44,22 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeF
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderService {
+    private final DocumentService documentService;
+    private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
 
     private final OrdersLookupService ordersLookupService;
     private final CaseConverter caseConverter;
     private final ObjectMapper objectMapper;
 
-    public SaveOrSendGatekeepingOrder buildSaveOrSendPage(CaseData caseData, Document document) {
+    public GatekeepingOrderSealDecision buildSealDecisionPage(CaseData caseData) {
         //add draft document
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = caseData.getGatekeepingOrderEventData()
-            .getSaveOrSendGatekeepingOrder().toBuilder()
+        Document document = buildDocument(caseData);
+
+        return GatekeepingOrderSealDecision.builder()
             .draftDocument(buildFromDocument(document))
+            .nextSteps(buildNextStepsLabel(caseData))
             .orderStatus(null)
             .build();
-
-        saveOrSendGatekeepingOrder = saveOrSendGatekeepingOrder.toBuilder()
-            .nextSteps(buildNextStepsLabel(caseData))
-            .build();
-
-        return saveOrSendGatekeepingOrder;
     }
 
     public JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge, JudgeAndLegalAdvisor issuingJudge) {
@@ -100,13 +101,12 @@ public class GatekeepingOrderService {
         if (requiredMissingInformation.isEmpty()) {
             return null;
         } else {
-            List<String> nextStepsLabel = new ArrayList<>();
-            nextStepsLabel.add("## Next steps");
-            nextStepsLabel.add("Your order will be saved as a draft in 'Draft orders'.");
-            nextStepsLabel.add("You cannot seal and send the order until adding:");
-            nextStepsLabel.addAll(requiredMissingInformation);
+            String nextStepsLabel = "## Next steps\n\n"
+                + "Your order will be saved as a draft in 'Draft orders'.\n\n"
+                + "You cannot seal and send the order until adding:";
+            requiredMissingInformation.add(0, nextStepsLabel);
 
-            return String.join("\n\n", nextStepsLabel);
+            return String.join("\n\n", requiredMissingInformation);
         }
     }
 
@@ -117,9 +117,8 @@ public class GatekeepingOrderService {
             getJudgeForTabView(eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
 
         return StandardDirectionOrder.builder()
-//            .customDirections(eventData.getSdoDirectionCustom())
-//            .standardDirections(eventData.getStandardDirections())
-            .orderStatus(defaultIfNull(eventData.getSaveOrSendGatekeepingOrder().getOrderStatus(), DRAFT))
+            .customDirections(eventData.getSdoDirectionCustom())
+            .orderStatus(defaultIfNull(eventData.getGatekeepingOrderSealDecision().getOrderStatus(), DRAFT))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .build();
     }
@@ -133,6 +132,11 @@ public class GatekeepingOrderService {
         }
 
         return templates;
+    }
+
+    public Document buildDocument(CaseData caseData) {
+        DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
+        return documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
     }
 
     public void populateStandardDirections(CaseDetails caseDetails) {

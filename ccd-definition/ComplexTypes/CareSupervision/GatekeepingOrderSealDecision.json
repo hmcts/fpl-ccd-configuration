@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SaveOrSendGatekeepingOrder",
+    "ID": "GatekeepingOrderSealDecision",
     "ListElementCode": "draftDocument",
     "FieldType": "Document",
     "ElementLabel": " ",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SaveOrSendGatekeepingOrder",
+    "ID": "GatekeepingOrderSealDecision",
     "ListElementCode": "orderStatus",
     "FieldType": "FixedRadioList",
     "ElementLabel": "Do you want to send this order now?",
@@ -18,7 +18,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SaveOrSendGatekeepingOrder",
+    "ID": "GatekeepingOrderSealDecision",
     "ListElementCode": "dateOfIssue",
     "FieldType": "Date",
     "ElementLabel": "Order issue date",
@@ -27,10 +27,11 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SaveOrSendGatekeepingOrder",
+    "ID": "GatekeepingOrderSealDecision",
     "ListElementCode": "nextSteps",
     "FieldType": "Text",
     "ElementLabel": "Next steps",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
   }
 ]

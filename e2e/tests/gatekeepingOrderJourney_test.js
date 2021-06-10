@@ -16,17 +16,6 @@ BeforeSuite(async ({I}) => {
 
 Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
-Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
-  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
-  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
-  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
-  I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
-});
-
 Scenario('Gatekeeping judge adds hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
   let hearingStartDate = moment('2030-01-10 14:00:00').toDate();
   let hearingEndDate = moment(hearingStartDate).add(30,'m').toDate();
@@ -35,8 +24,9 @@ Scenario('Gatekeeping judge adds hearing', async ({I, caseViewPage, manageHearin
   await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate, presence: hearingDetails[0].presence});
   manageHearingsEventPage.enterVenue(hearingDetails[0]);
   await I.goToNextPage();
-  manageHearingsEventPage.enterJudgeDetails(hearingDetails[0]);
-  manageHearingsEventPage.enterLegalAdvisorName(hearingDetails[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.click('Her Honour Judge');
+  I.fillField('Last name', 'xxx');
+  I.fillField('Email Address', 'test@test.com');
   await I.goToNextPage();
   manageHearingsEventPage.dontSendNoticeOfHearing();
   await I.completeEvent('Save and continue');
@@ -48,6 +38,8 @@ Scenario('Gatekeeping judge adds hearing', async ({I, caseViewPage, manageHearin
 Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   await addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
+  await I.runAccessibilityTest();
+  await I.goToNextPage();
 
   I.see('Request permission for expert evidence');
   I.see('Request help to take part in proceedings');
@@ -129,15 +121,29 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   await addGatekeepingOrderEventPage.enterCustomDirections(directions[0]);
   await I.addAnotherElementToCollection();
   await addGatekeepingOrderEventPage.enterCustomDirections(directions[1]);
+  await I.runAccessibilityTest();
   await I.goToNextPage();
-  await addGatekeepingOrderEventPage.enterIssuingJudge('Bob Ross');
+  await addGatekeepingOrderEventPage.enterIssuingJudge('Judy', 'Bob Ross');
+  await I.runAccessibilityTest();
   await I.goToNextPage();
-  addGatekeepingOrderEventPage.markAsDraft();
+  await addGatekeepingOrderEventPage.verifyNextStepsLabel();
+  await I.runAccessibilityTest();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);
 
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeInTab(['Gatekeeping order', 'File'], 'draft-standard-directions-order.pdf');
+});
+
+Scenario('Gatekeeping judge adds allocated judge', async ({I, caseViewPage, allocatedJudgeEventPage}) => {
+  await caseViewPage.goToNewActions(config.applicationActions.allocatedJudge);
+  await allocatedJudgeEventPage.enterAllocatedJudge('Moley', 'moley@example.com');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.applicationActions.allocatedJudge);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeInTab(['Allocated Judge', 'Judge or magistrate\'s title'], 'Her Honour Judge');
+  I.seeInTab(['Allocated Judge', 'Last name'], 'Moley');
+  I.seeInTab(['Allocated Judge', 'Email Address'], 'moley@example.com');
 });
 
 Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
@@ -186,7 +192,7 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   await I.goToNextPage();
 
   await I.goToNextPage();
-
+  await addGatekeepingOrderEventPage.selectAllocatedJudge('Bob Ross');
   await I.goToNextPage();
 
   await addGatekeepingOrderEventPage.markAsFinal({day: 11, month: 1, year: 2020});

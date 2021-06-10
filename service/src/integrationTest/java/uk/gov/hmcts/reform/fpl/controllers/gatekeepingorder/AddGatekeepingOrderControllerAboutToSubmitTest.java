@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -86,7 +86,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     void shouldBuildDraftSDOWithExistingDraftDocumentWhenOrderStatusIsDraft() {
         CaseData caseData = CaseData.builder()
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .orderStatus(DRAFT)
                     .draftDocument(SDO_REFERENCE)
                     .build())
@@ -114,7 +114,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().build())
                 .sdoDirectionCustom(customDirections)
-                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .orderStatus(SEALED)
                     .dateOfIssue(time.now().toLocalDate())
                     .draftDocument(SDO_REFERENCE)
@@ -145,7 +145,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .extracting(Element::getValue)
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
         assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "sdoDirectionCustom",
-            "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
+            "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
     }
 
     private CaseData buildBaseCaseData() {

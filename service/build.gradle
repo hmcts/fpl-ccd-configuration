@@ -17,7 +17,7 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'org.springframework.boot' version '2.4.5'
+  id 'org.springframework.boot' version '2.4.6'
   id 'com.github.ben-manes.versions' version '0.39.0'
   id 'org.sonarqube' version '3.2.0'
   id 'project-report'
@@ -297,7 +297,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.1'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.9.2'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -318,6 +318,8 @@ dependencies {
   implementation group: 'commons-io', name: 'commons-io', version: '2.9.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+
+  implementation group: 'net.minidev', name:'json-smart', version: '2.4.7'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
