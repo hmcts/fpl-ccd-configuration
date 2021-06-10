@@ -34,7 +34,7 @@ module.exports = {
   async enterIssuingJudge(judgeName, legalAdvisorName) {
     I.click(this.fields.issuingJudgeTitle);
     I.fillField(this.fields.issuingJudgeName, judgeName);
-    I.fillField(this.fields.issuingJudgeEmail, "test@mail.com");
+    I.fillField(this.fields.issuingJudgeEmail, 'test@mail.com');
     I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
   },
 
@@ -44,7 +44,7 @@ module.exports = {
   },
 
   async verifyNextStepsLabel() {
-    I.see('the allocated judge')
+    I.see('the allocated judge');
   },
 
   async enterCustomDirections(direction) {
