@@ -78,7 +78,20 @@ public enum Order {
         false,
         List.of(
             LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
-    );
+    ),
+    C35B_INTERIM_SUPERVISION_ORDER(
+        "Interim supervision order",
+        "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
+        "Interim supervision order (C35B)",
+        List.of(
+            LINKED_TO_HEARING,
+            APPROVER,
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            FURTHER_DIRECTIONS,
+            MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
+            REVIEW_DRAFT_ORDER)
+    ),;
 
     private final String title;
     private final String childrenAct;
