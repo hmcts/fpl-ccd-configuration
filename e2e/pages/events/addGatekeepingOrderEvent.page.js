@@ -22,8 +22,8 @@ module.exports = {
     issuingJudgeEmail: '#gatekeepingOrderIssuingJudge_judgeEmailAddress',
     legalAdvisorName: '#gatekeepingOrderIssuingJudge_legalAdvisorName',
     statusRadioGroup: {
-      sealed: 'Yes, seal it and send to the local authority',
-      draft: 'No, just save it on the system',
+      sealed: '#saveOrSendGatekeepingOrder_orderStatus-SEALED',
+      draft: '#saveOrSendGatekeepingOrder_orderStatus-DRAFT',
     },
   },
 
@@ -51,7 +51,7 @@ module.exports = {
     const elementIndex = await I.getActiveElementIndex();
     I.fillField(this.fields.customDirection.fields(elementIndex).title, direction.title);
     I.fillField(this.fields.customDirection.fields(elementIndex).description, direction.description);
-    I.selectOption(this.fields.customDirection.fields(elementIndex).assignee, 'All parties');
+    I.selectOption(this.fields.customDirection.fields(elementIndex).assignee, direction.assignee);
     await I.fillDate(direction.dueDate, this.fields.customDirection.fields(elementIndex).date);
   },
 
