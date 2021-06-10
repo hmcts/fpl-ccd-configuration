@@ -48,7 +48,7 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({I, c
   });
 });
 
-Scenario('Create 32b discharge of care order @f', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
