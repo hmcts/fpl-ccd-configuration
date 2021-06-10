@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
 import java.io.File;
 import java.io.IOException;
 
-@ActiveProfiles( {"integration-test", "docmosis-template-test"})
+@ActiveProfiles({"integration-test", "docmosis-template-test"})
 @OverrideAutoConfiguration(enabled = true)
 @Import(AbstractDocmosisTest.TestConfiguration.class)
 @SpringBootTest(classes = {
