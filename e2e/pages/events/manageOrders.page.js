@@ -135,6 +135,13 @@ const section4 = {
 const preview = {
   label: '#orderPreviewSectionHeader',
   documentName: 'Preview order.pdf',
+  closeCase: {
+    group: '#manageOrdersCloseCase',
+    options: {
+      yes: '#manageOrdersCloseCase-Yes',
+      no: '#manageOrdersCloseCase-No',
+    },
+  },
 };
 
 // Actions
@@ -264,6 +271,10 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
+const selectCloseCase = async () => {
+  I.checkOption(preview.closeCase.options.no);
+};
+
 const selectExclusionRequirementICO = (exclusionRequirement) => {
   I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
 };
@@ -279,7 +290,7 @@ const selectEnglandOffice= office => {
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterFurtherDirections, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
