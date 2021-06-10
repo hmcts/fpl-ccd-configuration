@@ -1,10 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
@@ -16,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C35aSupervisionOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
@@ -25,9 +22,9 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_CALENDAR_DAY_AND_TIME;
-import static uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType.SET_NUMBER_OF_MONTHS;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.CALENDAR_DAY_AND_TIME;
+import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
@@ -35,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateT
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith({MockitoExtension.class})
 class C35aSupervisionOrderDocumentParameterGeneratorTest {
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
     private static final String CHILD_GRAMMAR = "child";
@@ -49,14 +45,18 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     private String dayOrdinalSuffix;
     private String courtOrderMessage;
 
-    @Mock
-    private ChildrenService childrenService;
+    private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final LocalAuthorityNameLookupConfiguration laNameLookup =
+        mock(LocalAuthorityNameLookupConfiguration.class);
+    private final OrderDetailsWithEndTypeGenerator orderDetailsWithEndTypeGenerator =
+        new OrderDetailsWithEndTypeGenerator(
+            childrenService,
+            laNameLookup);
 
-    @Mock
-    private LocalAuthorityNameLookupConfiguration laNameLookup;
-
-    @InjectMocks
-    private C35aSupervisionOrderDocumentParameterGenerator underTest;
+    private C35aSupervisionOrderDocumentParameterGenerator underTest =
+        new C35aSupervisionOrderDocumentParameterGenerator(
+            orderDetailsWithEndTypeGenerator
+        );
 
     @Test
     void accept() {
@@ -251,7 +251,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             + " until " + formattedDate + ".";
     }
 
-    private C35aSupervisionOrderDocmosisParameters.C35aSupervisionOrderDocmosisParametersBuilder<?,?>
+    private C35aSupervisionOrderDocmosisParameters.C35aSupervisionOrderDocmosisParametersBuilder<?, ?>
         expectedCommonParameters() {
         return C35aSupervisionOrderDocmosisParameters.builder()
             .orderTitle(Order.C35A_SUPERVISION_ORDER.getTitle())
@@ -265,7 +265,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY)
                 .manageOrdersSetDateEndDate(NEXT_WEEK_DATE_TIME.toLocalDate())
                 .build())
             .build();
@@ -278,7 +278,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_CALENDAR_DAY_AND_TIME)
+                .manageOrdersEndDateTypeWithMonth(CALENDAR_DAY_AND_TIME)
                 .manageOrdersSetDateAndTimeEndDate(NEXT_WEEK_DATE_TIME)
                 .build())
             .build();
@@ -291,7 +291,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
                 .manageOrdersApprovalDate(time.now().toLocalDate())
                 .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)
                 .manageOrdersType(C35A_SUPERVISION_ORDER)
-                .manageSupervisionOrderEndDateType(SET_NUMBER_OF_MONTHS)
+                .manageOrdersEndDateTypeWithMonth(NUMBER_OF_MONTHS)
                 .manageOrdersSetMonthsEndDate(numOfMonths)
                 .build())
             .build();

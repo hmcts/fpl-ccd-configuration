@@ -7,11 +7,12 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.enums.WalesOffices;
-import uk.gov.hmcts.reform.fpl.enums.orders.SupervisionOrderEndDateType;
+import uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Jacksonized
 public class ManageOrdersEventData {
+
+    OrderTempQuestions orderTempQuestions;
     Order manageOrdersType;
     DynamicList manageOrdersApprovedAtHearingList;
     State manageOrdersState;
@@ -34,14 +37,18 @@ public class ManageOrdersEventData {
     String manageOrdersChildrenDescription;
     LocalDate manageOrdersCareOrderIssuedDate;
     String manageOrdersExclusionRequirement;
+    String manageOrdersExclusionDetails;
     String manageOrdersWhoIsExcluded;
     DocumentReference manageOrdersPowerOfArrest;
     Address manageOrdersEpoRemovalAddress;
     LocalDate manageOrdersExclusionStartDate;
-    SupervisionOrderEndDateType manageSupervisionOrderEndDateType;
+    ManageOrdersEndDateType manageOrdersEndDateTypeWithMonth;
+    ManageOrdersEndDateType manageOrdersEndDateTypeWithEndOfProceedings;
     LocalDate manageOrdersSetDateEndDate;
     LocalDateTime manageOrdersSetDateAndTimeEndDate;
     Integer manageOrdersSetMonthsEndDate;
+    String manageOrdersShowCloseCase;
+    String manageOrdersCloseCase;
     String manageOrdersCafcassRegion;
     EnglandOffices manageOrdersCafcassOfficesEngland;
     WalesOffices manageOrdersCafcassOfficesWales;

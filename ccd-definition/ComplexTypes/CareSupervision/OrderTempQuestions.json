@@ -119,6 +119,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
+    "ListElementCode": "closeCase",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
     "ListElementCode": "previewOrder",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
@@ -128,10 +137,28 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
-    "ListElementCode": "supervisionOrderExpiryDate",
+    "ListElementCode": "manageOrdersExpiryDateWithMonth",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "manageOrdersExpiryDateWithMonth=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "manageOrdersExclusionRequirementDetails",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "manageOrdersExclusionRequirementDetails=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "manageOrdersExpiryDateWithEndOfProceedings",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "manageOrdersExpiryDateWithEndOfProceedings=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

@@ -40,9 +40,19 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersCareOrderIssuedDate", "manageOrdersCareOrderIssuedCourt")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,
         List.of("orderPreview")),
-    SUPERVISION_ORDER_END_DATE("supervisionOrderExpiryDate", "End date", OrderSection.ORDER_DETAILS,
-        List.of("manageSupervisionOrderEndDateType", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
-            "manageOrdersSetMonthsEndDate"));
+    MANAGE_ORDER_END_DATE_WITH_MONTH(
+        "manageOrdersExpiryDateWithMonth", "End date", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersEndDateTypeWithMonth", "manageOrdersSetDateEndDate", "manageOrdersSetDateAndTimeEndDate",
+            "manageOrdersSetMonthsEndDate")),
+    MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS(
+        "manageOrdersExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersEndDateTypeWithEndOfProceedings", "manageOrdersSetDateEndDate",
+            "manageOrdersSetDateAndTimeEndDate")),
+    ICO_EXCLUSION(
+        "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),
+    CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
+        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning"));
 
     private final String showHideField;
     private final String question;

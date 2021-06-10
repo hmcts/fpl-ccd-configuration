@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
@@ -79,13 +80,16 @@ class SealedOrderHistoryServiceTest {
     private final DischargeCareOrderService dischargeCareOrderService = mock(DischargeCareOrderService.class);
     private final OrderCreationService orderCreationService = mock(OrderCreationService.class);
     private final Time time = mock(Time.class);
+    private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator = mock(
+        ManageOrdersClosedCaseFieldGenerator.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
         dischargeCareOrderService,
         orderCreationService,
-        time
+        time,
+        manageOrdersClosedCaseFieldGenerator
     );
 
     @Nested
@@ -114,6 +118,29 @@ class SealedOrderHistoryServiceTest {
                     "orderCollection", List.of(
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
                     )
+                ));
+            }
+        }
+
+        @Test
+        void generateWithOtherClosingExtras() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().build();
+                mockDocumentUpload(caseData);
+                when(childrenService.getSelectedChildren(caseData)).thenReturn(wrapElements(child1));
+                when(manageOrdersClosedCaseFieldGenerator.generate(caseData)).thenReturn(
+                    Map.of("somethingClose", "closeCaseValue")
+                );
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder().build())
+                    ),
+                    "somethingClose", "closeCaseValue"
                 ));
             }
         }

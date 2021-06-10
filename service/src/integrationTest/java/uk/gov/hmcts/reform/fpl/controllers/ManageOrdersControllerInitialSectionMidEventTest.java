@@ -62,8 +62,11 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("epoChildrenDescription", "NO"),
+            Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
-            Map.entry("supervisionOrderExpiryDate", "NO")
+            Map.entry("closeCase", "NO")
         );
 
         assertThat(response.getData()).containsAllEntriesOf(
@@ -81,8 +84,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "initial-selection");
-
-        assertThat(response.getData()).doesNotContainKeys("orderTempQuestions", "issuingDetailsSectionSubHeader");
+        assertThat(response.getData()).doesNotContainKey("issuingDetailsSectionSubHeader");
+        assertThat(response.getData()).containsEntry("orderTempQuestions", null);
     }
 
 }

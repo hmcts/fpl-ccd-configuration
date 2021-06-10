@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
@@ -37,6 +38,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final WhichOrdersBlockPrePopulator whichOrdersBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
+    private final CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -60,7 +62,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             whichChildrenBlockPrePopulator,
             whichOrdersBlockPrePopulator,
             approverBlockPrePopulator,
-            epoTypeAndPreventRemovalBlockPrePopulator
+            epoTypeAndPreventRemovalBlockPrePopulator,
+            closeCaseBlockPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()
