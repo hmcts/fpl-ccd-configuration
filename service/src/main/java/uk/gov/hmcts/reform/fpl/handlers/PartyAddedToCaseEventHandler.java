@@ -42,17 +42,17 @@ public class PartyAddedToCaseEventHandler {
             caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL
         );
 
-        String template = toggleService.isEldestChildLastNameEnabled()
+        String emailRepTemplate = toggleService.isEldestChildLastNameEnabled()
                           ? PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE_CHILD_NAME
                           : PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 
         NotifyData servedByEmailParameters = contentProvider.getPartyAddedToCaseNotificationParameters(caseData, EMAIL);
 
         representativeNotificationService.sendToUpdatedRepresentatives(
-            template, servedByEmailParameters, caseData, representativesServedByEmail
+            emailRepTemplate, servedByEmailParameters, caseData, representativesServedByEmail
         );
 
-        template = toggleService.isEldestChildLastNameEnabled()
+        String digitalRepTemplate = toggleService.isEldestChildLastNameEnabled()
                    ? PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE_WITH_CHILD
                    : PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
 
@@ -61,7 +61,7 @@ public class PartyAddedToCaseEventHandler {
         );
 
         representativeNotificationService.sendToUpdatedRepresentatives(
-            template, servedByDigitalServiceParameters, caseData, representativesServedByDigitalService
+            digitalRepTemplate, servedByDigitalServiceParameters, caseData, representativesServedByDigitalService
         );
     }
 }

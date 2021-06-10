@@ -1,28 +1,20 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 
 @ContextConfiguration(classes = {
-    NoticeOfChangeEventHandler.class,
-    NoticeOfChangeContentProvider.class,
-    CaseUrlService.class,
-    EmailNotificationHelper.class
+    NoticeOfChangeEventHandler.class, NoticeOfChangeContentProvider.class, CaseUrlService.class
 })
 class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;
@@ -39,14 +31,6 @@ class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
 
     @Autowired
     private NoticeOfChangeEventHandler underTest;
-
-    @MockBean
-    private FeatureToggleService toggleService;
-
-    @BeforeEach
-    void setUp() {
-        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(false);
-    }
 
     @Test
     void notifySolicitorAccessGranted() {

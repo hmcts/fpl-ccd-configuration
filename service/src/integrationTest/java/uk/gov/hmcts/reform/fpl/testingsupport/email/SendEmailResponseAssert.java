@@ -45,7 +45,7 @@ public class SendEmailResponseAssert extends AbstractAssert<SendEmailResponseAss
     }
 
     private String standardiseLineBreaks(String body) {
-        return body.replaceAll("\\r\\n", "\n");
+        return body.replaceAll("\\r\\n", EmailContent.NEW_LINE);
     }
 
     private String cleanGovNotifyDocLink(String body) {

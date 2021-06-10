@@ -60,8 +60,8 @@ public class SubmittedCaseEventHandler {
         NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
         String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        String template = toggleService.isEldestChildLastNameEnabled() ? HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME
-                                                                       : HMCTS_COURT_SUBMISSION_TEMPLATE;
+        String template = getTemplate(HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME, HMCTS_COURT_SUBMISSION_TEMPLATE);
+
         notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
     }
 
@@ -73,8 +73,8 @@ public class SubmittedCaseEventHandler {
         NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        String template = toggleService.isEldestChildLastNameEnabled() ? CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME
-                                                                       : CAFCASS_SUBMISSION_TEMPLATE;
+        String template = getTemplate(CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME, CAFCASS_SUBMISSION_TEMPLATE);
+
         notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
     }
 
@@ -91,8 +91,7 @@ public class SubmittedCaseEventHandler {
 
         NotifyData templateData = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
-        String template = toggleService.isEldestChildLastNameEnabled() ? OUTSOURCED_CASE_TEMPLATE_CHILD_NAME
-                                                                       : OUTSOURCED_CASE_TEMPLATE;
+        String template = getTemplate(OUTSOURCED_CASE_TEMPLATE_CHILD_NAME, OUTSOURCED_CASE_TEMPLATE);
 
         notificationService.sendEmail(template, emails, templateData, caseData.getId().toString());
     }
@@ -112,6 +111,10 @@ public class SubmittedCaseEventHandler {
         } else {
             handlePaymentNotTaken(caseData);
         }
+    }
+
+    private String getTemplate(String toggleEnabledTemplate, String toggleDisabledTemplate) {
+        return toggleService.isEldestChildLastNameEnabled() ? toggleEnabledTemplate : toggleDisabledTemplate;
     }
 
     private void makePaymentForCaseOrders(final CaseData caseData) {
