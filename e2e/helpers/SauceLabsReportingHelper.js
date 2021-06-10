@@ -13,6 +13,8 @@ module.exports = function () {
   let failedTests = [];
 
   event.dispatcher.on(event.test.passed, (test) => {
+    console.log('Test Passed:', test.title);    // deleteme before merge
+    console.log('Failed Tests:', failedTests);  // deleteme before merge
     if (failedTests.find(failedTest => failedTest === test.title)) {
       // Remove test from failedTests list once it passes
       failedTests = failedTests.filter(failedTest => failedTest === test.title);
@@ -20,6 +22,7 @@ module.exports = function () {
   });
 
   event.dispatcher.on(event.test.failed, (test) => {
+    console.log('Test Failed:', test.title);    // deleteme before merge
     if (!failedTests.find(failedTest => failedTest === test.title)) {
       failedTests.push(test.title);
     }
