@@ -109,7 +109,7 @@ def setupSecretsForIntegrationTests(pipelineConf) {
 }
 
 def archiveExtraFilesForIntegrationTests() {
-  steps.archiveArtifacts artifacts: "${env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER}"
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "${env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER}/**/*"
 }
 
 def teardownSecretsForIntegrationTests() {
