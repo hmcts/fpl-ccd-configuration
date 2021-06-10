@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.fpl.docmosis;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.docmosis.generator.DocmosisOrderCaseDataGenerator;
@@ -18,12 +16,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.docmosis.DocumentConversionService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
@@ -34,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C35aSupervisionOrderDocu
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35bISODocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C47AAppointmentOfAChildrensGuardianParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocmosisCommonElementDecorator;
-import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHolder;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
@@ -55,19 +49,14 @@ import static uk.gov.hmcts.reform.fpl.docmosis.DocmosisHelper.remove;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
-@SpringBootTest(classes = {
-    ObjectMapper.class,
+@ContextConfiguration(classes = {
     OrderCreationService.class,
     OrderDocumentGenerator.class,
-    ChildrenService.class,
     OrderDocumentGenerator.class,
     DocmosisDocumentGeneratorService.class,
     OrderDocumentGeneratorHolder.class,
     DocmosisCommonElementDecorator.class,
     CaseDataExtractionService.class,
-    HearingVenueLookUpService.class,
-    DocumentMerger.class,
-    DocumentConversionService.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
     C23EPODocumentParameterGenerator.class,
@@ -78,9 +67,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     C35bISODocumentParameterGenerator.class,
     OrderDetailsWithEndTypeGenerator.class,
     DocmosisDocumentGeneratorService.class,
-    RestTemplate.class
 })
-
 public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
