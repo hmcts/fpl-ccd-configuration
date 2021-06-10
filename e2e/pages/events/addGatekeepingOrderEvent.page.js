@@ -22,8 +22,8 @@ module.exports = {
     issuingJudgeEmail: '#gatekeepingOrderIssuingJudge_judgeEmailAddress',
     legalAdvisorName: '#gatekeepingOrderIssuingJudge_legalAdvisorName',
     statusRadioGroup: {
-      sealed: '#saveOrSendGatekeepingOrder_orderStatus-SEALED',
-      draft: '#saveOrSendGatekeepingOrder_orderStatus-DRAFT',
+      sealed: '#gatekeepingOrderSealDecision_orderStatus-SEALED',
+      draft: '#gatekeepingOrderSealDecision_orderStatus-DRAFT',
     },
   },
 

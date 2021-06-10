@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
@@ -37,7 +37,7 @@ public class GatekeepingOrderGenerationService extends
         HearingBooking firstHearing = caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT)
             .orElse(null);
 
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = eventData.getSaveOrSendGatekeepingOrder();
+        GatekeepingOrderSealDecision gatekeepingOrderSealDecision = eventData.getGatekeepingOrderSealDecision();
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
             eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge()
@@ -58,12 +58,12 @@ public class GatekeepingOrderGenerationService extends
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
-        if (SEALED.equals(saveOrSendGatekeepingOrder.getOrderStatus())) {
+        if (SEALED.equals(gatekeepingOrderSealDecision.getOrderStatus())) {
             orderBuilder.courtseal(getCourtSealData());
-            orderBuilder.dateOfIssue(formatLocalDateToString(saveOrSendGatekeepingOrder.getDateOfIssue(), DATE));
+            orderBuilder.dateOfIssue(formatLocalDateToString(gatekeepingOrderSealDecision.getDateOfIssue(), DATE));
         } else {
             orderBuilder.draftbackground(getDraftWaterMarkData());
-            orderBuilder.dateOfIssue("<date of issue TBA>");
+            orderBuilder.dateOfIssue("<date will be added on issue>");
         }
         return orderBuilder.build();
     }

@@ -10,8 +10,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -102,14 +102,14 @@ class GatekeepingOrderGenerationServiceTest {
     private DocmosisStandardDirectionOrder fullDraftOrder() {
         return baseDocmosisOrder().toBuilder()
             .draftbackground("[userImage:draft-watermark.png]")
-            .dateOfIssue("<date of issue TBA>")
+            .dateOfIssue("<date will be added on issue>")
             .build();
     }
 
     private CaseData caseDataForSealed() {
         return baseCaseData().toBuilder()
             .gatekeepingOrderEventData(baseCaseData().getGatekeepingOrderEventData().toBuilder()
-                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .dateOfIssue(LocalDate.of(2019, 11, 29))
                     .orderStatus(SEALED)
                     .build())
@@ -120,7 +120,7 @@ class GatekeepingOrderGenerationServiceTest {
     private CaseData caseDataForDraft() {
         return baseCaseData().toBuilder()
             .gatekeepingOrderEventData(baseCaseData().getGatekeepingOrderEventData().toBuilder()
-                .saveOrSendGatekeepingOrder(SaveOrSendGatekeepingOrder.builder()
+                .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .orderStatus(DRAFT)
                     .build())
                 .build())

@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -67,7 +67,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("saveOrSendGatekeepingOrder", service.buildSaveOrSendPage(caseData));
+        caseDetails.getData().put("gatekeepingOrderSealDecision", service.buildSealDecisionPage(caseData));
 
         return respond(caseDetails);
     }
@@ -82,15 +82,16 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         StandardDirectionOrder gatekeepingOrder = service.buildBaseGatekeepingOrder(caseData);
 
-        SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = eventData.getSaveOrSendGatekeepingOrder();
+        GatekeepingOrderSealDecision gatekeepingOrderSealDecision = eventData.getGatekeepingOrderSealDecision();
 
-        if (saveOrSendGatekeepingOrder.getOrderStatus() == SEALED) {
+        if (gatekeepingOrderSealDecision.getOrderStatus() == SEALED) {
             //generate document
             Document document = service.buildDocument(caseData);
 
             gatekeepingOrder = gatekeepingOrder.toBuilder()
-                .dateOfIssue(formatLocalDateToString(eventData.getSaveOrSendGatekeepingOrder().getDateOfIssue(), DATE))
-                .unsealedDocumentCopy(saveOrSendGatekeepingOrder.getDraftDocument())
+                .dateOfIssue(
+                    formatLocalDateToString(eventData.getGatekeepingOrderSealDecision().getDateOfIssue(), DATE))
+                .unsealedDocumentCopy(gatekeepingOrderSealDecision.getDraftDocument())
                 .orderDoc(buildFromDocument(document))
                 .build();
 
@@ -105,12 +106,12 @@ public class AddGatekeepingOrderController extends CallbackController {
             caseDetails.getData().put("state", CASE_MANAGEMENT);
 
             removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "sdoDirectionCustom",
-                "gatekeepingOrderIssuingJudge", "saveOrSendGatekeepingOrder");
+                "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
 
         } else {
             //no need to regenerate draft
             gatekeepingOrder = gatekeepingOrder.toBuilder()
-                .orderDoc(saveOrSendGatekeepingOrder.getDraftDocument())
+                .orderDoc(gatekeepingOrderSealDecision.getDraftDocument())
                 .build();
         }
 

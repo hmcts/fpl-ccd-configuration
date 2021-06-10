@@ -4,11 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
@@ -62,13 +62,13 @@ class GatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(null)
             .build();
 
-        assertThat(underTest.buildSaveOrSendPage(caseData)).isEqualTo(expected);
+        assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
     }
 
     @Test
@@ -80,13 +80,13 @@ class GatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the first hearing details")
             .build();
 
-        assertThat(underTest.buildSaveOrSendPage(caseData)).isEqualTo(expected);
+        assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
     }
 
     @Test
@@ -101,13 +101,13 @@ class GatekeepingOrderServiceTest {
                 .build())
             .build();
 
-        SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the allocated judge")
             .build();
 
-        assertThat(underTest.buildSaveOrSendPage(caseData)).isEqualTo(expected);
+        assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
     }
 
     @Test
@@ -117,20 +117,20 @@ class GatekeepingOrderServiceTest {
             .allocatedJudge(Judge.builder().judgeLastName("Judy").build())
             .build();
 
-        SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the judge issuing the order")
             .build();
 
-        assertThat(underTest.buildSaveOrSendPage(caseData)).isEqualTo(expected);
+        assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
     }
 
     @Test
     void shouldBuildNextStepsLabelWhenAllFieldsMandatoryFieldsMissing() {
         CaseData caseData = CaseData.builder().build();
 
-        SaveOrSendGatekeepingOrder expected = SaveOrSendGatekeepingOrder.builder()
+        GatekeepingOrderSealDecision expected = GatekeepingOrderSealDecision.builder()
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the first hearing details\n\n"
@@ -138,7 +138,7 @@ class GatekeepingOrderServiceTest {
                 + "* the judge issuing the order")
             .build();
 
-        assertThat(underTest.buildSaveOrSendPage(caseData)).isEqualTo(expected);
+        assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
     }
 
     @Test

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.Judge;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
@@ -32,11 +32,11 @@ public class GatekeepingOrderService {
     private final DocumentService documentService;
     private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
 
-    public SaveOrSendGatekeepingOrder buildSaveOrSendPage(CaseData caseData) {
+    public GatekeepingOrderSealDecision buildSealDecisionPage(CaseData caseData) {
         //add draft document
         Document document = buildDocument(caseData);
 
-        return SaveOrSendGatekeepingOrder.builder()
+        return GatekeepingOrderSealDecision.builder()
             .draftDocument(buildFromDocument(document))
             .nextSteps(buildNextStepsLabel(caseData))
             .orderStatus(null)
@@ -99,7 +99,7 @@ public class GatekeepingOrderService {
 
         return StandardDirectionOrder.builder()
             .customDirections(eventData.getSdoDirectionCustom())
-            .orderStatus(defaultIfNull(eventData.getSaveOrSendGatekeepingOrder().getOrderStatus(), DRAFT))
+            .orderStatus(defaultIfNull(eventData.getGatekeepingOrderSealDecision().getOrderStatus(), DRAFT))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .build();
     }

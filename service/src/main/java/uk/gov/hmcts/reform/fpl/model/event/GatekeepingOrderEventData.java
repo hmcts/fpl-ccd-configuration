@@ -7,7 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
-import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
+import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,14 +33,14 @@ public class GatekeepingOrderEventData {
 
     List<Element<CustomDirection>> sdoDirectionCustom;
     JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
-    SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder;
+    GatekeepingOrderSealDecision gatekeepingOrderSealDecision;
 
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
         return defaultIfNull(gatekeepingOrderIssuingJudge, JudgeAndLegalAdvisor.builder().build());
     }
 
-    public SaveOrSendGatekeepingOrder getSaveOrSendGatekeepingOrder() {
-        return defaultIfNull(saveOrSendGatekeepingOrder, SaveOrSendGatekeepingOrder.builder().build());
+    public GatekeepingOrderSealDecision getGatekeepingOrderSealDecision() {
+        return defaultIfNull(gatekeepingOrderSealDecision, GatekeepingOrderSealDecision.builder().build());
     }
 
     public static String[] temporaryFields() {
