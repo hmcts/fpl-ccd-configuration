@@ -46,7 +46,9 @@ public enum OrderQuestionBlock {
             "manageOrdersSetDateAndTimeEndDate")),
     ICO_EXCLUSION(
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails"));
+        List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),
+    CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
+        List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning"));
 
     private final String showHideField;
     private final String question;

@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,8 +63,24 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @OverrideAutoConfiguration(enabled = true)
 class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
-    @Autowired
-    private Time time;
+    private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
+        Map.entry("hearingDetails", "YES"),
+        Map.entry("approver", "YES"),
+        Map.entry("previewOrder", "YES"),
+        Map.entry("furtherDirections", "YES"),
+        Map.entry("orderDetails", "NO"),
+        Map.entry("whichChildren", "YES"),
+        Map.entry("closeCase", "YES"),
+        Map.entry("approvalDate", "YES"),
+        Map.entry("approvalDateTime", "NO"),
+        Map.entry("epoIncludePhrase", "NO"),
+        Map.entry("epoChildrenDescription", "NO"),
+        Map.entry("epoExpiryDate", "NO"),
+        Map.entry("epoTypeAndPreventRemoval", "NO"),
+        Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+        Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+        Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+        Map.entry("cafcassJurisdictions", "NO")));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
 
@@ -111,30 +124,11 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
 
-        Map<String, String> expectedQuestions = Map.ofEntries(
-            Map.entry("approver", "YES"),
-            Map.entry("previewOrder", "YES"),
-            Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails", "NO"),
-            Map.entry("hearingDetails", "YES"),
-            Map.entry("whichChildren", "YES"),
-            Map.entry("approvalDate", "YES"),
-            Map.entry("approvalDateTime", "NO"),
-            Map.entry("epoIncludePhrase", "NO"),
-            Map.entry("epoChildrenDescription", "NO"),
-            Map.entry("epoExpiryDate", "NO"),
-            Map.entry("epoTypeAndPreventRemoval", "NO"),
-            Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
-            Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
-            Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
-            Map.entry("cafcassJurisdictions", "NO")
-        );
-
-        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
+        assertThat(response.getData().get("orderTempQuestions")).isEqualTo(EXPECTED_QUESTIONS);
     }
 
     @Test
-    void orderSelectionShouldPrePopulateFirstSectionDetails() throws JsonProcessingException {
+    void orderSelectionShouldPrePopulateFirstSectionDetails() {
         Element<HearingBooking> pastHearing = element(UUID.randomUUID(),
             HearingBooking.builder().type(HearingType.CASE_MANAGEMENT)
                 .startDate(now().minusDays(2))
@@ -459,6 +453,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("closeCase", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "NO")
@@ -489,6 +484,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("closeCase", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "YES")
