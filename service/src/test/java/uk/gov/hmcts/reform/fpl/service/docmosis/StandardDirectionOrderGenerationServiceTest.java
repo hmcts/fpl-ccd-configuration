@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -96,7 +96,7 @@ class StandardDirectionOrderGenerationServiceTest {
 
     @Test
     void shouldNotAddDirectionsMarkedNotNeededToDocmosisObject() {
-        Direction notNeededDirection = Direction.builder().directionNeeded("No").build();
+        StandardDirectionTemplate notNeededDirection = StandardDirectionTemplate.builder().directionNeeded("No").build();
         StandardDirectionOrder order = StandardDirectionOrder.builder()
             .directions(wrapElements(notNeededDirection))
             .build();
@@ -253,9 +253,9 @@ class StandardDirectionOrderGenerationServiceTest {
                 .build());
     }
 
-    private List<Element<Direction>> getDirections() {
+    private List<Element<StandardDirectionTemplate>> getDirections() {
         return Stream.of(DirectionAssignee.values())
-            .map(assignee -> element(Direction.builder()
+            .map(assignee -> element(StandardDirectionTemplate.builder()
                 .directionType("Direction")
                 .assignee(assignee)
                 .build()))

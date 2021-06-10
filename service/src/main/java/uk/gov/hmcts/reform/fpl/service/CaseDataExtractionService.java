@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -133,11 +133,11 @@ public class CaseDataExtractionService {
             .orElse(DocmosisHearingBooking.builder().build());
     }
 
-    public DocmosisDirection.Builder baseDirection(Direction direction, int index) {
+    public DocmosisDirection.Builder baseDirection(StandardDirectionTemplate direction, int index) {
         return baseDirection(direction, index, emptyList());
     }
 
-    public DocmosisDirection.Builder baseDirection(Direction direction, int index,
+    public DocmosisDirection.Builder baseDirection(StandardDirectionTemplate direction, int index,
                                                    List<DirectionConfiguration> config) {
         return DocmosisDirection.builder()
             .assignee(direction.getAssignee())
@@ -145,7 +145,7 @@ public class CaseDataExtractionService {
             .body(trim(direction.getDirectionText()));
     }
 
-    private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
+    private String formatTitle(int index, StandardDirectionTemplate direction, List<DirectionConfiguration> directionConfigurations) {
 
         // default values here cover edge case where direction title is not found in configuration.
         class DateFormattingConfig {

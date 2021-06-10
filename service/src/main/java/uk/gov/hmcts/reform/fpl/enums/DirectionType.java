@@ -38,4 +38,9 @@ public enum DirectionType {
         return isStandard;
     }
 
+    @JsonIgnore
+    public String getFieldName() {
+        return "sdoDirection-" + this.name();
+    }
+
 }

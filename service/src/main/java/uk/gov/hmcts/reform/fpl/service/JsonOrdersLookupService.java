@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.UncheckedIOException;
+import javax.annotation.PostConstruct;
 
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
@@ -19,21 +20,26 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 public class JsonOrdersLookupService implements OrdersLookupService {
     private static final String ORDERS_CONFIG_FILENAME = "ordersConfig.json";
     private final ObjectMapper objectMapper;
+    private OrderDefinition orderDefinition;
 
     @Autowired
     public JsonOrdersLookupService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public OrderDefinition getStandardDirectionOrder() {
-        String content = readString(ORDERS_CONFIG_FILENAME);
-
+    @PostConstruct
+    void init() {
         try {
-            return this.objectMapper.readValue(content, OrderDefinition.class);
+            String content = readString(ORDERS_CONFIG_FILENAME);
+            orderDefinition = this.objectMapper.readValue(content, OrderDefinition.class);
         } catch (JsonProcessingException e) {
             log.error("Could not read file " + ORDERS_CONFIG_FILENAME);
             throw new UncheckedIOException(e);
         }
+    }
+
+    public OrderDefinition getStandardDirectionOrder() {
+        return orderDefinition;
     }
 
     public DirectionConfiguration getDirectionConfiguration(DirectionType directionType) {

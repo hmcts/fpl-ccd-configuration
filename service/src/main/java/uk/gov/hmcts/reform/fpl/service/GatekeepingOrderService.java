@@ -1,31 +1,50 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.exceptions.StandardDirectionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
+import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeForTabView;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GatekeepingOrderService {
+
+    private final OrdersLookupService ordersLookupService;
+    private final CaseConverter caseConverter;
+    private final ObjectMapper objectMapper;
 
     public SaveOrSendGatekeepingOrder buildSaveOrSendPage(CaseData caseData, Document document) {
         //add draft document
@@ -98,7 +117,8 @@ public class GatekeepingOrderService {
             getJudgeForTabView(eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
 
         return StandardDirectionOrder.builder()
-            .customDirections(eventData.getSdoDirectionCustom())
+//            .customDirections(eventData.getSdoDirectionCustom())
+//            .standardDirections(eventData.getStandardDirections())
             .orderStatus(defaultIfNull(eventData.getSaveOrSendGatekeepingOrder().getOrderStatus(), DRAFT))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
             .build();
@@ -113,5 +133,74 @@ public class GatekeepingOrderService {
         }
 
         return templates;
+    }
+
+    public void populateStandardDirections(CaseDetails caseDetails) {
+        CaseData caseData = caseConverter.convert(caseDetails);
+        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+
+        List<DirectionType> requestedDirections = eventData.getRequestedDirections();
+        List<StandardDirection> draftedDirections = unwrapElements(eventData.getStandardDirections());
+        List<StandardDirectionTemplate> templateDirections = getDirectionTemplates(caseData);
+
+        Stream.of(DirectionType.values())
+            .map(DirectionType::getFieldName)
+            .forEach(caseDetails.getData()::remove);
+
+        requestedDirections.stream()
+            .map(directionType -> getDirectionFromDraft(directionType, draftedDirections)
+                .orElseGet(() -> getDirectionFromTemplate(directionType, templateDirections)))
+            .forEach(direction -> caseDetails.getData().put(direction.getType().getFieldName(), direction));
+    }
+
+    public CaseData updateStandardDirections(CaseDetails caseDetails) {
+
+        CaseData caseData = caseConverter.convert(caseDetails);
+        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        List<Element<StandardDirection>> standardDirections = eventData.resetStandardDirections();
+
+        eventData.getRequestedDirections()
+            .forEach(requestedType -> {
+                StandardDirection standardDirection = objectMapper.convertValue(
+                    caseDetails.getData().get(requestedType.getFieldName()), StandardDirection.class);
+
+                DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(requestedType);
+
+                standardDirections.add(element(standardDirection.apply(directionConfig)));
+            });
+
+        return caseData;
+    }
+
+    private StandardDirection getDirectionFromTemplate(DirectionType type, List<StandardDirectionTemplate> templates) {
+        final DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(type);
+
+        return templates.stream()
+            .filter(template -> Objects.equals(directionConfig.getTitle(), template.getDirectionType()))
+            .findFirst()
+            .map(template -> StandardDirection.builder()
+                .dateToBeCompletedBy(template.getDateToBeCompletedBy())
+                .build())
+            .map(direction -> direction.apply(directionConfig))
+            .orElseThrow(() -> new StandardDirectionNotFoundException(type));
+    }
+
+    private Optional<StandardDirection> getDirectionFromDraft(DirectionType type, List<StandardDirection> draft) {
+        return draft.stream()
+            .filter(draftedDirection -> Objects.equals(draftedDirection.getType(), type))
+            .findFirst();
+    }
+
+    private List<StandardDirectionTemplate> getDirectionTemplates(CaseData caseData) {
+        return Stream.of(caseData.getAllParties(),
+            caseData.getLocalAuthorityDirections(),
+            caseData.getRespondentDirections(),
+            caseData.getCafcassDirections(),
+            caseData.getOtherPartiesDirections(),
+            caseData.getCourtDirections())
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .map(Element::getValue)
+            .collect(Collectors.toList());
     }
 }

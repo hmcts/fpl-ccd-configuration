@@ -63,7 +63,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
         caseDetails.getData().entrySet().removeIf(e -> e.getKey().startsWith("sdoDirection-"));
 
-        if (caseData.getAllocatedJudge() != null) {
+        if (caseData.getAllocatedJudge() != null && caseData.getAllocatedJudge().getJudgeTitle() != null) {
             data.put("gatekeepingOrderIssuingJudge", service.setAllocatedJudgeLabel(caseData.getAllocatedJudge(),
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
@@ -75,9 +75,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse directionSelection(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
 
-        CaseData caseData = getCaseData(caseDetails);
-
-        caseDetails.getData().putAll(standardDirectionsService.getRequestedDirections(caseData));
+        service.populateStandardDirections(caseDetails);
 
         return respond(caseDetails);
     }
@@ -86,9 +84,8 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleGenerateDraftMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
 
-        standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
+        CaseData caseData = service.updateStandardDirections(caseDetails);
 
         DocmosisStandardDirectionOrder templateData = gatekeepingOrderGenerationService.getTemplateData(caseData);
         Document document = documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
@@ -103,14 +100,15 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+
+        CaseData caseData = service.updateStandardDirections(caseDetails);
+
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         StandardDirectionOrder gatekeepingOrder = service.buildBaseGatekeepingOrder(caseData);
 
         SaveOrSendGatekeepingOrder saveOrSendGatekeepingOrder = eventData.getSaveOrSendGatekeepingOrder();
 
-        standardDirectionsService.addOrUpdateDirections(caseData, caseDetails);
 
         if (saveOrSendGatekeepingOrder.getOrderStatus() == SEALED) {
             //generate document
@@ -145,7 +143,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         }
 
         caseDetails.getData().put("standardDirectionOrder", gatekeepingOrder);
-        caseDetails.getData().put("standardDirections", caseData.getStandardDirections());
+        caseDetails.getData().put("standardDirections", caseData.getGatekeepingOrderEventData().getStandardDirections());
         return respond(caseDetails);
     }
 

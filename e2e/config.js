@@ -167,6 +167,7 @@ module.exports = {
   },
   internalActions: {
     updateCase: 'internal-change-UPDATE_CASE',
+    populateSDO: 'populateSDO',
   },
   // files
   testFile: './e2e/fixtures/testFiles/mockFile.txt',

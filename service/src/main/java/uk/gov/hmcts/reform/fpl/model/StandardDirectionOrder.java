@@ -34,7 +34,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
-    private List<Element<Direction>> directions;
+    private List<Element<StandardDirectionTemplate>> directions;
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;
@@ -42,6 +42,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     //New gatekeeping order fields
     private final DocumentReference unsealedDocumentCopy;
     private final List<Element<CustomDirection>> customDirections;
+    private final List<Element<StandardDirection>> standardDirections;
 
     @JsonIgnore
     public boolean isSealed() {

@@ -1,7 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.sdo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -12,7 +21,9 @@ import uk.gov.hmcts.reform.fpl.model.SaveOrSendGatekeepingOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
+import uk.gov.hmcts.reform.fpl.service.CaseConverter;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
+import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,17 +36,18 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CaseConverter.class})
 class GatekeepingOrderServiceTest {
     private static final String NEXT_STEPS = "## Next steps\n\n"
         + "Your order will be saved as a draft in 'Draft orders'.\n\n"
         + "You cannot seal and send the order until adding:\n\n";
 
-    private GatekeepingOrderService underTest;
+    @Mock
+    private OrdersLookupService ordersLookupService;
 
-    @BeforeEach
-    void setUp() {
-        underTest = new GatekeepingOrderService();
-    }
+    @InjectMocks
+    private GatekeepingOrderService underTest;
 
     @Test
     void shouldNotBuildNextStepsLabelWhenAllRequiredInformationPresent() {

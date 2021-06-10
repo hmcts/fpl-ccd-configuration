@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -67,13 +67,13 @@ public class StandardDirectionOrderGenerationService extends
         return dataService.getJudgeAndLegalAdvisor(judgeAndLegalAdvisor);
     }
 
-    private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) {
-        List<Direction> directions = unwrapElements(elements);
+    private List<DocmosisDirection> buildDirections(List<Element<StandardDirectionTemplate>> elements) {
+        List<StandardDirectionTemplate> directions = unwrapElements(elements);
         List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getDirections();
         List<DocmosisDirection> formattedDirections = new ArrayList<>();
         int index = SDO_DIRECTION_INDEX_START;
 
-        for (Direction direction : directions) {
+        for (StandardDirectionTemplate direction : directions) {
             if (direction.isNeeded()) {
                 DocmosisDirection.Builder builder = dataService.baseDirection(direction, index++, config);
                 formattedDirections.add(builder.build());

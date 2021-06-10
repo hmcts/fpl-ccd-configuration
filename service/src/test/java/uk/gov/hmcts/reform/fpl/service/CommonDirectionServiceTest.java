@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ class CommonDirectionServiceTest {
             .courtDirectionsCustom(buildCustomDirections())
             .build();
 
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+        List<Element<StandardDirectionTemplate>> directions = service.combineAllDirections(caseData);
 
         assertThat(directions).size().isEqualTo(12);
     }
@@ -56,7 +56,7 @@ class CommonDirectionServiceTest {
     void combineAllDirections_shouldAllowNullCustomDirectionValues() {
         CaseData caseData = populateCaseDataWithFixedDirections().build();
 
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+        List<Element<StandardDirectionTemplate>> directions = service.combineAllDirections(caseData);
 
         assertThat(directions).size().isEqualTo(6);
     }
@@ -67,9 +67,9 @@ class CommonDirectionServiceTest {
             .courtDirectionsCustom(buildCustomDirections())
             .build();
 
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+        List<Element<StandardDirectionTemplate>> directions = service.combineAllDirections(caseData);
 
-        List<Element<Direction>> directionWithCustomFlag = directions.stream()
+        List<Element<StandardDirectionTemplate>> directionWithCustomFlag = directions.stream()
             .filter(element -> element.getValue().getCustom() != null && element.getValue().getCustom().equals("Yes"))
             .collect(toList());
 
@@ -82,9 +82,9 @@ class CommonDirectionServiceTest {
             .courtDirectionsCustom(buildCustomDirections())
             .build();
 
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+        List<Element<StandardDirectionTemplate>> directions = service.combineAllDirections(caseData);
 
-        List<Element<Direction>> courtDirections = directions.stream()
+        List<Element<StandardDirectionTemplate>> courtDirections = directions.stream()
             .filter(element -> element.getValue().getAssignee().equals(COURT))
             .collect(toList());
 
@@ -93,9 +93,9 @@ class CommonDirectionServiceTest {
 
     @Test
     void removeUnnecessaryDirections_shouldRemoveDirectionsWhenDirectionsAreMarkedAsNotNeeded() {
-        List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(directionsMarkedAsRemoved()));
+        List<StandardDirectionTemplate> directions = unwrapElements(service.removeUnnecessaryDirections(directionsMarkedAsRemoved()));
 
-        List<Direction> expectedDirections = unwrapElements(Stream.of(buildDirections(ALL_PARTIES, "Yes"),
+        List<StandardDirectionTemplate> expectedDirections = unwrapElements(Stream.of(buildDirections(ALL_PARTIES, "Yes"),
             buildDirections(CAFCASS, "Yes"),
             buildDirections(COURT, "Yes"))
             .flatMap(Collection::stream)
@@ -106,9 +106,9 @@ class CommonDirectionServiceTest {
 
     @Test
     void removeUnnecessaryDirections_shouldNotRemoveCustomDirectionsWhenCustomDirectionsPresent() {
-        List<Direction> directions = unwrapElements(service.removeUnnecessaryDirections(buildCustomDirections()));
+        List<StandardDirectionTemplate> directions = unwrapElements(service.removeUnnecessaryDirections(buildCustomDirections()));
 
-        List<Direction> expectedDirections = unwrapElements(buildCustomDirections());
+        List<StandardDirectionTemplate> expectedDirections = unwrapElements(buildCustomDirections());
 
         assertThat(directions).isEqualTo(expectedDirections);
     }
@@ -118,7 +118,7 @@ class CommonDirectionServiceTest {
 
         @Test
         void shouldRemoveCustomDirectionFromListWhenCustomFlagIsYes() {
-            List<Element<Direction>> filteredDirections = service.removeCustomDirections(buildCustomDirections());
+            List<Element<StandardDirectionTemplate>> filteredDirections = service.removeCustomDirections(buildCustomDirections());
 
             assertThat(filteredDirections).isEmpty();
         }
@@ -127,8 +127,8 @@ class CommonDirectionServiceTest {
         @NullAndEmptySource
         @ValueSource(strings = {"No"})
         void shouldNotRemoveDirectionFromListWhenCustomFlagIsNo(String custom) {
-            List<Element<Direction>> filteredDirections = service.removeCustomDirections(List.of(
-                element(Direction.builder()
+            List<Element<StandardDirectionTemplate>> filteredDirections = service.removeCustomDirections(List.of(
+                element(StandardDirectionTemplate.builder()
                     .custom(custom)
                     .build())));
 
@@ -146,16 +146,16 @@ class CommonDirectionServiceTest {
             .courtDirections(buildDirections(COURT));
     }
 
-    private List<Element<Direction>> buildDirections(DirectionAssignee assignee) {
-        return Lists.newArrayList(element(Direction.builder()
+    private List<Element<StandardDirectionTemplate>> buildDirections(DirectionAssignee assignee) {
+        return Lists.newArrayList(element(StandardDirectionTemplate.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
             .build()));
     }
 
-    private List<Element<Direction>> buildDirections(DirectionAssignee assignee, String directionNeeded) {
-        return Lists.newArrayList(element(Direction.builder()
+    private List<Element<StandardDirectionTemplate>> buildDirections(DirectionAssignee assignee, String directionNeeded) {
+        return Lists.newArrayList(element(StandardDirectionTemplate.builder()
             .directionType("direction")
             .directionText("example direction text")
             .directionNeeded(directionNeeded)
@@ -163,24 +163,24 @@ class CommonDirectionServiceTest {
             .build()));
     }
 
-    private List<Element<Direction>> buildDirections(DirectionAssignee assignee, UUID directionId) {
-        return Lists.newArrayList(element(directionId, Direction.builder()
+    private List<Element<StandardDirectionTemplate>> buildDirections(DirectionAssignee assignee, UUID directionId) {
+        return Lists.newArrayList(element(directionId, StandardDirectionTemplate.builder()
             .directionType("direction")
             .directionText("example direction text")
             .assignee(assignee)
             .build()));
     }
 
-    private List<Element<Direction>> buildCustomDirections() {
+    private List<Element<StandardDirectionTemplate>> buildCustomDirections() {
         return Lists.newArrayList(element(
-            Direction.builder()
+            StandardDirectionTemplate.builder()
                 .directionType("direction")
                 .directionText("example direction text")
                 .custom("Yes")
                 .build()));
     }
 
-    private List<Element<Direction>> directionsMarkedAsRemoved() {
+    private List<Element<StandardDirectionTemplate>> directionsMarkedAsRemoved() {
         return Stream.of(buildDirections(ALL_PARTIES, "Yes"),
             buildDirections(LOCAL_AUTHORITY, "No"),
             buildDirections(PARENTS_AND_RESPONDENTS, "No"),

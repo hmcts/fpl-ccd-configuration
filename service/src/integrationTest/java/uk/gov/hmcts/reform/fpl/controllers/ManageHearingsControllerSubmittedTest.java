@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -556,12 +556,12 @@ class ManageHearingsControllerSubmittedTest extends ManageHearingsControllerTest
                 buildDirection("court1", LocalDateTime.of(2060, 8, 8, 18, 0, 0))));
     }
 
-    private Direction buildDirection(String text) {
-        return Direction.builder().directionText(text).build();
+    private StandardDirectionTemplate buildDirection(String text) {
+        return StandardDirectionTemplate.builder().directionText(text).build();
     }
 
-    private Direction buildDirection(String text, LocalDateTime dateTime) {
-        return Direction.builder().directionText(text).dateToBeCompletedBy(dateTime).build();
+    private StandardDirectionTemplate buildDirection(String text, LocalDateTime dateTime) {
+        return StandardDirectionTemplate.builder().directionText(text).dateToBeCompletedBy(dateTime).build();
     }
 
     private Map<String, Object> caseSummary(String hasNextHearing, String hearingType, LocalDate hearingDate) {

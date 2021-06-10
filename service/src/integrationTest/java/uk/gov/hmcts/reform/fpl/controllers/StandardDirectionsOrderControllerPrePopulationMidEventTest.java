@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
@@ -79,7 +79,7 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
 
     @Test
     void shouldUpdateAllocatedJudgeLabelOnCurrentJudgeAndLegalAdvisorWhenExists() {
-        List<Direction> directions = createDirections();
+        List<StandardDirectionTemplate> directions = createDirections();
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(Map.of(
@@ -159,21 +159,21 @@ class StandardDirectionsOrderControllerPrePopulationMidEventTest extends Abstrac
             .build();
     }
 
-    private List<Direction> createDirections() {
+    private List<StandardDirectionTemplate> createDirections() {
         String title = "example direction";
 
         return List.of(
-            Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
-            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().directionType(title).assignee(CAFCASS).build(),
-            Direction.builder().directionType(title).assignee(OTHERS).build(),
-            Direction.builder().directionType(title).assignee(COURT).build(),
-            Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
+            StandardDirectionTemplate.builder().directionType(title).assignee(ALL_PARTIES).build(),
+            StandardDirectionTemplate.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
+            StandardDirectionTemplate.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
+            StandardDirectionTemplate.builder().directionType(title).assignee(CAFCASS).build(),
+            StandardDirectionTemplate.builder().directionType(title).assignee(OTHERS).build(),
+            StandardDirectionTemplate.builder().directionType(title).assignee(COURT).build(),
+            StandardDirectionTemplate.builder().directionType(title).custom("Yes").assignee(COURT).build()
         );
     }
 
-    private List<Element<Direction>> buildDirections(List<Direction> directions) {
+    private List<Element<StandardDirectionTemplate>> buildDirections(List<StandardDirectionTemplate> directions) {
         return directions.stream().map(ElementUtils::element).collect(toList());
     }
 

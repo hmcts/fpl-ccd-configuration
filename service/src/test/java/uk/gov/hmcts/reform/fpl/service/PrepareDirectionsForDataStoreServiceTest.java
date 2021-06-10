@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -26,16 +26,16 @@ class PrepareDirectionsForDataStoreServiceTest {
     void persistHiddenDirectionValues_shouldAddValuesHiddenInCcdUiIncludingTextWhenReadOnlyIsYes() {
         UUID uuid = randomUUID();
 
-        List<Element<Direction>> withHiddenValues = List.of(
-            element(uuid, Direction.builder()
+        List<Element<StandardDirectionTemplate>> withHiddenValues = List.of(
+            element(uuid, StandardDirectionTemplate.builder()
                 .directionType("direction type")
                 .directionText("hidden text")
                 .readOnly("Yes")
                 .directionRemovable("No")
                 .build()));
 
-        List<Element<Direction>> toAddValues = List.of(
-            element(uuid, Direction.builder()
+        List<Element<StandardDirectionTemplate>> toAddValues = List.of(
+            element(uuid, StandardDirectionTemplate.builder()
                 .directionType("direction type")
                 .build()));
 
@@ -48,23 +48,23 @@ class PrepareDirectionsForDataStoreServiceTest {
     void persistHiddenDirectionValues_shouldAddValuesHiddenInCcdUiExcludingTextWhenReadOnlyIsNo() {
         UUID uuid = randomUUID();
 
-        List<Element<Direction>> withHiddenValues = List.of(
-            element(uuid, Direction.builder()
+        List<Element<StandardDirectionTemplate>> withHiddenValues = List.of(
+            element(uuid, StandardDirectionTemplate.builder()
                 .directionType("direction type")
                 .directionText("hidden text")
                 .readOnly("No")
                 .directionRemovable("No")
                 .build()));
 
-        List<Element<Direction>> toAddValues = List.of(
-            element(uuid, Direction.builder()
+        List<Element<StandardDirectionTemplate>> toAddValues = List.of(
+            element(uuid, StandardDirectionTemplate.builder()
                 .directionType("direction type")
                 .directionText("the expected text")
                 .build()));
 
         service.persistHiddenDirectionValues(withHiddenValues, toAddValues);
 
-        assertThat(toAddValues.get(0).getValue()).isEqualTo(Direction.builder()
+        assertThat(toAddValues.get(0).getValue()).isEqualTo(StandardDirectionTemplate.builder()
             .directionType("direction type")
             .directionText("the expected text")
             .readOnly("No")

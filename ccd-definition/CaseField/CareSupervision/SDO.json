@@ -540,7 +540,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoDirectionsLocalAuthorityLabel2",
-    "Label": "<hr><br><h1>Local Authority</h1>",
+    "Label": "<br><h1>Local Authority</h1>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -558,7 +558,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoDirectionsRespondentsLabel2",
-    "Label": "<hr><br><h1>Parents and respondents</h1>",
+    "Label": "<br><h1>Parents and respondents</h1>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -576,7 +576,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoDirectionsCafcassLabel2",
-    "Label": "<hr><br><h1>Cafcass</h1>",
+    "Label": "<br><h1>Cafcass</h1>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -594,7 +594,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoDirectionsOthersLabel2",
-    "Label": "<hr><br><h1>Other parties</h1>",
+    "Label": "<br><h1>Other parties</h1>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -612,7 +612,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoDirectionsCourtLabel2",
-    "Label": "<hr><br><h1>Court</h1>",
+    "Label": "<br><h1>Court</h1>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -631,7 +631,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sdoDirectionsEditDirectionsLabel",
-    "Label": "<div class=\"heading-h2 bottom-0\">Add direction details</div><p class=\"form-hint\">Add details to your chosen directions. Dates and times are pre-filled based on the hearing date. Check these carefully and change them as needed. You can add more directions on the next page</p>",
+    "Label": "## Confirm compliance dates",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"

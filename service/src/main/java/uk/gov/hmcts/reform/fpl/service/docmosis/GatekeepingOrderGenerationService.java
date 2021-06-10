@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -84,7 +83,7 @@ public class GatekeepingOrderGenerationService extends
     }
 
     private List<DocmosisDirection> buildDirections(CaseData caseData, HearingBooking hearing) {
-        List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getStandardDirections());
+        List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData().getStandardDirections());
         List<Element<CustomDirection>> customDirections = nullSafeList(caseData
             .getGatekeepingOrderEventData().getSdoDirectionCustom());
 
@@ -112,26 +111,17 @@ public class GatekeepingOrderGenerationService extends
 
         DueDateType dueDateType = direction.getDueDateType();
 
-        LocalDateTime dueDate;
-
         if (DAYS == dueDateType) {
-            dueDate = Optional.ofNullable(hearing)
-                .map(HearingBooking::getStartDate)
-                .map(hearingDate -> hearingDate.minusDays(direction.getDaysBeforeHearing()))
-                .orElse(null);
-
-            if (dueDate == null) {
-                return String.format("%d days before the hearing (unspecified)", direction.getDaysBeforeHearing());
-            }
-
+            return format("%d. %s %d days before the hearing", index, direction.getTitle(), direction.getDaysBeforeHearing());
         } else {
-            dueDate = direction.getDateToBeCompletedBy();
+            LocalDateTime dueDate = direction.getDateToBeCompletedBy();
+
+            String formattedDate = formatLocalDateTimeBaseUsingFormat(dueDate, display.getTemplateDateFormat());
+
+            return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
+                formattedDate);
         }
 
-        String formattedDate = formatLocalDateTimeBaseUsingFormat(dueDate, display.getTemplateDateFormat());
-
-        return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
-            formattedDate);
     }
 
 }

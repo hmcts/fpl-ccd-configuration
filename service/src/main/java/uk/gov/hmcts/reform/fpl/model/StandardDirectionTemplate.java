@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Direction {
+public class StandardDirectionTemplate {
     private final String directionType;
     private String directionText;
     private final String status;

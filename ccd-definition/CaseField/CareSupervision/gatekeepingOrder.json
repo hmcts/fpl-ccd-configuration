@@ -62,7 +62,7 @@
     "ID": "standardDirections",
     "Label": "Further directions",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CustomDirection",
+    "FieldTypeParameter": "StandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

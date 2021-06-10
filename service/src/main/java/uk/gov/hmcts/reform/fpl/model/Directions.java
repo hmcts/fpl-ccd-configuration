@@ -29,16 +29,16 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @Builder
 @AllArgsConstructor
 public class Directions {
-    private final List<Element<Direction>> allPartiesCustomCMO;
-    private final List<Element<Direction>> localAuthorityDirectionsCustomCMO;
-    private final List<Element<Direction>> respondentDirectionsCustomCMO;
-    private final List<Element<Direction>> cafcassDirectionsCustomCMO;
-    private final List<Element<Direction>> otherPartiesDirectionsCustomCMO;
-    private final List<Element<Direction>> courtDirectionsCustomCMO;
+    private final List<Element<StandardDirectionTemplate>> allPartiesCustomCMO;
+    private final List<Element<StandardDirectionTemplate>> localAuthorityDirectionsCustomCMO;
+    private final List<Element<StandardDirectionTemplate>> respondentDirectionsCustomCMO;
+    private final List<Element<StandardDirectionTemplate>> cafcassDirectionsCustomCMO;
+    private final List<Element<StandardDirectionTemplate>> otherPartiesDirectionsCustomCMO;
+    private final List<Element<StandardDirectionTemplate>> courtDirectionsCustomCMO;
 
     @JsonIgnore
-    public List<Element<Direction>> getDirectionsList() {
-        List<Element<Direction>> directions = new ArrayList<>();
+    public List<Element<StandardDirectionTemplate>> getDirectionsList() {
+        List<Element<StandardDirectionTemplate>> directions = new ArrayList<>();
 
         ofNullable(getAllPartiesCustomCMO()).ifPresent(directions::addAll);
         ofNullable(getLocalAuthorityDirectionsCustomCMO()).ifPresent(directions::addAll);
@@ -51,9 +51,9 @@ public class Directions {
     }
 
     @JsonIgnore
-    public static Map<DirectionAssignee, List<Element<Direction>>> getAssigneeToDirectionMapping(
-        List<Element<Direction>> directions) {
-        Map<DirectionAssignee, List<Element<Direction>>> map = directions.stream()
+    public static Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> getAssigneeToDirectionMapping(
+        List<Element<StandardDirectionTemplate>> directions) {
+        Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> map = directions.stream()
             .collect(groupingBy(element -> element.getValue().getAssignee()));
 
         stream(DirectionAssignee.values()).forEach(assignee -> map.putIfAbsent(assignee, new ArrayList<>()));
@@ -68,35 +68,35 @@ public class Directions {
     }
 
     // getters need to be public for correct Json serialisation
-    public List<Element<Direction>> getAllPartiesCustomCMO() {
+    public List<Element<StandardDirectionTemplate>> getAllPartiesCustomCMO() {
         return assignDirections(allPartiesCustomCMO, ALL_PARTIES);
     }
 
-    public List<Element<Direction>> getLocalAuthorityDirectionsCustomCMO() {
+    public List<Element<StandardDirectionTemplate>> getLocalAuthorityDirectionsCustomCMO() {
         return assignDirections(localAuthorityDirectionsCustomCMO, LOCAL_AUTHORITY);
     }
 
-    public List<Element<Direction>> getRespondentDirectionsCustomCMO() {
+    public List<Element<StandardDirectionTemplate>> getRespondentDirectionsCustomCMO() {
         return assignDirections(respondentDirectionsCustomCMO, PARENTS_AND_RESPONDENTS);
     }
 
-    public List<Element<Direction>> getCafcassDirectionsCustomCMO() {
+    public List<Element<StandardDirectionTemplate>> getCafcassDirectionsCustomCMO() {
         return assignDirections(cafcassDirectionsCustomCMO, CAFCASS);
     }
 
-    public List<Element<Direction>> getOtherPartiesDirectionsCustomCMO() {
+    public List<Element<StandardDirectionTemplate>> getOtherPartiesDirectionsCustomCMO() {
         return assignDirections(otherPartiesDirectionsCustomCMO, OTHERS);
     }
 
-    public List<Element<Direction>> getCourtDirectionsCustomCMO() {
+    public List<Element<StandardDirectionTemplate>> getCourtDirectionsCustomCMO() {
         return assignDirections(courtDirectionsCustomCMO, COURT);
     }
 
-    private List<Element<Direction>> assignDirections(List<Element<Direction>> directions, DirectionAssignee assignee) {
+    private List<Element<StandardDirectionTemplate>> assignDirections(List<Element<StandardDirectionTemplate>> directions, DirectionAssignee assignee) {
         return ofNullable(directions).map(values -> addAssignee(values, assignee)).orElse(emptyList());
     }
 
-    private List<Element<Direction>> addAssignee(List<Element<Direction>> directions, DirectionAssignee assignee) {
+    private List<Element<StandardDirectionTemplate>> addAssignee(List<Element<StandardDirectionTemplate>> directions, DirectionAssignee assignee) {
         return directions.stream()
             .map(element -> element(element.getId(), element.getValue().toBuilder()
                 .assignee(assignee)
@@ -106,13 +106,13 @@ public class Directions {
             .collect(toList());
     }
 
-    private List<Element<Direction>> orderByRespondent(List<Element<Direction>> directions) {
+    private List<Element<StandardDirectionTemplate>> orderByRespondent(List<Element<StandardDirectionTemplate>> directions) {
         directions.sort(comparingInt(direction -> direction.getValue().getParentsAndRespondentsAssignee().ordinal()));
 
         return directions;
     }
 
-    private List<Element<Direction>> orderByOther(List<Element<Direction>> directions) {
+    private List<Element<StandardDirectionTemplate>> orderByOther(List<Element<StandardDirectionTemplate>> directions) {
         directions.sort(comparingInt(direction -> direction.getValue().getOtherPartiesAssignee().ordinal()));
 
         return directions;

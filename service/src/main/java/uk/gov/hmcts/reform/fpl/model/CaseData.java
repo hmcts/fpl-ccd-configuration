@@ -185,24 +185,24 @@ public class CaseData {
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
 
-    private final List<Element<Direction>> allParties;
+    private final List<Element<StandardDirectionTemplate>> allParties;
     @JsonProperty
-    private List<Element<Direction>> allPartiesCustom;
-    private final List<Element<Direction>> localAuthorityDirections;
+    private List<Element<StandardDirectionTemplate>> allPartiesCustom;
+    private final List<Element<StandardDirectionTemplate>> localAuthorityDirections;
     @JsonProperty
-    private List<Element<Direction>> localAuthorityDirectionsCustom;
-    private final List<Element<Direction>> courtDirections;
+    private List<Element<StandardDirectionTemplate>> localAuthorityDirectionsCustom;
+    private final List<Element<StandardDirectionTemplate>> courtDirections;
     @JsonProperty
-    private List<Element<Direction>> courtDirectionsCustom;
-    private final List<Element<Direction>> cafcassDirections;
+    private List<Element<StandardDirectionTemplate>> courtDirectionsCustom;
+    private final List<Element<StandardDirectionTemplate>> cafcassDirections;
     @JsonProperty
-    private List<Element<Direction>> cafcassDirectionsCustom;
-    private final List<Element<Direction>> otherPartiesDirections;
+    private List<Element<StandardDirectionTemplate>> cafcassDirectionsCustom;
+    private final List<Element<StandardDirectionTemplate>> otherPartiesDirections;
     @JsonProperty
-    private List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> respondentDirections;
+    private List<Element<StandardDirectionTemplate>> otherPartiesDirectionsCustom;
+    private final List<Element<StandardDirectionTemplate>> respondentDirections;
     @JsonProperty
-    private List<Element<Direction>> respondentDirectionsCustom;
+    private List<Element<StandardDirectionTemplate>> respondentDirectionsCustom;
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
@@ -951,7 +951,4 @@ public class CaseData {
             .filter(StringUtils::isNotEmpty)
             .isPresent();
     }
-
-    @JsonProperty
-    private List<Element<StandardDirection>> standardDirections;
 }

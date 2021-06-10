@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -123,7 +123,7 @@ class StandardDirectionsOrderControllerAboutToStartTest extends AbstractCallback
     @Test
     void shouldNotOverwriteSDODirectionsWhenDirectionsAreNotEmpty() {
         CaseData originalCaseData = CaseData.builder()
-            .localAuthorityDirections(wrapElements(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
+            .localAuthorityDirections(wrapElements(StandardDirectionTemplate.builder().assignee(LOCAL_AUTHORITY).build()))
             .build();
 
         CaseData actualCaseData = extractCaseData(postAboutToStartEvent(originalCaseData));

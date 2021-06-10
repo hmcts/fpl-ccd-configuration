@@ -262,30 +262,6 @@
       }
     ],
     "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
-    "hearingDetails": [
-      {
-        "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
-        "value": {
-          "endDate": "2050-01-02T16:30:00",
-          "hearingNeedsBooked": [
-            "INTERPRETER",
-            "SPOKEN_OR_WRITTEN_WELSH",
-            "SOMETHING_ELSE"
-          ],
-          "hearingNeedsDetails": "Some details",
-          "judgeAndLegalAdvisor": {
-            "judgeLastName": "Reed",
-            "judgeTitle": "HER_HONOUR_JUDGE",
-            "legalAdvisorName": "Rupert Robert"
-          },
-          "startDate": "2050-01-01T15:15:00",
-          "type": "CASE_MANAGEMENT",
-          "venue": "96",
-          "venueCustomAddress": {
-          }
-        }
-      }
-    ],
     "localAuthorityDirections": [
       {
         "id": "b17227fb-b816-45eb-859e-ec3b1ed6a1b6",

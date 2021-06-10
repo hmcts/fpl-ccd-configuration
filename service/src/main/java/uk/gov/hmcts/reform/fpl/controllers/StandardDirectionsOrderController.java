@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.enums.ccd.fixedlists.SDORoute;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -266,12 +266,12 @@ public class StandardDirectionsOrderController extends CallbackController {
                 removeAllocatedJudgeProperties(judgeAndLegalAdvisor);
 
                 //combine all directions from collections
-                List<Element<Direction>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
+                List<Element<StandardDirectionTemplate>> combinedDirections = commonDirectionService.combineAllDirections(caseData);
 
                 persistHiddenValues(caseData.getFirstHearing().orElse(null), combinedDirections);
 
                 //place directions with hidden values back into case details
-                Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(
+                Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> directions = sortDirectionsByAssignee(
                     combinedDirections
                 );
                 directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
@@ -355,14 +355,14 @@ public class StandardDirectionsOrderController extends CallbackController {
             .orElse("Please enter a hearing date");
     }
 
-    private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> list) {
-        List<Element<Direction>> nonCustomDirections = commonDirectionService.removeCustomDirections(list);
+    private Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> sortDirectionsByAssignee(List<Element<StandardDirectionTemplate>> list) {
+        List<Element<StandardDirectionTemplate>> nonCustomDirections = commonDirectionService.removeCustomDirections(list);
 
         return getAssigneeToDirectionMapping(nonCustomDirections);
     }
 
-    private void persistHiddenValues(HearingBooking firstHearing, List<Element<Direction>> directions) {
-        List<Element<Direction>> standardDirections = standardDirectionsService.getDirections(firstHearing);
+    private void persistHiddenValues(HearingBooking firstHearing, List<Element<StandardDirectionTemplate>> directions) {
+        List<Element<StandardDirectionTemplate>> standardDirections = standardDirectionsService.getDirections(firstHearing);
 
         prepareDirectionsForDataStoreService.persistHiddenDirectionValues(standardDirections, directions);
     }

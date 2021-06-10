@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -50,16 +50,16 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
         HearingBooking.builder().type(HearingType.OTHER).build()
     );
 
-    private static final List<Element<Direction>> STANDARD_DIRECTIONS = wrapElements(
-        Direction.builder()
+    private static final List<Element<StandardDirectionTemplate>> STANDARD_DIRECTIONS = wrapElements(
+        StandardDirectionTemplate.builder()
             .assignee(ALL_PARTIES)
             .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 10, 16, 0))
             .build(),
-        Direction.builder()
+        StandardDirectionTemplate.builder()
             .assignee(LOCAL_AUTHORITY)
             .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 8, 14, 0))
             .build(),
-        Direction.builder()
+        StandardDirectionTemplate.builder()
             .assignee(PARENTS_AND_RESPONDENTS)
             .dateToBeCompletedBy(LocalDateTime.of(2050, 6, 5, 11, 0))
             .build()
@@ -177,12 +177,12 @@ class PopulateStandardDirectionsOrderDatesHandlerTest {
         );
     }
 
-    private Direction buildDirection(String directionText) {
+    private StandardDirectionTemplate buildDirection(String directionText) {
         return buildDirection(directionText, null);
     }
 
-    private Direction buildDirection(String directionText, LocalDateTime dateToBeCompletedBy) {
-        return Direction.builder()
+    private StandardDirectionTemplate buildDirection(String directionText, LocalDateTime dateToBeCompletedBy) {
+        return StandardDirectionTemplate.builder()
             .directionText(directionText)
             .dateToBeCompletedBy(dateToBeCompletedBy)
             .build();

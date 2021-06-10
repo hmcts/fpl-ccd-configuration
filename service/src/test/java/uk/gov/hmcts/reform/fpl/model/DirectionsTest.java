@@ -41,9 +41,9 @@ class DirectionsTest {
 
         @Test
         void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
-            List<Element<Direction>> directions = wrapElements(getDirection(LOCAL_AUTHORITY), getDirection(COURT));
+            List<Element<StandardDirectionTemplate>> directions = wrapElements(getDirection(LOCAL_AUTHORITY), getDirection(COURT));
 
-            Map<DirectionAssignee, List<Element<Direction>>> mapping = getAssigneeToDirectionMapping(directions);
+            Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> mapping = getAssigneeToDirectionMapping(directions);
 
             assertKeyContainsCorrectDirection(LOCAL_AUTHORITY, mapping);
             assertKeyContainsCorrectDirection(COURT, mapping);
@@ -55,14 +55,14 @@ class DirectionsTest {
 
         @Test
         void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
-            Map<DirectionAssignee, List<Element<Direction>>> mapping = getAssigneeToDirectionMapping(emptyList());
+            Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> mapping = getAssigneeToDirectionMapping(emptyList());
 
             Stream.of(DirectionAssignee.values())
                 .forEach(assignee -> assertThat(mapping).containsEntry(assignee, emptyList()));
         }
 
         private void assertKeyContainsCorrectDirection(DirectionAssignee court,
-                                                       Map<DirectionAssignee, List<Element<Direction>>> mapping) {
+                                                       Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> mapping) {
             assertThat(unwrapElements(mapping.get(court))).containsOnly(getDirection(court));
         }
     }
@@ -70,15 +70,15 @@ class DirectionsTest {
     @Test
     void shouldGetListOfDirectionsWithPopulatedCCDFieldsFromIndividualDirectionFields() {
         Directions directions = Directions.builder()
-            .allPartiesCustomCMO(wrapElements(Direction.builder().build()))
-            .localAuthorityDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-            .respondentDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-            .cafcassDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-            .otherPartiesDirectionsCustomCMO(wrapElements(Direction.builder().build()))
-            .courtDirectionsCustomCMO(wrapElements(Direction.builder().build()))
+            .allPartiesCustomCMO(wrapElements(StandardDirectionTemplate.builder().build()))
+            .localAuthorityDirectionsCustomCMO(wrapElements(StandardDirectionTemplate.builder().build()))
+            .respondentDirectionsCustomCMO(wrapElements(StandardDirectionTemplate.builder().build()))
+            .cafcassDirectionsCustomCMO(wrapElements(StandardDirectionTemplate.builder().build()))
+            .otherPartiesDirectionsCustomCMO(wrapElements(StandardDirectionTemplate.builder().build()))
+            .courtDirectionsCustomCMO(wrapElements(StandardDirectionTemplate.builder().build()))
             .build();
 
-        List<Element<Direction>> expected = wrapElements(getDirection(ALL_PARTIES), getDirection(LOCAL_AUTHORITY),
+        List<Element<StandardDirectionTemplate>> expected = wrapElements(getDirection(ALL_PARTIES), getDirection(LOCAL_AUTHORITY),
             getDirection(PARENTS_AND_RESPONDENTS), getDirection(CAFCASS), getDirection(OTHERS), getDirection(COURT));
 
         assertThat(directions.getDirectionsList()).isEqualTo(expected);
@@ -95,9 +95,9 @@ class DirectionsTest {
 
     @Test
     void shouldOrderDirectionsByOtherWhenManyOtherAssignees() {
-        Direction first = directionFor(OTHER_1);
-        Direction third = directionFor(OTHER_3);
-        Direction fifth = directionFor(OTHER_5);
+        StandardDirectionTemplate first = directionFor(OTHER_1);
+        StandardDirectionTemplate third = directionFor(OTHER_3);
+        StandardDirectionTemplate fifth = directionFor(OTHER_5);
 
         Directions directions = Directions.builder()
             .otherPartiesDirectionsCustomCMO(wrapElements(fifth, first, third))
@@ -109,9 +109,9 @@ class DirectionsTest {
 
     @Test
     void shouldOrderDirectionsByRespondentWhenManyRespondentAssignees() {
-        Direction first = directionFor(RESPONDENT_1);
-        Direction third = directionFor(RESPONDENT_3);
-        Direction fifth = directionFor(RESPONDENT_5);
+        StandardDirectionTemplate first = directionFor(RESPONDENT_1);
+        StandardDirectionTemplate third = directionFor(RESPONDENT_3);
+        StandardDirectionTemplate fifth = directionFor(RESPONDENT_5);
 
         Directions directions = Directions.builder()
             .respondentDirectionsCustomCMO(wrapElements(fifth, first, third))
@@ -121,24 +121,24 @@ class DirectionsTest {
             .containsExactly(getDirection(RESPONDENT_1), getDirection(RESPONDENT_3), getDirection(RESPONDENT_5));
     }
 
-    private Direction directionFor(OtherPartiesDirectionAssignee assignee) {
-        return Direction.builder().otherPartiesAssignee(assignee).build();
+    private StandardDirectionTemplate directionFor(OtherPartiesDirectionAssignee assignee) {
+        return StandardDirectionTemplate.builder().otherPartiesAssignee(assignee).build();
     }
 
-    private Direction directionFor(ParentsAndRespondentsDirectionAssignee assignee) {
-        return Direction.builder().parentsAndRespondentsAssignee(assignee).build();
+    private StandardDirectionTemplate directionFor(ParentsAndRespondentsDirectionAssignee assignee) {
+        return StandardDirectionTemplate.builder().parentsAndRespondentsAssignee(assignee).build();
     }
 
-    private Direction getDirection(DirectionAssignee assignee) {
-        return Direction.builder()
+    private StandardDirectionTemplate getDirection(DirectionAssignee assignee) {
+        return StandardDirectionTemplate.builder()
             .assignee(assignee)
             .custom("Yes")
             .readOnly("No")
             .build();
     }
 
-    private Direction getDirection(OtherPartiesDirectionAssignee other) {
-        return Direction.builder()
+    private StandardDirectionTemplate getDirection(OtherPartiesDirectionAssignee other) {
+        return StandardDirectionTemplate.builder()
             .assignee(OTHERS)
             .custom("Yes")
             .readOnly("No")
@@ -146,8 +146,8 @@ class DirectionsTest {
             .build();
     }
 
-    private Direction getDirection(ParentsAndRespondentsDirectionAssignee respondent) {
-        return Direction.builder()
+    private StandardDirectionTemplate getDirection(ParentsAndRespondentsDirectionAssignee respondent) {
+        return StandardDirectionTemplate.builder()
             .assignee(PARENTS_AND_RESPONDENTS)
             .custom("Yes")
             .readOnly("No")

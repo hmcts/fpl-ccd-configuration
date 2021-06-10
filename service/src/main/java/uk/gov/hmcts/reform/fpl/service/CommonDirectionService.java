@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class CommonDirectionService {
      * @param caseData data containing all the directions by role.
      * @return directions.
      **/
-    public List<Element<Direction>> combineAllDirections(CaseData caseData) {
+    public List<Element<StandardDirectionTemplate>> combineAllDirections(CaseData caseData) {
         return
             Stream.of(caseData.getAllParties(),
                 getElements(caseData.getAllPartiesCustom(), ALL_PARTIES),
@@ -51,7 +51,7 @@ public class CommonDirectionService {
                 .collect(toList());
     }
 
-    private List<Element<Direction>> getElements(List<Element<Direction>> directions, DirectionAssignee assignee) {
+    private List<Element<StandardDirectionTemplate>> getElements(List<Element<StandardDirectionTemplate>> directions, DirectionAssignee assignee) {
         return ofNullable(directions)
             .map(values -> values.stream()
                 .map(element -> element(element.getId(), element.getValue().toBuilder()
@@ -69,7 +69,7 @@ public class CommonDirectionService {
      * @param directions any list of directions.
      * @return a list of directions that are not custom.
      */
-    public List<Element<Direction>> removeCustomDirections(List<Element<Direction>> directions) {
+    public List<Element<StandardDirectionTemplate>> removeCustomDirections(List<Element<StandardDirectionTemplate>> directions) {
         return directions.stream()
             .filter(element -> !"Yes".equals(element.getValue().getCustom()))
             .collect(toList());
@@ -81,13 +81,13 @@ public class CommonDirectionService {
      * @param directions any list of directions.
      * @return a list of directions that are marked as needed.
      */
-    public List<Element<Direction>> removeUnnecessaryDirections(List<Element<Direction>> directions) {
+    public List<Element<StandardDirectionTemplate>> removeUnnecessaryDirections(List<Element<StandardDirectionTemplate>> directions) {
         return directions.stream()
             .filter(this::removeDirection)
             .collect(toList());
     }
 
-    private boolean removeDirection(Element<Direction> element) {
+    private boolean removeDirection(Element<StandardDirectionTemplate> element) {
         return "Yes".equals(element.getValue().getDirectionNeeded()) || "Yes".equals(element.getValue().getCustom());
     }
 }

@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
@@ -146,12 +146,12 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .standardDirectionOrder(StandardDirectionOrder.builder().orderStatus(SEALED).build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
             .allocatedJudge(Judge.builder().build())
-            .localAuthorityDirections(buildDirections(Direction.builder().assignee(LOCAL_AUTHORITY).build()))
-            .allParties(buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
-            .respondentDirections(buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
-            .cafcassDirections(buildDirections(Direction.builder().assignee(CAFCASS).build()))
-            .otherPartiesDirections(buildDirections(Direction.builder().assignee(OTHERS).build()))
-            .courtDirections(buildDirections(Direction.builder().assignee(COURT).build()))
+            .localAuthorityDirections(buildDirections(StandardDirectionTemplate.builder().assignee(LOCAL_AUTHORITY).build()))
+            .allParties(buildDirections(StandardDirectionTemplate.builder().assignee(ALL_PARTIES).build()))
+            .respondentDirections(buildDirections(StandardDirectionTemplate.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
+            .cafcassDirections(buildDirections(StandardDirectionTemplate.builder().assignee(CAFCASS).build()))
+            .otherPartiesDirections(buildDirections(StandardDirectionTemplate.builder().assignee(OTHERS).build()))
+            .courtDirections(buildDirections(StandardDirectionTemplate.builder().assignee(COURT).build()))
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseData);
@@ -309,10 +309,10 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     private void assertThatDirectionsArePlacedBackIntoCaseDetailsWithValues(CaseData caseData) {
         assertThat(unwrapElements(caseData.getAllParties())).containsOnly(fullyPopulatedDirection(ALL_PARTIES));
 
-        List<Element<Direction>> localAuthorityDirections = caseData.getLocalAuthorityDirections();
+        List<Element<StandardDirectionTemplate>> localAuthorityDirections = caseData.getLocalAuthorityDirections();
         assertThat(unwrapElements(localAuthorityDirections)).containsOnly(fullyPopulatedDirection(LOCAL_AUTHORITY));
 
-        List<Element<Direction>> respondentDirections = caseData.getRespondentDirections();
+        List<Element<StandardDirectionTemplate>> respondentDirections = caseData.getRespondentDirections();
         assertThat(unwrapElements(respondentDirections)).containsOnly(fullyPopulatedDirection(PARENTS_AND_RESPONDENTS));
 
         assertThat(unwrapElements(caseData.getCafcassDirections())).containsOnly(fullyPopulatedDirection(CAFCASS));
@@ -403,8 +403,8 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
         );
     }
 
-    private List<Element<Direction>> buildDirection(DirectionAssignee assignee) {
-        return wrapElements(Direction.builder()
+    private List<Element<StandardDirectionTemplate>> buildDirection(DirectionAssignee assignee) {
+        return wrapElements(StandardDirectionTemplate.builder()
             .directionType(DIRECTION_TYPE)
             .directionText(DIRECTION_TEXT)
             .assignee(assignee)
@@ -428,8 +428,8 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .build();
     }
 
-    private Direction fullyPopulatedDirection(DirectionAssignee assignee) {
-        return Direction.builder()
+    private StandardDirectionTemplate fullyPopulatedDirection(DirectionAssignee assignee) {
+        return StandardDirectionTemplate.builder()
             .directionType(DIRECTION_TYPE)
             .directionText(DIRECTION_TEXT)
             .assignee(assignee)
@@ -440,13 +440,13 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
             .build();
     }
 
-    private List<Element<Direction>> fullyPopulatedDirections() {
+    private List<Element<StandardDirectionTemplate>> fullyPopulatedDirections() {
         return Stream.of(DirectionAssignee.values())
             .map(assignee -> element(null, fullyPopulatedDirection(assignee)))
             .collect(toList());
     }
 
-    private List<Element<Direction>> buildDirections(Direction direction) {
+    private List<Element<StandardDirectionTemplate>> buildDirections(StandardDirectionTemplate direction) {
         return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 
