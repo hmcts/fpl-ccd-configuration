@@ -38,8 +38,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.DocumentMerger;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.OrderDocumentGeneratorHolder;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
-import uk.gov.hmcts.reform.fpl.utils.captor.ResultsCaptor;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -81,7 +81,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     RestTemplate.class
 })
 
-public class AllOrdersDocmosisTest extends AbstractDocmosisTest {
+public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_COURT = "La Court";
@@ -95,6 +95,8 @@ public class AllOrdersDocmosisTest extends AbstractDocmosisTest {
         Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN
     );
 
+    private final DocmosisOrderCaseDataGenerator dataGenerator = new DocmosisOrderCaseDataGenerator();
+
     @SpyBean
     private DocmosisDocumentGeneratorService generatorService;
     @MockBean
@@ -106,16 +108,12 @@ public class AllOrdersDocmosisTest extends AbstractDocmosisTest {
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
-    private ResultsCaptor<DocmosisDocument> resultsCaptor = new ResultsCaptor<>();
-
     @Autowired
     private OrderCreationService underTest;
 
-    private final DocmosisOrderCaseDataGenerator dataGenerator = new DocmosisOrderCaseDataGenerator();
-
     @ParameterizedTest
     @MethodSource("allOrders")
-    void testAllOrders(Order order) {
+    void testAllOrders(Order order) throws IOException {
 
         String actualContent = getPdfContent(dataGenerator.generateForOrder(order));
 
@@ -129,7 +127,7 @@ public class AllOrdersDocmosisTest extends AbstractDocmosisTest {
             .map(Arguments::of);
     }
 
-    public String getPdfContent(CaseData caseData, String... ignores) {
+    public String getPdfContent(CaseData caseData, String... ignores) throws IOException {
         when(hmctsCourtLookupConfiguration.getCourt(LA_CODE)).thenReturn(
             new HmctsCourtLookupConfiguration.Court(LA_COURT, null, null));
         when(uploadDocumentService.uploadDocument(any(byte[].class),
@@ -141,7 +139,13 @@ public class AllOrdersDocmosisTest extends AbstractDocmosisTest {
             OrderStatus.PLAIN,
             RenderFormat.PDF);
 
-        String text = extractPdfContent(resultsCaptor.getResult().getBytes());
+        DocmosisDocument docmosisDocument = resultsCaptor.getResult();
+
+        byte[] bytes = docmosisDocument.getBytes();
+
+        storeToOuputFolder(docmosisDocument.getDocumentTitle(), bytes);
+
+        String text = extractPdfContent(bytes);
         return remove(text, ignores);
     }
 
