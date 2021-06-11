@@ -11,9 +11,11 @@ public enum DocmosisTemplates {
     SDO("FL-PLW-STD-ENG-00099.doc", "standard-directions-order"),
     //fallback title 'order.pdf' - file name is generated in GeneratedOrderService based on type of order
     ORDER("FL-PLW-GOR-ENG-00218.doc", "order"),
+    SGO("FL-C43aSpecialGuardianshipOrder.doc", "special-guardianship-order"),
     EPO("FL-PLW-GOR-ENG-00228.doc", "emergency_protection_order"),
     COVER_DOCS("FL-PLW-LET-ENG-00232.doc", "cover_documents");
 
+    //TODO: 11/06/2021 Update document with correct name
     private final String template;
     private final String documentTitle;
 

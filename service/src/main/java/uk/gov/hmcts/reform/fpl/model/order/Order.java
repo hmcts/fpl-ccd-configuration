@@ -71,14 +71,6 @@ public enum Order {
             LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION, FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
     ),
-    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
-        "Appointment of a Children's Guardian",
-        "Section 41(1) Children Act 1989",
-        "C47A - Appointment of a Children's Guardian",
-        false,
-        List.of(
-            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
-    ),
     C35B_INTERIM_SUPERVISION_ORDER(
         "Interim supervision order",
         "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
@@ -92,6 +84,27 @@ public enum Order {
             FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
             REVIEW_DRAFT_ORDER)
+    ),
+    C43A_SPECIAL_GUARDIANSHIP_ORDER(
+        "Special guardianship order",
+        "Section 14A(1) Children Act 1989",
+        "C47A - Special guardianship order",
+        false,
+        List.of(
+            LINKED_TO_HEARING,
+            APPROVER,
+            APPROVAL_DATE,
+            FURTHER_DIRECTIONS,
+            REVIEW_DRAFT_ORDER
+        )
+    ),
+    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+        "Appointment of a Children's Guardian",
+        "Section 41(1) Children Act 1989",
+        "C47A - Appointment of a Children's Guardian",
+        false,
+        List.of(
+            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),;
 
     private final String title;
