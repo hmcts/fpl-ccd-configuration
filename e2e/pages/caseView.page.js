@@ -71,6 +71,7 @@ module.exports = {
   },
 
   checkTaskStatus(task, status) {
+    I.waitForElement(locate(`//p/a[text()="${task}"]`), 10);
     if(status) {
       I.seeElement(locate(`//p/a[text()="${task}"]/../img`).withAttr({title: status}));
     } else {
