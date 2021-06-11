@@ -24,7 +24,33 @@ public class DischargeOfCareDateValidatorTest {
     }
 
     @Test
-    void validateIssuedDateBeforeApprovalDate() {
+    void validatePresentIssuedDate() {
+        LocalDate careOrderIssuedDate = time.now().toLocalDate();
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersCareOrderIssuedDate(careOrderIssuedDate)
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of());
+    }
+
+    @Test
+    void validatePastIssuedDate() {
+        LocalDate careOrderIssuedDate = time.now().minusDays(1).toLocalDate();
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersCareOrderIssuedDate(careOrderIssuedDate)
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of());
+    }
+
+    @Test
+    void validateFutureIssuedDate() {
         LocalDate careOrderIssuedDate = time.now().plusDays(1).toLocalDate();
 
         CaseData caseData = CaseData.builder()

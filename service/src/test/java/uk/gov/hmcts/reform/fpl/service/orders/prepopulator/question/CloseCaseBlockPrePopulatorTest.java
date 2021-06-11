@@ -24,6 +24,7 @@ class CloseCaseBlockPrePopulatorTest {
     private static final UUID CHILD_ID_2 = UUID.randomUUID();
     private static final Order FINAL_ORDER_TYPE = Order.C32_CARE_ORDER;
     private static final Order NON_FINAL_ORDER_TYPE = Order.C23_EMERGENCY_PROTECTION_ORDER;
+    private static final Order MAYBE_FINAL_ORDER_TYPE = Order.C32B_DISCHARGE_OF_CARE_ORDER;
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
 
@@ -85,6 +86,54 @@ class CloseCaseBlockPrePopulatorTest {
 
         OrderTempQuestions actual = (OrderTempQuestions) underTest.prePopulate(caseData).get("orderTempQuestions");
         OrderTempQuestions expected = OrderTempQuestions.builder().closeCase("NO").build();
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void askWhenUserSelectsFinalOrderForClosableCase() {
+        CaseData caseData = CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder()
+            .manageOrdersType(MAYBE_FINAL_ORDER_TYPE)
+            .orderTempQuestions(OrderTempQuestions.builder()
+                .isFinalOrder("YES")
+                .closeCase("YES")
+                .build())
+            .manageOrdersIsFinalOrder("Yes")
+            .build()
+        ).build();
+
+        when(childrenService.updateFinalOrderIssued(caseData)).thenReturn(List.of(
+            element(CHILD_ID_1, Child.builder().finalOrderIssued("Yes").build()),
+            element(CHILD_ID_2, Child.builder().finalOrderIssued("Yes").build())
+        ));
+
+        Map<String, Object> actual = underTest.prePopulate(caseData);
+
+        assertThat(actual).isEqualTo(Map.of());
+    }
+
+    @Test
+    void doNotAskWhenUserDoesNotSelectFinalOrderForClosableCase() {
+        CaseData caseData = CaseData.builder().manageOrdersEventData(ManageOrdersEventData.builder()
+            .manageOrdersType(MAYBE_FINAL_ORDER_TYPE)
+            .orderTempQuestions(OrderTempQuestions.builder()
+                .isFinalOrder("YES")
+                .closeCase("YES")
+                .build())
+            .manageOrdersIsFinalOrder("No")
+            .build()
+        ).build();
+
+        when(childrenService.updateFinalOrderIssued(caseData)).thenReturn(List.of(
+            element(CHILD_ID_1, Child.builder().finalOrderIssued("Yes").build()),
+            element(CHILD_ID_2, Child.builder().finalOrderIssued("Yes").build())
+        ));
+
+        OrderTempQuestions actual = (OrderTempQuestions) underTest.prePopulate(caseData).get("orderTempQuestions");
+        OrderTempQuestions expected = OrderTempQuestions.builder()
+            .closeCase("NO")
+            .isFinalOrder("YES")
+            .build();
 
         assertThat(actual).isEqualTo(expected);
     }

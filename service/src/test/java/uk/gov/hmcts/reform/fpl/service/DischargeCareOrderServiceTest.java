@@ -224,6 +224,29 @@ class DischargeCareOrderServiceTest {
             assertThat(dischargeCareOrderLabel).isEqualTo("Order 1: John Smith, 1 May 2019\n"
                 + "Order 2: Alex Green and Emma Johnson and James Black, 2 May 2019");
         }
+
+        @Test
+        void shouldReturnLabelForApprovalDateWhenPresent() {
+            Child child1 = child(testChildParty());
+            Child child2 = child(testChildParty());
+
+            GeneratedOrder order1 = GeneratedOrder.builder()
+                .orderType("Interim care order")
+                .approvalDate(LocalDate.of(2019, 5, 1))
+                .children(wrapElements(child1))
+                .build();
+
+            GeneratedOrder order2 = GeneratedOrder.builder()
+                .orderType("Final care order")
+                .approvalDate(LocalDate.of(2019, 5, 1))
+                .children(wrapElements(child2))
+                .build();
+
+            String dischargeCareOrderLabel = dischargeCareOrderService.getOrdersLabel(List.of(order1, order2));
+
+
+            assertThat(dischargeCareOrderLabel).contains("1st May 2019");
+        }
     }
 
     private static GeneratedOrder order(String type, String issueDate, Child... children) {

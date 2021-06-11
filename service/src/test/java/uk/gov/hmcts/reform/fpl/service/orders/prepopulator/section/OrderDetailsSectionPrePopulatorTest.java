@@ -43,4 +43,21 @@ class OrderDetailsSectionPrePopulatorTest {
             "orderDetailsSectionSubHeader", ORDER_NAME,
             "orderTempQuestions", ORDER_TEMP_QUESTIONS));
     }
+
+    @Test
+    void populateIsFinalOrder() {
+        Order order = Order.C32B_DISCHARGE_OF_CARE_ORDER;
+
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(order)
+                .orderTempQuestions(ORDER_TEMP_QUESTIONS)
+                .build()
+            )
+            .build();
+
+        assertThat(underTest.prePopulate(caseData)).isEqualTo(Map.of(
+            "orderDetailsSectionSubHeader", order.getHistoryTitle(),
+            "orderTempQuestions", OrderTempQuestions.builder().isFinalOrder("YES").build()));
+    }
 }

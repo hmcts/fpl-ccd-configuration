@@ -47,4 +47,15 @@ class WhichOrderValidatorTest {
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
     }
+
+    @Test
+    void validateNoCareOrders() {
+        CaseData caseData = CaseData.builder()
+            .careOrderSelector(Selector.builder()
+                .count("0")
+                .build())
+            .build();
+
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
+    }
 }
