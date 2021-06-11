@@ -28,7 +28,7 @@ public class WhichOrdersBlockPrePopulator implements QuestionBlockOrderPrePopula
 
     @Override
     public Map<String, Object> prePopulate(CaseData caseData) {
-        final List<GeneratedOrder> careOrders = dischargeCareOrder.getManageOrderCareOrders(caseData);
+        final List<GeneratedOrder> careOrders = dischargeCareOrder.getCareOrders(caseData);
         final Selector childSelector = newSelector(careOrders.size());
 
         return Map.of(

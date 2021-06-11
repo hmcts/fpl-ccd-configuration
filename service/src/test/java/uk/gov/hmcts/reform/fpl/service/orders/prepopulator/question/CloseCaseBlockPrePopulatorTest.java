@@ -65,7 +65,9 @@ class CloseCaseBlockPrePopulatorTest {
 
         Map<String, Object> actual = underTest.prePopulate(caseData);
 
-        assertThat(actual).isEqualTo(Map.of());
+        assertThat(actual).isEqualTo(Map.of(
+            "orderTempQuestions", OrderTempQuestions.builder().closeCase("NO").build())
+        );
     }
 
     @Test

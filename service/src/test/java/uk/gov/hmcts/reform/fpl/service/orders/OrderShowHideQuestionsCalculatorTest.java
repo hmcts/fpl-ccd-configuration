@@ -69,7 +69,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         dischargeOfCareQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
-        dischargeOfCareQuestions.put("closeCase", "NO");
+        dischargeOfCareQuestions.put("closeCase", "YES");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("furtherDirections", "YES");

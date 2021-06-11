@@ -31,7 +31,7 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersEpoType", "manageOrdersEpoRemovalAddress", "manageOrdersExclusionRequirement",
             "manageOrdersWhoIsExcluded", "manageOrdersExclusionStartDate", "manageOrdersPowerOfArrest")),
     FURTHER_DIRECTIONS("furtherDirections", "Further Directions", OrderSection.ORDER_DETAILS,
-        List.of("manageOrdersFurtherDirections")),
+        List.of("manageOrdersFurtherDirections", "manageOrdersIsFinalOrder")),
     CAFCASS_JURISDICTIONS("cafcassJurisdictions", "Select jurisdiction", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersCafcassRegion", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassOfficesWales")),
     DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,

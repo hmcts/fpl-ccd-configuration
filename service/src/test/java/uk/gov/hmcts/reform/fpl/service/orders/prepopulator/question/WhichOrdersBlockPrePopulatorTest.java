@@ -43,7 +43,7 @@ public class WhichOrdersBlockPrePopulatorTest {
             order(Order.C32_CARE_ORDER.getHistoryTitle(), mock(Child.class))
         );
 
-        when(dischargeCareOrderService.getManageOrderCareOrders(caseData)).thenReturn(careOrders);
+        when(dischargeCareOrderService.getCareOrders(caseData)).thenReturn(careOrders);
         when(dischargeCareOrderService.getOrdersLabel(careOrders)).thenReturn(ORDER_LABEL);
 
         assertThat(underTest.prePopulate(caseData)).isEqualTo(

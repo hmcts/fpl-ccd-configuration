@@ -36,14 +36,14 @@ public enum Order {
         "Blank order",
         "Section 31 Children Act 1989",
         "C21 - Blank order",
-        false,
+        IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
         "Emergency protection order",
         "Section 44 Children Act 1989",
         "C23 - Emergency protection order",
-        false,
+        IsFinalOrder.NO,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE_TIME, WHICH_CHILDREN, EPO_TYPE_AND_PREVENT_REMOVAL,
             EPO_INCLUDE_PHRASE, EPO_CHILDREN_DESCRIPTION, EPO_EXPIRY_DATE, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
@@ -51,7 +51,7 @@ public enum Order {
         "Care order",
         "Section 31 Children Act 1989",
         "C32 - Care order",
-        true,
+        IsFinalOrder.YES,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER,
             CLOSE_CASE)
     ),
@@ -59,15 +59,15 @@ public enum Order {
         "Discharge of care order",
         "Section 31 Children Act 1989",
         "C32B - Discharge of care order",
-        false,
+        IsFinalOrder.MAYBE,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_ORDERS, DISCHARGE_DETAILS, FURTHER_DIRECTIONS,
-            REVIEW_DRAFT_ORDER)
+            CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
         "Supervision order",
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Supervision order (C35A)",
-        true,
+        IsFinalOrder.YES,
         List.of(
             LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_MONTH, REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER)
@@ -76,7 +76,7 @@ public enum Order {
         "Interim care order",
         "Section 38 Children Act 1989",
         "Interim care order (C33)",
-        false,
+        IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, ICO_EXCLUSION, FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
@@ -85,7 +85,7 @@ public enum Order {
         "Appointment of a Children's Guardian",
         "Section 41(1) Children Act 1989",
         "C47A - Appointment of a Children's Guardian",
-        false,
+        IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
@@ -93,7 +93,7 @@ public enum Order {
         "Interim supervision order",
         "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Interim supervision order (C35B)",
-        false,
+        IsFinalOrder.NO,
         List.of(
             LINKED_TO_HEARING,
             APPROVER,
@@ -107,7 +107,7 @@ public enum Order {
     private final String title;
     private final String childrenAct;
     private final String historyTitle;
-    private final boolean isOrderFinal;
+    private final IsFinalOrder isFinalOrder;
     private final List<OrderQuestionBlock> questions;
 
     public String fileName(RenderFormat format) {

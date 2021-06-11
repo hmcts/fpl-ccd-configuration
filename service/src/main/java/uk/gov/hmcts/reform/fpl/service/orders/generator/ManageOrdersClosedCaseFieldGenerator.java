@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CloseCase;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -28,7 +29,7 @@ public class ManageOrdersClosedCaseFieldGenerator {
 
         Map<String, Object> data = new HashMap<>();
 
-        if (order.isOrderFinal()) {
+        if (IsFinalOrder.YES.equals(order.getIsFinalOrder())) {
             data.put("children1", childrenService.updateFinalOrderIssued(caseData));
         }
 

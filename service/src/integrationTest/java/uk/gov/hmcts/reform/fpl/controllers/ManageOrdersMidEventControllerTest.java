@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -225,7 +226,10 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void childrenDetailsShouldPrepopulateNextSectionDetails() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("Yes")
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C32_CARE_ORDER)
+                .orderTempQuestions(OrderTempQuestions.builder().build())
+                .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");

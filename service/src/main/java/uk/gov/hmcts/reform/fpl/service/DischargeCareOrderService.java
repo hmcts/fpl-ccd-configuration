@@ -40,24 +40,15 @@ public class DischargeCareOrderService {
     public List<GeneratedOrder> getCareOrders(CaseData caseData) {
         return caseData.getOrderCollection().stream()
             .map(Element::getValue)
-            .filter(order -> OrderHelper.isOfType(order, CARE_ORDER))
-            .collect(toList());
-    }
-
-    public List<GeneratedOrder> getManageOrderCareOrders(CaseData caseData) {
-        return caseData.getOrderCollection().stream()
-            .map(Element::getValue)
-            .filter(order -> Order.C32_CARE_ORDER.name().equals(order.getOrderType()))
+            .filter(order -> OrderHelper.isOfType(order, CARE_ORDER)
+                || Order.C32_CARE_ORDER.name().equals(order.getOrderType())
+            )
             .collect(toList());
     }
 
     public List<GeneratedOrder> getSelectedCareOrders(CaseData caseData) {
         List<GeneratedOrder> careOrders = getCareOrders(caseData);
         Selector careOrderSelector = caseData.getCareOrderSelector();
-
-        if (careOrders.isEmpty()) {
-            careOrders = getManageOrderCareOrders(caseData);
-        }
 
         if (careOrderSelector == null) {
             return careOrders;
