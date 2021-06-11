@@ -168,5 +168,13 @@
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "03/06/2021",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "linkedApplicationId",
+    "FieldType": "Text",
+    "ElementLabel": "Linked application",
+    "SecurityClassification": "Public"
   }
 ]

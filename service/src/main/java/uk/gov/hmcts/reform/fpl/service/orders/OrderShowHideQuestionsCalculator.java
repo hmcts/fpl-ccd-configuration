@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 public class OrderShowHideQuestionsCalculator {
 
     public Map<String, String> calculate(Order order) {
-        Set<OrderQuestionBlock> questions = Sets.newHashSet(order.getQuestions());
-        Set<OrderQuestionBlock> allQuestions = Stream.of(OrderQuestionBlock.values()).collect(Collectors.toSet());
+        Set<OrderQuestionBlock> questionsBlocks = Sets.newHashSet(order.getQuestionsBlocks());
+        Set<OrderQuestionBlock> allQuestionBlocks = Stream.of(OrderQuestionBlock.values()).collect(Collectors.toSet());
 
-        return allQuestions.stream().collect(Collectors.toMap(
-            OrderQuestionBlock::getShowHideField, el -> questions.contains(el) ? "YES" : "NO"
+        return allQuestionBlocks.stream().collect(Collectors.toMap(
+            OrderQuestionBlock::getShowHideField, el -> questionsBlocks.contains(el) ? "YES" : "NO"
         ));
     }
 

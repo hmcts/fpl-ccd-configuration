@@ -29,7 +29,7 @@ public class DocmosisOrderCaseDataGenerator {
 
     public CaseData generateForOrder(final Order order) {
 
-        return order.getQuestions().stream().reduce(
+        return order.getQuestionsBlocks().stream().reduce(
             commonCaseData(order),
             this::addDataForQuestion,
             (v, v2) -> v2

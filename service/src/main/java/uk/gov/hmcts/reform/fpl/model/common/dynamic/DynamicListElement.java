@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.common.dynamic;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.Objects;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Data
 @Jacksonized
 @Builder
+@EqualsAndHashCode
 public class DynamicListElement {
     public static final UUID DEFAULT_CODE = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final String DEFAULT_LABEL = "";

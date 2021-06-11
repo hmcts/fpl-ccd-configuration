@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
@@ -50,6 +52,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.buildDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocmosisDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -121,11 +124,14 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     @Test
     void shouldBuildNewOrderObject() {
+        UUID linkedApplicationId = UUID.randomUUID();
+        DynamicList selectedLinkedApplicationList = buildDynamicList(0, Pair.of(linkedApplicationId, "My application"));
         CaseData caseData = buildCaseData().toBuilder()
             .manageOrdersEventData(ManageOrdersEventData.builder()
                 .manageOrdersType(C21_BLANK_ORDER)
                 .manageOrdersApprovalDate(dateNow())
                 .manageOrdersFurtherDirections("Some further directions")
+                .manageOrdersLinkedApplication(selectedLinkedApplicationList)
                 .build())
             .build();
 
@@ -145,6 +151,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
                 .childrenDescription("first1 last1, first2 last2")
                 .document(DOCUMENT_PDF_REFERENCE)
                 .unsealedDocumentCopy(DOCUMENT_WORD_REFERENCE)
+                .linkedApplicationId(linkedApplicationId.toString())
                 .build())
         );
     }

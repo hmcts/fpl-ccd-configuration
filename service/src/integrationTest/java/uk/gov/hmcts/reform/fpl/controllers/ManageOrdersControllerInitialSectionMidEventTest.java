@@ -38,7 +38,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
     }
 
     @Test
-    void shouldPrepopulateIssueDetailsSectionDataWhenCreatingBlankOrderForClosedCase() {
+    void shouldPrePopulateIssueDetailsSectionDataWhenCreatingBlankOrderForClosedCase() {
         CaseData caseData = CaseData.builder()
             .id(CCD_CASE_NUMBER)
             .familyManCaseNumber(FAMILY_MAN_CASE_NUMBER)
@@ -64,7 +64,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
-            Map.entry("closeCase", "NO")
+            Map.entry("closeCase", "NO"),
+            Map.entry("linkApplicationQuestionBlock", "YES")
         );
 
         assertThat(response.getData()).containsAllEntriesOf(

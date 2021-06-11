@@ -1,23 +1,24 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
-const caseData = require('../fixtures/caseData/gatekeepinhWithPastHearingDetails.json');
+const caseData = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
+const manageDocumentsForLAHelper = require('../helpers/manage_documents_for_LA_helper.js');
 
 const approvalDate = new Date(2021, 3, 9);
-const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
+const allocatedJudge = { title: 'Her Honour Judge', name: 'Moley' };
 const orderTitle = 'some title';
 const today = new Date(Date.now());
 const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
-const removalAddress = {buildingAndStreet: {lineOne: 'Flat 2 Caversham', town: 'Reading'}, postcode: 'RG4 7AA'};
+const removalAddress = { buildingAndStreet: { lineOne: 'Flat 2 Caversham', town: 'Reading' }, postcode: 'RG4 7AA' };
 let caseId;
 
 Feature('HMCTS Admin manages orders');
 
-BeforeSuite(async ({I}) => caseId = await I.submitNewCaseWithData(caseData));
+BeforeSuite(async ({ I }) => caseId = await I.submitNewCaseWithData(caseData));
 
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
+Before(async ({ I }) => await I.navigateToCaseDetailsAs(config.hmctsAdminUser, caseId));
 
-Scenario('Create C32 care order (with pre filled hearing details)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C32 care order (with pre filled hearing details)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
@@ -26,6 +27,9 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({I, c
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
   await manageOrdersEventPage.selectHearing('Case management hearing, 3 November 2012');
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
+
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.yes);
   await I.goToNextPage();
   // Judge and approval date is already preFilled
   await I.goToNextPage();
@@ -41,12 +45,12 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({I, c
     orderIndex: 1,
     orderType: 'C32 - Care order',
     approvalDate: new Date(2012, 10, 3),
-    allocatedJudge: {title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
+    allocatedJudge: { title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
     children: 'Timothy Jones',
   });
 });
 
-Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create EPO order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
@@ -54,6 +58,7 @@ Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) =>
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDateTime(today);
@@ -77,7 +82,7 @@ Scenario('Create EPO order', async ({I, caseViewPage, manageOrdersEventPage}) =>
   });
 });
 
-Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create EPO Prevent removal order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
@@ -85,6 +90,7 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c23);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDateTime(today);
@@ -113,13 +119,14 @@ Scenario('Create EPO Prevent removal order', async ({I, caseViewPage, manageOrde
   });
 });
 
-Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C21 blank order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c21);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
@@ -142,7 +149,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   });
 });
 
-Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   const newCaseId = await I.submitNewCaseWithData(closedCaseData);
   await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
 
@@ -151,6 +158,7 @@ Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manag
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
@@ -173,13 +181,14 @@ Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manag
   });
 });
 
-Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C35a Supervision order', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35A);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();
@@ -202,17 +211,18 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   });
 });
 
-Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c33);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   manageOrdersEventPage.selectExclusionRequirementICO(manageOrdersEventPage.section4.exclusionRequirement.options.yes);
   await manageOrdersEventPage.enterExclusionDetails('I need an exclusion because of X,Y and Z');
@@ -222,7 +232,7 @@ Scenario('Create Interim care order  (C33)', async ({I, caseViewPage, manageOrde
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I,caseViewPage,{
+  assertOrder(I, caseViewPage, {
     orderIndex: 3,
     orderType: manageOrdersEventPage.orders.title.c33,
     approvalDate: today,
@@ -258,7 +268,9 @@ Scenario('Interim supervision order (C35B)', async ({I, caseViewPage, manageOrde
   });
 });
 
-Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage, uploadAdditionalApplicationsEventPage}) => {
+  //Add additional applications
+  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
@@ -266,6 +278,8 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  const linkedApplicationId = await manageOrdersEventPage.linkApplication();
+
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
@@ -283,6 +297,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
+    linkedApplicationId: linkedApplicationId,
   });
 });
 
@@ -303,5 +318,11 @@ function assertOrder(I, caseViewPage, order) {
 
   if (order.title !== undefined) {
     I.seeInTab([orderElement, 'Order title'], orderTitle);
+  }
+
+  if (order.linkedApplicationId !== undefined) {
+    I.seeInTab([orderElement, 'Linked application'], order.linkedApplicationId);
+  } else {
+    I.dontSeeInTab('Linked application');
   }
 }
