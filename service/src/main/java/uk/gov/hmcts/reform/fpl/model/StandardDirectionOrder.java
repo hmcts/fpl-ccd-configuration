@@ -34,7 +34,7 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final LocalDate dateOfUpload;
     private final String uploader;
-    private List<Element<StandardDirectionTemplate>> directions;
+    private List<Element<Direction>> directions;
     private DocumentReference orderDoc;
     private DocumentReference lastUploadedOrder;
     private String removalReason;

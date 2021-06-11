@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.PreviousHearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -307,7 +307,7 @@ class CaseDataExtractionServiceTest {
     void shouldBuildBaseDirectionWithCorrectIndexAndConfig() {
         String title = "Example title";
 
-        StandardDirectionTemplate direction = getDirection(title);
+        Direction direction = getDirection(title);
 
         DirectionConfiguration config = DirectionConfiguration.builder()
             .assignee(DirectionAssignee.LOCAL_AUTHORITY)
@@ -324,7 +324,7 @@ class CaseDataExtractionServiceTest {
     void shouldBuildBaseDirectionWithCorrectIndexWhenNoConfig() {
         String title = "Example title";
 
-        StandardDirectionTemplate direction = getDirection(title);
+        Direction direction = getDirection(title);
 
         assertThat(service.baseDirection(direction, 1))
             .usingRecursiveComparison()
@@ -336,7 +336,7 @@ class CaseDataExtractionServiceTest {
         String title = "Example title";
         String directionText = " " + "Example description" + " ";
 
-        StandardDirectionTemplate direction = getDirection(title, directionText);
+        Direction direction = getDirection(title, directionText);
 
         assertThat(service.baseDirection(direction, 1))
             .usingRecursiveComparison()
@@ -345,7 +345,7 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldBuildBaseDirectionWithUnknownValueWhenNoDirectionCompleteByDate() {
-        StandardDirectionTemplate direction = getDirectionWithNoCompleteByDate();
+        Direction direction = getDirectionWithNoCompleteByDate();
 
         assertThat(service.baseDirection(direction, 1))
             .usingRecursiveComparison()
@@ -368,12 +368,12 @@ class CaseDataExtractionServiceTest {
             .body("Example description");
     }
 
-    private StandardDirectionTemplate getDirection(String title) {
+    private Direction getDirection(String title) {
         return getDirection(title, "Example description");
     }
 
-    private StandardDirectionTemplate getDirection(String title, String directionText) {
-        return StandardDirectionTemplate.builder()
+    private Direction getDirection(String title, String directionText) {
+        return Direction.builder()
             .assignee(DirectionAssignee.LOCAL_AUTHORITY)
             .directionType(title)
             .directionText(directionText)
@@ -381,8 +381,8 @@ class CaseDataExtractionServiceTest {
             .build();
     }
 
-    private StandardDirectionTemplate getDirectionWithNoCompleteByDate() {
-        return StandardDirectionTemplate.builder()
+    private Direction getDirectionWithNoCompleteByDate() {
+        return Direction.builder()
             .assignee(DirectionAssignee.LOCAL_AUTHORITY)
             .directionType("Example title")
             .directionText("Example description")

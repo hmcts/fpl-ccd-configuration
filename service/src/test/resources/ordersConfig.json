@@ -2,8 +2,17 @@
   "type": "standardDirectionOrder",
   "language": "ENGLISH",
   "service": "FPL",
-  "directions": [
+  "customDirection": {
+    "id": "CUSTOM",
+    "display": {
+      "due": "BY",
+      "templateDateFormat": "d MMMM yyyy 'at' h:mma",
+      "showDateOnly": false
+    }
+  },
+  "standardDirections": [
     {
+      "id": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
       "title": "Test SDO type 1",
       "text": "- Test body 1 \n\n- Two\n",
       "assignee": "ALL_PARTIES",
@@ -16,6 +25,7 @@
       }
     },
     {
+      "id": "REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS",
       "title": "Test SDO type 2",
       "text": "Test body 2\n",
       "assignee": "LOCAL_AUTHORITY",
@@ -29,11 +39,12 @@
       }
     },
     {
+      "id": "ASK_FOR_DISCLOSURE",
       "title": "Test SDO type 3",
       "text": "Test body 3\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "due": "BY",
+        "due": "ON",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
         "showDateOnly": false,

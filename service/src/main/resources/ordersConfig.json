@@ -1,12 +1,18 @@
 {
   "id": "standardDirectionOrder",
   "language": "ENGLISH",
-  "service": "FPL",
-  "directions": [
+  "customDirection": {
+    "id": "CUSTOM",
+    "display": {
+      "due": "BY",
+      "templateDateFormat": "h:mma, d MMMM yyyy"
+    }
+  },
+  "standardDirections": [
     {
       "id": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
       "title": "Request permission for expert evidence",
-      "text": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
+      "text": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
       "assignee": "ALL_PARTIES",
       "display": {
         "due": "BY",
@@ -250,16 +256,6 @@
         "showDateOnly": false,
         "delta": "-2",
         "time": "16:00:00"
-      }
-    },
-    {
-      "id": "CUSTOM",
-      "assignee": "ALL_PARTIES",
-      "title": "",
-      "display": {
-        "due": "BY",
-        "templateDateFormat": "h:mma, d MMMM yyyy",
-        "delta": "0"
       }
     }
   ]

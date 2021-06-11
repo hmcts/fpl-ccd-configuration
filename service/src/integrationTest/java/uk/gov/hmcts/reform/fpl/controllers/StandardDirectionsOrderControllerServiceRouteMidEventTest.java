@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -123,14 +123,14 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
         assertThat(response.getData().get("showNoticeOfProceedings")).isEqualTo("NO");
     }
 
-    private CaseData.CaseDataBuilder populateCaseData(List<Element<StandardDirectionTemplate>> directions) {
+    private CaseData.CaseDataBuilder populateCaseData(List<Element<Direction>> directions) {
         return CaseData.builder()
             .localAuthorityDirections(directions)
-            .allParties(buildDirections(StandardDirectionTemplate.builder().assignee(ALL_PARTIES).build()))
-            .respondentDirections(buildDirections(StandardDirectionTemplate.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
-            .cafcassDirections(buildDirections(StandardDirectionTemplate.builder().assignee(CAFCASS).build()))
-            .otherPartiesDirections(buildDirections(StandardDirectionTemplate.builder().assignee(OTHERS).build()))
-            .courtDirections(buildDirections(StandardDirectionTemplate.builder().assignee(COURT).build()))
+            .allParties(buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
+            .respondentDirections(buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
+            .cafcassDirections(buildDirections(Direction.builder().assignee(CAFCASS).build()))
+            .otherPartiesDirections(buildDirections(Direction.builder().assignee(OTHERS).build()))
+            .courtDirections(buildDirections(Direction.builder().assignee(COURT).build()))
             .dateOfIssue(dateNow())
             .caseLocalAuthority(LOCAL_AUTHORITY_1_CODE)
             .dateSubmitted(dateNow())
@@ -139,8 +139,8 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build());
     }
 
-    private List<Element<StandardDirectionTemplate>> buildTestDirections() {
-        return List.of(element(StandardDirectionTemplate.builder()
+    private List<Element<Direction>> buildTestDirections() {
+        return List.of(element(Direction.builder()
             .directionType("direction 1")
             .directionText("example")
             .assignee(LOCAL_AUTHORITY)
@@ -148,7 +148,7 @@ class StandardDirectionsOrderControllerServiceRouteMidEventTest extends Abstract
             .build()));
     }
 
-    private List<Element<StandardDirectionTemplate>> buildDirections(StandardDirectionTemplate direction) {
+    private List<Element<Direction>> buildDirections(Direction direction) {
         return wrapElements(direction.toBuilder().directionType("Direction").build());
     }
 

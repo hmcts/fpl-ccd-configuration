@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -21,14 +21,14 @@ public class PrepareDirectionsForDataStoreService {
      * @param directionsWithValues  an order object that should be generated using original case data.
      * @param directionsToAddValues an order object that should be generated using case data edited through a ccd event.
      */
-    public void persistHiddenDirectionValues(List<Element<StandardDirectionTemplate>> directionsWithValues,
-                                             List<Element<StandardDirectionTemplate>> directionsToAddValues) {
+    public void persistHiddenDirectionValues(List<Element<Direction>> directionsWithValues,
+                                             List<Element<Direction>> directionsToAddValues) {
         directionsToAddValues.forEach(elementToAddValue ->
             directionsWithValues.stream()
                 .filter(element -> hasSameDirectionType(elementToAddValue, element))
                 .forEach(element -> {
-                    StandardDirectionTemplate direction = elementToAddValue.getValue();
-                    StandardDirectionTemplate value = element.getValue();
+                    Direction direction = elementToAddValue.getValue();
+                    Direction value = element.getValue();
 
                     direction.setReadOnly(value.getReadOnly());
                     direction.setDirectionRemovable(value.getDirectionRemovable());
@@ -42,7 +42,7 @@ public class PrepareDirectionsForDataStoreService {
                 }));
     }
 
-    private boolean hasSameDirectionType(Element<StandardDirectionTemplate> directionToAddValue, Element<StandardDirectionTemplate> direction) {
+    private boolean hasSameDirectionType(Element<Direction> directionToAddValue, Element<Direction> direction) {
         return direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType());
     }
 }

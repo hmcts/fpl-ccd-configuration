@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -28,7 +29,8 @@ public class StandardDirection {
     private final YesNo showDateOnly;
     private final DueDateType dueDateType;
 
-    public StandardDirection apply(DirectionConfiguration config) {
+    @JsonIgnore
+    public StandardDirection applyConfig(DirectionConfiguration config) {
         return this.toBuilder()
             .type(config.getId())
             .title(config.getTitle())

@@ -1,9 +1,6 @@
 const config = require('../config.js');
 const directions = require('../fixtures/directions.js');
 const gatekeepingCaseData = require('../fixtures/caseData/gatekeepingNoAllocatedJudge.json');
-const hearingDetails = require('../fixtures/hearingTypeDetails.js');
-const moment = require('moment');
-const api = require('../helpers/api_helper');
 
 let caseId;
 
@@ -15,25 +12,6 @@ BeforeSuite(async ({I}) => {
 });
 
 Before(async ({I}) => await I.navigateToCaseDetails(caseId));
-
-Scenario('Gatekeeping judge adds hearing', async ({I, caseViewPage, manageHearingsEventPage}) => {
-  let hearingStartDate = moment('2030-01-10 14:00:00').toDate();
-  let hearingEndDate = moment(hearingStartDate).add(30,'m').toDate();
-
-  await caseViewPage.goToNewActions(config.administrationActions.manageHearings);
-  await manageHearingsEventPage.enterHearingDetails({startDate: hearingStartDate, endDate: hearingEndDate, presence: hearingDetails[0].presence});
-  manageHearingsEventPage.enterVenue(hearingDetails[0]);
-  await I.goToNextPage();
-  I.click('Her Honour Judge');
-  I.fillField('Last name', 'xxx');
-  I.fillField('Email Address', 'test@test.com');
-  await I.goToNextPage();
-  manageHearingsEventPage.dontSendNoticeOfHearing();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.manageHearings);
-
-  await api.pollLastEvent(caseId, config.internalActions.populateSDO);
-});
 
 Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
@@ -101,13 +79,12 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   I.dontSee('Court');
   I.dontSee('Arrange interpreters');
 
+  await addGatekeepingOrderEventPage.seeDays('Request permission for expert evidence',3);
   addGatekeepingOrderEventPage.clickDateAndTime('Request permission for expert evidence');
-  await addGatekeepingOrderEventPage.seeDate('Request permission for expert evidence','2030-01-07 12:00:00');
+  await addGatekeepingOrderEventPage.seeDate('Request permission for expert evidence','2050-01-05 12:00:00');
 
-  addGatekeepingOrderEventPage.clickNumberOfDaysBeforeHearing('Ask for disclosure');
   await addGatekeepingOrderEventPage.seeDays('Ask for disclosure',2);
 
-  addGatekeepingOrderEventPage.clickNumberOfDaysBeforeHearing('Send documents to all parties');
   await addGatekeepingOrderEventPage.seeDays('Send documents to all parties',2);
   await addGatekeepingOrderEventPage.seeDetails('Send documents to all parties', 'Give all parties access to all documents sent to the court, including:\n\n' +
       '- the application form\n' +
@@ -184,7 +161,7 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   I.see('Identify alternative carers');
   I.dontSee('Send documents to all parties');
 
-  await addGatekeepingOrderEventPage.seeDate('Request permission for expert evidence','2030-01-07 12:00:00');
+  await addGatekeepingOrderEventPage.seeDate('Request permission for expert evidence','2050-01-05 12:00:00');
 
   addGatekeepingOrderEventPage.clickNumberOfDaysBeforeHearing('Identify alternative carers');
   await addGatekeepingOrderEventPage.seeDays('Identify alternative carers',0);

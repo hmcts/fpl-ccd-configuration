@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseConverter;
@@ -51,19 +51,19 @@ class PopulateStandardDirectionsHandlerTest {
     private static final List<Element<HearingBooking>> HEARING_DETAILS = List.of(element(HearingBooking.builder()
         .type(HearingType.ISSUE_RESOLUTION)
         .build()));
-    private static final Element<StandardDirectionTemplate> ALL_PARTIES_DIRECTION =
-        element(StandardDirectionTemplate.builder().assignee(ALL_PARTIES).build());
-    private static final Element<StandardDirectionTemplate> LOCAL_AUTHORITY_DIRECTION =
-        element(StandardDirectionTemplate.builder().assignee(LOCAL_AUTHORITY).build());
-    private static final Element<StandardDirectionTemplate> RESPONDENT_DIRECTION =
-        element(StandardDirectionTemplate.builder().assignee(PARENTS_AND_RESPONDENTS).build());
+    private static final Element<Direction> ALL_PARTIES_DIRECTION =
+        element(Direction.builder().assignee(ALL_PARTIES).build());
+    private static final Element<Direction> LOCAL_AUTHORITY_DIRECTION =
+        element(Direction.builder().assignee(LOCAL_AUTHORITY).build());
+    private static final Element<Direction> RESPONDENT_DIRECTION =
+        element(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build());
 
-    private static final Map<DirectionAssignee, List<Element<StandardDirectionTemplate>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
+    private static final Map<DirectionAssignee, List<Element<Direction>>> DIRECTIONS_SORTED_BY_ASSIGNEE = Map.of(
         ALL_PARTIES, List.of(ALL_PARTIES_DIRECTION),
         LOCAL_AUTHORITY, List.of(LOCAL_AUTHORITY_DIRECTION),
         PARENTS_AND_RESPONDENTS, List.of(RESPONDENT_DIRECTION)
     );
-    private static final List<Element<StandardDirectionTemplate>> STANDARD_DIRECTIONS = List.of(
+    private static final List<Element<Direction>> STANDARD_DIRECTIONS = List.of(
         ALL_PARTIES_DIRECTION, LOCAL_AUTHORITY_DIRECTION, RESPONDENT_DIRECTION);
 
     @Autowired
@@ -132,7 +132,7 @@ class PopulateStandardDirectionsHandlerTest {
             .build();
     }
 
-    private Map<String, List<Element<StandardDirectionTemplate>>> getExpectedDirections() {
+    private Map<String, List<Element<Direction>>> getExpectedDirections() {
         return Map.of(
             ALL_PARTIES.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(ALL_PARTIES),
             LOCAL_AUTHORITY.getValue(), DIRECTIONS_SORTED_BY_ASSIGNEE.get(LOCAL_AUTHORITY),

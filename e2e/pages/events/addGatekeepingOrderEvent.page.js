@@ -14,6 +14,7 @@ module.exports = {
           title: `#sdoDirectionCustom_${index}_title`,
           description: `#sdoDirectionCustom_${index}_description`,
           assignee: `#sdoDirectionCustom_${index}_assignee`,
+          dueDateType: `#sdoDirectionCustom_${index}_dueDateType-DATE`,
           date: `#sdoDirectionCustom_${index}_dateToBeCompletedBy`,
         };
       },
@@ -54,6 +55,7 @@ module.exports = {
     I.fillField(this.fields.customDirection.fields(elementIndex).title, direction.title);
     I.fillField(this.fields.customDirection.fields(elementIndex).description, direction.description);
     I.selectOption(this.fields.customDirection.fields(elementIndex).assignee, direction.assignee);
+    I.click(this.fields.customDirection.fields(elementIndex).dueDateType);
     await I.fillDate(direction.dueDate, this.fields.customDirection.fields(elementIndex).date);
   },
 

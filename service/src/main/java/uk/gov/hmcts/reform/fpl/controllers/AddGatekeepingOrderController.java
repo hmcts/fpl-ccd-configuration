@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
-import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.hmcts.reform.fpl.service.sdo.GatekeepingOrderEventNotificationDecider;
 
@@ -47,7 +46,6 @@ public class AddGatekeepingOrderController extends CallbackController {
     private final GatekeepingOrderEventNotificationDecider notificationDecider;
     private final NoticeOfProceedingsService nopService;
     private final GatekeepingOrderService service;
-    private final StandardDirectionsService standardDirectionsService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -55,9 +53,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().entrySet().removeIf(e -> e.getKey().startsWith("sdoDirection-"));
-
-        if (caseData.getAllocatedJudge() != null && caseData.getAllocatedJudge().getJudgeTitle() != null) {
+        if (caseData.getAllocatedJudge() != null) {
             data.put("gatekeepingOrderIssuingJudge", service.setAllocatedJudgeLabel(caseData.getAllocatedJudge(),
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
@@ -66,7 +62,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     }
 
     @PostMapping("/direction-selection/mid-event")
-    public AboutToStartOrSubmitCallbackResponse directionSelection(@RequestBody CallbackRequest request) {
+    public AboutToStartOrSubmitCallbackResponse populateSelectedDirections(@RequestBody CallbackRequest request) {
         CaseDetails caseDetails = request.getCaseDetails();
 
         service.populateStandardDirections(caseDetails);
@@ -82,6 +78,8 @@ public class AddGatekeepingOrderController extends CallbackController {
         CaseData caseData = service.updateStandardDirections(caseDetails);
 
         caseDetails.getData().put("gatekeepingOrderSealDecision", service.buildSealDecisionPage(caseData));
+        caseDetails.getData().put("standardDirections", caseData.getGatekeepingOrderEventData()
+            .getStandardDirections());
 
         return respond(caseDetails);
     }
@@ -91,8 +89,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        CaseData caseData = service.updateStandardDirections(caseDetails);
+        CaseData caseData = getCaseData(caseDetails);
 
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
@@ -132,7 +129,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         }
 
         caseDetails.getData().put("standardDirectionOrder", gatekeepingOrder);
-        caseDetails.getData().put("standardDirections", caseData.getGatekeepingOrderEventData().getStandardDirections());
         return respond(caseDetails);
     }
 

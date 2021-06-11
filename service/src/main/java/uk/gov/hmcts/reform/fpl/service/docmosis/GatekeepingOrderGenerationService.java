@@ -68,7 +68,7 @@ public class GatekeepingOrderGenerationService extends
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
-                .directions(buildDirections(caseData, firstHearing))
+                .directions(buildDirections(caseData))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
@@ -82,8 +82,9 @@ public class GatekeepingOrderGenerationService extends
         return orderBuilder.build();
     }
 
-    private List<DocmosisDirection> buildDirections(CaseData caseData, HearingBooking hearing) {
-        List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData().getStandardDirections());
+    private List<DocmosisDirection> buildDirections(CaseData caseData) {
+        List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData()
+            .getStandardDirections());
         List<Element<CustomDirection>> customDirections = nullSafeList(caseData
             .getGatekeepingOrderEventData().getSdoDirectionCustom());
 
@@ -93,26 +94,27 @@ public class GatekeepingOrderGenerationService extends
             .flatMap(Collection::stream)
             .map(Element::getValue)
             .sorted(comparing(StandardDirection::getAssignee))
-            .map(direction -> toDocmosisDirection(direction, hearing, directionIndex.getAndAdd(1)))
+            .map(direction -> toDocmosisDirection(direction, directionIndex.getAndAdd(1)))
             .collect(Collectors.toList());
     }
 
-    private DocmosisDirection toDocmosisDirection(StandardDirection direction, HearingBooking hearing, int index) {
+    private DocmosisDirection toDocmosisDirection(StandardDirection direction, int index) {
         return DocmosisDirection.builder()
             .assignee(direction.getAssignee())
-            .title(formatTitle(direction, hearing, index))
+            .title(formatTitle(direction, index))
             .body(direction.getDescription())
             .build();
     }
 
-    private String formatTitle(StandardDirection direction, HearingBooking hearing, int index) {
+    private String formatTitle(StandardDirection direction, int index) {
         DirectionConfiguration conf = ordersLookupService.getDirectionConfiguration(direction.getType());
         Display display = conf.getDisplay();
 
         DueDateType dueDateType = direction.getDueDateType();
 
         if (DAYS == dueDateType) {
-            return format("%d. %s %d days before the hearing", index, direction.getTitle(), direction.getDaysBeforeHearing());
+            return format("%d. %s %d days before the hearing", index, direction.getTitle(),
+                direction.getDaysBeforeHearing());
         } else {
             LocalDateTime dueDate = direction.getDateToBeCompletedBy();
 

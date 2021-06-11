@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -161,21 +161,21 @@ public class CaseDataGeneratorHelper {
     public static StandardDirectionOrder createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
         return StandardDirectionOrder.builder()
             .dateOfIssue("29 November 2019")
-            .directions(wrapElements(StandardDirectionTemplate.builder()
+            .directions(wrapElements(Direction.builder()
                     .directionType("Test SDO type 1")
                     .directionText("Test body 1")
                     .directionNeeded(YES.getValue())
                     .dateToBeCompletedBy(today)
                     .assignee(ALL_PARTIES)
                     .build(),
-                StandardDirectionTemplate.builder()
+                Direction.builder()
                     .directionType("Test SDO type 2")
                     .directionText("Test body 2")
                     .directionNeeded(YES.getValue())
                     .dateToBeCompletedBy(today)
                     .assignee(ALL_PARTIES)
                     .build(),
-                StandardDirectionTemplate.builder()
+                Direction.builder()
                     .directionNeeded(NO.getValue())
                     .build()
             ))
@@ -317,8 +317,8 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    private static StandardDirectionTemplate createCustomDirection(DirectionAssignee assignee) {
-        return StandardDirectionTemplate.builder()
+    private static Direction createCustomDirection(DirectionAssignee assignee) {
+        return Direction.builder()
             .directionType("Direction title")
             .directionText("Mock direction text")
             .directionNeeded(YES.getValue())
@@ -329,7 +329,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static List<Element<StandardDirectionTemplate>> createCmoDirections() {
+    public static List<Element<Direction>> createCmoDirections() {
         return wrapElements(
             createCustomDirection(ALL_PARTIES),
             createCustomDirection(LOCAL_AUTHORITY),

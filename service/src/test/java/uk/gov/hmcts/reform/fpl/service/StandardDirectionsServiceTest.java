@@ -9,7 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
@@ -74,12 +74,12 @@ class StandardDirectionsServiceTest {
             .build();
 
         //test data in test/resources/ordersConfig.json
-        Map<String, List<Element<StandardDirectionTemplate>>> populatedDirections = service.populateStandardDirections(caseData);
+        Map<String, List<Element<Direction>>> populatedDirections = service.populateStandardDirections(caseData);
 
-        List<Element<StandardDirectionTemplate>> allPartiesDirections = populatedDirections.get(ALL_PARTIES.getValue());
-        List<Element<StandardDirectionTemplate>> localAuthorityDirections = populatedDirections.get(LOCAL_AUTHORITY.getValue());
+        List<Element<Direction>> allPartiesDirections = populatedDirections.get(ALL_PARTIES.getValue());
+        List<Element<Direction>> localAuthorityDirections = populatedDirections.get(LOCAL_AUTHORITY.getValue());
 
-        StandardDirectionTemplate[] expectedDirections = expectedDirections(dayAfterTomorrowDate);
+        Direction[] expectedDirections = expectedDirections(dayAfterTomorrowDate);
 
         assertThat(unwrapElements(allPartiesDirections)).containsExactly(expectedDirections[0]);
         assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
@@ -99,12 +99,12 @@ class StandardDirectionsServiceTest {
             .build();
 
         //test data in test/resources/ordersConfig.json
-        Map<String, List<Element<StandardDirectionTemplate>>> populatedDirections = service.populateStandardDirections(caseData);
+        Map<String, List<Element<Direction>>> populatedDirections = service.populateStandardDirections(caseData);
 
-        List<Element<StandardDirectionTemplate>> allPartiesDirections = populatedDirections.get(ALL_PARTIES.getValue());
-        List<Element<StandardDirectionTemplate>> localAuthorityDirections = populatedDirections.get(LOCAL_AUTHORITY.getValue());
+        List<Element<Direction>> allPartiesDirections = populatedDirections.get(ALL_PARTIES.getValue());
+        List<Element<Direction>> localAuthorityDirections = populatedDirections.get(LOCAL_AUTHORITY.getValue());
 
-        StandardDirectionTemplate[] expectedDirections = expectedDirections(null);
+        Direction[] expectedDirections = expectedDirections(null);
 
         assertThat(unwrapElements(allPartiesDirections)).containsExactly(expectedDirections[0]);
         assertThat(unwrapElements(localAuthorityDirections)).containsExactly(
@@ -118,14 +118,14 @@ class StandardDirectionsServiceTest {
         given(calendarService.getWorkingDayFrom(date, -2)).willReturn(date.minusDays(2));
         given(calendarService.getWorkingDayFrom(date, -3)).willReturn(date.minusDays(3));
 
-        List<Element<StandardDirectionTemplate>> directions = service.getDirections(hearingOnDateAtMidday(date));
+        List<Element<Direction>> directions = service.getDirections(hearingOnDateAtMidday(date));
 
         assertThat(unwrapElements(directions)).containsOnly(expectedDirections(date));
     }
 
     @Test
     void shouldReturnExpectedListOfDirectionsWithNullDatesWhenThereIsNoHearingDate() {
-        List<Element<StandardDirectionTemplate>> directions = service.getDirections(null);
+        List<Element<Direction>> directions = service.getDirections(null);
 
         assertThat(unwrapElements(directions)).containsOnly(expectedDirections(null));
     }
@@ -136,7 +136,7 @@ class StandardDirectionsServiceTest {
             .allParties(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
             .localAuthorityDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
             .respondentDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
-            .cafcassDirections(wrapElements(buildDirectionWithDate(), StandardDirectionTemplate.builder().build()))
+            .cafcassDirections(wrapElements(buildDirectionWithDate(), Direction.builder().build()))
             .otherPartiesDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
             .courtDirections(wrapElements(buildDirectionWithDate(), buildDirectionWithDate()))
             .build();
@@ -175,7 +175,7 @@ class StandardDirectionsServiceTest {
     @Test
     void shouldReturnFalseWhenSomeDirectionsAreEmpty() {
         CaseData caseData = CaseData.builder()
-            .allParties(List.of(element(StandardDirectionTemplate.builder()
+            .allParties(List.of(element(Direction.builder()
                 .assignee(ALL_PARTIES)
                 .build())))
             .localAuthorityDirections(Collections.emptyList())
@@ -188,19 +188,19 @@ class StandardDirectionsServiceTest {
         assertThat(service.hasEmptyDirections(caseData)).isFalse();
     }
 
-    private StandardDirectionTemplate buildDirectionWithDate() {
-        return StandardDirectionTemplate.builder().dateToBeCompletedBy(LocalDateTime.now()).build();
+    private Direction buildDirectionWithDate() {
+        return Direction.builder().dateToBeCompletedBy(LocalDateTime.now()).build();
     }
 
     private HearingBooking hearingOnDateAtMidday(LocalDate hearingDate) {
         return HearingBooking.builder().startDate(hearingDate.atTime(12, 0, 0)).build();
     }
 
-    private StandardDirectionTemplate[] expectedDirections(LocalDate date) {
+    private Direction[] expectedDirections(LocalDate date) {
         Optional<LocalDate> hearingDate = ofNullable(date);
 
-        return new StandardDirectionTemplate[] {
-            StandardDirectionTemplate.builder()
+        return new Direction[] {
+            Direction.builder()
                 .assignee(ALL_PARTIES)
                 .directionType(DIRECTION_TYPE_1)
                 .directionText(DIRECTION_TEXT_1)
@@ -209,7 +209,7 @@ class StandardDirectionsServiceTest {
                 .directionNeeded("Yes")
                 .dateToBeCompletedBy(hearingDate.map(LocalDate::atStartOfDay).orElse(null))
                 .build(),
-            StandardDirectionTemplate.builder()
+            Direction.builder()
                 .assignee(LOCAL_AUTHORITY)
                 .directionType(DIRECTION_TYPE_2)
                 .directionText(DIRECTION_TEXT_2)
@@ -218,7 +218,7 @@ class StandardDirectionsServiceTest {
                 .directionNeeded("Yes")
                 .dateToBeCompletedBy(hearingDate.map(x -> x.minusDays(3).atTime(12, 0, 0)).orElse(null))
                 .build(),
-            StandardDirectionTemplate.builder()
+            Direction.builder()
                 .assignee(LOCAL_AUTHORITY)
                 .directionType(DIRECTION_TYPE_3)
                 .directionText(DIRECTION_TEXT_3)

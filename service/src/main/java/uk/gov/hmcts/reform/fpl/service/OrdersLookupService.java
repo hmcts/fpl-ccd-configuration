@@ -6,5 +6,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 public interface OrdersLookupService {
     OrderDefinition getStandardDirectionOrder();
+
     DirectionConfiguration getDirectionConfiguration(DirectionType directionType);
 }

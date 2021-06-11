@@ -31,8 +31,28 @@
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "sdoDirectionCustom",
-    "ListElementCode": "dateToBeCompletedBy",
+    "ListElementCode": "dueDateType",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "sdoDirectionCustom.dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "sdoDirectionCustom",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "sdoDirectionCustom.dueDateType=\"DAYS\""
   }
 ]

@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisChild;
@@ -24,23 +23,29 @@ import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.JsonOrdersLookupService;
-import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static java.time.LocalTime.NOON;
 import static java.time.format.FormatStyle.LONG;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ASK_FOR_DISCLOSURE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.CUSTOM;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE;
+import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DATE;
+import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -62,19 +67,11 @@ class GatekeepingOrderGenerationServiceTest {
     private static final long CASE_NUMBER = 1234123412341234L;
     private static final String FORMATTED_CASE_NUMBER = "1234-1234-1234-1234";
 
-    @MockBean
-    private CalendarService calendarService;
-
     @Autowired
     private Time time;
 
     @Autowired
     private GatekeepingOrderGenerationService underTest;
-
-    @BeforeEach
-    void setup() {
-        given(calendarService.getWorkingDayFrom(any(LocalDate.class), anyInt())).willReturn(LocalDate.now());
-    }
 
     @Test
     void shouldGenerateSealedOrder() {
@@ -169,11 +166,8 @@ class GatekeepingOrderGenerationServiceTest {
             .respondents1(createRespondents())
             .applicants(createPopulatedApplicants())
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .sdoDirectionCustom(wrapElements(CustomDirection.builder()
-                    .title("Test custom direction")
-                    .description("Test description")
-                    .assignee(LOCAL_AUTHORITY
-                    ).build()))
+                .sdoDirectionCustom(wrapElements(getCustomDirections()))
+                .standardDirections(wrapElements(getStandardDirections()))
                 .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HER_HONOUR_JUDGE)
                     .judgeLastName("Smith")
@@ -183,17 +177,82 @@ class GatekeepingOrderGenerationServiceTest {
             .build();
     }
 
-    private List<DocmosisDirection> getExpectedDirections() {
-        //add future directions here
-        return getExpectedCustomDirections();
+    private List<CustomDirection> getCustomDirections() {
+        return List.of(
+            CustomDirection.builder()
+                .type(CUSTOM)
+                .title("First custom direction title")
+                .description("First custom direction description")
+                .assignee(LOCAL_AUTHORITY)
+                .dueDateType(DATE)
+                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.JUNE, 14, 8, 50, 0))
+                .build(),
+            CustomDirection.builder()
+                .type(CUSTOM)
+                .title("Second custom direction title")
+                .description("Second custom direction description")
+                .assignee(CAFCASS)
+                .dueDateType(DAYS)
+                .daysBeforeHearing(2)
+                .build());
     }
 
-    private List<DocmosisDirection> getExpectedCustomDirections() {
-        return List.of(DocmosisDirection.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title("Test custom direction")
-            .body("Test description")
-            .build());
+    private List<StandardDirection> getStandardDirections() {
+        return List.of(
+            StandardDirection.builder()
+                .type(ASK_FOR_DISCLOSURE)
+                .title("Ask for disclosure")
+                .description("Serve requests for disclosure on any third parties")
+                .assignee(LOCAL_AUTHORITY)
+                .dueDateType(DATE)
+                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.MAY, 10, 12, 00, 0))
+                .build(),
+            StandardDirection.builder()
+                .type(REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS)
+                .title("Request help to take part in proceedings")
+                .description("Make an application to the court if you believe any party or witness needs help")
+                .assignee(ALL_PARTIES)
+                .dueDateType(DATE)
+                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.MAY, 10, 12, 00, 0))
+                .build(),
+            StandardDirection.builder()
+                .type(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE)
+                .title("Request permission for expert evidence")
+                .description("Your request must be in line with Family Procedure Rules part 25")
+                .assignee(ALL_PARTIES)
+                .dueDateType(DAYS)
+                .daysBeforeHearing(3)
+                .build());
+    }
+
+    private List<DocmosisDirection> getExpectedDirections() {
+        return List.of(
+            DocmosisDirection.builder()
+                .assignee(ALL_PARTIES)
+                .title("1. Request help to take part in proceedings by 12:00pm, 10 May 2030")
+                .body("Make an application to the court if you believe any party or witness needs help")
+                .build(),
+            DocmosisDirection.builder()
+                .assignee(ALL_PARTIES)
+                .title("2. Request permission for expert evidence 3 days before the hearing")
+                .body("Your request must be in line with Family Procedure Rules part 25")
+                .build(),
+            DocmosisDirection.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .title("3. Ask for disclosure on 12:00pm, 10 May 2030")
+                .body("Serve requests for disclosure on any third parties")
+                .build(),
+            DocmosisDirection.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .title("4. First custom direction title by 14 June 2030 at 8:50am")
+                .body("First custom direction description")
+                .build(),
+            DocmosisDirection.builder()
+                .assignee(CAFCASS)
+                .title("5. Second custom direction title 2 days before the hearing")
+                .body("Second custom direction description")
+                .build()
+        );
     }
 
     private List<DocmosisChild> getExpectedChildren() {

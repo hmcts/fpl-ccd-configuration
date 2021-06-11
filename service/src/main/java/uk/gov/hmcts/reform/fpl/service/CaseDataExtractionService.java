@@ -8,12 +8,11 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
@@ -133,11 +132,11 @@ public class CaseDataExtractionService {
             .orElse(DocmosisHearingBooking.builder().build());
     }
 
-    public DocmosisDirection.Builder baseDirection(StandardDirectionTemplate direction, int index) {
+    public DocmosisDirection.Builder baseDirection(Direction direction, int index) {
         return baseDirection(direction, index, emptyList());
     }
 
-    public DocmosisDirection.Builder baseDirection(StandardDirectionTemplate direction, int index,
+    public DocmosisDirection.Builder baseDirection(Direction direction, int index,
                                                    List<DirectionConfiguration> config) {
         return DocmosisDirection.builder()
             .assignee(direction.getAssignee())
@@ -145,7 +144,7 @@ public class CaseDataExtractionService {
             .body(trim(direction.getDirectionText()));
     }
 
-    private String formatTitle(int index, StandardDirectionTemplate direction, List<DirectionConfiguration> directionConfigurations) {
+    private String formatTitle(int index, Direction direction, List<DirectionConfiguration> directionConfigurations) {
 
         // default values here cover edge case where direction title is not found in configuration.
         class DateFormattingConfig {
@@ -167,32 +166,6 @@ public class CaseDataExtractionService {
 
         // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
         return format("%d. %s %s", index, direction.getDirectionType(),
-            formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
-    }
-
-
-    public String formatTitle(int index, StandardDirection direction, List<DirectionConfiguration> directionConfigurations) {
-
-        // default values here cover edge case where direction title is not found in configuration.
-        class DateFormattingConfig {
-            private String pattern = TIME_DATE;
-            private Display.Due due = BY;
-        }
-
-        final DateFormattingConfig config = new DateFormattingConfig();
-
-        // find the date configuration values for the given direction
-        for (DirectionConfiguration directionConfiguration : directionConfigurations) {
-            if (directionConfiguration.getTitle().equals(direction.getType())) {
-                Display display = directionConfiguration.getDisplay();
-                config.pattern = display.getTemplateDateFormat();
-                config.due = display.getDue();
-                break;
-            }
-        }
-
-        // create direction display title for docmosis in format "index. directionTitle [(by / on) date]"
-        return format("%d. %s %s", index, direction.getType(),
             formatTitleDate(direction.getDateToBeCompletedBy(), config.pattern, config.due)).trim();
     }
 

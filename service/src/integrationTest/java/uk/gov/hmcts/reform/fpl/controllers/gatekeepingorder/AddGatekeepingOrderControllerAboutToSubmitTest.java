@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DirectionType;
+import uk.gov.hmcts.reform.fpl.enums.DueDateType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -16,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -31,6 +35,7 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,12 +113,30 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     @Test
     void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed() {
         List<Element<CustomDirection>> customDirections = wrapElements(
-            CustomDirection.builder().title("Test direction").build());
+            CustomDirection.builder()
+                .type(DirectionType.CUSTOM)
+                .assignee(DirectionAssignee.CAFCASS)
+                .title("Test direction")
+                .dueDateType(DueDateType.DATE)
+                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.FEBRUARY, 10, 12, 0, 0))
+                .build());
+
+
+        List<Element<StandardDirection>> standardDirections = wrapElements(
+            StandardDirection.builder()
+                .type(DirectionType.ATTEND_HEARING)
+                .title("Attend the pre-hearing and hearing")
+                .assignee(DirectionAssignee.ALL_PARTIES)
+                .dueDateType(DueDateType.DATE)
+                .description("Parties and their legal representatives must attend the pre-hearing and hearing")
+                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.FEBRUARY, 10, 12, 0, 0))
+                .build());
 
         CaseData caseData = buildBaseCaseData().toBuilder()
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().build())
                 .sdoDirectionCustom(customDirections)
+                .standardDirections(standardDirections)
                 .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .orderStatus(SEALED)
                     .dateOfIssue(time.now().toLocalDate())
@@ -133,6 +156,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
             .orderStatus(SEALED)
             .dateOfIssue("3 March 2021")
             .customDirections(customDirections)
+            .standardDirections(standardDirections)
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
             .build();
 

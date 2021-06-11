@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsOrderDatesEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.StandardDirectionTemplate;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.StandardDirectionsService;
@@ -52,7 +52,7 @@ public class PopulateStandardDirectionsOrderDatesHandler {
     }
 
     private Map<String, Object> getDataWithDates(HearingBooking hearingBooking, Map<String, Object> data) {
-        List<Element<StandardDirectionTemplate>> directions = standardDirectionsService.getDirections(hearingBooking);
+        List<Element<Direction>> directions = standardDirectionsService.getDirections(hearingBooking);
         getAssigneeToDirectionMapping(directions).forEach((assignee, directionElements) -> {
             if (!directionElements.isEmpty()) {
                 populateEmptyDates(data, assignee, directionElements);
@@ -63,8 +63,8 @@ public class PopulateStandardDirectionsOrderDatesHandler {
     }
 
     private void populateEmptyDates(Map<String, Object> data, DirectionAssignee assignee,
-                                    List<Element<StandardDirectionTemplate>> configDirectionsForAssignee) {
-        List<Element<StandardDirectionTemplate>> directionsForAssignee = mapper.convertValue(
+                                    List<Element<Direction>> configDirectionsForAssignee) {
+        List<Element<Direction>> directionsForAssignee = mapper.convertValue(
             data.get(assignee.getValue()), new TypeReference<>() {}
         );
 

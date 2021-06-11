@@ -53,7 +53,7 @@ class StandardDirectionOrderTest {
     @Test
     void shouldSetDirectionsToAnEmptyList() {
         StandardDirectionOrder standardDirectionOrder = StandardDirectionOrder.builder()
-            .directions(List.of(element(StandardDirectionTemplate.builder()
+            .directions(List.of(element(Direction.builder()
                 .readOnly("Some direction")
                 .build())))
             .build();

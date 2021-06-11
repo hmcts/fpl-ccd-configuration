@@ -6,12 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
-import uk.gov.hmcts.reform.fpl.exceptions.StandardDirectionNotFoundException;
+import uk.gov.hmcts.reform.fpl.exceptions.OrderDefinitionNotFoundException;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.UncheckedIOException;
-import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
@@ -19,19 +19,13 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 @Service
 public class JsonOrdersLookupService implements OrdersLookupService {
     private static final String ORDERS_CONFIG_FILENAME = "ordersConfig.json";
-    private final ObjectMapper objectMapper;
-    private OrderDefinition orderDefinition;
+    private OrderDefinition cachedOrderDefinition;
 
     @Autowired
     public JsonOrdersLookupService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
-    @PostConstruct
-    void init() {
         try {
             String content = readString(ORDERS_CONFIG_FILENAME);
-            orderDefinition = this.objectMapper.readValue(content, OrderDefinition.class);
+            cachedOrderDefinition = objectMapper.readValue(content, OrderDefinition.class);
         } catch (JsonProcessingException e) {
             log.error("Could not read file " + ORDERS_CONFIG_FILENAME);
             throw new UncheckedIOException(e);
@@ -39,13 +33,25 @@ public class JsonOrdersLookupService implements OrdersLookupService {
     }
 
     public OrderDefinition getStandardDirectionOrder() {
-        return orderDefinition;
+        return cachedOrderDefinition;
     }
 
     public DirectionConfiguration getDirectionConfiguration(DirectionType directionType) {
-        return getStandardDirectionOrder().getDirections().stream()
-            .filter(directionConfig -> directionConfig.getId().equals(directionType))
-            .findFirst()
-            .orElseThrow(() -> new StandardDirectionNotFoundException(directionType));
+        Optional<DirectionConfiguration> directionConfiguration = getConfiguration(directionType);
+
+        return directionConfiguration
+            .orElseThrow(() -> new OrderDefinitionNotFoundException(directionType));
+    }
+
+
+    private Optional<DirectionConfiguration> getConfiguration(DirectionType directionType) {
+
+        if (directionType.isStandard()) {
+            return getStandardDirectionOrder().getStandardDirections().stream()
+                .filter(directionConfig -> directionConfig.getId().equals(directionType))
+                .findFirst();
+        }
+
+        return Optional.ofNullable(getStandardDirectionOrder().getCustomDirection());
     }
 }
