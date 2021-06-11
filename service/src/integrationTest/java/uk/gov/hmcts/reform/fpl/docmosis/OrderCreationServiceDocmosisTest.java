@@ -131,7 +131,10 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
         byte[] bytes = docmosisDocument.getBytes();
 
-        storeToOuputFolder(docmosisDocument.getDocumentTitle(), bytes);
+        storeToOuputFolder(
+            caseData.getManageOrdersEventData().getManageOrdersType().fileName(RenderFormat.PDF),
+            bytes
+        );
 
         String text = extractPdfContent(bytes);
         return remove(text, ignores);
