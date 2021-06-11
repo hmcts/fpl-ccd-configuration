@@ -54,12 +54,7 @@ public class GatekeepingOrderService {
             return false;
         }
 
-        if (judgeAndLegalAdvisor.isUsingAllocatedJudge()) {
-            return true;
-        } else {
-            //after judge title selected the other fields are mandatory, so checking title verifies judge entry (?)
-            return isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle());
-        }
+        return judgeAndLegalAdvisor.isUsingAllocatedJudge() || isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle());
     }
 
     //this constructs a label which hides the option to seal if mandatory information is missing
