@@ -2,7 +2,7 @@
 
 const testConfig = require('./e2e/config');
 
-const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 45000;
+const waitForTimeout = parseInt(process.env.WAIT_FOR_TIMEOUT) || 35000;
 const smartWait = parseInt(process.env.SMART_WAIT) || 30000;
 const browser = process.env.SAUCELABS_BROWSER || 'chrome';
 
