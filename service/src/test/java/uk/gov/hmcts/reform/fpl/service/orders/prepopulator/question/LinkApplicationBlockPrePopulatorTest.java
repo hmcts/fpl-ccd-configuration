@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
+import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import uk.gov.hmcts.reform.fpl.utils.assertions.DynamicListAssert;
 
 import java.util.Map;
@@ -53,7 +55,7 @@ class LinkApplicationBlockPrePopulatorTest {
         Map<String, Object> actual = classUnderTest.prePopulate(caseDataBuilder.build());
 
         assertThat(actual).hasSize(2)
-            .containsEntry("linkApplication", "YES");
+            .containsEntry("orderTempQuestions", OrderTempQuestions.builder().linkApplication("YES").build());
         assertThat(actual).extractingByKey("manageOrdersLinkedApplication")
             .asInstanceOf(DynamicListAssert.getInstanceOfAssertFactory())
             .hasSize(2)
@@ -66,7 +68,7 @@ class LinkApplicationBlockPrePopulatorTest {
         Map<String, Object> actual = classUnderTest.prePopulate(caseDataBuilder.build());
 
         assertThat(actual).hasSize(1)
-            .containsEntry("linkApplication", "NO");
+            .containsEntry("orderTempQuestions", OrderTempQuestions.builder().linkApplication("NO").build());
     }
 
 }

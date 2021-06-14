@@ -173,7 +173,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .isEqualTo(
                 asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
             );
-        assertThat(manageOrdersEventData.getOrderTempQuestions().getLinkApplication()).isEqualTo("YES");
+        assertThat(manageOrdersEventData.getOrderTempQuestions().getLinkApplication()).isEqualTo("YES");//TODO - have one with NO
         DynamicListAssert.assertThat(manageOrdersEventData.getManageOrdersLinkedApplication())
             .hasSize(1)
             .hasElement(otherApplicationsBundle.getId(), otherApplicationsBundle.toLabel());

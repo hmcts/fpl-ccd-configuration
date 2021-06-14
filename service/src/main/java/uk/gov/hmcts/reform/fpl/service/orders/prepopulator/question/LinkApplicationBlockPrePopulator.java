@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
+import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +22,14 @@ public class LinkApplicationBlockPrePopulator implements QuestionBlockOrderPrePo
         Map<String, Object> prePopulatedFields = new HashMap<>();
 
         DynamicList applicationsToLink = caseData.buildApplicationBundlesDynamicList();
+        OrderTempQuestions.OrderTempQuestionsBuilder orderTempQuestionsBuilder = caseData.getManageOrdersEventData().getOrderTempQuestions().toBuilder();
         if (!applicationsToLink.getListItems().isEmpty()) {
-            prePopulatedFields.put("linkApplication", "YES");
+            orderTempQuestionsBuilder.linkApplication("YES");
             prePopulatedFields.put("manageOrdersLinkedApplication", applicationsToLink);
         } else {
-            prePopulatedFields.put("linkApplication", "NO");
+            orderTempQuestionsBuilder.linkApplication("NO");
         }
+        prePopulatedFields.put("orderTempQuestions", orderTempQuestionsBuilder.build());
 
         return prePopulatedFields;
     }
