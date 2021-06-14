@@ -51,6 +51,7 @@ public class DocmosisOrderCaseDataGenerator {
 
         switch (questionBlock) {
             case LINKED_TO_HEARING:
+            case LINK_APPLICATION:
             case REVIEW_DRAFT_ORDER:
             case CLOSE_CASE:
                 // Do Nothing - they won't modify the document

@@ -70,6 +70,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
         Map.entry("hearingDetails", "YES"),
+        Map.entry("linkApplicationQuestionBlock", "YES"),
         Map.entry("approver", "YES"),
         Map.entry("previewOrder", "YES"),
         Map.entry("furtherDirections", "YES"),
@@ -462,6 +463,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
+            Map.entry("linkApplicationQuestionBlock", "YES"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
@@ -493,6 +495,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
+            Map.entry("linkApplicationQuestionBlock", "YES"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
