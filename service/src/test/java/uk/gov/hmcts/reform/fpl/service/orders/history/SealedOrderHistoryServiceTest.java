@@ -81,7 +81,8 @@ class SealedOrderHistoryServiceTest {
     private final Time time = mock(Time.class);
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator = mock(
         ManageOrdersClosedCaseFieldGenerator.class);
-    private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator = mock(SealedOrderHistoryExtraTitleGenerator.class);
+    private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator =
+        mock(SealedOrderHistoryExtraTitleGenerator.class);
 
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
