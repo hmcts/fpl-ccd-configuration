@@ -67,7 +67,7 @@ class RespondentStatementsTransformerTest {
 
         assertThat(documentBundleView).isEqualTo(List.of(
             DocumentBundleView.builder()
-                .name(RESPONDENT1.getValue().getParty().getFullName() + " statements")
+                .name("Dave Miller statements")
                 .documents(expectedDocuments)
                 .build())
         );
@@ -95,7 +95,7 @@ class RespondentStatementsTransformerTest {
 
         assertThat(documentBundleView).isEqualTo(List.of(
             DocumentBundleView.builder()
-                .name(RESPONDENT2.getValue().getParty().getFullName() + " statements")
+                .name("Will Smith statements")
                 .documents(expectedDocuments)
                 .build())
         );
@@ -113,7 +113,7 @@ class RespondentStatementsTransformerTest {
                     .build(),
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT2.getId())
-                    .respondentName(RESPONDENT2.getValue().getParty().getFullName())
+                    .respondentName("Will Smith")
                     .supportingEvidenceBundle(List.of(ADMIN_NON_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();
@@ -141,7 +141,7 @@ class RespondentStatementsTransformerTest {
             .respondentStatements(wrapElements(
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT1.getId())
-                    .respondentName(RESPONDENT1.getValue().getParty().getFullName())
+                    .respondentName("Dave Miller")
                     .supportingEvidenceBundle(List.of(ADMIN_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();

@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
-import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.HMCTS;
-import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.LA;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -34,32 +32,26 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
         DocumentViewType view) {
 
         List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments = new ArrayList<>();
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
-        List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsNC = new ArrayList<>();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceDocuments
             = caseData.getHearingFurtherEvidenceDocuments();
 
         unwrapElements(hearingFurtherEvidenceDocuments).forEach(bundle -> {
-            furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
-            furtherEvidenceDocumentsLA.addAll(bundle.getSupportingEvidenceLA());
-            furtherEvidenceDocumentsNC.addAll(bundle.getSupportingEvidenceNC());
+            switch (view) {
+                case HMCTS:
+                    furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
+                    break;
+                case LA:
+                    furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceLA());
+                    break;
+                default:
+                    furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceNC());
+                    break;
+            }
         });
 
-        List<DocumentBundleView> furtherEvidenceDocumentBundles = new ArrayList<>();
-
-        if (view == HMCTS) {
-            furtherEvidenceDocuments.addAll(getFurtherEvidenceDocumentsNotLinkedToHearing(caseData, view));
-            furtherEvidenceDocumentBundles.addAll(getFurtherEvidenceDocumentBundles(furtherEvidenceDocuments));
-        } else if (view == LA) {
-            furtherEvidenceDocumentsLA.addAll(getFurtherEvidenceDocumentsNotLinkedToHearing(caseData, view));
-            furtherEvidenceDocumentBundles.addAll(getFurtherEvidenceDocumentBundles(furtherEvidenceDocumentsLA));
-        } else {
-            furtherEvidenceDocumentsNC.addAll(getFurtherEvidenceDocumentsNotLinkedToHearing(caseData, view));
-            furtherEvidenceDocumentBundles.addAll(getFurtherEvidenceDocumentBundles(furtherEvidenceDocumentsNC));
-        }
-
-        return furtherEvidenceDocumentBundles;
+        furtherEvidenceDocuments.addAll(getFurtherEvidenceDocumentsNotLinkedToHearing(caseData, view));
+        return getFurtherEvidenceDocumentBundles(furtherEvidenceDocuments);
     }
 
     private List<Element<SupportingEvidenceBundle>> getFurtherEvidenceDocumentsNotLinkedToHearing(
@@ -96,9 +88,7 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
                             true);
 
                     if (!documentView.isEmpty()) {
-                        DocumentBundleView bundleView = buildBundle(
-                            type.getLabel(),
-                            documentView);
+                        DocumentBundleView bundleView = buildBundle(type.getLabel(), documentView);
                         documentBundles.add(bundleView);
                     }
                 });

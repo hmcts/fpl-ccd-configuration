@@ -52,7 +52,7 @@ public class RespondentStatementsTransformer {
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsNC = new ArrayList<>();
 
-                var bundleName = String.format("%s statements",
+                String bundleName = String.format("%s statements",
                     respondentElement.getValue().getParty().getFullName());
 
                 respondentDocumentBundle.forEach(bundle -> {
