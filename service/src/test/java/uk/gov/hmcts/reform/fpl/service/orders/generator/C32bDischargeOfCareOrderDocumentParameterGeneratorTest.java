@@ -31,9 +31,9 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
     private static final String FURTHER_DIRECTIONS = "Further test directions";
     private static final CaseData CASE_DATA = CaseData.builder()
         .caseLocalAuthority(LA_CODE)
-        .manageOrdersCareOrderIssuedCourt(VENUE_ID)
         .manageOrdersEventData(ManageOrdersEventData.builder()
             .manageOrdersCareOrderIssuedDate(LocalDate.of(2021, 6, 1))
+            .manageOrdersCareOrderIssuedCourt(VENUE_ID)
             .manageOrdersType(Order.C32B_DISCHARGE_OF_CARE_ORDER)
             .manageOrdersDirections(DIRECTIONS)
             .manageOrdersFurtherDirections(FURTHER_DIRECTIONS)

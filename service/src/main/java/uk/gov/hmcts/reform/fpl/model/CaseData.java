@@ -917,7 +917,6 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder().build();
-    private final String manageOrdersCareOrderIssuedCourt;
 
     public boolean hasSelectedTemporaryJudge(JudgeAndLegalAdvisor judge) {
         return judge.getJudgeTitle() != null;

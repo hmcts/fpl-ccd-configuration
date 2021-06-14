@@ -42,7 +42,7 @@ public class C32bDischargeOfCareOrderDocumentParameterGenerator implements Docmo
 
 
         HearingVenue hearingVenue =
-            hearingVenueLookUpService.getHearingVenue(caseData.getManageOrdersCareOrderIssuedCourt());
+            hearingVenueLookUpService.getHearingVenue(eventData.getManageOrdersCareOrderIssuedCourt());
 
         return C32bDischargeOfCareOrderDocmosisParameters.builder()
             .orderTitle(Order.C32B_DISCHARGE_OF_CARE_ORDER.getTitle())

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -59,10 +60,11 @@ class DocmosisCommonElementDecoratorTest {
         .build();
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final DischargeCareOrderService dischargeCareOrderService = mock(DischargeCareOrderService.class);
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
 
     private final DocmosisCommonElementDecorator underTest = new DocmosisCommonElementDecorator(
-        childrenService, extractionService);
+        childrenService, dischargeCareOrderService, extractionService);
 
     @BeforeEach
     void setUp() {

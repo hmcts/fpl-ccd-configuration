@@ -36,6 +36,7 @@ public class ManageOrdersEventData {
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
     String manageOrdersChildrenDescription;
+    String manageOrdersCareOrderIssuedCourt;
     LocalDate manageOrdersCareOrderIssuedDate;
     String manageOrdersExclusionRequirement;
     String manageOrdersExclusionDetails;
