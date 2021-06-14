@@ -3,13 +3,25 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageOrders",
-    "CaseFieldID": "manageOrdersOperation",
+    "CaseFieldID": "orderTempQuestions",
+    "DisplayContext": "READONLY",
+    "PageID": "ManageOrdersOperation",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
     "PageFieldDisplayOrder": 1,
+    "FieldShowCondition": "manageOrdersOperation=\"DO_NOT_SHOW\"",
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/initial-selection/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersOperation",
     "DisplayContext": "MANDATORY",
     "PageID": "ManageOrdersOperation",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "ShowSummaryChangeOption": "Y",
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/initial-selection/mid-event"
+    "PageFieldDisplayOrder": 2,
+    "ShowSummaryChangeOption": "Y"
   }
 ]

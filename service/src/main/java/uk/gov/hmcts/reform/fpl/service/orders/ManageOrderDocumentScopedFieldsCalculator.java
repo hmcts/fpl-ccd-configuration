@@ -19,6 +19,7 @@ public class ManageOrderDocumentScopedFieldsCalculator {
         fields.addAll(List.of(
             "manageOrdersOperation",
             "manageOrdersType",
+            "manageOrdersUploadType",
             "manageOrdersState",
             "orderTempQuestions",
             "hearingDetailsSectionSubHeader",

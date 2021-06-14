@@ -1,0 +1,219 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C46A_APPOINTMENT_OF_A_GUARDIAN",
+    "ListElement": "Appointment of a guardian (C46A)",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C48A_APPOINTMENT_OF_A_SOLICITOR",
+    "ListElement": "Appointment of a solicitor (C48A)",
+    "DisplayOrder": 20
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C31_AUTHORITY_TO_SEARCH_FOR_A_CHILD",
+    "ListElement": "Authority to search for a child (C31)",
+    "DisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C27_AUTHORITY_TO_SEARCH_FOR_ANOTHER_CHILD",
+    "ListElement": "Authority to search for another child (C27)",
+    "DisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER",
+    "ListElement": "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
+    "DisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C39_CHILD_ASSESSMENT_ORDER",
+    "ListElement": "Child assessment order (C39)",
+    "DisplayOrder": 60
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C34A_CONTACT_WITH_A_CHILD_IN_CARE",
+    "ListElement": "Contact with a child in care (C34A)",
+    "DisplayOrder": 70
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C38A_DISCHARGE_EDUCATION_SUPERVISION_ORDER",
+    "ListElement": "Discharge education supervision order (C38A)",
+    "DisplayOrder": 80
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY",
+    "ListElement": "Discharge of parental responsibility (C45B)",
+    "DisplayOrder": 90
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C37_EDUCATION_SUPERVISION_ORDER",
+    "ListElement": "Education supervision order (C37)",
+    "DisplayOrder": 100
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C38B_EXTENSION_OF_AN_EDUCATION_SUPERVISION_ORDER",
+    "ListElement": "Extension of an education supervision order (C38B)",
+    "DisplayOrder": 110
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C42_FAMILY_ASSISTANCE_ORDER",
+    "ListElement": "Family assistance order (C42)",
+    "DisplayOrder": 120
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C44A_LEAVE_TO_CHANGE_SURNAME",
+    "ListElement": "Leave to change surname (C44A)",
+    "DisplayOrder": 130
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C44B_LEAVE_TO_REMOVE_A_CHILD_FROM_THE_UK",
+    "ListElement": "Leave to remove a child from the UK (C44B)",
+    "DisplayOrder": 140
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C45A_PARENTAL_RESPONSIBILITY_ORDER",
+    "ListElement": "Parental responsibility order (C45A)",
+    "DisplayOrder": 150
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C29_RECOVERY_OF_A_CHILD",
+    "ListElement": "Recovery of a child (C29)",
+    "DisplayOrder": 160
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C47B_REFUSAL_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
+    "ListElement": "Refusal of appointment of a children's guardian (C47B)",
+    "DisplayOrder": 170
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C48B_REFUSAL_OF_APPOINTMENT_OF_A_SOLICITOR",
+    "ListElement": "Refusal of appointment of a solicitor (C48B)",
+    "DisplayOrder": 180
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C34B_REFUSAL_OF_CONTACT_WITH_A_CHILD_IN_CARE",
+    "ListElement": "Refusal of contact with a child in care (C34B)",
+    "DisplayOrder": 190
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C50_REFUSAL_TO_TRANSFER_PROCEEDINGS",
+    "ListElement": "Refusal to transfer proceedings (C50)",
+    "DisplayOrder": 200
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C43A_SPECIAL_GUARDIANSHIP_ORDER",
+    "ListElement": "Special guardianship order (C43A)",
+    "DisplayOrder": 210
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C47C_TERMINATION_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
+    "ListElement": "Termination of appointment of a children's guardian (C47C)",
+    "DisplayOrder": 220
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C48C_TERMINATION_OF_APPOINTMENT_OF_A_SOLICITOR",
+    "ListElement": "Termination of appointment of a solicitor (C48C)",
+    "DisplayOrder": 230
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C46B_TERMINATION_OF_GUARDIANS_APPOINTMENT",
+    "ListElement": "Termination of guardian's appointment (C46B)",
+    "DisplayOrder": 240
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C30_TO_DISCLOSE_INFORMATION_ABOUT_THE_WHEREABOUTS_OF_A_MISSING_CHILD",
+    "ListElement": "To disclose information about the whereabouts of a missing child (C30)",
+    "DisplayOrder": 250
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C49_TRANSFER_OUT_CHILDREN_ACT",
+    "ListElement": "Transfer out Children Act (C49)",
+    "DisplayOrder": 260
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER",
+    "ListElement": "Variation of Emergency protection order (C24)",
+    "DisplayOrder": 270
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER",
+    "ListElement": "Variation/extension of Education supervision order (C36)",
+    "DisplayOrder": 280
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C28_WARRANT_TO_ASSIST",
+    "ListElement": "Warrant to assist (C28)",
+    "DisplayOrder": 290
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "C25_WARRANT_TO_ASSIST_EPO",
+    "ListElement": "Warrant to assist EPO (C25)",
+    "DisplayOrder": 300
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersUploadType",
+    "ListElementCode": "OTHER_ORDER",
+    "ListElement": "Other",
+    "DisplayOrder": 500
+  }
+]
