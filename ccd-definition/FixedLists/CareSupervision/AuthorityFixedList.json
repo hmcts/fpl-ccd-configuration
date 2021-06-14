@@ -380,6 +380,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "MON",
+    "ListElement": "Monmouthshire County Borough Council",
+    "DisplayOrder": 223
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "NPT",
     "ListElement": "Neath & Port Talbot County Council",
     "DisplayOrder": 225
