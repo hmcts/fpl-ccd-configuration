@@ -24,6 +24,7 @@ import static java.util.Comparator.nullsLast;
 import static java.util.Comparator.reverseOrder;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationDocumentType.SWET;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
@@ -76,7 +77,7 @@ public class ApplicationDocumentBundleTransformer {
             hearingEvidenceDocumentView,
             applicationDocumentView)
             .flatMap(Collection::stream)
-            .sorted(comparing(DocumentView::getUploadedAt, nullsLast(reverseOrder())))
+            .sorted(comparing(DocumentView::getUploadedDateTime, nullsLast(reverseOrder())))
             .collect(Collectors.toList());
 
         if (!combinedDocuments.isEmpty()) {
@@ -106,8 +107,8 @@ public class ApplicationDocumentBundleTransformer {
                         ? formatLocalDateTimeBaseUsingFormat(doc.getDateTimeUploaded(), TIME_DATE) : null)
                     .includedInSWET(doc.getIncludedInSWET())
                     .uploadedBy(doc.getUploadedBy())
-                    .documentName(doc.getDocumentName())
-                    .title(doc.getDocumentType().getLabel())
+                    .documentName(OTHER == doc.getDocumentType() ? EMPTY : doc.getDocumentName())
+                    .title(OTHER == doc.getDocumentType() ? doc.getDocumentName() : doc.getDocumentType().getLabel())
                     .includeSWETField(SWET == doc.getDocumentType())
                     .includeDocumentName(Arrays.asList(APPLICANT_STATEMENT, OTHER).contains(doc.getDocumentType()))
                     .build())

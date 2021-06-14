@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "Correspondence",
     "TabLabel": "Correspondence",
-    "TabDisplayOrder": 13,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceTabHeading",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "correspondenceDocuments!=\"\" OR correspondenceDocumentsNC!=\"\" OR correspondenceDocumentsLA!=\"\" OR correspondenceDocumentsLANC!=\"\""
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "Correspondence",
     "TabLabel": "Correspondence",
-    "TabDisplayOrder": 13,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceDocuments",
     "TabFieldDisplayOrder": 2
   },
@@ -26,7 +26,7 @@
     "Channel": "CaseWorker",
     "TabID": "Correspondence",
     "TabLabel": "Correspondence",
-    "TabDisplayOrder": 13,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceDocumentsNC",
     "TabFieldDisplayOrder": 3
   },
@@ -36,7 +36,7 @@
     "Channel": "CaseWorker",
     "TabID": "Correspondence",
     "TabLabel": "Correspondence",
-    "TabDisplayOrder": 13,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceDocumentsLA",
     "TabFieldDisplayOrder": 4
   },
@@ -46,7 +46,7 @@
     "Channel": "CaseWorker",
     "TabID": "Correspondence",
     "TabLabel": "Correspondence",
-    "TabDisplayOrder": 13,
+    "TabDisplayOrder": 12,
     "CaseFieldID": "correspondenceDocumentsLANC",
     "TabFieldDisplayOrder": 5
   }

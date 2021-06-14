@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "orderTabHeading",
     "TabFieldDisplayOrder": 0
   },
@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "createOrderLink",
     "TabFieldDisplayOrder": 1
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "uploadCMOLink",
     "TabFieldDisplayOrder": 2,
     "FieldShowCondition": "[STATE] = \"PREPARE_FOR_HEARING\" OR [STATE] = \"FINAL_HEARING\""
@@ -36,7 +36,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "servedCaseManagementOrders",
     "TabFieldDisplayOrder": 3
   },
@@ -46,7 +46,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "sealedCMOs",
     "TabFieldDisplayOrder": 3
   },
@@ -56,7 +56,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "draftSDOLinkOrdersTab",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "standardDirectionOrder!=\"*\"",
@@ -68,7 +68,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 4,
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
@@ -79,7 +79,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "urgentHearingOrder",
     "TabFieldDisplayOrder": 5
   },
@@ -89,7 +89,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 6,
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\""
@@ -100,7 +100,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "orderCollection",
     "TabFieldDisplayOrder": 7
   },
@@ -110,7 +110,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "hiddenCaseManagementOrders",
     "TabFieldDisplayOrder": 8
   },
@@ -120,7 +120,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "hiddenStandardDirectionOrders",
     "TabFieldDisplayOrder": 9
   },
@@ -130,7 +130,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "hiddenOrders",
     "TabFieldDisplayOrder": 10
   }

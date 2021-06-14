@@ -43,7 +43,6 @@ public class RespondentStatementsTransformer {
         Map<UUID, List<RespondentStatement>> respondentStatementsById = unwrapElements(respondentStatements)
             .stream().collect(groupingBy(RespondentStatement::getRespondentId));
 
-        var count = 1;
         for (Element<Respondent> respondentElement : nullSafeList(respondents)) {
             List<RespondentStatement> respondentDocumentBundle = respondentStatementsById.get(
                 respondentElement.getId());
@@ -53,7 +52,8 @@ public class RespondentStatementsTransformer {
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsLA = new ArrayList<>();
                 List<Element<SupportingEvidenceBundle>> furtherEvidenceDocumentsNC = new ArrayList<>();
 
-                var bundleName = String.format("Respondent %d statements", count);
+                var bundleName = String.format("%s statements",
+                    respondentElement.getValue().getParty().getFullName());
 
                 respondentDocumentBundle.forEach(bundle -> {
                     furtherEvidenceDocuments.addAll(bundle.getSupportingEvidenceBundle());
@@ -81,7 +81,6 @@ public class RespondentStatementsTransformer {
                     respondentStatementsView.add(buildBundle(bundleName, documentViewList));
                 }
             }
-            count++;
         }
 
         return respondentStatementsView;
