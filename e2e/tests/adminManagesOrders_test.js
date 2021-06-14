@@ -34,6 +34,7 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({I, c
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
@@ -189,6 +190,7 @@ Scenario('Create C35a Supervision order', async ({I, caseViewPage, manageOrdersE
   await manageOrdersEventPage.enterSuperVisionNumOfMonths(12);
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {

@@ -333,7 +333,7 @@ public class GeneratedOrderController extends CallbackController {
 
     private List<Element<Child>> getUpdatedChildren(CaseData caseData) {
         return childrenService.updateFinalOrderIssued(
-            caseData.getOrderTypeAndDocument(),
+            caseData.getOrderTypeAndDocument().getTypeLabel(),
             caseData.getAllChildren(),
             caseData.getOrderAppliesToAllChildren(),
             caseData.getChildSelector(),
