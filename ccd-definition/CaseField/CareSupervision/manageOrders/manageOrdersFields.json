@@ -47,16 +47,7 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "03/06/2021",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "manageOrdersShouldAllowLinkingApplication",
-    "Label": " ",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public",
-    "Searchable": "N"
-  },
-  {
-    "LiveFrom": "03/06/2021",
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageOrdersShouldLinkApplication",
     "Label": "Is there an application for the order on the system?",
@@ -65,7 +56,7 @@
     "Searchable": "N"
   },
   {
-    "LiveFrom": "03/06/2021",
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageOrdersLinkedApplication",
     "Label": "Applications",

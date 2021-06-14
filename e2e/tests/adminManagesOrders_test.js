@@ -278,7 +278,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
-  const linkedApplicationId = await manageOrdersEventPage.linkApplication();
+  manageOrdersEventPage.linkApplication();
 
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
@@ -297,7 +297,6 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
     approvalDate: approvalDate,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
-    linkedApplicationId: linkedApplicationId,
   });
 });
 
@@ -318,11 +317,5 @@ function assertOrder(I, caseViewPage, order) {
 
   if (order.title !== undefined) {
     I.seeInTab([orderElement, 'Order title'], orderTitle);
-  }
-
-  if (order.linkedApplicationId !== undefined) {
-    I.seeInTab([orderElement, 'Linked application'], order.linkedApplicationId);
-  } else {
-    I.dontSeeInTab('Linked application');
   }
 }

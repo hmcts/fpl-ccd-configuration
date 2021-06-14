@@ -70,7 +70,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
         Map.entry("hearingDetails", "YES"),
-        Map.entry("linkApplicationQuestionBlock", "YES"),
+        Map.entry("linkApplication", "YES"),
         Map.entry("approver", "YES"),
         Map.entry("previewOrder", "YES"),
         Map.entry("furtherDirections", "YES"),
@@ -167,13 +167,13 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         CaseData responseCaseData = extractCaseData(response);
 
         assertThat(response.getData())
-            .containsEntry("hearingDetailsSectionSubHeader", "C32 - Care order")
-            .containsEntry("manageOrdersShouldAllowLinkingApplication", "Yes");
+            .containsEntry("hearingDetailsSectionSubHeader", "C32 - Care order");
         ManageOrdersEventData manageOrdersEventData = responseCaseData.getManageOrdersEventData();
         assertThat(manageOrdersEventData.getManageOrdersApprovedAtHearingList())
             .isEqualTo(
                 asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
             );
+        assertThat(manageOrdersEventData.getOrderTempQuestions().getLinkApplication()).isEqualTo("YES");
         DynamicListAssert.assertThat(manageOrdersEventData.getManageOrdersLinkedApplication())
             .hasSize(1)
             .hasElement(otherApplicationsBundle.getId(), otherApplicationsBundle.toLabel());
@@ -463,7 +463,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
-            Map.entry("linkApplicationQuestionBlock", "YES"),
+            Map.entry("linkApplication", "YES"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
@@ -495,7 +495,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
-            Map.entry("linkApplicationQuestionBlock", "YES"),
+            Map.entry("linkApplication", "YES"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),

@@ -50,11 +50,11 @@ class LinkApplicationBlockPrePopulatorTest {
                 .build()
         )));
 
-        Map<String, Object> prePopulatedData = classUnderTest.prePopulate(caseDataBuilder.build());
+        Map<String, Object> actual = classUnderTest.prePopulate(caseDataBuilder.build());
 
-        assertThat(prePopulatedData).hasSize(2)
-            .containsEntry("manageOrdersShouldAllowLinkingApplication", "Yes");
-        assertThat(prePopulatedData).extractingByKey("manageOrdersLinkedApplication")
+        assertThat(actual).hasSize(2)
+            .containsEntry("linkApplication", "YES");
+        assertThat(actual).extractingByKey("manageOrdersLinkedApplication")
             .asInstanceOf(DynamicListAssert.getInstanceOfAssertFactory())
             .hasSize(2)
             .hasElement(c2DocumentBundle.getId(), c2DocumentBundle.toLabel())
@@ -63,9 +63,10 @@ class LinkApplicationBlockPrePopulatorTest {
 
     @Test
     void shouldPrePopulateFields_WithNoApplicationsToLink() {
-        Map<String, Object> prePopulatedData = classUnderTest.prePopulate(caseDataBuilder.build());
+        Map<String, Object> actual = classUnderTest.prePopulate(caseDataBuilder.build());
 
-        assertThat(prePopulatedData).isEmpty();
+        assertThat(actual).hasSize(1)
+            .containsEntry("linkApplication", "NO");
     }
 
 }

@@ -15,7 +15,6 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersApprovedAtHearingList",
             "judgeAndLegalAdvisor",
             "manageOrdersApprovalDate",
-            "manageOrdersShouldAllowLinkingApplication",
             "manageOrdersShouldLinkApplication",
             "manageOrdersLinkedApplication",
             "orderAppliesToAllChildren",

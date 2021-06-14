@@ -22,8 +22,10 @@ public class LinkApplicationBlockPrePopulator implements QuestionBlockOrderPrePo
 
         DynamicList applicationsToLink = caseData.buildApplicationBundlesDynamicList();
         if (!applicationsToLink.getListItems().isEmpty()) {
-            prePopulatedFields.put("manageOrdersShouldAllowLinkingApplication", "Yes");
+            prePopulatedFields.put("linkApplication", "YES");
             prePopulatedFields.put("manageOrdersLinkedApplication", applicationsToLink);
+        } else {
+            prePopulatedFields.put("linkApplication", "NO");
         }
 
         return prePopulatedFields;
