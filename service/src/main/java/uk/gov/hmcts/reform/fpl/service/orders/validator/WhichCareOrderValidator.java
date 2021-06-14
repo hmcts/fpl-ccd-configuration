@@ -10,9 +10,10 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Component
-public class WhichOrderValidator implements QuestionBlockOrderValidator {
+public class WhichCareOrderValidator implements QuestionBlockOrderValidator {
 
-    private static final String MESSAGE = "Select care orders to be discharged";
+    private static final String SELECT_ORDER_MESSAGE = "Select a care order to be discharged";
+    private static final String SELECT_ONE_ORDER_MESSAGE = "Select one care order to discharge";
 
     @Override
     public OrderQuestionBlock accept() {
@@ -24,7 +25,11 @@ public class WhichOrderValidator implements QuestionBlockOrderValidator {
         Selector careOrderSelector = caseData.getCareOrderSelector();
 
         if (isEmpty(careOrderSelector) || isEmpty(careOrderSelector.getSelected())) {
-            return List.of(MESSAGE);
+            return List.of(SELECT_ORDER_MESSAGE);
+        }
+
+        if (careOrderSelector.getSelected().size() > 1) {
+            return List.of(SELECT_ONE_ORDER_MESSAGE);
         }
 
         return List.of();

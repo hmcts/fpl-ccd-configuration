@@ -9,11 +9,12 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_ORDERS;
 
-class WhichOrderValidatorTest {
+class WhichCareOrderValidatorTest {
 
-    private static final String MESSAGE = "Select care orders to be discharged";
+    private static final String SELECT_ORDER_MESSAGE = "Select a care order to be discharged";
+    private static final String SELECT_ONE_ORDER_MESSAGE = "Select one care order to discharge";
 
-    private final WhichOrderValidator underTest = new WhichOrderValidator();
+    private final WhichCareOrderValidator underTest = new WhichCareOrderValidator();
 
     @Test
     void accept() {
@@ -21,22 +22,21 @@ class WhichOrderValidatorTest {
     }
 
     @Test
-    void validateSomeOrdersSelected() {
+    void validateOneCareOrderSelected() {
         CaseData caseData = CaseData.builder()
-            .careOrderSelector(Selector.builder().selected(List.of(1, 2)).build())
+            .careOrderSelector(Selector.builder().selected(List.of(0)).build())
             .build();
 
         assertThat(underTest.validate(caseData)).isEqualTo(List.of());
     }
 
     @Test
-    void validateNoOrdersSelected() {
+    void validateMultipleCareOrderSelected() {
         CaseData caseData = CaseData.builder()
-            .orderAppliesToAllChildren("No")
-            .careOrderSelector(Selector.builder().build())
+            .careOrderSelector(Selector.builder().selected(List.of(1, 2)).build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(SELECT_ONE_ORDER_MESSAGE));
     }
 
     @Test
@@ -45,7 +45,7 @@ class WhichOrderValidatorTest {
             .careOrderSelector(Selector.builder().build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(SELECT_ORDER_MESSAGE));
     }
 
     @Test
@@ -56,6 +56,6 @@ class WhichOrderValidatorTest {
                 .build())
             .build();
 
-        assertThat(underTest.validate(caseData)).isEqualTo(List.of(MESSAGE));
+        assertThat(underTest.validate(caseData)).isEqualTo(List.of(SELECT_ORDER_MESSAGE));
     }
 }

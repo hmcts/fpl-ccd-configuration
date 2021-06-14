@@ -37,7 +37,7 @@ class OrderValidatorHolderTest {
     @Mock
     private WhichChildrenValidator whichChildrenValidator;
     @Mock
-    private WhichOrderValidator whichOrderValidator;
+    private WhichCareOrderValidator whichCareOrderValidator;
     @Mock
     private DischargeOfCareDateValidator dischargeOfCareDateValidator;
     @Mock
@@ -56,7 +56,7 @@ class OrderValidatorHolderTest {
             approvalDateValidator,
             approvalDateTimeValidator,
             whichChildrenValidator,
-            whichOrderValidator,
+            whichCareOrderValidator,
             dischargeOfCareDateValidator,
             epoEndDateValidator,
             manageOrderEndDateValidator,
@@ -67,7 +67,7 @@ class OrderValidatorHolderTest {
             APPROVAL_DATE, approvalDateValidator,
             APPROVAL_DATE_TIME, approvalDateTimeValidator,
             WHICH_CHILDREN, whichChildrenValidator,
-            WHICH_ORDERS, whichOrderValidator,
+            WHICH_ORDERS, whichCareOrderValidator,
             DISCHARGE_DETAILS, dischargeOfCareDateValidator,
             EPO_EXPIRY_DATE, epoEndDateValidator,
             MANAGE_ORDER_END_DATE_WITH_MONTH, manageOrderEndDateValidator,

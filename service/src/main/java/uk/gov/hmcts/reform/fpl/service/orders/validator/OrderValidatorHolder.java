@@ -17,7 +17,7 @@ public class OrderValidatorHolder {
     private final ApprovalDateValidator approvalDateValidator;
     private final ApprovalDateTimeValidator approvalDateTimeValidator;
     private final WhichChildrenValidator whichChildrenValidator;
-    private final WhichOrderValidator whichOrderValidator;
+    private final WhichCareOrderValidator whichCareOrderValidator;
     private final DischargeOfCareDateValidator dischargeOfCareDateValidator;
     private final EPOEndDateValidator epoEndDateValidator;
     private final ManageOrderEndDateWithMonthValidator manageOrderEndDateWithMonthValidator;
@@ -31,7 +31,7 @@ public class OrderValidatorHolder {
         }
         blockToValidator = List.of(
             whichChildrenValidator,
-            whichOrderValidator,
+            whichCareOrderValidator,
             approvalDateValidator,
             approvalDateTimeValidator,
             dischargeOfCareDateValidator,
