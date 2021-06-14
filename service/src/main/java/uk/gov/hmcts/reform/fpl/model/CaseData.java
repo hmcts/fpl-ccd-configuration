@@ -186,23 +186,17 @@ public class CaseData {
     private final Allocation allocationDecision;
 
     private final List<Element<Direction>> allParties;
-    @JsonProperty
-    private List<Element<Direction>> allPartiesCustom;
+    private final List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
-    @JsonProperty
-    private List<Element<Direction>> localAuthorityDirectionsCustom;
+    private final List<Element<Direction>> localAuthorityDirectionsCustom;
     private final List<Element<Direction>> courtDirections;
-    @JsonProperty
-    private List<Element<Direction>> courtDirectionsCustom;
+    private final List<Element<Direction>> courtDirectionsCustom;
     private final List<Element<Direction>> cafcassDirections;
-    @JsonProperty
-    private List<Element<Direction>> cafcassDirectionsCustom;
+    private final List<Element<Direction>> cafcassDirectionsCustom;
     private final List<Element<Direction>> otherPartiesDirections;
-    @JsonProperty
-    private List<Element<Direction>> otherPartiesDirectionsCustom;
+    private final List<Element<Direction>> otherPartiesDirectionsCustom;
     private final List<Element<Direction>> respondentDirections;
-    @JsonProperty
-    private List<Element<Direction>> respondentDirectionsCustom;
+    private final List<Element<Direction>> respondentDirectionsCustom;
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;

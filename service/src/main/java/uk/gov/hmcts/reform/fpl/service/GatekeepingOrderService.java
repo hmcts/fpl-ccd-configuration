@@ -35,8 +35,8 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -99,7 +99,7 @@ public class GatekeepingOrderService {
         if (requiredMissingInformation.isEmpty()) {
             return null;
         } else {
-            String nextStepsLabel = "## Next steps\n\n"
+            final String nextStepsLabel = "## Next steps\n\n"
                 + "Your order will be saved as a draft in 'Draft orders'.\n\n"
                 + "You cannot seal and send the order until adding:";
             requiredMissingInformation.add(0, nextStepsLabel);
@@ -115,7 +115,7 @@ public class GatekeepingOrderService {
             getJudgeForTabView(eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
 
         return StandardDirectionOrder.builder()
-            .customDirections(eventData.getSdoDirectionCustom())
+            .customDirections(eventData.getCustomDirections())
             .standardDirections(eventData.getStandardDirections())
             .orderStatus(defaultIfNull(eventData.getGatekeepingOrderSealDecision().getOrderStatus(), DRAFT))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
@@ -143,25 +143,25 @@ public class GatekeepingOrderService {
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
-        final List<StandardDirection> draftDirections = unwrapElements(eventData.getStandardDirections());
+        final List<StandardDirection> draftStandardDirections = unwrapElements(eventData.getStandardDirections());
 
-        final HearingBooking hearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT).orElse(null);
+        final HearingBooking firstHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT).orElse(null);
 
         Stream.of(DirectionType.values())
             .map(DirectionType::getFieldName)
             .forEach(caseDetails.getData()::remove);
 
         requestedDirections.stream()
-            .map(directionType -> getStandardDirectionDraft(directionType, draftDirections)
-                .orElseGet(() -> buildStandardDirection(directionType, hearing)))
+            .map(directionType -> getStandardDirectionDraft(directionType, draftStandardDirections)
+                .orElseGet(() -> buildStandardDirection(directionType, firstHearing)))
             .forEach(direction -> caseDetails.getData().put(direction.getType().getFieldName(), direction));
     }
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {
-        CaseData caseData = caseConverter.convert(caseDetails);
-        GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
+        final CaseData caseData = caseConverter.convert(caseDetails);
+        final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
-        List<Element<StandardDirection>> standardDirections = eventData.resetStandardDirections();
+        final List<Element<StandardDirection>> standardDirections = eventData.resetStandardDirections();
 
         eventData.getRequestedDirections()
             .forEach(requestedType -> {
@@ -174,27 +174,6 @@ public class GatekeepingOrderService {
             });
 
         return caseData;
-    }
-
-    private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display) {
-
-        LocalDate hearingDay = ofNullable(hearing)
-            .map(HearingBooking::getStartDate)
-            .map(LocalDateTime::toLocalDate)
-            .orElse(null);
-
-        if (hearingDay == null) {
-            return null;
-        }
-
-        Integer daysBefore = Optional.ofNullable(display.getDelta())
-            .map(Integer::parseInt)
-            .orElse(0);
-
-        LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
-
-        return LocalDateTime.of(deadline, LocalTime.parse(defaultIfNull(display.getTime(), "00:00:00")));
-
     }
 
     private StandardDirection buildStandardDirection(DirectionType type, HearingBooking hearing) {
@@ -211,5 +190,25 @@ public class GatekeepingOrderService {
         return draft.stream()
             .filter(draftedDirection -> Objects.equals(draftedDirection.getType(), type))
             .findFirst();
+    }
+
+    private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display) {
+
+        final LocalDate hearingDay = ofNullable(hearing)
+            .map(HearingBooking::getStartDate)
+            .map(LocalDateTime::toLocalDate)
+            .orElse(null);
+
+        if (hearingDay == null) {
+            return null;
+        }
+
+        final Integer daysBefore = Optional.ofNullable(display.getDelta())
+            .map(Integer::parseInt)
+            .orElse(0);
+
+        LocalDate deadline = daysBefore == 0 ? hearingDay : calendarService.getWorkingDayFrom(hearingDay, daysBefore);
+
+        return LocalDateTime.of(deadline, LocalTime.parse(defaultIfNull(display.getTime(), "00:00:00")));
     }
 }

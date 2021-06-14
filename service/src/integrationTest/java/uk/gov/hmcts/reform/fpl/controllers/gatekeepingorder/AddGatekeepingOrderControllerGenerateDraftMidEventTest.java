@@ -35,9 +35,9 @@ import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_CASE_SUMMARY;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
@@ -79,12 +79,12 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
     @Test
     void shouldSetDraftDocumentStandardDirectionsAndNextStepsLabelWhenMandatoryInformationMissing() {
-        String nextSteps = NEXT_STEPS
+        final String nextSteps = NEXT_STEPS
             + "* the first hearing details\n\n"
             + "* the allocated judge\n\n"
             + "* the judge issuing the order";
 
-        StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
+        final StandardDirection localAuthorityStandardDirection = StandardDirection.builder()
             .type(SEND_CASE_SUMMARY)
             .title("Send case summary to all parties")
             .description("Send to the court and all parties.")
@@ -94,7 +94,7 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
             .daysBeforeHearing(2)
             .build();
 
-        StandardDirection cafcassStandardDirection = StandardDirection.builder()
+        final StandardDirection cafcassStandardDirection = StandardDirection.builder()
             .type(APPOINT_CHILDREN_GUARDIAN)
             .title("Appoint a children's guardian")
             .description("Custom direction")
@@ -104,30 +104,30 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
             .daysBeforeHearing(2)
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(1234123412341234L)
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .id(1234567890123456L)
             .data(Map.of(
                 "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                 "dateSubmitted", dateNow(),
                 "applicants", getApplicant(),
-                "sdoDirectionsForLocalAuthority", List.of(localAuthorityStandardDirection.getType()),
-                "sdoDirectionsForCafcass", List.of(cafcassStandardDirection.getType()),
-                "sdoDirection-SEND_CASE_SUMMARY", localAuthorityStandardDirection,
-                "sdoDirection-APPOINT_CHILDREN_GUARDIAN", cafcassStandardDirection
-            ))
+                "directionsForLocalAuthority", List.of(localAuthorityStandardDirection.getType()),
+                "directionsForCafcass", List.of(cafcassStandardDirection.getType()),
+                "direction-SEND_CASE_SUMMARY", localAuthorityStandardDirection,
+                "direction-APPOINT_CHILDREN_GUARDIAN", cafcassStandardDirection))
             .build();
 
-        GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
+        final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
             .nextSteps(nextSteps)
             .build();
 
-        CaseData responseData = extractCaseData(postMidEvent(caseDetails, "generate-draft"));
+        final CaseData responseData = extractCaseData(postMidEvent(caseDetails, "generate-draft"));
+        final GatekeepingOrderEventData eventData = responseData.getGatekeepingOrderEventData();
 
-        assertThat(responseData.getGatekeepingOrderEventData().getGatekeepingOrderSealDecision())
+        assertThat(eventData.getGatekeepingOrderSealDecision())
             .isEqualTo(expectedSealDecision);
 
-        assertThat(responseData.getGatekeepingOrderEventData().getStandardDirections())
+        assertThat(eventData.getStandardDirections())
             .extracting(Element::getValue)
             .contains(localAuthorityStandardDirection, cafcassStandardDirection);
     }

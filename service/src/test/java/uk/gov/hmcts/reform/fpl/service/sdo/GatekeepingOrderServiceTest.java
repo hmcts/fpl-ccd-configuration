@@ -40,7 +40,6 @@ import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static java.lang.String.format;
-import static java.time.Month.JANUARY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,11 +49,11 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DATE;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -75,13 +74,13 @@ class GatekeepingOrderServiceTest {
     private DocumentService documentService;
 
     @MockBean
-    private GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
+    private CalendarService calendarService;
 
     @MockBean
     private OrdersLookupService ordersLookupService;
 
     @MockBean
-    private CalendarService calendarService;
+    private GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
 
     @Autowired
     private GatekeepingOrderService underTest;
@@ -210,37 +209,22 @@ class GatekeepingOrderServiceTest {
         assertThat(underTest.getNoticeOfProceedingsTemplates(caseData)).isEqualTo(List.of(C6, C6A));
     }
 
-
-    private DirectionConfiguration directionConfiguration(DirectionType type, int days) {
-        return DirectionConfiguration.builder()
-            .id(type)
-            .assignee(ALL_PARTIES)
-            .title(format("title - %s", type))
-            .text(format("text - %s", type))
-            .display(Display
-                .builder()
-                .due(Display.Due.ON)
-                .delta("" + (-1 * days))
-                .build())
-            .build();
-    }
-
     @ParameterizedTest
     @EnumSource(value = DirectionType.class)
     void shouldCreateDirectionFromConfAndSetDefaultDueDateTypeWhenNoHearingPresent(DirectionType type) {
 
         final DirectionConfiguration directionConfiguration = directionConfiguration(type, 1);
 
-        when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(newHashMap(Map.of("sdoDirectionsForAll", List.of(type))))
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .data(newHashMap(Map.of("directionsForAllParties", List.of(type))))
             .build();
+
+        when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
         underTest.populateStandardDirections(caseDetails);
 
-        StandardDirection expectedDirection = StandardDirection.builder()
-            .type(directionConfiguration.getId())
+        final StandardDirection expectedDirection = StandardDirection.builder()
+            .type(directionConfiguration.getType())
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
@@ -250,7 +234,7 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(expectedDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
     }
 
 
@@ -258,36 +242,36 @@ class GatekeepingOrderServiceTest {
     @EnumSource(value = DirectionType.class)
     void shouldCreateDirectionFromConfAndSetDefaultDatesFromHearing(DirectionType type) {
 
-        Integer dueDateDaysBeforeHearing = 2;
-        LocalDateTime hearingDate = LocalDateTime.of(2050, JANUARY, 10, 12, 0, 0);
-        LocalDateTime directionDueDate = LocalDateTime.of(2050, JANUARY, 8, 0, 0, 0);
+        final int dueDateDaysBeforeHearing = 2;
+        final LocalDateTime hearingDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
+        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 8, 0, 0, 0);
 
-        HearingBooking hearing1 = HearingBooking.builder()
+        final HearingBooking hearing1 = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(hearingDate)
             .build();
 
-        HearingBooking hearing2 = HearingBooking.builder()
+        final HearingBooking hearing2 = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(hearingDate.plusDays(1))
             .build();
 
-        DirectionConfiguration directionConfiguration = directionConfiguration(type, dueDateDaysBeforeHearing);
+        final DirectionConfiguration directionConfiguration = directionConfiguration(type, dueDateDaysBeforeHearing);
 
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
         when(calendarService.getWorkingDayFrom(hearingDate.toLocalDate(), -2))
             .thenReturn(directionDueDate.toLocalDate());
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
-                "sdoDirectionsForAll", List.of(type),
+                "directionsForAllParties", List.of(type),
                 "hearingDetails", wrapElements(hearing1, hearing2))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
-        StandardDirection expectedDirection = StandardDirection.builder()
-            .type(directionConfiguration.getId())
+        final StandardDirection expectedDirection = StandardDirection.builder()
+            .type(directionConfiguration.getType())
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
@@ -297,35 +281,34 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(expectedDirection);
-
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
     }
 
     @ParameterizedTest
     @EnumSource(value = DirectionType.class)
     void shouldCreateDirectionFromConfAndSetDefaultDatesFromHearingWhenDefaultDaysBeforeHearingIs0(DirectionType type) {
 
-        LocalDateTime hearingDate = LocalDateTime.of(2050, JANUARY, 10, 12, 0, 0);
-        LocalDateTime directionDueDate = LocalDateTime.of(2050, JANUARY, 10, 0, 0, 0);
+        final LocalDateTime hearingDate = LocalDateTime.of(2050, 1, 10, 12, 0, 0);
+        final LocalDateTime directionDueDate = LocalDateTime.of(2050, 1, 10, 0, 0, 0);
 
-        HearingBooking hearing = HearingBooking.builder()
+        final HearingBooking hearing = HearingBooking.builder()
             .type(CASE_MANAGEMENT)
             .startDate(hearingDate)
             .build();
 
-        DirectionConfiguration directionConfiguration = directionConfiguration(type, 0);
+        final DirectionConfiguration directionConfiguration = directionConfiguration(type, 0);
 
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
-                "sdoDirectionsForAll", List.of(type),
+                "directionsForAllParties", List.of(type),
                 "hearingDetails", wrapElements(hearing))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
-        StandardDirection expectedDirection = StandardDirection.builder()
+        final StandardDirection expectedDirection = StandardDirection.builder()
             .type(type)
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
@@ -336,16 +319,15 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(expectedDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
 
         verifyNoInteractions(calendarService);
     }
 
-
     @ParameterizedTest
     @EnumSource(value = DirectionType.class)
-    void shouldGetDirectionFromDraft(DirectionType type) {
-        StandardDirection draftDirection = StandardDirection.builder()
+    void shouldGetStandardDirectionsFromDraft(DirectionType type) {
+        final StandardDirection draftDirection = StandardDirection.builder()
             .type(type)
             .title("title")
             .description("Text")
@@ -356,29 +338,26 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DATE)
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
                 "standardDirections", wrapElements(draftDirection),
-                "sdoDirectionsForAll", List.of(type))))
+                "directionsForAllParties", List.of(type))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(draftDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
 
         verifyNoInteractions(ordersLookupService, calendarService);
     }
-
 
     @ParameterizedTest
     @EnumSource(value = DirectionType.class)
     void shouldUpdateStandardDirections(DirectionType type) {
 
-        DirectionConfiguration directionConfiguration = directionConfiguration(type, 0);
+        final DirectionConfiguration directionConfiguration = directionConfiguration(type, 0);
 
-        when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
-
-        StandardDirection oldDirectionDraft = StandardDirection.builder()
+        final StandardDirection oldDirectionDraft = StandardDirection.builder()
             .type(type)
             .title("title")
             .description("Text")
@@ -389,14 +368,12 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DATE)
             .build();
 
-
-        StandardDirection newDirectionDraft = StandardDirection.builder()
+        final StandardDirection newDirectionDraft = StandardDirection.builder()
             .daysBeforeHearing(10)
             .dueDateType(DAYS)
             .build();
 
-
-        StandardDirection expectedDirection = StandardDirection.builder()
+        final StandardDirection expectedDirection = StandardDirection.builder()
             .type(type)
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
@@ -407,21 +384,35 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        final CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
                 "standardDirections", wrapElements(oldDirectionDraft),
-                "sdoDirection-" + type, newDirectionDraft,
-                "sdoDirectionsForAll", List.of(type))))
+                "direction-" + type, newDirectionDraft,
+                "directionsForAllParties", List.of(type))))
             .build();
 
-        CaseData cd = underTest.updateStandardDirections(caseDetails);
+        when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
-        assertThat(cd.getGatekeepingOrderEventData().getStandardDirections())
+        final CaseData updatedCase = underTest.updateStandardDirections(caseDetails);
+
+        assertThat(updatedCase.getGatekeepingOrderEventData().getStandardDirections())
             .extracting(Element::getValue)
             .containsExactly(expectedDirection);
 
         verifyNoInteractions(calendarService);
     }
 
-
+    private static DirectionConfiguration directionConfiguration(DirectionType type, int days) {
+        return DirectionConfiguration.builder()
+            .type(type)
+            .assignee(ALL_PARTIES)
+            .title(format("title - %s", type))
+            .text(format("text - %s", type))
+            .display(Display
+                .builder()
+                .due(Display.Due.ON)
+                .delta("" + (-1 * days))
+                .build())
+            .build();
+    }
 }

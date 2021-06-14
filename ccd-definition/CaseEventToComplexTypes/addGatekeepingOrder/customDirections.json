@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
+    "CaseFieldID": "customDirections",
     "ListElementCode": "title",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
@@ -12,7 +12,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
+    "CaseFieldID": "customDirections",
     "ListElementCode": "description",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
@@ -21,7 +21,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
+    "CaseFieldID": "customDirections",
     "ListElementCode": "assignee",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
@@ -30,7 +30,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
+    "CaseFieldID": "customDirections",
     "ListElementCode": "dueDateType",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
@@ -39,20 +39,20 @@
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
+    "CaseFieldID": "customDirections",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "sdoDirectionCustom.dueDateType=\"DATE\""
+    "FieldShowCondition": "customDirections.dueDateType=\"DATE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionCustom",
+    "CaseFieldID": "customDirections",
     "ListElementCode": "daysBeforeHearing",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "sdoDirectionCustom.dueDateType=\"DAYS\""
+    "FieldShowCondition": "customDirections.dueDateType=\"DAYS\""
   }
 ]

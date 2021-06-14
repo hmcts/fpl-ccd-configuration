@@ -8,14 +8,15 @@ module.exports = {
       groupName: '#gatekeepingOrderRouter',
       service: '#gatekeepingOrderRouter-SERVICE',
     },
+    standardDirection: directionName => `//h2[text()='${directionName}']/..`,
     customDirection: {
       fields(index) {
         return {
-          title: `#sdoDirectionCustom_${index}_title`,
-          description: `#sdoDirectionCustom_${index}_description`,
-          assignee: `#sdoDirectionCustom_${index}_assignee`,
-          dueDateType: `#sdoDirectionCustom_${index}_dueDateType-DATE`,
-          date: `#sdoDirectionCustom_${index}_dateToBeCompletedBy`,
+          title: `#customDirections_${index}_title`,
+          description: `#customDirections_${index}_description`,
+          assignee: `#customDirections_${index}_assignee`,
+          dueDateType: `#customDirections_${index}_dueDateType-DATE`,
+          date: `#customDirections_${index}_dateToBeCompletedBy`,
         };
       },
     },
@@ -60,43 +61,46 @@ module.exports = {
   },
 
   async clickDateAndTime(directionName) {
-    await within(`//h2[text()='${directionName}']/..`, () => {
-      I.click('Date and time');
-    });
+    await within(this.fields.standardDirection(directionName), () => I.click('Date and time'));
   },
 
   async clickNumberOfDaysBeforeHearing(directionName) {
-    await within(`//h2[text()='${directionName}']/..`, () => {
-      I.click('Number of days before hearing');
-    });
+    await within(this.fields.standardDirection(directionName), () => I.click('Number of days before hearing'));
   },
 
-  async seeDate(directionName, date, format='YYYY-MM-DD HH:mm:ss') {
-    return await within(`//h2[text()='${directionName}']/..`, async () => {
-      let day = parseInt(await I.grabValueFrom('//*[contains(@class, \'form-group-day\')]/input'));
-      let month = parseInt(await I.grabValueFrom('//*[contains(@class, \'form-group-month\')]/input'));
-      let year = parseInt(await I.grabValueFrom('//*[contains(@class, \'form-group-year\')]/input'));
-      let hour = parseInt(await I.grabValueFrom('//*[contains(@class, \'form-group-hour\')]/input'));
-      let minute = parseInt(await I.grabValueFrom('//*[contains(@class, \'form-group-minute\')]/input'));
-      let second = parseInt(await I.grabValueFrom('//*[contains(@class, \'form-group-second\')]/input'));
+  async seeDate(directionName, date, format = 'YYYY-MM-DD HH:mm:ss') {
+    const getDateField = async field => parseInt(await I.grabValueFrom(`//*[contains(@class, 'form-group-${field}')]/input`));
 
+    return await within(this.fields.standardDirection(directionName), async () => {
+      let day = await getDateField('day');
+      let month = await getDateField('month');
+      let year = await getDateField('year');
+      let hour = await getDateField('hour');
+      let minute = await getDateField('minute');
+      let second = await getDateField('second');
 
-      let actualDate =moment().set({'year': year, 'month': month, 'date': day, 'hour': hour, 'minute': minute, 'second': second})
+      let actualDate = moment().set({
+        'year': year,
+        'month': month,
+        'date': day,
+        'hour': hour,
+        'minute': minute,
+        'second': second,
+      })
         .subtract(1, 'month')
         .format(format);
 
       assert.strictEqual(actualDate, date);
-
     });
   },
 
   async seeDays(directionName, days) {
-    let actualDays =parseInt(await I.grabValueFrom(`//h2[text()='${directionName}']/..//span[text()='Enter number of days']/../../input`));
+    let actualDays = parseInt(await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//span[text()='Enter number of days']/../../input`));
     assert.strictEqual(actualDays, days);
   },
 
   async seeDetails(directionName, details) {
-    let actualDetails =await I.grabValueFrom(`//h2[text()='${directionName}']/..//textarea`);
+    let actualDetails = await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//textarea`);
     assert.strictEqual(actualDetails, details);
   },
 

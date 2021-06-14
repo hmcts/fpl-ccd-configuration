@@ -171,7 +171,6 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   await I.goToNextPage();
   await addGatekeepingOrderEventPage.selectAllocatedJudge('Bob Ross');
   await I.goToNextPage();
-
   await addGatekeepingOrderEventPage.markAsFinal({day: 11, month: 1, year: 2020});
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);

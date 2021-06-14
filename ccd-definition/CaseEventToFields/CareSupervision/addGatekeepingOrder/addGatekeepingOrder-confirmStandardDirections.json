@@ -3,300 +3,300 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsEditDirectionsLabel",
+    "CaseFieldID": "editDirectionsLabel",
     "PageFieldDisplayOrder": 0,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageShowCondition": "sdoDirectionsForAll !=\"\" OR sdoDirectionsForLocalAuthority !=\"\" OR sdoDirectionsForRespondents !=\"\" OR sdoDirectionsForCafcass  !=\"\" OR sdoDirectionsForOthers !=\"\" OR sdoDirectionsForCourt !=\"\""
+    "PageShowCondition": "directionsForAllParties !=\"\" OR directionsForLocalAuthority !=\"\" OR directionsForRespondents !=\"\" OR directionsForCafcass  !=\"\" OR directionsForOthers !=\"\" OR directionsForCourt !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsAllLabel2",
+    "CaseFieldID": "directionsForAllPartiesLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForAll CONTAINS \"REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE\" OR sdoDirectionsForAll CONTAINS \"REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS\" OR sdoDirectionsForAll CONTAINS \"ASK_FOR_DISCLOSURE\" OR sdoDirectionsForAll CONTAINS \"ATTEND_HEARING\" OR sdoDirectionsForAll CONTAINS \"CONTACT_ALTERNATIVE_CARERS\""
+    "FieldShowCondition": "directionsForAllParties !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
+    "CaseFieldID": "direction-REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForAll CONTAINS \"REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE\""
+    "FieldShowCondition": "directionsForAllParties CONTAINS \"REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS",
+    "CaseFieldID": "direction-REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForAll CONTAINS \"REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS\""
+    "FieldShowCondition": "directionsForAllParties CONTAINS \"REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-ASK_FOR_DISCLOSURE",
+    "CaseFieldID": "direction-ASK_FOR_DISCLOSURE",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForAll CONTAINS \"ASK_FOR_DISCLOSURE\""
+    "FieldShowCondition": "directionsForAllParties CONTAINS \"ASK_FOR_DISCLOSURE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-ATTEND_HEARING",
+    "CaseFieldID": "direction-ATTEND_HEARING",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForAll CONTAINS \"ATTEND_HEARING\""
+    "FieldShowCondition": "directionsForAllParties CONTAINS \"ATTEND_HEARING\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-CONTACT_ALTERNATIVE_CARERS",
+    "CaseFieldID": "direction-CONTACT_ALTERNATIVE_CARERS",
     "PageFieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForAll CONTAINS \"CONTACT_ALTERNATIVE_CARERS\""
+    "FieldShowCondition": "directionsForAllParties CONTAINS \"CONTACT_ALTERNATIVE_CARERS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsLocalAuthorityLabel2",
+    "CaseFieldID": "directionsForLocalAuthorityLabel",
     "PageFieldDisplayOrder": 7,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"SEND_DOCUMENTS_TO_ALL_PARTIES\" OR sdoDirectionsForLocalAuthority CONTAINS \"SEND_MISSING_ANNEX\" OR sdoDirectionsForLocalAuthority CONTAINS \"IDENTIFY_ALTERNATIVE_CARERS\" OR sdoDirectionsForLocalAuthority CONTAINS \"SEND_TRANSLATED_DOCUMENTS\" OR sdoDirectionsForLocalAuthority CONTAINS \"LODGE_BUNDLE\" OR sdoDirectionsForLocalAuthority CONTAINS \"SEND_CASE_SUMMARY\" OR sdoDirectionsForLocalAuthority CONTAINS \"CONSIDER_JURISDICTION\""
+    "FieldShowCondition": "directionsForLocalAuthority !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "CaseFieldID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
     "PageFieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"SEND_DOCUMENTS_TO_ALL_PARTIES\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_DOCUMENTS_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-SEND_MISSING_ANNEX",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "PageFieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"SEND_MISSING_ANNEX\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_MISSING_ANNEX\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-IDENTIFY_ALTERNATIVE_CARERS",
+    "CaseFieldID": "direction-IDENTIFY_ALTERNATIVE_CARERS",
     "PageFieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"IDENTIFY_ALTERNATIVE_CARERS\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"IDENTIFY_ALTERNATIVE_CARERS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-SEND_TRANSLATED_DOCUMENTS",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
     "PageFieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"SEND_TRANSLATED_DOCUMENTS\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_TRANSLATED_DOCUMENTS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-LODGE_BUNDLE",
+    "CaseFieldID": "direction-LODGE_BUNDLE",
     "PageFieldDisplayOrder": 12,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"LODGE_BUNDLE\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"LODGE_BUNDLE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-SEND_CASE_SUMMARY",
+    "CaseFieldID": "direction-SEND_CASE_SUMMARY",
     "PageFieldDisplayOrder": 13,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"SEND_CASE_SUMMARY\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"SEND_CASE_SUMMARY\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-CONSIDER_JURISDICTION",
+    "CaseFieldID": "direction-CONSIDER_JURISDICTION",
     "PageFieldDisplayOrder": 14,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForLocalAuthority CONTAINS \"CONSIDER_JURISDICTION\""
+    "FieldShowCondition": "directionsForLocalAuthority CONTAINS \"CONSIDER_JURISDICTION\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsRespondentsLabel2",
+    "CaseFieldID": "directionsForRespondentsLabel",
     "PageFieldDisplayOrder": 15,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\""
+    "FieldShowCondition": "directionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
+    "CaseFieldID": "direction-SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
     "PageFieldDisplayOrder": 16,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\""
+    "FieldShowCondition": "directionsForRespondents CONTAINS \"SEND_RESPONSE_TO_THRESHOLD_STATEMENT\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsCafcassLabel2",
+    "CaseFieldID": "directionsForCafcassLabel",
     "PageFieldDisplayOrder": 17,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForCafcass CONTAINS \"ARRANGE_ADVOCATES_MEETING\" OR sdoDirectionsForCafcass CONTAINS \"SEND_GUARDIANS_ANALYSIS\" OR sdoDirectionsForCafcass CONTAINS \"APPOINT_CHILDREN_GUARDIAN\""
+    "FieldShowCondition": "directionsForCafcass !=\"\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-ARRANGE_ADVOCATES_MEETING",
+    "CaseFieldID": "direction-ARRANGE_ADVOCATES_MEETING",
     "PageFieldDisplayOrder": 18,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForCafcass CONTAINS \"ARRANGE_ADVOCATES_MEETING\""
+    "FieldShowCondition": "directionsForCafcass CONTAINS \"ARRANGE_ADVOCATES_MEETING\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-SEND_GUARDIANS_ANALYSIS",
+    "CaseFieldID": "direction-SEND_GUARDIANS_ANALYSIS",
     "PageFieldDisplayOrder": 19,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForCafcass CONTAINS \"SEND_GUARDIANS_ANALYSIS\""
+    "FieldShowCondition": "directionsForCafcass CONTAINS \"SEND_GUARDIANS_ANALYSIS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-APPOINT_CHILDREN_GUARDIAN",
+    "CaseFieldID": "direction-APPOINT_CHILDREN_GUARDIAN",
     "PageFieldDisplayOrder": 20,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForCafcass CONTAINS \"APPOINT_CHILDREN_GUARDIAN\""
+    "FieldShowCondition": "directionsForCafcass CONTAINS \"APPOINT_CHILDREN_GUARDIAN\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsOthersLabel2",
+    "CaseFieldID": "directionsForOthersLabel",
     "PageFieldDisplayOrder": 21,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForOthers CONTAINS \"OBJECT_TO_REQUEST_FOR_DISCLOSURE\""
+    "FieldShowCondition": "directionsForOthers CONTAINS \"OBJECT_TO_REQUEST_FOR_DISCLOSURE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
+    "CaseFieldID": "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
     "PageFieldDisplayOrder": 22,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForOthers CONTAINS \"OBJECT_TO_REQUEST_FOR_DISCLOSURE\""
+    "FieldShowCondition": "directionsForOthers CONTAINS \"OBJECT_TO_REQUEST_FOR_DISCLOSURE\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirectionsCourtLabel2",
+    "CaseFieldID": "directionsForCourtLabel",
     "PageFieldDisplayOrder": 23,
     "DisplayContext": "READONLY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\""
+    "FieldShowCondition": "directionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "sdoDirection-ARRANGE_INTERPRETERS",
+    "CaseFieldID": "direction-ARRANGE_INTERPRETERS",
     "PageFieldDisplayOrder": 24,
     "DisplayContext": "MANDATORY",
-    "PageID": "standardDirections",
+   "PageID": "ConfirmStandardDirections",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "sdoDirectionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\""
+    "FieldShowCondition": "directionsForCourt CONTAINS \"ARRANGE_INTERPRETERS\""
   }
 ]

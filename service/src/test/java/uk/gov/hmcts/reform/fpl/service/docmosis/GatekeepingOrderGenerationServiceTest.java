@@ -40,12 +40,12 @@ import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ASK_FOR_DISCLOSURE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.CUSTOM;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DATE;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
@@ -166,7 +166,7 @@ class GatekeepingOrderGenerationServiceTest {
             .respondents1(createRespondents())
             .applicants(createPopulatedApplicants())
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .sdoDirectionCustom(wrapElements(getCustomDirections()))
+                .customDirections(wrapElements(getCustomDirections()))
                 .standardDirections(wrapElements(getStandardDirections()))
                 .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder()
                     .judgeTitle(HER_HONOUR_JUDGE)
@@ -205,7 +205,7 @@ class GatekeepingOrderGenerationServiceTest {
                 .description("Serve requests for disclosure on any third parties")
                 .assignee(LOCAL_AUTHORITY)
                 .dueDateType(DATE)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.MAY, 10, 12, 00, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 5, 10, 12, 0, 0))
                 .build(),
             StandardDirection.builder()
                 .type(REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS)
@@ -213,7 +213,7 @@ class GatekeepingOrderGenerationServiceTest {
                 .description("Make an application to the court if you believe any party or witness needs help")
                 .assignee(ALL_PARTIES)
                 .dueDateType(DATE)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.MAY, 10, 12, 00, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 5, 10, 12, 0, 0))
                 .build(),
             StandardDirection.builder()
                 .type(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE)

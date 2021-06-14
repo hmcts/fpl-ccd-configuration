@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
@@ -42,16 +42,14 @@ public class GatekeepingOrderEventData {
     JudgeAndLegalAdvisor gatekeepingOrderIssuingJudge;
     GatekeepingOrderSealDecision gatekeepingOrderSealDecision;
 
-    List<DirectionType> sdoDirectionsForAll;
-    List<DirectionType> sdoDirectionsForLocalAuthority;
-    List<DirectionType> sdoDirectionsForRespondents;
-    List<DirectionType> sdoDirectionsForCafcass;
-    List<DirectionType> sdoDirectionsForOthers;
-    List<DirectionType> sdoDirectionsForCourt;
+    List<DirectionType> directionsForAllParties;
+    List<DirectionType> directionsForLocalAuthority;
+    List<DirectionType> directionsForRespondents;
+    List<DirectionType> directionsForCafcass;
+    List<DirectionType> directionsForOthers;
+    List<DirectionType> directionsForCourt;
 
-    @JsonProperty
-    List<Element<CustomDirection>> sdoDirectionCustom;
-    @JsonProperty
+    List<Element<CustomDirection>> customDirections;
     List<Element<StandardDirection>> standardDirections;
 
     public JudgeAndLegalAdvisor getGatekeepingOrderIssuingJudge() {
@@ -62,9 +60,10 @@ public class GatekeepingOrderEventData {
         return defaultIfNull(gatekeepingOrderSealDecision, GatekeepingOrderSealDecision.builder().build());
     }
 
+    @JsonIgnore
     public List<DirectionType> getRequestedDirections() {
-        return Stream.of(sdoDirectionsForAll, sdoDirectionsForLocalAuthority, sdoDirectionsForRespondents,
-            sdoDirectionsForCafcass, sdoDirectionsForOthers, sdoDirectionsForCourt)
+        return Stream.of(directionsForAllParties, directionsForLocalAuthority, directionsForRespondents,
+            directionsForCafcass, directionsForOthers, directionsForCourt)
             .filter(Objects::nonNull)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());

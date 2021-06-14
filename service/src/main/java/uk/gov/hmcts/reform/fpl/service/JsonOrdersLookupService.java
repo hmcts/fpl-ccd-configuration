@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import java.io.UncheckedIOException;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
 
 @Slf4j
@@ -37,21 +38,18 @@ public class JsonOrdersLookupService implements OrdersLookupService {
     }
 
     public DirectionConfiguration getDirectionConfiguration(DirectionType directionType) {
-        Optional<DirectionConfiguration> directionConfiguration = getConfiguration(directionType);
-
-        return directionConfiguration
+        return getConfiguration(directionType)
             .orElseThrow(() -> new OrderDefinitionNotFoundException(directionType));
     }
 
 
     private Optional<DirectionConfiguration> getConfiguration(DirectionType directionType) {
-
         if (directionType.isStandard()) {
             return getStandardDirectionOrder().getStandardDirections().stream()
-                .filter(directionConfig -> directionConfig.getId().equals(directionType))
+                .filter(directionConfig -> directionConfig.getType().equals(directionType))
                 .findFirst();
         }
 
-        return Optional.ofNullable(getStandardDirectionOrder().getCustomDirection());
+        return ofNullable(getStandardDirectionOrder().getCustomDirection());
     }
 }

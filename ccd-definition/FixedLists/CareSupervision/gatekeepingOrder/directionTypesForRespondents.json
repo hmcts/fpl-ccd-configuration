@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SdoDirectionGroup-Respondents",
+    "ID": "DirectionTypesForRespondents",
     "ListElementCode": "SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
     "ListElement": "Send response to threshold statement to all parties",
     "DisplayOrder": 1

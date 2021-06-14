@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.DueDateType;
+import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
@@ -24,13 +24,13 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 public class GatekeepingOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
     private final CaseDataExtractionService dataService;
-    private final OrdersLookupService ordersLookupService;
+    private final OrdersLookupService ordersConfig;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
@@ -83,19 +83,20 @@ public class GatekeepingOrderGenerationService extends
     }
 
     private List<DocmosisDirection> buildDirections(CaseData caseData) {
-        List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData()
+        final List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData()
             .getStandardDirections());
-        List<Element<CustomDirection>> customDirections = nullSafeList(caseData
-            .getGatekeepingOrderEventData().getSdoDirectionCustom());
 
-        AtomicInteger directionIndex = new AtomicInteger(1);
+        final List<Element<CustomDirection>> customDirections = nullSafeList(caseData
+            .getGatekeepingOrderEventData().getCustomDirections());
+
+        final AtomicInteger directionIndex = new AtomicInteger(1);
 
         return Stream.of(standardDirections, customDirections)
             .flatMap(Collection::stream)
             .map(Element::getValue)
             .sorted(comparing(StandardDirection::getAssignee))
             .map(direction -> toDocmosisDirection(direction, directionIndex.getAndAdd(1)))
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     private DocmosisDirection toDocmosisDirection(StandardDirection direction, int index) {
@@ -107,10 +108,9 @@ public class GatekeepingOrderGenerationService extends
     }
 
     private String formatTitle(StandardDirection direction, int index) {
-        DirectionConfiguration conf = ordersLookupService.getDirectionConfiguration(direction.getType());
-        Display display = conf.getDisplay();
-
-        DueDateType dueDateType = direction.getDueDateType();
+        final DirectionConfiguration directionConf = ordersConfig.getDirectionConfiguration(direction.getType());
+        final DirectionDueDateType dueDateType = direction.getDueDateType();
+        final Display display = directionConf.getDisplay();
 
         if (DAYS == dueDateType) {
             return format("%d. %s %d days before the hearing", index, direction.getTitle(),
@@ -123,7 +123,5 @@ public class GatekeepingOrderGenerationService extends
             return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
                 formattedDate);
         }
-
     }
-
 }

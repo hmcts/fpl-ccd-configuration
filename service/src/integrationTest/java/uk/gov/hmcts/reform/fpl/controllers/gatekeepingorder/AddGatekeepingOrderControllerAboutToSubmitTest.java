@@ -9,9 +9,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.DirectionType;
-import uk.gov.hmcts.reform.fpl.enums.DueDateType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -35,13 +32,18 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionType.CUSTOM;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -53,6 +55,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
 @WebMvcTest(AddGatekeepingOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTest {
+
     AddGatekeepingOrderControllerAboutToSubmitTest() {
         super("add-gatekeeping-order");
     }
@@ -114,28 +117,27 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
     void shouldBuildSealedSDOAndRemoveTransientFieldsWhenOrderStatusIsSealed() {
         List<Element<CustomDirection>> customDirections = wrapElements(
             CustomDirection.builder()
-                .type(DirectionType.CUSTOM)
-                .assignee(DirectionAssignee.CAFCASS)
+                .type(CUSTOM)
+                .assignee(CAFCASS)
                 .title("Test direction")
-                .dueDateType(DueDateType.DATE)
-                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.FEBRUARY, 10, 12, 0, 0))
+                .dueDateType(DAYS)
+                .daysBeforeHearing(2)
                 .build());
-
 
         List<Element<StandardDirection>> standardDirections = wrapElements(
             StandardDirection.builder()
-                .type(DirectionType.ATTEND_HEARING)
+                .type(ATTEND_HEARING)
+                .assignee(ALL_PARTIES)
                 .title("Attend the pre-hearing and hearing")
-                .assignee(DirectionAssignee.ALL_PARTIES)
-                .dueDateType(DueDateType.DATE)
+                .dueDateType(DATE)
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
-                .dateToBeCompletedBy(LocalDateTime.of(2030, Month.FEBRUARY, 10, 12, 0, 0))
+                .dateToBeCompletedBy(LocalDateTime.of(2030, 1, 10, 12, 0, 0))
                 .build());
 
         CaseData caseData = buildBaseCaseData().toBuilder()
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().build())
-                .sdoDirectionCustom(customDirections)
+                .customDirections(customDirections)
                 .standardDirections(standardDirections)
                 .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .orderStatus(SEALED)
@@ -168,8 +170,8 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
-        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "sdoDirectionCustom",
-            "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
+        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "customDirections",
+            "standardDirections", "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
     }
 
     private CaseData buildBaseCaseData() {

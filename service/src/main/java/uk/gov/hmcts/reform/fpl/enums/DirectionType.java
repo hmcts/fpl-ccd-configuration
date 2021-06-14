@@ -23,7 +23,7 @@ public enum DirectionType {
     ARRANGE_INTERPRETERS,
     CUSTOM(false);
 
-    private boolean isStandard;
+    private final boolean isStandard;
 
     DirectionType(boolean standard) {
         this.isStandard = standard;
@@ -40,7 +40,7 @@ public enum DirectionType {
 
     @JsonIgnore
     public String getFieldName() {
-        return "sdoDirection-" + this.name();
+        return "direction-" + this.name();
     }
 
 }

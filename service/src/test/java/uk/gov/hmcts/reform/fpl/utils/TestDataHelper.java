@@ -6,6 +6,7 @@ import feign.Response;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
@@ -332,6 +333,20 @@ public class TestDataHelper {
 
     public static DynamicList caseRoleDynamicList(SolicitorRole role) {
         return caseRoleDynamicList(role.getCaseRoleLabel());
+    }
+
+    public static BankHolidays bankHolidays(LocalDate... days) {
+        final List<BankHolidays.Division.Event> events = Stream.of(days)
+            .map(day -> BankHolidays.Division.Event.builder()
+                .date(day)
+                .build())
+            .collect(toList());
+
+        return BankHolidays.builder()
+            .englandAndWales(BankHolidays.Division.builder()
+                .events(events)
+                .build())
+            .build();
     }
 
 }

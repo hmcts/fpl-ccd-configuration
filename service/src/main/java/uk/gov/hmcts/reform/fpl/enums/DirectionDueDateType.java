@@ -1,5 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-public enum DueDateType {
+public enum DirectionDueDateType {
     DATE, DAYS
 }
