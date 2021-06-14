@@ -184,7 +184,7 @@ module.exports = {
         await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
       }, signedInSelector);
     }
-    await this.waitForSelector('.ccd-dropdown');
+    this.waitForElement('#next-step');
   },
 
   async navigateToCaseDetailsAs(user, caseId) {

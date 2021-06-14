@@ -69,6 +69,9 @@ exports.config = {
     StepListener: {
       require: './e2e/helpers/stepListener.js',
     },
+    Mochawesome: {
+      uniqueScreenshotNames: true,
+    },
   },
   include: {
     config: './e2e/config.js',
