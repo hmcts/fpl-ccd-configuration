@@ -11,7 +11,6 @@ const defaultSauceOptions = {
   accessKey: process.env.SAUCE_ACCESS_KEY,
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
-  windowSize: '1600x900',
   tags: ['FPL'],
 };
 
@@ -66,7 +65,7 @@ const setupConfig = {
     },
     DumpBrowserLogsHelper: {
       require: './e2e/helpers/dump_browser_logs_helper.js',
-    }
+    },
   },
   plugins: {
     retryFailedStep: {
@@ -76,6 +75,10 @@ const setupConfig = {
     autoDelay: {
       enabled: true,
       delayAfter: 2000,
+    },
+    screenshotOnFail: {
+      enabled: true,
+      fullPageScreenshots: true,
     },
   },
   include: {
