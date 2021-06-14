@@ -29,7 +29,7 @@
     "ID": "CustomDirection",
     "ListElementCode": "dueDateType",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "DueDateType",
+    "FieldTypeParameter": "DirectionDueDateType",
     "ElementLabel": "Due date",
     "SecurityClassification": "Public"
   },
@@ -47,6 +47,8 @@
     "ID": "CustomDirection",
     "ListElementCode": "daysBeforeHearing",
     "FieldType": "Number",
+    "Min": 0,
+    "Max": 365,
     "ElementLabel": "Enter number of days",
     "SecurityClassification": "Public"
   },

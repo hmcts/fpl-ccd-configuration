@@ -90,7 +90,6 @@ public class AddGatekeepingOrderController extends CallbackController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
-
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         StandardDirectionOrder gatekeepingOrder = service.buildBaseGatekeepingOrder(caseData);
@@ -118,7 +117,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
             caseDetails.getData().put("state", CASE_MANAGEMENT);
 
-            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "sdoDirectionCustom",
+            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "customDirections", "standardDirections",
                 "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
 
         } else {
@@ -129,6 +128,7 @@ public class AddGatekeepingOrderController extends CallbackController {
         }
 
         caseDetails.getData().put("standardDirectionOrder", gatekeepingOrder);
+
         return respond(caseDetails);
     }
 

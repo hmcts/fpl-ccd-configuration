@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
-import uk.gov.hmcts.reform.fpl.enums.DueDateType;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
@@ -27,12 +27,12 @@ public class StandardDirection {
     private final LocalDateTime dateToBeCompletedBy;
     private final Integer daysBeforeHearing;
     private final YesNo showDateOnly;
-    private final DueDateType dueDateType;
+    private final DirectionDueDateType dueDateType;
 
     @JsonIgnore
     public StandardDirection applyConfig(DirectionConfiguration config) {
         return this.toBuilder()
-            .type(config.getId())
+            .type(config.getType())
             .title(config.getTitle())
             .assignee(config.getAssignee())
             .showDateOnly(YesNo.from(config.getDisplay().isShowDateOnly()))

@@ -945,7 +945,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "populateSDO",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "CU"
   },
   {
     "LiveFrom": "01/01/2017",

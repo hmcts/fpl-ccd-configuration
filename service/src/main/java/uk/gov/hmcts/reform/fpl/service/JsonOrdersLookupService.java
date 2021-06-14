@@ -48,7 +48,7 @@ public class JsonOrdersLookupService implements OrdersLookupService {
 
         if (directionType.isStandard()) {
             return getStandardDirectionOrder().getStandardDirections().stream()
-                .filter(directionConfig -> directionConfig.getId().equals(directionType))
+                .filter(directionConfig -> directionConfig.getType().equals(directionType))
                 .findFirst();
         }
 

@@ -43,7 +43,7 @@
     "ID": "StandardDirection",
     "ListElementCode": "dueDateType",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "DueDateType",
+    "FieldTypeParameter": "DirectionDueDateType",
     "ElementLabel": "Due date",
     "SecurityClassification": "Public"
   },
@@ -63,6 +63,8 @@
     "ListElementCode": "daysBeforeHearing",
     "FieldType": "Number",
     "ElementLabel": "Enter number of days",
+    "Min": 0,
+    "Max": 365,
     "SecurityClassification": "Public",
     "FieldShowCondition": "dueDateType=\"DAYS\""
   },

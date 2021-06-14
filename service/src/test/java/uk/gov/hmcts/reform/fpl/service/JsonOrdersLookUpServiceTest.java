@@ -41,7 +41,7 @@ class JsonOrdersLookUpServiceTest {
     private ObjectMapper mockedMapper;
 
     private final DirectionConfiguration order1Definition = DirectionConfiguration.builder()
-        .id(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE)
+        .type(REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE)
         .title("Test SDO type 1")
         .text("- Test body 1 \n\n- Two\n")
         .assignee(ALL_PARTIES)
@@ -55,7 +55,7 @@ class JsonOrdersLookUpServiceTest {
         .build();
 
     private final DirectionConfiguration order2Definition = DirectionConfiguration.builder()
-        .id(REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS)
+        .type(REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS)
         .title("Test SDO type 2")
         .text("Test body 2\n")
         .assignee(LOCAL_AUTHORITY)
@@ -70,7 +70,7 @@ class JsonOrdersLookUpServiceTest {
         .build();
 
     private final DirectionConfiguration order3Definition = DirectionConfiguration.builder()
-        .id(ASK_FOR_DISCLOSURE)
+        .type(ASK_FOR_DISCLOSURE)
         .title("Test SDO type 3")
         .text("Test body 3\n")
         .assignee(LOCAL_AUTHORITY)
@@ -85,7 +85,7 @@ class JsonOrdersLookUpServiceTest {
         .build();
 
     private final DirectionConfiguration customOrderDefinition = DirectionConfiguration.builder()
-        .id(CUSTOM)
+        .type(CUSTOM)
         .display(Display.builder()
             .due(Display.Due.BY)
             .templateDateFormat("d MMMM yyyy 'at' h:mma")

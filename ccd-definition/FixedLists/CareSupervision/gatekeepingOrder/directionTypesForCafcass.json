@@ -1,21 +1,21 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SdoDirectionGroup-Cafcass",
+    "ID": "DirectionTypesForCafcass",
     "ListElementCode": "ARRANGE_ADVOCATES_MEETING",
     "ListElement": "Arrange an advocates' meeting",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SdoDirectionGroup-Cafcass",
+    "ID": "DirectionTypesForCafcass",
     "ListElementCode": "SEND_GUARDIANS_ANALYSIS",
     "ListElement": "Send the guardian's analysis to all parties",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SdoDirectionGroup-Cafcass",
+    "ID": "DirectionTypesForCafcass",
     "ListElementCode": "APPOINT_CHILDREN_GUARDIAN",
     "ListElement": "Appoint a children's guardian",
     "DisplayOrder": 3

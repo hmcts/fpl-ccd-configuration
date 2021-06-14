@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.DueDateType;
+import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import static java.lang.String.format;
 import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
@@ -86,7 +86,7 @@ public class GatekeepingOrderGenerationService extends
         List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData()
             .getStandardDirections());
         List<Element<CustomDirection>> customDirections = nullSafeList(caseData
-            .getGatekeepingOrderEventData().getSdoDirectionCustom());
+            .getGatekeepingOrderEventData().getCustomDirections());
 
         AtomicInteger directionIndex = new AtomicInteger(1);
 
@@ -110,7 +110,7 @@ public class GatekeepingOrderGenerationService extends
         DirectionConfiguration conf = ordersLookupService.getDirectionConfiguration(direction.getType());
         Display display = conf.getDisplay();
 
-        DueDateType dueDateType = direction.getDueDateType();
+        DirectionDueDateType dueDateType = direction.getDueDateType();
 
         if (DAYS == dueDateType) {
             return format("%d. %s %d days before the hearing", index, direction.getTitle(),
@@ -123,7 +123,5 @@ public class GatekeepingOrderGenerationService extends
             return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
                 formattedDate);
         }
-
     }
-
 }

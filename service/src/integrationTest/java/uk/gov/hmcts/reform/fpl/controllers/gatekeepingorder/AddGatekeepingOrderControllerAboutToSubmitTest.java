@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.controllers.AddGatekeepingOrderController;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
-import uk.gov.hmcts.reform.fpl.enums.DueDateType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -117,17 +117,16 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
                 .type(DirectionType.CUSTOM)
                 .assignee(DirectionAssignee.CAFCASS)
                 .title("Test direction")
-                .dueDateType(DueDateType.DATE)
+                .dueDateType(DirectionDueDateType.DATE)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, Month.FEBRUARY, 10, 12, 0, 0))
                 .build());
-
 
         List<Element<StandardDirection>> standardDirections = wrapElements(
             StandardDirection.builder()
                 .type(DirectionType.ATTEND_HEARING)
                 .title("Attend the pre-hearing and hearing")
                 .assignee(DirectionAssignee.ALL_PARTIES)
-                .dueDateType(DueDateType.DATE)
+                .dueDateType(DirectionDueDateType.DATE)
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .dateToBeCompletedBy(LocalDateTime.of(2030, Month.FEBRUARY, 10, 12, 0, 0))
                 .build());
@@ -135,7 +134,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         CaseData caseData = buildBaseCaseData().toBuilder()
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
                 .gatekeepingOrderIssuingJudge(JudgeAndLegalAdvisor.builder().build())
-                .sdoDirectionCustom(customDirections)
+                .customDirections(customDirections)
                 .standardDirections(standardDirections)
                 .gatekeepingOrderSealDecision(GatekeepingOrderSealDecision.builder()
                     .orderStatus(SEALED)
@@ -168,7 +167,7 @@ class AddGatekeepingOrderControllerAboutToSubmitTest extends AbstractCallbackTes
         assertThat(responseData.getNoticeOfProceedingsBundle())
             .extracting(Element::getValue)
             .containsExactly(DocumentBundle.builder().document(C6_REFERENCE).build());
-        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "sdoDirectionCustom",
+        assertThat(response.getData()).doesNotContainKeys("gatekeepingOrderRouter", "customDirections",
             "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
     }
 

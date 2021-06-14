@@ -50,11 +50,11 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DATE;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -213,7 +213,7 @@ class GatekeepingOrderServiceTest {
 
     private DirectionConfiguration directionConfiguration(DirectionType type, int days) {
         return DirectionConfiguration.builder()
-            .id(type)
+            .type(type)
             .assignee(ALL_PARTIES)
             .title(format("title - %s", type))
             .text(format("text - %s", type))
@@ -234,13 +234,13 @@ class GatekeepingOrderServiceTest {
         when(ordersLookupService.getDirectionConfiguration(type)).thenReturn(directionConfiguration);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(newHashMap(Map.of("sdoDirectionsForAll", List.of(type))))
+            .data(newHashMap(Map.of("directionsForAllParties", List.of(type))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
         StandardDirection expectedDirection = StandardDirection.builder()
-            .type(directionConfiguration.getId())
+            .type(directionConfiguration.getType())
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
@@ -250,7 +250,7 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(expectedDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
     }
 
 
@@ -280,14 +280,14 @@ class GatekeepingOrderServiceTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
-                "sdoDirectionsForAll", List.of(type),
+                "directionsForAllParties", List.of(type),
                 "hearingDetails", wrapElements(hearing1, hearing2))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
         StandardDirection expectedDirection = StandardDirection.builder()
-            .type(directionConfiguration.getId())
+            .type(directionConfiguration.getType())
             .title(directionConfiguration.getTitle())
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
@@ -297,7 +297,7 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(expectedDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
 
     }
 
@@ -319,7 +319,7 @@ class GatekeepingOrderServiceTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
-                "sdoDirectionsForAll", List.of(type),
+                "directionsForAllParties", List.of(type),
                 "hearingDetails", wrapElements(hearing))))
             .build();
 
@@ -336,7 +336,7 @@ class GatekeepingOrderServiceTest {
             .dueDateType(DAYS)
             .build();
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(expectedDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(expectedDirection);
 
         verifyNoInteractions(calendarService);
     }
@@ -359,12 +359,12 @@ class GatekeepingOrderServiceTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
                 "standardDirections", wrapElements(draftDirection),
-                "sdoDirectionsForAll", List.of(type))))
+                "directionsForAllParties", List.of(type))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
-        assertThat(caseDetails.getData().get("sdoDirection-" + type)).isEqualTo(draftDirection);
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
 
         verifyNoInteractions(ordersLookupService, calendarService);
     }
@@ -410,8 +410,8 @@ class GatekeepingOrderServiceTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
                 "standardDirections", wrapElements(oldDirectionDraft),
-                "sdoDirection-" + type, newDirectionDraft,
-                "sdoDirectionsForAll", List.of(type))))
+                "direction-" + type, newDirectionDraft,
+                "directionsForAllParties", List.of(type))))
             .build();
 
         CaseData cd = underTest.updateStandardDirections(caseDetails);

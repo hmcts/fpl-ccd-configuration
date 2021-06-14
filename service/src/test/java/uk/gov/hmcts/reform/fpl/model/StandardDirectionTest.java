@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 class StandardDirectionTest {
 
     private static final DirectionConfiguration DIRECTION_CONFIGURATION = DirectionConfiguration.builder()
-        .id(APPOINT_CHILDREN_GUARDIAN)
+        .type(APPOINT_CHILDREN_GUARDIAN)
         .title("test title")
         .text("test text")
         .assignee(CAFCASS)

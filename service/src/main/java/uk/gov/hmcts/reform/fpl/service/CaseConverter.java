@@ -46,4 +46,5 @@ public class CaseConverter {
         }
         return objectMapper.convertValue(object, MAP_TYPE);
     }
+
 }

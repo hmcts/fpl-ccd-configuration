@@ -25,10 +25,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
@@ -52,8 +52,8 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
 
         CaseData caseData = CaseData.builder()
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .sdoDirectionsForAll(selectedDirectionsForAll)
-                .sdoDirectionsForCafcass(selectedDirectionsForCafcass)
+                .directionsForAllParties(selectedDirectionsForAll)
+                .directionsForCafcass(selectedDirectionsForCafcass)
                 .build())
             .build();
 
@@ -114,8 +114,8 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .startDate(LocalDateTime.of(2030, FEBRUARY, 10, 15, 0, 0))
                 .build()))
             .gatekeepingOrderEventData(GatekeepingOrderEventData.builder()
-                .sdoDirectionsForAll(selectedDirectionsForAll)
-                .sdoDirectionsForCafcass(selectedDirectionsForCafcass)
+                .directionsForAllParties(selectedDirectionsForAll)
+                .directionsForCafcass(selectedDirectionsForCafcass)
                 .build())
             .build();
 
@@ -160,7 +160,7 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
     }
 
     private StandardDirection getStandardDirection(AboutToStartOrSubmitCallbackResponse response, DirectionType type) {
-        return caseConverter.convert(response.getData().get("sdoDirection-" + type), StandardDirection.class);
+        return caseConverter.convert(response.getData().get("direction-" + type), StandardDirection.class);
     }
 
 }

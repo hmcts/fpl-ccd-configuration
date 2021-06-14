@@ -35,8 +35,8 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.DueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -99,7 +99,7 @@ public class GatekeepingOrderService {
         if (requiredMissingInformation.isEmpty()) {
             return null;
         } else {
-            String nextStepsLabel = "## Next steps\n\n"
+            final String nextStepsLabel = "## Next steps\n\n"
                 + "Your order will be saved as a draft in 'Draft orders'.\n\n"
                 + "You cannot seal and send the order until adding:";
             requiredMissingInformation.add(0, nextStepsLabel);
@@ -115,7 +115,7 @@ public class GatekeepingOrderService {
             getJudgeForTabView(eventData.getGatekeepingOrderIssuingJudge(), caseData.getAllocatedJudge());
 
         return StandardDirectionOrder.builder()
-            .customDirections(eventData.getSdoDirectionCustom())
+            .customDirections(eventData.getCustomDirections())
             .standardDirections(eventData.getStandardDirections())
             .orderStatus(defaultIfNull(eventData.getGatekeepingOrderSealDecision().getOrderStatus(), DRAFT))
             .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
