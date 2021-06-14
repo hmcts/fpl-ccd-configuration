@@ -77,7 +77,7 @@ public class GatekeepingOrderService {
         if (requiredMissingInformation.isEmpty()) {
             return null;
         } else {
-            String nextStepsLabel = "## Next steps\n\n"
+            final String nextStepsLabel = "## Next steps\n\n"
                 + "Your order will be saved as a draft in 'Draft orders'.\n\n"
                 + "You cannot seal and send the order until adding:";
             requiredMissingInformation.add(0, nextStepsLabel);

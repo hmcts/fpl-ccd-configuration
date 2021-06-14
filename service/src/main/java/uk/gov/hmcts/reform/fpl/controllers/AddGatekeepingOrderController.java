@@ -89,8 +89,7 @@ public class AddGatekeepingOrderController extends CallbackController {
             Document document = service.buildDocument(caseData);
 
             gatekeepingOrder = gatekeepingOrder.toBuilder()
-                .dateOfIssue(
-                    formatLocalDateToString(eventData.getGatekeepingOrderSealDecision().getDateOfIssue(), DATE))
+                .dateOfIssue(formatLocalDateToString(gatekeepingOrderSealDecision.getDateOfIssue(), DATE))
                 .unsealedDocumentCopy(gatekeepingOrderSealDecision.getDraftDocument())
                 .orderDoc(buildFromDocument(document))
                 .build();

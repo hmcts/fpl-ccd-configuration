@@ -15,7 +15,7 @@ Before(async ({I}) => await I.navigateToCaseDetails(caseId));
 
 Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, addGatekeepingOrderEventPage}) => {
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
-  await addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
+  addGatekeepingOrderEventPage.createGatekeepingOrderThroughService();
   await I.runAccessibilityTest();
   await I.goToNextPage();
   await I.addAnotherElementToCollection();
@@ -24,10 +24,10 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   await addGatekeepingOrderEventPage.enterCustomDirections(directions[1]);
   await I.runAccessibilityTest();
   await I.goToNextPage();
-  await addGatekeepingOrderEventPage.enterIssuingJudge('Judy', 'Bob Ross');
+  addGatekeepingOrderEventPage.enterIssuingJudge('Judy', 'Bob Ross');
   await I.runAccessibilityTest();
   await I.goToNextPage();
-  await addGatekeepingOrderEventPage.verifyNextStepsLabel();
+  addGatekeepingOrderEventPage.verifyNextStepsLabel();
   await I.runAccessibilityTest();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addGatekeepingOrder);
@@ -51,7 +51,7 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   await caseViewPage.goToNewActions(config.administrationActions.addGatekeepingOrder);
   await I.goToNextPage();
   await I.goToNextPage();
-  await addGatekeepingOrderEventPage.selectAllocatedJudge('Bob Ross');
+  addGatekeepingOrderEventPage.selectAllocatedJudge('Bob Ross');
   await I.goToNextPage();
   await addGatekeepingOrderEventPage.markAsFinal({day: 11, month: 1, year: 2020});
   await I.completeEvent('Save and continue');
