@@ -14,6 +14,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersApprovedAtHearing",
             "manageOrdersApprovedAtHearingList",
             "manageOrdersUploadType",
+            "manageOrdersUploadTypeOtherTitle",
             "manageOrdersUploadOrderFile",
             "manageOrdersNeedSealing",
             "judgeAndLegalAdvisor",

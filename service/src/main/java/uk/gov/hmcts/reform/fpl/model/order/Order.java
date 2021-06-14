@@ -359,7 +359,7 @@ public enum Order {
         MANUAL_UPLOAD,
         "",
         "",
-        "",
+        "Other",
         false,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
