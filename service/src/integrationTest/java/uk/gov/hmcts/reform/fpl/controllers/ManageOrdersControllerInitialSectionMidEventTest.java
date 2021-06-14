@@ -64,6 +64,8 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("needSealing", "NO"),
+            Map.entry("uploadOrderFile", "NO"),
             Map.entry("closeCase", "NO")
         );
 

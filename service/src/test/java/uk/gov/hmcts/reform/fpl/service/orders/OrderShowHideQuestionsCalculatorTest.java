@@ -4,7 +4,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -39,6 +41,8 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("approvalDate", "YES");
         careOrderQuestions.put("approvalDateTime", "NO");
         careOrderQuestions.put("epoIncludePhrase", "NO");
+        careOrderQuestions.put("uploadOrderFile", "NO");
+        careOrderQuestions.put("needSealing", "NO");
         careOrderQuestions.put("epoChildrenDescription", "NO");
         careOrderQuestions.put("epoExpiryDate", "NO");
         careOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
@@ -55,6 +59,8 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("approvalDate", "NO");
         epoQuestions.put("approvalDateTime", "YES");
         epoQuestions.put("epoIncludePhrase", "YES");
+        epoQuestions.put("uploadOrderFile", "NO");
+        epoQuestions.put("needSealing", "NO");
         epoQuestions.put("epoChildrenDescription", "YES");
         epoQuestions.put("epoExpiryDate", "YES");
         epoQuestions.put("epoTypeAndPreventRemoval", "YES");
@@ -72,6 +78,8 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("orderDetails", "YES");
         blankOrderQuestions.put("approvalDateTime", "NO");
         blankOrderQuestions.put("epoIncludePhrase", "NO");
+        blankOrderQuestions.put("uploadOrderFile", "NO");
+        blankOrderQuestions.put("needSealing", "NO");
         blankOrderQuestions.put("epoChildrenDescription", "NO");
         blankOrderQuestions.put("epoExpiryDate", "NO");
         blankOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
@@ -88,6 +96,8 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("orderDetails", "NO");
         supervisionOrderQuestions.put("approvalDateTime", "NO");
         supervisionOrderQuestions.put("epoIncludePhrase", "NO");
+        supervisionOrderQuestions.put("uploadOrderFile", "NO");
+        supervisionOrderQuestions.put("needSealing", "NO");
         supervisionOrderQuestions.put("epoChildrenDescription", "NO");
         supervisionOrderQuestions.put("epoExpiryDate", "NO");
         supervisionOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
@@ -104,6 +114,8 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("orderDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("approvalDateTime", "NO");
         appointmentOfChildrensGuardianQuestions.put("epoIncludePhrase", "NO");
+        appointmentOfChildrensGuardianQuestions.put("uploadOrderFile", "NO");
+        appointmentOfChildrensGuardianQuestions.put("needSealing", "NO");
         appointmentOfChildrensGuardianQuestions.put("epoChildrenDescription", "NO");
         appointmentOfChildrensGuardianQuestions.put("epoExpiryDate", "NO");
         appointmentOfChildrensGuardianQuestions.put("epoTypeAndPreventRemoval", "NO");
@@ -122,5 +134,39 @@ class OrderShowHideQuestionsCalculatorTest {
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, appointmentOfChildrensGuardianQuestions)
         );
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("manualUploadOrders")
+    void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    private static Stream<Arguments> manualUploadOrders() {
+        return Arrays.stream(Order.values())
+            .filter(order -> OrderSourceType.MANUAL_UPLOAD == order.getSourceType())
+            .map(order -> Arguments.of(order, Map.ofEntries(
+                Map.entry("approver", "NO"),
+                Map.entry("previewOrder", "YES"),
+                Map.entry("furtherDirections", "NO"),
+                Map.entry("orderDetails", "NO"),
+                Map.entry("whichChildren", "YES"),
+                Map.entry("hearingDetails", "NO"),
+                Map.entry("approvalDate", "YES"),
+                Map.entry("approvalDateTime", "NO"),
+                Map.entry("epoIncludePhrase", "NO"),
+                Map.entry("epoExpiryDate", "NO"),
+                Map.entry("epoTypeAndPreventRemoval", "NO"),
+                Map.entry("epoChildrenDescription", "NO"),
+                Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+                Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+                Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+                Map.entry("cafcassJurisdictions", "NO"),
+                Map.entry("needSealing", "YES"),
+                Map.entry("uploadOrderFile", "YES"),
+                Map.entry("closeCase", "YES")
+                )
+            ));
     }
 }
