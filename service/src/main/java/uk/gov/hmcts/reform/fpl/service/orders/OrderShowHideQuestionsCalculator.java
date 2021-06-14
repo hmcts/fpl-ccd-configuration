@@ -17,9 +17,9 @@ public class OrderShowHideQuestionsCalculator {
         Set<OrderQuestionBlock> questions = Sets.newHashSet(order.getQuestions());
         Set<OrderQuestionBlock> allQuestions = Stream.of(OrderQuestionBlock.values()).collect(Collectors.toSet());
 
-        Map<String, String> shownHideQuestions = allQuestions.stream().collect(Collectors.toMap(
+        return allQuestions.stream().collect(Collectors.toMap(
             OrderQuestionBlock::getShowHideField, el -> questions.contains(el) ? "YES" : "NO"
         ));
-        return shownHideQuestions;
     }
+
 }
