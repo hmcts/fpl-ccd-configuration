@@ -286,6 +286,34 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   });
 });
 
+Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectUploadOrder(manageOrdersEventPage.orders.options.other);
+  await manageOrdersEventPage.specifyOtherOrderTitle('Order F789s');
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.uploadManualOrder(config.testPdfFile);
+  manageOrdersEventPage.selectManualOrderNeedSealing(manageOrdersEventPage.section4.manualOrderNeedSealing.options.yes);
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 6,
+    orderType: 'Other',
+    orderTitle: 'Order F789s',
+    approvalDate: approvalDate,
+    allocatedJudge: allocatedJudge,
+    children: 'Timothy Jones',
+  });
+});
+
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
   const dateOfApproval = order.approvalDate !== undefined ? order.approvalDate : order.approvalDateTime;

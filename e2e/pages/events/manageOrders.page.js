@@ -7,11 +7,13 @@ const operations = {
   group: '#manageOrdersOperation',
   options: {
     create: 'CREATE',
+    upload: 'UPLOAD',
   },
 };
 
 const orders = {
   group: '#manageOrdersType',
+  uploadGroup: '#manageOrdersUploadType',
   options: {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
@@ -20,6 +22,7 @@ const orders = {
     c35A: 'C35A_SUPERVISION_ORDER',
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
+    other: 'OTHER_ORDER',
   },
   title: {
     c21: 'Blank order (C21)',
@@ -29,7 +32,9 @@ const orders = {
     c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
+    other: 'Other',
   },
+  otherOrderTitle: '#manageOrdersUploadTypeOtherTitle',
 };
 
 const hearingDetails = {
@@ -117,6 +122,14 @@ const section4 = {
   exclusionStartDate: '#manageOrdersExclusionStartDate',
   exclusionDetails: '#manageOrdersExclusionDetails',
   powerOfArrest: '#manageOrdersPowerOfArrest',
+  manualOrder: '#manageOrdersUploadOrderFile',
+  manualOrderNeedSealing: {
+    group: '#manageOrdersNeedSealing',
+    options: {
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
   endDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDateAndTime: '#manageOrdersSetDateAndTimeEndDate',
@@ -163,6 +176,16 @@ const selectHearing = async (hearing) => {
 const selectOrder = async (orderType) => {
   I.click(`${orders.group}-${orderType}`);
   await I.runAccessibilityTest();
+};
+
+const selectUploadOrder = async (orderType) => {
+  I.click(`${orders.uploadGroup}-${orderType}`);
+  await I.runAccessibilityTest();
+};
+
+const specifyOtherOrderTitle = async (text) => {
+  I.waitForElement(orders.otherOrderTitle);
+  await I.fillField(orders.otherOrderTitle, text);
 };
 
 const enterJudge = () => {
@@ -233,6 +256,15 @@ const uploadPowerOfArrest = (file) => {
   I.attachFile(section4.powerOfArrest, file);
 };
 
+const uploadManualOrder = async (file) => {
+  I.attachFile(section4.manualOrder, file);
+  await I.runAccessibilityTest();
+};
+
+const selectManualOrderNeedSealing = (needSealing) => {
+  I.click(`${section4.manualOrderNeedSealing.group}-${needSealing}`);
+};
+
 const enterRemovalAddress = (address) => {
   postcodeLookup.enterAddressManually(address);
 };
@@ -295,4 +327,5 @@ module.exports = {
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectCafcassRegion, selectEnglandOffice,
+  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing,
 };
