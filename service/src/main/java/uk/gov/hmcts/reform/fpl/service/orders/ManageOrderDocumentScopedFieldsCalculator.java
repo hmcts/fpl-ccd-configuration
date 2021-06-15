@@ -18,6 +18,7 @@ public class ManageOrderDocumentScopedFieldsCalculator {
 
         fields.addAll(List.of(
             "manageOrdersOperation",
+            "manageOrdersOperationClosedState",
             "manageOrdersType",
             "manageOrdersUploadType",
             "manageOrdersUploadTypeOtherTitle",

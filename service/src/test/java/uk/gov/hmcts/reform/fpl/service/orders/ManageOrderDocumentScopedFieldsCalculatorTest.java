@@ -44,6 +44,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersCloseCaseWarning",
             "manageOrdersApprovalDateTime",
             "manageOrdersOperation",
+            "manageOrdersOperationClosedState",
             "manageOrdersType",
             "manageOrdersState",
             "orderTempQuestions",
