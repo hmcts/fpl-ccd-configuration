@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.DocumentService;
 import uk.gov.hmcts.reform.fpl.service.GatekeepingOrderService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,6 +67,7 @@ class GatekeepingOrderServiceTest {
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(null)
+            .dateOfIssue(LocalDate.now())
             .build();
 
         assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
@@ -84,6 +86,7 @@ class GatekeepingOrderServiceTest {
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the first hearing details")
+            .dateOfIssue(LocalDate.now())
             .build();
 
         assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
@@ -105,6 +108,7 @@ class GatekeepingOrderServiceTest {
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the allocated judge")
+            .dateOfIssue(LocalDate.now())
             .build();
 
         assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
@@ -121,6 +125,7 @@ class GatekeepingOrderServiceTest {
             .draftDocument(REFERENCE)
             .orderStatus(null)
             .nextSteps(NEXT_STEPS + "* the judge issuing the order")
+            .dateOfIssue(LocalDate.now())
             .build();
 
         assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);
@@ -136,6 +141,7 @@ class GatekeepingOrderServiceTest {
             .nextSteps(NEXT_STEPS + "* the first hearing details\n\n"
                 + "* the allocated judge\n\n"
                 + "* the judge issuing the order")
+            .dateOfIssue(LocalDate.now())
             .build();
 
         assertThat(underTest.buildSealDecisionPage(caseData)).isEqualTo(expected);

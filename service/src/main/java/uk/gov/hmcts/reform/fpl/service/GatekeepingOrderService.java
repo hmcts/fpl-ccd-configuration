@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class GatekeepingOrderService {
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(buildFromDocument(document))
             .nextSteps(buildNextStepsLabel(caseData))
+            .dateOfIssue(LocalDate.now())
             .orderStatus(null)
             .build();
     }
