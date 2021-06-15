@@ -18,11 +18,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-public class WhichOrdersBlockPrePopulatorTest {
+public class WhichCareOrdersBlockPrePopulatorTest {
 
     private static final String ORDER_LABEL = "order label";
     private final DischargeCareOrderService dischargeCareOrderService = mock(DischargeCareOrderService.class);
-    private final WhichOrdersBlockPrePopulator underTest = new WhichOrdersBlockPrePopulator(
+    private final WhichCareOrdersBlockPrePopulator underTest = new WhichCareOrdersBlockPrePopulator(
         dischargeCareOrderService
     );
 

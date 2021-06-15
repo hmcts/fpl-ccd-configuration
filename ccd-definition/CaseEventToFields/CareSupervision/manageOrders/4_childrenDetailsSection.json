@@ -9,7 +9,7 @@
     "PageID": "ChildrenDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "PageShowCondition": "orderTempQuestions.whichChildren=\"YES\" OR orderTempQuestions.whichOrders=\"YES\"",
+    "PageShowCondition": "orderTempQuestions.whichChildren=\"YES\" OR orderTempQuestions.whichCareOrders=\"YES\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/children-details/mid-event",
     "ShowSummaryChangeOption": "N"
   },
@@ -74,7 +74,7 @@
     "PageID": "ChildrenDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.whichOrders=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.whichCareOrders=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -87,7 +87,7 @@
     "PageID": "ChildrenDetails",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orderTempQuestions.whichOrders=\"YES\"",
+    "FieldShowCondition": "orderTempQuestions.whichCareOrders=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

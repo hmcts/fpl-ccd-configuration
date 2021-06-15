@@ -7,7 +7,7 @@ const closedCaseData = require('../fixtures/caseData/closedCase.json');
 const approvalDate = new Date(2021, 3, 9);
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
 const orderTitle = 'some title';
-const pastDate = new Date(Date.now() - (3600 * 1000 * 24));
+const aYearAgo = new Date(Date.now() - (3600 * 1000 * 24));
 const today = new Date(Date.now());
 const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
 const removalAddress = {buildingAndStreet: {lineOne: 'Flat 2 Caversham', town: 'Reading'}, postcode: 'RG4 7AA'};
@@ -61,7 +61,7 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   await I.goToNextPage();
   await manageOrdersEventPage.selectCareOrder([0]);
   await I.goToNextPage();
-  await manageOrdersEventPage.enterCareOrderIssuedDate(pastDate);
+  await manageOrdersEventPage.enterCareOrderIssuedDate(aYearAgo);
   manageOrdersEventPage.enterCareOrderIssuedVenue(hearingDetails[0]);
   await manageOrdersEventPage.enterFurtherDirections('some text');
   await I.goToNextPage();

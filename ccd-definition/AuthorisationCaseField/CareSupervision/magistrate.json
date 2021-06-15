@@ -373,13 +373,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "orders_label",
-    "UserRole": "caseworker-publiclaw-magistrate",
-    "CRUD": "CRUD"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "showFinalOrderSingleChildPage",
     "UserRole": "caseworker-publiclaw-magistrate",
     "CRUD": "R"

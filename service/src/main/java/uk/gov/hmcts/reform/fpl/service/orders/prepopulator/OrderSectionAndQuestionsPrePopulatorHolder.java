@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlo
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichCareOrdersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichOrdersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
@@ -35,7 +35,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ApprovalDateBlockPrePopulator approvalDateBlockPrePopulator;
     private final ApprovalDateTimeBlockPrePopulator approvalDateTimeBlockPrePopulator;
     private final WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
-    private final WhichOrdersBlockPrePopulator whichOrdersBlockPrePopulator;
+    private final WhichCareOrdersBlockPrePopulator whichCareOrdersBlockPrePopulator;
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     private final CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
@@ -60,7 +60,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
-            whichOrdersBlockPrePopulator,
+            whichCareOrdersBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator

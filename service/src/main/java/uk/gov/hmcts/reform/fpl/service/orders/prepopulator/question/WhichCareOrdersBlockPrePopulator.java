@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 
 @Component
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class WhichOrdersBlockPrePopulator implements QuestionBlockOrderPrePopulator {
+public class WhichCareOrdersBlockPrePopulator implements QuestionBlockOrderPrePopulator {
 
     private final DischargeCareOrderService dischargeCareOrder;
 

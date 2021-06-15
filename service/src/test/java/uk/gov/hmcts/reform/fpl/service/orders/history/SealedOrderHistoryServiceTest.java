@@ -167,6 +167,35 @@ class SealedOrderHistoryServiceTest {
         }
 
         @Test
+        void generateChildrenForDischargeOfCareOrder() {
+            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
+                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
+                mockHelper(jalMock);
+                CaseData caseData = caseData().manageOrdersEventData(ManageOrdersEventData
+                    .builder()
+                    .manageOrdersType(Order.C32B_DISCHARGE_OF_CARE_ORDER)
+                    .manageOrdersApprovalDate(APPROVAL_DATE)
+                    .build())
+                    .build();
+                mockDocumentUpload(caseData);
+                when(dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData)).thenReturn(List.of(child1,
+                    child1));
+
+                Map<String, Object> actual = underTest.generate(caseData);
+
+                assertThat(actual).isEqualTo(Map.of(
+                    "orderCollection", List.of(
+                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
+                            .orderType(Order.C32B_DISCHARGE_OF_CARE_ORDER.name())
+                            .type(Order.C32B_DISCHARGE_OF_CARE_ORDER.getHistoryTitle())
+                            .children(wrapElements(child1, child1))
+                            .childrenDescription(String.format("%s, %s", CHILD_1_FULLNAME, CHILD_2_FULLNAME))
+                            .build())
+                    )));
+            }
+        }
+
+        @Test
         void generateWithPreviousOrdersWithPastApprovalDate() {
             try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
                      Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {

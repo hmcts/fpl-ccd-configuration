@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class DocmosisCommonElementDecoratorTest {
@@ -114,6 +115,18 @@ class DocmosisCommonElementDecoratorTest {
             .build();
 
         assertThat(decorated).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldGetSelectedChildrenForDischargeOfCareOrder() {
+        when(dischargeCareOrderService.getChildrenInSelectedCareOrders(CASE_DATA)).thenReturn(unwrapElements(CHILDREN));
+
+        DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS,
+            CASE_DATA,
+            SEALED,
+            Order.C32B_DISCHARGE_OF_CARE_ORDER);
+
+        assertThat(decorated.getChildren()).isEqualTo(DOCMOSIS_CHILDREN);
     }
 
     private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters(
