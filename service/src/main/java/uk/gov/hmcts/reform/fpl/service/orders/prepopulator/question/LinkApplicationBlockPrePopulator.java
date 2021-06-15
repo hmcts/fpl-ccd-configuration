@@ -22,7 +22,9 @@ public class LinkApplicationBlockPrePopulator implements QuestionBlockOrderPrePo
         Map<String, Object> prePopulatedFields = new HashMap<>();
 
         DynamicList applicationsToLink = caseData.buildApplicationBundlesDynamicList();
-        OrderTempQuestions.OrderTempQuestionsBuilder orderTempQuestionsBuilder = caseData.getManageOrdersEventData().getOrderTempQuestions().toBuilder();
+        OrderTempQuestions.OrderTempQuestionsBuilder orderTempQuestionsBuilder = caseData.getManageOrdersEventData()
+            .getOrderTempQuestions()
+            .toBuilder();
         if (!applicationsToLink.getListItems().isEmpty()) {
             orderTempQuestionsBuilder.linkApplication("YES");
             prePopulatedFields.put("manageOrdersLinkedApplication", applicationsToLink);
