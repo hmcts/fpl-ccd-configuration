@@ -37,8 +37,15 @@
   {
     "LiveFrom": "01/01/207",
     "ID": "ManageOrdersType",
+    "ListElementCode": "C35B_INTERIM_SUPERVISION_ORDER",
+    "ListElement": "Interim supervision order (C35B)",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/207",
+    "ID": "ManageOrdersType",
     "ListElementCode": "C35A_SUPERVISION_ORDER",
     "ListElement": "Supervision order (C35A)",
-    "DisplayOrder": 6
+    "DisplayOrder": 7
   }
 ]

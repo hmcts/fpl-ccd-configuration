@@ -18,6 +18,7 @@ const orders = {
     c32: 'C32_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
+    c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
   },
   title: {
@@ -25,6 +26,7 @@ const orders = {
     c23: 'Emergency protection order (C23)',
     c32: 'Care order (C32)',
     c33: 'Interim care order (C33)',
+    c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
   },
@@ -133,6 +135,13 @@ const section4 = {
 const preview = {
   label: '#orderPreviewSectionHeader',
   documentName: 'Preview order.pdf',
+  closeCase: {
+    group: '#manageOrdersCloseCase',
+    options: {
+      yes: '#manageOrdersCloseCase-Yes',
+      no: '#manageOrdersCloseCase-No',
+    },
+  },
 };
 
 // Actions
@@ -262,6 +271,10 @@ const checkPreview = async () => {
   await I.runAccessibilityTest();
 };
 
+const selectCloseCase = async () => {
+  I.checkOption(preview.closeCase.options.no);
+};
+
 const selectExclusionRequirementICO = (exclusionRequirement) => {
   I.click(`${section4.exclusionRequirement.group}-${exclusionRequirement}`);
 };
@@ -277,7 +290,7 @@ const selectEnglandOffice= office => {
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterFurtherDirections, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,

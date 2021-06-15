@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.docmosis;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -286,7 +287,8 @@ public class CaseSubmissionGenerationService
     }
 
     public String getSigneeName(final List<Element<Applicant>> applicants) {
-        String legalTeamManager = applicants.get(0).getValue().getParty().getLegalTeamManager();
+        String legalTeamManager = ObjectUtils.isEmpty(applicants) ? EMPTY
+            : applicants.get(0).getValue().getParty().getLegalTeamManager();
 
         if (isNotBlank(legalTeamManager)) {
             return legalTeamManager;

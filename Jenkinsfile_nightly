@@ -30,7 +30,8 @@ AppPipelineConfig pipelineConf;
 
 def integrationTestSecrets = [
   'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
   ]
 ]
 
@@ -47,12 +48,23 @@ def setupSecretsForIntegrationTests(pipelineConf) {
     withTeamSecrets(pipelineConf, 'aat') {
       /* Setup Email template integration tests key with gov.notify */
       env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+      /* Setup Docmosis template integration tests key and url */
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
     }
   }
 }
 
+def archiveExtraFilesForIntegrationTests() {
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "build/docmosis-generated/**/*"
+}
+
 def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
 }
 
 withNightlyPipeline(type, product, component) {
@@ -70,13 +82,14 @@ withNightlyPipeline(type, product, component) {
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
-  enableCrossBrowserTest()
+  enableCrossBrowserTest(['chrome', 'firefox', 'safari', 'microsoft'])
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
   }
 
   after('mutationTest') {
+    archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
 

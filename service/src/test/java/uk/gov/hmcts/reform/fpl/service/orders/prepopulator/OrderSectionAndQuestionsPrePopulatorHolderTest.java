@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
@@ -68,6 +70,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     private OrderDetailsSectionPrePopulator orderDetailsSectionPrePopulator;
     @Mock
     private DraftOrderPreviewSectionPrePopulator draftOrderPreviewSectionPrePopulator;
+    @Mock
+    private CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
 
     @InjectMocks
     private OrderSectionAndQuestionsPrePopulatorHolder underTest;
@@ -86,7 +90,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator,
-            epoTypeAndPreventRemovalBlockPrePopulator
+            epoTypeAndPreventRemovalBlockPrePopulator,
+            closeCaseBlockPrePopulator
         );
         questionBlockPrepopulatorMapping = Map.of(
             LINKED_TO_HEARING, linkedToHearingBlockPrePopulator,
@@ -94,7 +99,8 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator,
             APPROVER, approverBlockPrePopulator,
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
-            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator
+            EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
+            CLOSE_CASE, closeCaseBlockPrePopulator
         );
 
         sectionPrepopulatorMapping = Map.of(

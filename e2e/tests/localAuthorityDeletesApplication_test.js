@@ -10,9 +10,8 @@ BeforeSuite(async ({I}) => {
   caseId = await I.submitNewCase(config.swanseaLocalAuthorityUserOne, caseName);
 });
 
-Before(async ({I}) => await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId));
-
 Scenario('local authority deletes application', async ({I, caseViewPage, deleteApplicationEventPage, caseListPage}) => {
+  await I.navigateToCaseDetailsAs(config.swanseaLocalAuthorityUserOne, caseId);
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   await deleteApplicationEventPage.tickDeletionConsent();
   // I.completeEvent() tries to search for the success alert, this can sometimes disappear to quickly as the user is
