@@ -155,6 +155,10 @@ public class GatekeepingOrderService {
             .map(directionType -> getStandardDirectionDraft(directionType, draftStandardDirections)
                 .orElseGet(() -> buildStandardDirection(directionType, firstHearing)))
             .forEach(direction -> caseDetails.getData().put(direction.getType().getFieldName(), direction));
+
+        if(firstHearing!=null) {
+            caseDetails.getData().put("gatekeepingOrderHearingDate", firstHearing.getStartDate());
+        }
     }
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {

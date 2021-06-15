@@ -81,6 +81,8 @@ public class AddGatekeepingOrderController extends CallbackController {
         caseDetails.getData().put("standardDirections", caseData.getGatekeepingOrderEventData()
             .getStandardDirections());
 
+        gatekeepingOrderHearingDate
+
         return respond(caseDetails);
     }
 

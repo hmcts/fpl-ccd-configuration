@@ -15,6 +15,18 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "gatekeepingOrderHearingDate",
+    "PageFieldDisplayOrder": 0,
+    "DisplayContext": "READONLY",
+    "PageID": "ConfirmStandardDirections",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "gatekeepingOrderHearingDate !=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addGatekeepingOrder",
     "CaseFieldID": "directionsForAllPartiesLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
