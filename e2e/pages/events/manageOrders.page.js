@@ -5,6 +5,7 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 // Fields
 const operations = {
   group: '#manageOrdersOperation',
+  groupInClosedState: '#manageOrdersOperationClosedState',
   options: {
     create: 'CREATE',
     upload: 'UPLOAD',
@@ -160,6 +161,11 @@ const preview = {
 // Actions
 const selectOperation = async (operationType) => {
   I.click(`${operations.group}-${operationType}`);
+  await I.runAccessibilityTest();
+};
+
+const selectOperationInClosedState = async (operationType) => {
+  I.click(`${operations.groupInClosedState}-${operationType}`);
   await I.runAccessibilityTest();
 };
 
@@ -327,5 +333,5 @@ module.exports = {
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectCafcassRegion, selectEnglandOffice,
-  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing,
+  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
 };
