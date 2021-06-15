@@ -41,6 +41,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Objects.deepEquals;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -70,7 +71,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
     private static final Map<String, String> EXPECTED_QUESTIONS = new java.util.HashMap<>(Map.ofEntries(
         Map.entry("hearingDetails", "YES"),
-        Map.entry("linkApplication", "YES"),
+        Map.entry("linkApplication", "NO"),
         Map.entry("approver", "YES"),
         Map.entry("previewOrder", "YES"),
         Map.entry("furtherDirections", "YES"),
@@ -173,7 +174,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             .isEqualTo(
                 asDynamicList(List.of(pastHearing), null, HearingBooking::toLabel)
             );
-        assertThat(manageOrdersEventData.getOrderTempQuestions().getLinkApplication()).isEqualTo("YES");//TODO - have one with NO
+        assertThat(manageOrdersEventData.getOrderTempQuestions().getLinkApplication()).isEqualTo("YES");
         DynamicListAssert.assertThat(manageOrdersEventData.getManageOrdersLinkedApplication())
             .hasSize(1)
             .hasElement(otherApplicationsBundle.getId(), otherApplicationsBundle.toLabel());
@@ -463,11 +464,11 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
-            Map.entry("linkApplication", "YES"),
+            Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails","NO"),
+            Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -495,11 +496,11 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
 
         Map<String, String> expectedQuestions = Map.ofEntries(
             Map.entry("hearingDetails", "YES"),
-            Map.entry("linkApplication", "YES"),
+            Map.entry("linkApplication", "NO"),
             Map.entry("approver", "YES"),
             Map.entry("previewOrder", "YES"),
             Map.entry("furtherDirections", "YES"),
-            Map.entry("orderDetails","NO"),
+            Map.entry("orderDetails", "NO"),
             Map.entry("whichChildren", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -517,6 +518,21 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         assertThat(response.getData().get("orderTempQuestions")).isEqualTo(expectedQuestions);
     }
 
+    @Test
+    void responseShouldHaveValuesChangedByBothTheCalculatorAndThePrePopulator() {
+        CaseData caseData = CaseData.builder()
+            .manageOrdersEventData(ManageOrdersEventData.builder()
+                .manageOrdersType(C32_CARE_ORDER)
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "order-selection");
+
+        assertThat(response.getData())
+            .extractingByKey("orderTempQuestions", MAP)
+            .containsEntry("hearingDetails", "YES")//Set by calculator
+            .containsEntry("linkApplication", "NO");//Set by pre-populator
+    }
 
     private CaseData buildCaseData() {
         return CaseData.builder()
