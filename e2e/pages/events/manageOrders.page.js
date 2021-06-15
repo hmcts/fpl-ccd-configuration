@@ -183,9 +183,9 @@ const selectUploadOrder = async (orderType) => {
   await I.runAccessibilityTest();
 };
 
-const specifyOtherOrderTitle = async (text) => {
+const specifyOtherOrderTitle = (text) => {
   I.waitForElement(orders.otherOrderTitle);
-  await I.fillField(orders.otherOrderTitle, text);
+  I.fillField(orders.otherOrderTitle, text);
 };
 
 const enterJudge = () => {

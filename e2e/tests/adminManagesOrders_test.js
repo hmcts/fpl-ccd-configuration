@@ -291,7 +291,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
   await I.goToNextPage();
   await manageOrdersEventPage.selectUploadOrder(manageOrdersEventPage.orders.options.other);
-  await manageOrdersEventPage.specifyOtherOrderTitle('Order F789s');
+  manageOrdersEventPage.specifyOtherOrderTitle('Order F789s');
   await I.goToNextPage();
   await manageOrdersEventPage.enterApprovalDate(approvalDate);
   await I.goToNextPage();
