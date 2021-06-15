@@ -64,8 +64,10 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   await manageOrdersEventPage.enterCareOrderIssuedDate(aYearAgo);
   manageOrdersEventPage.enterCareOrderIssuedVenue(hearingDetails[0]);
   await manageOrdersEventPage.enterFurtherDirections('some text');
+  await manageOrdersEventPage.selectIsFinalOrder();
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
