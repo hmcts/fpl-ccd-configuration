@@ -16,6 +16,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BED",
+    "ListElement": "Bedford Borough Council",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BIR",
     "ListElement": "Birmingham Children's Trust",
     "DisplayOrder": 5
