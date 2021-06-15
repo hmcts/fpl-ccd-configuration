@@ -5,7 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingFurtherEvidenceBundle;
 import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
@@ -21,7 +20,6 @@ import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.quality.Strictness.LENIENT;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType.HMCTS;
@@ -37,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.service.document.transformer.DocumentViewT
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = LENIENT)
 class FurtherEvidenceDocumentsBundlesTransformerTest {
 
     private static final List<DocumentView> EXPERT_REPORTS_DOCUMENT_VIEWS = List.of(mock(DocumentView.class));
@@ -162,12 +159,13 @@ class FurtherEvidenceDocumentsBundlesTransformerTest {
 
     @Test
     void shouldReturnEmptyBundlesWhenFurtherEvidenceContainsOnlyApplicationStatementDocuments() {
-        CaseData caseData = CaseData.builder()
+        CaseData caseDataWithApplicantStatements = CaseData.builder()
             .furtherEvidenceDocuments(List.of(ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT))
             .furtherEvidenceDocumentsLA(List.of(LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT))
             .build();
 
-        List<DocumentBundleView> actual = underTest.getFurtherEvidenceDocumentsBundleView(caseData, NONCONFIDENTIAL);
+        List<DocumentBundleView> actual = underTest.getFurtherEvidenceDocumentsBundleView(
+            caseDataWithApplicantStatements, NONCONFIDENTIAL);
 
         assertThat(actual).isEqualTo(Collections.emptyList());
     }

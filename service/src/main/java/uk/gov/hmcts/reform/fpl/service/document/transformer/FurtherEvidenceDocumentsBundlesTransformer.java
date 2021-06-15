@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -61,12 +61,12 @@ public class FurtherEvidenceDocumentsBundlesTransformer {
         List<Element<SupportingEvidenceBundle>> hmctsDocuments = nullSafeList(caseData.getFurtherEvidenceDocuments())
             .stream()
             .filter(doc -> (view.isIncludeConfidentialHMCTS() || !doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         List<Element<SupportingEvidenceBundle>> laDocuments = nullSafeList(caseData.getFurtherEvidenceDocumentsLA())
             .stream()
             .filter(doc -> (view.isIncludeConfidentialLA() || !doc.getValue().isConfidentialDocument()))
-            .collect(Collectors.toList());
+            .collect(toList());
 
         List<Element<SupportingEvidenceBundle>> combinedDocuments = new ArrayList<>(hmctsDocuments);
         combinedDocuments.addAll(laDocuments);
