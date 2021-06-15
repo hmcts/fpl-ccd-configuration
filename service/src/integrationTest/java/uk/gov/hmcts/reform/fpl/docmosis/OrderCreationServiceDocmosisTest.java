@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -72,6 +73,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     DocumentSealingService.class,
     DocmosisDocumentGeneratorService.class,
 })
+@MockBeans({@MockBean(DocumentDownloadService.class)})
 public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
 
     private static final String LA_CODE = "LA_CODE";
@@ -84,8 +86,6 @@ public class OrderCreationServiceDocmosisTest extends AbstractDocmosisTest {
     private DocmosisDocumentGeneratorService generatorService;
     @MockBean
     private UploadDocumentService uploadDocumentService;
-    @MockBean
-    private DocumentDownloadService documentDownloadService;
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     @MockBean

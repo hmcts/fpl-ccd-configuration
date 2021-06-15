@@ -148,6 +148,7 @@ Scenario('Create C21 blank order in closed case', async ({I, caseViewPage, manag
 
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
+  I.dontSee('Upload an order');
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 public class ManageOrdersEventData {
 
     OrderOperation manageOrdersOperation;
+    OrderOperation manageOrdersOperationClosedState;
     OrderTempQuestions orderTempQuestions;
     Order manageOrdersUploadType;
     String manageOrdersUploadTypeOtherTitle;

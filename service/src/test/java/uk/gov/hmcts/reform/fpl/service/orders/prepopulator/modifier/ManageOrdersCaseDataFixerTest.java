@@ -11,6 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ManageOrdersCaseDataFixerTest {
 
+    private static final OrderOperation ORDER_OPERATION = OrderOperation.CREATE;
+
     private final ManageOrdersCaseDataFixer underTest = new ManageOrdersCaseDataFixer();
 
     @Test
@@ -21,15 +23,23 @@ class ManageOrdersCaseDataFixerTest {
     }
 
     @Test
-    void defaultBlankOrderIfInClosedState() {
-        CaseData actual = underTest.fix(CaseData.builder().state(State.CLOSED).build());
+    void defaultBlankAndOrderStateOrderIfInClosedState() {
+        CaseData actual = underTest.fix(CaseData.builder()
+            .state(State.CLOSED)
+            .manageOrdersEventData(
+                ManageOrdersEventData.builder()
+                    .manageOrdersOperationClosedState(ORDER_OPERATION)
+                    .build()
+            ).build());
 
         assertThat(actual).isEqualTo(CaseData.builder()
             .state(State.CLOSED)
             .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(
-                    Order.C21_BLANK_ORDER).build())
-            .build());
+                .manageOrdersOperationClosedState(ORDER_OPERATION)
+                .manageOrdersOperation(ORDER_OPERATION)
+                .manageOrdersType(Order.C21_BLANK_ORDER)
+                .build()
+            ).build());
     }
 
     @Test

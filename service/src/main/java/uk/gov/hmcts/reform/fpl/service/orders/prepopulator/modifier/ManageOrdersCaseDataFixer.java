@@ -18,7 +18,10 @@ public class ManageOrdersCaseDataFixer {
 
         if (State.CLOSED == caseData.getState()) {
             return caseData.toBuilder().manageOrdersEventData(
-                manageOrdersEventData.toBuilder().manageOrdersType(C21_BLANK_ORDER).build()
+                manageOrdersEventData.toBuilder()
+                    .manageOrdersType(C21_BLANK_ORDER)
+                    .manageOrdersOperation(manageOrdersEventData.getManageOrdersOperationClosedState())
+                    .build()
             ).build();
         }
 
