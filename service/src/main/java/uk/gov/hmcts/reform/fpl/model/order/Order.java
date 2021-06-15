@@ -354,7 +354,6 @@ public enum Order {
         false,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
-    //    FL406_POWER_OF_ARREST,// TODO: is a separate? that should be part of another order
     OTHER_ORDER(
         MANUAL_UPLOAD,
         "",
