@@ -20,10 +20,7 @@ public class UploadedOrderDocumentGenerator {
     private final DocumentConversionService documentConversionService;
     private final DocumentDownloadService documentDownloadService;
 
-    public OrderDocumentGeneratorResult generate(
-        CaseData caseData,
-        OrderStatus status,
-        RenderFormat format) {
+    public OrderDocumentGeneratorResult generate(CaseData caseData, OrderStatus status, RenderFormat format) {
 
         DocumentReference documentReference = caseData.getManageOrdersEventData().getManageOrdersUploadOrderFile();
         byte[] bytes = documentDownloadService.downloadDocument(documentReference.getBinaryUrl());
