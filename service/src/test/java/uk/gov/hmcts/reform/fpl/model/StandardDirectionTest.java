@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARDIAN;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 
 class StandardDirectionTest {
 
@@ -37,7 +36,6 @@ class StandardDirectionTest {
             .daysBeforeHearing(2)
             .dueDateType(null)
             .dateToBeCompletedBy(null)
-            .showDateOnly(NO)
             .build();
 
         final StandardDirection actualStandardDirection = initialStandardDirection.applyConfig(DIRECTION_CONFIGURATION);
@@ -62,7 +60,6 @@ class StandardDirectionTest {
             .title("test title")
             .description("new text")
             .assignee(CAFCASS)
-            .showDateOnly(NO)
             .dueDateType(DAYS)
             .daysBeforeHearing(3)
             .dateToBeCompletedBy(dueDate)

@@ -149,7 +149,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-ATTEND_HEARING",
     "Label": "Attend the pre-hearing and hearing",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -167,7 +167,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
     "Label": "Send documents to all parties",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -176,7 +176,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-SEND_MISSING_ANNEX",
     "Label": "Send missing annex documents to the court and all parties",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -194,7 +194,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-SEND_TRANSLATED_DOCUMENTS",
     "Label": "Send translated case documents to respondents",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -221,7 +221,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-CONSIDER_JURISDICTION",
     "Label": "Urgently consider jurisdiction and invite any representations",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -257,7 +257,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-APPOINT_CHILDREN_GUARDIAN",
     "Label": "Appoint a children's guardian",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -275,7 +275,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "direction-ARRANGE_INTERPRETERS",
     "Label": "Arrange interpreters",
-    "FieldType": "StandardDirection",
+    "FieldType": "EditableStandardDirection",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -408,11 +408,37 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "gatekeepingOrderHearingDate",
-    "Label": "## Hearing date",
+    "ID": "gatekeepingOrderHearingDate1",
+    "Label": "Hearing date",
     "FieldType": "Text",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHearingDate2",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHasHearing1",
+    "Label": "Has hearing date",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHasHearing2",
+    "Label": "Has hearing date",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
-
 ]

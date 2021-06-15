@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -37,7 +38,6 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
-import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -63,6 +63,10 @@ public class GatekeepingOrderService {
             .nextSteps(buildNextStepsLabel(caseData))
             .orderStatus(null)
             .build();
+    }
+
+    public Optional<HearingBooking> getHearing(CaseData caseData) {
+        return caseData.getFirstHearingOfType(HearingType.CASE_MANAGEMENT);
     }
 
     public JudgeAndLegalAdvisor setAllocatedJudgeLabel(Judge allocatedJudge, JudgeAndLegalAdvisor issuingJudge) {
@@ -138,27 +142,31 @@ public class GatekeepingOrderService {
         return documentService.getDocumentFromDocmosisOrderTemplate(templateData, SDO);
     }
 
-    public void populateStandardDirections(CaseDetails caseDetails) {
+    public CaseData populateStandardDirections(CaseDetails caseDetails) {
         final CaseData caseData = caseConverter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
         final List<StandardDirection> draftStandardDirections = unwrapElements(eventData.getStandardDirections());
 
-        final HearingBooking firstHearing = caseData.getFirstHearingOfType(CASE_MANAGEMENT).orElse(null);
+        final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
         Stream.of(DirectionType.values())
+            .filter(directionType -> !requestedDirections.contains(directionType))
             .map(DirectionType::getFieldName)
             .forEach(caseDetails.getData()::remove);
+
+        final List<Element<StandardDirection>> standardDirections = eventData.resetStandardDirections();
 
         requestedDirections.stream()
             .map(directionType -> getStandardDirectionDraft(directionType, draftStandardDirections)
                 .orElseGet(() -> buildStandardDirection(directionType, firstHearing)))
-            .forEach(direction -> caseDetails.getData().put(direction.getType().getFieldName(), direction));
+            .forEach(direction -> {
+                standardDirections.add(element(direction));
+                caseDetails.getData().put(direction.getType().getFieldName(), direction);
+            });
 
-        if(firstHearing!=null) {
-            caseDetails.getData().put("gatekeepingOrderHearingDate", firstHearing.getStartDate());
-        }
+        return caseData;
     }
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {

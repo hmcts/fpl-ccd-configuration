@@ -40,8 +40,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARD
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.SEND_CASE_SUMMARY;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentBinaries;
@@ -89,7 +87,6 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
             .title("Send case summary to all parties")
             .description("Send to the court and all parties.")
             .assignee(LOCAL_AUTHORITY)
-            .showDateOnly(YES)
             .dueDateType(DAYS)
             .daysBeforeHearing(2)
             .build();
@@ -99,7 +96,6 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
             .title("Appoint a children's guardian")
             .description("Custom direction")
             .assignee(CAFCASS)
-            .showDateOnly(NO)
             .dueDateType(DAYS)
             .daysBeforeHearing(2)
             .build();

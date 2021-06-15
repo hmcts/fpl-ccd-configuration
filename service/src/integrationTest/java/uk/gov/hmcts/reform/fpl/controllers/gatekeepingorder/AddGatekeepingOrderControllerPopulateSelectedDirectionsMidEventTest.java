@@ -27,8 +27,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionType.APPOINT_CHILDREN_GUARD
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.ATTEND_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionType.REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE;
 import static uk.gov.hmcts.reform.fpl.enums.HearingType.CASE_MANAGEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.bankHolidays;
 
@@ -65,7 +63,6 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .description("Your request must be in line with Family Procedure Rules part 25 and "
                     + "Practice Direction 25C. Give other parties a list of names of suitable experts.")
                 .assignee(ALL_PARTIES)
-                .showDateOnly(YES)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(3)
                 .build());
@@ -76,7 +73,6 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .title("Attend the pre-hearing and hearing")
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .assignee(ALL_PARTIES)
-                .showDateOnly(NO)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(0)
                 .build());
@@ -87,7 +83,6 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .title("Appoint a children's guardian")
                 .description("")
                 .assignee(CAFCASS)
-                .showDateOnly(NO)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
                 .build());
@@ -128,7 +123,6 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .description("Your request must be in line with Family Procedure Rules part 25 "
                     + "and Practice Direction 25C. Give other parties a list of names of suitable experts.")
                 .assignee(ALL_PARTIES)
-                .showDateOnly(YES)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(3)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 6, 12, 0, 0))
@@ -140,7 +134,6 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .title("Attend the pre-hearing and hearing")
                 .description("Parties and their legal representatives must attend the pre-hearing and hearing")
                 .assignee(ALL_PARTIES)
-                .showDateOnly(NO)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(0)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 10, 0, 0, 0))
@@ -152,7 +145,6 @@ class AddGatekeepingOrderControllerPopulateSelectedDirectionsMidEventTest extend
                 .title("Appoint a children's guardian")
                 .description("")
                 .assignee(CAFCASS)
-                .showDateOnly(NO)
                 .dueDateType(DAYS)
                 .daysBeforeHearing(2)
                 .dateToBeCompletedBy(LocalDateTime.of(2030, 2, 7, 16, 0, 0))

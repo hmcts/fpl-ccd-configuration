@@ -1,15 +1,17 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "title",
     "FieldType": "Text",
-    "ElementLabel": "Title",
-    "SecurityClassification": "Public"
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "description",
     "FieldType": "TextArea",
     "ElementLabel": "Description",
@@ -17,7 +19,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "type",
     "FieldType": "Text",
     "ElementLabel": "Type",
@@ -26,16 +28,17 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "assignee",
-    "ElementLabel": "Party responsible",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "DirectionAssignee",
-    "SecurityClassification": "Public"
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "dueDateType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "DirectionDueDateType",
@@ -44,21 +47,24 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldType": "DateTime",
     "ElementLabel": "Enter date and time",
     "HintText": "Use 24h format",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DATE\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CustomDirection",
+    "ID": "EditableStandardDirection",
     "ListElementCode": "daysBeforeHearing",
     "FieldType": "Number",
+    "ElementLabel": "Enter number of days",
     "Min": 0,
     "Max": 365,
-    "ElementLabel": "Enter number of days",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DAYS\""
   }
 ]
+

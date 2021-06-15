@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const directions = require('../fixtures/directions.js');
 const gatekeepingCaseData = require('../fixtures/caseData/gatekeepingNoAllocatedJudge.json');
+const hearingDate = '10 January 2050, 3:15pm';
 
 let caseId;
 
@@ -47,7 +48,11 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
   I.click('Ask for disclosure');
   I.click('Send documents to all parties');
 
+  await I.runAccessibilityTest();
+
   await I.goToNextPage();
+
+  I.see(hearingDate);
 
   I.see('All parties');
   I.see('Request permission for expert evidence');
@@ -92,7 +97,10 @@ Scenario('Gatekeeping judge drafts gatekeeping order', async ({I, caseViewPage, 
       '- evidential checklist documents\n' +
       '- any documents sent later on\n');
 
+  await I.runAccessibilityTest();
   await I.goToNextPage();
+
+  I.see(hearingDate);
 
   await I.addAnotherElementToCollection();
   await addGatekeepingOrderEventPage.enterCustomDirections(directions[0]);
@@ -151,7 +159,11 @@ Scenario('Gatekeeping judge seals gatekeeping order', async ({I, caseViewPage, a
   I.click('Ask for disclosure');
   I.click('Identify alternative carers');
 
+  await I.runAccessibilityTest();
+
   await I.goToNextPage();
+
+  I.see(hearingDate);
 
   I.see('All parties');
   I.see('Request permission for expert evidence');

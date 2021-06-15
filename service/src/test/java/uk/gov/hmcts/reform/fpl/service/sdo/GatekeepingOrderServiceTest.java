@@ -13,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DirectionType;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -229,7 +228,6 @@ class GatekeepingOrderServiceTest {
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
             .daysBeforeHearing(1)
-            .showDateOnly(YesNo.from(directionConfiguration.getDisplay().isShowDateOnly()))
             .dateToBeCompletedBy(null)
             .dueDateType(DAYS)
             .build();
@@ -276,7 +274,6 @@ class GatekeepingOrderServiceTest {
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
             .daysBeforeHearing(dueDateDaysBeforeHearing)
-            .showDateOnly(YesNo.from(directionConfiguration.getDisplay().isShowDateOnly()))
             .dateToBeCompletedBy(directionDueDate)
             .dueDateType(DAYS)
             .build();
@@ -314,7 +311,6 @@ class GatekeepingOrderServiceTest {
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
             .daysBeforeHearing(0)
-            .showDateOnly(YesNo.from(directionConfiguration.getDisplay().isShowDateOnly()))
             .dateToBeCompletedBy(directionDueDate)
             .dueDateType(DAYS)
             .build();
@@ -333,7 +329,6 @@ class GatekeepingOrderServiceTest {
             .description("Text")
             .assignee(COURT)
             .daysBeforeHearing(0)
-            .showDateOnly(YesNo.YES)
             .dateToBeCompletedBy(LocalDateTime.now())
             .dueDateType(DATE)
             .build();
@@ -363,7 +358,6 @@ class GatekeepingOrderServiceTest {
             .description("Text")
             .assignee(COURT)
             .daysBeforeHearing(0)
-            .showDateOnly(YesNo.YES)
             .dateToBeCompletedBy(LocalDateTime.now())
             .dueDateType(DATE)
             .build();
@@ -379,7 +373,6 @@ class GatekeepingOrderServiceTest {
             .description(directionConfiguration.getText())
             .assignee(directionConfiguration.getAssignee())
             .daysBeforeHearing(newDirectionDraft.getDaysBeforeHearing())
-            .showDateOnly(YesNo.from(directionConfiguration.getDisplay().isShowDateOnly()))
             .dateToBeCompletedBy(null)
             .dueDateType(DAYS)
             .build();
