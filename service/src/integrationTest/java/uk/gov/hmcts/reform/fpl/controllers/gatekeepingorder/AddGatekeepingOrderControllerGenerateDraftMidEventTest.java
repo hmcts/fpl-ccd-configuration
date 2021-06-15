@@ -114,6 +114,7 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
         final GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
+            .dateOfIssue(dateNow())
             .nextSteps(nextSteps)
             .build();
 
@@ -140,6 +141,7 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
 
         GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
+            .dateOfIssue(dateNow())
             .nextSteps(null)
             .build();
 

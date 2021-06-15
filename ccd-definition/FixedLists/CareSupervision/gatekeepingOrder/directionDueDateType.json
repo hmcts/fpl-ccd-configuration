@@ -10,7 +10,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "DirectionDueDateType",
     "ListElementCode": "DAYS",
-    "ListElement": "Number of days before hearing",
+    "ListElement": "Number of working days before hearing",
     "DisplayOrder": 2
   }
 ]

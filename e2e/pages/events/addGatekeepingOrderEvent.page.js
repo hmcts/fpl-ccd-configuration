@@ -31,23 +31,26 @@ module.exports = {
     },
   },
 
-  async createGatekeepingOrderThroughService() {
+  createGatekeepingOrderThroughService() {
     I.click(this.fields.routingRadioGroup.service);
   },
 
-  async enterIssuingJudge(judgeName, legalAdvisorName) {
+  enterIssuingJudge(judgeName, legalAdvisorName) {
     I.click(this.fields.issuingJudgeTitle);
     I.fillField(this.fields.issuingJudgeName, judgeName);
     I.fillField(this.fields.issuingJudgeEmail, 'test@mail.com');
     I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
   },
 
-  async selectAllocatedJudge(legalAdvisorName) {
+  selectAllocatedJudge(legalAdvisorName) {
     I.click(this.fields.useAllocatedJudge);
     I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
   },
 
-  async verifyNextStepsLabel() {
+  verifyNextStepsLabel() {
+    I.see('Next steps');
+    I.see('Your order will be saved as a draft in \'Draft orders\'');
+    I.see('You cannot seal and send the order until adding');
     I.see('the allocated judge');
   },
 
@@ -65,7 +68,7 @@ module.exports = {
   },
 
   async clickNumberOfDaysBeforeHearing(directionName) {
-    await within(this.fields.standardDirection(directionName), () => I.click('Number of days before hearing'));
+    await within(this.fields.standardDirection(directionName), () => I.click('Number of working days before hearing'));
   },
 
   async seeDate(directionName, date, format = 'YYYY-MM-DD HH:mm:ss') {

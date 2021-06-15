@@ -301,7 +301,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "directionsForLocalAuthorityLabelSmall",
-    "Label": "<h2 class=\"govuk-!-margin-top-9\">Local Authority</h2>",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">Local authority</h2>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"
@@ -310,7 +310,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "directionsForLocalAuthorityLabel",
-    "Label": "<h1 class=\"govuk-!-margin-top-9\">Local Authority</h1>",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">Local authority</h1>",
     "FieldType": "Label",
     "SecurityClassification": "Public",
     "Searchable": "N"

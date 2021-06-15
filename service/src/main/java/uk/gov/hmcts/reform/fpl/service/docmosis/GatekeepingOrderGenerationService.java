@@ -113,8 +113,18 @@ public class GatekeepingOrderGenerationService extends
         final Display display = directionConf.getDisplay();
 
         if (DAYS == dueDateType) {
-            return format("%d. %s %d days before the hearing", index, direction.getTitle(),
+
+            if (direction.getDaysBeforeHearing() == 0) {
+                return format("%d. %s by the day of the hearing", index, direction.getTitle());
+            }
+
+            if (direction.getDaysBeforeHearing() == 1) {
+                return format("%d. %s 1 working day before the hearing", index, direction.getTitle());
+            }
+
+            return format("%d. %s %d working days before the hearing", index, direction.getTitle(),
                 direction.getDaysBeforeHearing());
+
         } else {
             LocalDateTime dueDate = direction.getDateToBeCompletedBy();
 

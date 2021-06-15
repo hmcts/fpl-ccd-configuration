@@ -61,6 +61,7 @@ public class GatekeepingOrderService {
         return GatekeepingOrderSealDecision.builder()
             .draftDocument(buildFromDocument(document))
             .nextSteps(buildNextStepsLabel(caseData))
+            .dateOfIssue(LocalDate.now())
             .orderStatus(null)
             .build();
     }

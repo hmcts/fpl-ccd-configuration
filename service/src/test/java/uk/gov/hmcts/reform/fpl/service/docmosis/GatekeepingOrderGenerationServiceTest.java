@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.fpl.Constants.DEFAULT_LA_COURT;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
@@ -193,7 +194,15 @@ class GatekeepingOrderGenerationServiceTest {
                 .description("Second custom direction description")
                 .assignee(CAFCASS)
                 .dueDateType(DAYS)
-                .daysBeforeHearing(2)
+                .daysBeforeHearing(1)
+                .build(),
+            CustomDirection.builder()
+                .type(CUSTOM)
+                .title("Arrange interpreters")
+                .description("At all hearings, the court must arrange an interpreter for Louise Laurent in French.")
+                .assignee(COURT)
+                .dueDateType(DAYS)
+                .daysBeforeHearing(0)
                 .build());
     }
 
@@ -234,7 +243,7 @@ class GatekeepingOrderGenerationServiceTest {
                 .build(),
             DocmosisDirection.builder()
                 .assignee(ALL_PARTIES)
-                .title("2. Request permission for expert evidence 3 days before the hearing")
+                .title("2. Request permission for expert evidence 3 working days before the hearing")
                 .body("Your request must be in line with Family Procedure Rules part 25")
                 .build(),
             DocmosisDirection.builder()
@@ -249,8 +258,13 @@ class GatekeepingOrderGenerationServiceTest {
                 .build(),
             DocmosisDirection.builder()
                 .assignee(CAFCASS)
-                .title("5. Second custom direction title 2 days before the hearing")
+                .title("5. Second custom direction title 1 working day before the hearing")
                 .body("Second custom direction description")
+                .build(),
+            DocmosisDirection.builder()
+                .assignee(COURT)
+                .title("6. Arrange interpreters by the day of the hearing")
+                .body("At all hearings, the court must arrange an interpreter for Louise Laurent in French.")
                 .build()
         );
     }
