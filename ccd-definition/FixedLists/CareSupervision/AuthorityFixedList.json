@@ -275,6 +275,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "KKL",
+    "ListElement": "Kirklees Council",
+    "DisplayOrder": 149
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "KBC",
     "ListElement": "Knowsley Borough Council",
     "DisplayOrder": 150
@@ -327,6 +334,13 @@
     "ListElementCode": "BRE",
     "ListElement": "London Borough of Brent",
     "DisplayOrder": 183
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BRO",
+    "ListElement": "London Borough of Bromley",
+    "DisplayOrder": 184
   },
   {
     "LiveFrom": "01/01/2017",
