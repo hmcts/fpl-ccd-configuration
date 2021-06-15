@@ -296,6 +296,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "LEE",
+    "ListElement": "Leeds City Council",
+    "DisplayOrder": 157
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "LEI",
     "ListElement": "Leicester City Council",
     "DisplayOrder": 160
