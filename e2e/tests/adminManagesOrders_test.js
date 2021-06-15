@@ -309,7 +309,6 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
-    allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
   });
 });
@@ -322,11 +321,17 @@ function assertOrder(I, caseViewPage, order) {
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab([orderElement, 'Type of order'], order.orderType);
   I.seeInTab([orderElement, 'Approval date'], dateFormat(dateOfApproval, mask));
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
-  if (order.allocatedJudge.legalAdviserFullName) {
-    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.allocatedJudge.legalAdviserFullName);
+
+  // Judge details will be removed anyway based on https://tools.hmcts.net/jira/browse/FPLA-3084
+  if (order.allocatedJudge) {
+    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
+    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
+
+    if (order.allocatedJudge.legalAdviserFullName) {
+      I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.allocatedJudge.legalAdviserFullName);
+    }
   }
+
   I.seeInTab([orderElement, 'Children'], order.children);
 
   if (order.title !== undefined) {
