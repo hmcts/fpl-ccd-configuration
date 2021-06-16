@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
@@ -75,9 +74,8 @@ class SealedOrderHistoryServiceTest {
     private final Child child1 = mock(Child.class);
     private final Child child2 = mock(Child.class);
 
-    private final IdentityService identityService = mock(IdentityService.class);
     private final ChildrenService childrenService = mock(ChildrenService.class);
-    private final DischargeCareOrderService dischargeCareOrderService = mock(DischargeCareOrderService.class);
+    private final IdentityService identityService = mock(IdentityService.class);
     private final OrderCreationService orderCreationService = mock(OrderCreationService.class);
     private final Time time = mock(Time.class);
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator = mock(
@@ -86,7 +84,6 @@ class SealedOrderHistoryServiceTest {
     private final SealedOrderHistoryService underTest = new SealedOrderHistoryService(
         identityService,
         childrenService,
-        dischargeCareOrderService,
         orderCreationService,
         time,
         manageOrdersClosedCaseFieldGenerator
@@ -159,35 +156,6 @@ class SealedOrderHistoryServiceTest {
                 assertThat(actual).isEqualTo(Map.of(
                     "orderCollection", List.of(
                         element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
-                            .children(wrapElements(child1, child1))
-                            .childrenDescription(String.format("%s, %s", CHILD_1_FULLNAME, CHILD_2_FULLNAME))
-                            .build())
-                    )));
-            }
-        }
-
-        @Test
-        void generateChildrenForDischargeOfCareOrder() {
-            try (MockedStatic<JudgeAndLegalAdvisorHelper> jalMock =
-                     Mockito.mockStatic(JudgeAndLegalAdvisorHelper.class)) {
-                mockHelper(jalMock);
-                CaseData caseData = caseData().manageOrdersEventData(ManageOrdersEventData
-                    .builder()
-                    .manageOrdersType(Order.C32B_DISCHARGE_OF_CARE_ORDER)
-                    .manageOrdersApprovalDate(APPROVAL_DATE)
-                    .build())
-                    .build();
-                mockDocumentUpload(caseData);
-                when(dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData)).thenReturn(List.of(child1,
-                    child1));
-
-                Map<String, Object> actual = underTest.generate(caseData);
-
-                assertThat(actual).isEqualTo(Map.of(
-                    "orderCollection", List.of(
-                        element(GENERATED_ORDER_UUID, expectedGeneratedOrder()
-                            .orderType(Order.C32B_DISCHARGE_OF_CARE_ORDER.name())
-                            .type(Order.C32B_DISCHARGE_OF_CARE_ORDER.getHistoryTitle())
                             .children(wrapElements(child1, child1))
                             .childrenDescription(String.format("%s, %s", CHILD_1_FULLNAME, CHILD_2_FULLNAME))
                             .build())

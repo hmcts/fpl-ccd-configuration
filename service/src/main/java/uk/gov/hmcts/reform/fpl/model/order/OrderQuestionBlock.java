@@ -19,8 +19,6 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersApprovalDateTime")),
     WHICH_CHILDREN("whichChildren", "Which children", OrderSection.CHILDREN_DETAILS,
         List.of("orderAppliesToAllChildren", "children_label", "childSelector")),
-    WHICH_ORDERS("whichCareOrders", "Which Orders", OrderSection.CHILDREN_DETAILS,
-        List.of("orders_label", "careOrderSelector")),
     EPO_INCLUDE_PHRASE("epoIncludePhrase", "Include Phrase", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersIncludePhrase")),
     EPO_CHILDREN_DESCRIPTION("epoChildrenDescription", "Children description", OrderSection.ORDER_DETAILS,

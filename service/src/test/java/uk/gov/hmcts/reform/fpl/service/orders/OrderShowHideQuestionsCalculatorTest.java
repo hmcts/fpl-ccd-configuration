@@ -50,7 +50,6 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         careOrderQuestions.put("closeCase", "YES");
-        careOrderQuestions.put("whichCareOrders", "NO");
         careOrderQuestions.put("dischargeOfCareDetails", "NO");
 
         Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
@@ -63,8 +62,7 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("epoTypeAndPreventRemoval", "NO");
         dischargeOfCareQuestions.put("orderDetails", "NO");
         dischargeOfCareQuestions.put("cafcassJurisdictions", "NO");
-        dischargeOfCareQuestions.put("whichChildren", "NO");
-        dischargeOfCareQuestions.put("whichCareOrders", "YES");
+        dischargeOfCareQuestions.put("whichChildren", "YES");
         dischargeOfCareQuestions.put("dischargeOfCareDetails", "YES");
         dischargeOfCareQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         dischargeOfCareQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -83,7 +81,6 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("orderDetails", "NO");
         epoQuestions.put("cafcassJurisdictions", "NO");
         epoQuestions.put("whichChildren", "YES");
-        epoQuestions.put("whichCareOrders", "NO");
         epoQuestions.put("dischargeOfCareDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -100,7 +97,6 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("epoExpiryDate", "NO");
         blankOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         blankOrderQuestions.put("whichChildren", "YES");
-        blankOrderQuestions.put("whichCareOrders", "NO");
         blankOrderQuestions.put("dischargeOfCareDetails", "NO");
         blankOrderQuestions.put("cafcassJurisdictions", "NO");
         blankOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
@@ -119,7 +115,6 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         supervisionOrderQuestions.put("cafcassJurisdictions", "NO");
         supervisionOrderQuestions.put("whichChildren", "YES");
-        supervisionOrderQuestions.put("whichCareOrders", "NO");
         supervisionOrderQuestions.put("dischargeOfCareDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithMonth", "YES");
         supervisionOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -137,7 +132,6 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("epoTypeAndPreventRemoval", "NO");
         appointmentOfChildrensGuardianQuestions.put("cafcassJurisdictions", "YES");
         appointmentOfChildrensGuardianQuestions.put("whichChildren", "NO");
-        appointmentOfChildrensGuardianQuestions.put("whichCareOrders", "NO");
         appointmentOfChildrensGuardianQuestions.put("dischargeOfCareDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExclusionRequirementDetails", "NO");

@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
-import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
@@ -71,7 +70,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("furtherDirections", "YES"),
         Map.entry("orderDetails", "NO"),
         Map.entry("whichChildren", "YES"),
-        Map.entry("whichCareOrders", "NO"),
         Map.entry("dischargeOfCareDetails", "NO"),
         Map.entry("closeCase", "YES"),
         Map.entry("approvalDate", "YES"),
@@ -226,10 +224,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     void childrenDetailsShouldPrepopulateNextSectionDetails() {
         CaseData caseData = CaseData.builder()
             .orderAppliesToAllChildren("Yes")
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(C32_CARE_ORDER)
-                .orderTempQuestions(OrderTempQuestions.builder().build())
-                .build())
+            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseData, "children-details");
@@ -452,7 +447,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("furtherDirections", "YES"),
             Map.entry("orderDetails","NO"),
             Map.entry("whichChildren", "YES"),
-            Map.entry("whichCareOrders", "NO"),
             Map.entry("dischargeOfCareDetails", "NO"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
@@ -485,7 +479,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("furtherDirections", "YES"),
             Map.entry("orderDetails","NO"),
             Map.entry("whichChildren", "YES"),
-            Map.entry("whichCareOrders", "NO"),
             Map.entry("dischargeOfCareDetails", "NO"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
