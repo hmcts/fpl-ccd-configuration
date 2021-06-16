@@ -146,30 +146,30 @@ class ApplicationDocumentBundleTransformerTest {
 
     private List<DocumentView> getExpectedApplicationDocumentsHMCTS() {
         List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedApplicationDocumentView());
         documents.addAll(getExpectedHearingDocumentViewHMCTS());
         documents.addAll(expectedDocumentViewHMCTS());
         documents.addAll(expectedDocumentViewLA());
-        documents.addAll(expectedApplicationDocumentView());
 
         return documents;
     }
 
     private List<DocumentView> getExpectedApplicationDocumentsLA() {
         List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedApplicationDocumentView());
         documents.addAll(getExpectedHearingDocumentViewLA());
         documents.addAll(expectedDocumentViewHmctsNonConfidential());
         documents.addAll(expectedDocumentViewLA());
-        documents.addAll(expectedApplicationDocumentView());
 
         return documents;
     }
 
     private List<DocumentView> getExpectedApplicationDocumentsNonConfidential() {
         List<DocumentView> documents = new ArrayList<>();
+        documents.addAll(expectedApplicationDocumentView());
         documents.addAll(getExpectedHearingDocumentViewNonConfidential());
         documents.addAll(expectedDocumentViewHmctsNonConfidential());
         documents.addAll(expectedDocumentViewLANonConfidential());
-        documents.addAll(expectedApplicationDocumentView());
 
         return documents;
     }
@@ -190,8 +190,8 @@ class ApplicationDocumentBundleTransformerTest {
             (DocumentView.builder()
                 .document(DocumentReference.builder().build())
                 .type("SWET")
-                .uploadedAt("8:20pm, 15 June 2021")
-                .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 20, 0))
+                .uploadedAt("8:19pm, 15 June 2021")
+                .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 19, 0))
                 .includedInSWET("This is included in SWET")
                 .uploadedBy("kurt@swansea.gov.uk")
                 .documentName(null)
@@ -202,8 +202,8 @@ class ApplicationDocumentBundleTransformerTest {
             (DocumentView.builder()
                 .document(DocumentReference.builder().build())
                 .type("Other")
-                .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 20, 0))
-                .uploadedAt("8:20pm, 15 June 2021")
+                .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 18, 0))
+                .uploadedAt("8:18pm, 15 June 2021")
                 .includedInSWET(null)
                 .uploadedBy("kurt@swansea.gov.uk")
                 .documentName("")
@@ -258,7 +258,7 @@ class ApplicationDocumentBundleTransformerTest {
             .document(DocumentReference.builder().build())
             .type("Applicant statement")
             .uploadedAt("8:20pm, 15th June 2021")
-            .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 20, 20, 0))
+            .uploadedDateTime(LocalDateTime.of(2021, 6, 15, 19, 20, 0))
             .includedInSWET(null)
             .uploadedBy(uploadedBy)
             .documentName(documentName)
@@ -292,19 +292,22 @@ class ApplicationDocumentBundleTransformerTest {
     }
 
     private List<Element<ApplicationDocument>> buildApplicationDocuments() {
-        return List.of(buildApplicationDocument(ApplicationDocumentType.THRESHOLD),
-            buildApplicationDocument(ApplicationDocumentType.SWET),
-            buildApplicationDocument(ApplicationDocumentType.OTHER));
+        return List.of(
+            buildApplicationDocument(ApplicationDocumentType.SWET, LocalDateTime.of(2021, 6, 15, 20, 19, 0)),
+            buildApplicationDocument(ApplicationDocumentType.OTHER, LocalDateTime.of(2021, 6, 15, 20, 18, 0)),
+            buildApplicationDocument(ApplicationDocumentType.THRESHOLD, LocalDateTime.of(2021, 6, 15, 20, 20, 0)));
     }
 
-    private Element<ApplicationDocument> buildApplicationDocument(ApplicationDocumentType type) {
+    private Element<ApplicationDocument> buildApplicationDocument(
+        ApplicationDocumentType type,
+        LocalDateTime uploadedAt) {
         return element(ApplicationDocument.builder()
             .documentType(type)
             .documentName(type == ApplicationDocumentType.OTHER ? "Document name" : null)
             .uploadedBy("kurt@swansea.gov.uk")
             .includedInSWET(type == ApplicationDocumentType.SWET ? "This is included in SWET" : null)
             .document(DocumentReference.builder().build())
-            .dateTimeUploaded(LocalDateTime.of(2021, 6, 15, 20, 20))
+            .dateTimeUploaded(uploadedAt)
             .build());
     }
 
