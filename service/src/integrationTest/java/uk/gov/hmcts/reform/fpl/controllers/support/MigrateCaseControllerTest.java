@@ -9,9 +9,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -82,7 +82,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration FPLA-3125: Expected bundle id to be b02898e7-46dc-47ce-9639-9e5b04d03b9e"
-                            + " but was 00000000-0000-0000-0000-000000000000");
+                    + " but was 00000000-0000-0000-0000-000000000000");
         }
 
         @Test
@@ -96,7 +96,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration FPLA-3125: Expected c2 id to be 4b725c8a-3496-4f28-83f1-95d4838a533a"
-                            + " but was 00000000-0000-0000-0000-000000000000");
+                    + " but was 00000000-0000-0000-0000-000000000000");
         }
 
         @Test
@@ -108,7 +108,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
                 .hasMessage("Migration FPLA-3125: Expected doc id to be b444c4fb-362b-4e27-b7d8-61996b3f6e0d"
-                            + " but was some-url/00000000-0000-0000-0000-000000000000");
+                    + " but was some-url/00000000-0000-0000-0000-000000000000");
         }
 
         @Test
