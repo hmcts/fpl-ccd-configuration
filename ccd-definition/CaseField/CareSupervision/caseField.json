@@ -233,6 +233,69 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childrenHaveRepresentation",
+    "Label": "Do you know if any of the children have legal representation?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childrenMainRepresentative",
+    "Label": " ",
+    "FieldType": "RespondentSolicitor",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childrenHaveSameRepresentation",
+    "Label": "Do all the children have this Cafcass legal representative?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails1",
+    "Label": "Child 1",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails2",
+    "Label": "Child 2",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails3",
+    "Label": "Child 3",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails4",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicants",
     "Label": "Applicants",
     "FieldType": "Collection",

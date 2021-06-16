@@ -9,5 +9,87 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenHaveRepresentation",
+    "DisplayContext": "MANDATORY",
+    "PageID": 2,
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenMainRepresentative",
+    "DisplayContext": "COMPLEX",
+    "FieldShowCondition": "childrenHaveRepresentation = \"Yes\"",
+    "PageID": 2,
+    "PageDisplayOrder": 2,
+    "PageFieldDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childrenHaveSameRepresentation",
+    "DisplayContext": "MANDATORY",
+    "PageID": 3,
+    "PageDisplayOrder": 3,
+    "PageFieldDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails1",
+    "DisplayContext": "COMPLEX",
+    "FieldShowCondition": "childrenHaveSameRepresentation = \"No\"",
+    "PageID": 3,
+    "PageDisplayOrder": 3,
+    "PageFieldDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails2",
+    "DisplayContext": "COMPLEX",
+    "FieldShowCondition": "childrenHaveSameRepresentation = \"No\"",
+    "PageID": 3,
+    "PageDisplayOrder": 3,
+    "PageFieldDisplayOrder": 3,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails3",
+    "DisplayContext": "COMPLEX",
+    "FieldShowCondition": "childrenHaveSameRepresentation = \"No\"",
+    "PageID": 3,
+    "PageDisplayOrder": 3,
+    "PageFieldDisplayOrder": 4,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails4",
+    "DisplayContext": "COMPLEX",
+    "FieldShowCondition": "childrenHaveSameRepresentation = \"No\"",
+    "PageID": 3,
+    "PageDisplayOrder": 3,
+    "PageFieldDisplayOrder": 5,
+    "PageColumnNumber": 1
   }
 ]
