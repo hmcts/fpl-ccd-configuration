@@ -50,7 +50,7 @@ public enum OrderQuestionBlock {
     CLOSE_CASE("closeCase", "Closing case", OrderSection.REVIEW,
         List.of("manageOrdersCloseCase", "manageOrdersCloseCaseWarning")),
     WHICH_OTHERS("whichOthers", "Which others", OrderSection.OTHER_DETAILS,
-        List.of("sendOrderToAllOthers", "others_label", "othersSelector")),;;
+        List.of("sendOrderToAllOthers", "others_label", "othersSelector"));
 
     private final String showHideField;
     private final String question;
