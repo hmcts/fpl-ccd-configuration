@@ -174,7 +174,7 @@
     "ID": "GeneratedOrder",
     "ListElementCode": "others",
     "FieldType": "Collection",
-    "FieldTypeParameter": "BasicOther",
+    "FieldTypeParameter": "Others",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
     "FieldShowCondition": "type = \"DO NOT SHOW\""
