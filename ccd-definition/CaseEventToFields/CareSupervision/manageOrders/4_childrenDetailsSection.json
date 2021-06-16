@@ -9,7 +9,7 @@
     "PageID": "ChildrenDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "PageShowCondition": "orderTempQuestions.whichChildren=\"YES\"",
+    "PageShowCondition": "orderTempQuestions.whichChildren=\"YES\" OR orderTempQuestions.whichCareOrders=\"YES\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-orders/children-details/mid-event",
     "ShowSummaryChangeOption": "N"
   },
@@ -35,6 +35,7 @@
     "PageID": "ChildrenDetails",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.whichChildren=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -61,6 +62,32 @@
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderAppliesToAllChildren=\"No\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "orders_label",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "PageID": "ChildrenDetails",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.whichCareOrders=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "careOrderSelector",
+    "PageFieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL",
+    "PageID": "ChildrenDetails",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.whichCareOrders=\"YES\"",
     "ShowSummaryChangeOption": "Y"
   }
 ]

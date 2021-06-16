@@ -47,6 +47,24 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTempQuestions",
+    "ListElementCode": "whichCareOrders",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "whichChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "dischargeOfCareDetails",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "whichChildren=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
     "ListElementCode": "epoTypeAndPreventRemoval",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
@@ -96,6 +114,15 @@
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
     "FieldShowCondition": "orderDetails=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "isFinalOrder",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "previewOrder=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

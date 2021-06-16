@@ -7,6 +7,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
@@ -43,7 +44,7 @@ class DischargeCareOrderServiceTest {
 
         @Test
         void shouldReturnAllCareOrders() {
-            GeneratedOrder order1 = order("Interim care order", "1 May 2019");
+            GeneratedOrder order1 = manageOrder(Order.C32_CARE_ORDER.name(), "1 May 2019");
             GeneratedOrder order2 = order("Interim care order", "2 May 2019");
             GeneratedOrder order3 = order("Final care order", "2 May 2019");
             GeneratedOrder order4 = order("Final supervision order", "3 May 2019");
@@ -65,7 +66,7 @@ class DischargeCareOrderServiceTest {
 
         @Test
         void shouldReturnSelectedCareOrders() {
-            GeneratedOrder order1 = order("Interim care order", "1 May 2019");
+            GeneratedOrder order1 = manageOrder(Order.C32_CARE_ORDER.name(), "1 May 2019");
             GeneratedOrder order2 = order("Interim care order", "2 May 2019");
             GeneratedOrder order3 = order("Final supervision order", "3 May 2019");
             GeneratedOrder order4 = order("Final care order", "2 May 2019");
@@ -138,18 +139,20 @@ class DischargeCareOrderServiceTest {
             Child child2 = child(testChildParty());
             Child child3 = child(testChildParty());
             Child child4 = child(testChildParty());
+            Child child5 = child(testChildParty());
 
             GeneratedOrder order1 = order("Interim care order", "1 May 2019", child1);
             GeneratedOrder order2 = order("Final supervision order", "3 May 2019", child2);
             GeneratedOrder order3 = order("Final care order", "2 May 2019", child3, child4);
+            GeneratedOrder order4 = manageOrder(Order.C32_CARE_ORDER.name(), "2 May 2019", child5);
 
-            List<Integer> selected = List.of(0, 1);
+            List<Integer> selected = List.of(0, 1, 2);
 
-            CaseData caseData = caseWithOrders(List.of(order1, order2, order3), selected);
+            CaseData caseData = caseWithOrders(List.of(order1, order2, order3, order4), selected);
 
             List<Child> actualChildren = dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData);
 
-            assertThat(actualChildren).containsExactly(child1, child3, child4);
+            assertThat(actualChildren).containsExactly(child1, child3, child4, child5);
         }
 
         @Test
@@ -224,12 +227,43 @@ class DischargeCareOrderServiceTest {
             assertThat(dischargeCareOrderLabel).isEqualTo("Order 1: John Smith, 1 May 2019\n"
                 + "Order 2: Alex Green and Emma Johnson and James Black, 2 May 2019");
         }
+
+        @Test
+        void shouldReturnLabelForApprovalDateWhenPresent() {
+            Child child1 = child(testChildParty());
+            Child child2 = child(testChildParty());
+
+            GeneratedOrder order1 = GeneratedOrder.builder()
+                .orderType(Order.C32_CARE_ORDER.name())
+                .approvalDate(LocalDate.of(2019, 5, 1))
+                .children(wrapElements(child1))
+                .build();
+
+            GeneratedOrder order2 = GeneratedOrder.builder()
+                .orderType(Order.C32B_DISCHARGE_OF_CARE_ORDER.name())
+                .approvalDate(LocalDate.of(2019, 5, 1))
+                .children(wrapElements(child2))
+                .build();
+
+            String dischargeCareOrderLabel = dischargeCareOrderService.getOrdersLabel(List.of(order1, order2));
+
+
+            assertThat(dischargeCareOrderLabel).contains("1st May 2019");
+        }
     }
 
     private static GeneratedOrder order(String type, String issueDate, Child... children) {
         return GeneratedOrder.builder()
             .type(type)
             .dateOfIssue(issueDate)
+            .children(wrapElements(children))
+            .build();
+    }
+
+    private static GeneratedOrder manageOrder(String orderType, String approvalDate, Child... children) {
+        return GeneratedOrder.builder()
+            .orderType(orderType)
+            .dateOfIssue(approvalDate)
             .children(wrapElements(children))
             .build();
     }

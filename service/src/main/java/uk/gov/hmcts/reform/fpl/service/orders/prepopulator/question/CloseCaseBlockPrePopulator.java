@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
+import uk.gov.hmcts.reform.fpl.model.order.IsFinalOrder;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
@@ -33,12 +35,17 @@ public class CloseCaseBlockPrePopulator implements QuestionBlockOrderPrePopulato
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         Order order = manageOrdersEventData.getManageOrdersType();
 
-        if (order.isOrderFinal() && !allChildrenHaveFinalOrder(updatedChildren)) {
+        if (!isFinalOrder(manageOrdersEventData, order) || !allChildrenHaveFinalOrder(updatedChildren)) {
             OrderTempQuestions orderTempQuestions = manageOrdersEventData.getOrderTempQuestions();
             return Map.of("orderTempQuestions", orderTempQuestions.toBuilder().closeCase("NO").build());
         }
 
         return Map.of();
+    }
+
+    private boolean isFinalOrder(ManageOrdersEventData manageOrdersEventData, Order order) {
+        return IsFinalOrder.YES.equals(order.getIsFinalOrder())
+            || BooleanUtils.toBoolean(manageOrdersEventData.getManageOrdersIsFinalOrder());
     }
 
     private boolean allChildrenHaveFinalOrder(List<Element<Child>> updatedChildren) {

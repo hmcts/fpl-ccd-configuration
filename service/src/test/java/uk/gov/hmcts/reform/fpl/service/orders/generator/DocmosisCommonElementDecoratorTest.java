@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C32CareOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class DocmosisCommonElementDecoratorTest {
@@ -59,10 +61,11 @@ class DocmosisCommonElementDecoratorTest {
         .build();
 
     private final ChildrenService childrenService = mock(ChildrenService.class);
+    private final DischargeCareOrderService dischargeCareOrderService = mock(DischargeCareOrderService.class);
     private final CaseDataExtractionService extractionService = mock(CaseDataExtractionService.class);
 
     private final DocmosisCommonElementDecorator underTest = new DocmosisCommonElementDecorator(
-        childrenService, extractionService);
+        childrenService, dischargeCareOrderService, extractionService);
 
     @BeforeEach
     void setUp() {
@@ -112,6 +115,18 @@ class DocmosisCommonElementDecoratorTest {
             .build();
 
         assertThat(decorated).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void shouldGetSelectedChildrenForDischargeOfCareOrder() {
+        when(dischargeCareOrderService.getChildrenInSelectedCareOrders(CASE_DATA)).thenReturn(unwrapElements(CHILDREN));
+
+        DocmosisParameters decorated = underTest.decorate(DOCMOSIS_PARAMETERS,
+            CASE_DATA,
+            SEALED,
+            Order.C32B_DISCHARGE_OF_CARE_ORDER);
+
+        assertThat(decorated.getChildren()).isEqualTo(DOCMOSIS_CHILDREN);
     }
 
     private C32CareOrderDocmosisParameters.C32CareOrderDocmosisParametersBuilder<?, ?> expectedCommonParameters(
