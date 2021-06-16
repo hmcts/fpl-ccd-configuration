@@ -8,6 +8,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import uk.gov.hmcts.reform.fpl.json.converter.BasicChildConverter;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrderTypeDescriptor;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -52,6 +53,7 @@ public class GeneratedOrder implements RemovableOrder {
     private final String uploadedOrderDescription;
     @JsonSerialize(contentConverter = BasicChildConverter.class)
     private final List<Element<Child>> children;
+    private final List<Element<Other>> others;
     private final String childrenDescription;
     private String removalReason;
 

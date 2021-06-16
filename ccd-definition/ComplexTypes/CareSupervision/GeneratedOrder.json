@@ -168,5 +168,15 @@
     "FieldType": "TextArea",
     "ElementLabel": "Reason for removal",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "BasicOther",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"DO NOT SHOW\""
   }
 ]
