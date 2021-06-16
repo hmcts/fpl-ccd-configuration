@@ -41,15 +41,18 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         private final String c2DocId = "b444c4fb-362b-4e27-b7d8-61996b3f6e0d";
         private final String familyManCaseNumber = "SA20C50050";
         private final String invalidId = "00000000-0000-0000-0000-000000000000";
-        private final Element<AdditionalApplicationsBundle> randomBundle = element(
-            UUID.randomUUID(), AdditionalApplicationsBundle.builder().build()
+        private final Element<AdditionalApplicationsBundle> randomBundle1 = element(
+            AdditionalApplicationsBundle.builder().build()
+        );
+        private final Element<AdditionalApplicationsBundle> randomBundle2 = element(
+            AdditionalApplicationsBundle.builder().build()
         );
 
         @Test
         void shouldMigrate() {
             CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails(standardCaseData(), migrationId)));
 
-            assertThat(caseData.getAdditionalApplicationsBundle()).isEqualTo(List.of(randomBundle));
+            assertThat(caseData.getAdditionalApplicationsBundle()).isEqualTo(List.of(randomBundle1, randomBundle2));
         }
 
         @Test
@@ -119,7 +122,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(caseData, migrationId)))
                 .getRootCause()
                 .isInstanceOf(AssertionError.class)
-                .hasMessage("Migration FPLA-3125: Expected additional applications bundle size to be 2 but was 1");
+                .hasMessage("Migration FPLA-3125: Expected additional applications bundle size to be 3 but was 1");
         }
 
         private CaseData.CaseDataBuilder standardCaseData() {
@@ -131,7 +134,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         private List<Element<AdditionalApplicationsBundle>> buildAdditionalApplicationBundle(UUID bundleId, UUID c2Id,
                                                                                              String c2DocId) {
             return List.of(
-                randomBundle,
+                randomBundle1,
+                randomBundle2,
                 element(bundleId, AdditionalApplicationsBundle.builder()
                     .c2DocumentBundle(C2DocumentBundle.builder()
                         .id(c2Id)
