@@ -59,7 +59,7 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   manageOrdersEventPage.enterJudge();
   await manageOrdersEventPage.enterApprovalDateTime(today);
   await I.goToNextPage();
-  await manageOrdersEventPage.selectCareOrder([0]);
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.enterCareOrderIssuedDate(aYearAgo);
   manageOrdersEventPage.enterCareOrderIssuedVenue(hearingDetails[0]);

@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
-import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.time.LocalDate;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class DocmosisOrderCaseDataGenerator {
 
@@ -69,14 +67,14 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersApprovalDate(LocalDate.of(2013, 10, 5))
                         .build());
             case WHICH_CHILDREN:
-                return builder.children1(List.of(element(UUID.randomUUID(), buildChild())))
+                return builder.children1(List.of(element(UUID.randomUUID(), Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("Kenny")
+                        .lastName("Kruger")
+                        .dateOfBirth(LocalDate.of(2010, 1, 1))
+                        .build())
+                    .build())))
                     .childSelector(Selector.builder().selected(List.of(1)).build());
-            case WHICH_ORDERS:
-                return builder.orderCollection(wrapElements(GeneratedOrder.builder()
-                    .orderType(Order.C32_CARE_ORDER.name())
-                    .children(List.of(element(UUID.randomUUID(), buildChild())))
-                    .build()))
-                    .careOrderSelector(Selector.builder().selected(List.of(0)).build());
             case DISCHARGE_DETAILS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)
@@ -176,13 +174,5 @@ public class DocmosisOrderCaseDataGenerator {
         return defaultIfNull(builder.build().getManageOrdersEventData(), ManageOrdersEventData.builder().build());
     }
 
-    private Child buildChild() {
-        return Child.builder()
-            .party(ChildParty.builder()
-                .firstName("Kenny")
-                .lastName("Kruger")
-                .dateOfBirth(LocalDate.of(2010, 1, 1))
-                .build())
-            .build();
-    }
+
 }

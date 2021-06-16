@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDE
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_ORDERS;
 
 @Getter
 @RequiredArgsConstructor
@@ -60,7 +59,7 @@ public enum Order {
         "Section 31 Children Act 1989",
         "C32B - Discharge of care order",
         IsFinalOrder.MAYBE,
-        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_ORDERS, DISCHARGE_DETAILS, FURTHER_DIRECTIONS,
+        List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DISCHARGE_DETAILS, FURTHER_DIRECTIONS,
             CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(

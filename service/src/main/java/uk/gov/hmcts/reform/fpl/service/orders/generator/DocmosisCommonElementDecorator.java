@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.DischargeCareOrderService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
@@ -26,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Component
@@ -34,7 +32,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 public class DocmosisCommonElementDecorator {
 
     private final ChildrenService childrenService;
-    private final DischargeCareOrderService dischargeCareOrderService;
     private final CaseDataExtractionService extractionService;
 
     public DocmosisParameters decorate(DocmosisParameters currentParameters, CaseData caseData,
@@ -42,7 +39,7 @@ public class DocmosisCommonElementDecorator {
         ManageOrdersEventData eventData = caseData.getManageOrdersEventData();
         String localAuthorityCode = caseData.getCaseLocalAuthority();
 
-        List<Element<Child>> selectedChildren = getSelectedChildren(orderType, caseData);
+        List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
         List<DocmosisChild> children = extractionService.getChildrenDetails(selectedChildren);
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getSelectedJudge(
@@ -65,13 +62,5 @@ public class DocmosisCommonElementDecorator {
             .draftbackground(DRAFT == status ? DocmosisImages.DRAFT_WATERMARK.getValue() : null)
             .courtseal(SEALED == status ? DocmosisImages.COURT_SEAL.getValue() : null)
             .build();
-    }
-
-    private List<Element<Child>> getSelectedChildren(Order orderType, CaseData caseData) {
-        if (Order.C32B_DISCHARGE_OF_CARE_ORDER.equals(orderType)) {
-            return wrapElements(dischargeCareOrderService.getChildrenInSelectedCareOrders(caseData));
-        }
-
-        return childrenService.getSelectedChildren(caseData);
     }
 }

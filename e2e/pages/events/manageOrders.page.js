@@ -65,9 +65,6 @@ const section3 = {
   childSelector: {
     selector: index => `#childSelector_option${index}`,
   },
-  careOrderSelector: {
-    selector: index => `#careOrderSelector_option${index}-SELECTED`,
-  },
 };
 
 const section4 = {
@@ -218,14 +215,6 @@ const selectChildren = async (option, indexes = []) => {
   await I.runAccessibilityTest();
 };
 
-const selectCareOrder = async (indexes = []) => {
-  indexes.forEach((selectorIndex) => {
-    I.checkOption(section3.careOrderSelector.selector(selectorIndex));
-  });
-
-  await I.runAccessibilityTest();
-};
-
 const enterTitle = (text) => {
   I.fillField(section4.title, text);
 };
@@ -328,5 +317,5 @@ module.exports = {
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
-  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, selectCareOrder,
+  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate,
 };

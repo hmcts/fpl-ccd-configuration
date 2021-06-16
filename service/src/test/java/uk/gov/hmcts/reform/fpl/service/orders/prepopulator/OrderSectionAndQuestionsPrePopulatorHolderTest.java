@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlo
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichCareOrdersBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
@@ -37,7 +36,6 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.CLOSE_CASE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.EPO_TYPE_AND_PREVENT_REMOVAL;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_HEARING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
-import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_ORDERS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.CHILDREN_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.HEARING_DETAILS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderSection.ISSUING_DETAILS;
@@ -50,8 +48,6 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
     // Section blocks
     @Mock
     private WhichChildrenBlockPrePopulator whichChildrenBlockPrePopulator;
-    @Mock
-    private WhichCareOrdersBlockPrePopulator whichCareOrdersBlockPrePopulator;
     @Mock
     private ApproverBlockPrePopulator approverBlockPrePopulator;
     @Mock
@@ -93,7 +89,6 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             approvalDateBlockPrePopulator,
             approvalDateTimeBlockPrePopulator,
             whichChildrenBlockPrePopulator,
-            whichCareOrdersBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
             closeCaseBlockPrePopulator
@@ -104,7 +99,6 @@ class OrderSectionAndQuestionsPrePopulatorHolderTest {
             APPROVAL_DATE_TIME, approvalDateTimeBlockPrePopulator,
             APPROVER, approverBlockPrePopulator,
             WHICH_CHILDREN, whichChildrenBlockPrePopulator,
-            WHICH_ORDERS, whichCareOrdersBlockPrePopulator,
             EPO_TYPE_AND_PREVENT_REMOVAL, epoTypeAndPreventRemovalBlockPrePopulator,
             CLOSE_CASE, closeCaseBlockPrePopulator
         );
