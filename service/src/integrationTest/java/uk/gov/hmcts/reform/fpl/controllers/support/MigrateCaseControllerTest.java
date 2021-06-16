@@ -5,27 +5,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
-import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
+import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITHOUT_NOTICE;
-import static uk.gov.hmcts.reform.fpl.enums.C2ApplicationType.WITH_NOTICE;
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
@@ -36,314 +33,230 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
         super("migrate-case");
     }
 
+    @Nested
+    class Fpla3125 {
+        private final String migrationId = "FPLA-3125";
+        private final UUID bundleId = fromString("b02898e7-46dc-47ce-9639-9e5b04d03b9e");
+        private final UUID c2Id = fromString("4b725c8a-3496-4f28-83f1-95d4838a533a");
+        private final String c2DocId = "b444c4fb-362b-4e27-b7d8-61996b3f6e0d";
+        private final String familyManCaseNumber = "SA20C50050";
+        private final String invalidId = "00000000-0000-0000-0000-000000000000";
+        private final Element<AdditionalApplicationsBundle> randomBundle1 = element(
+            AdditionalApplicationsBundle.builder().build()
+        );
+        private final Element<AdditionalApplicationsBundle> randomBundle2 = element(
+            AdditionalApplicationsBundle.builder().build()
+        );
+
+        @Test
+        void shouldMigrate() {
+            CaseData caseData = extractCaseData(postAboutToSubmitEvent(caseDetails(standardCaseData(), migrationId)));
+
+            assertThat(caseData.getAdditionalApplicationsBundle()).isEqualTo(List.of(randomBundle1, randomBundle2));
+        }
+
+        @Test
+        void shouldNotMigrateWhenInvalidMigrationId() {
+            CaseData.CaseDataBuilder caseData = standardCaseData();
+            CaseData responseData = extractCaseData(postAboutToSubmitEvent(caseDetails(caseData, "")));
+
+            List<Element<AdditionalApplicationsBundle>> originalBundles = caseData.build()
+                .getAdditionalApplicationsBundle();
+            assertThat(responseData.getAdditionalApplicationsBundle()).isEqualTo(originalBundles);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenInvalidFamilyManNumber() {
+            CaseData.CaseDataBuilder caseData = standardCaseData()
+                .familyManCaseNumber("bad number");
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration FPLA-3125: Expected family man case number to be SA20C50050 but was bad number");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenInvalidBundleId() {
+            CaseData.CaseDataBuilder caseData = standardCaseData()
+                .additionalApplicationsBundle(buildAdditionalApplicationBundle(fromString(invalidId), c2Id, c2DocId));
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration FPLA-3125: Expected bundle id to be b02898e7-46dc-47ce-9639-9e5b04d03b9e"
+                    + " but was 00000000-0000-0000-0000-000000000000");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenInvalidC2Id() {
+            CaseData.CaseDataBuilder caseData = standardCaseData()
+                .additionalApplicationsBundle(buildAdditionalApplicationBundle(
+                    bundleId, fromString(invalidId), c2DocId
+                ));
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration FPLA-3125: Expected c2 id to be 4b725c8a-3496-4f28-83f1-95d4838a533a"
+                    + " but was 00000000-0000-0000-0000-000000000000");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenInvalidC2DocId() {
+            CaseData.CaseDataBuilder caseData = standardCaseData()
+                .additionalApplicationsBundle(buildAdditionalApplicationBundle(bundleId, c2Id, invalidId));
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration FPLA-3125: Expected doc id to be b444c4fb-362b-4e27-b7d8-61996b3f6e0d"
+                    + " but was some-url/00000000-0000-0000-0000-000000000000");
+        }
+
+        @Test
+        void shouldThrowExceptionWhenIncorrectBundleSize() {
+            CaseData.CaseDataBuilder caseData = standardCaseData()
+                .additionalApplicationsBundle(wrapElements(mock(AdditionalApplicationsBundle.class)));
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails(caseData, migrationId)))
+                .getRootCause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("Migration FPLA-3125: Expected additional applications bundle size to be 3 but was 1");
+        }
+
+        private CaseData.CaseDataBuilder standardCaseData() {
+            return CaseData.builder()
+                .familyManCaseNumber(familyManCaseNumber)
+                .additionalApplicationsBundle(buildAdditionalApplicationBundle(bundleId, c2Id, c2DocId));
+        }
+
+        private List<Element<AdditionalApplicationsBundle>> buildAdditionalApplicationBundle(UUID bundleId, UUID c2Id,
+                                                                                             String c2DocId) {
+            return List.of(
+                randomBundle1,
+                randomBundle2,
+                element(bundleId, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder()
+                        .id(c2Id)
+                        .document(DocumentReference.builder()
+                            .url("some-url/" + c2DocId)
+                            .build())
+                        .build())
+                    .build()
+                )
+            );
+        }
+
+        private CaseDetails caseDetails(CaseData.CaseDataBuilder caseData, String migrationId) {
+            CaseDetails caseDetails = asCaseDetails(caseData.build());
+            caseDetails.getData().put("migrationId", migrationId);
+            return caseDetails;
+        }
+    }
+
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla3080 {
-        String familyManNumber = "SA21C50024";
-        String migrationId = "FPLA-3080";
-        private UUID firstBundleID = UUID.fromString("427ef017-f57a-4942-9d75-4dcf7b45de74");
-        private UUID secondBundleID = UUID.fromString("4e4def36-2323-4e95-b93a-2f46fc4d6fc0");
-        private UUID supportingEvidenceID = UUID.fromString("3f3a183e-44ab-4e63-ac27-0ca40f3058ff");
+    class Fpla3135 {
+        String familyManNumber = "DE21C50016";
+        String migrationId = "FPLA-3135";
+        UUID documentToRemoveUUID = UUID.fromString("2acc1f5f-ff76-4c3e-b3fc-087ebebd2911");
+        UUID incorrectDocument1UUID = UUID.randomUUID();
+        UUID incorrectDocument2UUID = UUID.randomUUID();
 
-        private DocumentReference supportingDocument = testDocumentReference("Correct c2 document");
-        private DocumentReference c2Document = testDocumentReference("Incorrect c2 document");
+        DocumentReference documentToRemove = testDocumentReference("Correct court admin document");
+        DocumentReference incorrectDocument1 = testDocumentReference("Incorrect court admin document1");
+        DocumentReference incorrectDocument2 = testDocumentReference("Incorrect court admin document2");
 
         @Test
-        void shouldReplaceC2DocumentWithSupportingDocumentWithCorrectID() {
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                expectedFirstAdditionalApplicationsBundle()), element(secondBundleID,
-                buildSecondAdditionalApplicationsBundle()));
+        void shouldRemoveDocumentFromOtherCourtAdminDocumentsCollection() {
+            List<Element<CourtAdminDocument>> otherCourtAdminDocuments = List.of(
+                element(incorrectDocument1UUID, CourtAdminDocument.builder()
+                    .documentTitle("incorrect document1").document(incorrectDocument1).build()),
+                element(documentToRemoveUUID, CourtAdminDocument.builder()
+                    .documentTitle("correct document to remove").document(documentToRemove).build()),
+                element(incorrectDocument2UUID, CourtAdminDocument.builder()
+                    .documentTitle("incorrect document2").document(incorrectDocument2).build())
+            );
 
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+            CaseDetails caseDetails = caseDetails(otherCourtAdminDocuments, migrationId);
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-            C2DocumentBundle expectedBundle = C2DocumentBundle.builder()
-                .document(supportingDocument)
-                .type(WITH_NOTICE)
-                .supportingEvidenceBundle(null)
-                .usePbaPayment(YES.getValue())
-                .build();
+            List<Element<CourtAdminDocument>> updatedDocuments
+                = extractCaseData(response).getOtherCourtAdminDocuments();
 
-            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
-                .getAdditionalApplicationsBundle());
+            assertThat(updatedDocuments).doesNotContain(otherCourtAdminDocuments.get(1));
+            assertThat(updatedDocuments).containsExactly(
+                otherCourtAdminDocuments.get(0), otherCourtAdminDocuments.get(2));
 
-            assertThat(extractedApplicationBundle.get(0)).isEqualTo(additionalApplications.get(0).getValue());
-            assertThat(extractedApplicationBundle.get(1).getC2DocumentBundle()).isEqualTo(expectedBundle);
+            assertThat((String) response.getData().get("documentViewLA"))
+                .doesNotContain(otherCourtAdminDocuments.get(1).getValue().getDocumentTitle());
+            assertThat((String) response.getData().get("documentViewHMCTS"))
+                .doesNotContain(otherCourtAdminDocuments.get(1).getValue().getDocumentTitle());
+            assertThat((String) response.getData().get("documentViewNC"))
+                .doesNotContain(otherCourtAdminDocuments.get(1).getValue().getDocumentTitle());
+            assertThat((String) response.getData().get("migrationId")).isNull();
         }
 
         @Test
-        void shouldRevertC2DocumentAndSupportingDocumentsToOldValuesWithCorrectID() {
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildFirstAdditionalApplicationsBundle()), element(secondBundleID,
-                buildSecondAdditionalApplicationsBundle()));
+        void shouldNotUpdateCourtAdminDocumentsCollectionWhenExpectedDocumentIdDoesNotExist() {
+            List<Element<CourtAdminDocument>> otherCourtAdminDocuments = List.of(
+                element(incorrectDocument1UUID, CourtAdminDocument.builder()
+                    .documentTitle("incorrect document1").document(incorrectDocument1).build()),
+                element(incorrectDocument2UUID, CourtAdminDocument.builder()
+                    .documentTitle("incorrect document2").document(incorrectDocument2).build())
+            );
 
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            List<AdditionalApplicationsBundle> extractedApplicationBundle = unwrapElements(extractedCaseData
-                .getAdditionalApplicationsBundle());
-
-            assertThat(extractedApplicationBundle.get(0)).isEqualTo(expectedFirstAdditionalApplicationsBundle());
-        }
-
-        @Test
-        void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
-            String incorrectMigrationId = "FPLA-1111";
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildFirstAdditionalApplicationsBundle()), element(secondBundleID,
-                expectedSecondAdditionalApplicationsBundle()));
-
-            CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(additionalApplications);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfIncorrectIDForFirstBundle() {
-            UUID wrongID = UUID.randomUUID();
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(wrongID,
-                buildFirstAdditionalApplicationsBundle()), element(secondBundleID,
-                expectedSecondAdditionalApplicationsBundle()));
-
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+            CaseDetails caseDetails = caseDetails(otherCourtAdminDocuments, migrationId);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
-                    familyManNumber, firstBundleID, wrongID));
+                .hasMessage(String.format("Migration failed on case %s: Expected %s but not found",
+                    familyManNumber, documentToRemoveUUID));
         }
 
         @Test
-        void shouldThrowAnExceptionIfIncorrectIDForSecondBundle() {
-            UUID wrongID = UUID.randomUUID();
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildFirstAdditionalApplicationsBundle()), element(wrongID,
-                expectedSecondAdditionalApplicationsBundle()));
+        void shouldNotMigrateCaseForIncorrectMigrationId() {
+            List<Element<CourtAdminDocument>> otherCourtAdminDocuments = List.of(
+                element(incorrectDocument1UUID, CourtAdminDocument.builder()
+                    .documentTitle("incorrect document1").document(incorrectDocument1).build()),
+                element(documentToRemoveUUID, CourtAdminDocument.builder()
+                    .documentTitle("correct document to remove").document(documentToRemove).build())
+            );
 
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+            String incorrectMigrationId = "FPLA-3030";
+            CaseDetails caseDetails = caseDetails(otherCourtAdminDocuments, incorrectMigrationId);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
-                    familyManNumber, secondBundleID, wrongID));
+            assertThat(extractedCaseData.getOtherCourtAdminDocuments()).isEqualTo(otherCourtAdminDocuments);
         }
 
         @Test
-        void shouldThrowAnExceptionIfSupportingDocumentIDIsNotPresent() {
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                expectedFirstAdditionalApplicationsBundle()), element(secondBundleID,
-                expectedSecondAdditionalApplicationsBundle()));
+        void shouldNotMigrateCaseForIncorrectFamilyManNumber() {
+            List<Element<CourtAdminDocument>> otherCourtAdminDocuments = List.of(
+                element(incorrectDocument1UUID, CourtAdminDocument.builder()
+                    .documentTitle("incorrect document1").document(incorrectDocument1).build()),
+                element(documentToRemoveUUID, CourtAdminDocument.builder()
+                    .documentTitle("correct document to remove").document(documentToRemove).build())
+            );
 
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
+            String incorrectFamilyManId = "SA21C52424";
+            CaseDetails caseDetails = caseDetails(otherCourtAdminDocuments, incorrectFamilyManId);
+            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format("Supporting evidence document with %s does not exist",
-                    supportingEvidenceID));
+            assertThat(extractedCaseData.getOtherCourtAdminDocuments()).isEqualTo(otherCourtAdminDocuments);
         }
 
-        private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
+        private CaseDetails caseDetails(List<Element<CourtAdminDocument>> otherCourtAdminDocuments,
                                         String migrationId) {
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .state(State.CASE_MANAGEMENT)
-                .additionalApplicationsBundle(additionalApplications)
+                .otherCourtAdminDocuments(otherCourtAdminDocuments)
                 .familyManCaseNumber(familyManNumber)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
         }
-
-        private AdditionalApplicationsBundle buildFirstAdditionalApplicationsBundle() {
-            return AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .type(WITHOUT_NOTICE)
-                    .document(testDocumentReference())
-                    .usePbaPayment(YES.getValue())
-                    .supportingEvidenceBundle(null)
-                    .build())
-                .build();
-        }
-
-        private AdditionalApplicationsBundle buildSecondAdditionalApplicationsBundle() {
-            return AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .type(WITH_NOTICE)
-                    .document(c2Document)
-                    .usePbaPayment(YES.getValue())
-                    .supportingEvidenceBundle(List.of(element(supportingEvidenceID, SupportingEvidenceBundle.builder()
-                        .document(supportingDocument)
-                        .build())))
-                    .build())
-                .build();
-        }
-
-        private AdditionalApplicationsBundle expectedFirstAdditionalApplicationsBundle() {
-            return AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .type(WITHOUT_NOTICE)
-                    .document(buildExpectedC2Document())
-                    .usePbaPayment(YES.getValue())
-                    .supportingEvidenceBundle(buildSupportingEvidenceBundle())
-                    .build())
-                .build();
-        }
-
-        private AdditionalApplicationsBundle expectedSecondAdditionalApplicationsBundle() {
-            return AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .document(supportingDocument)
-                    .type(WITH_NOTICE)
-                    .supportingEvidenceBundle(null)
-                    .usePbaPayment(YES.getValue())
-                    .build()).build();
-        }
-
-        private DocumentReference buildExpectedC2Document() {
-            return DocumentReference.builder()
-                .filename("S45C-921052410100.pdf")
-                .url("http://dm-store-prod.service.core-compute-prod.internal/documents/5ddafb9c-1396-44c1-a4dc-25204b0989f0")
-                .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/5ddafb9c-1396-44c1-a4dc-25204b0989f0/binary")
-                .build();
-        }
-
-        private List<Element<SupportingEvidenceBundle>> buildSupportingEvidenceBundle() {
-            SupportingEvidenceBundle firstBundle = SupportingEvidenceBundle.builder()
-                .name("Position Statement for C2")
-                .document(DocumentReference.builder()
-                    .url("http://dm-store-prod.service.core-compute-prod.internal/documents/d448738d-51fe-439e-9a0b-5ecc0bb378b6")
-                    .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/d448738d-51fe-439e-9a0b-5ecc0bb378b6/binary")
-                    .filename("Position Statement for C2.docx")
-                    .build())
-                .uploadedBy("HMCTS")
-                .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
-                .build();
-
-            SupportingEvidenceBundle secondBundle = SupportingEvidenceBundle.builder()
-                .name("Draft LOI")
-                .document(DocumentReference.builder()
-                    .url("http://dm-store-prod.service.core-compute-prod.internal/documents/d8357dbc-e3bd-464f-8edb-aac0fe1c58c2")
-                    .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/d8357dbc-e3bd-464f-8edb-aac0fe1c58c2/binary")
-                    .filename("AMO0030002 Draft LOI.docx")
-                    .build())
-                .uploadedBy("HMCTS")
-                .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
-                .build();
-
-            SupportingEvidenceBundle thirdBundle = SupportingEvidenceBundle.builder()
-                .name("CV")
-                .document(DocumentReference.builder()
-                    .url("http://dm-store-prod.service.core-compute-prod.internal/documents/6b6b5071-e097-4074-b317-b00dc3cfa89c")
-                    .binaryUrl("http://dm-store-prod.service.core-compute-prod.internal/documents/6b6b5071-e097-4074-b317-b00dc3cfa89c/binary")
-                    .filename("AMO0030002 Medico-legal_CV-May2021.doc")
-                    .build())
-                .uploadedBy("HMCTS")
-                .dateTimeUploaded(LocalDateTime.of(2021, 5, 24, 10, 23, 32))
-                .build();
-
-            return wrapElements(firstBundle, secondBundle, thirdBundle);
-        }
     }
 
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    @Nested
-    class Fpla2991 {
-        String familyManNumber = "SA21C50011";
-        String migrationId = "FPLA-2991";
-        UUID firstBundleID = UUID.randomUUID();
-        UUID firstSupportingEvidenceID = UUID.randomUUID();
-        UUID secondBundleID = UUID.randomUUID();
-        UUID secondSupportingEvidenceID = UUID.randomUUID();
-        UUID thirdBundleID = UUID.fromString("1bae342e-f73c-4ef3-b7e2-044d6c618825");
-        UUID thirdSupportingEvidenceID = UUID.fromString("045c1fd6-3fed-42d3-be0b-e47257f6c01c");
-
-        private DocumentReference supportingDocument = testDocumentReference("Correct c2 document");
-        private DocumentReference c2Document = testDocumentReference("Incorrect c2 document");
-
-        @Test
-        void shouldRemoveSupportingEvidenceDocumentWithCorrectID() {
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildAdditionalApplicationsBundle(thirdSupportingEvidenceID)), element(secondBundleID,
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(thirdBundleID,
-                buildAdditionalApplicationsBundle(thirdSupportingEvidenceID)));
-
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            AdditionalApplicationsBundle expectedBundle = AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .document(c2Document)
-                    .type(WITH_NOTICE)
-                    .supportingEvidenceBundle(List.of(element(firstSupportingEvidenceID,
-                        SupportingEvidenceBundle.builder()
-                            .document(supportingDocument)
-                            .build())))
-                    .usePbaPayment(YES.getValue())
-                    .build())
-                .build();
-
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(0))
-                .isEqualTo(additionalApplications.get(0));
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(1))
-                .isEqualTo(additionalApplications.get(1));
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle().get(2).getValue())
-                .isEqualTo(expectedBundle);
-        }
-
-        @Test
-        void shouldNotMigrateCaseIfMigrationIdIsIncorrect() {
-            String incorrectMigrationId = "FPLA-1111";
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(firstBundleID,
-                buildAdditionalApplicationsBundle(firstSupportingEvidenceID)), element(secondBundleID,
-                buildAdditionalApplicationsBundle(secondSupportingEvidenceID)), element(thirdBundleID,
-                buildAdditionalApplicationsBundle(thirdSupportingEvidenceID)));
-
-            CaseDetails caseDetails = caseDetails(additionalApplications, incorrectMigrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getAdditionalApplicationsBundle()).isEqualTo(additionalApplications);
-        }
-
-        @Test
-        void shouldThrowAnExceptionIfIncorrectIDForThirdBundle() {
-            UUID wrongID = UUID.randomUUID();
-            List<Element<AdditionalApplicationsBundle>> additionalApplications = List.of(element(UUID.randomUUID(),
-                buildAdditionalApplicationsBundle(UUID.randomUUID())), element(UUID.randomUUID(),
-                buildAdditionalApplicationsBundle(UUID.randomUUID())), element(wrongID,
-                buildAdditionalApplicationsBundle(UUID.randomUUID())));
-
-            CaseDetails caseDetails = caseDetails(additionalApplications, migrationId);
-
-            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
-                .getRootCause()
-                .hasMessage(String.format("Migration failed on case %s: Expected %s but got %s",
-                    familyManNumber, thirdBundleID, wrongID));
-        }
-
-        private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> additionalApplications,
-                                        String migrationId) {
-            CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .state(State.CASE_MANAGEMENT)
-                .additionalApplicationsBundle(additionalApplications)
-                .familyManCaseNumber(familyManNumber)
-                .build());
-            caseDetails.getData().put("migrationId", migrationId);
-            return caseDetails;
-        }
-
-        private AdditionalApplicationsBundle buildAdditionalApplicationsBundle(UUID id) {
-            return AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(C2DocumentBundle.builder()
-                    .document(c2Document)
-                    .type(WITH_NOTICE)
-                    .supportingEvidenceBundle(List.of(element(firstSupportingEvidenceID,
-                        SupportingEvidenceBundle.builder()
-                            .document(supportingDocument)
-                            .build()), element(id, SupportingEvidenceBundle.builder()
-                        .document(supportingDocument).build())))
-                    .usePbaPayment(YES.getValue())
-                    .build()).build();
-        }
-    }
 }
