@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.DISCHARGE_D
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DischargeOfCareDateValidator implements QuestionBlockOrderValidator {
 
-    private static final String BEFORE_ISSUED_DATE_MESSAGE = "Date of issue cannot be in the future";
+    private static final String FUTURE_ISSUED_DATE_MESSAGE = "Date of issue cannot be in the future";
     private final Time time;
 
     @Override
@@ -35,7 +35,7 @@ public class DischargeOfCareDateValidator implements QuestionBlockOrderValidator
         List<String> errors = new ArrayList<>();
 
         if (issuedDate.isAfter(now)) {
-            errors.add(BEFORE_ISSUED_DATE_MESSAGE);
+            errors.add(FUTURE_ISSUED_DATE_MESSAGE);
         }
 
         return errors;
