@@ -16,6 +16,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BED",
+    "ListElement": "Bedford Borough Council",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BIR",
     "ListElement": "Birmingham Children's Trust",
     "DisplayOrder": 5
@@ -292,6 +299,13 @@
     "ListElementCode": "LAN",
     "ListElement": "Lancashire County Council",
     "DisplayOrder": 155
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LEE",
+    "ListElement": "Leeds City Council",
+    "DisplayOrder": 157
   },
   {
     "LiveFrom": "01/01/2017",
