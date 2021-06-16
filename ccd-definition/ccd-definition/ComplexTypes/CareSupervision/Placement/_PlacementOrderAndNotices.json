@@ -1,0 +1,36 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementOrderAndNotices",
+    "ElementLabel": "For court official use only",
+    "FieldType": "Label",
+    "ListElementCode": "type_label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementOrderAndNotices",
+    "ListElementCode": "type",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "PlacementOrderAndNoticesType",
+    "ElementLabel": "Document type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementOrderAndNotices",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Document",
+    "SecurityClassification": "Public",
+    "RegularExpression": ".pdf"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PlacementOrderAndNotices",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "SecurityClassification": "Public"
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "LocalAuthority",
+    "ListElement": "The local authority",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "Lawyers",
+    "ListElement": "Other lawyers",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "Cafcass",
+    "ListElement": "Cafcass",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "LegalAidAgency",
+    "ListElement": "Legal Aid Agency",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "HMCTS",
+    "ListElement": "HMCTS, including judges",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "Experts",
+    "ListElement": "Experts, including medics and the police",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasonType",
+    "ListElementCode": "Other",
+    "ListElement": "Hearing vacated for another reason",
+    "DisplayOrder": 7
+  }
+]

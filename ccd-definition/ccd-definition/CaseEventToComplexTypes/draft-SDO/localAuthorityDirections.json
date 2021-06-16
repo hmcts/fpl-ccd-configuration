@@ -1,0 +1,62 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "readOnly",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "directionRemovable",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "directionType",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "directionNeeded",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "localAuthorityDirections.directionRemovable=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "localAuthorityDirections.readOnly!=\"Yes\" AND localAuthorityDirections.directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  }
+]

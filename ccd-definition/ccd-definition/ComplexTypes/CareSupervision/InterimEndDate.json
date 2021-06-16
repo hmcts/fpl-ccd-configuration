@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDate",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "InterimEndDateType",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDate",
+    "ListElementCode": "endDate",
+    "FieldType": "Date",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"NAMED_DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InterimEndDate",
+    "ListElementCode": "endDateTime",
+    "FieldType": "DateTime",
+    "ElementLabel": " ",
+    "HintText": "Use 24 hour clock, for example 15 30 00",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type = \"SPECIFIC_TIME_NAMED_DATE\""
+  }
+]

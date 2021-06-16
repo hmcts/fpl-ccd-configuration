@@ -1,0 +1,84 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "initiateCase",
+    "Name": "Initiate Case",
+    "Description": "Create a new case – add a title",
+    "DisplayOrder": 1,
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addApplication",
+    "Name": "Upload application",
+    "Description": "Upload application document to the case",
+    "DisplayOrder": 2,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public",
+    "ShowEventNotes": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addAnnexDocuments",
+    "Name": "Upload annex documents",
+    "Description": "Upload annex documents to the case",
+    "DisplayOrder": 3,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public",
+    "ShowEventNotes": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addCaseIDReference",
+    "Name": "Add Case ID",
+    "Description": "Add Case ID to the case",
+    "DisplayOrder": 4,
+    "PreConditionState(s)": "1_Initiation",
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public",
+    "ShowEventNotes": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addBundle",
+    "Name": "Upload bundle",
+    "Description": "Add bundle document to the case",
+    "DisplayOrder": 5,
+    "PreConditionState(s)": "1_Initiation",
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public",
+    "ShowEventNotes": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "amendCaseTitle",
+    "Name": "Amend case title",
+    "Description": "Amend case title",
+    "DisplayOrder": 6,
+    "PreConditionState(s)": "1_Initiation",
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public",
+    "ShowEventNotes": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addAnnex",
+    "Name": "Upload annex collection",
+    "Description": "Upload annex documentation",
+    "DisplayOrder": 7,
+    "PreConditionState(s)": "*",
+    "PostConditionState": "1_Initiation",
+    "SecurityClassification": "Public",
+    "ShowEventNotes": "N"
+  }
+]

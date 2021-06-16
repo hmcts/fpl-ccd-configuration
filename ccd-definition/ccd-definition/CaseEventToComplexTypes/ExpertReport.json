@@ -1,0 +1,39 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReport",
+    "CaseEventID": "expertReport",
+    "CaseFieldID": "expertReport",
+    "ListElementCode": "expertReportList",
+    "ElementLabel": "Label",
+    "SecurityClassification": "Public",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReport",
+    "CaseEventID": "expertReport",
+    "CaseFieldID": "expertReport",
+    "ListElementCode": "expertReportDateRequested",
+    "SecurityClassification": "Public",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReport",
+    "CaseEventID": "expertReport",
+    "CaseFieldID": "expertReport",
+    "ListElementCode": "reportApproval",
+    "SecurityClassification": "Public",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ExpertReport",
+    "CaseEventID": "expertReport",
+    "CaseFieldID": "expertReport",
+    "ListElementCode": "reportApprovalDate",
+    "FieldShowCondition": "expertReport.reportApproval=\"Yes\"",
+    "DisplayContext": "MANDATORY"
+  }
+]

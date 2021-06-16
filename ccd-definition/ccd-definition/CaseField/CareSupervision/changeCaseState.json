@@ -1,0 +1,39 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confirmChangeState",
+    "FieldType": "YesOrNo",
+    "Label": "Change the state",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "currentStateLabel",
+    "FieldType": "Label",
+    "Label": "<div class='panel panel-border-wide'>Current state: ${[STATE]}</div><br/>",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextStateLabelContent",
+    "Label": "Content to be displayed above confirmChangeState, text type so that it can be dynamic",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "closedStateRadioList",
+    "Label": "Change status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ChangeClosedStateList",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  }
+]

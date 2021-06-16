@@ -1,0 +1,87 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "action",
+    "FieldType": "OrderAction",
+    "ElementLabel": "Order actions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "orderDoc",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Text",
+    "ElementLabel": "Date of issue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "hearingDate",
+    "FieldType": "Text",
+    "ElementLabel": "Which hearing is this order for?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "id",
+    "FieldType": "Text",
+    "ElementLabel": "id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "hearingDate=\"DO_NOT_SHOW\"",
+    "Comment": "Id has been used here to uniquely identify selected date in case management order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "directions",
+    "FieldType": "Collection",
+    "ElementLabel": "Directions",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "schedule",
+    "FieldType": "Schedule",
+    "ElementLabel": "Schedule",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "recitals",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Recitals",
+    "ElementLabel": "Recitals",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CMOStatus",
+    "ElementLabel": "Is this ready to be sent to the judge?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "nextHearing",
+    "FieldType": "NextHearing",
+    "ElementLabel": "Next Hearing",
+    "SecurityClassification": "Public"
+  }
+]

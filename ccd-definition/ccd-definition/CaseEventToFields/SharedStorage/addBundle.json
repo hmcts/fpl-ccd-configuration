@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "addBundle",
+    "CaseFieldID": "bundleTitle",
+    "PageID": 1,
+    "PageLabel": "Bundle document",
+    "DisplayContext": "OPTIONAL",
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "addBundle",
+    "CaseFieldID": "uploadedBundle",
+    "PageID": 1,
+    "PageLabel": "Bundle document",
+    "DisplayContext": "OPTIONAL",
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "addBundle",
+    "CaseFieldID": "shortBundleDescription",
+    "PageID": 1,
+    "PageLabel": "Bundle document",
+    "DisplayContext": "OPTIONAL",
+    "PageColumnNumber": 1,
+    "PageDisplayOrder": 1,
+    "PageFieldDisplayOrder": 3
+  }
+]

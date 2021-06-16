@@ -1,0 +1,70 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "fullName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "positionInACase",
+    "FieldType": "Text",
+    "ElementLabel": "Position in a case",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Phone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": " ",
+    "HintText": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "servingPreferences",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RepresentativeServingPreferences",
+    "ElementLabel": "How do they want to get case information?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "role",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "RepresentativeRole",
+    "ElementLabel": "Who are they?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Representative",
+    "ListElementCode": "idamId",
+    "FieldType": "Text",
+    "ElementLabel": "Idam id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "idamId=\"DO_NOT_SHOW\""
+  }
+]

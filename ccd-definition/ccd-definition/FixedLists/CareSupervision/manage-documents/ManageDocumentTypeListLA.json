@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeListLA",
+    "ListElementCode": "FURTHER_EVIDENCE_DOCUMENTS",
+    "ListElement": "Further documents for main application",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeListLA",
+    "ListElementCode": "COURT_BUNDLE",
+    "ListElement": "Court bundle",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeListLA",
+    "ListElementCode": "CORRESPONDENCE",
+    "ListElement": "Correspondence",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeListLA",
+    "ListElementCode": "ADDITIONAL_APPLICATIONS_DOCUMENTS",
+    "ListElement": "Documents for additional applications",
+    "DisplayOrder": 4
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "Representative's first name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Representative's last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "organisation",
+    "FieldType": "Organisation",
+    "ElementLabel": "Organisation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "regionalOfficeAddress",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Managing office",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "organisation.OrganisationName!=\"\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentSolicitor",
+    "ListElementCode": "unregisteredOrganisation",
+    "FieldType": "UnregisteredOrganisation",
+    "ElementLabel": "Organisation (unregistered)",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "unregisteredOrganisation.name!=\"\""
+  }
+]

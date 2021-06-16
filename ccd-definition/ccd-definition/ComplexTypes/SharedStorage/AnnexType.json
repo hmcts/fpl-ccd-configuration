@@ -1,0 +1,28 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AnnexType",
+    "ListElementCode": "typeOfDocument",
+    "FieldType": "FixedList",
+    "ElementLabel": "Type of Document",
+    "HintText": "Optionally upload any annex documents",
+    "FieldTypeParameter": "fl_Annex",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AnnexType",
+    "ListElementCode": "uploadedDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AnnexType",
+    "ListElementCode": "shortDescription",
+    "FieldType": "Text",
+    "ElementLabel": "Short Description",
+    "SecurityClassification": "Public"
+  }
+]

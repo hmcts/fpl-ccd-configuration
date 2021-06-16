@@ -1,0 +1,202 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "type",
+    "EventElementLabel": "Select the order you want to make",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "subtype",
+    "EventElementLabel": "",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "uploadedOrderType",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "orderName",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "orderDescription",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTypeAndDocumentComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "orderTypeAndDocument",
+    "ListElementCode": "document",
+    "EventElementLabel": "Order document",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "order",
+    "ListElementCode": "title",
+    "EventElementLabel": "Order title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "order",
+    "ListElementCode": "details",
+    "EventElementLabel": "Order details",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "order",
+    "ListElementCode": "date",
+    "EventElementLabel": "Date and time of upload",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "allocatedJudgeLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "useAllocatedJudge",
+    "EventElementLabel": "Is this judge issuing the order?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeSubHeading",
+    "ElementLabel": "Who is issuing the order?",
+    "FieldDisplayOrder": 3,
+    "SecurityClassification": "Public",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeTitle",
+    "EventElementLabel": "Judge or magistrate's title",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeLastName",
+    "EventElementLabel": "Last name",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeFullName",
+    "EventElementLabel": "Full name",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "judgeEmailAddress",
+    "EventElementLabel": "Email Address",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "legalAdvisorName",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOChildren",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoChildren",
+    "ListElementCode": "descriptionNeeded",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOChildren",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "epoChildren",
+    "ListElementCode": "description",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  }
+]

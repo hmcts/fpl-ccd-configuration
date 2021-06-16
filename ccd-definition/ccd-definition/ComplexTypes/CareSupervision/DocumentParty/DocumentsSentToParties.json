@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentsSentToParty",
+    "ListElementCode": "partyName",
+    "FieldType": "Text",
+    "ElementLabel": "Recipient",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DocumentsSentToParty",
+    "ListElementCode": "documentsSentToParty",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DocumentSentToParty",
+    "ElementLabel": "Document ",
+    "SecurityClassification": "Public"
+  }
+]

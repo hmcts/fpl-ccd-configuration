@@ -1,0 +1,62 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "readOnly",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "directionRemovable",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "directionType",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "directionNeeded",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "otherPartiesDirections.directionRemovable=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "otherPartiesDirections.readOnly!=\"Yes\" AND otherPartiesDirections.directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  }
+]

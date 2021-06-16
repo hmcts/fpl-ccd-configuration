@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseLocalAuthority",
+    "Label": "Local authority",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "caseLocalAuthority",
+    "Label": "Local authority",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseName",
+    "Label": "Case name",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "familyManCaseNumber",
+    "Label": "FamilyMan case number",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "20/03/2020",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "[CASE_REFERENCE]",
+    "Label": "CCD Case Number",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "dateSubmitted",
+    "Label": "Date submitted",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "evidenceHandled",
+    "Label": "Supplementary evidence handled",
+    "DisplayOrder": 6
+  }
+]

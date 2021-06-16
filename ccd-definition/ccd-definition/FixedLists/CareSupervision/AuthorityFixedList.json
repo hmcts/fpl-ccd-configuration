@@ -1,0 +1,801 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BAR",
+    "ListElement": "Barnsley Metropolitan Borough Council",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BNS",
+    "ListElement": "Bath & North East Somerset Council",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BED",
+    "ListElement": "Bedford Borough Council",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BIR",
+    "ListElement": "Birmingham Children's Trust",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BDB",
+    "ListElement": "Blackburn with Darwen Borough Council",
+    "DisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BGW",
+    "ListElement": "Blaenau Gwent County Borough Council",
+    "DisplayOrder": 13
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BOL",
+    "ListElement": "Bolton Metropolitan Borough Council",
+    "DisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BCP",
+    "ListElement": "Bournemouth, Christchurch and Poole Council",
+    "DisplayOrder": 20
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BRD",
+    "ListElement": "Bridgend County Borough Council",
+    "DisplayOrder": 25
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BHC",
+    "ListElement": "Brighton and Hove City Council",
+    "DisplayOrder": 30
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BCC",
+    "ListElement": "Bristol City Council",
+    "DisplayOrder": 35
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BSC",
+    "ListElement": "Buckinghamshire Council",
+    "DisplayOrder": 40
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CDF",
+    "ListElement": "Cardiff Council",
+    "DisplayOrder": 45
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CPY",
+    "ListElement": "Caerphilly County Borough Council",
+    "DisplayOrder": 47
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CAR",
+    "ListElement": "Carmarthenshire County Council",
+    "DisplayOrder": 50
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CER",
+    "ListElement": "Ceredigion County Council",
+    "DisplayOrder": 55
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CEB",
+    "ListElement": "Cheshire East Borough Council",
+    "DisplayOrder": 60
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CWC",
+    "ListElement": "Cheshire West and Chester Council",
+    "DisplayOrder": 63
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "COR",
+    "ListElement": "Cornwall Council",
+    "DisplayOrder": 65
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CCC",
+    "ListElement": "Coventry City Council",
+    "DisplayOrder": 70
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "CMB",
+    "ListElement": "Cumbria County Council",
+    "DisplayOrder": 75
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DBC",
+    "ListElement": "Darlington Borough Council",
+    "DisplayOrder": 80
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DEN",
+    "ListElement": "Denbighshire County Council",
+    "DisplayOrder": 83
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DER",
+    "ListElement": "Derby City Council",
+    "DisplayOrder": 85
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DSC",
+    "ListElement": "Derbyshire County Council",
+    "DisplayOrder": 90
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DEV",
+    "ListElement": "Devon County Council",
+    "DisplayOrder": 95
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DON",
+    "ListElement": "Doncaster Metropolitan Borough Council",
+    "DisplayOrder": 97
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DOR",
+    "ListElement": "Dorset County Council",
+    "DisplayOrder": 98
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DMC",
+    "ListElement": "Dudley Metropolitan Borough Council",
+    "DisplayOrder": 100
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "DCC",
+    "ListElement": "Durham County Council",
+    "DisplayOrder": 105
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ERY",
+    "ListElement": "East Riding of Yorkshire Council",
+    "DisplayOrder": 110
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "FPLA",
+    "ListElement": "FPLA team",
+    "DisplayOrder": 115
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "GTE",
+    "ListElement": "Gateshead Council",
+    "DisplayOrder": 120
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "GCC",
+    "ListElement": "Gloucestershire County Council",
+    "DisplayOrder": 125
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HBC",
+    "ListElement": "Halton Borough Council",
+    "DisplayOrder": 130
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HAM",
+    "ListElement": "Hampshire County Council",
+    "DisplayOrder": 135
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HFC",
+    "ListElement": "Herefordshire Council",
+    "DisplayOrder": 140
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HCC",
+    "ListElement": "Hertfordshire County Council",
+    "DisplayOrder": 145
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "IOA",
+    "ListElement": "Isle of Anglesey County Council",
+    "DisplayOrder": 147
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "KECH",
+    "ListElement": "Kensington and Chelsea Borough Council",
+    "DisplayOrder": 148
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "KKL",
+    "ListElement": "Kirklees Council",
+    "DisplayOrder": 149
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "KBC",
+    "ListElement": "Knowsley Borough Council",
+    "DisplayOrder": 150
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LAN",
+    "ListElement": "Lancashire County Council",
+    "DisplayOrder": 155
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LEE",
+    "ListElement": "Leeds City Council",
+    "DisplayOrder": 157
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LEI",
+    "ListElement": "Leicester City Council",
+    "DisplayOrder": 160
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LCO",
+    "ListElement": "Leicestershire County Council",
+    "DisplayOrder": 165
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LIC",
+    "ListElement": "Lincolnshire County Council",
+    "DisplayOrder": 170
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LCC",
+    "ListElement": "Liverpool County Council",
+    "DisplayOrder": 175
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "HN",
+    "ListElement": "London Borough Hillingdon",
+    "DisplayOrder": 180
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BRE",
+    "ListElement": "London Borough of Brent",
+    "DisplayOrder": 183
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "BRO",
+    "ListElement": "London Borough of Bromley",
+    "DisplayOrder": 184
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LBM",
+    "ListElement": "London Borough of Merton",
+    "DisplayOrder": 185
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LBTH",
+    "ListElement": "London Borough of Tower Hamlets",
+    "DisplayOrder": 190
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LBC",
+    "ListElement": "Luton Borough Council",
+    "DisplayOrder": 195
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MCC",
+    "ListElement": "Manchester City Council",
+    "DisplayOrder": 200
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MWC",
+    "ListElement": "Medway Council",
+    "DisplayOrder": 205
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MTC",
+    "ListElement": "Merthyr Tydfil CBC",
+    "DisplayOrder": 210
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MDB",
+    "ListElement": "Middlesbrough Council",
+    "DisplayOrder": 215
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MKC",
+    "ListElement": "Milton Keynes Council",
+    "DisplayOrder": 220
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "MON",
+    "ListElement": "Monmouthshire County Borough Council",
+    "DisplayOrder": 223
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NPT",
+    "ListElement": "Neath & Port Talbot County Council",
+    "DisplayOrder": 225
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NCC",
+    "ListElement": "Newcastle City Council",
+    "DisplayOrder": 230
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NWT",
+    "ListElement": "Newport City Council",
+    "DisplayOrder": 235
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NFK",
+    "ListElement": "Norfolk County Council",
+    "DisplayOrder": 240
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NELC",
+    "ListElement": "North East Lincolnshire Council",
+    "DisplayOrder": 245
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NLC",
+    "ListElement": "North Lincolnshire Council",
+    "DisplayOrder": 250
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NSC",
+    "ListElement": "North Somerset Council",
+    "DisplayOrder": 255
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NYS",
+    "ListElement": "North Yorkshire County Council",
+    "DisplayOrder": 260
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NTH",
+    "ListElement": "Northamptonshire County Council",
+    "DisplayOrder": 265
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NHB",
+    "ListElement": "Northumberland County Council",
+    "DisplayOrder": 267
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NHC",
+    "ListElement": "Nottingham City Council",
+    "DisplayOrder": 270
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NGC",
+    "ListElement": "Nottinghamshire County Council",
+    "DisplayOrder": 275
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "OLC",
+    "ListElement": "Oldham Council",
+    "DisplayOrder": 280
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "OCC",
+    "ListElement": "Oxfordshire County Council",
+    "DisplayOrder": 285
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "PEM",
+    "ListElement": "Pembrokeshire County Council",
+    "DisplayOrder": 290
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "PET",
+    "ListElement": "Peterborough City Council",
+    "DisplayOrder": 295
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "PCC",
+    "ListElement": "Portsmouth City Council",
+    "DisplayOrder": 300
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "RCC",
+    "ListElement": "Reading Borough Council",
+    "DisplayOrder": 305
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "RCT",
+    "ListElement": "Rhondda Cynon Taf CBC",
+    "DisplayOrder": 310
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "RBC",
+    "ListElement": "Rochdale Borough Council",
+    "DisplayOrder": 315
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "ROT",
+    "ListElement": "Rotherham Metropolitan Borough Council",
+    "DisplayOrder": 317
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SAL",
+    "ListElement": "Salford City Council",
+    "DisplayOrder": 320
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SMC",
+    "ListElement": "Sandwell Metropolitan Council",
+    "DisplayOrder": 325
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHF",
+    "ListElement": "Sheffield City Council",
+    "DisplayOrder": 327
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SHR",
+    "ListElement": "Shropshire Borough Council",
+    "DisplayOrder": 330
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SOL",
+    "ListElement": "Solihull Metropolitan Borough Council",
+    "DisplayOrder": 335
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SOC",
+    "ListElement": "Somerset County Council",
+    "DisplayOrder": 340
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SGL",
+    "ListElement": "South Gloucestershire Council",
+    "DisplayOrder": 345
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SCC",
+    "ListElement": "Southampton City Council",
+    "DisplayOrder": 350
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STF",
+    "ListElement": "Staffordshire County Council",
+    "DisplayOrder": 355
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STH",
+    "ListElement": "St Helens Borough Council",
+    "DisplayOrder": 357
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STC",
+    "ListElement": "Stockport Metropolitan Borough Council",
+    "DisplayOrder": 360
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SOT",
+    "ListElement": "Stockton-on-Tees Borough Council",
+    "DisplayOrder": 365
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "STO",
+    "ListElement": "Stoke on Trent City Council",
+    "DisplayOrder": 370
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SUF",
+    "ListElement": "Suffolk County Council",
+    "DisplayOrder": 375
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "GSCC",
+    "ListElement": "Surrey County Council",
+    "DisplayOrder": 380
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SA",
+    "ListElement": "Swansea City Council",
+    "DisplayOrder": 385
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SN",
+    "ListElement": "Swindon Borough Council",
+    "DisplayOrder": 390
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TAM",
+    "ListElement": "Tameside Metropolitan Borough Council",
+    "DisplayOrder": 395
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TWB",
+    "ListElement": "Telford and Wrekin Borough Council",
+    "DisplayOrder": 400
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "TBC",
+    "ListElement": "Trafford Borough Council",
+    "DisplayOrder": 405
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "VOG",
+    "ListElement": "Vale of Glamorgan Council",
+    "DisplayOrder": 410
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WMD",
+    "ListElement": "Wakefield Metropolitan District Council",
+    "DisplayOrder": 415
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WAL",
+    "ListElement": "Walsall Borough Council",
+    "DisplayOrder": 420
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WAR",
+    "ListElement": "Warrington Borough Council",
+    "DisplayOrder": 423
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WCC",
+    "ListElement": "Warwickshire County Council",
+    "DisplayOrder": 425
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WMS",
+    "ListElement": "Westminster City Council",
+    "DisplayOrder": 427
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WIC",
+    "ListElement": "Wigan Council",
+    "DisplayOrder": 430
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SNW",
+    "ListElement": "Wiltshire Council",
+    "DisplayOrder": 435
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WIR",
+    "ListElement": "Wirral Borough Council",
+    "DisplayOrder": 440
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WOL",
+    "ListElement": "Wolverhampton City Council",
+    "DisplayOrder": 445
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WSC",
+    "ListElement": "Worcestershire County Council",
+    "DisplayOrder": 450
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "WRX",
+    "ListElement": "Wrexham County Borough Council",
+    "DisplayOrder": 455
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "YCC",
+    "ListElement": "York City Council",
+    "DisplayOrder": 460
+  }
+]

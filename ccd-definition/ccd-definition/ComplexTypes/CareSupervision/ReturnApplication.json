@@ -1,0 +1,44 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "reason",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ReturnedReason",
+    "ElementLabel": "Reason for rejection",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "note",
+    "FieldType": "TextArea",
+    "ElementLabel": "Let the local authority know what they need to change",
+    "FieldShowCondition": "reason!=\"\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "submittedDate",
+    "FieldType": "Text",
+    "ElementLabel": "Date submitted",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "returnedDate",
+    "FieldType": "Text",
+    "ElementLabel": "Date returned",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReturnApplication",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Document",
+    "SecurityClassification": "Public"
+  }
+]

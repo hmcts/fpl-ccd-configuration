@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeList",
+    "ListElementCode": "FURTHER_EVIDENCE_DOCUMENTS",
+    "ListElement": "Further documents for main application",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeList",
+    "ListElementCode": "CORRESPONDENCE",
+    "ListElement": "Correspondence",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeList",
+    "ListElementCode": "ADDITIONAL_APPLICATIONS_DOCUMENTS",
+    "ListElement": "Documents for additional applications",
+    "DisplayOrder": 3
+  }
+]

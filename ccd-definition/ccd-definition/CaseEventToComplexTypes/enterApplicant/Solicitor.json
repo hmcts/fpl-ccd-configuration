@@ -1,0 +1,61 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "solicitorLabel",
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "solicitorLabel!=\"SHOW_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "name",
+    "EventElementLabel": "*Solicitor's full name",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "mobile",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "telephone",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "email",
+    "EventElementLabel": "*Solicitor's email",
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "dx",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Solicitor",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "solicitor",
+    "ListElementCode": "reference",
+    "DisplayContext": "OPTIONAL"
+  }
+]

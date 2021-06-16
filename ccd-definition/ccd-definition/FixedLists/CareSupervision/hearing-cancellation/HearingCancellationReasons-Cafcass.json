@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-Cafcass",
+    "ListElementCode": "CA1",
+    "ListElement": "CAFCASS not allocated/present",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingCancellationReasons-Cafcass",
+    "ListElementCode": "CA2",
+    "ListElement": "No/poor CAFCASS analysis",
+    "DisplayOrder": 2
+  }
+]

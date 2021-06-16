@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingReListOption",
+    "ListElementCode": "RE_LIST_NOW",
+    "ListElement": "Yes - and I can add the new date now",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingReListOption",
+    "ListElementCode": "RE_LIST_LATER",
+    "ListElement": "Yes - but I do not have the new date yet",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingReListOption",
+    "ListElementCode": "NONE",
+    "ListElement": "No - it’s not being re-listed",
+    "DisplayOrder": 3
+  }
+]

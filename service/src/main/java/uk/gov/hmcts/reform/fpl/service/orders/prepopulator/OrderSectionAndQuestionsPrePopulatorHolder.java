@@ -5,20 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock;
 import uk.gov.hmcts.reform.fpl.model.order.OrderSection;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApprovalDateTimeBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.ApproverBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.CloseCaseBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.EPOTypeAndPreventRemovalBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.LinkedToHearingBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.QuestionBlockOrderPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.WhichChildrenBlockPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.ChildrenDetailsSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.DraftOrderPreviewSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.HearingDetailsSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.IssuingDetailsSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderDetailsSectionPrePopulator;
-import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.OrderSectionPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.question.*;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.section.*;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +25,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ApproverBlockPrePopulator approverBlockPrePopulator;
     private final EPOTypeAndPreventRemovalBlockPrePopulator epoTypeAndPreventRemovalBlockPrePopulator;
     private final CloseCaseBlockPrePopulator closeCaseBlockPrePopulator;
+    private final WhichOthersBlockPrePopulator whichOthersBlockPrePopulator;
 
     // Sections
     private final HearingDetailsSectionPrePopulator hearingDetailsSectionPrePopulator;
@@ -44,6 +33,7 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
     private final ChildrenDetailsSectionPrePopulator childrenDetailsPrePopulator;
     private final OrderDetailsSectionPrePopulator orderDetailsPrePopulator;
     private final DraftOrderPreviewSectionPrePopulator draftOrderPreviewPrePopulator;
+    private final OtherDetailsSectionPrePopulator otherDetailsSectionPrePopulator;
 
     private Map<OrderQuestionBlock, QuestionBlockOrderPrePopulator> blockOrderPrePopulatorMap;
     private Map<OrderSection, OrderSectionPrePopulator> sectionPrePopulatorMap;
@@ -60,7 +50,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             whichChildrenBlockPrePopulator,
             approverBlockPrePopulator,
             epoTypeAndPreventRemovalBlockPrePopulator,
-            closeCaseBlockPrePopulator
+            closeCaseBlockPrePopulator,
+            whichOthersBlockPrePopulator
         ).stream().collect(Collectors.toMap(
             QuestionBlockOrderPrePopulator::accept,
             Function.identity()
@@ -79,7 +70,8 @@ public class OrderSectionAndQuestionsPrePopulatorHolder {
             issuingDetailsPrePopulator,
             childrenDetailsPrePopulator,
             orderDetailsPrePopulator,
-            draftOrderPreviewPrePopulator
+            draftOrderPreviewPrePopulator,
+            otherDetailsSectionPrePopulator
         ).stream().collect(Collectors.toMap(
             OrderSectionPrePopulator::accept,
             Function.identity()

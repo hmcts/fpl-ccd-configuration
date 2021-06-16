@@ -1,0 +1,87 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "orderDoc",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "lastUploadedOrder",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "hearingDate",
+    "FieldType": "Date",
+    "ElementLabel": "The date of the hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Text",
+    "ElementLabel": "Date of issue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "dateOfUpload",
+    "FieldType": "Date",
+    "ElementLabel": "Date uploaded",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "uploader",
+    "FieldType": "Text",
+    "ElementLabel": "Uploaded by",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "directions",
+    "FieldType": "Collection",
+    "ElementLabel": "Directions",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "orderStatus",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Do you want to send the order now?",
+    "FieldTypeParameter": "OrderStatus",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directions=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "judgeAndLegalAdvisor",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "ElementLabel": "Judge and Justices' Legal Adviser",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "removalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Reason for removal",
+    "SecurityClassification": "Public"
+  }
+]

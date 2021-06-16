@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderStatus",
+    "ListElementCode": "SEALED",
+    "ListElement": "Yes, seal it and send to the local authority",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderStatus",
+    "ListElementCode": "DRAFT",
+    "ListElement": "No, just save it on the system",
+    "DisplayOrder": 2
+  }
+]

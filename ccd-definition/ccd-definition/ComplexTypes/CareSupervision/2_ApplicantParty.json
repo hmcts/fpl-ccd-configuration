@@ -1,0 +1,105 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "partyId",
+    "FieldType": "Text",
+    "ElementLabel": "Party ID",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "partyType",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Party type",
+    "FieldTypeParameter": "PartyType",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "organisationName",
+    "FieldType": "Text",
+    "ElementLabel": "Name of applicant",
+    "HintText": "Local authority or authorised person",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "legalTeamManager",
+    "FieldType": "Text",
+    "ElementLabel": "Name of legal team manager or authorising officer",
+    "HintText": "The statement of truth will be signed in this person's name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "pbaNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Payment by account (PBA) number",
+    "HintText": "For example, PBA1234567",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "clientCode",
+    "FieldType": "Text",
+    "ElementLabel": "Client code",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "customerReference",
+    "FieldType": "Text",
+    "ElementLabel": "Customer reference",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Telephone",
+    "ElementLabel": "Telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "jobTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Job title",
+    "HintText": "For example, legal advisor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "mobileNumber",
+    "FieldType": "MobileNumber",
+    "ElementLabel": "Mobile number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
+    "ListElementCode": "email",
+    "FieldType": "EmailAddress",
+    "ElementLabel": "Email",
+    "SecurityClassification": "Public"
+  }
+]

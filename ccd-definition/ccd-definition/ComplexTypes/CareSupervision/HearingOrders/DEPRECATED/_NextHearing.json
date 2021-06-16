@@ -1,0 +1,20 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NextHearing",
+    "ListElementCode": "date",
+    "FieldType": "Text",
+    "ElementLabel": "Which hearing is next?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NextHearing",
+    "ListElementCode": "id",
+    "FieldType": "Text",
+    "ElementLabel": "nextHearingId",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "date=\"DO_NOT_SHOW\"",
+    "Comment": "nextHearingId uniquely identifies selected date in action CMO"
+  }
+]

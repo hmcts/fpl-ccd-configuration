@@ -1,0 +1,121 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "assignee",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "DirectionAssignees",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "responder",
+    "FieldType": "Text",
+    "ElementLabel": "Name of person responding",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfRespondent",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ParentsAndRespondentsDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfOthers",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "OtherPartiesDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfCafcass",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "directionId",
+    "FieldType": "Text",
+    "ElementLabel": "Direction ID",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "assignee=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "complied",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Has this direction been complied with?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "documentDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "file",
+    "FieldType": "Document",
+    "ElementLabel": "Upload file",
+    "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"Yes\"",
+    "Comment": "Similar field to cannotComplyFile. There are two definitions so the user has a clean field when changing answer"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "cannotComplyTitle",
+    "FieldType": "Label",
+    "ElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\n If you can't comply, you need to explain:\n\n- reasons why\n\n- impact on timetable and next hearing\n\n- proposed next actions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "cannotComplyReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "c2Uploaded",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C2Uploaded",
+    "ElementLabel": "C2 applications",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "cannotComplyFile",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a supporting file",
+    "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  }
+]

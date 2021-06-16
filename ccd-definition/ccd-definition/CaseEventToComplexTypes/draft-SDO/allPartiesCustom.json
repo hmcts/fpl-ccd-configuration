@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "allPartiesCustom",
+    "ListElementCode": "directionType",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "allPartiesCustom",
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllPartiesCustomDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "allPartiesCustom",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  }
+]

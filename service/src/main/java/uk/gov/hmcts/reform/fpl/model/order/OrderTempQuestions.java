@@ -21,5 +21,6 @@ public class OrderTempQuestions {
     String closeCase;
     String previewOrder;
     String supervisionOrderExpiryDate;
+    String whichOthers;
 
 }

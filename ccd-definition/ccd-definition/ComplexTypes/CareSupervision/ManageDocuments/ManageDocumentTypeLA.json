@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "label",
+    "FieldType": "Label",
+    "ElementLabel": "You can add, replace or delete documents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Choose a document category",
+    "FieldTypeParameter": "ManageDocumentTypeListLA",
+    "HintText": "Your document will be stored in the corresponding tab",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "hasHearings",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no hearings",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageDocumentTypeLA",
+    "ListElementCode": "hasC2s",
+    "FieldType": "Text",
+    "ElementLabel": "Hidden to control display of the next field when there are no C2s and Other applications",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type=\"DO NOT SHOW\""
+  }
+]

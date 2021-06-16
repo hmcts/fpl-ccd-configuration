@@ -1,0 +1,102 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.allocatedJudgeLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.useAllocatedJudge",
+    "EventElementLabel": "Is this judge hearing the case?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.judgeSubHeading",
+    "EventElementLabel": "Who is hearing the case?",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.judgeTitle",
+    "EventElementLabel": "Judge or magistrate's title",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.otherTitle",
+    "EventElementLabel": "Title",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.judgeLastName",
+    "EventElementLabel": "Last name",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.judgeFullName",
+    "EventElementLabel": "Full name",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.judgeEmailAddress",
+    "EventElementLabel": "Email Address",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "judgeAndLegalAdvisor.legalAdvisorName",
+    "EventElementLabel": "Justices' Legal Adviser's full name",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "CaseEventID": "createNoticeOfProceedings",
+    "CaseFieldID": "noticeOfProceedings",
+    "ListElementCode": "proceedingTypes",
+    "EventElementLabel": "What would you like to create?",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "MANDATORY"
+  }
+]

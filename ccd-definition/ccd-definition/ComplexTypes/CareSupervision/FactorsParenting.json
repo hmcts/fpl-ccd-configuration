@@ -1,0 +1,61 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "pageHeader",
+    "FieldType": "Label",
+    "ElementLabel": "Is there any evidence of any of the following affecting ability to parent?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "alcoholDrugAbuse",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Alcohol or drug abuse",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "alcoholDrugAbuseReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "alcoholDrugAbuse=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "domesticViolence",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Domestic violence",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "domesticViolenceReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "domesticViolence=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "anythingElse",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Anything else",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "FactorsParenting",
+    "ListElementCode": "anythingElseReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "anythingElse=\"Yes\"",
+    "SecurityClassification": "Public"
+  }
+]

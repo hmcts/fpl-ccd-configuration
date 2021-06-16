@@ -1,0 +1,65 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "THRESHOLD",
+    "ListElement": "Threshold",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "SWET",
+    "ListElement": "SWET",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "CARE_PLAN",
+    "ListElement": "Care plan",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "SOCIAL_WORK_CHRONOLOGY",
+    "ListElement": "Social work chronology",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "SOCIAL_WORK_STATEMENT",
+    "ListElement": "Social work statement",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "GENOGRAM",
+    "ListElement": "Genogram",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "CHECKLIST_DOCUMENT",
+    "ListElement": "Checklist document",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "BIRTH_CERTIFICATE",
+    "ListElement": "Birth certificate",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicationDocumentType",
+    "ListElementCode": "OTHER",
+    "ListElement": "Other",
+    "DisplayOrder": 9
+  }
+]

@@ -1,0 +1,287 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "partyId",
+    "FieldType": "Text",
+    "ElementLabel": "Party Id",
+    "FieldShowCondition": "partyId=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "partyType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "PartyType",
+    "ElementLabel": "Party type",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "dateOfBirth",
+    "FieldType": "Date",
+    "ElementLabel": "Date of birth",
+    "HintText": "For example, 31 3 2016",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "gender",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ChildGenderList",
+    "ElementLabel": "Gender",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "genderIdentification",
+    "FieldType": "Text",
+    "ElementLabel": "What gender do they identify with?",
+    "FieldShowCondition": "gender=\"They identify in another way\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "livingSituation",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LivingSituationList",
+    "ElementLabel": "Child's living situation",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "livingSituationDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "livingSituation=\"Other\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "addressChangeDate",
+    "FieldType": "Date",
+    "ElementLabel": "What date did they start staying here?",
+    "FieldShowCondition": "livingSituation=\"Living with *\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "datePowersEnd",
+    "FieldType": "Date",
+    "ElementLabel": "Date powers end",
+    "FieldShowCondition": "livingSituation=\"Removed by *\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "careStartDate",
+    "FieldType": "Date",
+    "ElementLabel": "Date this began",
+    "FieldShowCondition": "livingSituation=\"Voluntarily in section 20 care order\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "dischargeDate",
+    "FieldType": "Date",
+    "ElementLabel": "Discharge date",
+    "FieldShowCondition": "livingSituation=\"In hospital and soon to be discharged\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "livingSituation=\"*\" OR showAddressInConfidentialTab=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "keyDates",
+    "FieldType": "TextArea",
+    "ElementLabel": "Key dates for this child",
+    "HintText": "List any events HMCTS will need to take into account when scheduling hearings. For example, child starting primary school or taking GCSEs.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "careAndContactPlan",
+    "FieldType": "TextArea",
+    "ElementLabel": "Brief summary of care and contact plan",
+    "HintText": "For example, place baby in local authority foster care until further assessments are completed. Supervised contact for parents will be arranged.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "adoption",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are you considering adoption at this stage?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "placementOrderApplication",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Are you submitting an application for a placement order?",
+    "FieldShowCondition": "adoption=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "placementCourt",
+    "FieldType": "TextArea",
+    "ElementLabel": "Which court are you applying to?",
+    "FieldShowCondition": "placementOrderApplication=\"Yes\" AND adoption=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "mothersName",
+    "FieldType": "Text",
+    "ElementLabel": "Mother's full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "fathersName",
+    "FieldType": "Text",
+    "ElementLabel": "Father's full name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "fathersResponsibility",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "FathersResponsibilityList",
+    "ElementLabel": "Does the father have parental responsibility?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "socialWorkerName",
+    "FieldType": "Text",
+    "ElementLabel": "Name of social worker",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "socialWorkerTelephoneNumber",
+    "FieldType": "Telephone",
+    "ElementLabel": "Social worker's telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "additionalNeeds",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Does the child have any additional needs?",
+    "HintText": "For example, child has severe autism and learning disabilities. Special needs for autism should be taken into account.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "additionalNeedsDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "additionalNeeds=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "detailsHidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need contact details hidden from other parties?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "detailsHiddenReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "proceedingsLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Ability to take part in proceedings",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "proceedingsLabel=\"HIDE_LABEL\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "litigationIssues",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "litigationIssuesDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "showAddressInConfidentialTab",
+    "FieldType": "Text",
+    "ElementLabel": "Should Address field be shown in confidential tab",
+    "FieldShowCondition": "partyId=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
+    "ListElementCode": "party",
+    "FieldType": "ChildParty",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
+    "ListElementCode": "finalOrderIssued",
+    "FieldType": "Text",
+    "ElementLabel": "Final Order Issued",
+    "FieldShowCondition": "finalOrderIssued!=\"\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildrenNew",
+    "ListElementCode": "finalOrderIssuedType",
+    "FieldType": "Text",
+    "ElementLabel": "Final Order Issued Type",
+    "FieldShowCondition": "finalOrderIssuedType!=\"\"",
+    "SecurityClassification": "Public"
+  }
+
+]

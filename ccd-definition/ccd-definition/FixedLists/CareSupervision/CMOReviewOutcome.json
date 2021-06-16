@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOReviewOutcome",
+    "ListElementCode": "SEND_TO_ALL_PARTIES",
+    "ListElement": "Yes",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOReviewOutcome",
+    "ListElementCode": "JUDGE_AMENDS_DRAFT",
+    "ListElement": "No, I need to make changes",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMOReviewOutcome",
+    "ListElementCode": "JUDGE_REQUESTED_CHANGES",
+    "ListElement": "No, the local authority needs to make changes",
+    "DisplayOrder": 3
+  }
+]

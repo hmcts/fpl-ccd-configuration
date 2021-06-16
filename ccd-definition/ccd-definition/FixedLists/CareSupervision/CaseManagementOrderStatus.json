@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderStatus",
+    "ListElementCode": "SEND_TO_JUDGE",
+    "ListElement": "With judge for approval",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderStatus",
+    "ListElementCode": "RETURNED",
+    "ListElement": "Returned",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderStatus",
+    "ListElementCode": "APPROVED",
+    "ListElement": "Approved",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderStatus",
+    "ListElementCode": "DRAFT",
+    "ListElement": "Draft order, to review before hearing",
+    "DisplayOrder": 4
+  }
+]

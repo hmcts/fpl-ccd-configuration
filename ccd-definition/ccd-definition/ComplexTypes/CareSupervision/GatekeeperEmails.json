@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeeperEmail",
+    "ListElementCode": "email",
+    "FieldType": "Email",
+    "ElementLabel": "Email address",
+    "HintText": "For example, joe.bloggs@la.gov.uk",
+    "SecurityClassification": "Public"
+  }
+]
