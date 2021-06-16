@@ -12,13 +12,6 @@ Child in the case
 
 Kenny Kruger Born 1 January 2010
 
-Some exclusion details
-
-The Court orders that the child is placed in the care of LocalAuthorityName until the end
-of the proceedings or until a further order is made.
-
-Some further directions.
-
 Care order restrictions
 
 While a care order is in place, no one can:
@@ -29,5 +22,15 @@ permission from the court.
 
 Taking the child from the UK without this consent or permission might be an offence
 under the Child Abduction Act 1984.
-LocalAuthorityName has been given parental responsibility under this care order. LocalAuthorityName may take the child out of the
-UK for up to 1 month without this consent or permission.
+
+LocalAuthorityName has been given parental responsibility under this care order.
+
+LocalAuthorityName may take the child out of the UK for up to 1 month without this
+consent or permission.
+
+The Court orders that the child is placed in the care of LocalAuthorityName until the end of
+the proceedings or until a further order is made.
+
+Some exclusion details
+
+Some further directions.

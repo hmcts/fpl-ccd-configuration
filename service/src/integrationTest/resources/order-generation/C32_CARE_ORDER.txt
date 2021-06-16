@@ -11,10 +11,6 @@ La Court
 Child in the case
 Kenny Kruger Born 1 January 2010
 
-It is ordered that the child is placed in the care of LocalAuthorityName.
-
-Some further directions.
-
 Care order restrictions
 
 While a care order is in place, no one can:
@@ -30,3 +26,7 @@ LocalAuthorityName has been given parental responsibility under this care order.
 
 LocalAuthorityName may take the child out of the UK for up to 1 month without this
 consent or permission.
+
+It is ordered that the child is placed in the care of LocalAuthorityName.
+
+Some further directions.
