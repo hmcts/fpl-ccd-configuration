@@ -287,13 +287,12 @@ const selectEnglandOffice = office => {
   I.selectOption(section4.englandOffices, office);
 };
 
-const linkApplication = async (applicationId) => {
+const linkApplication = async (applicationToChoose) => {
   I.see('Is there an application for the order on the system?');
   I.dontSee('Applications');
   I.checkOption('Yes', '#manageOrdersShouldLinkApplication');
   I.see('Applications');
-  const optionToChoose = `1: ${applicationId}`;
-  I.selectOption('Applications', optionToChoose);
+  I.selectOption('Applications', applicationToChoose);
 };
 
 const confirmNoApplicationCanBeLinked = () => {

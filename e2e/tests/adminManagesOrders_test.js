@@ -281,8 +281,8 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   
-  const applicationId = '788f1b70-2d7d-4c76-8484-de225ac92ead';
-  manageOrdersEventPage.linkApplication(applicationId);
+  const applicationToChoose = 'C2, 16 June 2021, 11:49am';
+  manageOrdersEventPage.linkApplication(applicationToChoose);
 
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();
