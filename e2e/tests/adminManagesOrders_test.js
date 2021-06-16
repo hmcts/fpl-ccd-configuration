@@ -1,8 +1,8 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const caseData = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
+const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndApplication.json');
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
-const manageDocumentsForLAHelper = require('../helpers/manage_documents_for_LA_helper.js');
 
 const approvalDate = new Date(2021, 3, 9);
 const allocatedJudge = { title: 'Her Honour Judge', name: 'Moley' };
@@ -241,17 +241,18 @@ Scenario('Create Interim care order  (C33)', async ({ I, caseViewPage, manageOrd
   });
 });
 
-Scenario('Interim supervision order (C35B)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+Scenario('Interim supervision order (C35B)', async ({ I, caseViewPage, manageOrdersEventPage }) => {
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c35B);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  manageOrdersEventPage.confirmNoApplicationCanBeLinked();
   await I.goToNextPage();
   await manageOrdersEventPage.enterJudge();
   await I.goToNextPage();
-  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
   await I.goToNextPage();
   await manageOrdersEventPage.enterFurtherDirections('Further details.');
   await manageOrdersEventPage.selectOrderTypeWithEndOfProceedings(manageOrdersEventPage.section4.orderTypeWithEndOfProceedings.options.endOfProceedings);
@@ -259,7 +260,7 @@ Scenario('Interim supervision order (C35B)', async ({I, caseViewPage, manageOrde
   await manageOrdersEventPage.checkPreview();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
-  assertOrder(I,caseViewPage,{
+  assertOrder(I, caseViewPage, {
     orderIndex: 3,
     orderType: manageOrdersEventPage.orders.title.c35B,
     approvalDate: today,
@@ -268,9 +269,10 @@ Scenario('Interim supervision order (C35B)', async ({I, caseViewPage, manageOrde
   });
 });
 
-Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseViewPage, manageOrdersEventPage, uploadAdditionalApplicationsEventPage}) => {
-  //Add additional applications
-  await manageDocumentsForLAHelper.uploadC2(I, caseViewPage, uploadAdditionalApplicationsEventPage);
+Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseViewPage, manageOrdersEventPage }) => {
+  const newCaseId = await I.submitNewCaseWithData(caseDataWithApplication);
+  await I.navigateToCaseDetailsAs(config.hmctsAdminUser, newCaseId);
+
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
   await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
@@ -278,7 +280,9 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
-  manageOrdersEventPage.linkApplication();
+  
+  const applicationId = '788f1b70-2d7d-4c76-8484-de225ac92ead';
+  manageOrdersEventPage.linkApplication(applicationId);
 
   await I.goToNextPage();
   manageOrdersEventPage.enterJudge();

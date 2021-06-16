@@ -1,7 +1,6 @@
 const { I } = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
-const lodash = require('lodash');
 
 // Fields
 const operations = {
@@ -288,16 +287,13 @@ const selectEnglandOffice = office => {
   I.selectOption(section4.englandOffices, office);
 };
 
-const linkApplication = async () => {
+const linkApplication = async (applicationId) => {
   I.see('Is there an application for the order on the system?');
   I.dontSee('Applications');
   I.checkOption('Yes', '#manageOrdersShouldLinkApplication');
   I.see('Applications');
-  let applicationList = await I.grabValueFromAll('#manageOrdersLinkedApplication option');
-  const applicationToLink = lodash.last(applicationList);
-  I.selectOption('Applications', applicationToLink);
-  const linkedApplicationId = applicationToLink.split(':')[1].trim();
-  return linkedApplicationId;
+  const optionToChoose = `1: ${applicationId}`;
+  I.selectOption('Applications', optionToChoose);
 };
 
 const confirmNoApplicationCanBeLinked = () => {
