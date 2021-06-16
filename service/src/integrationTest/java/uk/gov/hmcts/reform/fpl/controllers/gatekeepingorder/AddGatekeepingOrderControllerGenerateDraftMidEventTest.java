@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.DocmosisDocumentGeneratorService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -79,6 +80,7 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
         GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
             .nextSteps(nextSteps)
+            .dateOfIssue(LocalDate.now())
             .build();
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));
@@ -100,6 +102,7 @@ class AddGatekeepingOrderControllerGenerateDraftMidEventTest extends AbstractCal
         GatekeepingOrderSealDecision expectedSealDecision = GatekeepingOrderSealDecision.builder()
             .draftDocument(DOCUMENT_REFERENCE)
             .nextSteps(null)
+            .dateOfIssue(LocalDate.now())
             .build();
 
         CaseData responseData = extractCaseData(postMidEvent(caseData, "generate-draft"));
