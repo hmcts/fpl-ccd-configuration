@@ -6,12 +6,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.IdentityService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.orders.OrderCreationService;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.ManageOrdersClosedCaseFieldGenerator;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -39,6 +41,7 @@ public class SealedOrderHistoryService {
 
     private final IdentityService identityService;
     private final ChildrenService childrenService;
+    private final OthersService othersService;
     private final OrderCreationService orderCreationService;
     private final Time time;
 
@@ -48,6 +51,7 @@ public class SealedOrderHistoryService {
         List<Element<GeneratedOrder>> pastOrders = caseData.getOrderCollection();
         ManageOrdersEventData manageOrdersEventData = caseData.getManageOrdersEventData();
         List<Element<Child>> selectedChildren = childrenService.getSelectedChildren(caseData);
+        List<Element<Other>> selectedOthers = othersService.getSelectedOthers(caseData);
 
         DocumentReference sealedPdfOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.SEALED, PDF);
         DocumentReference plainWordOrder = orderCreationService.createOrderDocument(caseData, OrderStatus.PLAIN, WORD);
@@ -57,6 +61,7 @@ public class SealedOrderHistoryService {
             .title(manageOrdersEventData.getManageOrdersTitle())
             .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
+            .others(selectedOthers) // hidden field, to store the selected others for notify
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
             .dateTimeIssued(time.now())
             .approvalDate(manageOrdersEventData.getManageOrdersApprovalDate())

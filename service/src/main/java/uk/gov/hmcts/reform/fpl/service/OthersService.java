@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
@@ -58,6 +61,27 @@ public class OthersService {
             .firstOther(getFirstOther(caseData.getConfidentialOthers(), others))
             .additionalOthers(getAdditionalOthers(others))
             .build();
+    }
+
+    public List<Element<Other>> getSelectedOthers(CaseData caseData) {
+        return getSelectedOthers(caseData.getAllOthers(), caseData.getOthersSelector(),
+            caseData.getOrderAppliesToAllChildren());
+    }
+
+    private List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
+                                                     String sendOrderToAllOthers) {
+
+        if (useAllOthers(sendOrderToAllOthers)) {
+            return others;
+        }
+
+        return selector.getSelected().stream()
+            .map(others::get)
+            .collect(toList());
+    }
+
+    private boolean useAllOthers(String sendOrdersToAllOthers) {
+        return sendOrdersToAllOthers == null || "Yes".equals(sendOrdersToAllOthers);
     }
 
     private Other addConfidentialDetails(Other confidentialOther, Element<Other> other) {
