@@ -78,7 +78,7 @@ const setupConfig = {
     },
     autoDelay: {
       enabled: true,
-      delayAfter: 2000,
+      delayAfter: 1000,
     },
     screenshotOnFail: {
       enabled: true,
