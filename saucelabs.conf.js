@@ -12,6 +12,7 @@ const defaultSauceOptions = {
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
   tags: ['FPL'],
+  maxDuration: 3000,
 };
 
 function merge(intoObject, fromObject) {
