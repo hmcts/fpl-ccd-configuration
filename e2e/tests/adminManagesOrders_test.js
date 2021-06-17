@@ -280,7 +280,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c47a);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
-  
+
   const applicationToChoose = 'C2, 16 June 2021, 11:49am';
   manageOrdersEventPage.linkApplication(applicationToChoose);
 
@@ -295,7 +295,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 6,
+    orderIndex: 1,
     orderType: 'C47A - Appointment of a Children\'s Guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
