@@ -8,9 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
 
 @WebMvcTest(MigrateCaseController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -29,90 +29,111 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    class Fpla3092 {
-        String familyManNumber = "CF20C50063";
-        String migrationId = "FPLA-3092";
-        UUID documentToRemoveUUID = UUID.fromString("a1e1f56d-18b8-4123-acaf-7c276627628e");
-        UUID incorrectDocumentUUID1 = UUID.randomUUID();
-        UUID incorrectDocumentUUID2 = UUID.randomUUID();
-
-        DocumentReference documentToRemove = testDocumentReference("Correspondence document to remove");
-        DocumentReference incorrectDocument1 = testDocumentReference("Incorrect correspondence document");
-        DocumentReference incorrectDocument2 = testDocumentReference("Incorrect correspondence document2");
+    class Fpla3088 {
+        String familyManNumber = "CF21C50022";
+        String migrationId = "FPLA-3088";
+        UUID bundleId = UUID.fromString("1ccca4f7-40d5-4392-a199-ae9372f53d00");
+        UUID c2ApplicationId = UUID.fromString("e3d5bac0-4ba6-48b6-b6d5-e60d5234a183");
+        UUID anotherBundleId = UUID.randomUUID();
+        UUID anotherC2ApplicationId = UUID.randomUUID();
 
         @Test
-        void shouldRemoveCorrespondenceDocument() {
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = List.of(
-                element(documentToRemoveUUID, SupportingEvidenceBundle.builder().document(documentToRemove).build()),
-                element(
-                    incorrectDocumentUUID1, SupportingEvidenceBundle.builder().document(incorrectDocument1).build())
-            );
+        void shouldRemoveAdditionalApplicationBundle() {
+            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundle();
+            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
 
-            CaseDetails caseDetails = caseDetails(correspondenceDocuments, familyManNumber, migrationId);
             CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
 
-            assertThat(extractedCaseData.getCorrespondenceDocuments())
-                .isEqualTo(List.of(correspondenceDocuments.get(1)));
+            assertThat(extractedCaseData.getAdditionalApplicationsBundle())
+                .isEqualTo(List.of(bundles.get(1)));
         }
 
         @Test
-        void shouldThrowExceptionWhenDocumentUuidISNotFound() {
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = List.of(element(incorrectDocumentUUID1,
-                SupportingEvidenceBundle.builder().document(incorrectDocument1).build()),
-                element(incorrectDocumentUUID2,
-                    SupportingEvidenceBundle.builder().document(incorrectDocument2).build())
-            );
+        void shouldThrowExceptionWhenAdditionalApplicationBundleIdIsNotFound() {
+            List<Element<AdditionalApplicationsBundle>> bundles = List.of(element(anotherBundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(anotherC2ApplicationId).build()).build()));
 
-            CaseDetails caseDetails = caseDetails(correspondenceDocuments, familyManNumber, migrationId);
+            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage(String.format(
-                    "Migration failed on case %s: Expected correspondence document id %s but not found",
-                    familyManNumber, documentToRemoveUUID));
+                    "Migration FPLA-3088: Expected additional application bundle id to be %s but not found",
+                    bundleId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenC2ApplicationIdIsNotFound() {
+            List<Element<AdditionalApplicationsBundle>> bundles = List.of(element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(anotherC2ApplicationId).build()).build()),
+                element(anotherBundleId, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(UUID.randomUUID()).build()).build()));
+
+            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage(String.format(
+                    "Migration FPLA-3088: Expected c2 bundle Id to be %s but not found", c2ApplicationId));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenOtherApplicationExistInBundle() {
+            List<Element<AdditionalApplicationsBundle>> bundles = List.of(element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(c2ApplicationId).build())
+                    .otherApplicationsBundle(OtherApplicationsBundle.builder().id(UUID.randomUUID()).build())
+                    .build()),
+                element(anotherBundleId, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(anotherBundleId).build()).build()));
+
+            CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
+
+            assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
+                .getRootCause()
+                .hasMessage("Migration FPLA-3088: Unexpected other application bundle");
         }
 
         @Test
         void shouldThrowExceptionForIncorrectFamilyManNumber() {
-            String incorrectFamilyManId = "INCORRECT_FAMILY_MAN_ID";
+            List<Element<AdditionalApplicationsBundle>> bundles = List.of(element(bundleId,
+                AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(anotherC2ApplicationId).build()).build()),
+                element(anotherBundleId, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(UUID.randomUUID()).build()).build()));
 
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = List.of(
-                element(documentToRemoveUUID, SupportingEvidenceBundle.builder().document(incorrectDocument1).build())
-            );
-
-            CaseDetails caseDetails = caseDetails(correspondenceDocuments, incorrectFamilyManId, migrationId);
+            String incorrectFamilyManNum = "12456";
+            CaseDetails caseDetails = caseDetails(bundles, incorrectFamilyManNum, migrationId);
 
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage(String.format(
-                    "Migration FPLA-3092: Expected family man case number to be %s but was %s",
-                    familyManNumber, incorrectFamilyManId));
+                    "Migration FPLA-3088: Expected family man case number to be %s but was %s",
+                    familyManNumber, incorrectFamilyManNum));
         }
 
-        @Test
-        void shouldNotRemoveCorrespondenceDocumentForIncorrectMigrationId() {
-            List<Element<SupportingEvidenceBundle>> correspondenceDocuments = List.of(
-                element(documentToRemoveUUID, SupportingEvidenceBundle.builder().document(documentToRemove).build())
-            );
-
-            String incorrectMigrationId = "some migration id";
-            CaseDetails caseDetails = caseDetails(correspondenceDocuments, familyManNumber, incorrectMigrationId);
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
-
-            assertThat(extractedCaseData.getCorrespondenceDocuments()).isEqualTo(correspondenceDocuments);
-        }
-
-        private CaseDetails caseDetails(List<Element<SupportingEvidenceBundle>> correspondenceDocuments,
-                                        String familyManId,
+        private CaseDetails caseDetails(List<Element<AdditionalApplicationsBundle>> bundles,
+                                        String familyManNumber,
                                         String migrationId) {
+
             CaseDetails caseDetails = asCaseDetails(CaseData.builder()
-                .correspondenceDocuments(correspondenceDocuments)
-                .familyManCaseNumber(familyManId)
+                .additionalApplicationsBundle(bundles)
+                .familyManCaseNumber(familyManNumber)
                 .build());
 
             caseDetails.getData().put("migrationId", migrationId);
             return caseDetails;
         }
+
+        private List<Element<AdditionalApplicationsBundle>> buildAdditionalApplicationsBundle() {
+            return List.of(element(bundleId, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(c2ApplicationId).build()).build()),
+                element(anotherBundleId, AdditionalApplicationsBundle.builder()
+                    .c2DocumentBundle(C2DocumentBundle.builder().id(anotherC2ApplicationId).build()).build()));
+        }
+
     }
 
 }
