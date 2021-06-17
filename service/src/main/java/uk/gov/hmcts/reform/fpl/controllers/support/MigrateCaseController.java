@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +29,6 @@ import static java.util.Objects.isNull;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-    private final DocumentListService documentListService;
 
     private static final String MIGRATION_ID_KEY = "migrationId";
 
@@ -43,6 +41,10 @@ public class MigrateCaseController extends CallbackController {
             run3088(caseDetails);
         }
 
+        if ("FPLA-3089".equals(migrationId)) {
+            run3089(caseDetails);
+        }
+
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
@@ -52,12 +54,36 @@ public class MigrateCaseController extends CallbackController {
         final UUID additionalApplicationBundleId = UUID.fromString("1ccca4f7-40d5-4392-a199-ae9372f53d00");
         final UUID c2ApplicationId = UUID.fromString("e3d5bac0-4ba6-48b6-b6d5-e60d5234a183");
 
+        removeAdditionalApplicationBundle(caseDetails,
+            familyManCaseNumber,
+            additionalApplicationBundleId,
+            c2ApplicationId,
+            "FPLA-3088");
+    }
+
+    private void run3089(CaseDetails caseDetails) {
+        final String familyManCaseNumber = "WR21C50042";
+        final UUID additionalApplicationBundleId = UUID.fromString("6dc62c7b-47a5-4e26-8ce3-99a697f72454");
+        final UUID c2ApplicationId = UUID.fromString("2b2159aa-6ab8-4b63-b65b-08cb896de2ec");
+
+        removeAdditionalApplicationBundle(caseDetails,
+            familyManCaseNumber,
+            additionalApplicationBundleId,
+            c2ApplicationId,
+            "FPLA-3089");
+    }
+
+    private void removeAdditionalApplicationBundle(CaseDetails caseDetails,
+                                                   String familyManCaseNumber,
+                                                   UUID additionalApplicationBundleId,
+                                                   UUID c2ApplicationId,
+                                                   String migrationId) {
         CaseData caseData = getCaseData(caseDetails);
 
         if (!Objects.equals(familyManCaseNumber, caseData.getFamilyManCaseNumber())) {
             throw new AssertionError(String.format(
-                "Migration FPLA-3088: Expected family man case number to be %s but was %s",
-                familyManCaseNumber, caseData.getFamilyManCaseNumber()));
+                "Migration %s: Expected family man case number to be %s but was %s",
+                migrationId, familyManCaseNumber, caseData.getFamilyManCaseNumber()));
         }
 
         List<Element<AdditionalApplicationsBundle>> bundles = caseData.getAdditionalApplicationsBundle();
@@ -66,29 +92,31 @@ public class MigrateCaseController extends CallbackController {
             .filter(bundle -> additionalApplicationBundleId.equals(bundle.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError(String.format(
-                "Migration FPLA-3088: Expected additional application bundle id to be %s but not found",
-                additionalApplicationBundleId
+                "Migration %s: Expected additional application bundle id to be %s but not found",
+                migrationId, additionalApplicationBundleId
             )));
 
-        validateBundle(additionalApplicationsBundleElement, c2ApplicationId);
+        validateBundle(additionalApplicationsBundleElement.getValue(), c2ApplicationId, migrationId);
 
         bundles.removeIf(bundle -> additionalApplicationBundleId.equals(bundle.getId()));
 
         caseDetails.getData().put("additionalApplicationsBundle", bundles);
     }
 
-    private void validateBundle(Element<AdditionalApplicationsBundle> additionalApplicationsBundleElement,
-                                UUID c2BundleId) {
-        C2DocumentBundle c2DocumentBundle = additionalApplicationsBundleElement.getValue().getC2DocumentBundle();
+    private void validateBundle(AdditionalApplicationsBundle additionalApplicationsBundle,
+                                UUID c2BundleId,
+                                String migrationId) {
+        C2DocumentBundle c2DocumentBundle = additionalApplicationsBundle.getC2DocumentBundle();
 
         if (!Objects.equals(c2BundleId, c2DocumentBundle.getId())) {
             throw new AssertionError(String.format(
-                "Migration FPLA-3088: Expected c2 bundle Id to be %s but not found", c2BundleId
+                "Migration %s: Expected c2 bundle Id to be %s but not found", migrationId, c2BundleId
             ));
         }
 
-        if (!isNull(additionalApplicationsBundleElement.getValue().getOtherApplicationsBundle())) {
-            throw new AssertionError("Migration FPLA-3088: Unexpected other application bundle");
+        if (!isNull(additionalApplicationsBundle.getOtherApplicationsBundle())) {
+            throw new AssertionError(
+                String.format("Migration %s: Unexpected other application bundle", migrationId));
         }
     }
 
