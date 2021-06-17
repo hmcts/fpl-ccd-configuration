@@ -1,0 +1,84 @@
+package uk.gov.hmcts.reform.fpl.service.children;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+
+
+class ChildRepresentationServiceTest {
+
+    private static final String CODED_OPTION_COUNT = "0";
+    private static final Map<String, Object> SERIALISED_REP_CHILDREN = Map.of(
+        "someKey1", "someValue1",
+        "someKey2", "someValue2"
+    );
+
+    private final OptionCountBuilder optionCountBuilder = mock(OptionCountBuilder.class);
+    private final ChildRepresentationDetailsSerializer childRepSerialiser =
+        mock(ChildRepresentationDetailsSerializer.class);
+
+    private final ChildRepresentationService underTest = new ChildRepresentationService(
+        optionCountBuilder,
+        childRepSerialiser
+    );
+
+    @Nested
+    class PopulateRepresentationDetails {
+
+        @Test
+        void testWhenChildrenIfHaveRepresentation() {
+
+            List<Element<Child>> children = wrapElements(Child.builder().build());
+            when(optionCountBuilder.generateCode(children)).thenReturn(CODED_OPTION_COUNT);
+            when(childRepSerialiser.serialise(children)).thenReturn(SERIALISED_REP_CHILDREN);
+
+            Map<String, Object> actual = underTest.populateRepresentationDetails(CaseData.builder()
+                .childrenEventData(ChildrenEventData.builder()
+                    .childrenHaveRepresentation(YesNo.YES.getValue())
+                    .build())
+                .children1(children)
+                .build());
+
+            Map<String, Object> expected = new HashMap<>();
+            expected.put("optionCount", CODED_OPTION_COUNT);
+            expected.putAll(SERIALISED_REP_CHILDREN);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+
+        @Test
+        void testWhenChildrenIfDoesNotHaveRepresentation() {
+
+            when(optionCountBuilder.generateCode(null)).thenReturn(CODED_OPTION_COUNT);
+            when(childRepSerialiser.serialise(null)).thenReturn(SERIALISED_REP_CHILDREN);
+
+            Map<String, Object> actual = underTest.populateRepresentationDetails(CaseData.builder()
+                .childrenEventData(ChildrenEventData.builder()
+                    .childrenHaveRepresentation(YesNo.NO.getValue())
+                    .build())
+                .children1(wrapElements(Child.builder().build()))
+                .build());
+
+
+            Map<String, Object> expected = new HashMap<>();
+            expected.put("optionCount", null);
+            expected.putAll(SERIALISED_REP_CHILDREN);
+
+            assertThat(actual).isEqualTo(expected);
+        }
+    }
+}

@@ -14,10 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
 
-import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.joining;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 
@@ -28,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 @Slf4j
 public class ChildController extends CallbackController {
     private final ConfidentialDetailsService confidentialDetailsService;
+    private final ChildRepresentationService childRepresentationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -45,13 +44,7 @@ public class ChildController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        String string = IntStream.range(0, caseData.getAllChildren().size())
-            .mapToObj(Integer::toString)
-            .collect(joining());
-
-        log.debug("optionCount = {}", string);
-
-        caseDetails.getData().put("optionCount", string);
+        caseDetails.getData().putAll(childRepresentationService.populateRepresentationDetails(caseData));
 
         return respond(caseDetails);
     }
