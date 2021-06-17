@@ -310,5 +310,18 @@
     "PageColumnNumber": 1,
     "FieldShowCondition": "manageOrdersEndDateTypeWithMonth=\"CALENDAR_DAY_AND_TIME\" OR manageOrdersEndDateTypeWithEndOfProceedings=\"CALENDAR_DAY_AND_TIME\"",
     "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "manageOrders",
+    "CaseFieldID": "manageOrdersIsByConsent",
+    "PageFieldDisplayOrder": 25,
+    "DisplayContext": "MANDATORY",
+    "PageID": "OrderDetails",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "orderTempQuestions.orderIsByConsent=\"YES\"",
+    "ShowSummaryChangeOption": "Y"
   }
 ]

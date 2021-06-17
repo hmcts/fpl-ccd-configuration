@@ -34,6 +34,7 @@ public class ManageOrdersEventData {
     String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
+    String manageOrdersIsByConsent;
     String manageOrdersChildrenDescription;
     String manageOrdersExclusionRequirement;
     String manageOrdersExclusionDetails;
