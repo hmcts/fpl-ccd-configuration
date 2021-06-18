@@ -6,10 +6,19 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -38,4 +47,37 @@ public class ChildRepresentationService {
         return data;
     }
 
+    public Map<String, Object> finaliseRepresentationDetails(CaseData caseData) {
+        ChildrenEventData eventData = caseData.getChildrenEventData();
+        List<Element<Child>> children = caseData.getAllChildren();
+
+        return Map.of("children1",
+            IntStream.range(0, children.size())
+                .mapToObj(idx -> element(children.get(idx).getId(), children.get(idx).getValue().toBuilder()
+                    .childRepresentative(selectSpecifiedRepresentative(eventData, idx))
+                    .build()))
+                .collect(Collectors.toList())
+        );
+    }
+
+    private RespondentSolicitor selectSpecifiedRepresentative(ChildrenEventData eventData, int idx) {
+        if (YesNo.NO.getValue().equals(eventData.getChildrenHaveRepresentation())) {
+            return null;
+        }
+
+        RespondentSolicitor mainRepresentative = eventData.getChildrenMainRepresentative();
+        ChildRepresentationDetails details = getChildRepresentationDetails(eventData, idx);
+
+        if (YesNo.YES.getValue().equals(eventData.getChildrenHaveSameRepresentation())
+            || YesNo.YES.getValue().equals(details.getUseMainSolicitor())) {
+            return mainRepresentative;
+        }
+
+        return details.getSolicitor();
+    }
+
+    private ChildRepresentationDetails getChildRepresentationDetails(ChildrenEventData eventData, int idx) {
+        List<ChildRepresentationDetails> representationDetails = eventData.getAllRepresentationDetails();
+        return representationDetails.get(idx);
+    }
 }

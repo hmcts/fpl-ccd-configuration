@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.fpl.model.event;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Value
 @Builder
@@ -33,4 +37,26 @@ public class ChildrenEventData {
     ChildRepresentationDetails childRepresentationDetails12;
     ChildRepresentationDetails childRepresentationDetails13;
     ChildRepresentationDetails childRepresentationDetails14;
+
+    @JsonIgnore
+    public List<ChildRepresentationDetails> getAllRepresentationDetails() {
+        // mutable to allow null values
+        List<ChildRepresentationDetails> childRepresentationDetails = new ArrayList<>();
+        childRepresentationDetails.add(childRepresentationDetails0);
+        childRepresentationDetails.add(childRepresentationDetails1);
+        childRepresentationDetails.add(childRepresentationDetails2);
+        childRepresentationDetails.add(childRepresentationDetails3);
+        childRepresentationDetails.add(childRepresentationDetails4);
+        childRepresentationDetails.add(childRepresentationDetails5);
+        childRepresentationDetails.add(childRepresentationDetails6);
+        childRepresentationDetails.add(childRepresentationDetails7);
+        childRepresentationDetails.add(childRepresentationDetails8);
+        childRepresentationDetails.add(childRepresentationDetails9);
+        childRepresentationDetails.add(childRepresentationDetails10);
+        childRepresentationDetails.add(childRepresentationDetails11);
+        childRepresentationDetails.add(childRepresentationDetails12);
+        childRepresentationDetails.add(childRepresentationDetails13);
+        childRepresentationDetails.add(childRepresentationDetails14);
+        return childRepresentationDetails;
+    }
 }

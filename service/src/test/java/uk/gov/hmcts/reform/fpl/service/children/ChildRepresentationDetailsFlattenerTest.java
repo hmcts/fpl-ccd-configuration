@@ -151,17 +151,19 @@ class ChildRepresentationDetailsFlattenerTest {
         expected.put("childRepresentationDetails1", null);
         expected.put("childRepresentationDetails2", null);
         expected.put("childRepresentationDetails3", null);
-//        expected.put("childRepresentationDetails4", null);
-//        expected.put("childRepresentationDetails5", null);
-//        expected.put("childRepresentationDetails6", null);
-//        expected.put("childRepresentationDetails7", null);
-//        expected.put("childRepresentationDetails8", null);
-//        expected.put("childRepresentationDetails9", null);
-//        expected.put("childRepresentationDetails10", null);
-//        expected.put("childRepresentationDetails11", null);
-//        expected.put("childRepresentationDetails12", null);
-//        expected.put("childRepresentationDetails13", null);
-//        expected.put("childRepresentationDetails14", null);
+        /*
+        expected.put("childRepresentationDetails4", null);
+        expected.put("childRepresentationDetails5", null);
+        expected.put("childRepresentationDetails6", null);
+        expected.put("childRepresentationDetails7", null);
+        expected.put("childRepresentationDetails8", null);
+        expected.put("childRepresentationDetails9", null);
+        expected.put("childRepresentationDetails10", null);
+        expected.put("childRepresentationDetails11", null);
+        expected.put("childRepresentationDetails12", null);
+        expected.put("childRepresentationDetails13", null);
+        expected.put("childRepresentationDetails14", null);
+        */
         return expected;
     }
 }
