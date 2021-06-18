@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "Confidential",
     "TabLabel": "Confidential information",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialChildren",
     "TabFieldDisplayOrder": 1
   },
@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "Confidential",
     "TabLabel": "Confidential information",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialRespondents",
     "TabFieldDisplayOrder": 2
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "Confidential",
     "TabLabel": "Confidential information",
-    "TabDisplayOrder": 15,
+    "TabDisplayOrder": 14,
     "CaseFieldID": "confidentialOthers",
     "TabFieldDisplayOrder": 3
   }

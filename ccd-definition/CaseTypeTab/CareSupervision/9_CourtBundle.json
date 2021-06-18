@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "CourtBundleTab",
     "TabLabel": "Court bundle",
-    "TabDisplayOrder": 10,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "courtBundleTabHeading",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "courtBundleList!=\"\""
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "CourtBundleTab",
     "TabLabel": "Court bundle",
-    "TabDisplayOrder": 10,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "manageDocumentsLALink",
     "TabFieldDisplayOrder": 2
   },
@@ -26,7 +26,7 @@
     "Channel": "CaseWorker",
     "TabID": "CourtBundleTab",
     "TabLabel": "Court bundle",
-    "TabDisplayOrder": 10,
+    "TabDisplayOrder": 9,
     "CaseFieldID": "courtBundleList",
     "TabFieldDisplayOrder": 3
   }

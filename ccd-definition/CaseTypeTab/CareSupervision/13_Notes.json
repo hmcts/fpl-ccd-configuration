@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "Notes",
     "TabLabel": "Notes",
-    "TabDisplayOrder": 14,
+    "TabDisplayOrder": 13,
     "CaseFieldID": "caseNotes",
     "TabFieldDisplayOrder": 1
   }
