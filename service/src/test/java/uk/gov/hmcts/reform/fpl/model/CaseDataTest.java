@@ -1485,9 +1485,9 @@ class CaseDataTest {
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = buildDynamicList(
-                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
-                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
-                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Urgent"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Urgent"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, Urgent")
             );
 
             assertThat(caseData.buildJudicialMessageDynamicList())
@@ -1504,9 +1504,9 @@ class CaseDataTest {
 
             CaseData caseData = CaseData.builder().judicialMessages(judicialMessages).build();
             DynamicList expectedDynamicList = buildDynamicList(2,
-                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Low"),
-                Pair.of(secondId, "Subject 2, 12 November 2020, Medium"),
-                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, High")
+                Pair.of(firstId, "C2, Subject 1, 11 November 2020, Urgent"),
+                Pair.of(secondId, "Subject 2, 12 November 2020, Urgent"),
+                Pair.of(thirdId, "C2, Subject 3, 13 November 2020, Urgent")
             );
 
             assertThat(caseData.buildJudicialMessageDynamicList(thirdId))

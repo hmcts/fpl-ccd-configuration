@@ -50,7 +50,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
         labels.add(dateSent);
 
         if (isNotBlank(getUrgency())) {
-            labels.add(getUrgency());
+            labels.add("Urgent");
         }
 
         return String.join(", ", labels);

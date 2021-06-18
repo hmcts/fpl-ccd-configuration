@@ -8,7 +8,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 class JudicialMessageTest {
     private static String DATE_SENT = "11 November at 08:30am";
-    private static String URGENCY = "High urgency";
+    private static String URGENCY = "Urgent";
     private static String SUBJECT = "Subject";
 
     @Test
@@ -26,7 +26,7 @@ class JudicialMessageTest {
     @Test
     void shouldBuildJudicialMessageLabelWithoutC2() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
-            .urgency(URGENCY)
+            .urgency("Urgent - need directions for the application")
             .dateSent(DATE_SENT)
             .subject(SUBJECT)
             .build();
