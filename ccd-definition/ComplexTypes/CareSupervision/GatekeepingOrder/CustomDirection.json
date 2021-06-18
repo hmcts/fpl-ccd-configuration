@@ -47,7 +47,7 @@
     "ID": "CustomDirection",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldType": "DateTime",
-    "ElementLabel": "Enter date and time",
+    "ElementLabel": "Date and time",
     "HintText": "Use 24h format",
     "SecurityClassification": "Public"
   },
@@ -58,7 +58,7 @@
     "FieldType": "Number",
     "Min": 0,
     "Max": 365,
-    "ElementLabel": "Enter number of days",
+    "ElementLabel": "Number of days",
     "SecurityClassification": "Public"
   }
 ]

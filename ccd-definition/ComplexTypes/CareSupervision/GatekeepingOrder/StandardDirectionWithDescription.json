@@ -50,7 +50,7 @@
     "ID": "EditableStandardDirection",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldType": "DateTime",
-    "ElementLabel": "Enter date and time",
+    "ElementLabel": "Date and time",
     "HintText": "Use 24h format",
     "SecurityClassification": "Public",
     "FieldShowCondition": "dueDateType=\"DATE\""
@@ -60,7 +60,7 @@
     "ID": "EditableStandardDirection",
     "ListElementCode": "daysBeforeHearing",
     "FieldType": "Number",
-    "ElementLabel": "Enter number of days",
+    "ElementLabel": "Number of days",
     "Min": 0,
     "Max": 365,
     "SecurityClassification": "Public",

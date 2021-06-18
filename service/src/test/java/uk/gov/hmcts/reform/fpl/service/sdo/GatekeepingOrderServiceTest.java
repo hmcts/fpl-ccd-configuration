@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
+import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -341,13 +342,54 @@ class GatekeepingOrderServiceTest {
 
         final CaseDetails caseDetails = CaseDetails.builder()
             .data(newHashMap(Map.of(
-                "standardDirections", wrapElements(draftDirection),
+                "standardDirectionOrder", StandardDirectionOrder.builder()
+                    .standardDirections(wrapElements(draftDirection))
+                    .build(),
                 "directionsForAllParties", List.of(type))))
             .build();
 
         underTest.populateStandardDirections(caseDetails);
 
         assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(draftDirection);
+
+        verifyNoInteractions(ordersLookupService, calendarService);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DirectionType.class)
+    void shouldGetCurrentStandardDirection(DirectionType type) {
+        final StandardDirection currentStandardDirection = StandardDirection.builder()
+            .type(type)
+            .title("title")
+            .description("Text")
+            .assignee(COURT)
+            .daysBeforeHearing(0)
+            .dateToBeCompletedBy(LocalDateTime.now())
+            .dueDateType(DATE)
+            .build();
+
+        final StandardDirection draftedStandardDirection = StandardDirection.builder()
+            .type(type)
+            .title("title 2")
+            .description("Text 2")
+            .assignee(COURT)
+            .daysBeforeHearing(1)
+            .dateToBeCompletedBy(LocalDateTime.now().minusDays(1))
+            .dueDateType(DAYS)
+            .build();
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .data(newHashMap(Map.of(
+                type.getFieldName(), currentStandardDirection,
+                "standardDirectionOrder", StandardDirectionOrder.builder()
+                    .standardDirections(wrapElements(draftedStandardDirection))
+                    .build(),
+                "directionsForAllParties", List.of(type))))
+            .build();
+
+        underTest.populateStandardDirections(caseDetails);
+
+        assertThat(caseDetails.getData().get("direction-" + type)).isEqualTo(currentStandardDirection);
 
         verifyNoInteractions(ordersLookupService, calendarService);
     }

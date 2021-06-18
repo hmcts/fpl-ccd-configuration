@@ -98,7 +98,7 @@ module.exports = {
   },
 
   async seeDays(directionName, days) {
-    let actualDays = parseInt(await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//span[text()='Enter number of days']/../../input`));
+    let actualDays = parseInt(await I.grabValueFrom(`${this.fields.standardDirection(directionName)}//span[text()='Number of days']/../../input`));
     assert.strictEqual(actualDays, days);
   },
 

@@ -103,7 +103,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = service.updateStandardDirections(caseDetails);
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         StandardDirectionOrder gatekeepingOrder = service.buildBaseGatekeepingOrder(caseData);
@@ -130,7 +130,7 @@ public class AddGatekeepingOrderController extends CallbackController {
 
             caseDetails.getData().put("state", CASE_MANAGEMENT);
 
-            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "customDirections", "standardDirections",
+            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "customDirections",
                 "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision", "gatekeepingOrderHearingDate1",
                 "gatekeepingOrderHearingDate2", "gatekeepingOrderHasHearing1", "gatekeepingOrderHasHearing2");
 

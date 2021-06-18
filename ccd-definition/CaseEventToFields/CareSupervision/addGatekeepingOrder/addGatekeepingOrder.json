@@ -8,7 +8,8 @@
     "DisplayContext": "MANDATORY",
     "PageID": "Router",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -43,7 +44,8 @@
     "DisplayContext": "COMPLEX",
     "PageID": "CustomDirections",
     "PageDisplayOrder": 4,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -66,7 +68,8 @@
     "DisplayContext": "COMPLEX",
     "PageID": "SealDecision",
     "PageDisplayOrder": 6,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

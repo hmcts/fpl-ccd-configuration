@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Judge;
 import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
@@ -22,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.docmosis.GatekeepingOrderGenerationService;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -40,8 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.SDO;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.buildAllocatedJudgeLabel;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getJudgeForTabView;
 
@@ -51,7 +51,7 @@ public class GatekeepingOrderService {
     private final DocumentService documentService;
     private final GatekeepingOrderGenerationService gatekeepingOrderGenerationService;
     private final OrdersLookupService ordersLookupService;
-    private final CaseConverter caseConverter;
+    private final CaseConverter converter;
     private final CalendarService calendarService;
 
     public GatekeepingOrderSealDecision buildSealDecisionPage(CaseData caseData) {
@@ -144,11 +144,14 @@ public class GatekeepingOrderService {
     }
 
     public CaseData populateStandardDirections(CaseDetails caseDetails) {
-        final CaseData caseData = caseConverter.convert(caseDetails);
+        final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         final List<DirectionType> requestedDirections = eventData.getRequestedDirections();
-        final List<StandardDirection> draftStandardDirections = unwrapElements(eventData.getStandardDirections());
+        final List<StandardDirection> draftStandardDirections = ofNullable(caseData.getStandardDirectionOrder())
+            .map(StandardDirectionOrder::getStandardDirections)
+            .map(ElementUtils::unwrapElements)
+            .orElseGet(ArrayList::new);
 
         final HearingBooking firstHearing = getHearing(caseData).orElse(null);
 
@@ -157,13 +160,11 @@ public class GatekeepingOrderService {
             .map(DirectionType::getFieldName)
             .forEach(caseDetails.getData()::remove);
 
-        final List<Element<StandardDirection>> standardDirections = eventData.resetStandardDirections();
-
         requestedDirections.stream()
-            .map(directionType -> getStandardDirectionDraft(directionType, draftStandardDirections)
-                .orElseGet(() -> buildStandardDirection(directionType, firstHearing)))
+            .map(directionType -> getCurrentStandardDirection(directionType, caseDetails)
+                .orElseGet(() -> getStandardDirectionDraft(directionType, draftStandardDirections)
+                    .orElseGet(() -> buildStandardDirection(directionType, firstHearing))))
             .forEach(direction -> {
-                standardDirections.add(element(direction));
                 caseDetails.getData().put(direction.getType().getFieldName(), direction);
             });
 
@@ -171,22 +172,33 @@ public class GatekeepingOrderService {
     }
 
     public CaseData updateStandardDirections(CaseDetails caseDetails) {
-        final CaseData caseData = caseConverter.convert(caseDetails);
+        final CaseData caseData = converter.convert(caseDetails);
         final GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
-        final List<Element<StandardDirection>> standardDirections = eventData.resetStandardDirections();
-
-        eventData.getRequestedDirections()
-            .forEach(requestedType -> {
-                StandardDirection standardDirection = caseConverter
+        final List<StandardDirection> standardDirections = eventData.getRequestedDirections().stream()
+            .map(requestedType -> {
+                StandardDirection standardDirection = converter
                     .convert(caseDetails.getData().get(requestedType.getFieldName()), StandardDirection.class);
 
                 DirectionConfiguration directionConfig = ordersLookupService.getDirectionConfiguration(requestedType);
 
-                standardDirections.add(element(standardDirection.applyConfig(directionConfig)));
-            });
+                return standardDirection.applyConfig(directionConfig);
+            })
+            .collect(toList());
+
+        eventData.setStandardDirections(wrapElements(standardDirections));
 
         return caseData;
+    }
+
+    private Optional<StandardDirection> getCurrentStandardDirection(DirectionType type, CaseDetails caseDetails) {
+        return ofNullable(converter.convert(caseDetails.getData().get(type.getFieldName()), StandardDirection.class));
+    }
+
+    private Optional<StandardDirection> getStandardDirectionDraft(DirectionType type, List<StandardDirection> draft) {
+        return draft.stream()
+            .filter(draftedDirection -> Objects.equals(draftedDirection.getType(), type))
+            .findFirst();
     }
 
     private StandardDirection buildStandardDirection(DirectionType type, HearingBooking hearing) {
@@ -197,12 +209,6 @@ public class GatekeepingOrderService {
             .dueDateType(DAYS)
             .build()
             .applyConfig(directionConfig);
-    }
-
-    private Optional<StandardDirection> getStandardDirectionDraft(DirectionType type, List<StandardDirection> draft) {
-        return draft.stream()
-            .filter(draftedDirection -> Objects.equals(draftedDirection.getType(), type))
-            .findFirst();
     }
 
     private LocalDateTime calculateDirectionDueDate(HearingBooking hearing, Display display) {
