@@ -8,7 +8,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
 class JudicialMessageTest {
     private static String DATE_SENT = "11 November at 08:30am";
-    private static String URGENCY = "Urgent";
+    private static String URGENCY = "High urgency";
     private static String SUBJECT = "Subject";
 
     @Test
@@ -26,7 +26,7 @@ class JudicialMessageTest {
     @Test
     void shouldBuildJudicialMessageLabelWithoutC2() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
-            .urgency("Urgent - need directions for the application")
+            .urgency(URGENCY)
             .dateSent(DATE_SENT)
             .subject(SUBJECT)
             .build();
@@ -52,6 +52,27 @@ class JudicialMessageTest {
             .build();
 
         assertThat(judicialMessage.toLabel()).isEqualTo(String.format("%s", DATE_SENT));
+    }
+
+    @Test
+    void shouldBuildJudicialMessageLabelWithMaximumLengthAllowedWhenUrgencyIsTooLong() {
+        String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
+            + "tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula nisl, tempor at eleifend ac, "
+            + "consequat condimentum sem. In sed porttitor turpis, at laoreet quam. Fusce bibendum vehicula ipsum, et "
+            + "tempus ante fermentum non.";
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .urgency(longUrgency.substring(0, 249))
+            .dateSent(DATE_SENT)
+            .build();
+
+        String truncatedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
+            + "elit. Sed sollicitudin eu felis tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula "
+            + "nisl, tempor at eleifend ac, consequat condimentum sem. In sed portt...";
+
+        String expectedMessageLabel = String.format("%s, %s", DATE_SENT, truncatedUrgencyText);
+
+        assertThat(judicialMessage.toLabel()).isEqualTo(expectedMessageLabel);
     }
 
     @Test

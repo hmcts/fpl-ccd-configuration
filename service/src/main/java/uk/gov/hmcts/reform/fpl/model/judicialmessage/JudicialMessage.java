@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -37,6 +38,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final String replyTo;
 
     public String toLabel() {
+        final int maxDynamicListLabelLength = 250;
         List<String> labels = new ArrayList<>();
 
         if (YES.equals(isRelatedToC2)) {
@@ -50,10 +52,11 @@ public class JudicialMessage extends JudicialMessageMetaData {
         labels.add(dateSent);
 
         if (isNotBlank(getUrgency())) {
-            labels.add("Urgent");
+            labels.add(getUrgency());
         }
 
-        return String.join(", ", labels);
+        String label = String.join(", ", labels);
+        return StringUtils.abbreviate(label, maxDynamicListLabelLength);
     }
 
     @JsonIgnore
