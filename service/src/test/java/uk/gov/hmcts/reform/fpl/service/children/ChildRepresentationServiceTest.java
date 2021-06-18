@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ChildrenEventData;
 
@@ -27,14 +28,12 @@ class ChildRepresentationServiceTest {
         "someKey2", "someValue2"
     );
 
-    private final OptionCountBuilder optionCountBuilder = mock(OptionCountBuilder.class);
-    private final ChildRepresentationDetailsSerializer childRepSerialiser =
-        mock(ChildRepresentationDetailsSerializer.class);
+    private final RespondentSolicitor mainRepresentative = mock(RespondentSolicitor.class);
 
-    private final ChildRepresentationService underTest = new ChildRepresentationService(
-        optionCountBuilder,
-        childRepSerialiser
-    );
+    private final OptionCountBuilder optionCountBuilder = mock(OptionCountBuilder.class);
+    private final ChildRepresentationDetailsFlattener flattener = mock(ChildRepresentationDetailsFlattener.class);
+
+    private final ChildRepresentationService underTest = new ChildRepresentationService(optionCountBuilder, flattener);
 
     @Nested
     class PopulateRepresentationDetails {
@@ -44,10 +43,11 @@ class ChildRepresentationServiceTest {
 
             List<Element<Child>> children = wrapElements(Child.builder().build());
             when(optionCountBuilder.generateCode(children)).thenReturn(CODED_OPTION_COUNT);
-            when(childRepSerialiser.serialise(children)).thenReturn(SERIALISED_REP_CHILDREN);
+            when(flattener.serialise(children, mainRepresentative)).thenReturn(SERIALISED_REP_CHILDREN);
 
             Map<String, Object> actual = underTest.populateRepresentationDetails(CaseData.builder()
                 .childrenEventData(ChildrenEventData.builder()
+                    .childrenMainRepresentative(mainRepresentative)
                     .childrenHaveRepresentation(YesNo.YES.getValue())
                     .build())
                 .children1(children)
@@ -64,7 +64,7 @@ class ChildRepresentationServiceTest {
         void testWhenChildrenIfDoesNotHaveRepresentation() {
 
             when(optionCountBuilder.generateCode(null)).thenReturn(CODED_OPTION_COUNT);
-            when(childRepSerialiser.serialise(null)).thenReturn(SERIALISED_REP_CHILDREN);
+            when(flattener.serialise(null, null)).thenReturn(SERIALISED_REP_CHILDREN);
 
             Map<String, Object> actual = underTest.populateRepresentationDetails(CaseData.builder()
                 .childrenEventData(ChildrenEventData.builder()
@@ -72,7 +72,6 @@ class ChildRepresentationServiceTest {
                     .build())
                 .children1(wrapElements(Child.builder().build()))
                 .build());
-
 
             Map<String, Object> expected = new HashMap<>();
             expected.put("optionCount", null);

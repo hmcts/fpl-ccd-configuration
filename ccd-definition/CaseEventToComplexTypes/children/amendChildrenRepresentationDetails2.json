@@ -4,6 +4,15 @@
     "ID": "AmendChildren",
     "CaseEventID": "amendChildren",
     "CaseFieldID": "childRepresentationDetails2",
+    "ListElementCode": "childDescription",
+    "FieldDisplayOrder": 0,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AmendChildren",
+    "CaseEventID": "amendChildren",
+    "CaseFieldID": "childRepresentationDetails2",
     "ListElementCode": "useMainSolicitor",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
