@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,8 +33,12 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
     private static final Child CHILD = mock(Child.class);
+    private static final Applicant APPLICANT = mock(Applicant.class);
+    private static final String[] APPLICANT_NAMES = {"Person1","Person2"};
     private static final String FURTHER_DIRECTIONS = "further directions";
-    private static final String WARNING_MESSAGE = "Where a Special Guardianship Order is in force no person may "
+    private static final String ORDER_HEADER = "Warning";
+    private static final String ORDER_MESSAGE = ORDER_HEADER + " \n \n"
+        + "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
         + " of every person who has parental responsibility for the child or "
@@ -44,7 +50,11 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
         + "\n \n"
         + "It may be a criminal offence under the Child Abduction Act 1984 "
         + "to remove the child from the United Kingdom without leave of the court.";
-
+    private static final String NOTICE_HEADER = "Notice";
+    private static final String NOTICE_MESSAGE = NOTICE_HEADER + "\n \n"
+        + "Any person with parental responsibility for a child may "
+        + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
+        + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
 
     private static final CaseData CASE_DATA = CaseData.builder()
         .caseLocalAuthority(LA_CODE)
@@ -58,6 +68,9 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     @Mock
     private ChildrenService childrenService;
 
+//    @Mock
+//    private ApplicantService applicantService;
+
     @Mock
     private LocalAuthorityNameLookupConfiguration laNameLookup;
 
@@ -65,42 +78,107 @@ class C43aSpecialGuardianshipOrderDocumentParameterGeneratorTest {
     private C43aSpecialGuardianshipOrderDocumentParameterGenerator underTest;
 
     @Test
-    void accept() {
+    void shouldReturnCorrectOrder() {
         assertThat(underTest.accept()).isEqualTo(C43A_SPECIAL_GUARDIANSHIP_ORDER);
     }
 
     @Test
-    void template() {
+    void shouldReturnCorrectTemplate() {
         assertThat(underTest.template()).isEqualTo(SGO);
     }
 
-
     @Test
-    void generate() {
+    void generateDocumentForChildAndSingleApplicant() {
         List<Element<Child>> selectedChildren = wrapElements(CHILD);
+//        List<Element<Applicant>> applicants = wrapElements(APPLICANT);
 
         when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+//        when(applicantService.addHiddenValues(CASE_DATA)).thenReturn(applicants);
 
         DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
-        DocmosisParameters expectedParameters = expectedCommonParameters()
-            .orderDetails(getOrderAppointmentMessage())
+        DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(getOrderAppointmentMessageForChildAndSingleApplicant())
             .build();
 
         assertThat(generatedParameters).isEqualTo(expectedParameters);
     }
 
-    private String getOrderAppointmentMessage() {
-        return "The Court orders %s (see text for both options below) \n"
-            + "[Applicant name] is appointed as Special Guardian for the %s.";
+    @Test
+    void generateDocumentForChildrenAndSingleApplicant() {
+        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
+//        List<Element<Applicant>> applicants = wrapElements(APPLICANT);
+
+        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+//        when(applicantService.addHiddenValues(CASE_DATA)).thenReturn(applicants);
+
+        DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
+        DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(getOrderAppointmentMessageForChildrenAndSingleApplicant())
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void generateDocumentForChildAndMultipleApplicants() {
+        List<Element<Child>> selectedChildren = wrapElements(CHILD);
+//        List<Element<Applicant>> applicants = wrapElements(APPLICANT);
+
+        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+//        when(applicantService.addHiddenValues(CASE_DATA)).thenReturn(applicants);
+
+        DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
+        DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(getOrderAppointmentMessageForChildAndMutipleApplicants())
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    @Test
+    void generateDocumentForForChildrenAndMultipleApplicants() {
+        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
+//        List<Element<Applicant>> applicants = wrapElements(APPLICANT);
+
+        when(childrenService.getSelectedChildren(CASE_DATA)).thenReturn(selectedChildren);
+//        when(applicantService.addHiddenValues(CASE_DATA)).thenReturn(applicants);
+
+        DocmosisParameters generatedParameters = underTest.generate(CASE_DATA);
+        DocmosisParameters expectedParameters = expectedCommonParameters(true)
+            .orderDetails(getOrderAppointmentMessageForChildrenAndMultipleApplicants())
+            .build();
+
+        assertThat(generatedParameters).isEqualTo(expectedParameters);
+    }
+
+    private String getOrderAppointmentMessageForChildAndSingleApplicant() {
+        return format("The Court orders [Applicant1] is appointed as Special Guardian for the child.");
+    }
+
+    private String getOrderAppointmentMessageForChildrenAndSingleApplicant() {
+        return format("The Court orders [Applicant1] is appointed as Special Guardian for the children.");
+    }
+
+    private String getOrderAppointmentMessageForChildAndMutipleApplicants() {
+        return format("The Court orders [Applicant1],[Applicant1] is appointed as Special Guardian for the child.");
+    }
+
+    private String getOrderAppointmentMessageForChildrenAndMultipleApplicants() {
+        return format("The Court orders [Applicant1],[Applicant1] are appointed as Special Guardian for the children.");
     }
 
     private C43aSpecialGuardianshipOrderDocmosisParameters.C43aSpecialGuardianshipOrderDocmosisParametersBuilder<?,?>
-        expectedCommonParameters() {
+    expectedCommonParameters(Boolean isOrderByConsent) {
+        String orderByConsentContent = "By consent";
+        if (!isOrderByConsent){
+            orderByConsentContent = null;
+        }
         return C43aSpecialGuardianshipOrderDocmosisParameters.builder()
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
             .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
             .furtherDirections(FURTHER_DIRECTIONS)
-            .orderByConsent("By consent")
-            .warningMessage(WARNING_MESSAGE);
+            .orderByConsent(orderByConsentContent)
+            .warningMessage(ORDER_MESSAGE)
+            .orderMessage(NOTICE_MESSAGE);
     }
 }

@@ -16,4 +16,8 @@ public class C43aSpecialGuardianshipOrderDocmosisParameters extends DocmosisPara
     String furtherDirections;
     String warningMessage;
     String orderByConsent;
+    String orderHeader;
+    String orderMessage;
+    String noticeHeader;
+    String noticeMessage;
 }

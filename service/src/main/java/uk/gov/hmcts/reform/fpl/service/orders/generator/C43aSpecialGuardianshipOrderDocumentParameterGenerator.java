@@ -23,20 +23,25 @@ import static java.lang.String.format;
 public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private final ChildrenService childrenService;
-    private static String paragraphBreak = "\n \n";
+//    private final ApplicantService applicantService;
 
+    private static String paragraphBreak = "\n \n";
+    private static String WARNING_HEADER = "\n Warning \n";
     private static String WARNING_MESSAGE = "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
         + " of every person who has parental responsibility for the child or "
         + "the leave of the court. "
-        + paragraphBreak
         + "However, this does not prevent the removal "
         + "of a child for a period of less than 3 months, "
         + "by its special guardian(s) (Section 14C (3) and (4) Children Act 1989)."
         + paragraphBreak
         + "It may be a criminal offence under the Child Abduction Act 1984 "
-        + "to remove the child from the United Kingdom without leave of the court.";
+        + "to remove the child from the United Kingdom without leave of the court.\n";
+    private static String NOTICE_HEADER = "\n Notice \n";
+    private static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
+        + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
+        + "to The United Kingdom Passport Agency, Globe House, 89 Eccleston Square, LONDON, SW1V 1PN.";
 
     @Override
     public Order accept() {
@@ -61,13 +66,16 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .warningMessage(WARNING_MESSAGE)
             .orderDetails(getSpecialGuardianAppointeeMessage(selectedChildren.size(), 1))
             .orderByConsent(getOrderByConsentMessage(manageOrdersEventData))
+            .orderHeader(WARNING_HEADER)
+            .orderMessage(WARNING_MESSAGE)
+            .noticeHeader(NOTICE_HEADER)
+            .noticeMessage(NOTICE_MESSAGE)
             .build();
     }
 
     private String getSpecialGuardianAppointeeMessage(int numOfChildren, int numOfApplicants) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
-        String[] applicants = {"Applicant1"};
-        String basicMessage = format("The Court orders %s (see text for both options below) \n \n ", applicants[0]);
+        String basicMessage = format("The Court orders [Applicant1] ");
 
         if (numOfApplicants > 1) {
             return basicMessage + multipleApplicantMessage(childOrChildren);
@@ -77,11 +85,11 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     }
 
     private String singleApplicantMessage(String childOrChildren) {
-        return format("[Applicant name] is appointed as Special Guardian for the %s.", childOrChildren);
+        return format("is appointed as Special Guardian for the %s.", childOrChildren);
     }
 
     private String multipleApplicantMessage(String childOrChildren) {
-        return format("[Applicant names comma separated] are appointed as Special Guardians for the %s",
+        return format("are appointed as Special Guardians for the %s",
             childOrChildren);
     }
 
