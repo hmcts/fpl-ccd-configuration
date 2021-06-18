@@ -226,6 +226,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "FCC",
+    "ListElement": "Flintshire County Council",
+    "DisplayOrder": 113
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team",
     "DisplayOrder": 115
