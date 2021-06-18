@@ -149,6 +149,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "GWY",
+    "ListElement": "Cyngor Gwynedd / Gwynedd Council",
+    "DisplayOrder": 78
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "DBC",
     "ListElement": "Darlington Borough Council",
     "DisplayOrder": 80
