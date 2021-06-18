@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 @Builder
 @Jacksonized
 public class ChildRepresentationDetails {
+    String childDescription;
     String useMainSolicitor;
     RespondentSolicitor solicitor;
 }

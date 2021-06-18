@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildRepresentationDetails",
+    "ListElementCode": "childDescription",
+    "FieldType": "Text",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildRepresentationDetails",
     "ListElementCode": "useMainSolicitor",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this child using the Cafcass representative?",
