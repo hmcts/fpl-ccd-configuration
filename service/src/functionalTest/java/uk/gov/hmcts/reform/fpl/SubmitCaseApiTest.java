@@ -113,7 +113,7 @@ public class SubmitCaseApiTest extends AbstractApiTest {
 
         assertThat(emails)
             .extracting(Email::getSubject)
-            .contains("Urgent application – same day hearing, Wall");
+            .contains("Urgent application – same day hearing, White");
     }
 
 }

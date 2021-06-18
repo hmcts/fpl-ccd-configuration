@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
@@ -15,16 +16,19 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PartyAddedToCaseEventHandler {
-    private final PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
+    private final PartyAddedToCaseContentProvider contentProvider;
     private final RepresentativeNotificationService representativeNotificationService;
     private final RepresentativeService representativeService;
+    private final FeatureToggleService toggleService;
 
     @EventListener
     public void notifyParties(final PartyAddedToCaseEvent event) {
@@ -32,23 +36,32 @@ public class PartyAddedToCaseEventHandler {
         CaseData caseDataBefore = event.getCaseDataBefore();
 
         List<Representative> representativesServedByDigitalService = representativeService.getUpdatedRepresentatives(
-            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE);
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), DIGITAL_SERVICE
+        );
         List<Representative> representativesServedByEmail = representativeService.getUpdatedRepresentatives(
-            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL);
+            caseData.getRepresentatives(), caseDataBefore.getRepresentatives(), EMAIL
+        );
 
-        NotifyData servedByEmailParameters = partyAddedToCaseContentProvider
-            .getPartyAddedToCaseNotificationParameters(caseData, EMAIL);
+        String emailRepTemplate = toggleService.isEldestChildLastNameEnabled()
+                          ? PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE_CHILD_NAME
+                          : PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
 
-        representativeNotificationService.sendToUpdatedRepresentatives(
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
-            servedByEmailParameters, caseData, representativesServedByEmail);
-
-        NotifyData servedByDigitalServiceParameters = partyAddedToCaseContentProvider
-            .getPartyAddedToCaseNotificationParameters(caseData, DIGITAL_SERVICE);
+        NotifyData servedByEmailParameters = contentProvider.getPartyAddedToCaseNotificationParameters(caseData, EMAIL);
 
         representativeNotificationService.sendToUpdatedRepresentatives(
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
-            servedByDigitalServiceParameters,
-            caseData, representativesServedByDigitalService);
+            emailRepTemplate, servedByEmailParameters, caseData, representativesServedByEmail
+        );
+
+        String digitalRepTemplate = toggleService.isEldestChildLastNameEnabled()
+                   ? PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE_WITH_CHILD
+                   : PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+
+        NotifyData servedByDigitalServiceParameters = contentProvider.getPartyAddedToCaseNotificationParameters(
+            caseData, DIGITAL_SERVICE
+        );
+
+        representativeNotificationService.sendToUpdatedRepresentatives(
+            digitalRepTemplate, servedByDigitalServiceParameters, caseData, representativesServedByDigitalService
+        );
     }
 }
