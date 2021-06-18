@@ -44,7 +44,7 @@ module.exports = {
         I.click(this.goButton);
       } else {
         const newUrl = await I.grabCurrentUrl();
-        if(newUrl === currentUrl){
+        if(newUrl === currentUrl || !newUrl.includes('http')){
           output.print('Page refresh');
           I.refreshPage();
         }
