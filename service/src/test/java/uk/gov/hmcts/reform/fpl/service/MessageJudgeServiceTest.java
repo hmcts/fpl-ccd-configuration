@@ -507,7 +507,7 @@ class MessageJudgeServiceTest {
         );
 
         DynamicList judicialMessageDynamicList = buildDynamicList(0,
-            Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "Test subject, 12 January 2021, high"),
+            Pair.of(SELECTED_DYNAMIC_LIST_ITEM_ID, "Test subject, 12 January 2021, Urgent"),
             Pair.of(judicialMessages.get(1).getId(), "null")
         );
 
