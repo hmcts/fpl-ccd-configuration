@@ -53,6 +53,6 @@ public class C33InterimCareOrderDocumentParameterGenerator implements DocmosisPa
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 }

@@ -55,7 +55,7 @@ public class C32bDischargeOfCareOrderDocumentParameterGenerator implements Docmo
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String orderDetails(ManageOrdersEventData eventData, HearingVenue hearingVenue) {

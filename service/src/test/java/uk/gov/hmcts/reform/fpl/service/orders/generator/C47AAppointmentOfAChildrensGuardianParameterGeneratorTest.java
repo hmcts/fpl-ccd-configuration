@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C47ADocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER_V2;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
 
 @ExtendWith({MockitoExtension.class})
@@ -28,7 +28,7 @@ class C47AAppointmentOfAChildrensGuardianParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(ORDER);
+        assertThat(underTest.template()).isEqualTo(ORDER_V2);
     }
 
     @Test

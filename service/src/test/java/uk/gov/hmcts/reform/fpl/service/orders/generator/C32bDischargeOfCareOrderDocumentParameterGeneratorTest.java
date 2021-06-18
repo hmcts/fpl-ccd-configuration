@@ -70,7 +70,7 @@ public class C32bDischargeOfCareOrderDocumentParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER);
+        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
     private C32bDischargeOfCareOrderDocmosisParameters expectedCommonParameters() {

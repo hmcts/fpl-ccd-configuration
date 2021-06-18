@@ -53,7 +53,7 @@ public class C32CareOrderDocumentParameterGenerator implements DocmosisParameter
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String orderDetails(int numOfChildren, String caseLocalAuthority) {

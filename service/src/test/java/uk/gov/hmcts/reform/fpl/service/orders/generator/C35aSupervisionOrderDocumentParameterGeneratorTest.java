@@ -65,7 +65,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
     @Test
     void template() {
-        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER);
+        assertThat(underTest.template()).isEqualTo(DocmosisTemplates.ORDER_V2);
     }
 
     @Test
