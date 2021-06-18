@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_CODE;
 import static uk.gov.hmcts.reform.fpl.Constants.LOCAL_AUTHORITY_1_NAME;
@@ -40,8 +39,5 @@ public abstract class AbstractEmailContentProviderTest {
     }
 
     @MockBean
-    FeatureToggleService featureToggleService;
-
-    @MockBean
-    DocumentDownloadService documentDownloadService;
+    protected DocumentDownloadService documentDownloadService;
 }

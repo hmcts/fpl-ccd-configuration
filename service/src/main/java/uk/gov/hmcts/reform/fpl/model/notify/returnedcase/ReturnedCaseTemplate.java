@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.notify.returnedcase;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
@@ -12,7 +13,8 @@ public class ReturnedCaseTemplate implements NotifyData {
     private String familyManCaseNumber;
     private String returnedReasons;
     private String returnedNote;
-    private String respondentLastName;
+    @JsonProperty("respondentLastName")
+    private String lastName;
     private String respondentFullName;
     private String caseUrl;
     private String localAuthority;
