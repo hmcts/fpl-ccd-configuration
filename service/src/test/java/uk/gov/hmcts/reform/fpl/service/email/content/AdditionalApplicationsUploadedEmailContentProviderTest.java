@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -18,46 +19,52 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
-import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C13A_SPECIAL_GUARDIANSHIP;
 import static uk.gov.hmcts.reform.fpl.enums.SupplementType.C20_SECURE_ACCOMMODATION;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ContextConfiguration(classes = {AdditionalApplicationsUploadedEmailContentProvider.class,
-    FixedTimeConfiguration.class})
+@ContextConfiguration(classes = {AdditionalApplicationsUploadedEmailContentProvider.class})
 class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
+    private static final LocalDateTime HEARING_DATE = LocalDateTime.of(2021, 2, 12, 0, 0, 0);
+    private static final String HEARING_CALLOUT = "hearing 12 Feb 2021";
+
+    @MockBean
+    private EmailNotificationHelper helper;
     @Autowired
-    private AdditionalApplicationsUploadedEmailContentProvider additionalApplicationsUploadedEmailContentProvider;
-
-    private static final LocalDateTime HEARING_DATE = LocalDateTime.now().plusMonths(3);
-
-    private static final String HEARING_CALLOUT = "hearing " + HEARING_DATE
-        .toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK));
+    private AdditionalApplicationsUploadedEmailContentProvider underTest;
 
     @Test
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        AdditionalApplicationsUploadedTemplate expectedParameters =
-            getAdditionalApplicationsUploadedTemplateParameters();
+        when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
 
-        AdditionalApplicationsUploadedTemplate actualParameters = additionalApplicationsUploadedEmailContentProvider
-            .getNotifyData(caseData);
+        AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
+            .callout("Smith, 12345, " + HEARING_CALLOUT)
+            .lastName("Davies")
+            .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
+            .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
+                "C13A - Special guardianship order",
+                "C20 - Secure accommodation (England)",
+                "C1 - Parental responsibility by the father",
+                "C13A - Special guardianship order",
+                "C20 - Secure accommodation (England)"))
+            .build();
 
-        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
+        AdditionalApplicationsUploadedTemplate actualParameters = underTest.getNotifyData(caseData);
+
+        assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
     @Test
@@ -66,25 +73,26 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .additionalApplicationsBundle(wrapElements(AdditionalApplicationsBundle.builder().c2DocumentBundle(
                 C2DocumentBundle.builder()
                     .type(C2ApplicationType.WITH_NOTICE)
-                    .c2AdditionalOrdersRequested(Collections.singletonList(
-                        C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY
-                    ))
+                    .c2AdditionalOrdersRequested(List.of(C2AdditionalOrdersRequested.PARENTAL_RESPONSIBILITY))
                     .parentalResponsibilityType(ParentalResponsibilityType.PR_BY_FATHER)
-                    .supplementsBundle(new ArrayList<>())
-                    .build()).build())).build();
+                    .supplementsBundle(List.of())
+                    .build())
+                .build()))
+            .build();
+
+        when(helper.getSubjectLineLastName(caseData)).thenReturn("Davies");
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
             AdditionalApplicationsUploadedTemplate.builder()
                 .callout("Smith, 12345, " + HEARING_CALLOUT)
-                .respondentLastName("Smith")
+                .lastName("Davies")
                 .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
-                .applicationTypes(Collections.singletonList("C2 (With notice) - Parental responsibility by the father"))
+                .applicationTypes(List.of("C2 (With notice) - Parental responsibility by the father"))
                 .build();
 
-        AdditionalApplicationsUploadedTemplate actualParameters = additionalApplicationsUploadedEmailContentProvider
-            .getNotifyData(caseData);
+        AdditionalApplicationsUploadedTemplate actualParameters = underTest.getNotifyData(caseData);
 
-        assertThat(actualParameters).usingRecursiveComparison().isEqualTo(expectedParameters);
+        assertThat(actualParameters).isEqualTo(expectedParameters);
     }
 
     @Test
@@ -95,24 +103,9 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
             .build();
 
-        BaseCaseNotifyData actualParameters = additionalApplicationsUploadedEmailContentProvider
-            .getPbaPaymentNotTakenNotifyData(caseData);
+        BaseCaseNotifyData actualParameters = underTest.getPbaPaymentNotTakenNotifyData(caseData);
 
         assertThat(actualParameters).isEqualTo(expectedParameters);
-    }
-
-    private AdditionalApplicationsUploadedTemplate getAdditionalApplicationsUploadedTemplateParameters() {
-        return AdditionalApplicationsUploadedTemplate.builder()
-            .callout("Smith, 12345, " + HEARING_CALLOUT)
-            .respondentLastName("Smith")
-            .caseUrl(caseUrl(CASE_REFERENCE, OTHER_APPLICATIONS))
-            .applicationTypes(Arrays.asList("C2 (With notice) - Appointment of a guardian",
-                "C13A - Special guardianship order",
-                "C20 - Secure accommodation (England)",
-                "C1 - Parental responsibility by the father",
-                "C13A - Special guardianship order",
-                "C20 - Secure accommodation (England)"))
-            .build();
     }
 
     private CaseData buildCaseData() {
@@ -145,10 +138,9 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         return CaseData.builder()
             .id(12345L)
             .familyManCaseNumber(CASE_REFERENCE)
-            .respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
-                .firstName("John")
-                .lastName("Smith")
-                .build()).build()))
+            .respondents1(wrapElements(Respondent.builder()
+                .party(RespondentParty.builder().firstName("John").lastName("Smith").build())
+                .build()))
             .hearingDetails(wrapElements(HearingBooking.builder().startDate((HEARING_DATE)).build()))
             .additionalApplicationsBundle(wrapElements(additionalApplicationsBundle))
             .build();

@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.OrderRemovalEmailContentPro
 import java.util.Set;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_REMOVAL_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
@@ -23,9 +24,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 @ExtendWith(MockitoExtension.class)
 class CMORemovedEventHandlerTest {
 
-    static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final Long CASE_ID = 12345L;
-    private static final String FAKE_URL = "https://fake.url";
 
     @Mock
     private InboxLookupService inboxLookupService;
@@ -44,7 +44,7 @@ class CMORemovedEventHandlerTest {
         CaseData caseData = caseData();
         String removalReason = "removal reason details";
 
-        OrderRemovalTemplate expectedTemplate = expectedTemplate(removalReason);
+        OrderRemovalTemplate expectedTemplate = mock(OrderRemovalTemplate.class);
 
         given(inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build())
@@ -61,14 +61,5 @@ class CMORemovedEventHandlerTest {
             expectedTemplate,
             String.valueOf(CASE_ID)
         );
-    }
-
-    private OrderRemovalTemplate expectedTemplate(String removalReason) {
-        return OrderRemovalTemplate.builder()
-            .respondentLastName("Smith")
-            .removalReason(removalReason)
-            .caseReference(String.valueOf(CASE_ID))
-            .caseUrl(FAKE_URL)
-            .build();
     }
 }

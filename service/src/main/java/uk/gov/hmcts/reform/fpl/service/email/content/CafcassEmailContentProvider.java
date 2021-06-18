@@ -10,19 +10,17 @@ import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTempl
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CafcassEmailContentProvider extends SharedNotifyContentProvider {
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final CafcassLookupConfiguration cafcassLookup;
 
     public SubmitCaseCafcassTemplate buildCafcassSubmissionNotification(CaseData caseData) {
 
-        SubmitCaseCafcassTemplate template = buildNotifyTemplate(SubmitCaseCafcassTemplate.builder().build(),
-            caseData.getId(), caseData.getOrders(), caseData.getHearing(), caseData.getRespondents1());
+        SubmitCaseCafcassTemplate template = buildNotifyTemplate(SubmitCaseCafcassTemplate.builder().build(), caseData);
 
-        template.setCafcass(cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getName());
-        template.setLocalAuthority(localAuthorityNameLookupConfiguration
-            .getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        template.setCafcass(cafcassLookup.getCafcass(caseData.getCaseLocalAuthority()).getName());
+        template.setLocalAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
         template.setDocumentLink(linkToAttachedDocument(caseData.getSubmittedForm()));
 
         return template;
