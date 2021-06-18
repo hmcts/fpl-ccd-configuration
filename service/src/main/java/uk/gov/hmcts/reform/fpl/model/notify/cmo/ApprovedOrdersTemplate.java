@@ -16,7 +16,7 @@ public class ApprovedOrdersTemplate implements NotifyData {
     private final String orderList;
     private final List<String> documentLinks;
     private final String subjectLineWithHearingDate;
-    private final String respondentLastName;
+    private final String lastName;
     private final String caseUrl;
     private final String digitalPreference;
     private final List<Map<String, Object>> attachedDocuments;

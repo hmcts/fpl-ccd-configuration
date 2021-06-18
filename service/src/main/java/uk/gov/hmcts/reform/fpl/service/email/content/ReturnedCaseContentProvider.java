@@ -8,15 +8,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.notify.returnedcase.ReturnedCaseTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentFullName;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookup;
+    private final LocalAuthorityNameLookupConfiguration laLookup;
+    private final EmailNotificationHelper helper;
+
 
     public ReturnedCaseTemplate parametersWithCaseUrl(CaseData caseData) {
         return templateData(caseData)
@@ -34,9 +36,9 @@ public class ReturnedCaseContentProvider extends AbstractEmailContentProvider {
         ReturnApplication returnApplication = caseData.getReturnApplication();
 
         return ReturnedCaseTemplate.builder()
-            .localAuthority(localAuthorityNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
+            .localAuthority(laLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()))
             .respondentFullName(getFirstRespondentFullName(caseData.getRespondents1()))
-            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .lastName(helper.getSubjectLineLastName(caseData))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
             .returnedReasons(returnApplication.getFormattedReturnReasons())
             .returnedNote(returnApplication.getNote());

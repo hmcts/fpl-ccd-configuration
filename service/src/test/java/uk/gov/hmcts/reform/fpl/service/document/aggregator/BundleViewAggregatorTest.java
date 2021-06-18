@@ -11,8 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsBundlesTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
 
@@ -51,10 +50,7 @@ class BundleViewAggregatorTest {
     private ApplicationDocumentBundleTransformer getDocumentBundleViews;
 
     @Mock
-    private FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
-
-    @Mock
-    private HearingBundleTransformer hearingBundleTransformer;
+    private FurtherEvidenceDocumentsBundlesTransformer furtherEvidenceTransformer;
 
     @Mock
     private RespondentStatementsTransformer respondentStatementsTransformer;
@@ -68,27 +64,23 @@ class BundleViewAggregatorTest {
     @Test
     void testGetDocumentBundleViews() {
 
-        when(getDocumentBundleViews.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            APPLICATION_STATEMENT_BUNDLE_VIEWS);
+        when(getDocumentBundleViews.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(APPLICATION_STATEMENT_BUNDLE_VIEWS);
 
-        when(furtherEvidenceTransformer.getFurtherEvidenceBundleView(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            FURTHER_EVIDENCE_BUNDLE_VIEWS);
+        when(furtherEvidenceTransformer.getFurtherEvidenceDocumentsBundleView(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(FURTHER_EVIDENCE_BUNDLE_VIEWS);
 
-        when(hearingBundleTransformer.getHearingBundleView(HEARING_FURTHER_EVIDENCE_DOCUMENTS,
-            DOCUMENT_VIEW_TYPE)).thenReturn(HEARING_BUNDLE_VIEWS);
+        when(respondentStatementsTransformer.getRespondentStatementsBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(RESPONDENT_STATEMENT_BUNDLE_VIEWS);
 
-        when(respondentStatementsTransformer.getRespondentStatementsBundle(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            RESPONDENT_STATEMENT_BUNDLE_VIEWS);
-
-        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            OTHER_DOCUMENTS_BUNDLE_VIEWS);
+        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(OTHER_DOCUMENTS_BUNDLE_VIEWS);
 
         List<DocumentBundleView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
 
         assertThat(actual).isEqualTo(Stream.of(
             APPLICATION_STATEMENT_BUNDLE_VIEWS,
             FURTHER_EVIDENCE_BUNDLE_VIEWS,
-            HEARING_BUNDLE_VIEWS,
             RESPONDENT_STATEMENT_BUNDLE_VIEWS,
             OTHER_DOCUMENTS_BUNDLE_VIEWS
         ).flatMap(Collection::stream).collect(toList()));
@@ -97,21 +89,17 @@ class BundleViewAggregatorTest {
 
     @Test
     void testGetDocumentBundleViewsIfEmpty() {
+        when(getDocumentBundleViews.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(Collections.emptyList());
 
-        when(getDocumentBundleViews.getApplicationStatementAndDocumentBundle(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            Collections.emptyList());
+        when(furtherEvidenceTransformer.getFurtherEvidenceDocumentsBundleView(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(Collections.emptyList());
 
-        when(furtherEvidenceTransformer.getFurtherEvidenceBundleView(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            Collections.emptyList());
+        when(respondentStatementsTransformer.getRespondentStatementsBundle(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(Collections.emptyList());
 
-        when(hearingBundleTransformer.getHearingBundleView(HEARING_FURTHER_EVIDENCE_DOCUMENTS,
-            DOCUMENT_VIEW_TYPE)).thenReturn(Collections.emptyList());
-
-        when(respondentStatementsTransformer.getRespondentStatementsBundle(CASE_DATA, DOCUMENT_VIEW_TYPE)).thenReturn(
-            Collections.emptyList());
-
-        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA,
-            DOCUMENT_VIEW_TYPE)).thenReturn(Collections.emptyList());
+        when(otherDocumentsTransformer.getOtherDocumentsView(CASE_DATA, DOCUMENT_VIEW_TYPE))
+            .thenReturn(Collections.emptyList());
 
         List<DocumentBundleView> actual = underTest.getDocumentBundleViews(CASE_DATA, DOCUMENT_VIEW_TYPE);
 

@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
     "TabLabel": "Other applications",
-    "TabDisplayOrder": 11,
+    "TabDisplayOrder": 10,
     "CaseFieldID": "uploadC2Link",
     "TabFieldDisplayOrder": 1,
     "TabShowCondition": "c2DocumentBundle!=\"\" OR additionalApplicationsBundle!=\"\""
@@ -16,7 +16,7 @@
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
     "TabLabel": "Other applications",
-    "TabDisplayOrder": 11,
+    "TabDisplayOrder": 10,
     "CaseFieldID": "additionalApplicationsBundle",
     "TabFieldDisplayOrder": 2
   },
@@ -26,7 +26,7 @@
     "Channel": "CaseWorker",
     "TabID": "OtherApplicationsTab",
     "TabLabel": "Other applications",
-    "TabDisplayOrder": 11,
+    "TabDisplayOrder": 10,
     "CaseFieldID": "c2DocumentBundle",
     "TabFieldDisplayOrder": 3,
     "FieldShowCondition": "c2DocumentBundle!=\"\""

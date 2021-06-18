@@ -1,19 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-@Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class NoticeOfChangeContentProvider extends SharedNotifyContentProvider {
+@Component
+public class NoticeOfChangeContentProvider extends AbstractEmailContentProvider {
 
     public NoticeOfChangeRespondentSolicitorTemplate buildNoticeOfChangeRespondentSolicitorTemplate(
         CaseData caseData, RespondentSolicitor solicitor) {

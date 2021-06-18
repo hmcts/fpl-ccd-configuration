@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
+import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.APPLICANT_STATEMENT;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.EXPERT_REPORTS;
 import static uk.gov.hmcts.reform.fpl.enums.FurtherEvidenceType.GUARDIAN_REPORTS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -31,6 +32,14 @@ public class DocumentViewTestHelper {
 
     public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_DOCUMENT = buildFurtherEvidenceBundle(
         "LA uploaded evidence2", "Kurt solicitor", false, GUARDIAN_REPORTS, now().minusMinutes(3));
+
+    public static final Element<SupportingEvidenceBundle> ADMIN_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT =
+        buildFurtherEvidenceBundle(
+            "Application statement document1", "HMCTS", false, APPLICANT_STATEMENT, now().minusMinutes(1));
+
+    public static final Element<SupportingEvidenceBundle> LA_NON_CONFIDENTIAL_APPLICANT_STATEMENT_DOCUMENT =
+        buildFurtherEvidenceBundle(
+            "Application statement document2", "Kurt solicitor", false, APPLICANT_STATEMENT, now().minusHours(1));
 
     public static final Element<Respondent> RESPONDENT1 = buildRespondent("Dave", "Miller");
     public static final Element<Respondent> RESPONDENT2 = buildRespondent("Will", "Smith");

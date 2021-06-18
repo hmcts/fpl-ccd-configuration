@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "hearingsTabHeading",
     "TabFieldDisplayOrder": 0
   },
@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "manageHearingsLink",
     "TabFieldDisplayOrder": 1
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "noticeOfProceedingsBundle",
     "TabFieldDisplayOrder": 2
   },
@@ -35,7 +35,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 3
   },
@@ -45,7 +45,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "cancelledHearingDetails",
     "TabFieldDisplayOrder": 4
   },
@@ -55,7 +55,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "hearing",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 5
