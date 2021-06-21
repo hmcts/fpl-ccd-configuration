@@ -128,6 +128,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CON",
+    "ListElement": "Conwy County Borough Council",
+    "DisplayOrder": 64
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "COR",
     "ListElement": "Cornwall Council",
     "DisplayOrder": 65
