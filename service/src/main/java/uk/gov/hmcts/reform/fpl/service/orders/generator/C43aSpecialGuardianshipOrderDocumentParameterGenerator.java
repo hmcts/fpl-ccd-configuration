@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
+import uk.gov.hmcts.reform.fpl.service.AppointedGuardianService;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C43aSpecialGuardianshipOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
@@ -37,7 +38,9 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         + "by its special guardian(s) (Section 14C (3) and (4) Children Act 1989)."
         + paragraphBreak
         + "It may be a criminal offence under the Child Abduction Act 1984 "
-        + "to remove the child from the United Kingdom without leave of the court.\n";
+        + "to remove the child from the United Kingdom without leave of the court.\n"
+        + "".repeat(40)
+        ;
     private static String NOTICE_HEADER = "\n Notice \n";
     private static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
@@ -64,7 +67,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
             .furtherDirections(manageOrdersEventData.getManageOrdersFurtherDirections())
             .warningMessage(WARNING_MESSAGE)
-            .orderDetails(getSpecialGuardianAppointeeMessage(selectedChildren.size(), 1))
+            .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size(), 1))
             .orderByConsent(getOrderByConsentMessage(manageOrdersEventData))
             .orderHeader(WARNING_HEADER)
             .orderMessage(WARNING_MESSAGE)
@@ -73,24 +76,13 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .build();
     }
 
-    private String getSpecialGuardianAppointeeMessage(int numOfChildren, int numOfApplicants) {
+    private String getSpecialGuardianAppointeeMessage(CaseData caseData, int numOfChildren, int numOfApplicants) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
-        String basicMessage = format("The Court orders [Applicant1] ");
+        String applicant = AppointedGuardianService.getAppointedGuardiansNames(caseData.getAllRespondents(), caseData.getAllOthers());
+        String guardianMessage =
+            format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
 
-        if (numOfApplicants > 1) {
-            return basicMessage + multipleApplicantMessage(childOrChildren);
-        } else {
-            return basicMessage + singleApplicantMessage(childOrChildren);
-        }
-    }
-
-    private String singleApplicantMessage(String childOrChildren) {
-        return format("is appointed as Special Guardian for the %s.", childOrChildren);
-    }
-
-    private String multipleApplicantMessage(String childOrChildren) {
-        return format("are appointed as Special Guardians for the %s",
-            childOrChildren);
+        return guardianMessage;
     }
 
     private String getOrderByConsentMessage(ManageOrdersEventData manageOrdersEventData) {

@@ -90,7 +90,7 @@ public enum Order {
     C43A_SPECIAL_GUARDIANSHIP_ORDER(
         "Special guardianship order",
         "Section 14A(1) Children Act 1989",
-        "C47A - Special guardianship order",
+        "Special guardianship order (C43A)",
         false,
         List.of(
             LINKED_TO_HEARING,
