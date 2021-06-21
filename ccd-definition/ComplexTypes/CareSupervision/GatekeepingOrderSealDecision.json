@@ -1,0 +1,37 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingOrderSealDecision",
+    "ListElementCode": "draftDocument",
+    "FieldType": "Document",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingOrderSealDecision",
+    "ListElementCode": "orderStatus",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Do you want to send this order now?",
+    "FieldTypeParameter": "OrderStatus",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingOrderSealDecision",
+    "ListElementCode": "dateOfIssue",
+    "FieldType": "Date",
+    "ElementLabel": "Order issue date",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GatekeepingOrderSealDecision",
+    "ListElementCode": "nextSteps",
+    "FieldType": "Text",
+    "ElementLabel": "Next steps",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  }
+]

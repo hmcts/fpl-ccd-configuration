@@ -2735,5 +2735,40 @@
     "CaseFieldID": "manageOrdersHasExclusionRequirement",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "gatekeepingOrderRouter",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdoDirectionCustom",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "gatekeepingOrderSealDecision",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextStepsLabel",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "gatekeepingOrderIssuingJudge",
+    "UserRole": "caseworker-publiclaw-judiciary",
+    "CRUD": "CRU"
   }
 ]

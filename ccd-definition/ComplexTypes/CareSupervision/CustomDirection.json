@@ -1,0 +1,35 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
+    "ListElementCode": "assignee",
+    "ElementLabel": "Party responsible",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DirectionAssignee",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Due date and time",
+    "SecurityClassification": "Public"
+  }
+]
