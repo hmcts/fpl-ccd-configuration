@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
-import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
@@ -18,6 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.enums.YesNo.fromString;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 
 @Service
@@ -30,7 +32,7 @@ public class ChildRepresentationService {
     public Map<String, Object> populateRepresentationDetails(CaseData caseData) {
         ChildrenEventData eventData = caseData.getChildrenEventData();
 
-        if (YesNo.NO == YesNo.fromString(eventData.getChildrenHaveRepresentation())) {
+        if (NO == fromString(eventData.getChildrenHaveRepresentation())) {
             return cleanUpData();
         }
 
@@ -51,8 +53,8 @@ public class ChildRepresentationService {
         ChildrenEventData eventData = caseData.getChildrenEventData();
         List<Element<Child>> children = caseData.getAllChildren();
 
-        return Map.of("children1",
-            IntStream.range(0, children.size())
+        return Map.of(
+            "children1", IntStream.range(0, children.size())
                 .mapToObj(idx -> element(children.get(idx).getId(), children.get(idx).getValue().toBuilder()
                     .childRepresentative(selectSpecifiedRepresentative(eventData, idx))
                     .build()))
@@ -61,23 +63,18 @@ public class ChildRepresentationService {
     }
 
     private RespondentSolicitor selectSpecifiedRepresentative(ChildrenEventData eventData, int idx) {
-        if (YesNo.NO.getValue().equals(eventData.getChildrenHaveRepresentation())) {
+        if (NO.getValue().equals(eventData.getChildrenHaveRepresentation())) {
             return null;
         }
 
         RespondentSolicitor mainRepresentative = eventData.getChildrenMainRepresentative();
-        ChildRepresentationDetails details = getChildRepresentationDetails(eventData, idx);
+        ChildRepresentationDetails details = eventData.getAllRepresentationDetails().get(idx);
 
-        if (YesNo.YES.getValue().equals(eventData.getChildrenHaveSameRepresentation())
-            || YesNo.YES.getValue().equals(details.getUseMainSolicitor())) {
+        if (YES.getValue().equals(eventData.getChildrenHaveSameRepresentation())
+            || YES.getValue().equals(details.getUseMainSolicitor())) {
             return mainRepresentative;
         }
 
         return details.getSolicitor();
-    }
-
-    private ChildRepresentationDetails getChildRepresentationDetails(ChildrenEventData eventData, int idx) {
-        List<ChildRepresentationDetails> representationDetails = eventData.getAllRepresentationDetails();
-        return representationDetails.get(idx);
     }
 }
