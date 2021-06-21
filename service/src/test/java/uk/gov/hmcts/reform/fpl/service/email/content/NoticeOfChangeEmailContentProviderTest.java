@@ -8,14 +8,13 @@ import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.noticeofchange.NoticeOfChangeRespondentSolicitorTemplate;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {NoticeOfChangeContentProvider.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {NoticeOfChangeContentProvider.class})
 class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final Long CASE_ID = 12345L;
@@ -27,11 +26,10 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
     @Autowired
     private NoticeOfChangeContentProvider underTest;
 
-
     @ParameterizedTest
     @MethodSource("solicitorNameSource")
     void shouldBuildNotificationDataForSolicitorAccessGranted(String firstName, String lastName,
-                                                          String expectedSalutation) {
+                                                              String expectedSalutation) {
 
         RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
             .firstName(firstName)
@@ -47,7 +45,7 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
     @ParameterizedTest
     @MethodSource("solicitorNameSource")
     void shouldBuildNotificationDataForSolicitorAccessRevoked(String firstName, String lastName,
-                                                          String expectedSalutation) {
+                                                              String expectedSalutation) {
 
         RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
             .firstName(firstName)
@@ -77,8 +75,7 @@ class NoticeOfChangeEmailContentProviderTest extends AbstractEmailContentProvide
         );
     }
 
-    private NoticeOfChangeRespondentSolicitorTemplate
-        buildExpectedTemplate(String expectedSalutation) {
+    private NoticeOfChangeRespondentSolicitorTemplate buildExpectedTemplate(String expectedSalutation) {
         return NoticeOfChangeRespondentSolicitorTemplate.builder()
             .salutation(expectedSalutation)
             .caseName(CASE_NAME)

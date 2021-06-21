@@ -6,20 +6,19 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.orderremoval.OrderRemovalTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
-
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderRemovalEmailContentProvider extends AbstractEmailContentProvider {
+    private final EmailNotificationHelper helper;
 
     public OrderRemovalTemplate buildNotificationForOrderRemoval(CaseData caseData, String removalReason) {
         return OrderRemovalTemplate.builder()
             .caseReference(String.valueOf(caseData.getId()))
             .caseUrl(getCaseUrl(caseData.getId()))
-            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .lastName(helper.getSubjectLineLastName(caseData))
             .removalReason(removalReason)
             .build();
     }
-
 }

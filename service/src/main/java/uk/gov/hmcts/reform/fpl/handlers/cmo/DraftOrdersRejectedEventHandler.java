@@ -44,14 +44,10 @@ public class DraftOrdersRejectedEventHandler {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        final RejectedOrdersTemplate content = contentProvider.buildOrdersRejectedContent(caseData, hearing,
-            rejectedOrders);
-
-        notificationService.sendEmail(
-            JUDGE_REJECTS_DRAFT_ORDERS,
-            emails,
-            content,
-            caseData.getId().toString()
+        final RejectedOrdersTemplate content = contentProvider.buildOrdersRejectedContent(
+            caseData, hearing, rejectedOrders
         );
+
+        notificationService.sendEmail(JUDGE_REJECTS_DRAFT_ORDERS, emails, content, caseData.getId().toString());
     }
 }

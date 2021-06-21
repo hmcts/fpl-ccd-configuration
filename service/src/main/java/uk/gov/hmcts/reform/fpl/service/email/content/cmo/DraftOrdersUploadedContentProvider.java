@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content.cmo;
 
-import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -10,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.cmo.DraftOrdersUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.List;
 
@@ -17,10 +20,11 @@ import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-@Service
+@Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class DraftOrdersUploadedContentProvider extends AbstractEmailContentProvider {
+    private final EmailNotificationHelper helper;
 
     public DraftOrdersUploadedTemplate buildContent(CaseData caseData, HearingBooking hearing,
                                                     AbstractJudge judge, List<HearingOrder> orders) {
@@ -29,9 +33,10 @@ public class DraftOrdersUploadedContentProvider extends AbstractEmailContentProv
             .caseUrl(getCaseUrl(caseData.getId(), TabUrlAnchor.DRAFT_ORDERS))
             .judgeTitle(getJudgeTitle(judge))
             .judgeName(getJudgeName(judge))
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .subjectLineWithHearingDate(subject(hearing, caseData.getAllRespondents(),
-                caseData.getFamilyManCaseNumber()))
+            .lastName(helper.getSubjectLineLastName(caseData))
+            .subjectLineWithHearingDate(subject(
+                hearing, caseData.getAllRespondents(), caseData.getFamilyManCaseNumber()
+            ))
             .draftOrders(formatOrders(orders))
             .build();
     }

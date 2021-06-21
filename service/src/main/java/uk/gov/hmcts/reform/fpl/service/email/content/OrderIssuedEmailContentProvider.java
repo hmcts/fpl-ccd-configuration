@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.OrderIssuedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.UUID;
 
@@ -22,15 +23,15 @@ import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.ORDERS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCalloutWithNextHearing;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvider {
     private final HmctsCourtLookupConfiguration config;
     private final Time time;
     private final OrderIssuedEmailContentProviderTypeOfOrderCalculator typeCalculator;
+    private final EmailNotificationHelper helper;
 
     public OrderIssuedNotifyData getNotifyDataWithoutCaseUrl(final CaseData caseData,
                                                              final DocumentReference orderDocument,
@@ -69,15 +70,13 @@ public class OrderIssuedEmailContentProvider extends AbstractEmailContentProvide
             .build();
     }
 
-    private OrderIssuedNotifyData commonOrderIssuedNotifyData(
-        final CaseData caseData,
-        final IssuedOrderType issuedOrderType) {
+    private OrderIssuedNotifyData commonOrderIssuedNotifyData(final CaseData caseData,
+                                                              final IssuedOrderType type) {
         return OrderIssuedNotifyData.builder()
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .orderType(typeCalculator.getTypeOfOrder(caseData, issuedOrderType))
+            .lastName(helper.getSubjectLineLastName(caseData))
+            .orderType(typeCalculator.getTypeOfOrder(caseData, type))
             .courtName(config.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .callout((issuedOrderType != NOTICE_OF_PLACEMENT_ORDER)
-                ? buildCalloutWithNextHearing(caseData, time.now()) : "")
+            .callout(NOTICE_OF_PLACEMENT_ORDER != type ? buildCalloutWithNextHearing(caseData, time.now()) : "")
             .build();
     }
 
