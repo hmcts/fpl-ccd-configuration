@@ -71,6 +71,10 @@ public class OthersService {
     private List<Element<Other>> getSelectedOthers(List<Element<Other>> others, Selector selector,
                                                      String sendOrderToAllOthers) {
 
+        if(others.isEmpty()) {
+            return others;
+        }
+
         if (useAllOthers(sendOrderToAllOthers)) {
             return others;
         }
