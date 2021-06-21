@@ -20,6 +20,7 @@ public class OrderTempQuestions {
     String orderDetails;
     String closeCase;
     String previewOrder;
+    String appointedGuardian;
     String supervisionOrderExpiryDate;
 
 }

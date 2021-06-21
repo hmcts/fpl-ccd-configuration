@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPLICANT_SELECTOR;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVAL_DATE_TIME;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.APPROVER;
@@ -96,6 +97,7 @@ public enum Order {
             APPROVER,
             APPROVAL_DATE,
             ORDER_BY_CONSENT,
+            APPLICANT_SELECTOR,
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER
         )
