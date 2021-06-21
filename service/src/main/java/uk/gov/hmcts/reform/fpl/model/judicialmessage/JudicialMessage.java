@@ -25,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @Jacksonized
 @ToString(callSuper = true)
 public class JudicialMessage extends JudicialMessageMetaData {
+    private static final int MAX_DYNAMIC_LIST_LABEL_LENGTH = 250;
+
     private final String dateSent;
     private final LocalDateTime updatedTime;
     private final JudicialMessageStatus status;
@@ -38,7 +40,6 @@ public class JudicialMessage extends JudicialMessageMetaData {
     private final String replyTo;
 
     public String toLabel() {
-        final int maxDynamicListLabelLength = 250;
         List<String> labels = new ArrayList<>();
 
         if (YES.equals(isRelatedToC2)) {
@@ -56,7 +57,7 @@ public class JudicialMessage extends JudicialMessageMetaData {
         }
 
         String label = String.join(", ", labels);
-        return StringUtils.abbreviate(label, maxDynamicListLabelLength);
+        return StringUtils.abbreviate(label, MAX_DYNAMIC_LIST_LABEL_LENGTH);
     }
 
     @JsonIgnore
