@@ -2263,14 +2263,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicantSelector",
+    "CaseFieldID": "appointedGuardianSelector",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "applicants_label",
+    "CaseFieldID": "appointedGuardians_label",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }
