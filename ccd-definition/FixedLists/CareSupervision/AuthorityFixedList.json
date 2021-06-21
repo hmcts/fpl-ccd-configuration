@@ -601,7 +601,13 @@
     "ListElement": "Sandwell Metropolitan Council",
     "DisplayOrder": 325
   },
-
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SBC",
+    "ListElement": "Sefton Borough Council",
+    "DisplayOrder": 326
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
