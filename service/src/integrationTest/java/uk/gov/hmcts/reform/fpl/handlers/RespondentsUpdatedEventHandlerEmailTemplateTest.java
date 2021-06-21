@@ -88,9 +88,7 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
             .hasSubject("New C110A application for your client")
             .hasBody(emailContent()
                 .start()
-                .line(expectedSalutation)
-                .line()
-                .line(LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family"
+                .line(expectedSalutation + LOCAL_AUTHORITY_NAME + " has made a new C110A application on the Family"
                     + " Public Law (FPL) digital service.")
                 .line()
                 .line("They’ve given your details as a respondent’s legal representative.")
@@ -131,7 +129,6 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
             .hasSubject("New C110a application involving your client")
             .hasBody(emailContent()
                 .start()
-                .line()
                 .line(LOCAL_AUTHORITY_NAME + " has made a new C110a application on the Family Public Law digital "
                     + "service.")
                 .line()
@@ -150,13 +147,11 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
                 .line("Use the 'notice of change' link on the 'case list' page to do this.")
                 .line()
                 .line("You'll need:")
-                .line()
                 .list("reference number 1234-5678-9012-3456",
                     "the name of the local authority that made the application",
                     "your client's first and last names")
                 .line()
                 .line("You’ll then be able to:")
-                .line()
                 .list("access relevant case files",
                     "upload your own statements and reports",
                     "make applications in the case, for example C2")
@@ -169,9 +164,11 @@ class RespondentsUpdatedEventHandlerEmailTemplateTest extends EmailTemplateTest 
     }
 
     private static Stream<Arguments> representativeNameSource() {
-        String expectedSalutation = String.join(" ", "Dear", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME);
+        // requires \n\n at the end due to line break discrepancies between the to expected salutations
+        String expectedSalutation = String.join(" ", "Dear", RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME + "\n\n");
         return Stream.of(
             Arguments.of(RESPONDENT_FIRST_NAME, RESPONDENT_LAST_NAME, expectedSalutation),
-            Arguments.of(null, null, EMPTY));
+            Arguments.of(null, null, EMPTY)
+        );
     }
 }

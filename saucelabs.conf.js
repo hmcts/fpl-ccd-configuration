@@ -12,6 +12,7 @@ const defaultSauceOptions = {
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
   tags: ['FPL'],
+  maxDuration: 3000,
 };
 
 function merge(intoObject, fromObject) {
@@ -77,7 +78,7 @@ const setupConfig = {
     },
     autoDelay: {
       enabled: true,
-      delayAfter: 2000,
+      delayAfter: 1000,
     },
     screenshotOnFail: {
       enabled: true,

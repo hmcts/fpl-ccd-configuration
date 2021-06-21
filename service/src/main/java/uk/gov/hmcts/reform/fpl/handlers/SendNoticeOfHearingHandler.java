@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.Recipient;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.NOTICE_OF_NEW_HEARING_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
@@ -32,12 +34,13 @@ public class SendNoticeOfHearingHandler {
 
     private static final List<RepresentativeServingPreferences> SERVING_PREFERENCES = List.of(EMAIL, DIGITAL_SERVICE);
 
-    private final NoticeOfHearingEmailContentProvider newHearingContent;
+    private final NoticeOfHearingEmailContentProvider contentProvider;
     private final NotificationService notificationService;
     private final RepresentativeNotificationService representativeNotificationService;
     private final InboxLookupService inboxLookupService;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final SendDocumentService sendDocumentService;
+    private final FeatureToggleService toggleService;
 
     @Async
     @EventListener
@@ -46,10 +49,11 @@ public class SendNoticeOfHearingHandler {
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        NotifyData notifyData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
-            event.getSelectedHearing(), DIGITAL_SERVICE);
+        NotifyData notifyData = contentProvider.buildNewNoticeOfHearingNotification(
+            caseData, event.getSelectedHearing(), DIGITAL_SERVICE
+        );
 
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, emails, notifyData, caseData.getId().toString());
+        notificationService.sendEmail(getTemplate(), emails, notifyData, caseData.getId().toString());
     }
 
     @Async
@@ -59,10 +63,11 @@ public class SendNoticeOfHearingHandler {
 
         final String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        NotifyData notifyData = newHearingContent.buildNewNoticeOfHearingNotification(caseData,
-            event.getSelectedHearing(), EMAIL);
+        NotifyData notifyData = contentProvider.buildNewNoticeOfHearingNotification(
+            caseData, event.getSelectedHearing(), EMAIL
+        );
 
-        notificationService.sendEmail(NOTICE_OF_NEW_HEARING, recipient, notifyData, caseData.getId());
+        notificationService.sendEmail(getTemplate(), recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -70,14 +75,16 @@ public class SendNoticeOfHearingHandler {
     public void notifyRepresentatives(final SendNoticeOfHearing event) {
         final CaseData caseData = event.getCaseData();
 
-        SERVING_PREFERENCES.forEach(servingPreference -> {
-            NotifyData notifyData =
-                newHearingContent.buildNewNoticeOfHearingNotification(
-                    caseData, event.getSelectedHearing(), servingPreference);
+        String template = getTemplate();
 
-            representativeNotificationService
-                .sendToRepresentativesByServedPreference(
-                    servingPreference, NOTICE_OF_NEW_HEARING, notifyData, caseData);
+        SERVING_PREFERENCES.forEach(servingPreference -> {
+            NotifyData notifyData = contentProvider.buildNewNoticeOfHearingNotification(
+                caseData, event.getSelectedHearing(), servingPreference
+            );
+
+            representativeNotificationService.sendToRepresentativesByServedPreference(
+                servingPreference, template, notifyData, caseData
+            );
         });
     }
 
@@ -90,5 +97,9 @@ public class SendNoticeOfHearingHandler {
         final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
 
         sendDocumentService.sendDocuments(caseData, List.of(noticeOfHearing), recipients);
+    }
+
+    private String getTemplate() {
+        return toggleService.isEldestChildLastNameEnabled() ? NOTICE_OF_NEW_HEARING_CHILD_NAME : NOTICE_OF_NEW_HEARING;
     }
 }

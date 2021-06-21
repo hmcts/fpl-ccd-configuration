@@ -9,16 +9,12 @@ import uk.gov.hmcts.reform.fpl.model.notify.sendtogatekeeper.NotifyGatekeeperTem
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class GatekeeperEmailContentProvider extends SharedNotifyContentProvider {
     private final LocalAuthorityNameLookupConfiguration config;
 
     public NotifyGatekeeperTemplate buildGatekeeperNotification(CaseData caseData) {
-        NotifyGatekeeperTemplate template = super.buildNotifyTemplate(NotifyGatekeeperTemplate.builder().build(),
-            caseData.getId(),
-            caseData.getOrders(),
-            caseData.getHearing(),
-            caseData.getRespondents1());
+        NotifyGatekeeperTemplate template = buildNotifyTemplate(NotifyGatekeeperTemplate.builder().build(), caseData);
 
         template.setLocalAuthority(config.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
 

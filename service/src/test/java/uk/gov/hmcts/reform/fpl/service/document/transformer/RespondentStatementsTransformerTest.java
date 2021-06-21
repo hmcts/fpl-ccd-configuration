@@ -66,7 +66,11 @@ class RespondentStatementsTransformerTest {
             caseData, DocumentViewType.HMCTS);
 
         assertThat(documentBundleView).isEqualTo(List.of(
-            DocumentBundleView.builder().name("Respondent 1 statements").documents(expectedDocuments).build()));
+            DocumentBundleView.builder()
+                .name("Dave Miller statements")
+                .documents(expectedDocuments)
+                .build())
+        );
     }
 
     @Test
@@ -90,7 +94,11 @@ class RespondentStatementsTransformerTest {
             caseData, DocumentViewType.LA);
 
         assertThat(documentBundleView).isEqualTo(List.of(
-            DocumentBundleView.builder().name("Respondent 2 statements").documents(expectedDocuments).build()));
+            DocumentBundleView.builder()
+                .name("Will Smith statements")
+                .documents(expectedDocuments)
+                .build())
+        );
     }
 
     @Test
@@ -105,7 +113,7 @@ class RespondentStatementsTransformerTest {
                     .build(),
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT2.getId())
-                    .respondentName(RESPONDENT2.getValue().getParty().getFullName())
+                    .respondentName("Will Smith")
                     .supportingEvidenceBundle(List.of(ADMIN_NON_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();
@@ -114,12 +122,12 @@ class RespondentStatementsTransformerTest {
             caseData, DocumentViewType.NONCONFIDENTIAL);
 
         DocumentBundleView respondent1Bundle = DocumentBundleView.builder()
-            .name("Respondent 1 statements")
+            .name(RESPONDENT1.getValue().getParty().getFullName() + " statements")
             .documents(List.of(buildDocumentView(LA_NON_CONFIDENTIAL_DOCUMENT.getValue())))
             .build();
 
         DocumentBundleView respondent2Bundle = DocumentBundleView.builder()
-            .name("Respondent 2 statements")
+            .name(RESPONDENT2.getValue().getParty().getFullName() + " statements")
             .documents(List.of(buildDocumentView(ADMIN_NON_CONFIDENTIAL_DOCUMENT.getValue())))
             .build();
 
@@ -133,7 +141,7 @@ class RespondentStatementsTransformerTest {
             .respondentStatements(wrapElements(
                 RespondentStatement.builder()
                     .respondentId(RESPONDENT1.getId())
-                    .respondentName(RESPONDENT1.getValue().getParty().getFullName())
+                    .respondentName("Dave Miller")
                     .supportingEvidenceBundle(List.of(ADMIN_CONFIDENTIAL_DOCUMENT, LA_CONFIDENTIAL_DOCUMENT))
                     .build()))
             .build();

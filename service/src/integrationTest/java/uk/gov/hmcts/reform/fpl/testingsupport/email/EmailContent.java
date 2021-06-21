@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.testingsupport.email;
 
 public class EmailContent {
-    private static final String NEW_LINE = "\r\n";
+    public static final String NEW_LINE = "\n";
     private final StringBuilder body = new StringBuilder();
 
     public static EmailContent emailContent() {

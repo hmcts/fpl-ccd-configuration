@@ -7,8 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentBundleView;
 import uk.gov.hmcts.reform.fpl.model.documentview.DocumentViewType;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.ApplicationDocumentBundleTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsTransformer;
-import uk.gov.hmcts.reform.fpl.service.document.transformer.HearingBundleTransformer;
+import uk.gov.hmcts.reform.fpl.service.document.transformer.FurtherEvidenceDocumentsBundlesTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.OtherDocumentsTransformer;
 import uk.gov.hmcts.reform.fpl.service.document.transformer.RespondentStatementsTransformer;
 
@@ -20,8 +19,7 @@ import java.util.List;
 public class BundleViewAggregator {
 
     private final ApplicationDocumentBundleTransformer applicationDocumentTransformer;
-    private final FurtherEvidenceDocumentsTransformer furtherEvidenceTransformer;
-    private final HearingBundleTransformer hearingBundleTransformer;
+    private final FurtherEvidenceDocumentsBundlesTransformer furtherEvidenceTransformer;
     private final RespondentStatementsTransformer respondentStatementsTransformer;
     private final OtherDocumentsTransformer otherDocumentsTransformer;
 
@@ -34,11 +32,8 @@ public class BundleViewAggregator {
         List<DocumentBundleView> applicationStatementAndDocumentsBundle =
             applicationDocumentTransformer.getApplicationStatementAndDocumentBundle(caseData, view);
 
-        List<DocumentBundleView> furtherEvidenceBundle =
-            furtherEvidenceTransformer.getFurtherEvidenceBundleView(caseData, view);
-
-        List<DocumentBundleView> hearingEvidenceBundle = hearingBundleTransformer.getHearingBundleView(
-            caseData.getHearingFurtherEvidenceDocuments(), view);
+        List<DocumentBundleView> furtherEvidenceBundle
+            = furtherEvidenceTransformer.getFurtherEvidenceDocumentsBundleView(caseData, view);
 
         List<DocumentBundleView> respondentStatementBundle =
             respondentStatementsTransformer.getRespondentStatementsBundle(caseData, view);
@@ -48,12 +43,10 @@ public class BundleViewAggregator {
 
         bundles.addAll(applicationStatementAndDocumentsBundle);
         bundles.addAll(furtherEvidenceBundle);
-        bundles.addAll(hearingEvidenceBundle);
         bundles.addAll(respondentStatementBundle);
         bundles.addAll(anyOtherDocumentsBundle);
 
         return bundles;
     }
-
 
 }

@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.OtherApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SupplementType;
@@ -16,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +23,24 @@ import java.util.List;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.TabUrlAnchor.OTHER_APPLICATIONS;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildCallout;
-import static uk.gov.hmcts.reform.fpl.utils.PeopleInCaseHelper.getFirstRespondentLastName;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AdditionalApplicationsUploadedEmailContentProvider extends AbstractEmailContentProvider {
+    private final EmailNotificationHelper helper;
 
     public AdditionalApplicationsUploadedTemplate getNotifyData(final CaseData caseData) {
         return AdditionalApplicationsUploadedTemplate.builder()
             .callout(buildCallout(caseData))
-            .respondentLastName(getFirstRespondentLastName(caseData.getRespondents1()))
+            .lastName(helper.getSubjectLineLastName(caseData))
             .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .applicationTypes(getApplicationTypes(caseData.getAdditionalApplicationsBundle().get(0).getValue()))
+            .build();
+    }
+
+    public BaseCaseNotifyData getPbaPaymentNotTakenNotifyData(final CaseData caseData) {
+        return BaseCaseNotifyData.builder()
+            .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
             .build();
     }
 
@@ -106,11 +111,5 @@ public class AdditionalApplicationsUploadedEmailContentProvider extends Abstract
                 }
                 applicationTypes.add(supplementName);
             });
-    }
-
-    public BaseCaseNotifyData getPbaPaymentNotTakenNotifyData(final CaseData caseData) {
-        return BaseCaseNotifyData.builder()
-            .caseUrl(getCaseUrl(caseData.getId(), OTHER_APPLICATIONS))
-            .build();
     }
 }

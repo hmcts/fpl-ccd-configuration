@@ -182,9 +182,8 @@ module.exports = {
     if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
       await this.retryUntilExists(async () => {
         await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-      }, signedInSelector);
+      }, '#next-step');
     }
-    this.waitForElement('#next-step');
   },
 
   async navigateToCaseDetailsAs(user, caseId) {

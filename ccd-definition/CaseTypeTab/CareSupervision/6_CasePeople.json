@@ -5,7 +5,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "manageLegalRepresentativesLink",
     "TabFieldDisplayOrder": 0
   },
@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "allocatedJudge",
     "TabFieldDisplayOrder": 1
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "children1",
     "TabShowCondition": "[STATE]!=\"Open\" AND [STATE]!=\"RETURNED\"",
     "TabFieldDisplayOrder": 2
@@ -36,7 +36,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 3
   },
@@ -46,7 +46,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 4
   },
@@ -56,7 +56,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "legalRepresentatives",
     "TabFieldDisplayOrder": 5
   },
@@ -66,7 +66,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 6
   },
@@ -76,7 +76,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "others",
     "TabFieldDisplayOrder": 7
   },
@@ -86,7 +86,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 7,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "representatives",
     "TabFieldDisplayOrder": 8
   }

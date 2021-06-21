@@ -10,23 +10,17 @@ import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplat
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class HmctsEmailContentProvider extends SharedNotifyContentProvider {
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration laNameLookup;
+    private final HmctsCourtLookupConfiguration hmctsLookup;
 
     public SubmitCaseHmctsTemplate buildHmctsSubmissionNotification(CaseData caseData) {
+        SubmitCaseHmctsTemplate template = buildNotifyTemplate(SubmitCaseHmctsTemplate.builder().build(), caseData);
 
-        SubmitCaseHmctsTemplate template = super.buildNotifyTemplate(SubmitCaseHmctsTemplate.builder().build(),
-            caseData.getId(),
-            caseData.getOrders(),
-            caseData.getHearing(),
-            caseData.getRespondents1());
-
-        template.setCourt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName());
-        template.setLocalAuthority(localAuthorityNameLookupConfiguration
-            .getLocalAuthorityName(caseData.getCaseLocalAuthority()));
-        template.setDocumentLink(caseData.getSubmittedForm().getBinaryUrl());
+        template.setCourt(hmctsLookup.getCourt(caseData.getCaseLocalAuthority()).getName());
+        template.setLocalAuthority(laNameLookup.getLocalAuthorityName(caseData.getCaseLocalAuthority()));
+        template.setDocumentLink(getDocumentUrl(caseData.getSubmittedForm()));
 
         return template;
     }
