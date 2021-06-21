@@ -56,7 +56,7 @@ public enum Order {
     ),
     C32B_DISCHARGE_OF_CARE_ORDER(
         "Discharge of care order",
-        "Section 31 Children Act 1989",
+        "Section 39(1) Children Act 1989",
         "Discharge of care order (C32B)",
         IsFinalOrder.MAYBE,
         List.of(LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, WHICH_CHILDREN, DISCHARGE_DETAILS, FURTHER_DIRECTIONS,
