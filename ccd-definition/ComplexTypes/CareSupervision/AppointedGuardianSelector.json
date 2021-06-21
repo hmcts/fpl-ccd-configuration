@@ -10,141 +10,12 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option0Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 1",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option1Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 1",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option2Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 2",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option3Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 3",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option4Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 4",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option5Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 5",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option6Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 6",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option7Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 7",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option8Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 8",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option9Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 9",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option10Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 10",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option11Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 11",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option12Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 12",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option13Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 13",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
-    "ListElementCode": "option14Hidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Person 14",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"HIDDEN FIELD FOR SHOW HIDE\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AppointedGuardianSelector",
     "ListElementCode": "option0",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 1",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1*\" AND option0Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -154,7 +25,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 2",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12*\" AND option1Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -164,7 +35,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 3",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"123*\" AND option2Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -174,7 +45,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 4",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1234*\" AND option3Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -184,7 +55,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 5",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12345*\" AND option4Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -194,7 +65,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 6",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"123456*\" AND option5Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -204,7 +75,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 7",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1234567*\" AND option6Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234567*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -214,7 +85,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 8",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12345678*\" AND option7Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345678*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -224,7 +95,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 9",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"123456789*\" AND option8Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456789*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -234,7 +105,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 10",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12345678910*\" AND option9Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345678910*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -244,7 +115,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 11",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1234567891011*\" AND option10Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234567891011*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -254,7 +125,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 12",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"123456789101112*\" AND option11Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456789101112*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -264,7 +135,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 13",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"12345678910111213*\" AND option12Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"12345678910111213*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -274,7 +145,7 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 14",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"1234567891011121314*\" AND option13Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"1234567891011121314*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -284,6 +155,6 @@
     "FieldTypeParameter": "AppointedGuardianSelector",
     "ElementLabel": "Person 15",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "optionCount=\"123456789101112131415\" AND option14Hidden!=\"Yes\""
+    "FieldShowCondition": "optionCount=\"123456789101112131415\""
   }
 ]
