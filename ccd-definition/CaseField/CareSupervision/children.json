@@ -81,5 +81,104 @@
     "FieldType": "ChildRepresentationDetails",
     "SecurityClassification": "Public",
     "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails4",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails5",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails6",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails7",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails8",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails9",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails10",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails11",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails12",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails13",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childRepresentationDetails14",
+    "Label": "Child 4",
+    "FieldType": "ChildRepresentationDetails",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
   }
 ]

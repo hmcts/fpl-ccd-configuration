@@ -4,6 +4,25 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 module.exports = {
   fields: function (index) {
     return {
+      mainSolicitor: {
+        childrenHaveLegalRepresentation: {
+          group: '#childrenHaveRepresentation',
+          options: {
+            yes: 'Yes',
+            no: 'No',
+          },
+        },
+        childrenHaveSameRepresentation: {
+          group: '#childrenHaveSameRepresentation',
+          options: {
+            yes: 'Yes',
+            no: 'No',
+          },
+        },
+        firstName: '#childrenMainRepresentative_firstName',
+        lastName: '#childrenMainRepresentative_lastName',
+        email: '#childrenMainRepresentative_email',
+      },
       child: {
         firstName: `#children1_${index}_party_firstName`,
         lastName: `#children1_${index}_party_lastName`,
@@ -147,6 +166,26 @@ module.exports = {
     if (litigationIssue === 'yes') {
       I.fillField(this.fields(elementIndex).child.litigationIssuesDetails, litigationIssueDetail);
     }
+  },
+
+  async selectAnyChildHasLegalRepresentation(answer) {
+    I.click(`${this.fields().mainSolicitor.childrenHaveLegalRepresentation.group}-${answer}`);
+  },
+
+  async selectChildrenHaveSameRepresentation(answer) {
+    I.click(`${this.fields().mainSolicitor.childrenHaveSameRepresentation.group}-${answer}`);
+  },
+
+  async enterChildrenMainRepresentation(solicitor) {
+    I.fillField(this.fields().mainSolicitor.firstName, solicitor.forename);
+    I.fillField(this.fields().mainSolicitor.lastName, solicitor.surname);
+    I.fillField(this.fields().mainSolicitor.email, solicitor.email);
+  },
+
+  async enterRegisteredOrganisation(solicitor) {
+    I.fillField('//input[@id="search-org-text"]', solicitor.organisation);
+    I.click(`//*[@id="organisation-table"]/caption/h3[text()="${solicitor.organisation}"]/../../tbody//a`);
+    //postcodeLookup.enterAddressManually(solicitor.regionalOfficeAddress);
   },
 
   async getActiveElementIndex() {
