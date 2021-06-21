@@ -1,0 +1,71 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "Description",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "type",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "assignee",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "HintText": "You must include a brief direction summary",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "dueDateType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "DirectionDueDateType",
+    "ElementLabel": "Due date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Date and time",
+    "HintText": "Use 24h format",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirection",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldType": "Number",
+    "ElementLabel": "Number of days",
+    "Min": 0,
+    "Max": 365,
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType=\"DAYS\""
+  }
+]
+

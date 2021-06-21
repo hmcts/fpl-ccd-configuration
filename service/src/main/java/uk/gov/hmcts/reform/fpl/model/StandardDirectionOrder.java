@@ -39,9 +39,9 @@ public class StandardDirectionOrder implements IssuableOrder, RemovableOrder {
     private DocumentReference lastUploadedOrder;
     private String removalReason;
 
-    //New gatekeeping order fields
     private final DocumentReference unsealedDocumentCopy;
     private final List<Element<CustomDirection>> customDirections;
+    private final List<Element<StandardDirection>> standardDirections;
 
     @JsonIgnore
     public boolean isSealed() {

@@ -33,11 +33,17 @@ public class CaseConverter {
             .build();
     }
 
+    public <T> T convert(Object o, Class<T> clazz) {
+        if (isNull(o)) {
+            return null;
+        }
+        return objectMapper.convertValue(o, clazz);
+    }
+
     public <T> Map<String, Object> toMap(T object) {
         if (isNull(object)) {
             return null;
         }
         return objectMapper.convertValue(object, MAP_TYPE);
     }
-
 }
