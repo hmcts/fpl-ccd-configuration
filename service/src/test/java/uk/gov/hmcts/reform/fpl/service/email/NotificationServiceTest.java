@@ -39,7 +39,7 @@ class NotificationServiceTest {
     private NotificationService notificationService;
 
     private static final NotifyData EMAIL_PERSONALISATION = BaseCaseNotifyData.builder()
-        .respondentLastName("Smith")
+        .lastName("Smith")
         .caseUrl("http://fake-url")
         .build();
 

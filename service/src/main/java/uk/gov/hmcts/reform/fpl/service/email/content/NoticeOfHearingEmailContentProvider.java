@@ -7,10 +7,12 @@ import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.hearing.NoticeOfHearingTemplate;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookUpService;
 import uk.gov.hmcts.reform.fpl.service.email.content.base.AbstractEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.format.FormatStyle;
 
@@ -27,12 +29,13 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
 
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final EmailNotificationHelper helper;
 
-    public NoticeOfHearingTemplate buildNewNoticeOfHearingNotification(
-        CaseData caseData,
-        HearingBooking hearingBooking,
-        RepresentativeServingPreferences servingPreference) {
+    public NoticeOfHearingTemplate buildNewNoticeOfHearingNotification(CaseData caseData,
+                                                                       HearingBooking hearingBooking,
+                                                                       RepresentativeServingPreferences preference) {
         HearingVenue venue = hearingVenueLookUpService.getHearingVenue(hearingBooking);
+        DocumentReference noticeOfHearing = hearingBooking.getNoticeOfHearing();
 
         return NoticeOfHearingTemplate.builder()
             .hearingType(getHearingType(hearingBooking))
@@ -40,12 +43,13 @@ public class NoticeOfHearingEmailContentProvider extends AbstractEmailContentPro
             .hearingVenue(hearingVenueLookUpService.buildHearingVenue(venue))
             .hearingTime(caseDataExtractionService.getHearingTime(hearingBooking))
             .preHearingTime(caseDataExtractionService.extractPrehearingAttendance(hearingBooking))
-            .documentLink(servingPreference == DIGITAL_SERVICE ? getDocumentUrl(hearingBooking.getNoticeOfHearing())
-                : linkToAttachedDocument(hearingBooking.getNoticeOfHearing()))
+            .documentLink(DIGITAL_SERVICE == preference ? getDocumentUrl(noticeOfHearing)
+                                                        : linkToAttachedDocument(noticeOfHearing))
             .familyManCaseNumber(defaultIfNull(caseData.getFamilyManCaseNumber(), ""))
-            .respondentLastName(getFirstRespondentLastName(caseData))
-            .digitalPreference(servingPreference == DIGITAL_SERVICE ? "Yes" : "No")
-            .caseUrl(servingPreference == DIGITAL_SERVICE ? getCaseUrl(caseData.getId(), HEARINGS) : "")
+            .lastName(getFirstRespondentLastName(caseData))
+            .digitalPreference(DIGITAL_SERVICE == preference ? "Yes" : "No")
+            .caseUrl(DIGITAL_SERVICE == preference ? getCaseUrl(caseData.getId(), HEARINGS) : "")
+            .childLastName(helper.getEldestChildLastName(caseData.getAllChildren()))
             .build();
     }
 

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @Getter
@@ -20,5 +22,6 @@ public class DocumentView {
     private String title;
     private boolean includeSWETField;
     private boolean includeDocumentName;
+    private LocalDateTime uploadedDateTime;
 
 }
