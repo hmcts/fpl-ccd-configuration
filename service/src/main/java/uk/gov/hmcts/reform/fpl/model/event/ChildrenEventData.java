@@ -5,11 +5,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.Temp;
 import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
 @Value
 @Builder
@@ -18,24 +23,41 @@ import java.util.List;
 public class ChildrenEventData {
     // page 2
     String childrenHaveRepresentation;
+    @Temp
     RespondentSolicitor childrenMainRepresentative;
 
     // page 3
+    @Temp
     String childrenHaveSameRepresentation;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails0;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails1;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails2;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails3;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails4;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails5;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails6;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails7;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails8;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails9;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails10;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails11;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails12;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails13;
+    @Temp
     ChildRepresentationDetails childRepresentationDetails14;
 
     @JsonIgnore
@@ -58,5 +80,23 @@ public class ChildrenEventData {
         childRepresentationDetails.add(childRepresentationDetails13);
         childRepresentationDetails.add(childRepresentationDetails14);
         return childRepresentationDetails;
+    }
+
+    public String[] getTransientFields() {
+        if (!YesNo.YES.getValue().equals(childrenHaveRepresentation)) {
+            return getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
+                .map(Field::getName)
+                .toArray(String[]::new);
+        }
+
+        if (YesNo.YES.getValue().equals(childrenHaveSameRepresentation)) {
+            List<String> excludedFields = List.of("childrenMainRepresentative", "childrenHaveSameRepresentation");
+            return getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
+                .map(Field::getName)
+                .filter(field -> !excludedFields.contains(field))
+                .toArray(String[]::new);
+        }
+
+        return new String[] {};
     }
 }

@@ -97,7 +97,7 @@ class ChildRepresentationServiceTest {
         void testIfMainSolicitorNotPresent() {
             Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
-                    .childRepresentative(CHILD_REPRESENTATIVE)
+                    .representative(CHILD_REPRESENTATIVE)
                     .build())))
                 .childrenEventData(ChildrenEventData.builder()
                     .childrenHaveRepresentation(NO.getValue())
@@ -106,7 +106,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .childRepresentative(null)
+                    .representative(null)
                     .build()))
             ));
         }
@@ -115,7 +115,7 @@ class ChildRepresentationServiceTest {
         void testIfMainSolicitorIsPresentAndAllChildrenUseMainSolicitor() {
             Map<String, Object> actual = underTest.finaliseRepresentationDetails(CaseData.builder()
                 .children1(List.of(element(CHILD_UUID_1, Child.builder()
-                    .childRepresentative(CHILD_REPRESENTATIVE)
+                    .representative(CHILD_REPRESENTATIVE)
                     .build())))
                 .childrenEventData(ChildrenEventData.builder()
                     .childrenHaveRepresentation(YES.getValue())
@@ -126,7 +126,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .childRepresentative(MAIN_CHILD_REPRESENTATIVE)
+                    .representative(MAIN_CHILD_REPRESENTATIVE)
                     .build()))
             ));
         }
@@ -149,7 +149,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .childRepresentative(CHILD_REPRESENTATIVE)
+                    .representative(CHILD_REPRESENTATIVE)
                     .build()))
             ));
         }
@@ -171,7 +171,7 @@ class ChildRepresentationServiceTest {
 
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(element(CHILD_UUID_1, Child.builder()
-                    .childRepresentative(MAIN_CHILD_REPRESENTATIVE)
+                    .representative(MAIN_CHILD_REPRESENTATIVE)
                     .build()))
             ));
         }
@@ -202,10 +202,10 @@ class ChildRepresentationServiceTest {
             assertThat(actual).isEqualTo(Map.of(
                 "children1", List.of(
                     element(CHILD_UUID_1, Child.builder()
-                        .childRepresentative(MAIN_CHILD_REPRESENTATIVE)
+                        .representative(MAIN_CHILD_REPRESENTATIVE)
                         .build()),
                     element(CHILD_UUID_2, Child.builder()
-                        .childRepresentative(CHILD_REPRESENTATIVE)
+                        .representative(CHILD_REPRESENTATIVE)
                         .build())
                 )
             ));

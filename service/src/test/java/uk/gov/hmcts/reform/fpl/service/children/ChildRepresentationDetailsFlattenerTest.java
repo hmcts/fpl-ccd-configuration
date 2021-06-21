@@ -42,7 +42,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .childRepresentative(childSolicitor)
+                    .representative(childSolicitor)
                     .build()
             ),
             mainRepresentative
@@ -68,11 +68,11 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .childRepresentative(childSolicitor)
+                    .representative(childSolicitor)
                     .build(),
                 Child.builder()
                     .party(ChildParty.builder().firstName("Freddie").lastName("Mercury").build())
-                    .childRepresentative(childSolicitor)
+                    .representative(childSolicitor)
                     .build()
             ),
             mainRepresentative
@@ -103,7 +103,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .childRepresentative(mainRepresentative)
+                    .representative(mainRepresentative)
                     .build()
             ),
             mainRepresentative
@@ -127,7 +127,7 @@ class ChildRepresentationDetailsFlattenerTest {
             wrapElements(
                 Child.builder()
                     .party(ChildParty.builder().firstName("Michael").lastName("Jackson").build())
-                    .childRepresentative(null)
+                    .representative(null)
                     .build()
             ),
             mainRepresentative

@@ -43,7 +43,7 @@ public class ChildRepresentationDetailsFlattener {
     }
 
     private ChildRepresentationDetails transform(Child child, int idx, RespondentSolicitor mainRepresentative) {
-        RespondentSolicitor childSolicitor = child.getChildRepresentative();
+        RespondentSolicitor childSolicitor = child.getRepresentative();
         boolean useMainSolicitor = Objects.equals(childSolicitor, mainRepresentative);
 
         return ChildRepresentationDetails.builder()

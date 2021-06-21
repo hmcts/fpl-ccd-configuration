@@ -56,7 +56,7 @@ public class ChildRepresentationService {
         return Map.of(
             "children1", IntStream.range(0, children.size())
                 .mapToObj(idx -> element(children.get(idx).getId(), children.get(idx).getValue().toBuilder()
-                    .childRepresentative(selectSpecifiedRepresentative(eventData, idx))
+                    .representative(selectSpecifiedRepresentative(eventData, idx))
                     .build()))
                 .collect(Collectors.toList())
         );
