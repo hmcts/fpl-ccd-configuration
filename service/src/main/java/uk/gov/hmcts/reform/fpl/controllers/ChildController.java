@@ -15,6 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentationService;
+import uk.gov.hmcts.reform.fpl.service.children.ChildRepresentativeSolicitorValidator;
+
+import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
@@ -27,6 +30,7 @@ import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
 public class ChildController extends CallbackController {
     private final ConfidentialDetailsService confidentialDetailsService;
     private final ChildRepresentationService childRepresentationService;
+    private final ChildRepresentativeSolicitorValidator validator;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -44,9 +48,24 @@ public class ChildController extends CallbackController {
         CaseDetails caseDetails = request.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
+        List<String> errors = validator.validateMainChildRepresentative(caseData);
+
+        if (!errors.isEmpty()) {
+            return respond(caseDetails, errors);
+        }
+
         caseDetails.getData().putAll(childRepresentationService.populateRepresentationDetails(caseData));
 
         return respond(caseDetails);
+    }
+
+    @PostMapping("/representation-validation/mid-event")
+    public CallbackResponse handleRepresentationValidationMidEvent(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        List<String> errors = validator.validateChildRepresentationDetails(getCaseData(caseDetails));
+
+        return respond(caseDetails, errors);
     }
 
     @PostMapping("/about-to-submit")
