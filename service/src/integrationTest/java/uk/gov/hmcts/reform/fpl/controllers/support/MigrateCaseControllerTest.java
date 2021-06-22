@@ -51,7 +51,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldThrowExceptionWhenAdditionalApplicationBundleIdIsNotFound() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(anotherBundleId, c2ApplicationId);
+            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
+                anotherBundleId, c2ApplicationId);
 
             CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
 
@@ -64,7 +65,8 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
         @Test
         void shouldThrowExceptionWhenC2ApplicationIdIsNotFound() {
-            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(additionalApplicationBundleId, anotherC2ApplicationId);
+            List<Element<AdditionalApplicationsBundle>> bundles = buildAdditionalApplicationsBundles(
+                additionalApplicationBundleId, anotherC2ApplicationId);
 
             CaseDetails caseDetails = caseDetails(bundles, familyManNumber, migrationId);
 
