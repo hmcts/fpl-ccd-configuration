@@ -7,21 +7,24 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Recipient;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.OrderIssuedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -39,16 +42,18 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
+    private final OthersService othersService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final DocumentReference orderDocument = orderEvent.getOrderDocument();
+        final List<Element<Other>> othersSelected = caseData.getOrderCollection().get(0).getValue().getOthers();
 
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
         sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument);
 
-        sendNotificationToEmailServedRepresentatives(caseData, orderDocument);
+        sendNotificationToEmailServedRepresentatives(caseData, orderDocument, othersSelected);
     }
 
     @EventListener
@@ -62,8 +67,35 @@ public class GeneratedOrderEventHandler {
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
-                                                              final DocumentReference orderDocument) {
+                                                              final DocumentReference orderDocument,
+                                                              final List<Element<Other>> othersSelected) {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
+        Set<String> representativesToBeNotified = representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL);
+
+        System.out.println("Others selected " + othersSelected);
+
+        othersSelected.stream().forEach(other -> {
+            if (other.getValue().getRepresentedBy().isEmpty()) {
+                //Send by print and post
+                System.out.println("I am going to send by print and post");
+            } else {
+                UUID representativeID = other.getValue().getRepresentedBy().get(0).getValue();
+
+                String representativeEmail = caseData.getRepresentatives().stream()
+                    .filter(element -> element.getId().equals(representativeID))
+                    .map(Element::getValue)
+                    .map(Representative::getEmail)
+                    .findFirst()
+                    .orElse(null);
+
+                System.out.println("Representative to email is" + representativeEmail);
+                representativesToBeNotified.add(representativeEmail);
+
+            }
+        });
+
+        System.out.println("I am going to notify" + representativesToBeNotified);
+
 
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
