@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
@@ -53,6 +54,25 @@ class OrderShowHideQuestionsCalculatorTest {
         careOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         careOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
         careOrderQuestions.put("closeCase", "YES");
+        careOrderQuestions.put("dischargeOfCareDetails", "NO");
+
+        Map<String, String> dischargeOfCareQuestions = new HashMap<>(commonQuestions);
+        dischargeOfCareQuestions.put("furtherDirections", "YES");
+        dischargeOfCareQuestions.put("approvalDate", "YES");
+        dischargeOfCareQuestions.put("approvalDateTime", "NO");
+        dischargeOfCareQuestions.put("epoIncludePhrase", "NO");
+        dischargeOfCareQuestions.put("epoChildrenDescription", "NO");
+        dischargeOfCareQuestions.put("epoExpiryDate", "NO");
+        dischargeOfCareQuestions.put("epoTypeAndPreventRemoval", "NO");
+        dischargeOfCareQuestions.put("orderDetails", "NO");
+        dischargeOfCareQuestions.put("cafcassJurisdictions", "NO");
+        dischargeOfCareQuestions.put("whichChildren", "YES");
+        dischargeOfCareQuestions.put("dischargeOfCareDetails", "YES");
+        dischargeOfCareQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
+        dischargeOfCareQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
+        dischargeOfCareQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
+        dischargeOfCareQuestions.put("isFinalOrder", "YES");
+        dischargeOfCareQuestions.put("closeCase", "YES");
 
         Map<String, String> epoQuestions = new HashMap<>(commonQuestions);
         epoQuestions.put("furtherDirections", "YES");
@@ -67,6 +87,7 @@ class OrderShowHideQuestionsCalculatorTest {
         epoQuestions.put("orderDetails", "NO");
         epoQuestions.put("cafcassJurisdictions", "NO");
         epoQuestions.put("whichChildren", "YES");
+        epoQuestions.put("dischargeOfCareDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         epoQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         epoQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
@@ -84,6 +105,7 @@ class OrderShowHideQuestionsCalculatorTest {
         blankOrderQuestions.put("epoExpiryDate", "NO");
         blankOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         blankOrderQuestions.put("whichChildren", "YES");
+        blankOrderQuestions.put("dischargeOfCareDetails", "NO");
         blankOrderQuestions.put("cafcassJurisdictions", "NO");
         blankOrderQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         blankOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
@@ -103,6 +125,7 @@ class OrderShowHideQuestionsCalculatorTest {
         supervisionOrderQuestions.put("epoTypeAndPreventRemoval", "NO");
         supervisionOrderQuestions.put("cafcassJurisdictions", "NO");
         supervisionOrderQuestions.put("whichChildren", "YES");
+        supervisionOrderQuestions.put("dischargeOfCareDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithMonth", "YES");
         supervisionOrderQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         supervisionOrderQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
@@ -121,6 +144,7 @@ class OrderShowHideQuestionsCalculatorTest {
         appointmentOfChildrensGuardianQuestions.put("epoTypeAndPreventRemoval", "NO");
         appointmentOfChildrensGuardianQuestions.put("cafcassJurisdictions", "YES");
         appointmentOfChildrensGuardianQuestions.put("whichChildren", "NO");
+        appointmentOfChildrensGuardianQuestions.put("dischargeOfCareDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithMonth", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExclusionRequirementDetails", "NO");
         appointmentOfChildrensGuardianQuestions.put("manageOrdersExpiryDateWithEndOfProceedings", "NO");
@@ -128,6 +152,7 @@ class OrderShowHideQuestionsCalculatorTest {
 
         return Stream.of(
             Arguments.of(C32_CARE_ORDER, careOrderQuestions),
+            Arguments.of(C32B_DISCHARGE_OF_CARE_ORDER, dischargeOfCareQuestions),
             Arguments.of(C21_BLANK_ORDER, blankOrderQuestions),
             Arguments.of(C23_EMERGENCY_PROTECTION_ORDER, epoQuestions),
             Arguments.of(C35A_SUPERVISION_ORDER, supervisionOrderQuestions),

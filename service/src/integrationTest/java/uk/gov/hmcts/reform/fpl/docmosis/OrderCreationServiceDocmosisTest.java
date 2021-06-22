@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.orders.generator.C21BlankOrderDocumentPar
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPOAdditionalDocumentsCollector;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C23EPODocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C32CareOrderDocumentParameterGenerator;
+import uk.gov.hmcts.reform.fpl.service.orders.generator.C32bDischargeOfCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C33InterimCareOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35aSupervisionOrderDocumentParameterGenerator;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.C35bISODocumentParameterGenerator;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocument;
     CaseDataExtractionService.class,
     C21BlankOrderDocumentParameterGenerator.class,
     C32CareOrderDocumentParameterGenerator.class,
+    C32bDischargeOfCareOrderDocumentParameterGenerator.class,
     C23EPODocumentParameterGenerator.class,
     C35aSupervisionOrderDocumentParameterGenerator.class,
     C47AAppointmentOfAChildrensGuardianParameterGenerator.class,

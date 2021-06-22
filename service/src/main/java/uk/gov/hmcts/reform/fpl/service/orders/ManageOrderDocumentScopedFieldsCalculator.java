@@ -23,6 +23,7 @@ public class ManageOrderDocumentScopedFieldsCalculator {
             "manageOrdersUploadType",
             "manageOrdersUploadTypeOtherTitle",
             "manageOrdersState",
+            "manageOrdersIsFinalOrder",
             "orderTempQuestions",
             "hearingDetailsSectionSubHeader",
             "issuingDetailsSectionSubHeader",
