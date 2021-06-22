@@ -413,6 +413,7 @@ public class CaseData {
     private final Selector childSelector;
     private final Selector careOrderSelector;
     private final Selector newHearingSelector;
+    private final Selector appointedGuardianSelector;
 
     private final String orderAppliesToAllChildren;
 

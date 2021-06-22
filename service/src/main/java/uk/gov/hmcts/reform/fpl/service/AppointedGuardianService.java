@@ -7,8 +7,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
@@ -16,7 +19,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AppointedGuardianService {
 
-    public static String getAppointedGuardiansLabel(List<Element<Respondent>> respondents, List<Element<Other>> others) {
+    public static String getAppointedGuardiansLabel(List<Element<Respondent>> respondents,
+                                                    List<Element<Other>> others) {
         if (isEmpty(respondents) && isEmpty(others)) {
             return "No respondents or others on the case";
         }
@@ -40,56 +44,46 @@ public class AppointedGuardianService {
         return builder.toString();
     }
 
-    public static String getAppointedGuardiansNames(List<Element<Respondent>> respondents, List<Element<Other>> others) {
+    public static String getAppointedGuardiansNames(List<Element<Respondent>> respondents,
+                                                    List<Element<Other>> others,
+                                                    Selector guardianSelector) {
 
         StringBuilder builder = new StringBuilder();
-        boolean semaphore = true;
-        boolean hasMultipleGuardiansGrammer = false;
+        boolean hasMultipleGuardiansGrammar = false;
 
-        for (int i = 0; i < CollectionUtils.size(respondents); i++) {
-            Respondent respondent = respondents.get(i).getValue();
+        Stream<String> respondentsNames = respondents.stream()
+            .map(respondent -> respondent.getValue().getParty().getFullName());
+
+        Stream<String> othersNames = others.stream()
+            .map(other -> other.getValue().getName());
+
+        List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(Collectors.toList());
+
+        List<String> selected = guardianSelector.getSelected().stream()
+            .map(respondentsAndOthersNames::get)
+            .collect(Collectors.toList());
+
+        for (int i = 0; i < selected.size(); i++) {
+            String name = selected.get(i);
 
             if (i >= 1) {
-                hasMultipleGuardiansGrammer = true;
-                builder.append(String.format(", %s", respondent.getParty().getFullName()));
+                hasMultipleGuardiansGrammar = true;
+                builder.append(String.format(", %s", name));
             } else {
-                builder.append(String.format("%s", respondent.getParty().getFullName()));
+                builder.append(String.format("%s", name));
             }
         }
 
-        for (int i = 0; i < CollectionUtils.size(others); i++) {
-            Other other = others.get(i).getValue();
-
-            boolean respondentAlreadySelected = builder.length() > 1 && semaphore;
-
-            if (i >= 1) {
-                hasMultipleGuardiansGrammer = true;
-                builder.append(String.format(", %s", other.getName()));
-            } else {
-                if (respondentAlreadySelected){
-                    addComma(builder, semaphore);
-                }
-                builder.append(String.format("%s", other.getName()));
-            }
-        }
-
-        builder.append(" ");
-
-        appendChildGrammerVerb(builder, hasMultipleGuardiansGrammer);
+        appendChildGrammarVerb(builder, hasMultipleGuardiansGrammar);
 
         return builder.toString();
     }
 
-    private static void addComma(StringBuilder builder, boolean semaphore) {
-        semaphore = false;
-        builder.append(", ");
-    }
-
-    private static void appendChildGrammerVerb(StringBuilder builder, Boolean hasMultipleGuardiansGrammer) {
+    private static void appendChildGrammarVerb(StringBuilder builder, Boolean hasMultipleGuardiansGrammer) {
         if (hasMultipleGuardiansGrammer) {
-            builder.append("are");
+            builder.append(" are");
         } else {
-            builder.append("is");
+            builder.append(" is");
         }
     }
 

@@ -39,8 +39,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         + paragraphBreak
         + "It may be a criminal offence under the Child Abduction Act 1984 "
         + "to remove the child from the United Kingdom without leave of the court.\n"
-        + "".repeat(40)
-        ;
+        + "".repeat(40);
     private static String NOTICE_HEADER = "\n Notice \n";
     private static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
@@ -78,7 +77,8 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
 
     private String getSpecialGuardianAppointeeMessage(CaseData caseData, int numOfChildren, int numOfApplicants) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
-        String applicant = AppointedGuardianService.getAppointedGuardiansNames(caseData.getAllRespondents(), caseData.getAllOthers());
+        String applicant = AppointedGuardianService.getAppointedGuardiansNames(caseData.getAllRespondents(),
+            caseData.getAllOthers(), caseData.getAppointedGuardianSelector());
         String guardianMessage =
             format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
 
