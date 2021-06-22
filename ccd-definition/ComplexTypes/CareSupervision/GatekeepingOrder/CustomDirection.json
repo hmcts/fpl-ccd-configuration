@@ -18,6 +18,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CustomDirection",
+    "ListElementCode": "type",
+    "FieldType": "Text",
+    "ElementLabel": "Type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "dueDateType = \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
     "ListElementCode": "assignee",
     "ElementLabel": "Party responsible",
     "FieldType": "FixedList",
@@ -27,9 +36,29 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CustomDirection",
+    "ListElementCode": "dueDateType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "DirectionDueDateType",
+    "ElementLabel": "Due date",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
+    "ElementLabel": "Date and time",
+    "HintText": "Use 24h format",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CustomDirection",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldType": "Number",
+    "Min": 0,
+    "Max": 365,
+    "ElementLabel": "Number of days",
     "SecurityClassification": "Public"
   }
 ]

@@ -1,0 +1,51 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "ListElement": "Send documents to all parties",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "SEND_MISSING_ANNEX",
+    "ListElement": "Send missing annex documents to the court and all parties",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "IDENTIFY_ALTERNATIVE_CARERS",
+    "ListElement": "Identify alternative carers",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "SEND_TRANSLATED_DOCUMENTS",
+    "ListElement": "Send translated case documents to respondents",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "LODGE_BUNDLE",
+    "ListElement": "Lodge a bundle",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "SEND_CASE_SUMMARY",
+    "ListElement": "Send case summary to all parties",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForLocalAuthority",
+    "ListElementCode": "CONSIDER_JURISDICTION",
+    "ListElement": "Urgently consider jurisdiction and invite any representations",
+    "DisplayOrder": 7
+  }
+]

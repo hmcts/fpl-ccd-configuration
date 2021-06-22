@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.events.GatekeepingOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.StandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -35,6 +37,8 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CASE_MANAGEMENT;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
 
 @Api
@@ -58,6 +62,25 @@ public class AddGatekeepingOrderController extends CallbackController {
                 caseData.getGatekeepingOrderEventData().getGatekeepingOrderIssuingJudge()));
         }
 
+        service.getHearing(caseData)
+            .map(HearingBooking::getStartDate)
+            .map(hearingDate -> formatLocalDateTimeBaseUsingFormat(hearingDate, DATE_TIME))
+            .ifPresent(hearingDate -> {
+                data.put("gatekeepingOrderHasHearing1", YesNo.YES);
+                data.put("gatekeepingOrderHasHearing2", YesNo.YES);
+                data.put("gatekeepingOrderHearingDate1", hearingDate);
+                data.put("gatekeepingOrderHearingDate2", hearingDate);
+            });
+
+        return respond(caseDetails);
+    }
+
+    @PostMapping("/direction-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse populateSelectedDirections(@RequestBody CallbackRequest request) {
+        CaseDetails caseDetails = request.getCaseDetails();
+
+        service.populateStandardDirections(caseDetails);
+
         return respond(caseDetails);
     }
 
@@ -65,9 +88,12 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleGenerateDraftMidEvent(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+
+        CaseData caseData = service.updateStandardDirections(caseDetails);
 
         caseDetails.getData().put("gatekeepingOrderSealDecision", service.buildSealDecisionPage(caseData));
+        caseDetails.getData().put("standardDirections", caseData.getGatekeepingOrderEventData()
+            .getStandardDirections());
 
         return respond(caseDetails);
     }
@@ -77,7 +103,7 @@ public class AddGatekeepingOrderController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = service.updateStandardDirections(caseDetails);
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
 
         StandardDirectionOrder gatekeepingOrder = service.buildBaseGatekeepingOrder(caseData);
@@ -104,8 +130,9 @@ public class AddGatekeepingOrderController extends CallbackController {
 
             caseDetails.getData().put("state", CASE_MANAGEMENT);
 
-            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "sdoDirectionCustom",
-                "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision");
+            removeTemporaryFields(caseDetails, "gatekeepingOrderRouter", "customDirections",
+                "gatekeepingOrderIssuingJudge", "gatekeepingOrderSealDecision", "gatekeepingOrderHearingDate1",
+                "gatekeepingOrderHearingDate2", "gatekeepingOrderHasHearing1", "gatekeepingOrderHasHearing2");
 
         } else {
             //no need to regenerate draft
