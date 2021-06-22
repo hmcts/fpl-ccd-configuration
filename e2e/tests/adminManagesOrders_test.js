@@ -340,7 +340,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 6,
+    orderIndex: 7,
     orderType: 'Other',
     orderTitle: 'Order F789s',
     approvalDate: approvalDate,
