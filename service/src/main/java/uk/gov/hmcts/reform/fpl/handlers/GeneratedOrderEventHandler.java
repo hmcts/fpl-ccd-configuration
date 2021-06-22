@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -42,7 +43,6 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
-    private final OthersService othersService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -51,7 +51,7 @@ public class GeneratedOrderEventHandler {
         final List<Element<Other>> othersSelected = caseData.getOrderCollection().get(0).getValue().getOthers();
 
         issuedOrderAdminNotificationHandler.notifyAdmin(caseData, orderDocument, GENERATED_ORDER);
-        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument);
+        sendNotificationToLocalAuthorityAndDigitalRepresentatives(caseData, orderDocument, othersSelected);
 
         sendNotificationToEmailServedRepresentatives(caseData, orderDocument, othersSelected);
     }
@@ -69,33 +69,11 @@ public class GeneratedOrderEventHandler {
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
                                                               final DocumentReference orderDocument,
                                                               final List<Element<Other>> othersSelected) {
-        Set<String> emailRepresentatives = representativesInbox.getEmailsByPreference(caseData, EMAIL);
-        Set<String> representativesToBeNotified = representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL);
+        Set<String> emailRepresentatives = representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL);
 
-        System.out.println("Others selected " + othersSelected);
+        emailRepresentatives.addAll(getOthersToBeNotified(othersSelected, caseData.getRepresentatives(), EMAIL));
 
-        othersSelected.stream().forEach(other -> {
-            if (other.getValue().getRepresentedBy().isEmpty()) {
-                //Send by print and post
-                System.out.println("I am going to send by print and post");
-            } else {
-                UUID representativeID = other.getValue().getRepresentedBy().get(0).getValue();
-
-                String representativeEmail = caseData.getRepresentatives().stream()
-                    .filter(element -> element.getId().equals(representativeID))
-                    .map(Element::getValue)
-                    .map(Representative::getEmail)
-                    .findFirst()
-                    .orElse(null);
-
-                System.out.println("Representative to email is" + representativeEmail);
-                representativesToBeNotified.add(representativeEmail);
-
-            }
-        });
-
-        System.out.println("I am going to notify" + representativesToBeNotified);
-
+        System.out.println("I am going to notify email serv" + emailRepresentatives);
 
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
@@ -111,8 +89,13 @@ public class GeneratedOrderEventHandler {
     }
 
     private void sendNotificationToLocalAuthorityAndDigitalRepresentatives(final CaseData caseData,
-                                                                           final DocumentReference orderDocument) {
-        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreference(caseData, DIGITAL_SERVICE);
+                                                                           final DocumentReference orderDocument,
+                                                                           List<Element<Other>> othersSelected) {
+        Set<String> digitalRepresentatives = representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, DIGITAL_SERVICE);
+
+        digitalRepresentatives.addAll(getOthersToBeNotified(othersSelected, caseData.getRepresentatives(), DIGITAL_SERVICE));
+
+        System.out.println("I am going to notify digital serv" + digitalRepresentatives);
 
         final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
             orderDocument, GENERATED_ORDER);
@@ -125,6 +108,29 @@ public class GeneratedOrderEventHandler {
             digitalRepresentatives,
             ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES
         );
+    }
+
+    private Set<String> getOthersToBeNotified(List<Element<Other>> othersSelected, List<Element<Representative>> representatives, RepresentativeServingPreferences preferences) {
+        Set<String> othersToBeNotified = new HashSet<>();
+
+        othersSelected.stream().forEach(other -> {
+            if (!other.getValue().getRepresentedBy().isEmpty()) {
+                UUID representativeID = other.getValue().getRepresentedBy().get(0).getValue();
+
+                String representativeEmail = representatives.stream()
+                    .filter(element -> element.getId().equals(representativeID) && element.getValue().getServingPreferences() == preferences)
+                    .map(Element::getValue)
+                    .map(Representative::getEmail)
+                    .findFirst()
+                    .orElse("");
+
+                if(!representativeEmail.isEmpty()) {
+                    othersToBeNotified.add(representativeEmail);
+                }
+            }
+        });
+
+        return othersToBeNotified;
     }
 
     private void sendToLocalAuthority(final CaseData caseData,
