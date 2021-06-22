@@ -16,6 +16,8 @@ import static uk.gov.hmcts.reform.fpl.model.order.selector.Selector.newSelector;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPrePopulator {
 
+    private final AppointedGuardianService appointedGuardianService;
+
     @Override
     public OrderQuestionBlock accept() {
         return OrderQuestionBlock.APPOINTED_GUARDIAN;
@@ -28,7 +30,7 @@ public class AppointedGuardianBlockPrePopulator implements QuestionBlockOrderPre
         return Map.of(
             "appointedGuardianSelector", appointedGuardianSelector,
             "appointedGuardians_label",
-            AppointedGuardianService.getAppointedGuardiansLabel(caseData.getAllRespondents(), caseData.getAllOthers())
+            appointedGuardianService.getAppointedGuardiansLabel(caseData.getAllRespondents(), caseData.getAllOthers())
         );
     }
 }

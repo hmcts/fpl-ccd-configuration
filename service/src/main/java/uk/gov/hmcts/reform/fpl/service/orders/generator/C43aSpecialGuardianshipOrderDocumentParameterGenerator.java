@@ -24,7 +24,7 @@ import static java.lang.String.format;
 public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements DocmosisParameterGenerator {
 
     private final ChildrenService childrenService;
-//    private final ApplicantService applicantService;
+    private final AppointedGuardianService appointedGuardianService;
 
     private static String paragraphBreak = "\n \n";
     private static String WARNING_HEADER = "\n Warning \n";
@@ -66,7 +66,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
             .furtherDirections(manageOrdersEventData.getManageOrdersFurtherDirections())
             .warningMessage(WARNING_MESSAGE)
-            .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size(), 1))
+            .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size()))
             .orderByConsent(getOrderByConsentMessage(manageOrdersEventData))
             .orderHeader(WARNING_HEADER)
             .orderMessage(WARNING_MESSAGE)
@@ -75,14 +75,11 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .build();
     }
 
-    private String getSpecialGuardianAppointeeMessage(CaseData caseData, int numOfChildren, int numOfApplicants) {
+    private String getSpecialGuardianAppointeeMessage(CaseData caseData, int numOfChildren) {
         String childOrChildren = (numOfChildren == 1 ? "child" : "children");
-        String applicant = AppointedGuardianService.getAppointedGuardiansNames(caseData.getAllRespondents(),
-            caseData.getAllOthers(), caseData.getAppointedGuardianSelector());
-        String guardianMessage =
-            format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
+        String applicant = appointedGuardianService.getAppointedGuardiansNames(caseData);
 
-        return guardianMessage;
+        return format("The Court orders %s appointed as Special Guardian for the %s.", applicant, childOrChildren);
     }
 
     private String getOrderByConsentMessage(ManageOrdersEventData manageOrdersEventData) {
