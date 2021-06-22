@@ -62,6 +62,7 @@ public enum Order {
             CLOSE_CASE)
     ),
     C32B_DISCHARGE_OF_CARE_ORDER(
+        DIGITAL,
         "Discharge of care order",
         "Section 39(1) Children Act 1989",
         "Discharge of care order (C32B)",
@@ -120,7 +121,7 @@ public enum Order {
         "Variation of Emergency protection order (C24)",
         "",
         "Variation of Emergency protection order (C24)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C25_WARRANT_TO_ASSIST_EPO(
@@ -128,7 +129,7 @@ public enum Order {
         "Warrant to assist EPO (C25)",
         "",
         "Warrant to assist EPO (C25)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C28_WARRANT_TO_ASSIST(
@@ -136,7 +137,7 @@ public enum Order {
         "Warrant to assist (C28)",
         "",
         "Warrant to assist (C28)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C27_AUTHORITY_TO_SEARCH_FOR_ANOTHER_CHILD(
@@ -144,7 +145,7 @@ public enum Order {
         "Authority to search for another child (C27)",
         "",
         "Authority to search for another child (C27)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C29_RECOVERY_OF_A_CHILD(
@@ -152,7 +153,7 @@ public enum Order {
         "Recovery of a child (C29)",
         "",
         "Recovery of a child (C29)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C30_TO_DISCLOSE_INFORMATION_ABOUT_THE_WHEREABOUTS_OF_A_MISSING_CHILD(
@@ -160,7 +161,7 @@ public enum Order {
         "To disclose information about the whereabouts of a missing child (C30)",
         "",
         "To disclose information about the whereabouts of a missing child (C30)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C31_AUTHORITY_TO_SEARCH_FOR_A_CHILD(
@@ -168,7 +169,7 @@ public enum Order {
         "Authority to search for a child (C31)",
         "",
         "Authority to search for a child (C31)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C34B_REFUSAL_OF_CONTACT_WITH_A_CHILD_IN_CARE(
@@ -176,7 +177,7 @@ public enum Order {
         "Refusal of contact with a child in care (C34B)",
         "",
         "Refusal of contact with a child in care (C34B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C34A_CONTACT_WITH_A_CHILD_IN_CARE(
@@ -184,7 +185,7 @@ public enum Order {
         "Contact with a child in care (C34A)",
         "",
         "Contact with a child in care (C34A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
@@ -192,7 +193,7 @@ public enum Order {
         "Variation/extension of Education supervision order (C36)",
         "",
         "Variation/extension of Education supervision order (C36)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C37_EDUCATION_SUPERVISION_ORDER(
@@ -200,7 +201,7 @@ public enum Order {
         "Education supervision order (C37)",
         "",
         "Education supervision order (C37)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C38A_DISCHARGE_EDUCATION_SUPERVISION_ORDER(
@@ -208,7 +209,7 @@ public enum Order {
         "Discharge education supervision order (C38A)",
         "",
         "Discharge education supervision order (C38A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C38B_EXTENSION_OF_AN_EDUCATION_SUPERVISION_ORDER(
@@ -216,7 +217,7 @@ public enum Order {
         "Extension of an education supervision order (C38B)",
         "",
         "Extension of an education supervision order (C38B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C39_CHILD_ASSESSMENT_ORDER(
@@ -224,7 +225,7 @@ public enum Order {
         "Child assessment order (C39)",
         "",
         "Child assessment order (C39)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C42_FAMILY_ASSISTANCE_ORDER(
@@ -232,7 +233,7 @@ public enum Order {
         "Family assistance order (C42)",
         "",
         "Family assistance order (C42)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
@@ -240,7 +241,7 @@ public enum Order {
         "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
         "",
         "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C43A_SPECIAL_GUARDIANSHIP_ORDER(
@@ -248,7 +249,7 @@ public enum Order {
         "Special guardianship order (C43A)",
         "",
         "Special guardianship order (C43A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C44A_LEAVE_TO_CHANGE_SURNAME(
@@ -256,7 +257,7 @@ public enum Order {
         "Leave to change surname (C44A)",
         "",
         "Leave to change surname (C44A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C44B_LEAVE_TO_REMOVE_A_CHILD_FROM_THE_UK(
@@ -264,7 +265,7 @@ public enum Order {
         "Leave to remove a child from the UK (C44B)",
         "",
         "Leave to remove a child from the UK (C44B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C45A_PARENTAL_RESPONSIBILITY_ORDER(
@@ -272,7 +273,7 @@ public enum Order {
         "Parental responsibility order (C45A)",
         "",
         "Parental responsibility order (C45A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY(
@@ -280,7 +281,7 @@ public enum Order {
         "Discharge of parental responsibility (C45B)",
         "",
         "Discharge of parental responsibility (C45B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C46A_APPOINTMENT_OF_A_GUARDIAN(
@@ -288,7 +289,7 @@ public enum Order {
         "Appointment of a guardian (C46A)",
         "",
         "Appointment of a guardian (C46A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C46B_TERMINATION_OF_GUARDIANS_APPOINTMENT(
@@ -296,7 +297,7 @@ public enum Order {
         "Termination of guardian's appointment (C46B)",
         "",
         "Termination of guardian's appointment (C46B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C47B_REFUSAL_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
@@ -304,7 +305,7 @@ public enum Order {
         "Refusal of appointment of a children's guardian (C47B)",
         "",
         "Refusal of appointment of a children's guardian (C47B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C47C_TERMINATION_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
@@ -312,7 +313,7 @@ public enum Order {
         "Termination of appointment of a children's guardian (C47C)",
         "",
         "Termination of appointment of a children's guardian (C47C)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C48A_APPOINTMENT_OF_A_SOLICITOR(
@@ -320,7 +321,7 @@ public enum Order {
         "Appointment of a solicitor (C48A)",
         "",
         "Appointment of a solicitor (C48A)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C48B_REFUSAL_OF_APPOINTMENT_OF_A_SOLICITOR(
@@ -328,7 +329,7 @@ public enum Order {
         "Refusal of appointment of a solicitor (C48B)",
         "",
         "Refusal of appointment of a solicitor (C48B)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C48C_TERMINATION_OF_APPOINTMENT_OF_A_SOLICITOR(
@@ -336,7 +337,7 @@ public enum Order {
         "Termination of appointment of a solicitor (C48C)",
         "",
         "Termination of appointment of a solicitor (C48C)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C49_TRANSFER_OUT_CHILDREN_ACT(
@@ -344,7 +345,7 @@ public enum Order {
         "Transfer out Children Act (C49)",
         "",
         "Transfer out Children Act (C49)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     C50_REFUSAL_TO_TRANSFER_PROCEEDINGS(
@@ -352,7 +353,7 @@ public enum Order {
         "Refusal to transfer proceedings (C50)",
         "",
         "Refusal to transfer proceedings (C50)",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     FL406_POWER_OF_ARREST(
@@ -360,7 +361,7 @@ public enum Order {
         "",
         "",
         "",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     OTHER_ORDER(
@@ -368,7 +369,7 @@ public enum Order {
         "",
         "",
         "Other",
-        false,
+        IsFinalOrder.NO,
         Constants.MANUAL_UPLOAD_QUESTIONS
     ),
     ;
