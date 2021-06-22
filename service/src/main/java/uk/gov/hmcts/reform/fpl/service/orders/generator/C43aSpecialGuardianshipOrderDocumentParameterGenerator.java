@@ -27,8 +27,8 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
     private final AppointedGuardianService appointedGuardianService;
 
     private static String paragraphBreak = "\n \n";
-    private static String WARNING_HEADER = "\n Warning \n";
-    private static String WARNING_MESSAGE = "Where a Special Guardianship Order is in force no person may "
+    private static String ORDER_HEADER = "\n Warning \n";
+    private static String ORDER_MESSAGE = "Where a Special Guardianship Order is in force no person may "
         + "cause the child to be known by a new surname or remove the "
         + "child from the United Kingdom without either the written consent"
         + " of every person who has parental responsibility for the child or "
@@ -39,7 +39,7 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
         + paragraphBreak
         + "It may be a criminal offence under the Child Abduction Act 1984 "
         + "to remove the child from the United Kingdom without leave of the court.\n"
-        + "".repeat(40);
+        + "";
     private static String NOTICE_HEADER = "\n Notice \n";
     private static String NOTICE_MESSAGE = "Any person with parental responsibility for a child may "
         + "obtain advice on what can be done to prevent the issue of a passport to the child. They should write "
@@ -65,11 +65,10 @@ public class C43aSpecialGuardianshipOrderDocumentParameterGenerator implements D
             .orderTitle(Order.C43A_SPECIAL_GUARDIANSHIP_ORDER.getTitle())
             .orderType(GeneratedOrderType.SPECIAL_GUARDIANSHIP_ORDER)
             .furtherDirections(manageOrdersEventData.getManageOrdersFurtherDirections())
-            .warningMessage(WARNING_MESSAGE)
             .orderDetails(getSpecialGuardianAppointeeMessage(caseData, selectedChildren.size()))
             .orderByConsent(getOrderByConsentMessage(manageOrdersEventData))
-            .orderHeader(WARNING_HEADER)
-            .orderMessage(WARNING_MESSAGE)
+            .orderHeader(ORDER_HEADER)
+            .orderMessage(ORDER_MESSAGE)
             .noticeHeader(NOTICE_HEADER)
             .noticeMessage(NOTICE_MESSAGE)
             .build();

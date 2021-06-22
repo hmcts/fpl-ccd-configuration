@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +64,7 @@ public class AppointedGuardianService {
 
         for (int i = 0; i < selected.size(); i++) {
             String name = selected.get(i);
-            System.out.println(name);
+
             if (i >= 1) {
                 hasMultipleGuardiansGrammar = true;
                 builder.append(String.format(", %s", name));

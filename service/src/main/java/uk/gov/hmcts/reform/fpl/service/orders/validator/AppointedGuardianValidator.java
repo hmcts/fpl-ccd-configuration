@@ -7,8 +7,6 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
-
 @Component
 public class AppointedGuardianValidator implements QuestionBlockOrderValidator {
 
