@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +49,7 @@ public class AppointedGuardianService {
         StringBuilder builder = new StringBuilder();
         boolean hasMultipleGuardiansGrammar = false;
 
-        Stream<String> respondentsNames = caseData.getRespondents1().stream()
+        Stream<String> respondentsNames = caseData.getAllRespondents().stream()
             .map(respondent -> respondent.getValue().getParty().getFullName());
 
         Stream<String> othersNames = caseData.getAllOthers().stream()
@@ -65,7 +64,6 @@ public class AppointedGuardianService {
 
         for (int i = 0; i < selected.size(); i++) {
             String name = selected.get(i);
-            System.out.println(name);
             if (i >= 1) {
                 hasMultipleGuardiansGrammar = true;
                 builder.append(String.format(", %s", name));
@@ -79,8 +77,11 @@ public class AppointedGuardianService {
         return builder.toString();
     }
 
-    private static void appendChildGrammarVerb(StringBuilder builder, Boolean hasMultipleGuardiansGrammer) {
-        if (hasMultipleGuardiansGrammer) {
+    private static void appendChildGrammarVerb(StringBuilder builder, boolean hasMultipleGuardiansGrammar) {
+        if (builder.toString().isEmpty()) {
+            return;
+        }
+        if (hasMultipleGuardiansGrammar) {
             builder.append(" are");
         } else {
             builder.append(" is");
