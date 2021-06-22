@@ -287,7 +287,7 @@ const selectEnglandOffice = office => {
   I.selectOption(section4.englandOffices, office);
 };
 
-const linkApplication = async (applicationToChoose) => {
+const linkApplication = (applicationToChoose) => {
   I.see('Is there an application for the order on the system?');
   I.dontSee('Applications');
   I.checkOption('Yes', '#manageOrdersShouldLinkApplication');
