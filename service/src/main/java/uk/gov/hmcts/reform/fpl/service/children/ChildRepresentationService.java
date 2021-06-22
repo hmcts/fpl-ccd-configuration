@@ -63,7 +63,7 @@ public class ChildRepresentationService {
     }
 
     private RespondentSolicitor selectSpecifiedRepresentative(ChildrenEventData eventData, int idx) {
-        if (NO.getValue().equals(eventData.getChildrenHaveRepresentation())) {
+        if (!YES.getValue().equals(eventData.getChildrenHaveRepresentation())) {
             return null;
         }
 
