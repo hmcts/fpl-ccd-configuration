@@ -266,7 +266,7 @@
       {
         "id": "f2be08a2-4daf-4aa3-b7ba-95843b4bcb89",
         "value": {
-          "endDate": "2050-01-02T16:30:00",
+          "endDate": "2050-01-10T16:30:00",
           "hearingNeedsBooked": [
             "INTERPRETER",
             "SPOKEN_OR_WRITTEN_WELSH",
@@ -278,7 +278,7 @@
             "judgeTitle": "HER_HONOUR_JUDGE",
             "legalAdvisorName": "Rupert Robert"
           },
-          "startDate": "2050-01-01T15:15:00",
+          "startDate": "2050-01-10T15:15:00",
           "type": "CASE_MANAGEMENT",
           "venue": "96",
           "venueCustomAddress": {

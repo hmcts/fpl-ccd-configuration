@@ -1,58 +1,58 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "direction-config-SEND_MISSING_ANNEX",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "customDirections",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "ListElementCode": "title",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "READONLY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "direction-config-SEND_MISSING_ANNEX",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "customDirections",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "ListElementCode": "description",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "direction-config-SEND_MISSING_ANNEX",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "customDirections",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "ListElementCode": "assignee",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "READONLY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "direction-config-SEND_MISSING_ANNEX",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "customDirections",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "ListElementCode": "dueDateType",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "direction-config-SEND_MISSING_ANNEX",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "customDirections",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "customDirections.dueDateType=\"DATE\""
+    "FieldShowCondition": "direction-SEND_MISSING_ANNEX.dueDateType=\"DATE\""
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirectionOrder",
+    "ID": "direction-config-SEND_MISSING_ANNEX",
     "CaseEventID": "addGatekeepingOrder",
-    "CaseFieldID": "customDirections",
+    "CaseFieldID": "direction-SEND_MISSING_ANNEX",
     "ListElementCode": "daysBeforeHearing",
     "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY",
-    "FieldShowCondition": "customDirections.dueDateType=\"DAYS\""
+    "FieldShowCondition": "direction-SEND_MISSING_ANNEX.dueDateType=\"DAYS\""
   }
 ]
