@@ -1,7 +1,7 @@
 const config = require('../config.js');
-//const dateFormat = require('dateformat');
 const mandatoryWithMaxChildren = require('../fixtures/caseData/mandatoryWithMaxChildren.json');
 const apiHelper = require('../helpers/api_helper.js');
+const moment = require('moment');
 
 const solicitor1 = config.privateSolicitorOne;
 
@@ -35,6 +35,26 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   await enterChildrenEventPage.selectChildrenHaveSameRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveSameRepresentation.options.yes);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  mandatoryWithMaxChildren.caseData.children1.forEach((element, index) => assertChild(I, index+1, element.value, solicitor1.details));
 });
+
+function assertChild(I, idx, child, solicitor) {
+  const childElement = `Child ${idx}`;
+
+  I.seeInTab([childElement, 'Party', 'First name'], child.party.firstName);
+  I.seeInTab([childElement, 'Party', 'Last name'], child.party.lastName);
+  I.seeInTab([childElement, 'Party', 'Date of birth'], moment(child.party.dateOfBirth, 'YYYY-MM-DD').format('D MMM YYYY'));
+  I.seeInTab([childElement, 'Party', 'Gender'], child.party.gender);
+
+  if(solicitor) {
+    I.seeInTab([childElement, 'Representative', 'Representative\'s first name'], solicitor.forename);
+    I.seeInTab([childElement, 'Representative', 'Representative\'s last name'], solicitor.surname);
+    I.seeInTab([childElement, 'Representative', 'Email address'], solicitor.email);
+    I.waitForText(solicitor.organisation, 40);
+    I.seeOrganisationInTab([childElement, 'Representative', 'Name'], solicitor.organisation);
+  }
+}
+
 
 

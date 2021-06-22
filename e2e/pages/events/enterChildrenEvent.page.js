@@ -184,7 +184,8 @@ module.exports = {
 
   async enterRegisteredOrganisation(solicitor) {
     I.fillField('//input[@id="search-org-text"]', solicitor.organisation);
-    I.click(`//*[@id="organisation-table"]/caption/h3[text()="${solicitor.organisation}"]/../../tbody//a`);
+    let selectedItem = `//*[@id="organisation-table"]/caption/h3[text()="${solicitor.organisation}"]/../../tbody//a`;
+    I.click(selectedItem);
     //postcodeLookup.enterAddressManually(solicitor.regionalOfficeAddress);
   },
 
