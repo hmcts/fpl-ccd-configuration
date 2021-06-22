@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderSourceType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,9 +18,20 @@ import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C37_EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43A_SPECIAL_GUARDIANSHIP_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.OTHER_ORDER;
 
 class OrderShowHideQuestionsCalculatorTest {
+
+    private static final Set<Order> ORDERS_WITH_IS_FINAL_ORDER_QUESTION = Set.of(
+        C37_EDUCATION_SUPERVISION_ORDER,
+        C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER,
+        C43A_SPECIAL_GUARDIANSHIP_ORDER,
+        OTHER_ORDER
+    );
 
     private final OrderShowHideQuestionsCalculator underTest = new OrderShowHideQuestionsCalculator();
 
@@ -164,15 +176,51 @@ class OrderShowHideQuestionsCalculatorTest {
     }
 
     @ParameterizedTest(name = "Show hide map for upload order {0}")
-    @MethodSource("manualUploadOrders")
+    @MethodSource("finalManualUploadOrders")
+    void calculateManualUploadWithFinalOrderQuestion(Order order, Map<String, String> expectedShowHideMap) {
+        assertThat(underTest.calculate(order))
+            .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
+    }
+
+    private static Stream<Arguments> finalManualUploadOrders() {
+        return ORDERS_WITH_IS_FINAL_ORDER_QUESTION.stream()
+            .map(order -> Arguments.of(order, Map.ofEntries(
+                Map.entry("approver", "NO"),
+                Map.entry("previewOrder", "YES"),
+                Map.entry("furtherDirections", "NO"),
+                Map.entry("orderDetails", "NO"),
+                Map.entry("whichChildren", "YES"),
+                Map.entry("hearingDetails", "NO"),
+                Map.entry("approvalDate", "YES"),
+                Map.entry("approvalDateTime", "NO"),
+                Map.entry("dischargeOfCareDetails", "NO"),
+                Map.entry("epoIncludePhrase", "NO"),
+                Map.entry("epoExpiryDate", "NO"),
+                Map.entry("isFinalOrder", "YES"),
+                Map.entry("epoTypeAndPreventRemoval", "NO"),
+                Map.entry("epoChildrenDescription", "NO"),
+                Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
+                Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+                Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
+                Map.entry("cafcassJurisdictions", "NO"),
+                Map.entry("needSealing", "YES"),
+                Map.entry("uploadOrderFile", "YES"),
+                Map.entry("closeCase", "YES")
+                )
+            ));
+    }
+
+    @ParameterizedTest(name = "Show hide map for upload order {0}")
+    @MethodSource("nonFinalManualUploadOrders")
     void calculateManualUpload(Order order, Map<String, String> expectedShowHideMap) {
         assertThat(underTest.calculate(order))
             .containsExactlyInAnyOrderEntriesOf(expectedShowHideMap);
     }
 
-    private static Stream<Arguments> manualUploadOrders() {
+    private static Stream<Arguments> nonFinalManualUploadOrders() {
         return Arrays.stream(Order.values())
             .filter(order -> OrderSourceType.MANUAL_UPLOAD == order.getSourceType())
+            .filter(order -> !ORDERS_WITH_IS_FINAL_ORDER_QUESTION.contains(order))
             .map(order -> Arguments.of(order, Map.ofEntries(
                 Map.entry("approver", "NO"),
                 Map.entry("previewOrder", "YES"),
