@@ -1,11 +1,13 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
 const caseData = require('../fixtures/caseData/gatekeepinhWithPastHearingDetails.json');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
 
 const approvalDate = new Date(2021, 3, 9);
 const allocatedJudge = {title: 'Her Honour Judge', name: 'Moley'};
 const orderTitle = 'some title';
+const aYearAgo = new Date(Date.now() - (3600 * 1000 * 24));
 const today = new Date(Date.now());
 const futureDate = new Date(Date.now() + (3600 * 1000 * 24));
 const removalAddress = {buildingAndStreet: {lineOne: 'Flat 2 Caversham', town: 'Reading'}, postcode: 'RG4 7AA'};
@@ -42,6 +44,37 @@ Scenario('Create C32 care order (with pre filled hearing details)', async ({I, c
     orderType: 'C32 - Care order',
     approvalDate: new Date(2012, 10, 3),
     allocatedJudge: {title: 'Her Honour Judge', name: 'Reed', legalAdviserFullName: 'Jack Nickolson' },
+    children: 'Timothy Jones',
+  });
+});
+
+Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectOrder(manageOrdersEventPage.orders.options.c32b);
+  await I.goToNextPage();
+  manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
+  await I.goToNextPage();
+  manageOrdersEventPage.enterJudge();
+  await manageOrdersEventPage.enterApprovalDateTime(today);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select, [0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterCareOrderIssuedDate(aYearAgo);
+  manageOrdersEventPage.enterCareOrderIssuedVenue(hearingDetails[0]);
+  await manageOrdersEventPage.enterFurtherDirections('some text');
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 1,
+    orderType: 'Discharge of care order (C32B)',
+    approvalDate: today,
+    allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
   });
 });
@@ -133,7 +166,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 3,
+    orderIndex: 4,
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
@@ -277,7 +310,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 6,
+    orderIndex: 7,
     orderType: 'C47A - Appointment of a Children\'s Guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
