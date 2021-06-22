@@ -13,7 +13,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "sdoDirectionCustom",
+    "ID": "customDirections",
     "Label": "Further directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "CustomDirection",
@@ -44,6 +44,400 @@
     "ID": "nextStepsLabel",
     "Label": "${gatekeepingOrderSealDecision.nextSteps}",
     "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "standardDirections",
+    "Label": "Standard directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForAllParties",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForAllParties",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForLocalAuthority",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForLocalAuthority",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForRespondents",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForRespondents",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCafcass",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForCafcass",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForOthers",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForOthers",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCourt",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "DirectionTypesForCourt",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
+    "Label": "Request permission for expert evidence",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS",
+    "Label": "Request help to take part in proceedings",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-ASK_FOR_DISCLOSURE",
+    "Label": "Ask for disclosure",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-ATTEND_HEARING",
+    "Label": "Attend the pre-hearing and hearing",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-CONTACT_ALTERNATIVE_CARERS",
+    "Label": "Contact alternative carers",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-SEND_DOCUMENTS_TO_ALL_PARTIES",
+    "Label": "Send documents to all parties",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-SEND_MISSING_ANNEX",
+    "Label": "Send missing annex documents to the court and all parties",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-IDENTIFY_ALTERNATIVE_CARERS",
+    "Label": "Identify alternative carers",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "Label": "Send translated case documents to respondents",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-LODGE_BUNDLE",
+    "Label": "Lodge a bundle",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-SEND_CASE_SUMMARY",
+    "Label": "Send case summary to all parties",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-CONSIDER_JURISDICTION",
+    "Label": "Urgently consider jurisdiction and invite any representations",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
+    "Label": "Send response to threshold statement to all parties",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-ARRANGE_ADVOCATES_MEETING",
+    "Label": "Arrange an advocates' meeting",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-SEND_GUARDIANS_ANALYSIS",
+    "Label": "Send the guardian's analysis to all parties",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-APPOINT_CHILDREN_GUARDIAN",
+    "Label": "Appoint a children's guardian",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-OBJECT_TO_REQUEST_FOR_DISCLOSURE",
+    "Label": "Object to a request for disclosure",
+    "FieldType": "StandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "direction-ARRANGE_INTERPRETERS",
+    "Label": "Arrange interpreters",
+    "FieldType": "EditableStandardDirection",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForAllPartiesLabelSmall",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">All parties</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForAllPartiesLabel",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">All parties</h1>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForLocalAuthorityLabelSmall",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">Local authority</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForLocalAuthorityLabel",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">Local authority</h1>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForRespondentsLabelSmall",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">Parents and respondents</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForRespondentsLabel",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">Parents and respondents</h1>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCafcassLabelSmall",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">Cafcass</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCafcassLabel",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">Cafcass</h1>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForOthersLabelSmall",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">Other parties</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForOthersLabel",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">Other parties</h1>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCourtLabelSmall",
+    "Label": "<h2 class=\"govuk-!-margin-top-9\">Court</h2>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directionsForCourtLabel",
+    "Label": "<h1 class=\"govuk-!-margin-top-9\">Court</h1>",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "selectDirectionsLabel",
+    "Label": "## Choose standard directions",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "editDirectionsLabel",
+    "Label": "## Confirm details",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHearingDate1",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHearingDate2",
+    "Label": "Hearing date",
+    "FieldType": "Text",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHasHearing1",
+    "Label": "Has hearing date",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gatekeepingOrderHasHearing2",
+    "Label": "Has hearing date",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public",
     "Searchable": "N"
   }

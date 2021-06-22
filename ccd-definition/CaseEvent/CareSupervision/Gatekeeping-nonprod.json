@@ -13,6 +13,7 @@
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/about-to-submit",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-gatekeeping-order/submitted",
     "EndButtonLabel": "Save and continue",
-    "ShowEventNotes": "Y"
+    "ShowEventNotes": "Y",
+    "ShowSummary": "Y"
   }
 ]
