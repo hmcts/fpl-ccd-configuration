@@ -39,6 +39,23 @@ Scenario('HMCTS assign a main solicitor for all the children', async ({I, caseVi
   mandatoryWithMaxChildren.caseData.children1.forEach((element, index) => assertChild(I, index+1, element.value, solicitor1.details));
 });
 
+Scenario('HMCTS assign a different solicitor for some of the children', async ({I, caseViewPage, enterChildrenEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.amendChildren);
+  await I.goToNextPage();
+  await enterChildrenEventPage.selectAnyChildHasLegalRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveLegalRepresentation.options.yes);
+  await enterChildrenEventPage.enterChildrenMainRepresentation(solicitor1.details);
+  await enterChildrenEventPage.enterRegisteredOrganisation(solicitor1.details);
+  await I.goToNextPage();
+  await enterChildrenEventPage.selectChildrenHaveSameRepresentation(enterChildrenEventPage.fields().mainSolicitor.childrenHaveSameRepresentation.options.no);
+  for (const [index,child] of mandatoryWithMaxChildren.caseData.children1.entries()) {
+    await enterChildrenEventPage.selectChildUseMainRepresentation(enterChildrenEventPage.fields(index).childSolicitor.useMainSolicitor.options.yes, index, child.value.party);
+  }
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendChildren);
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  mandatoryWithMaxChildren.caseData.children1.forEach((element, index) => assertChild(I, index+1, element.value, solicitor1.details));
+});
+
 function assertChild(I, idx, child, solicitor) {
   const childElement = `Child ${idx}`;
 

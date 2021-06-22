@@ -22,8 +22,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ChildRepresentationDetailsFlattener {
 
-    // TODO: 18/06/2021 replace with 15 when all fields are added in ccd
-    private static final int MAX_CHILDREN = 4;
+    private static final int MAX_CHILDREN = 15;
 
     public Map<String, Object> serialise(List<Element<Child>> children, RespondentSolicitor mainRepresentative) {
         List<Element<Child>> safeCollection = defaultIfNull(children, new ArrayList<>());

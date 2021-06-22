@@ -151,7 +151,6 @@ class ChildRepresentationDetailsFlattenerTest {
         expected.put("childRepresentationDetails1", null);
         expected.put("childRepresentationDetails2", null);
         expected.put("childRepresentationDetails3", null);
-        /*
         expected.put("childRepresentationDetails4", null);
         expected.put("childRepresentationDetails5", null);
         expected.put("childRepresentationDetails6", null);
@@ -163,7 +162,6 @@ class ChildRepresentationDetailsFlattenerTest {
         expected.put("childRepresentationDetails12", null);
         expected.put("childRepresentationDetails13", null);
         expected.put("childRepresentationDetails14", null);
-        */
         return expected;
     }
 }

@@ -23,6 +23,15 @@ module.exports = {
         lastName: '#childrenMainRepresentative_lastName',
         email: '#childrenMainRepresentative_email',
       },
+      childSolicitor: {
+        useMainSolicitor: {
+          group: `#childRepresentationDetails${index}_useMainSolicitor`,
+          options: {
+            yes: 'Yes',
+            no: 'No',
+          },
+        },
+      },
       child: {
         firstName: `#children1_${index}_party_firstName`,
         lastName: `#children1_${index}_party_lastName`,
@@ -174,6 +183,11 @@ module.exports = {
 
   async selectChildrenHaveSameRepresentation(answer) {
     I.click(`${this.fields().mainSolicitor.childrenHaveSameRepresentation.group}-${answer}`);
+  },
+
+  async selectChildUseMainRepresentation(answer, index, child) {
+    await within(`#childRepresentationDetails${index}_childRepresentationDetails${index}`, () => I.see(`Child ${index+1} - ${child.firstName} ${child.lastName}`));
+    I.click(`${this.fields(index).childSolicitor.useMainSolicitor.group}-${answer}`);
   },
 
   async enterChildrenMainRepresentation(solicitor) {
