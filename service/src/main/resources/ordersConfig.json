@@ -1,11 +1,18 @@
 {
-  "type": "standardDirectionOrder",
+  "id": "standardDirectionOrder",
   "language": "ENGLISH",
-  "service": "FPL",
-  "directions": [
+  "customDirection": {
+    "type": "CUSTOM",
+    "display": {
+      "due": "BY",
+      "templateDateFormat": "h:mma, d MMMM yyyy"
+    }
+  },
+  "standardDirections": [
     {
+      "type": "REQUEST_PERMISSION_FOR_EXPERT_EVIDENCE",
       "title": "Request permission for expert evidence",
-      "text": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
+      "text": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.",
       "assignee": "ALL_PARTIES",
       "display": {
         "due": "BY",
@@ -17,6 +24,7 @@
       }
     },
     {
+      "type": "REQUEST_HELP_TO_TAKE_PART_IN_PROCEEDINGS",
       "title": "Request help to take part in proceedings",
       "text": "Make an application to the court if you believe any party or witness needs help with:\n\n- understanding proceedings and their role in them in court\n- putting their views to the court\n- instructing their representatives before, during and after the hearing\n- attending the hearing without significant distress\n\nIf possible, include in your application:\n\n- why the party or witness would benefit from help\n- the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n- written confirmation from any relevant witnesses of their view\n",
       "assignee": "ALL_PARTIES",
@@ -30,6 +38,7 @@
       }
     },
     {
+      "type": "ASK_FOR_DISCLOSURE",
       "title": "Ask for disclosure",
       "text": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.  \n",
       "assignee": "ALL_PARTIES",
@@ -43,6 +52,7 @@
       }
     },
     {
+      "type": "ATTEND_HEARING",
       "title": "Attend the pre-hearing and hearing",
       "text": "Parties and their legal representatives must attend the pre-hearing and hearing",
       "assignee": "ALL_PARTIES",
@@ -55,6 +65,7 @@
       }
     },
     {
+      "type": "CONTACT_ALTERNATIVE_CARERS",
       "title": "Contact alternative carers",
       "text": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
       "assignee": "ALL_PARTIES",
@@ -68,6 +79,7 @@
       }
     },
     {
+      "type": "SEND_DOCUMENTS_TO_ALL_PARTIES",
       "title": "Send documents to all parties",
       "text": "Give all parties access to all documents sent to the court, including:\n\n- the application form\n- annex documents\n- evidential checklist documents\n- any documents sent later on\n",
       "assignee": "LOCAL_AUTHORITY",
@@ -81,6 +93,7 @@
       }
     },
     {
+      "type": "SEND_MISSING_ANNEX",
       "title": "Send missing annex documents to the court and all parties",
       "text": "- Social work chronology\n- Social work statement\n- Family tree (genogram)\n- Social work assessment\n- Care plan\n- Threshold document\n- Index of checklist documents\n",
       "assignee": "LOCAL_AUTHORITY",
@@ -94,6 +107,7 @@
       }
     },
     {
+      "type": "IDENTIFY_ALTERNATIVE_CARERS",
       "title": "Identify alternative carers",
       "text": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
       "assignee": "LOCAL_AUTHORITY",
@@ -106,6 +120,7 @@
       }
     },
     {
+      "type": "SEND_TRANSLATED_DOCUMENTS",
       "title": "Send translated case documents to respondents",
       "text": "Send documents to [Respondent's Name] in [Language], including the application and genogram.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
       "assignee": "LOCAL_AUTHORITY",
@@ -119,6 +134,7 @@
       }
     },
     {
+      "type": "LODGE_BUNDLE",
       "title": "Lodge a bundle",
       "text": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
       "assignee": "LOCAL_AUTHORITY",
@@ -132,6 +148,7 @@
       }
     },
     {
+      "type": "SEND_CASE_SUMMARY",
       "title": "Send case summary to all parties",
       "text": "Send to the court and all parties.",
       "assignee": "LOCAL_AUTHORITY",
@@ -145,6 +162,7 @@
       }
     },
     {
+      "type": "CONSIDER_JURISDICTION",
       "title": "Urgently consider jurisdiction and invite any representations",
       "text": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
       "assignee": "LOCAL_AUTHORITY",
@@ -158,6 +176,7 @@
       }
     },
     {
+      "type": "SEND_RESPONSE_TO_THRESHOLD_STATEMENT",
       "title": "Send response to threshold statement to all parties",
       "text": "Send a written statement to the court and all parties, showing:\n\n- the parents' response to the local authority's threshold statement\n- the parents' proposals for placing the children, immediately and long-term\n- whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
       "assignee": "PARENTS_AND_RESPONDENTS",
@@ -171,6 +190,7 @@
       }
     },
     {
+      "type": "ARRANGE_ADVOCATES_MEETING",
       "title": "Arrange an advocates' meeting",
       "text": "All of the advocates who will appear at the related hearing must attend. ",
       "assignee": "CAFCASS",
@@ -183,19 +203,7 @@
       }
     },
     {
-      "title": "Appoint a children's guardian",
-      "text": "",
-      "assignee": "CAFCASS",
-      "display": {
-        "due": "BY",
-        "templateDateFormat": "h:mma, d MMMM yyyy",
-        "directionRemovable": true,
-        "showDateOnly": false,
-        "delta": "-2",
-        "time": "16:00:00"
-      }
-    },
-    {
+      "type": "SEND_GUARDIANS_ANALYSIS",
       "title": "Send the guardian's analysis to all parties",
       "text": "Send to the court and all parties.",
       "assignee": "CAFCASS",
@@ -209,6 +217,21 @@
       }
     },
     {
+      "type": "APPOINT_CHILDREN_GUARDIAN",
+      "title": "Appoint a children's guardian",
+      "text": "",
+      "assignee": "CAFCASS",
+      "display": {
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": true,
+        "showDateOnly": false,
+        "delta": "-2",
+        "time": "16:00:00"
+      }
+    },
+    {
+      "type": "OBJECT_TO_REQUEST_FOR_DISCLOSURE",
       "title": "Object to a request for disclosure",
       "text": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court's permission.\n",
       "assignee": "OTHERS",
@@ -222,6 +245,7 @@
       }
     },
     {
+      "type": "ARRANGE_INTERPRETERS",
       "title": "Arrange interpreters",
       "text": "At all hearings, the court must arrange an interpreter for [Respondent’s Name] in [Language].",
       "assignee": "COURT",

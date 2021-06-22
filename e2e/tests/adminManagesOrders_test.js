@@ -72,7 +72,7 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C32B - Discharge of care order',
+    orderType: 'Discharge of care order (C32B)',
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',
@@ -166,7 +166,7 @@ Scenario('Create C21 blank order', async ({I, caseViewPage, manageOrdersEventPag
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 3,
+    orderIndex: 4,
     orderType: 'C21 - Blank order',
     orderTitle: orderTitle,
     approvalDate: approvalDate,
@@ -310,7 +310,7 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({I, caseVie
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
-    orderIndex: 6,
+    orderIndex: 7,
     orderType: 'C47A - Appointment of a Children\'s Guardian',
     orderTitle: orderTitle,
     approvalDate: approvalDate,

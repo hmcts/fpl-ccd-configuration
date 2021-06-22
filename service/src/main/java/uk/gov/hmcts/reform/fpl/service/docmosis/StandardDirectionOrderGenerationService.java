@@ -69,7 +69,7 @@ public class StandardDirectionOrderGenerationService extends
 
     private List<DocmosisDirection> buildDirections(List<Element<Direction>> elements) {
         List<Direction> directions = unwrapElements(elements);
-        List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getDirections();
+        List<DirectionConfiguration> config = ordersLookupService.getStandardDirectionOrder().getStandardDirections();
         List<DocmosisDirection> formattedDirections = new ArrayList<>();
         int index = SDO_DIRECTION_INDEX_START;
 

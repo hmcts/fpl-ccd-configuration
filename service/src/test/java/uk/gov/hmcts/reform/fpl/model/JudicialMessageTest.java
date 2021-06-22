@@ -55,6 +55,27 @@ class JudicialMessageTest {
     }
 
     @Test
+    void shouldBuildJudicialMessageLabelWithMaximumLengthAllowedWhenUrgencyIsTooLong() {
+        String longUrgency = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin eu felis "
+            + "tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula nisl, tempor at eleifend ac, "
+            + "consequat condimentum sem. In sed porttitor turpis, at laoreet quam. Fusce bibendum vehicula ipsum, et "
+            + "tempus ante fermentum non.";
+
+        JudicialMessage judicialMessage = JudicialMessage.builder()
+            .urgency(longUrgency.substring(0, 249))
+            .dateSent(DATE_SENT)
+            .build();
+
+        String truncatedUrgencyText = "Lorem ipsum dolor sit amet, consectetur adipiscing "
+            + "elit. Sed sollicitudin eu felis tincidunt volutpat. Donec tempus quis metus congue placerat. Sed ligula "
+            + "nisl, tempor at eleifend ac, consequat condimentum sem. In sed portt...";
+
+        String expectedMessageLabel = String.format("%s, %s", DATE_SENT, truncatedUrgencyText);
+
+        assertThat(judicialMessage.toLabel()).isEqualTo(expectedMessageLabel);
+    }
+
+    @Test
     void shouldBuildJudicialMessageLabelWithOnlyDateSent() {
         JudicialMessage judicialMessage = JudicialMessage.builder()
             .dateSent(DATE_SENT)

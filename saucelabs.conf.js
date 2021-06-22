@@ -12,6 +12,7 @@ const defaultSauceOptions = {
   tunnelIdentifier: process.env.TUNNEL_IDENTIFIER || 'reformtunnel',
   acceptSslCerts: true,
   tags: ['FPL'],
+  maxDuration: 3000,
 };
 
 function merge(intoObject, fromObject) {
@@ -77,7 +78,7 @@ const setupConfig = {
     },
     autoDelay: {
       enabled: true,
-      delayAfter: 2000,
+      delayAfter: 1000,
     },
     screenshotOnFail: {
       enabled: true,
@@ -120,6 +121,7 @@ const setupConfig = {
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
+    addGatekeepingOrderEventPage: './e2e/pages/events/addGatekeepingOrderEvent.page.js',
     createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
