@@ -56,6 +56,7 @@ class ManageOrdersControllerInitialSectionMidEventTest extends AbstractCallbackT
             Map.entry("hearingDetails", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
+            Map.entry("dischargeOfCareDetails", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),

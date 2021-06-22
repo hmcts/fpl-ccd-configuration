@@ -39,7 +39,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
     @Test
     void shouldCloseCase() {
-        CaseData caseData = buildCaseData("Yes", C32_CARE_ORDER);
+        CaseData caseData = buildCaseData("Yes", "No", C32_CARE_ORDER);
 
         when(childrenService.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
@@ -58,7 +58,7 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
     @Test
     void shouldUpdateChildrenAndNotCloseCase() {
 
-        CaseData caseData = buildCaseData("No", C32_CARE_ORDER);
+        CaseData caseData = buildCaseData("No", "No", C32_CARE_ORDER);
         when(childrenService.updateFinalOrderIssued(caseData))
             .thenReturn(Collections.emptyList());
 
@@ -71,16 +71,29 @@ public class ManageOrdersClosedCaseFieldGeneratorTest {
 
     @Test
     void shouldNotUpdateChildrenWhenNotFinalOrder() {
-        CaseData caseData = buildCaseData("No", C21_BLANK_ORDER);
+        CaseData caseData = buildCaseData("No", "No", C21_BLANK_ORDER);
 
         Map<String, Object> generatedData = underTest.generate(caseData);
 
         assertThat(generatedData).isEqualTo(Collections.emptyMap());
     }
 
-    private CaseData buildCaseData(String closeCase, Order order) {
+    @Test
+    void shouldUpdateChildrenWhenUserHasSelectedFinalOrder() {
+        CaseData caseData = buildCaseData("No", "Yes", C21_BLANK_ORDER);
+
+        when(childrenService.updateFinalOrderIssued(caseData))
+            .thenReturn(Collections.emptyList());
+
+        Map<String, Object> generatedData = underTest.generate(caseData);
+
+        assertThat(generatedData).containsKey("children1");
+    }
+
+    private CaseData buildCaseData(String closeCase, String isFinalOrder, Order order) {
         ManageOrdersEventData manageOrdersEventData = ManageOrdersEventData.builder()
             .manageOrdersCloseCase(closeCase)
+            .manageOrdersIsFinalOrder(isFinalOrder)
             .manageOrdersType(order)
             .build();
 

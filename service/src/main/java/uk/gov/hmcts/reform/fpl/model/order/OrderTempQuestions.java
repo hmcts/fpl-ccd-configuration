@@ -12,14 +12,14 @@ public class OrderTempQuestions {
     String approvalDate;
     String approvalDateTime;
     String whichChildren;
+    String dischargeOfCareDetails;
     String epoTypeAndPreventRemoval;
     String epoIncludePhrase;
     String epoChildrenDescription;
     String epoExpiryDate;
     String furtherDirections;
     String orderDetails;
+    String isFinalOrder;
     String closeCase;
     String previewOrder;
-    String supervisionOrderExpiryDate;
-
 }

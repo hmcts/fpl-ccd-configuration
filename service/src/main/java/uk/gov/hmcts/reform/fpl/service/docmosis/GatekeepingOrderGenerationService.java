@@ -3,27 +3,40 @@ package uk.gov.hmcts.reform.fpl.service.docmosis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CustomDirection;
 import uk.gov.hmcts.reform.fpl.model.GatekeepingOrderSealDecision;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.StandardDirection;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
+import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisDirection;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisStandardDirectionOrder;
 import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
+import static java.lang.String.format;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionDueDateType.DAYS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.formatCCDCaseNumber;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.nullSafeList;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelectedJudge;
 
 @Service
@@ -31,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getSelect
 public class GatekeepingOrderGenerationService extends
     DocmosisTemplateDataGeneration<DocmosisStandardDirectionOrder> {
     private final CaseDataExtractionService dataService;
+    private final OrdersLookupService ordersConfig;
 
     public DocmosisStandardDirectionOrder getTemplateData(CaseData caseData) {
         GatekeepingOrderEventData eventData = caseData.getGatekeepingOrderEventData();
@@ -54,7 +68,7 @@ public class GatekeepingOrderGenerationService extends
                 .respondents(dataService.getRespondentsNameAndRelationship(caseData.getAllRespondents()))
                 .respondentsProvided(isNotEmpty(caseData.getAllRespondents()))
                 .applicantName(dataService.getApplicantName(caseData.getAllApplicants()))
-                .directions(buildDirections(caseData.getGatekeepingOrderEventData()))
+                .directions(buildDirections(caseData))
                 .hearingBooking(dataService.getHearingBookingData(firstHearing))
                 .crest(getCrestData());
 
@@ -68,21 +82,56 @@ public class GatekeepingOrderGenerationService extends
         return orderBuilder.build();
     }
 
-    private List<DocmosisDirection> buildDirections(GatekeepingOrderEventData eventData) {
-        //add future directions here
-        return buildCustomDirections(eventData.getSdoDirectionCustom());
+    private List<DocmosisDirection> buildDirections(CaseData caseData) {
+        final List<Element<StandardDirection>> standardDirections = nullSafeList(caseData.getGatekeepingOrderEventData()
+            .getStandardDirections());
+
+        final List<Element<CustomDirection>> customDirections = nullSafeList(caseData
+            .getGatekeepingOrderEventData().getCustomDirections());
+
+        final AtomicInteger directionIndex = new AtomicInteger(1);
+
+        return Stream.of(standardDirections, customDirections)
+            .flatMap(Collection::stream)
+            .map(Element::getValue)
+            .sorted(comparing(StandardDirection::getAssignee))
+            .map(direction -> toDocmosisDirection(direction, directionIndex.getAndAdd(1)))
+            .collect(toList());
     }
 
-    private List<DocmosisDirection> buildCustomDirections(List<Element<CustomDirection>> elements) {
-        List<CustomDirection> customDirections = unwrapElements(elements);
-        List<DocmosisDirection> formattedDirections = new ArrayList<>();
-        for (CustomDirection direction : customDirections) {
-            formattedDirections.add(DocmosisDirection.builder()
-                .assignee(direction.getAssignee())
-                .title(direction.getTitle())
-                .body(direction.getDescription())
-                .build());
+    private DocmosisDirection toDocmosisDirection(StandardDirection direction, int index) {
+        return DocmosisDirection.builder()
+            .assignee(direction.getAssignee())
+            .title(formatTitle(direction, index))
+            .body(direction.getDescription())
+            .build();
+    }
+
+    private String formatTitle(StandardDirection direction, int index) {
+        final DirectionConfiguration directionConf = ordersConfig.getDirectionConfiguration(direction.getType());
+        final DirectionDueDateType dueDateType = direction.getDueDateType();
+        final Display display = directionConf.getDisplay();
+
+        if (DAYS == dueDateType) {
+
+            if (direction.getDaysBeforeHearing() == 0) {
+                return format("%d. %s by the day of the hearing", index, direction.getTitle());
+            }
+
+            if (direction.getDaysBeforeHearing() == 1) {
+                return format("%d. %s 1 working day before the hearing", index, direction.getTitle());
+            }
+
+            return format("%d. %s %d working days before the hearing", index, direction.getTitle(),
+                direction.getDaysBeforeHearing());
+
+        } else {
+            LocalDateTime dueDate = direction.getDateToBeCompletedBy();
+
+            String formattedDate = formatLocalDateTimeBaseUsingFormat(dueDate, display.getTemplateDateFormat());
+
+            return format("%d. %s %s %s", index, direction.getTitle(), display.getDue().toString().toLowerCase(),
+                formattedDate);
         }
-        return formattedDirections;
     }
 }
