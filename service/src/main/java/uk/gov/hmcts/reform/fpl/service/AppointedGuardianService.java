@@ -49,7 +49,7 @@ public class AppointedGuardianService {
         StringBuilder builder = new StringBuilder();
         boolean hasMultipleGuardiansGrammar = false;
 
-        Stream<String> respondentsNames = caseData.getRespondents1().stream()
+        Stream<String> respondentsNames = caseData.getAllRespondents().stream()
             .map(respondent -> respondent.getValue().getParty().getFullName());
 
         Stream<String> othersNames = caseData.getAllOthers().stream()
@@ -78,8 +78,11 @@ public class AppointedGuardianService {
         return builder.toString();
     }
 
-    private static void appendChildGrammarVerb(StringBuilder builder, Boolean hasMultipleGuardiansGrammer) {
-        if (hasMultipleGuardiansGrammer) {
+    private static void appendChildGrammarVerb(StringBuilder builder, boolean hasMultipleGuardiansGrammar) {
+        if (builder.toString().isEmpty()) {
+            return;
+        }
+        if (hasMultipleGuardiansGrammar) {
             builder.append(" are");
         } else {
             builder.append(" is");
