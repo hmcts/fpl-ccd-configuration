@@ -30,12 +30,15 @@ public class ManageOrdersEventData {
     LocalDateTime manageOrdersApprovalDateTime;
     LocalDateTime manageOrdersEndDateTime;
     String manageOrdersFurtherDirections;
+    String manageOrdersIsFinalOrder;
     String manageOrdersTitle;
     String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
     String manageOrdersIsByConsent;
     String manageOrdersChildrenDescription;
+    String manageOrdersCareOrderIssuedCourt;
+    LocalDate manageOrdersCareOrderIssuedDate;
     String manageOrdersExclusionRequirement;
     String manageOrdersExclusionDetails;
     String manageOrdersWhoIsExcluded;
@@ -47,7 +50,6 @@ public class ManageOrdersEventData {
     LocalDate manageOrdersSetDateEndDate;
     LocalDateTime manageOrdersSetDateAndTimeEndDate;
     Integer manageOrdersSetMonthsEndDate;
-    String manageOrdersShowCloseCase;
     String manageOrdersCloseCase;
     String manageOrdersCafcassRegion;
     EnglandOffices manageOrdersCafcassOfficesEngland;

@@ -1,26 +1,20 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NoticeOfChangeEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.service.CaseUrlService;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.NoticeOfChangeContentProvider;
 import uk.gov.hmcts.reform.fpl.testingsupport.email.EmailTemplateTest;
 
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.EmailContent.emailContent;
 import static uk.gov.hmcts.reform.fpl.testingsupport.email.SendEmailResponseAssert.assertThat;
 
-@SpringBootTest(classes = {
-    NoticeOfChangeEventHandler.class,
-    NotificationService.class,
-    NoticeOfChangeContentProvider.class,
-    ObjectMapper.class,
-    CaseUrlService.class,
+@ContextConfiguration(classes = {
+    NoticeOfChangeEventHandler.class, NoticeOfChangeContentProvider.class, CaseUrlService.class
 })
 class NoticeOfChangeEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final Long CASE_ID = 12345L;

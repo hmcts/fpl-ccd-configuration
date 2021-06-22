@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.JudicialMessageStatus;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -24,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 @Jacksonized
 @ToString(callSuper = true)
 public class JudicialMessage extends JudicialMessageMetaData {
+    private static final int MAX_DYNAMIC_LIST_LABEL_LENGTH = 250;
+
     private final String dateSent;
     private final LocalDateTime updatedTime;
     private final JudicialMessageStatus status;
@@ -53,7 +56,8 @@ public class JudicialMessage extends JudicialMessageMetaData {
             labels.add(getUrgency());
         }
 
-        return String.join(", ", labels);
+        String label = String.join(", ", labels);
+        return StringUtils.abbreviate(label, MAX_DYNAMIC_LIST_LABEL_LENGTH);
     }
 
     @JsonIgnore

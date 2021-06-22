@@ -16,6 +16,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "BED",
+    "ListElement": "Bedford Borough Council",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "BIR",
     "ListElement": "Birmingham Children's Trust",
     "DisplayOrder": 5
@@ -121,6 +128,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CON",
+    "ListElement": "Conwy County Borough Council",
+    "DisplayOrder": 64
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "COR",
     "ListElement": "Cornwall Council",
     "DisplayOrder": 65
@@ -138,6 +152,13 @@
     "ListElementCode": "CMB",
     "ListElement": "Cumbria County Council",
     "DisplayOrder": 75
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "GWY",
+    "ListElement": "Cyngor Gwynedd / Gwynedd Council",
+    "DisplayOrder": 78
   },
   {
     "LiveFrom": "01/01/2017",
@@ -208,6 +229,13 @@
     "ListElementCode": "ERY",
     "ListElement": "East Riding of Yorkshire Council",
     "DisplayOrder": 110
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "FCC",
+    "ListElement": "Flintshire County Council",
+    "DisplayOrder": 113
   },
   {
     "LiveFrom": "01/01/2017",
@@ -292,6 +320,13 @@
     "ListElementCode": "LAN",
     "ListElement": "Lancashire County Council",
     "DisplayOrder": 155
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "LEE",
+    "ListElement": "Leeds City Council",
+    "DisplayOrder": 157
   },
   {
     "LiveFrom": "01/01/2017",
@@ -566,7 +601,13 @@
     "ListElement": "Sandwell Metropolitan Council",
     "DisplayOrder": 325
   },
-
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SBC",
+    "ListElement": "Sefton Borough Council",
+    "DisplayOrder": 326
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",

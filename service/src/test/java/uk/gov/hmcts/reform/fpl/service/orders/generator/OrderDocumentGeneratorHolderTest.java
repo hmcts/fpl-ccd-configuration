@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C21_BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C23_EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.Order.C32B_DISCHARGE_OF_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C32_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C33_INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.order.Order.C35A_SUPERVISION_ORDER;
@@ -42,6 +43,8 @@ class OrderDocumentGeneratorHolderTest {
     @Mock
     private C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
     @Mock
+    private C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
+    @Mock
     private C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
     @Mock
     private C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
@@ -63,9 +66,9 @@ class OrderDocumentGeneratorHolderTest {
     void setUp() {
         generators = List.of(
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
-            c32CareOrderDocumentParameterGenerator, c33InterimCareOrderDocumentParameterGenerator,
-            c35aSupervisionOrderDocumentParameterGenerator, c35bISODocumentParameterGenerator,
-            c47AAppointmentOfAChildrensGuardianParameterGenerator
+            c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
+            c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
+            c35bISODocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 
@@ -73,6 +76,7 @@ class OrderDocumentGeneratorHolderTest {
             C21_BLANK_ORDER, c21BlankOrderDocumentParameterGenerator,
             C23_EMERGENCY_PROTECTION_ORDER, c23EPODocumentParameterGenerator,
             C32_CARE_ORDER, c32CareOrderDocumentParameterGenerator,
+            C32B_DISCHARGE_OF_CARE_ORDER, c32bDischargeOfCareOrderDocumentParameterGenerator,
             C33_INTERIM_CARE_ORDER, c33InterimCareOrderDocumentParameterGenerator,
             C35A_SUPERVISION_ORDER, c35aSupervisionOrderDocumentParameterGenerator,
             C35B_INTERIM_SUPERVISION_ORDER, c35bISODocumentParameterGenerator,

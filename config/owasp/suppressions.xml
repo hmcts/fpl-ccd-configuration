@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
   <suppress>
-    <notes>
-      <![CDATA[
-        insecure randomness vulnerability when using SecureRandomFactoryBean#setSeed to configure a SecureRandom
-        instance. In order to be impacted, an honest application must provide a seed and make the resulting random
-        material available to an attacker for inspection. Waiting for an update of org.springframework.boot to address
-        this issue.
-        This one seems to be false positive targeting old spring security 5.0.5
-      ]]>
+    <notes><![CDATA[file name: hibernate-validator-6.2.0.Final.jar]]>
     </notes>
-    <gav regex="true">^org\.springframework\.security:.*$</gav>
-    <cve>CVE-2018-1258</cve>
+    <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate\-validator@.*$</packageUrl>
+    <vulnerabilityName>CVE-2020-10693</vulnerabilityName>
   </suppress>
 </suppressions>

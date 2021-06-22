@@ -5,44 +5,49 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
 import uk.gov.hmcts.reform.fnp.exception.RetryablePaymentException;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.State;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.events.FailedPBAPaymentEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 
-import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
-import static org.mockito.ArgumentMatchers.any;
+import java.util.stream.Stream;
+
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.State.SUBMITTED;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.LOCAL_AUTHORITY_CODE;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
 import static uk.gov.hmcts.reform.fpl.utils.assertions.AnnotationAssertion.assertClass;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class SubmittedCaseEventHandlerTest {
+
+    private static final long CASE_ID = 12345L;
 
     @Mock
     private NotificationService notificationService;
@@ -60,77 +65,93 @@ class SubmittedCaseEventHandlerTest {
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @Mock
-    private ApplicationEventPublisher applicationEventPublisher;
+    private EventService eventService;
 
     @Mock
     private PaymentService paymentService;
 
+    @Mock
+    private FeatureToggleService toggleService;
+
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
-    @Test
-    void shouldSendEmailToHmctsAdmin() {
-        final String expectedEmail = "test@test.com";
-        final CaseData caseData = caseData().toBuilder()
-            .submittedForm(DocumentReference.builder().binaryUrl("testUrl").build())
-            .build();
-        final CaseData caseDataBefore = caseData();
-        final SubmitCaseHmctsTemplate expectedTemplate = SubmitCaseHmctsTemplate.builder().build();
-        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
+    @ParameterizedTest
+    @MethodSource("hmctsTemplates")
+    void shouldSendEmailToHmctsAdmin(String template, boolean toggle) {
+        final CaseData caseData = mock(CaseData.class);
+        final CaseData caseDataBefore = mock(CaseData.class);
 
-        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(expectedEmail);
-        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData))
-            .thenReturn(expectedTemplate);
+        final String email = "test@test.com";
+        final SubmitCaseHmctsTemplate parameters = mock(SubmitCaseHmctsTemplate.class);
 
-        submittedCaseEventHandler.notifyAdmin(submittedCaseEvent);
+        when(caseData.getId()).thenReturn(CASE_ID);
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+        when(adminNotificationHandler.getHmctsAdminEmail(caseData)).thenReturn(email);
+        when(hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData)).thenReturn(parameters);
 
-        verify(notificationService).sendEmail(
-            HMCTS_COURT_SUBMISSION_TEMPLATE,
-            expectedEmail,
-            expectedTemplate,
-            caseData.getId());
+        submittedCaseEventHandler.notifyAdmin(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        verify(notificationService).sendEmail(template, email, parameters, CASE_ID);
+    }
+
+    @ParameterizedTest
+    @MethodSource("cafcassTemplates")
+    void shouldSendEmailToCafcass(String template, boolean toggle) {
+        final CaseData caseData = mock(CaseData.class);
+        final CaseData caseDataBefore = mock(CaseData.class);
+
+        final SubmitCaseCafcassTemplate parameters = mock(SubmitCaseCafcassTemplate.class);
+        final String email = "test@test.com";
+
+        when(caseData.getCaseLocalAuthority()).thenReturn(LOCAL_AUTHORITY_CODE);
+        when(caseData.getId()).thenReturn(CASE_ID);
+        when(toggleService.isEldestChildLastNameEnabled()).thenReturn(toggle);
+        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .thenReturn(new Cafcass(LOCAL_AUTHORITY_CODE, email));
+        when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData)).thenReturn(parameters);
+
+        submittedCaseEventHandler.notifyCafcass(new SubmittedCaseEvent(caseData, caseDataBefore));
+
+        verify(notificationService).sendEmail(template, email, parameters, CASE_ID);
     }
 
     @Test
-    void shouldSendEmailToCafcass() {
-        final String expectedEmail = "test@test.com";
-        final CaseData caseData = caseData();
-        final CaseData caseDataBefore = caseData();
-        final CafcassLookupConfiguration.Cafcass cafcass =
-            new CafcassLookupConfiguration.Cafcass(LOCAL_AUTHORITY_CODE, expectedEmail);
-        final SubmitCaseCafcassTemplate expectedTemplate = SubmitCaseCafcassTemplate.builder().build();
-        final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
-        when(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE)).thenReturn(cafcass);
-        when(cafcassEmailContentProvider.buildCafcassSubmissionNotification(any(CaseData.class)))
-            .thenReturn(expectedTemplate);
+    void shouldExecuteAsynchronously() {
+        assertClass(SubmittedCaseEventHandler.class).hasAsyncMethods("notifyAdmin", "notifyCafcass", "makePayment");
+    }
 
-        submittedCaseEventHandler.notifyCafcass(submittedCaseEvent);
+    private static Stream<Arguments> hmctsTemplates() {
+        return Stream.of(
+            Arguments.of(HMCTS_COURT_SUBMISSION_TEMPLATE, false),
+            Arguments.of(HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME, true)
+        );
+    }
 
-        verify(notificationService).sendEmail(
-            CAFCASS_SUBMISSION_TEMPLATE,
-            expectedEmail,
-            expectedTemplate,
-            caseData.getId());
+    private static Stream<Arguments> cafcassTemplates() {
+        return Stream.of(
+            Arguments.of(CAFCASS_SUBMISSION_TEMPLATE, false),
+            Arguments.of(CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME, true)
+        );
     }
 
     @Nested
     class Payment {
 
-        @ParameterizedTest
-        @EnumSource(value = State.class, mode = EXCLUDE, names = {"OPEN"})
-        void shouldNotPayIfCaseStateIsDifferentThanOpen(State state) {
+        @Test
+        void shouldNotPayIfCaseIsReturned() {
             final CaseData caseData = CaseData.builder()
-                .state(RETURNED)
+                .state(SUBMITTED)
                 .build();
             final CaseData caseDataBefore = CaseData.builder()
-                .state(SUBMITTED)
+                .state(RETURNED)
                 .build();
 
             final SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(caseData, caseDataBefore);
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verifyNoMoreInteractions(paymentService, applicationEventPublisher);
+            verifyNoMoreInteractions(paymentService, eventService);
         }
 
         @Test
@@ -144,8 +165,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(applicationEventPublisher).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
-            verifyNoMoreInteractions(paymentService, applicationEventPublisher);
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verifyNoMoreInteractions(paymentService, eventService);
         }
 
         @Test
@@ -159,9 +180,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(applicationEventPublisher)
-                .publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
-            verifyNoMoreInteractions(paymentService, applicationEventPublisher);
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verifyNoMoreInteractions(paymentService, eventService);
         }
 
         @Test
@@ -180,8 +200,7 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(applicationEventPublisher)
-                .publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
         }
 
         @Test
@@ -200,12 +219,11 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verify(applicationEventPublisher)
-                .publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+            verify(eventService).publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
         }
 
         @Test
-        void shouldPayWhenCaseIsOpenedAndPaymentDesicionIsYes() {
+        void shouldPayWhenCaseIsOpenedAndPaymentDecisionIsYes() {
             CaseData caseData = CaseData.builder()
                 .state(OPEN)
                 .caseLocalAuthority(LOCAL_AUTHORITY_CODE)
@@ -216,16 +234,8 @@ class SubmittedCaseEventHandlerTest {
 
             submittedCaseEventHandler.makePayment(submittedCaseEvent);
 
-            verifyNoMoreInteractions(applicationEventPublisher);
+            verifyNoMoreInteractions(eventService);
         }
-    }
-
-    @Test
-    void shouldExecuteAsynchronously() {
-        assertClass(SubmittedCaseEventHandler.class).hasAsyncMethods(
-            "notifyAdmin",
-            "notifyCafcass",
-            "makePayment");
     }
 
 }

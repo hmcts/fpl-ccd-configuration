@@ -1,0 +1,58 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_TRANSLATED_DOCUMENTS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "ListElementCode": "title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_TRANSLATED_DOCUMENTS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "ListElementCode": "description",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_TRANSLATED_DOCUMENTS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "ListElementCode": "assignee",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_TRANSLATED_DOCUMENTS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "ListElementCode": "dueDateType",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_TRANSLATED_DOCUMENTS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-SEND_TRANSLATED_DOCUMENTS.dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "direction-config-SEND_TRANSLATED_DOCUMENTS",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "direction-SEND_TRANSLATED_DOCUMENTS",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "direction-SEND_TRANSLATED_DOCUMENTS.dueDateType=\"DAYS\""
+  }
+]
