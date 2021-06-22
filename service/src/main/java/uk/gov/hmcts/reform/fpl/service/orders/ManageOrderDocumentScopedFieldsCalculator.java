@@ -21,6 +21,7 @@ public class ManageOrderDocumentScopedFieldsCalculator {
             "manageOrdersOperation",
             "manageOrdersType",
             "manageOrdersState",
+            "manageOrdersIsFinalOrder",
             "orderTempQuestions",
             "hearingDetailsSectionSubHeader",
             "issuingDetailsSectionSubHeader",

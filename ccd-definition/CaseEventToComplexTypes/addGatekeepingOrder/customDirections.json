@@ -1,0 +1,58 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "ListElementCode": "title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "ListElementCode": "description",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "ListElementCode": "assignee",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "ListElementCode": "dueDateType",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "customDirections.dueDateType=\"DATE\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "CaseEventID": "addGatekeepingOrder",
+    "CaseFieldID": "customDirections",
+    "ListElementCode": "daysBeforeHearing",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "MANDATORY",
+    "FieldShowCondition": "customDirections.dueDateType=\"DAYS\""
+  }
+]

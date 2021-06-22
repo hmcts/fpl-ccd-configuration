@@ -17,4 +17,5 @@ public final class NoticeOfHearingTemplate extends BaseCaseNotifyData {
     private String hearingTime;
     private Object documentLink;
     private String digitalPreference;
+    private String childLastName;
 }

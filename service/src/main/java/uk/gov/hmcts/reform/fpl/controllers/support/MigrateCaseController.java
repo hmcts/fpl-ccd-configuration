@@ -12,14 +12,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.SupportingEvidenceBundle;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
+import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
 
 @Api
 @RestController
@@ -27,7 +24,6 @@ import java.util.UUID;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-    private final DocumentListService documentListService;
 
     private static final String MIGRATION_ID_KEY = "migrationId";
 
@@ -36,36 +32,24 @@ public class MigrateCaseController extends CallbackController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-3092".equals(migrationId)) {
-            run3092(caseDetails);
+        if ("FPLA-3170".equals(migrationId)) {
+            run3170(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run3092(CaseDetails caseDetails) {
-        final String familyManId = "CF20C50063";
-        final UUID documentToRemoveUUID = UUID.fromString("a1e1f56d-18b8-4123-acaf-7c276627628e");
+    private void run3170(CaseDetails caseDetails) {
+        final String familyManCaseNumber = "WR21C50006";
 
-        CaseData caseData = getCaseData(caseDetails);
-
-        if (!Objects.equals(familyManId, caseData.getFamilyManCaseNumber())) {
+        if (!Objects.equals(familyManCaseNumber, caseDetails.getData().get("familyManCaseNumber"))) {
             throw new AssertionError(String.format(
-                "Migration FPLA-3092: Expected family man case number to be %s but was %s",
-                familyManId, caseData.getFamilyManCaseNumber()));
+                "Migration FPLA-3170: Expected family man case number to be %s but was %s",
+                familyManCaseNumber, caseDetails.getData().get("familyManCaseNumber")));
         }
 
-        List<Element<SupportingEvidenceBundle>> correspondenceDocuments = caseData.getCorrespondenceDocuments();
-
-        if (correspondenceDocuments.stream().noneMatch(doc -> documentToRemoveUUID.equals(doc.getId()))) {
-            throw new IllegalStateException(String
-                .format("Migration failed on case %s: Expected correspondence document id %s but not found",
-                    caseData.getFamilyManCaseNumber(), documentToRemoveUUID));
-        } else {
-            correspondenceDocuments.removeIf(document -> documentToRemoveUUID.equals(document.getId()));
-            caseDetails.getData().put("correspondenceDocuments", correspondenceDocuments);
-        }
+        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
     }
 
 }

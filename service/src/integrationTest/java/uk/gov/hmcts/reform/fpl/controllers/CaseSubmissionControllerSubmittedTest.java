@@ -127,16 +127,16 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
         final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(true), new TypeReference<>() {
-            });
+            getExpectedHmctsParameters(true), new TypeReference<>() {}
+        );
 
         final Map<String, Object> completeCafcassParameters = mapper.convertValue(
-            getExpectedCafcassParameters(true), new TypeReference<>() {
-            });
+            getExpectedCafcassParameters(true), new TypeReference<>() {}
+        );
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("testUrl").build());
+        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("/testUrl").build());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -155,7 +155,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
-        verifyTaskListUpdated(CASE_ID);
+        verifyTaskListUpdated();
 
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
@@ -178,8 +178,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {
-            });
+            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {}
+        );
 
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
 
@@ -210,8 +210,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            });
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
+        );
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -239,8 +239,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            });
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
+        );
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -527,7 +527,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         return CaseDetails.builder()
             .id(CASE_ID)
             .data(new HashMap<>(Map.of(
-                "submittedForm", DocumentReference.builder().binaryUrl("testUrl").build(),
+                "submittedForm", DocumentReference.builder().binaryUrl("/testUrl").build(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))
@@ -593,6 +593,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         template.setUrgentHearing(YES.getValue());
         template.setNonUrgentHearing(NO.getValue());
         template.setFirstRespondentName("Smith");
+        template.setChildLastName("Reeves");
 
         return template;
     }
@@ -616,7 +617,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        template.setDocumentLink("testUrl");
+        template.setDocumentLink("http://fake-url/testUrl");
+        template.setChildLastName("");
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {
@@ -629,11 +631,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .build();
     }
 
-    private void verifyTaskListUpdated(Long caseId) {
+    private void verifyTaskListUpdated() {
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
-            eq(caseId),
+            eq(CASE_ID),
             eq("internal-update-task-list"),
             anyMap());
     }

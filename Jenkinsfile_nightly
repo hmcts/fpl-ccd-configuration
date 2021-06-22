@@ -108,6 +108,10 @@ withNightlyPipeline(type, product, component) {
     env.TESTS_FOR_ACCESSIBILITY = false
   }
 
+  before('crossBrowserTest') {
+    env.TEST_RETRIES = 2
+  }
+
   after('crossBrowserTest') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }

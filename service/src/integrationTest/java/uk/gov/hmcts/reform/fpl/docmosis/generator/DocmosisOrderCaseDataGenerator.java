@@ -76,6 +76,13 @@ public class DocmosisOrderCaseDataGenerator {
                         .build())
                     .build())))
                     .childSelector(Selector.builder().selected(List.of(1)).build());
+            case DISCHARGE_DETAILS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersCareOrderIssuedDate(LocalDate.of(2013, 10, 4))
+                        .manageOrdersCareOrderIssuedCourt("1")
+                        .build()
+                );
             case DETAILS:
                 return builder.manageOrdersEventData(
                     getManageOrdersEvent(builder)

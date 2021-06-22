@@ -8,16 +8,11 @@ import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.OutsourcedCaseTemplate
 import uk.gov.hmcts.reform.fpl.service.email.content.base.SharedNotifyContentProvider;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OutsourcedCaseContentProvider extends SharedNotifyContentProvider {
 
     public OutsourcedCaseTemplate buildNotifyLAOnOutsourcedCaseTemplate(CaseData caseData) {
-        OutsourcedCaseTemplate template = super.buildNotifyTemplate(
-            OutsourcedCaseTemplate.builder().build(),
-            caseData.getId(),
-            caseData.getOrders(),
-            caseData.getHearing(),
-            caseData.getRespondents1());
+        OutsourcedCaseTemplate template = buildNotifyTemplate(OutsourcedCaseTemplate.builder().build(), caseData);
 
         template.setThirdParty(caseData.getOutsourcingPolicy().getOrganisation().getOrganisationName());
 

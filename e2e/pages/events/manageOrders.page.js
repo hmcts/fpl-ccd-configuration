@@ -16,6 +16,7 @@ const orders = {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
     c32: 'C32_CARE_ORDER',
+    c32b: 'C32B_DISCHARGE_OF_CARE_ORDER',
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
@@ -25,6 +26,7 @@ const orders = {
     c21: 'Blank order (C21)',
     c23: 'Emergency protection order (C23)',
     c32: 'Care order (C32)',
+    c32b: 'Discharge of care order (C32B)',
     c33: 'Interim care order (C33)',
     c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
@@ -69,6 +71,8 @@ const section4 = {
   title: '#manageOrdersTitle',
   directions: '#manageOrdersDirections',
   furtherDirections: '#manageOrdersFurtherDirections',
+  careOrderIssuedDate:  '#manageOrdersCareOrderIssuedDate',
+  careOrderIssuedVenue: '#manageOrdersCareOrderIssuedCourt',
   epoTypes: {
     group: '#manageOrdersEpoType',
     options: {
@@ -130,6 +134,13 @@ const section4 = {
   },
   englandOffices: '#manageOrdersCafcassOfficesEngland',
   walesOffices: '#manageOrdersCafcassOfficesWales',
+  isFinalOrder: {
+    group: '#manageOrdersIsFinalOrder',
+    options: {
+      yes: '#manageOrdersIsFinalOrder-Yes',
+      no: '#manageOrdersIsFinalOrder-No',
+    },
+  },
 };
 
 const preview = {
@@ -177,6 +188,14 @@ const enterApprovalDate = async (date) => {
 const enterApprovalDateTime = async (dateTime) => {
   await I.fillDateAndTime(dateTime, section2.approvalDateTime);
   await I.runAccessibilityTest();
+};
+
+const enterCareOrderIssuedDate = async (date) => {
+  await I.fillDate(date, section4.careOrderIssuedDate);
+};
+
+const enterCareOrderIssuedVenue = (hearingDetails) => {
+  I.selectOption(section4.careOrderIssuedVenue, hearingDetails.venue);
 };
 
 const enterEPOEndDateTime = async (dateTime) => {
@@ -266,6 +285,10 @@ const enterFurtherDirections = async (text) => {
   await I.runAccessibilityTest();
 };
 
+const selectIsFinalOrder = async () => {
+  I.checkOption(section4.isFinalOrder.options.yes);
+};
+
 const checkPreview = async () => {
   I.see(preview.documentName);
   await I.runAccessibilityTest();
@@ -302,9 +325,9 @@ const confirmNoApplicationCanBeLinked = () => {
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterFurtherDirections, selectIsFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
-  selectCafcassRegion, selectEnglandOffice, linkApplication, confirmNoApplicationCanBeLinked,
+  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, linkApplication, confirmNoApplicationCanBeLinked,
 };
