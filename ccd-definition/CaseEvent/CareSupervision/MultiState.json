@@ -13,6 +13,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "mandatoryHiddenFieldEvent",
+    "Name": "(TEST) Mandatory hidden field",
+    "PreConditionState(s)": "*",
+    "PostConditionState": "*",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internal-update-task-list",
     "Name": "Update task list",
     "PreConditionState(s)": "*",

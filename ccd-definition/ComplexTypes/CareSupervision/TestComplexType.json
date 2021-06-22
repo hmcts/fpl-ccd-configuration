@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TestComplexType",
+    "ListElementCode": "radioButton",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Please select yes or no",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TestComplexType",
+    "ListElementCode": "nestedComplex",
+    "FieldType": "AnotherTestComplexType",
+    "ElementLabel": "This is a nested complex type",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "radioButton=\"Yes\""
+  }
+]
