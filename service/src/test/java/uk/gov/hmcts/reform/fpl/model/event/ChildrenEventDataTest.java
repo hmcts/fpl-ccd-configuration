@@ -18,7 +18,7 @@ class ChildrenEventDataTest {
             "childRepresentationDetails4", "childRepresentationDetails5", "childRepresentationDetails6",
             "childRepresentationDetails7", "childRepresentationDetails8", "childRepresentationDetails9",
             "childRepresentationDetails10", "childRepresentationDetails11", "childRepresentationDetails12",
-            "childRepresentationDetails13", "childRepresentationDetails14"
+            "childRepresentationDetails13", "childRepresentationDetails14", "optionCount"
         );
     }
 
@@ -34,7 +34,8 @@ class ChildrenEventDataTest {
             "childRepresentationDetails3", "childRepresentationDetails4", "childRepresentationDetails5",
             "childRepresentationDetails6", "childRepresentationDetails7", "childRepresentationDetails8",
             "childRepresentationDetails9", "childRepresentationDetails10", "childRepresentationDetails11",
-            "childRepresentationDetails12", "childRepresentationDetails13", "childRepresentationDetails14"
+            "childRepresentationDetails12", "childRepresentationDetails13", "childRepresentationDetails14",
+            "optionCount"
         );
     }
 
@@ -45,6 +46,6 @@ class ChildrenEventDataTest {
             .childrenHaveSameRepresentation("No")
             .build();
 
-        assertThat(eventData.getTransientFields()).isEmpty();
+        assertThat(eventData.getTransientFields()).containsExactly("optionCount");
     }
 }

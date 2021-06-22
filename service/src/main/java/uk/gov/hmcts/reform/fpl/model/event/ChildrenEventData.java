@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.components.OptionCountBuilder;
 import uk.gov.hmcts.reform.fpl.enums.YesNo;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.Temp;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.children.ChildRepresentationDetails;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.getFieldsListWithAnnotation;
 
@@ -83,20 +85,23 @@ public class ChildrenEventData {
     }
 
     public String[] getTransientFields() {
+        List<String> fields = new ArrayList<>();
         if (!YesNo.YES.getValue().equals(childrenHaveRepresentation)) {
-            return getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
+            fields = getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
                 .map(Field::getName)
-                .toArray(String[]::new);
+                .collect(Collectors.toList());
         }
 
         if (YesNo.YES.getValue().equals(childrenHaveSameRepresentation)) {
             List<String> excludedFields = List.of("childrenMainRepresentative", "childrenHaveSameRepresentation");
-            return getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
+            fields = getFieldsListWithAnnotation(ChildrenEventData.class, Temp.class).stream()
                 .map(Field::getName)
                 .filter(field -> !excludedFields.contains(field))
-                .toArray(String[]::new);
+                .collect(Collectors.toList());
         }
 
-        return new String[] {};
+        fields.add(OptionCountBuilder.CASE_FIELD);
+
+        return fields.toArray(String[]::new);
     }
 }
