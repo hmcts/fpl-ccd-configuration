@@ -21,6 +21,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.model.Child.expandCollection;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -37,8 +38,9 @@ public class ChildController extends CallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = getCaseData(caseDetails);
 
-        caseDetails.getData().put("children1", confidentialDetailsService
-            .prepareCollection(caseData.getAllChildren(), caseData.getConfidentialChildren(), expandCollection()));
+        caseDetails.getData().put("children1", confidentialDetailsService.prepareCollection(
+            caseData.getAllChildren(), caseData.getConfidentialChildren(), expandCollection()
+        ));
 
         return respond(caseDetails);
     }
@@ -78,6 +80,8 @@ public class ChildController extends CallbackController {
         confidentialDetailsService.addConfidentialDetailsToCase(
             caseDetails, getCaseData(caseDetails).getAllChildren(), CHILD
         );
+
+        removeTemporaryFields(caseDetails, caseData.getChildrenEventData().getTransientFields());
 
         return respond(caseDetails);
     }

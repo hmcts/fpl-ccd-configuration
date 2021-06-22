@@ -49,7 +49,7 @@ public class ChildRepresentativeSolicitorValidator {
 
         return emailValidator.validate(
             eventData.getChildrenMainRepresentative().getEmail(),
-            "Enter an email address in the correct format for child main legal representative, for example "
+            "Enter an email address in the correct format for the children's main legal representative, for example "
             + "name@example.com"
         ).map(List::of).orElseGet(List::of);
     }
@@ -60,12 +60,7 @@ public class ChildRepresentativeSolicitorValidator {
         List<ChildRepresentationDetails> childrenDetails = eventData.getAllRepresentationDetails();
 
         List<String> errors = new ArrayList<>();
-        for (int i = 0, idx = 1; i < childrenDetails.size(); i++, idx++) {
-            // ignore fields that will be null
-            if (i == numOfChildren) {
-                break;
-            }
-
+        for (int i = 0, idx = 1; i < numOfChildren; i++, idx++) {
             ChildRepresentationDetails details = childrenDetails.get(i);
 
             if (YES.getValue().equals(details.getUseMainSolicitor())) {
