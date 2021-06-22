@@ -61,6 +61,8 @@ class OrderShowHideQuestionsCalculatorTest {
         dischargeOfCareQuestions.put("approvalDate", "YES");
         dischargeOfCareQuestions.put("approvalDateTime", "NO");
         dischargeOfCareQuestions.put("epoIncludePhrase", "NO");
+        dischargeOfCareQuestions.put("uploadOrderFile", "NO");
+        dischargeOfCareQuestions.put("needSealing", "NO");
         dischargeOfCareQuestions.put("epoChildrenDescription", "NO");
         dischargeOfCareQuestions.put("epoExpiryDate", "NO");
         dischargeOfCareQuestions.put("epoTypeAndPreventRemoval", "NO");
@@ -180,6 +182,7 @@ class OrderShowHideQuestionsCalculatorTest {
                 Map.entry("hearingDetails", "NO"),
                 Map.entry("approvalDate", "YES"),
                 Map.entry("approvalDateTime", "NO"),
+                Map.entry("dischargeOfCareDetails", "NO"),
                 Map.entry("epoIncludePhrase", "NO"),
                 Map.entry("epoExpiryDate", "NO"),
                 Map.entry("epoTypeAndPreventRemoval", "NO"),
