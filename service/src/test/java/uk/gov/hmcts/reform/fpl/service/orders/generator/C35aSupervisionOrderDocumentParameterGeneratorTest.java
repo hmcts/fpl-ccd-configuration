@@ -1,15 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.orders.generator;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
-import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ManageOrderDocumentService;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.C35aSupervisionOrderDocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.docmosis.DocmosisParameters;
 import uk.gov.hmcts.reform.fpl.service.orders.generator.common.OrderDetailsWithEndTypeGenerator;
@@ -17,7 +14,8 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
@@ -30,7 +28,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME_WITH_O
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_WITH_ORDINAL_SUFFIX;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.getDayOfMonthSuffix;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 class C35aSupervisionOrderDocumentParameterGeneratorTest {
     private static final Time time = new FixedTimeConfiguration().stoppedTime();
@@ -38,20 +35,26 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
     private static final String CHILDREN_GRAMMAR = "children";
     private static final String LA_CODE = "LA_CODE";
     private static final String LA_NAME = "Local Authority Name";
-    private static final Child CHILD = mock(Child.class);
     private static final GeneratedOrderType TYPE = GeneratedOrderType.SUPERVISION_ORDER;
     private static final String FURTHER_DIRECTIONS = "further directions";
     private static final LocalDateTime NEXT_WEEK_DATE_TIME = time.now().plusDays(7);
+
+    private static final Map<String, String> CHILD_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
+        "childOrChildren", "child",
+        "childIsOrAre", "is",
+        "localAuthorityName", LA_NAME));
+
+    private static final Map<String, String> CHILDREN_CONTEXT_ELEMENTS = new HashMap<>(Map.of(
+        "childOrChildren", "children",
+        "childIsOrAre", "are",
+        "localAuthorityName", LA_NAME));
+
     private String dayOrdinalSuffix;
     private String courtOrderMessage;
 
-    private final ChildrenService childrenService = mock(ChildrenService.class);
-    private final LocalAuthorityNameLookupConfiguration laNameLookup =
-        mock(LocalAuthorityNameLookupConfiguration.class);
+    private final ManageOrderDocumentService manageOrderDocumentService = mock(ManageOrderDocumentService.class);
     private final OrderDetailsWithEndTypeGenerator orderDetailsWithEndTypeGenerator =
-        new OrderDetailsWithEndTypeGenerator(
-            childrenService,
-            laNameLookup);
+        new OrderDetailsWithEndTypeGenerator(manageOrderDocumentService);
 
     private C35aSupervisionOrderDocumentParameterGenerator underTest =
         new C35aSupervisionOrderDocumentParameterGenerator(
@@ -80,12 +83,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getSingularChildMessageDate(formattedDate);
 
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
@@ -106,11 +104,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getMultipleChildMessageDate(formattedDate);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
@@ -122,7 +116,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnContentForSingleChildAndMonthsSpecified() {
-        Integer numOfMonths = 4;
+        int numOfMonths = 4;
         LocalDateTime futureDate = time.now().plusMonths(numOfMonths);
         dayOrdinalSuffix = getDayOfMonthSuffix(futureDate.getDayOfMonth());
         CaseData caseData = buildCaseDataWithMonthsSpecified(numOfMonths);
@@ -134,11 +128,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getSingularChildMessageMonths(formattedDate, numOfMonths);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
@@ -150,7 +140,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
     @Test
     void shouldReturnContentForChildrenAndMonthsSpecified() {
-        Integer numOfMonths = 4;
+        int numOfMonths = 4;
         LocalDateTime futureDate = time.now().plusMonths(numOfMonths);
         dayOrdinalSuffix = getDayOfMonthSuffix(futureDate.getDayOfMonth());
         CaseData caseData = buildCaseDataWithMonthsSpecified(numOfMonths);
@@ -162,11 +152,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getMultipleChildMessageMonths(formattedDate, numOfMonths);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
@@ -186,11 +172,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
         );
         String courtOrderMessage = getSingularChildMessageDate(formattedDate);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILD_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
@@ -211,11 +193,7 @@ class C35aSupervisionOrderDocumentParameterGeneratorTest {
 
         courtOrderMessage = getMultipleChildMessageDate(formattedDate);
 
-        when(laNameLookup.getLocalAuthorityName(LA_CODE)).thenReturn(LA_NAME);
-
-        List<Element<Child>> selectedChildren = wrapElements(CHILD, CHILD);
-
-        when(childrenService.getSelectedChildren(caseData)).thenReturn(selectedChildren);
+        when(manageOrderDocumentService.commonContextElements(caseData)).thenReturn(CHILDREN_CONTEXT_ELEMENTS);
 
         DocmosisParameters generatedParameters = underTest.generate(caseData);
         DocmosisParameters expectedParameters = expectedCommonParameters()
