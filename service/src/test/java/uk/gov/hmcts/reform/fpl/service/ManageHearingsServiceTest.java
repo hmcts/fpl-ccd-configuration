@@ -351,7 +351,7 @@ class ManageHearingsServiceTest {
 
         @Test
         void shouldPullCustomAddressFromHearingWhenHearingVenueIsOther() {
-            given(hearingVenueLookUpService.getHearingVenue(any())).willCallRealMethod();
+            given(hearingVenueLookUpService.getHearingVenue(any(HearingBooking.class))).willCallRealMethod();
             given(hearingVenueLookUpService.buildHearingVenue(any())).willCallRealMethod();
 
             CaseData caseData = CaseData.builder()
