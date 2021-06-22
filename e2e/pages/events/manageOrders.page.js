@@ -327,6 +327,10 @@ const selectIsFinalOrder = async () => {
   I.checkOption(section4.isFinalOrder.options.yes);
 };
 
+const selectIsNotFinalOrder = async () => {
+  I.checkOption(section4.isFinalOrder.options.no);
+};
+
 const checkPreview = async () => {
   I.see(preview.documentName);
   await I.runAccessibilityTest();
@@ -351,7 +355,7 @@ const selectEnglandOffice= office => {
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, selectIsFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,

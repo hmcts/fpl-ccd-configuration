@@ -333,6 +333,7 @@ Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrd
   await I.goToNextPage();
   await manageOrdersEventPage.uploadManualOrder(config.testPdfFile);
   manageOrdersEventPage.selectManualOrderNeedSealing(manageOrdersEventPage.section4.manualOrderNeedSealing.options.yes);
+  await manageOrdersEventPage.selectIsNotFinalOrder();
   await I.goToNextPage();
   await manageOrdersEventPage.checkPreview();
   await manageOrdersEventPage.selectCloseCase();
