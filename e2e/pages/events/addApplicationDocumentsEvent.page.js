@@ -7,6 +7,7 @@ module.exports = {
       document: `#applicationDocuments_${index}_document`,
       includedInSWET: `#applicationDocuments_${index}_includedInSWET`,
       documentName: `#applicationDocuments_${index}_documentName`,
+      documentUploading: `//*[@id="applicationDocuments_${index}_${index}"]//*[contains(text(), "Uploading")]`,
     };
   },
 
@@ -14,9 +15,9 @@ module.exports = {
 
     await I.addAnotherElementToCollection('Documents');
     const index = await I.getActiveElementIndex();
+    await I.runAccessibilityTest();
 
     this.selectDocumentType(option, index);
-    await I.runAccessibilityTest();
     this.uploadFile(file, index);
 
     if (name) {
@@ -34,6 +35,7 @@ module.exports = {
 
   uploadFile(file, index) {
     I.attachFile(this.fields(index).document, file);
+    I.waitForInvisible(this.fields(index).documentUploading, 20);
   },
 
   enterWhatIsIncludedInSWET(description, index) {
