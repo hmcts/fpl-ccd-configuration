@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.docmosis.generator;
 
+import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.order.selector.Selector;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -126,6 +128,14 @@ public class DocmosisOrderCaseDataGenerator {
                     getManageOrdersEvent(builder)
                         .manageOrdersEndDateTime(LocalDateTime.of(2018, 9, 1, 13, 20, 4))
                         .build()
+                );
+            case C43_DETAILS:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                    .manageOrdersC43Orders(Collections.singletonList(C43OrderType.CHILD_ARRANGEMENT_ORDER))
+                    .manageOrdersC43RecitalsAndPreambles("Recitals and Preambles")
+                    .manageOrdersC43Directions("C43 directions")
+                    .build()
                 );
             case FURTHER_DIRECTIONS:
                 return builder.manageOrdersEventData(

@@ -81,6 +81,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("manageOrdersExclusionRequirementDetails", "NO"),
         Map.entry("manageOrdersExpiryDateWithMonth", "NO"),
         Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
+        Map.entry("c43Details", "NO"),
         Map.entry("cafcassJurisdictions", "NO")));
 
     private static final String FAMILY_MAN_CASE_NUMBER = "CASE_NUMBER";
@@ -455,6 +456,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("c43Details", "NO"),
             Map.entry("closeCase", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "YES"),
             Map.entry("manageOrdersExpiryDateWithEndOfProceedings", "NO"),
@@ -487,6 +489,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("epoExpiryDate", "NO"),
             Map.entry("epoTypeAndPreventRemoval", "NO"),
             Map.entry("cafcassJurisdictions", "NO"),
+            Map.entry("c43Details", "NO"),
             Map.entry("closeCase", "NO"),
             Map.entry("manageOrdersExclusionRequirementDetails", "YES"),
             Map.entry("manageOrdersExpiryDateWithMonth", "NO"),

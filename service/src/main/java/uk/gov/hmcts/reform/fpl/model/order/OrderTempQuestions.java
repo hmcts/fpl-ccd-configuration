@@ -13,6 +13,7 @@ public class OrderTempQuestions {
     String approvalDateTime;
     String whichChildren;
     String dischargeOfCareDetails;
+    String c43Details;
     String epoTypeAndPreventRemoval;
     String epoIncludePhrase;
     String epoChildrenDescription;

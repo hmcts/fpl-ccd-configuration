@@ -34,6 +34,8 @@ public enum OrderQuestionBlock {
         List.of("manageOrdersCafcassRegion", "manageOrdersCafcassOfficesEngland", "manageOrdersCafcassOfficesWales")),
     DETAILS("orderDetails", "Order Details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersTitle", "manageOrdersDirections")),
+    C43_DETAILS("c43Details", "Order Details", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersC43Orders", "manageOrdersC43RecitalsAndPreambles", "manageOrdersC43Directions")),
     DISCHARGE_DETAILS("dischargeOfCareDetails", "Order Details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersCareOrderIssuedDate", "manageOrdersCareOrderIssuedCourt")),
     REVIEW_DRAFT_ORDER("previewOrder", "Review draft order", OrderSection.REVIEW,

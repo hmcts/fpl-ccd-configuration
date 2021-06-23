@@ -50,7 +50,16 @@
     "ListElementCode": "dischargeOfCareDetails",
     "FieldType": "YesOrNo",
     "ElementLabel": " ",
-    "FieldShowCondition": "whichChildren=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "dischargeOfCareDetails=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderTempQuestions",
+    "ListElementCode": "c43Details",
+    "FieldType": "YesOrNo",
+    "ElementLabel": " ",
+    "FieldShowCondition": "c43Details=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

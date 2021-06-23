@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.event;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import uk.gov.hmcts.reform.fpl.enums.C43OrderType;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.EnglandOffices;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.order.OrderTempQuestions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Value
 @Builder(toBuilder = true)
@@ -35,6 +37,9 @@ public class ManageOrdersEventData {
     String manageOrdersDirections;
     EPOType manageOrdersEpoType;
     String manageOrdersIncludePhrase;
+    List<C43OrderType> manageOrdersC43Orders;
+    String manageOrdersC43RecitalsAndPreambles;
+    String manageOrdersC43Directions;
     String manageOrdersChildrenDescription;
     String manageOrdersCareOrderIssuedCourt;
     LocalDate manageOrdersCareOrderIssuedDate;

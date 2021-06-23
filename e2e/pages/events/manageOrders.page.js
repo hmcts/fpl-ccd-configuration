@@ -20,6 +20,7 @@ const orders = {
     c33: 'C33_INTERIM_CARE_ORDER',
     c35A: 'C35A_SUPERVISION_ORDER',
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
+    c43: 'C43_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
   },
   title: {
@@ -30,6 +31,7 @@ const orders = {
     c33: 'Interim care order (C33)',
     c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
+    c43: 'Child arrangements, Specific issue, Prohibited steps (C43)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
   },
 };
@@ -134,6 +136,15 @@ const section4 = {
   },
   englandOffices: '#manageOrdersCafcassOfficesEngland',
   walesOffices: '#manageOrdersCafcassOfficesWales',
+  c43Orders: {
+    orders: {
+      childArrangement: '#manageOrdersC43Orders-CHILD_ARRANGEMENT_ORDER',
+      specificIssue: '#manageOrdersC43Orders-SPECIFIC_ISSUE_ORDER',
+      prohibitedSteps: '#manageOrdersC43Orders-PROHIBITED_STEPS_ORDER',
+    },
+  },
+  recitalsAndPreambles: '#manageOrdersC43RecitalsAndPreambles',
+  c43Directions: '#manageOrdersC43Directions',
   isFinalOrder: {
     group: '#manageOrdersIsFinalOrder',
     options: {
@@ -280,6 +291,20 @@ const selectOrderTypeWithEndOfProceedings = (orderDateType) => {
   I.click(`${section4.orderTypeWithEndOfProceedings.group}-${orderDateType}`);
 };
 
+const selectC43Orders = async () => {
+  I.checkOption(section4.c43Orders.orders.childArrangement);
+  I.checkOption(section4.c43Orders.orders.prohibitedSteps);
+  I.checkOption(section4.c43Orders.orders.specificIssue);
+};
+
+const enterRecitalsAndPreambles = async (text) => {
+  I.fillField(section4.recitalsAndPreambles, text);
+};
+
+const enterC43Directions = async (text) => {
+  I.fillField(section4.c43Directions, text);
+};
+
 const enterFurtherDirections = async (text) => {
   I.fillField(section4.furtherDirections, text);
   await I.runAccessibilityTest();
@@ -317,5 +342,5 @@ module.exports = {
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
-  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate,
+  selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate, selectC43Orders, enterRecitalsAndPreambles, enterC43Directions,
 };
