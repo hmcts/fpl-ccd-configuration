@@ -11,6 +11,7 @@ public class OrderTempQuestions {
     String approver;
     String approvalDate;
     String approvalDateTime;
+    String cafcassJurisdictions;
     String whichChildren;
     String dischargeOfCareDetails;
     String epoTypeAndPreventRemoval;
@@ -20,6 +21,11 @@ public class OrderTempQuestions {
     String furtherDirections;
     String orderDetails;
     String isFinalOrder;
+    String manageOrdersExpiryDateWithMonth;
+    String manageOrdersExpiryDateWithEndOfProceedings;
+    String manageOrdersExclusionRequirementDetails;
+    String needSealing;
     String closeCase;
+    String uploadOrderFile;
     String previewOrder;
 }
