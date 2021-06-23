@@ -34,7 +34,7 @@ public class C47AAppointmentOfAChildrensGuardianParameterGenerator implements Do
 
     @Override
     public DocmosisTemplates template() {
-        return DocmosisTemplates.ORDER;
+        return DocmosisTemplates.ORDER_V2;
     }
 
     private String buildOrderDetails(ManageOrdersEventData manageOrdersEventData) {
