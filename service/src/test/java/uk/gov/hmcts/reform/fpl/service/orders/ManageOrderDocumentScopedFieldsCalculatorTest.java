@@ -13,6 +13,10 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
         assertThat(underTest.calculate()).containsExactlyInAnyOrder(
             "manageOrdersApprovedAtHearing",
             "manageOrdersApprovedAtHearingList",
+            "manageOrdersUploadType",
+            "manageOrdersUploadTypeOtherTitle",
+            "manageOrdersUploadOrderFile",
+            "manageOrdersNeedSealing",
             "judgeAndLegalAdvisor",
             "manageOrdersApprovalDate",
             "orderAppliesToAllChildren",
@@ -43,6 +47,7 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
             "manageOrdersCloseCaseWarning",
             "manageOrdersApprovalDateTime",
             "manageOrdersOperation",
+            "manageOrdersOperationClosedState",
             "manageOrdersType",
             "manageOrdersState",
             "orderTempQuestions",
