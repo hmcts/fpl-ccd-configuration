@@ -12,11 +12,15 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.CallbackController;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
+import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 
+import java.util.List;
 import java.util.Objects;
-
-import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDecisionFields;
+import java.util.UUID;
 
 @Api
 @RestController
@@ -24,32 +28,62 @@ import static uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData.reviewDe
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class MigrateCaseController extends CallbackController {
-
     private static final String MIGRATION_ID_KEY = "migrationId";
+    private final CaseSubmissionService caseSubmissionService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Object migrationId = caseDetails.getData().get(MIGRATION_ID_KEY);
 
-        if ("FPLA-3170".equals(migrationId)) {
-            run3170(caseDetails);
+        if ("FPLA-3093".equals(migrationId)) {
+            run3093(caseDetails);
         }
 
         caseDetails.getData().remove(MIGRATION_ID_KEY);
         return respond(caseDetails);
     }
 
-    private void run3170(CaseDetails caseDetails) {
-        final String familyManCaseNumber = "WR21C50006";
+    private void run3093(CaseDetails caseDetails) {
+        final String familyManCaseNumber = "KH21C50008";
+        final UUID additionalApplicationBundleId = UUID.fromString("c7b47c00-4b7a-4dd8-8bce-140e41ab4bb0");
+        final UUID c2ApplicationId = UUID.fromString("30d385b9-bdc5-4145-aeb5-ffee5afd1f02");
 
-        if (!Objects.equals(familyManCaseNumber, caseDetails.getData().get("familyManCaseNumber"))) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (!Objects.equals(familyManCaseNumber, caseData.getFamilyManCaseNumber())) {
             throw new AssertionError(String.format(
-                "Migration FPLA-3170: Expected family man case number to be %s but was %s",
-                familyManCaseNumber, caseDetails.getData().get("familyManCaseNumber")));
+                "Migration FPLA-3093: Expected family man case number to be %s but was %s",
+                familyManCaseNumber, caseData.getFamilyManCaseNumber()));
         }
 
-        CaseDetailsHelper.removeTemporaryFields(caseDetails, reviewDecisionFields());
+        List<Element<AdditionalApplicationsBundle>> bundles = caseData.getAdditionalApplicationsBundle();
+
+        validateAdditionalApplicationsBundles(additionalApplicationBundleId, c2ApplicationId, bundles);
+
+        bundles.removeIf(bundle -> additionalApplicationBundleId.equals(bundle.getId()));
+        caseDetails.getData().put("additionalApplicationsBundle", bundles);
+    }
+
+    private void validateAdditionalApplicationsBundles(UUID additionalApplicationBundleId,
+                                                       UUID c2ApplicationId,
+                                                       List<Element<AdditionalApplicationsBundle>> bundles) {
+
+        Element<AdditionalApplicationsBundle> bundleElement = bundles.stream()
+            .filter(bundle -> additionalApplicationBundleId.equals(bundle.getId()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError(String.format(
+                "Migration FPLA-3093: Expected additional application bundle id to be %s but not found",
+                additionalApplicationBundleId
+            )));
+
+        C2DocumentBundle c2DocumentBundle = bundleElement.getValue().getC2DocumentBundle();
+
+        if (!Objects.equals(c2ApplicationId, c2DocumentBundle.getId())) {
+            throw new AssertionError(String.format(
+                "Migration FPLA-3093: Expected c2 bundle Id to be %s but not found", c2ApplicationId
+            ));
+        }
     }
 
 }
