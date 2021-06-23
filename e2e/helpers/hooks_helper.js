@@ -22,9 +22,11 @@ module.exports = class HooksHelpers extends Helper {
     });
   }
 
-  _beforeStep() {
+  _beforeStep(step) {
     const helper = this.helpers['Puppeteer'] || this.helpers['WebDriver'];
-    return helper.waitForInvisible('xuilib-loading-spinner', 30);
+    if (step.name !== 'amOnPage') {
+      return helper.waitForInvisible('xuilib-loading-spinner', 30);
+    }
   }
 
 };
