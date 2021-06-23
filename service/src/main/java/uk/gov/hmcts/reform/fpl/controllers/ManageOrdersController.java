@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.service.orders.ManageOrderDocumentScopedFieldsCal
 import uk.gov.hmcts.reform.fpl.service.orders.OrderShowHideQuestionsCalculator;
 import uk.gov.hmcts.reform.fpl.service.orders.history.SealedOrderHistoryService;
 import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.OrderSectionAndQuestionsPrePopulator;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.modifier.ManageOrdersCaseDataFixer;
+import uk.gov.hmcts.reform.fpl.service.orders.prepopulator.preselector.ManageOrderInitialTypePreSelector;
 import uk.gov.hmcts.reform.fpl.service.orders.validator.OrderValidator;
 
 import java.util.List;
@@ -30,18 +32,26 @@ import java.util.Map;
 @RequestMapping("/callback/manage-orders")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ManageOrdersController extends CallbackController {
-
     private final OrderValidator orderValidator;
     private final OrderShowHideQuestionsCalculator showHideQuestionsCalculator;
     private final ManageOrderDocumentScopedFieldsCalculator fieldsCalculator;
     private final OrderSectionAndQuestionsPrePopulator orderSectionAndQuestionsPrePopulator;
     private final SealedOrderHistoryService sealedOrderHistoryService;
+    private final ManageOrderInitialTypePreSelector manageOrderInitialTypePreSelector;
+    private final ManageOrdersCaseDataFixer manageOrdersCaseDataFixer;
+
+    @PostMapping("/initial-selection/mid-event")
+    public AboutToStartOrSubmitCallbackResponse populateInitialSection(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        caseDetails.getData().putAll(manageOrderInitialTypePreSelector.preSelect(caseDetails));
+        return respond(caseDetails);
+    }
 
     @PostMapping("/order-selection/mid-event")
     public AboutToStartOrSubmitCallbackResponse prepareQuestions(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
 
@@ -56,7 +66,7 @@ public class ManageOrdersController extends CallbackController {
     public AboutToStartOrSubmitCallbackResponse handleSectionMidEvent(@PathVariable String section,
                                                                       @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
         Map<String, Object> data = caseDetails.getData();
 
         Order order = caseData.getManageOrdersEventData().getManageOrdersType();
@@ -76,12 +86,11 @@ public class ManageOrdersController extends CallbackController {
         return respond(caseDetails, errors);
     }
 
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = getCaseData(caseDetails);
+        CaseData caseData = manageOrdersCaseDataFixer.fix(getCaseData(caseDetails));
 
         data.putAll(sealedOrderHistoryService.generate(caseData));
 

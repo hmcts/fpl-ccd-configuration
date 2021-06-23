@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import uk.gov.hmcts.reform.ccd.model.ChangeOrganisationRequest;
+import uk.gov.hmcts.reform.ccd.model.Organisation;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
 import uk.gov.hmcts.reform.fpl.enums.AdditionalApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
@@ -16,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.enums.EPOType;
 import uk.gov.hmcts.reform.fpl.enums.HearingOptions;
 import uk.gov.hmcts.reform.fpl.enums.HearingReListOption;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
+import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeList;
 import uk.gov.hmcts.reform.fpl.enums.ManageDocumentSubtypeListLA;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OutsourcingType;
@@ -38,14 +42,17 @@ import uk.gov.hmcts.reform.fpl.model.common.OtherApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOChildren;
 import uk.gov.hmcts.reform.fpl.model.emergencyprotectionorder.EPOPhrase;
+import uk.gov.hmcts.reform.fpl.model.event.GatekeepingOrderEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.event.MessageJudgeEventData;
 import uk.gov.hmcts.reform.fpl.model.event.ReviewDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.event.UploadDraftOrdersData;
 import uk.gov.hmcts.reform.fpl.model.interfaces.ApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.judicialmessage.JudicialMessage;
+import uk.gov.hmcts.reform.fpl.model.noc.ChangeOfRepresentation;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.HearingOrdersBundle;
+import uk.gov.hmcts.reform.fpl.model.order.UrgentHearingOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.order.generated.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.order.generated.InterimEndDate;
@@ -107,7 +114,10 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.TIME_DATE;
 import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateToString;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.parseLocalDateTimeFromStringUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.findElement;
@@ -154,13 +164,13 @@ public class CaseData {
     @NotEmpty(message = "Add the respondents' details")
     private final List<@NotNull(message = "Add the respondents' details") Element<Respondent>> respondents1;
 
-    public DynamicList buildRespondentStatementDynamicList(UUID selected) {
+    public DynamicList buildRespondentDynamicList(UUID selected) {
         return asDynamicList(getAllRespondents(), selected,
             respondent -> respondent.getParty().getFullName());
     }
 
-    public DynamicList buildRespondentStatementDynamicList() {
-        return buildRespondentStatementDynamicList(null);
+    public DynamicList buildRespondentDynamicList() {
+        return buildRespondentDynamicList(null);
     }
 
     private final Proceeding proceeding;
@@ -190,6 +200,7 @@ public class CaseData {
 
     private final List<Element<Placement>> placements;
     private final StandardDirectionOrder standardDirectionOrder;
+    private final UrgentHearingOrder urgentHearingOrder;
     private final List<Element<StandardDirectionOrder>> hiddenStandardDirectionOrders;
 
     public List<Element<StandardDirectionOrder>> getHiddenStandardDirectionOrders() {
@@ -295,6 +306,8 @@ public class CaseData {
     private final PBAPayment temporaryPbaPayment;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final List<Element<AdditionalApplicationsBundle>> additionalApplicationsBundle;
+    private final DynamicList applicantsList;
+    private final String otherApplicant;
 
     @JsonIgnore
     public boolean hasC2DocumentBundle() {
@@ -339,10 +352,14 @@ public class CaseData {
 
     public DynamicList buildApplicationBundlesDynamicList(UUID selected) {
         List<Element<ApplicationsBundle>> applicationsBundles = getAllApplicationsBundles();
-        applicationsBundles
-            .sort(Comparator.comparing(
-                (Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
-                .thenComparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().toLabel()));
+
+        Comparator<Element<ApplicationsBundle>> reverseChronological = comparing((Element<ApplicationsBundle> bundle) ->
+            parseLocalDateTimeFromStringUsingFormat(bundle.getValue().getUploadedDateTime(), DATE_TIME, TIME_DATE))
+            .reversed();
+
+        applicationsBundles.sort(Comparator
+            .comparing((Element<ApplicationsBundle> bundle) -> bundle.getValue().getSortOrder())
+            .thenComparing(reverseChronological));
 
         return asDynamicList(applicationsBundles, selected, ApplicationsBundle::toLabel);
     }
@@ -565,6 +582,7 @@ public class CaseData {
     private final ManageDocument manageDocument;
     private final ManageDocumentLA manageDocumentLA;
     private final ManageDocumentSubtypeListLA manageDocumentSubtypeListLA;
+    private final ManageDocumentSubtypeList manageDocumentSubtypeList;
     private final String manageDocumentsRelatedToHearing;
     private final List<Element<SupportingEvidenceBundle>> supportingEvidenceDocumentsTemp;
     private final List<Element<SupportingEvidenceBundle>> furtherEvidenceDocuments; //general evidence
@@ -573,6 +591,8 @@ public class CaseData {
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocuments;
     private final List<Element<SupportingEvidenceBundle>> correspondenceDocumentsLA;
     private final List<Element<SupportingEvidenceBundle>> c2SupportingDocuments;
+    private final List<Element<CourtAdminDocument>> otherCourtAdminDocuments;
+    private final List<Element<ScannedDocument>> scannedDocuments;
 
     private final List<Element<RespondentStatement>> respondentStatements;
     private final Object manageDocumentsHearingList;
@@ -691,6 +711,7 @@ public class CaseData {
     }
 
     private final DocumentReference submittedForm;
+    private final DocumentReference draftApplicationDocument;
 
     private final List<Element<HearingOrder>> draftUploadedCMOs;
     private List<Element<HearingOrdersBundle>> hearingOrdersBundlesDrafts;
@@ -825,6 +846,10 @@ public class CaseData {
         return asDynamicList(getHearingDetails(), selected, HearingBooking::toLabel);
     }
 
+    public DynamicList buildDynamicHearingList(List<Element<HearingBooking>> hearingDetails, UUID selected) {
+        return asDynamicList(hearingDetails, selected, HearingBooking::toLabel);
+    }
+
     private final HearingType hearingType;
     private final String hearingTypeDetails;
     private final String hearingVenue;
@@ -904,4 +929,20 @@ public class CaseData {
     @JsonUnwrapped
     @Builder.Default
     private final RespondentPolicyData respondentPolicyData = RespondentPolicyData.builder().build();
+
+    @JsonUnwrapped
+    @Builder.Default
+    private final GatekeepingOrderEventData gatekeepingOrderEventData = GatekeepingOrderEventData.builder().build();
+
+    private final List<Element<ChangeOfRepresentation>> changeOfRepresentatives;
+    private final ChangeOrganisationRequest changeOrganisationRequestField;
+
+    @JsonIgnore
+    public boolean isOutsourced() {
+        return Optional.ofNullable(outsourcingPolicy)
+            .map(OrganisationPolicy::getOrganisation)
+            .map(Organisation::getOrganisationID)
+            .filter(StringUtils::isNotEmpty)
+            .isPresent();
+    }
 }

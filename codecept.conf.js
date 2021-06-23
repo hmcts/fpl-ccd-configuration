@@ -43,6 +43,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       keepCookies: true,
+      keepBrowserState: true,
       waitForTimeout: parseInt(process.env.WAIT_FOR_TIMEOUT || '20000'),
       chrome: {
         ignoreHTTPSErrors: true,
@@ -64,7 +65,13 @@ exports.config = {
     },
     GenerateReportHelper: {
       require: './e2e/helpers/generate_report_helper.js',
-    }
+    },
+    StepListener: {
+      require: './e2e/helpers/stepListener.js',
+    },
+    Mochawesome: {
+      uniqueScreenshotNames: true,
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -103,6 +110,7 @@ exports.config = {
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
+    addGatekeepingOrderEventPage: './e2e/pages/events/addGatekeepingOrderEvent.page.js',
     createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
     placementEventPage: './e2e/pages/events/placementEvent.page.js',
     allocatedJudgeEventPage: './e2e/pages/events/enterAllocatedJudgeEvent.page.js',
@@ -126,18 +134,6 @@ exports.config = {
     manageOrdersEventPage: './e2e/pages/events/manageOrders.page.js',
   },
   plugins: {
-    autoDelay: {
-      enabled: true,
-      methods: [
-        'click',
-        'doubleClick',
-        'rightClick',
-        'fillField',
-        'checkOption',
-        'selectOption',
-      ],
-      delayAfter: 550,
-    },
     retryFailedStep: {
       enabled: true,
     },

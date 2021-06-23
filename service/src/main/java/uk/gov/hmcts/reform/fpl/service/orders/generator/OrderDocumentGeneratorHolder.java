@@ -14,21 +14,45 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class OrderDocumentGeneratorHolder {
 
+    // parameter generators
     private final C21BlankOrderDocumentParameterGenerator c21BlankOrderDocumentParameterGenerator;
     private final C32CareOrderDocumentParameterGenerator c32CareOrderDocumentParameterGenerator;
+    private final C32bDischargeOfCareOrderDocumentParameterGenerator c32bDischargeOfCareOrderDocumentParameterGenerator;
+    private final C23EPODocumentParameterGenerator c23EPODocumentParameterGenerator;
+    private final C33InterimCareOrderDocumentParameterGenerator c33InterimCareOrderDocumentParameterGenerator;
+    private final C35aSupervisionOrderDocumentParameterGenerator c35aSupervisionOrderDocumentParameterGenerator;
+    private final C35bISODocumentParameterGenerator c35bISODocumentParameterGenerator;
+    private final C47AAppointmentOfAChildrensGuardianParameterGenerator c47AParameterGenerator;
+
+    // additional document collectors
+    private final C23EPOAdditionalDocumentsCollector c23EPOAdditionalDocumentsCollector;
 
     private Map<Order, DocmosisParameterGenerator> typeToGenerator;
+    private Map<Order, AdditionalDocumentsCollector> typeToAdditionalDocsCollector;
 
     public Map<Order, DocmosisParameterGenerator> getTypeToGenerator() {
         if (typeToGenerator == null) {
             typeToGenerator = List.of(
                 c21BlankOrderDocumentParameterGenerator,
-                c32CareOrderDocumentParameterGenerator
-            ).stream().collect(Collectors.toMap(
-                DocmosisParameterGenerator::accept,
-                Function.identity()
-            ));
+                c23EPODocumentParameterGenerator,
+                c32CareOrderDocumentParameterGenerator,
+                c32bDischargeOfCareOrderDocumentParameterGenerator,
+                c33InterimCareOrderDocumentParameterGenerator,
+                c35aSupervisionOrderDocumentParameterGenerator,
+                c35bISODocumentParameterGenerator,
+                c47AParameterGenerator
+            ).stream().collect(Collectors.toMap(DocmosisParameterGenerator::accept, Function.identity()));
         }
         return typeToGenerator;
     }
+
+    public Map<Order, AdditionalDocumentsCollector> getTypeToAdditionalDocumentsCollector() {
+        if (typeToAdditionalDocsCollector == null) {
+            typeToAdditionalDocsCollector = List.of(
+                c23EPOAdditionalDocumentsCollector
+            ).stream().collect(Collectors.toMap(AdditionalDocumentsCollector::accept, Function.identity()));
+        }
+        return typeToAdditionalDocsCollector;
+    }
+
 }

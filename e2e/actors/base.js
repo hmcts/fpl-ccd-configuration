@@ -22,7 +22,7 @@ let currentUser = {};
 
 module.exports = {
   async signIn(user) {
-    if (currentUser !== user) {
+    if (!(this.isPuppeteer() &&  (currentUser === user))) {
       output.debug(`Logging in as ${user.email}`);
       currentUser = {}; // reset in case the login fails
 
@@ -35,10 +35,11 @@ module.exports = {
         }
 
         if (await this.hasSelector(signedInSelector)) {
-          this.click('Sign out');
+          await this.retryUntilExists(() => this.click('Sign out'), signedOutSelector, false, 10);
         }
 
-        await loginPage.signIn(user);
+        await this.retryUntilExists(() =>  loginPage.signIn(user), signedInSelector, false, 10);
+
       }, signedInSelector, false, 10);
       output.debug(`Logged in as ${user.email}`);
       currentUser = user;
@@ -127,6 +128,14 @@ module.exports = {
     }
   },
 
+  async dontSeeEvent(eventName) {
+    await within('ccd-event-trigger', () => this.dontSee(eventName));
+  },
+
+  async seeEvent(eventName) {
+    await within('ccd-event-trigger', () => this.see(eventName));
+  },
+
   async startEventViaHyperlink(linkLabel) {
     await this.retryUntilExists(() => {
       this.click(locate(`//p/a[text()="${linkLabel}"]`));
@@ -173,9 +182,8 @@ module.exports = {
     if (!currentUrl.replace(/#.+/g, '').endsWith(caseId)) {
       await this.retryUntilExists(async () => {
         await this.goToPage(`${baseUrl}/cases/case-details/${caseId}`);
-      }, signedInSelector);
+      }, '#next-step');
     }
-    await this.waitForSelector('.ccd-dropdown');
   },
 
   async navigateToCaseDetailsAs(user, caseId) {
@@ -271,7 +279,9 @@ module.exports = {
   async submitNewCaseWithData(data = mandatorySubmissionFields) {
     const caseId = await this.submitNewCase(config.swanseaLocalAuthorityUserOne);
     await apiHelper.populateWithData(caseId, data);
-    await this.refreshPage();
+    if (this.isPuppeteer()) {
+      await this.refreshPage();
+    }
     output.print(`Case #${caseId} has been populated with data`);
 
     return caseId;

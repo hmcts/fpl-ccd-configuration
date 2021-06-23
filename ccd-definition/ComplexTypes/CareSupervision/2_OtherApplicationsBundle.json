@@ -2,9 +2,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OtherApplicationsBundle",
+    "ListElementCode": "applicantName",
+    "FieldType": "Text",
+    "ElementLabel": "Applicant",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherApplicationsBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
+    "RegularExpression": ".doc,.docx,.pdf",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },

@@ -6,13 +6,11 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.ccd.model.OrganisationPolicy;
-import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.ContactInformation;
 import uk.gov.hmcts.reform.rd.model.Organisation;
@@ -21,7 +19,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.ccd.model.OrganisationPolicy.organisationPolicy;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LAMANAGING;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.LASOLICITOR;
 import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 
@@ -35,9 +35,6 @@ class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
 
     @MockBean
     private OrganisationApi organisationApi;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
 
     ApplicantAboutToStartControllerTest() {
         super("enter-applicant");
@@ -90,16 +87,13 @@ class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldAddManagedOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOn() {
-        when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(true);
-
+    void shouldAddManagedOrganisationDetailsToApplicant() {
         given(organisationApi.findOrganisation(AUTH_TOKEN, SERVICE_AUTH_TOKEN, ORGANISATION_ID))
             .willReturn(POPULATED_ORGANISATION);
 
-        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
+        OrganisationPolicy outsourcingPolicy = organisationPolicy("ORGEXT", null, LAMANAGING);
 
-        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID, null,
-            CaseRole.LASOLICITOR);
+        OrganisationPolicy localAuthorityPolicy = organisationPolicy(ORGANISATION_ID, null, LASOLICITOR);
 
         CaseData caseData = CaseData.builder()
             .localAuthorityPolicy(localAuthorityPolicy)
@@ -113,30 +107,6 @@ class ApplicantAboutToStartControllerTest extends AbstractCallbackTest {
         Applicant expectedApplicant = buildApplicant(returnedCaseData,
             organisationContact,
             POPULATED_ORGANISATION.getName());
-
-        assertThat(returnedCaseData.getApplicants())
-            .extracting(Element::getValue)
-            .containsExactly(expectedApplicant);
-    }
-
-    @Test
-    void shouldNotAddOrganisationDetailsToApplicantWhenCaseIsOutsourcedToggledOff() {
-        when(featureToggleService.isRetrievingOrganisationEnabled()).thenReturn(false);
-
-        OrganisationPolicy outsourcingPolicy = OrganisationPolicy.builder().build();
-
-        OrganisationPolicy localAuthorityPolicy = OrganisationPolicy.organisationPolicy(ORGANISATION_ID, null,
-            CaseRole.LASOLICITOR);
-
-        CaseData caseData = CaseData.builder()
-            .localAuthorityPolicy(localAuthorityPolicy)
-            .outsourcingPolicy(outsourcingPolicy).build();
-
-        CaseData returnedCaseData = extractCaseData(postAboutToStartEvent(caseData));
-
-        Applicant expectedApplicant = buildApplicant(returnedCaseData,
-            ContactInformation.builder().build(),
-            EMPTY_ORGANISATION.getName());
 
         assertThat(returnedCaseData.getApplicants())
             .extracting(Element::getValue)

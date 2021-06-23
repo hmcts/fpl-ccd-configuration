@@ -10,5 +10,19 @@ module.exports = [
     },
     title: 'Mock title',
     description: 'Mock description',
+    assignee: 'All parties',
+  },
+  {
+    dueDate: {
+      day: '01',
+      month: '01',
+      year: '2050',
+      hour: '12',
+      minute: '00',
+      second: '00',
+    },
+    title: 'Mock title 2',
+    description: 'Mock description 2',
+    assignee: 'Local authority',
   },
 ];

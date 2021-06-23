@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.aac.model.DecisionRequest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.config.feign.FeignClientConfiguration;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -21,13 +21,11 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 public interface CaseAssignmentApi {
 
     @PostMapping(
-        value = "/noc/check-noc-approval",
-        consumes = MediaType.APPLICATION_JSON_VALUE
-    )
+        value = "/noc/apply-decision",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    SubmittedCallbackResponse changeRepresentation(
+    AboutToStartOrSubmitCallbackResponse applyDecision(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestBody CallbackRequest callbackRequest
-    );
+        @RequestBody DecisionRequest decisionRequest);
 }

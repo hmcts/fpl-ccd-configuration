@@ -74,7 +74,8 @@
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Justices' Legal Adviser",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Comment": "this might appear as empty even if nothing entered (will be fixed by EUI-3798)"
   },
   {
     "LiveFrom": "01/01/2017",

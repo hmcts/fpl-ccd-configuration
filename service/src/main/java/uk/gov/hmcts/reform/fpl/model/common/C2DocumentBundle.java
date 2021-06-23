@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class C2DocumentBundle implements ApplicationsBundle {
-    private UUID id;
+    private final UUID id;
     private C2ApplicationType type;
     private final String nameOfRepresentative;
     private final String usePbaPayment;
@@ -43,6 +43,7 @@ public class C2DocumentBundle implements ApplicationsBundle {
     private final List<Element<Supplement>> supplementsBundle;
     private final List<C2AdditionalOrdersRequested> c2AdditionalOrdersRequested;
     private final ParentalResponsibilityType parentalResponsibilityType;
+    private final String applicantName;
 
     public String toLabel(int index) {
         return format("Application %d: %s", index, uploadedDateTime);
@@ -100,9 +101,5 @@ public class C2DocumentBundle implements ApplicationsBundle {
         documentReferences.addAll(getSupportingEvidenceBundleReferences());
 
         return documentReferences;
-    }
-
-    public void setId(UUID newId) {
-        this.id = newId;
     }
 }

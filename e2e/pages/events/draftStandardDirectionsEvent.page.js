@@ -1,4 +1,4 @@
-const { I } = inject();
+const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 const directions = require('../../fragments/directions');
 
@@ -13,6 +13,7 @@ module.exports = {
       groupName: '#sdoRouter',
       service: '#sdoRouter-SERVICE',
       upload: '#sdoRouter-UPLOAD',
+      urgent: '#sdoRouter-URGENT',
     },
     file: {
       preparedSDO: '#preparedSDO',
@@ -23,6 +24,22 @@ module.exports = {
       c6: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
       c6a: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
     },
+    allocationDecision: {
+      judgeLevelConfirmation: {
+        yes: '#urgentHearingAllocation_judgeLevelRadio-Yes',
+        no: '#urgentHearingAllocation_judgeLevelRadio-No',
+      },
+      allocationLevel: {
+        // ids have spaces in so don't work
+        circuit: 'Circuit Judge',
+        section9Circuit: 'Circuit Judge (Section 9)',
+        district: 'District Judge',
+        magistrate: 'Magistrate',
+        highCourt: 'High Court Judge',
+      },
+      reason: '#urgentHearingAllocation_proposalReason',
+    },
+    urgentHearingOrder: '#urgentHearingOrderDocument',
   },
 
   async createSDOThroughService() {
@@ -33,6 +50,12 @@ module.exports = {
 
   async createSDOThroughUpload() {
     I.click(this.fields.routingRadioGroup.upload);
+    await I.runAccessibilityTest();
+    await I.goToNextPage();
+  },
+
+  async createUrgentHearingOrder() {
+    I.click(this.fields.routingRadioGroup.urgent);
     await I.runAccessibilityTest();
     await I.goToNextPage();
   },
@@ -49,12 +72,12 @@ module.exports = {
     await I.goToNextPage();
   },
 
-  async skipDateOfIssue(){
+  async skipDateOfIssue() {
     await I.runAccessibilityTest();
     await I.goToNextPage();
   },
 
-  async enterDateOfIssue(date){
+  async enterDateOfIssue(date) {
     await I.runAccessibilityTest();
     await I.fillDate(date);
     await I.goToNextPage();
@@ -87,14 +110,27 @@ module.exports = {
   async markAsFinal() {
     await I.runAccessibilityTest();
     I.click(this.fields.statusRadioGroup.sealed);
-    await I.goToNextPage();
   },
 
-  async checkC6() {
+  checkC6() {
     I.checkOption(this.fields.noticeOfProceedings.c6);
   },
 
   checkC6A() {
     I.checkOption(this.fields.noticeOfProceedings.c6a);
+  },
+
+  async makeAllocationDecision(agreement, level, reason) {
+    I.click(agreement);
+    if (agreement === this.fields.allocationDecision.judgeLevelConfirmation.no) {
+      I.click(level);
+      I.fillField(this.fields.allocationDecision.reason, reason);
+    }
+    await I.runAccessibilityTest();
+  },
+
+  async uploadUrgentHearingOrder(order) {
+    I.attachFile(this.fields.urgentHearingOrder, order);
+    await I.runAccessibilityTest();
   },
 };

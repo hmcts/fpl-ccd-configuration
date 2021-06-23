@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +23,13 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FeesData;
 import uk.gov.hmcts.reform.fpl.model.markdown.MarkdownData;
-import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
+import uk.gov.hmcts.reform.fpl.service.RespondentRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
 import uk.gov.hmcts.reform.fpl.service.markdown.CaseSubmissionMarkdownService;
 import uk.gov.hmcts.reform.fpl.service.payment.FeeService;
 import uk.gov.hmcts.reform.fpl.service.validators.CaseSubmissionChecker;
 import uk.gov.hmcts.reform.fpl.utils.BigDecimalHelper;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -47,6 +44,7 @@ import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInOpenState;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.isInReturnedState;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper.removeTemporaryFields;
 
 @Api
 @RestController
@@ -61,9 +59,7 @@ public class CaseSubmissionController extends CallbackController {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CaseSubmissionMarkdownService markdownService;
     private final CaseSubmissionChecker caseSubmissionChecker;
-    private final RespondentPolicyService respondentPolicyService;
-    private final IdamClient idamClient;
-    private final RequestData requestData;
+    private final RespondentRepresentationService respondentRepresentationService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
@@ -88,8 +84,9 @@ public class CaseSubmissionController extends CallbackController {
             }
         }
 
-        String label = String.format(CONSENT_TEMPLATE, idamClient.getUserInfo(requestData.authorisation())
-            .getName());
+        String signeeName = caseSubmissionService.getSigneeName(caseData.getAllApplicants());
+
+        String label = String.format(CONSENT_TEMPLATE, signeeName);
         data.put("submissionConsentLabel", label);
 
         return respond(caseDetails);
@@ -119,16 +116,12 @@ public class CaseSubmissionController extends CallbackController {
             data.put("dateAndTimeSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
             data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime));
             data.put("sendToCtsc", setSendToCtsc(data.get("caseLocalAuthority").toString()).getValue());
-            data.put("submittedForm", ImmutableMap.<String, String>builder()
-                .put("document_url", document.links.self.href)
-                .put("document_binary_url", document.links.binary.href)
-                .put("document_filename", document.originalDocumentName)
-                .build());
+            data.put("submittedForm", buildFromDocument(document));
 
-            if (featureToggleService.hasRSOCaseAccess()) {
-                data.putAll(respondentPolicyService.generateForSubmission(caseDetails));
-            }
+            data.putAll(respondentRepresentationService.generate(caseData));
         }
+
+        removeTemporaryFields(caseDetails, "draftApplicationDocument", "submissionConsentLabel");
 
         return respond(caseDetails, errors);
     }

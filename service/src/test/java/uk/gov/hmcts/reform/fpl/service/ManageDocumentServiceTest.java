@@ -58,12 +58,17 @@ import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.ADD
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.C2_DOCUMENTS_COLLECTION_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENTS_HEARING_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.MANAGE_DOCUMENT_KEY;
+import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.RESPONDENTS_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.service.document.ManageDocumentService.SUPPORTING_C2_LIST_KEY;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.DATE_TIME;
+import static uk.gov.hmcts.reform.fpl.utils.DateFormatterHelper.formatLocalDateTimeBaseUsingFormat;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.asDynamicList;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testDocumentReference;
+import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.testRespondent;
 
 @SuppressWarnings("unchecked")
 class ManageDocumentServiceTest {
@@ -87,15 +92,17 @@ class ManageDocumentServiceTest {
     @Test
     void shouldPopulateFieldsWhenHearingAndC2DocumentBundleDetailsArePresentOnCaseData() {
         Element<C2DocumentBundle> c2Bundle1 = element(buildC2DocumentBundle(futureDate.plusDays(2)));
-        C2DocumentBundle c2ApplicationBundle1 = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(3));
+        C2DocumentBundle c2ApplicationBundle1 = buildC2DocumentBundle(futureDate.plusDays(3));
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationBundle(
             randomUUID(), OtherApplicationType.C100_CHILD_ARRANGEMENTS, futureDate.plusDays(3));
 
         List<Element<HearingBooking>> hearingBookings = List.of(
             element(createHearingBooking(futureDate.plusDays(5), futureDate.plusDays(6))),
             element(createHearingBooking(futureDate.plusDays(2), futureDate.plusDays(3))),
-            element(createHearingBooking(futureDate, futureDate.plusDays(1)))
-        );
+            element(createHearingBooking(futureDate, futureDate.plusDays(1))));
+
+        Element<Respondent> respondent1 = testRespondent("John", "Smith");
+        Element<Respondent> respondent2 = testRespondent("Alex", "Williams");
 
         CaseData caseData = CaseData.builder()
             .c2DocumentBundle(List.of(c2Bundle1))
@@ -104,26 +111,43 @@ class ManageDocumentServiceTest {
                     .c2DocumentBundle(c2ApplicationBundle1)
                     .otherApplicationsBundle(otherApplicationsBundle).build()))
             .hearingDetails(hearingBookings)
+            .respondents1(List.of(respondent1, respondent2))
             .build();
 
         DynamicList expectedC2DocumentsDynamicList = TestDataHelper.buildDynamicList(
-            Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
             Pair.of(c2ApplicationBundle1.getId(), "C2, " + c2ApplicationBundle1.getUploadedDateTime()),
+            Pair.of(c2Bundle1.getId(), "C2, " + c2Bundle1.getValue().getUploadedDateTime()),
             Pair.of(otherApplicationsBundle.getId(), "C100, " + otherApplicationsBundle.getUploadedDateTime())
         );
 
         DynamicList expectedHearingDynamicList = asDynamicList(hearingBookings, HearingBooking::toLabel);
+
+        DynamicList expectedRespondentsDynamicList = TestDataHelper.buildDynamicList(
+            Pair.of(respondent1.getId(), "John Smith"),
+            Pair.of(respondent2.getId(), "Alex Williams"));
 
         ManageDocument expectedManageDocument = ManageDocument.builder()
             .hasHearings(YES.getValue())
             .hasC2s(YES.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = underTest.baseEventData(caseData);
+        Map<String, Object> updates = underTest.baseEventData(caseData);
 
-        assertThat(listAndLabel)
-            .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
-            .containsExactly(expectedHearingDynamicList, expectedC2DocumentsDynamicList, expectedManageDocument);
+        assertThat(updates)
+            .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY)
+            .isEqualTo(expectedHearingDynamicList);
+
+        assertThat(updates)
+            .extracting(SUPPORTING_C2_LIST_KEY)
+            .isEqualTo(expectedC2DocumentsDynamicList);
+
+        assertThat(updates)
+            .extracting(RESPONDENTS_LIST_KEY)
+            .isEqualTo(expectedRespondentsDynamicList);
+
+        assertThat(updates)
+            .extracting(MANAGE_DOCUMENT_KEY)
+            .isEqualTo(expectedManageDocument);
     }
 
     @ParameterizedTest
@@ -136,11 +160,16 @@ class ManageDocumentServiceTest {
             .hasC2s(NO.getValue())
             .build();
 
-        Map<String, Object> listAndLabel = underTest.baseEventData(caseData);
+        Map<String, Object> updates = underTest.baseEventData(caseData);
 
-        assertThat(listAndLabel)
+        assertThat(updates)
             .extracting(MANAGE_DOCUMENTS_HEARING_LIST_KEY, SUPPORTING_C2_LIST_KEY, MANAGE_DOCUMENT_KEY)
             .containsExactly(null, null, expectedManageDocument);
+
+        assertThat(updates).doesNotContainKeys(MANAGE_DOCUMENTS_HEARING_LIST_KEY);
+        assertThat(updates).doesNotContainKeys(SUPPORTING_C2_LIST_KEY);
+        assertThat(updates).doesNotContainKeys(RESPONDENTS_LIST_KEY);
+        assertThat(updates).containsEntry(MANAGE_DOCUMENT_KEY, expectedManageDocument);
     }
 
     @Test
@@ -158,11 +187,11 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsHearingList(selectHearingId.toString())
             .hearingDetails(hearingBookings)
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
-        Map<String, Object> listAndLabel = underTest.initialiseHearingListAndLabel(
-            caseData, caseData.getManageDocument().isDocumentRelatedToHearing());
+        Map<String, Object> listAndLabel = underTest.initialiseHearingListAndLabel(caseData);
 
         DynamicList expectedDynamicList = asDynamicList(hearingBookings, selectHearingId, HearingBooking::toLabel);
 
@@ -183,11 +212,11 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsHearingList(selectHearingId.toString())
             .hearingDetails(hearingBookings)
-            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
+            .manageDocumentsRelatedToHearing(NO.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
-        Map<String, Object> listAndLabel = underTest.initialiseHearingListAndLabel(
-            caseData, caseData.getManageDocument().isDocumentRelatedToHearing());
+        Map<String, Object> listAndLabel = underTest.initialiseHearingListAndLabel(caseData);
 
         assertThat(listAndLabel).isEmpty();
     }
@@ -205,10 +234,11 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .manageDocumentsHearingList(selectedHearingId.toString())
             .hearingDetails(hearingBookings)
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
-        assertThatThrownBy(() -> underTest.initialiseHearingListAndLabel(caseData, true))
+        assertThatThrownBy(() -> underTest.initialiseHearingListAndLabel(caseData))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage(String.format("Hearing booking with id %s not found", selectedHearingId));
     }
@@ -234,12 +264,12 @@ class ManageDocumentServiceTest {
     @Test
     void shouldReturnEvidenceBundleWithDefaultTypeWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
-            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
+            .manageDocumentsRelatedToHearing(NO.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<SupportingEvidenceBundle>> supportingEvidenceBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, false,
-                List.of(element(SupportingEvidenceBundle.builder().build())));
+            underTest.getFurtherEvidences(caseData, List.of(element(SupportingEvidenceBundle.builder().build())));
 
         SupportingEvidenceBundle firstSupportingEvidenceBundle = supportingEvidenceBundleCollection.get(0).getValue();
 
@@ -253,12 +283,13 @@ class ManageDocumentServiceTest {
         List<Element<SupportingEvidenceBundle>> furtherEvidenceBundle = buildSupportingEvidenceBundle();
 
         CaseData caseData = CaseData.builder()
-            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
+            .manageDocumentsRelatedToHearing(NO.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .furtherEvidenceDocuments(furtherEvidenceBundle)
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, false, furtherEvidenceBundle);
+            underTest.getFurtherEvidences(caseData, furtherEvidenceBundle);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
         assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
@@ -277,11 +308,12 @@ class ManageDocumentServiceTest {
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
                     .build())))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, true, null);
+            underTest.getFurtherEvidences(caseData, null);
 
         assertThat(furtherDocumentBundleCollection).isEqualTo(furtherEvidenceBundle);
         assertThat(furtherDocumentBundleCollection.get(0).getValue().getType()).isEqualTo(OTHER_REPORTS);
@@ -311,11 +343,12 @@ class ManageDocumentServiceTest {
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(furtherEvidenceBundle)
                     .build())))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, true, null);
+            underTest.getFurtherEvidences(caseData, null);
 
         assertThat(furtherDocumentBundleCollection).containsExactly(adminEvidence);
     }
@@ -333,13 +366,14 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(hearingBookings)
             .manageDocumentsHearingList(asDynamicList(hearingBookings, hearingId, HearingBooking::toLabel))
+            .manageDocumentsRelatedToHearing(YES.getValue())
             .hearingFurtherEvidenceDocuments(List.of(
                 element(hearingId, HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(ElementUtils.wrapElements(supportingEvidence))
                     .build())))
             .build();
 
-        assertThat(underTest.getFurtherEvidenceCollection(caseData, true, emptyList()))
+        assertThat(underTest.getFurtherEvidences(caseData, emptyList()))
             .extracting(Element::getValue)
             .containsExactly(SupportingEvidenceBundle.builder().build());
     }
@@ -347,12 +381,12 @@ class ManageDocumentServiceTest {
     @Test
     void shouldReturnEmptyEvidenceCollectionWhenFurtherEvidenceIsNotRelatedToHearingAndCollectionIsNotPresent() {
         CaseData caseData = CaseData.builder()
-            .manageDocument(buildFurtherEvidenceManagementDocument(NO.getValue()))
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .furtherEvidenceDocuments(emptyList())
             .build();
 
         List<Element<SupportingEvidenceBundle>> furtherDocumentBundleCollection =
-            underTest.getFurtherEvidenceCollection(caseData, false, null);
+            underTest.getFurtherEvidences(caseData, null);
 
         assertThat(unwrapElements(furtherDocumentBundleCollection))
             .containsExactly(SupportingEvidenceBundle.builder().build());
@@ -455,7 +489,8 @@ class ManageDocumentServiceTest {
         CaseData caseData = CaseData.builder()
             .hearingDetails(List.of(element(hearingId, hearingBooking)))
             .manageDocumentsHearingList(buildDynamicList(hearingId))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
@@ -488,7 +523,8 @@ class ManageDocumentServiceTest {
                 element(HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build())))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundle =
@@ -515,7 +551,8 @@ class ManageDocumentServiceTest {
                 element(randomUUID(), HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build()))))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
@@ -544,7 +581,8 @@ class ManageDocumentServiceTest {
                 element(randomUUID(), HearingFurtherEvidenceBundle.builder()
                     .supportingEvidenceBundle(List.of(element(SupportingEvidenceBundle.builder().build())))
                     .build()))))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -561,9 +599,9 @@ class ManageDocumentServiceTest {
         C2DocumentBundle selectedC2Document = buildC2DocumentBundle(futureDate.plusDays(2));
 
         List<Element<C2DocumentBundle>> c2DocumentBundle = List.of(
-            element(buildC2DocumentBundle(futureDate.plusDays(1))),
+            element(buildC2DocumentBundle(futureDate.plusDays(3))),
             element(selectedC2DocumentId, selectedC2Document),
-            element(buildC2DocumentBundle(futureDate.plusDays(3)))
+            element(buildC2DocumentBundle(futureDate.plusDays(1)))
         );
 
         CaseData caseData = CaseData.builder()
@@ -606,7 +644,7 @@ class ManageDocumentServiceTest {
         Map<String, Object> listAndLabel = underTest.initialiseApplicationBundlesListAndLabel(caseData);
 
         List<Element<ApplicationsBundle>> expectedBundles = List.of(element(otherBundle.getId(), otherBundle),
-            element(selectedC2DocumentId, selectedC2Document), element(anotherC2DocumentId, anotherC2Document));
+            element(anotherC2DocumentId, anotherC2Document), element(selectedC2DocumentId, selectedC2Document));
 
         DynamicList expectedC2DocumentsDynamicList = asDynamicList(
             expectedBundles, selectedC2DocumentId, ApplicationsBundle::toLabel);
@@ -622,9 +660,8 @@ class ManageDocumentServiceTest {
         UUID anotherBundleId = UUID.randomUUID();
 
         C2DocumentBundle c2Document = buildC2DocumentBundle(anotherBundleId, futureDate.plusDays(1));
-        OtherApplicationsBundle selectedBundle = OtherApplicationsBundle.builder().id(selectedBundleId)
-            .uploadedDateTime(futureDate.toString())
-            .applicationType(C1_WITH_SUPPLEMENT).build();
+        OtherApplicationsBundle selectedBundle
+            = buildOtherApplicationBundle(selectedBundleId, C1_WITH_SUPPLEMENT, futureDate);
 
         AdditionalApplicationsBundle additionApplicationsBundle = AdditionalApplicationsBundle.builder()
             .c2DocumentBundle(c2Document)
@@ -654,7 +691,7 @@ class ManageDocumentServiceTest {
         UUID selectedBundleId = randomUUID();
 
         AdditionalApplicationsBundle additionApplicationsBundle = AdditionalApplicationsBundle.builder()
-            .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate.plusDays(1)))
+            .c2DocumentBundle(buildC2DocumentBundle(futureDate.plusDays(1)))
             .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
             .build();
 
@@ -789,7 +826,7 @@ class ManageDocumentServiceTest {
         C2DocumentBundle selectedC2DocumentBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         List<Element<SupportingEvidenceBundle>> newSupportingEvidenceBundle = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle c2Bundle = C2DocumentBundle.builder().uploadedDateTime(futureDate.toString()).build();
+        C2DocumentBundle c2Bundle = buildC2DocumentBundle(futureDate);
 
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(
             element(anotherC2DocumentId, c2Bundle),
@@ -821,7 +858,7 @@ class ManageDocumentServiceTest {
         UUID selectedC2BundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle c2Bundle = C2DocumentBundle.builder().uploadedDateTime(futureDate.toString()).build();
+        C2DocumentBundle c2Bundle = buildC2DocumentBundle(futureDate);
         List<Element<C2DocumentBundle>> c2DocumentBundleList = List.of(element(c2Bundle));
 
         C2DocumentBundle selectedC2Application = buildC2DocumentBundle(selectedC2BundleId, futureDate.plusDays(2));
@@ -857,7 +894,7 @@ class ManageDocumentServiceTest {
         UUID selectedBundleId = UUID.randomUUID();
         List<Element<SupportingEvidenceBundle>> newSupportingEvidence = buildSupportingEvidenceBundle(futureDate);
 
-        C2DocumentBundle c2ApplicationBundle = buildC2DocumentBundle(randomUUID(), futureDate.plusDays(2));
+        C2DocumentBundle c2ApplicationBundle = buildC2DocumentBundle(futureDate.plusDays(2));
         OtherApplicationsBundle otherApplicationsBundle = buildOtherApplicationBundle(
             selectedBundleId, C1_WITH_SUPPLEMENT, futureDate);
 
@@ -930,11 +967,11 @@ class ManageDocumentServiceTest {
 
         List<Element<AdditionalApplicationsBundle>> applicationsBundles = wrapElements(
             AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
+                .c2DocumentBundle(buildC2DocumentBundle(futureDate))
                 .otherApplicationsBundle(buildOtherApplicationBundle(randomUUID(), C1_WITH_SUPPLEMENT, futureDate))
                 .build(),
             AdditionalApplicationsBundle.builder()
-                .c2DocumentBundle(buildC2DocumentBundle(randomUUID(), futureDate))
+                .c2DocumentBundle(buildC2DocumentBundle(futureDate))
                 .build());
 
         DynamicList applicationBundlesDynamicList = buildDynamicList(selectedBundleId);
@@ -973,7 +1010,8 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(List.of(
                 element(editedSupportingEvidenceBundle),
                 element(SupportingEvidenceBundle.builder().build())))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -1008,7 +1046,8 @@ class ManageDocumentServiceTest {
             .supportingEvidenceDocumentsTemp(List.of(
                 previousSupportingEvidenceList.get(0),
                 element(SupportingEvidenceBundle.builder().build())))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         CaseData caseDataBefore = CaseData.builder()
@@ -1089,7 +1128,8 @@ class ManageDocumentServiceTest {
                     .hearingName("Case Management hearing 2")
                     .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                     .build()))))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
@@ -1120,7 +1160,8 @@ class ManageDocumentServiceTest {
                     .hearingName("Case Management hearing 2")
                     .supportingEvidenceBundle(buildSupportingEvidenceBundle())
                     .build()))))
-            .manageDocument(buildFurtherEvidenceManagementDocument(YES.getValue()))
+            .manageDocumentsRelatedToHearing(YES.getValue())
+            .manageDocument(buildFurtherEvidenceManagementDocument())
             .build();
 
         List<Element<HearingFurtherEvidenceBundle>> hearingFurtherEvidenceBundleCollection =
@@ -1156,7 +1197,7 @@ class ManageDocumentServiceTest {
                 .build();
 
             List<Element<SupportingEvidenceBundle>> actualBundle
-                = underTest.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
+                = underTest.getRespondentStatements(caseData, selectedRespondentId);
 
             assertThat(actualBundle).isEqualTo(supportingEvidenceBundleTwo);
         }
@@ -1176,7 +1217,7 @@ class ManageDocumentServiceTest {
                 .build();
 
             List<Element<SupportingEvidenceBundle>> actualBundle
-                = underTest.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
+                = underTest.getRespondentStatements(caseData, selectedRespondentId);
 
             assertThat(actualBundle).extracting(Element::getValue)
                 .containsExactly(SupportingEvidenceBundle.builder().build());
@@ -1187,7 +1228,7 @@ class ManageDocumentServiceTest {
             CaseData caseData = CaseData.builder().build();
 
             List<Element<SupportingEvidenceBundle>> actualBundle
-                = underTest.getRespondentStatementFurtherEvidenceCollection(caseData, selectedRespondentId);
+                = underTest.getRespondentStatements(caseData, selectedRespondentId);
 
             assertThat(actualBundle).extracting(Element::getValue)
                 .containsExactly(SupportingEvidenceBundle.builder().build());
@@ -1220,9 +1261,9 @@ class ManageDocumentServiceTest {
                 .respondentStatements(newArrayList(
                     element(respondentStatementId, RespondentStatement.builder()
                         .respondentId(respondentOneId)
-                        .supportingEvidenceBundle(newArrayList(
-                            element(supportingEvidenceBundleId, SupportingEvidenceBundle.builder().build())
-                        ))
+                        .supportingEvidenceBundle(
+                            newArrayList(element(supportingEvidenceBundleId,
+                                SupportingEvidenceBundle.builder().document(testDocumentReference()).build())))
                         .respondentName("David Stevenson")
                         .build())))
                 .build();
@@ -1407,8 +1448,8 @@ class ManageDocumentServiceTest {
             .build());
     }
 
-    private ManageDocument buildFurtherEvidenceManagementDocument(String isRelatedToHearing) {
-        return ManageDocument.builder().type(FURTHER_EVIDENCE_DOCUMENTS).relatedToHearing(isRelatedToHearing).build();
+    private ManageDocument buildFurtherEvidenceManagementDocument() {
+        return ManageDocument.builder().type(FURTHER_EVIDENCE_DOCUMENTS).build();
     }
 
     private HearingBooking buildFinalHearingBooking() {
@@ -1418,12 +1459,15 @@ class ManageDocumentServiceTest {
             .build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
-        return buildC2DocumentBundle(null, dateTime);
+    private C2DocumentBundle buildC2DocumentBundle(UUID id, LocalDateTime dateTime) {
+        return buildC2DocumentBundle(dateTime).toBuilder().id(id).build();
     }
 
-    private C2DocumentBundle buildC2DocumentBundle(UUID id, LocalDateTime dateTime) {
-        return C2DocumentBundle.builder().id(id).uploadedDateTime(dateTime.toString()).build();
+    private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime) {
+        return C2DocumentBundle.builder()
+            .id(UUID.randomUUID())
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(dateTime, DATE_TIME))
+            .build();
     }
 
     private C2DocumentBundle buildC2DocumentBundle(LocalDateTime dateTime, List<Element<SupportingEvidenceBundle>>
@@ -1436,7 +1480,10 @@ class ManageDocumentServiceTest {
     private OtherApplicationsBundle buildOtherApplicationBundle(
         UUID id, OtherApplicationType type, LocalDateTime time) {
         return OtherApplicationsBundle.builder()
-            .id(id).applicationType(type).uploadedDateTime(time.toString()).build();
+            .id(id)
+            .applicationType(type)
+            .uploadedDateTime(formatLocalDateTimeBaseUsingFormat(time, DATE_TIME))
+            .build();
     }
 
     private DynamicList buildDynamicList(UUID selectedId) {

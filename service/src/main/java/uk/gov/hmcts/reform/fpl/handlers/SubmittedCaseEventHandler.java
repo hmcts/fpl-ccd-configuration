@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,8 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.OutsourcedCaseTemplate;
+import uk.gov.hmcts.reform.fpl.service.EventService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -29,8 +29,11 @@ import uk.gov.hmcts.reform.fpl.service.payment.PaymentService;
 import java.util.Collection;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.OUTSOURCED_CASE_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.enums.ApplicationType.C110A_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 
@@ -46,7 +49,8 @@ public class SubmittedCaseEventHandler {
     private final InboxLookupService inboxLookupService;
     private final OutsourcedCaseContentProvider outsourcedCaseContentProvider;
     private final PaymentService paymentService;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final EventService eventService;
+    private final FeatureToggleService toggleService;
 
     @Async
     @EventListener
@@ -56,7 +60,9 @@ public class SubmittedCaseEventHandler {
         NotifyData notifyData = hmctsEmailContentProvider.buildHmctsSubmissionNotification(caseData);
         String recipient = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        notificationService.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
+        String template = getTemplate(HMCTS_COURT_SUBMISSION_TEMPLATE_CHILD_NAME, HMCTS_COURT_SUBMISSION_TEMPLATE);
+
+        notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
     }
 
     @Async
@@ -67,24 +73,27 @@ public class SubmittedCaseEventHandler {
         NotifyData notifyData = cafcassEmailContentProvider.buildCafcassSubmissionNotification(caseData);
         String recipient = cafcassLookupConfiguration.getCafcass(caseData.getCaseLocalAuthority()).getEmail();
 
-        notificationService.sendEmail(CAFCASS_SUBMISSION_TEMPLATE, recipient, notifyData, caseData.getId());
+        String template = getTemplate(CAFCASS_SUBMISSION_TEMPLATE_CHILD_NAME, CAFCASS_SUBMISSION_TEMPLATE);
+
+        notificationService.sendEmail(template, recipient, notifyData, caseData.getId());
     }
 
     @EventListener
     public void notifyManagedLA(SubmittedCaseEvent event) {
         CaseData caseData = event.getCaseData();
 
-        if (caseData.getOutsourcingPolicy() == null) {
+        if (!caseData.isOutsourced()) {
             return;
         }
 
         Collection<String> emails = inboxLookupService.getRecipients(
             LocalAuthorityInboxRecipientsRequest.builder().caseData(caseData).build());
 
-        OutsourcedCaseTemplate templateData
-            = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
+        NotifyData templateData = outsourcedCaseContentProvider.buildNotifyLAOnOutsourcedCaseTemplate(caseData);
 
-        notificationService.sendEmail(OUTSOURCED_CASE_TEMPLATE, emails, templateData, caseData.getId().toString());
+        String template = getTemplate(OUTSOURCED_CASE_TEMPLATE_CHILD_NAME, OUTSOURCED_CASE_TEMPLATE);
+
+        notificationService.sendEmail(template, emails, templateData, caseData.getId().toString());
     }
 
     @Async
@@ -104,6 +113,10 @@ public class SubmittedCaseEventHandler {
         }
     }
 
+    private String getTemplate(String toggleEnabledTemplate, String toggleDisabledTemplate) {
+        return toggleService.isEldestChildLastNameEnabled() ? toggleEnabledTemplate : toggleDisabledTemplate;
+    }
+
     private void makePaymentForCaseOrders(final CaseData caseData) {
         try {
             paymentService.makePaymentForCaseOrders(caseData);
@@ -118,6 +131,6 @@ public class SubmittedCaseEventHandler {
 
     private void handlePaymentNotTaken(CaseData caseData) {
         log.error("Payment not taken for case {}.", caseData.getId());
-        applicationEventPublisher.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
+        eventService.publishEvent(new FailedPBAPaymentEvent(caseData, C110A_APPLICATION));
     }
 }

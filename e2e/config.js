@@ -130,6 +130,7 @@ module.exports = {
     addApplicationDocuments: 'Application documents',
     manageDocumentsLA: 'Manage documents',
     messageJudge: 'Send and reply to messages',
+    removeManagingOrganisation: 'Remove managing organisation',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
@@ -147,6 +148,7 @@ module.exports = {
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Add the gatekeeping order',
+    addGatekeepingOrder: 'V2: Add the gatekeeping order',
     createOrder: 'Create or upload an order',
     placement: 'Placement',
     handleSupplementaryEvidence: 'Handle supplementary evidence',
@@ -162,6 +164,9 @@ module.exports = {
   superUserActions: {
     removeOrder: 'Remove an order',
     changeCaseState: 'Change case state',
+  },
+  internalActions: {
+    updateCase: 'internal-change-UPDATE_CASE',
   },
   // files
   testFile: './e2e/fixtures/testFiles/mockFile.txt',

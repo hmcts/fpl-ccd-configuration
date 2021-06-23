@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('0 19 * * *')]),
+  pipelineTriggers([cron('0 18 * * *')]),
   parameters([
     string(name: 'FRONTEND_URL', defaultValue: 'https://manage-case.aat.platform.hmcts.net',
       description: 'The URL you want to run the full functional tests against'),
@@ -30,7 +30,8 @@ AppPipelineConfig pipelineConf;
 
 def integrationTestSecrets = [
   'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
   ]
 ]
 
@@ -47,12 +48,23 @@ def setupSecretsForIntegrationTests(pipelineConf) {
     withTeamSecrets(pipelineConf, 'aat') {
       /* Setup Email template integration tests key with gov.notify */
       env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+      /* Setup Docmosis template integration tests key and url */
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
     }
   }
 }
 
+def archiveExtraFilesForIntegrationTests() {
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "build/docmosis-generated/**/*"
+}
+
 def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
 }
 
 withNightlyPipeline(type, product, component) {
@@ -70,16 +82,15 @@ withNightlyPipeline(type, product, component) {
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
-  enableCrossBrowserTest()
+  // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
+  enableCrossBrowserTest(['chrome', 'firefox'])
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
   }
 
   after('mutationTest') {
-    withSonarQubeEnv('SonarQube') {
-      sh './gradlew --info sonarqube'
-    }
+    archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
 
@@ -96,6 +107,10 @@ withNightlyPipeline(type, product, component) {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
+  }
+
+  before('crossBrowserTest') {
+    env.TEST_RETRIES = 2
   }
 
   after('crossBrowserTest') {

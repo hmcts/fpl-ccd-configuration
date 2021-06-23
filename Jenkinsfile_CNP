@@ -27,7 +27,8 @@ def serviceSecrets = [
 
 def integrationTestSecrets = [
   'fpl-aat': [
-    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY')
+    secret('integration-test-notify-service-key', 'INTEGRATION_TEST_NOTIFY_SERVICE_KEY'),
+    secret('docmosis-api-key', 'INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY')
   ]
 ]
 
@@ -105,12 +106,23 @@ def setupSecretsForIntegrationTests(pipelineConf) {
     withTeamSecrets(pipelineConf, 'aat') {
       /* Setup Email template integration tests key with gov.notify */
       env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = "${INTEGRATION_TEST_NOTIFY_SERVICE_KEY}"
+      /* Setup Docmosis template integration tests key and url */
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = "${INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY}"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = "https://docmosis.aat.platform.hmcts.net"
+      env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = "${WORKSPACE}/build/docmosis-generated"
     }
   }
 }
 
+def archiveExtraFilesForIntegrationTests() {
+  steps.archiveArtifacts allowEmptyArchive: true, artifacts: "build/docmosis-generated/**/*"
+}
+
 def teardownSecretsForIntegrationTests() {
   env.INTEGRATION_TEST_NOTIFY_SERVICE_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_KEY = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_URL = ''
+  env.INTEGRATION_TEST_DOCMOSIS_TORNADO_OUTPUT_FOLDER = ''
 }
 
 
@@ -145,7 +157,7 @@ withPipeline(type, product, component) {
 
             git fetch origin demo:demo
             git push --force origin HEAD:demo
-            
+
             git fetch origin perftest:perftest
             git push --force origin HEAD:perftest
           '''
@@ -162,6 +174,7 @@ withPipeline(type, product, component) {
   }
 
   after('test') {
+    archiveExtraFilesForIntegrationTests()
     teardownSecretsForIntegrationTests()
   }
 
@@ -184,8 +197,8 @@ withPipeline(type, product, component) {
     env.CASE_SERVICE_URL="http://fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.URL="http://xui-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
     env.MOCKED_PAYMENTS=false
-    env.PARALLEL_CHUNKS=3
-    env.TEST_RETRIES=1
+    env.PARALLEL_CHUNKS=4
+    env.TEST_RETRIES=2
   }
 
   after('smoketest:saat') {

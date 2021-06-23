@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.RespondentPolicyData;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.noticeofchange.NoticeOfChangeAnswers;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 
 @WebMvcTest(CaseSubmissionController.class)
@@ -86,7 +88,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
     @Test
     void shouldReturnUnsuccessfulResponseWithNoData() {
-        postAboutToSubmitEvent(new byte[]{}, SC_BAD_REQUEST);
+        postAboutToSubmitEvent(new byte[] {}, SC_BAD_REQUEST);
     }
 
     @Test
@@ -131,7 +133,9 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
                 "orders", Orders.builder().orderType(List.of(CARE_ORDER)).build(),
                 "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
                 "amountToPay", "233300",
-                "displayAmountToPay", "Yes"
+                "displayAmountToPay", "Yes",
+                "applicants", wrapElements(buildApplicant()),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build())
             ))
             .build());
 
@@ -145,7 +149,10 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
 
         final String localAuthority = LOCAL_AUTHORITY_1_CODE;
         final CaseDetails caseDetails = CaseDetails.builder()
-            .data(of("caseLocalAuthority", localAuthority))
+            .data(of("caseLocalAuthority", localAuthority,
+                "applicants", wrapElements(buildApplicant()),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build())
+            ))
             .build();
 
         @Test
@@ -171,7 +178,7 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldMapCaseDetailsToNoticeOfChangeAnswersAndRespondentPoliciesWhenRSOCaseAccessIsToggledOn() {
+    void shouldMapCaseDetailsToNoticeOfChangeAnswersAndRespondentPolicies() {
         UUID respondentElementOneId = UUID.randomUUID();
         UUID respondentElementTwoId = UUID.randomUUID();
 
@@ -210,8 +217,6 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
             "applicants", List.of(element(buildApplicant()))
         ));
 
-        given(featureToggleService.hasRSOCaseAccess()).willReturn(true);
-
         CaseDetails caseDetails = CaseDetails.builder().data(data).build();
         AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -249,57 +254,22 @@ class CaseSubmissionControllerAboutToSubmitTest extends AbstractCallbackTest {
     }
 
     @Test
-    void shouldNotMapCaseDetailsToNoticeOfChangeAnswersAndRespondentPoliciesWhenRSOCaseAccessIsToggledOff() {
-        UUID respondentElementOneId = UUID.randomUUID();
-        UUID respondentElementTwoId = UUID.randomUUID();
+    void shouldRemoveTransientFields() {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(CaseDetails.builder()
+            .id(2313L)
+            .data(Map.of(
+                "caseLocalAuthority", LOCAL_AUTHORITY_1_CODE,
+                "applicants", List.of(element(buildApplicant())),
+                "respondents1", wrapElements(Respondent.builder().party(buildRespondentParty()).build()),
+                "draftApplicationDocument", DocumentReference.buildFromDocument(document),
+                "submissionConsentLabel", "Test"
+            ))
+            .build());
 
-        RespondentParty respondentParty = buildRespondentParty();
-
-        Organisation solicitorOrganisation = Organisation.builder()
-            .organisationName("Summers Inc")
-            .organisationID("12345")
-            .build();
-
-        RespondentSolicitor respondentSolicitor = RespondentSolicitor.builder()
-            .firstName("Ben")
-            .lastName("Summers")
-            .email("bensummers@gmail.com")
-            .organisation(solicitorOrganisation)
-            .build();
-
-        Respondent respondentOne = Respondent.builder()
-            .party(respondentParty)
-            .legalRepresentation("Yes")
-            .solicitor(respondentSolicitor)
-            .build();
-
-        Respondent respondentTwo = Respondent.builder()
-            .party(respondentParty)
-            .legalRepresentation("No")
-            .build();
-
-        List<Element<Respondent>> respondents = List.of(
-            element(respondentElementOneId, respondentOne),
-            element(respondentElementTwoId, respondentTwo));
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("caseLocalAuthority", LOCAL_AUTHORITY_1_CODE);
-        data.put("respondents1", respondents);
-
-        given(featureToggleService.hasRSOCaseAccess()).willReturn(false);
-
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
-        CaseData updatedCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        RespondentPolicyData respondentPolicyData = updatedCaseData.getRespondentPolicyData();
-        NoticeOfChangeAnswersData noticeOfChangeAnswersData = updatedCaseData.getNoticeOfChangeAnswersData();
-
-        assertThat(updatedCaseData.getRespondents1()).isEqualTo(respondents);
-        assertThat(respondentPolicyData.getRespondentPolicy0()).isNull();
-        assertThat(respondentPolicyData.getRespondentPolicy1()).isNull();
-        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers0()).isNull();
-        assertThat(noticeOfChangeAnswersData.getNoticeOfChangeAnswers1()).isNull();
+        assertThat(callbackResponse.getData()).doesNotContainKeys(
+            "draftApplicationDocument",
+            "submissionConsentLabel"
+        );
     }
 
     private RespondentParty buildRespondentParty() {

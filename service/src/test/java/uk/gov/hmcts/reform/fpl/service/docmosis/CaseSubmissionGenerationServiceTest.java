@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisAnnexDocuments;
@@ -46,6 +47,7 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.time.LocalDate.now;
 import static java.util.List.of;
@@ -123,6 +125,49 @@ class CaseSubmissionGenerationServiceTest {
         templateDataGenerationService.populateCaseNumber(returnedCaseSubmission, 12345L);
 
         assertThat(returnedCaseSubmission.getCaseNumber()).isEqualTo(expectedCaseNumber);
+    }
+
+    @Nested
+    class DocmosisCaseSubmissionSigneeNameTest {
+        @Test
+        void shouldReturnExpectedSigneeNameWhenLegalTeamManagerPresent() {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager("legal team manager")
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("legal team manager");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnCurrentUserWhenApplicantsListIsNullOrEmpty(
+            List<Element<Applicant>> applicants) {
+
+            CaseData updatedCaseData = givenCaseData.toBuilder().applicants(applicants).build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        void shouldReturnCurrentUserWhenLegalTeamManagerIsEmptyOrNotPresent(String legalTeamManager) {
+            CaseData updatedCaseData = givenCaseData.toBuilder()
+                .applicants(wrapElements(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .legalTeamManager(legalTeamManager)
+                        .build())
+                    .build()))
+                .build();
+
+            DocmosisCaseSubmission caseSubmission = templateDataGenerationService.getTemplateData(updatedCaseData);
+            assertThat(caseSubmission.getUserFullName()).isEqualTo("Professor");
+        }
     }
 
     @Nested

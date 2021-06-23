@@ -1,166 +1,111 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.fpl.events.PartyAddedToCaseEvent;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.PartyAddedNotifyData;
 import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
-import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
 import uk.gov.hmcts.reform.fpl.service.email.content.PartyAddedToCaseContentProvider;
 import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotificationService;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
-import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE_CHILD_NAME;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE_WITH_CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedDigitalRepresentativesForAddingPartiesToCase;
-import static uk.gov.hmcts.reform.fpl.handlers.NotificationEventHandlerTestData.getExpectedEmailRepresentativesForAddingPartiesToCase;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.caseData;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {PartyAddedToCaseEventHandler.class, LookupTestConfig.class,
-    RepresentativeNotificationService.class, RepresentativesInbox.class})
+@ExtendWith(MockitoExtension.class)
 class PartyAddedToCaseEventHandlerTest {
 
-    @MockBean
-    private NotificationService notificationService;
+    private static final List<Representative> EMAIL_REPS = List.of(mock(Representative.class));
+    private static final List<Representative> DIGITAL_REPS = List.of(mock(Representative.class));
+    private static final PartyAddedNotifyData DIGITAL_REP_NOTIFY_DATA = mock(PartyAddedNotifyData.class);
+    private static final PartyAddedNotifyData EMIAL_REP_NOTIFY_DATA = mock(PartyAddedNotifyData.class);
+    private static final CaseData CASE_DATA = mock(CaseData.class);
+    private static final CaseData CASE_DATA_BEFORE = mock(CaseData.class);
+    private static final long CASE_ID = 12345L;
 
-    @MockBean
+    @Mock
+    private RepresentativeNotificationService notificationService;
+    @Mock
     private RepresentativeService representativeService;
+    @Mock
+    private PartyAddedToCaseContentProvider contentProvider;
+    @Mock
+    private FeatureToggleService toggleService;
 
-    @MockBean
-    private PartyAddedToCaseContentProvider partyAddedToCaseContentProvider;
-
-    @MockBean
-    private FeatureToggleService featureToggleService;
-
-    @Autowired
+    @InjectMocks
     private PartyAddedToCaseEventHandler underTest;
 
-    CaseData caseData = caseData();
-    CaseData caseDataBefore = caseData();
 
     @BeforeEach
     void init() {
-        given(featureToggleService.hasRSOCaseAccess()).willReturn(true);
+        List<Element<Representative>> reps = wrapElements(mock(Representative.class));
+        List<Element<Representative>> repsBefore = wrapElements(mock(Representative.class));
 
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), EMAIL))
-            .willReturn(getExpectedEmailRepresentativesForAddingPartiesToCase());
+        given(CASE_DATA.getId()).willReturn(CASE_ID);
+        given(CASE_DATA.getRepresentatives()).willReturn(reps);
+        given(CASE_DATA_BEFORE.getRepresentatives()).willReturn(repsBefore);
 
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), DIGITAL_SERVICE))
-            .willReturn(getExpectedDigitalRepresentativesForAddingPartiesToCase());
+        given(representativeService.getUpdatedRepresentatives(reps, repsBefore, EMAIL))
+            .willReturn(EMAIL_REPS);
+        given(representativeService.getUpdatedRepresentatives(reps, repsBefore, DIGITAL_SERVICE))
+            .willReturn(DIGITAL_REPS);
+
+        given(contentProvider.getPartyAddedToCaseNotificationParameters(CASE_DATA, EMAIL))
+            .willReturn(EMIAL_REP_NOTIFY_DATA);
+        given(contentProvider.getPartyAddedToCaseNotificationParameters(CASE_DATA, DIGITAL_SERVICE))
+            .willReturn(DIGITAL_REP_NOTIFY_DATA);
+
+        given(toggleService.isEldestChildLastNameEnabled()).willReturn(false);
     }
 
-    @Test
-    void shouldSendEmailToPartiesWhenAddedToCase() {
-        final PartyAddedNotifyData expectedEmailParameters = getPartyAddedByEmailNotificationParameters();
-        final PartyAddedNotifyData expectedDigitalParameters = getPartyAddedByDigitalServiceNotificationParameters();
+    @ParameterizedTest
+    @MethodSource("templateSource")
+    void notifyParties(boolean toggle, String emailRepsTemplate, String digitalRepsTemplate) {
+        given(toggleService.isEldestChildLastNameEnabled()).willReturn(toggle);
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(caseData, EMAIL))
-            .willReturn(expectedEmailParameters);
+        underTest.notifyParties(new PartyAddedToCaseEvent(CASE_DATA, CASE_DATA_BEFORE));
 
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(caseData, DIGITAL_SERVICE))
-            .willReturn(expectedDigitalParameters);
+        verify(notificationService).sendToUpdatedRepresentatives(
+            emailRepsTemplate, EMIAL_REP_NOTIFY_DATA, CASE_DATA, EMAIL_REPS
+        );
 
-        underTest.notifyParties(new PartyAddedToCaseEvent(caseData, caseDataBefore));
-
-        verify(notificationService).sendEmail(
-            PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
-            PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS,
-            expectedEmailParameters,
-            caseData.getId());
-
-        verify(notificationService).sendEmail(
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL,
-            expectedDigitalParameters,
-            caseData.getId());
+        verify(notificationService).sendToUpdatedRepresentatives(
+            digitalRepsTemplate, DIGITAL_REP_NOTIFY_DATA, CASE_DATA, DIGITAL_REPS
+        );
     }
 
-    @Test
-    void shouldNotSendEmailToPartiesWhichHaveNotBeenUpdated() {
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), DIGITAL_SERVICE)).willReturn(getUpdatedRepresentatives());
-
-        given(representativeService.getUpdatedRepresentatives(caseData.getRepresentatives(),
-            caseDataBefore.getRepresentatives(), EMAIL)).willReturn(Collections.emptyList());
-
-        given(partyAddedToCaseContentProvider.getPartyAddedToCaseNotificationParameters(
-            caseData, DIGITAL_SERVICE))
-            .willReturn(getPartyAddedByDigitalServiceNotificationParameters());
-
-        underTest.notifyParties(new PartyAddedToCaseEvent(caseData, caseDataBefore));
-
-        verify(notificationService, never()).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_EMAIL),
-            any(),
-            eq(caseData.getId()));
-
-        verify(notificationService, never()).sendEmail(
-            eq(PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE),
-            eq(PARTY_ADDED_TO_CASE_BY_EMAIL_ADDRESS),
-            any(),
-            eq(caseData.getId()));
-
-        verify(notificationService).sendEmail(
-            PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE,
-            "johnmoley@test.com",
-            getPartyAddedByDigitalServiceNotificationParameters(),
-            caseData.getId());
-    }
-
-    private List<Representative> getUpdatedRepresentatives() {
-        return List.of(Representative.builder()
-            .fullName("John Moley")
-            .email("johnmoley@test.com")
-            .servingPreferences(DIGITAL_SERVICE)
-            .address(Address.builder()
-                .addressLine1("A1")
-                .postcode("CR0 2GE")
-                .build())
-            .build());
-    }
-
-    private PartyAddedNotifyData getPartyAddedByEmailNotificationParameters() {
-        return PartyAddedNotifyData.builder()
-            .firstRespondentLastName("Moley")
-            .familyManCaseNumber("123")
-            .reference("12345")
-            .build();
-    }
-
-    private PartyAddedNotifyData getPartyAddedByDigitalServiceNotificationParameters() {
-        return PartyAddedNotifyData.builder()
-            .firstRespondentLastName("Moley")
-            .familyManCaseNumber("123")
-            .reference("12345")
-            .caseUrl("null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+    private static Stream<Arguments> templateSource() {
+        return Stream.of(
+            Arguments.of(
+                false,
+                PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE,
+                PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE
+            ),
+            Arguments.of(
+                true,
+                PARTY_ADDED_TO_CASE_BY_EMAIL_NOTIFICATION_TEMPLATE_CHILD_NAME,
+                PARTY_ADDED_TO_CASE_THROUGH_DIGITAL_SERVICE_NOTIFICATION_TEMPLATE_WITH_CHILD
+            )
+        );
     }
 }

@@ -28,7 +28,8 @@ import uk.gov.hmcts.reform.fpl.model.ReturnApplication;
 import uk.gov.hmcts.reform.fpl.model.UnregisteredOrganisation;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.SharedNotifyTemplate;
-import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.RespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.RegisteredRespondentSolicitorTemplate;
+import uk.gov.hmcts.reform.fpl.model.notify.respondentsolicitor.UnregisteredRespondentSolicitorTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
@@ -43,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.apache.commons.lang3.RandomUtils.nextLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -78,6 +78,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.OPEN;
 import static uk.gov.hmcts.reform.fpl.enums.State.RETURNED;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.NO;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
+import static uk.gov.hmcts.reform.fpl.service.CaseConverter.MAP_TYPE;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkThat;
 import static uk.gov.hmcts.reform.fpl.utils.AssertionHelper.checkUntil;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -96,7 +97,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     private static final String SOLICITOR_LAST_NAME = "Smith";
     private static final String DISPLAY_AMOUNT_TO_PAY = "displayAmountToPay";
     private static final String SURVEY_LINK = "https://fake.survey.url";
-    private static final Long CASE_ID = nextLong();
+    private static final Long CASE_ID = 1234567890123456L;
     private static final String NOTIFICATION_REFERENCE = "localhost/" + CASE_ID;
 
     @Autowired
@@ -126,16 +127,16 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() {
         final Map<String, Object> expectedHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(true), new TypeReference<>() {
-            });
+            getExpectedHmctsParameters(true), new TypeReference<>() {}
+        );
 
         final Map<String, Object> completeCafcassParameters = mapper.convertValue(
-            getExpectedCafcassParameters(true), new TypeReference<>() {
-            });
+            getExpectedCafcassParameters(true), new TypeReference<>() {}
+        );
 
         CaseDetails caseDetails = populatedCaseDetails(Map.of("id", CASE_ID));
         caseDetails.getData().put(DISPLAY_AMOUNT_TO_PAY, YES.getValue());
-        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("testUrl").build());
+        caseDetails.getData().put("submittedForm", DocumentReference.builder().binaryUrl("/testUrl").build());
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
@@ -154,7 +155,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         });
 
         checkThat(() -> verifyNoMoreInteractions(notificationClient));
-        verifyTaskListUpdated(CASE_ID);
+        verifyTaskListUpdated();
 
         verify(coreCaseDataService).triggerEvent(eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID),
             eq("internal-update-case-summary"), anyMap());
@@ -177,8 +178,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .build();
 
         final Map<String, Object> registeredSolicitorParameters = mapper.convertValue(
-            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {
-            });
+            getExpectedRegisteredSolicitorParameters(), new TypeReference<>() {}
+        );
 
         postSubmittedEvent(buildCallbackRequest(asCaseDetails(caseData), OPEN));
 
@@ -209,8 +210,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            });
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
+        );
 
         checkUntil(() -> {
             verify(notificationClient).sendEmail(
@@ -238,8 +239,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         postSubmittedEvent(callbackRequest);
 
         Map<String, Object> expectedIncompleteHmctsParameters = mapper.convertValue(
-            getExpectedHmctsParameters(false), new TypeReference<>() {
-            });
+            getExpectedHmctsParameters(false), new TypeReference<>() {}
+        );
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
@@ -262,7 +263,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     void shouldNotifyManagedLAWhenCaseCreatedOnBehalfOfLA() {
         CaseData caseData = CaseData.builder()
             .outsourcingPolicy(OrganisationPolicy.builder()
-                .organisation(Organisation.builder().organisationName("Third party").build())
+                .organisation(Organisation.builder()
+                    .organisationID("ORG1")
+                    .organisationName("Third party")
+                    .build())
                 .build())
             .caseLocalAuthority("example")
             .id(CASE_ID)
@@ -295,21 +299,19 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
 
         postSubmittedEvent(buildCallbackRequest(caseDetails, OPEN));
 
-        String expectedSalutation = String.format("Dear %s %s", SOLICITOR_FIRST_NAME, SOLICITOR_LAST_NAME);
-
-        Map<String, Object> expectedUnregisteredSolicitorParameters = mapper.convertValue(
-            RespondentSolicitorTemplate.builder()
-                .salutation(expectedSalutation)
+        Map<String, Object> expectedParameters = mapper.convertValue(
+            UnregisteredRespondentSolicitorTemplate.builder()
+                .ccdNumber("1234-5678-9012-3456")
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .build(),
-            new TypeReference<>() {
-            });
+            MAP_TYPE
+        );
 
         checkUntil(() ->
             verify(notificationClient).sendEmail(
                 UNREGISTERED_RESPONDENT_SOLICITOR_TEMPLATE,
                 SOLICITOR_EMAIL,
-                expectedUnregisteredSolicitorParameters,
+                expectedParameters,
                 NOTIFICATION_REFERENCE
             ));
     }
@@ -332,7 +334,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         String expectedSalutation = String.format("Dear %s %s", SOLICITOR_FIRST_NAME, SOLICITOR_LAST_NAME);
 
         Map<String, Object> expectedUnregisteredSolicitorParameters = mapper.convertValue(
-            RespondentSolicitorTemplate.builder()
+            RegisteredRespondentSolicitorTemplate.builder()
                 .salutation(expectedSalutation)
                 .localAuthority(LOCAL_AUTHORITY_1_NAME)
                 .build(),
@@ -525,7 +527,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         return CaseDetails.builder()
             .id(CASE_ID)
             .data(new HashMap<>(Map.of(
-                "submittedForm", DocumentReference.builder().binaryUrl("testUrl").build(),
+                "submittedForm", DocumentReference.builder().binaryUrl("/testUrl").build(),
                 RETURN_APPLICATION, ReturnApplication.builder()
                     .note("Some note")
                     .reason(List.of(INCOMPLETE))
@@ -575,13 +577,12 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
     }
 
     private Map<String, Object> getExpectedRegisteredSolicitorParameters() {
-        RespondentSolicitorTemplate respondentSolicitorTemplate = RespondentSolicitorTemplate.builder()
+        RegisteredRespondentSolicitorTemplate template = RegisteredRespondentSolicitorTemplate.builder()
             .salutation("Dear First Respondent")
             .localAuthority(LOCAL_AUTHORITY_1_NAME)
             .build();
 
-        return mapper.convertValue(respondentSolicitorTemplate, new TypeReference<>() {
-        });
+        return mapper.convertValue(template, new TypeReference<>() {});
     }
 
     private <T extends SharedNotifyTemplate> T getCompleteParameters(T template) {
@@ -592,6 +593,7 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         template.setUrgentHearing(YES.getValue());
         template.setNonUrgentHearing(NO.getValue());
         template.setFirstRespondentName("Smith");
+        template.setChildLastName("Reeves");
 
         return template;
     }
@@ -615,7 +617,8 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
         template.setDataPresent(YES.getValue());
         template.setFullStop(NO.getValue());
         template.setOrdersAndDirections(List.of("Emergency protection order", "Contact with any named person"));
-        template.setDocumentLink("testUrl");
+        template.setDocumentLink("http://fake-url/testUrl");
+        template.setChildLastName("");
     }
 
     private CallbackRequest buildCallbackRequest(CaseDetails caseDetails, State stateBefore) {
@@ -628,11 +631,11 @@ class CaseSubmissionControllerSubmittedTest extends AbstractCallbackTest {
             .build();
     }
 
-    private void verifyTaskListUpdated(Long caseId) {
+    private void verifyTaskListUpdated() {
         verify(coreCaseDataService).triggerEvent(
             eq(JURISDICTION),
             eq(CASE_TYPE),
-            eq(caseId),
+            eq(CASE_ID),
             eq("internal-update-task-list"),
             anyMap());
     }

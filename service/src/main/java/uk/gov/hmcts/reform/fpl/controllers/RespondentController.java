@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
-import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
-import uk.gov.hmcts.reform.fpl.service.RespondentPolicyService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfChangeService;
+import uk.gov.hmcts.reform.fpl.service.RespondentAfterSubmissionRepresentationService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.respondent.RespondentValidator;
 
@@ -38,9 +38,9 @@ public class RespondentController extends CallbackController {
     private static final String RESPONDENTS_KEY = "respondents1";
     private final ConfidentialDetailsService confidentialDetailsService;
     private final RespondentService respondentService;
-    private final FeatureToggleService featureToggleService;
-    private final RespondentPolicyService respondentPolicyService;
+    private final RespondentAfterSubmissionRepresentationService respondentAfterSubmissionRepresentationService;
     private final RespondentValidator respondentValidator;
+    private final NoticeOfChangeService noticeOfChangeService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
@@ -82,8 +82,9 @@ public class RespondentController extends CallbackController {
             caseData.getAllRespondents(), caseDataBefore.getAllRespondents());
 
         caseDetails.getData().put(RESPONDENTS_KEY, respondentService.removeHiddenFields(respondents));
-        if (!OPEN.equals(caseData.getState()) && featureToggleService.hasRSOCaseAccess()) {
-            caseDetails.getData().putAll(respondentPolicyService.generateForSubmission(caseDetails));
+        if (!OPEN.equals(caseData.getState())) {
+            caseDetails.getData().putAll(
+                respondentAfterSubmissionRepresentationService.updateRepresentation(caseData, caseDataBefore));
         }
         return respond(caseDetails);
     }
@@ -95,9 +96,8 @@ public class RespondentController extends CallbackController {
         CaseData caseDataBefore = getCaseDataBefore(callbackRequest);
 
         if (!OPEN.equals(caseData.getState())) {
-            if (featureToggleService.hasRSOCaseAccess()) {
-                publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
-            }
+            noticeOfChangeService.updateRepresentativesAccess(caseData, caseDataBefore);
+            publishEvent(new RespondentsUpdated(caseData, caseDataBefore));
             publishEvent(new AfterSubmissionCaseDataUpdated(caseData, caseDataBefore));
         }
     }

@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
     classpath("gradle.plugin.au.com.dius.pact.provider:gradle:4.2.3") {
       exclude group: 'com.vladsch.flexmark'
     }
@@ -17,9 +17,9 @@ plugins {
   id 'checkstyle'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'org.springframework.boot' version '2.4.5'
-  id 'com.github.ben-manes.versions' version '0.36.0'
-  id 'org.sonarqube' version '3.1.1'
+  id 'org.springframework.boot' version '2.5.1'
+  id 'com.github.ben-manes.versions' version '0.39.0'
+  id 'org.sonarqube' version '3.3'
   id 'project-report'
   id "idea"
   id 'info.solidsoft.pitest' version '1.6.0'
@@ -33,6 +33,9 @@ apply plugin: 'au.com.dius.pact'
 
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
+
+def mirrorHost = System.env.NONPROD_SUBSCRIPTION_NAME == "sandbox" ? "artifactory.sandbox" : "artifactory";
+def mirrorUrl = "https://${mirrorHost}.platform.hmcts.net/artifactory/maven-remotes"
 
 sourceSets {
   functionalTest {
@@ -240,12 +243,11 @@ repositories {
   maven {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
-  //maven {
-  //  url "https://jitpack.io"
-  //}
-
   maven {
     url "https://repo.spring.io/milestone"
+  }
+  maven {
+    url mirrorUrl
   }
 }
 
@@ -258,7 +260,7 @@ def versions = [
   log4j           : '2.13.2',
   pdfbox          : '2.0.23',
   mockito         : '3.7.7',
-  serenity        : '2.3.4',
+  serenity        : '2.4.5',
   pact_version    : '4.1.7',
   junit_jupiter   : '5.7.1'
 ]
@@ -289,12 +291,12 @@ dependencies {
 
   implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.4.0'
+  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.5.0'
 
-  implementation group: 'io.github.openfeign', name: 'feign-core', version: '10.9'
+  implementation group: 'io.github.openfeign', name: 'feign-core', version: '11.2'
 
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.20'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.8.1'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.22'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.10.0'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -312,9 +314,13 @@ dependencies {
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.17.2-RELEASE'
 
   implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
-  implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.10.0'
 
   implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+
+  implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.12.3'
+
+  implementation group: 'net.minidev', name:'json-smart', version: '2.4.7'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
@@ -328,7 +334,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.apache.commons', name: 'commons-text', version: '1.8'
   testCompile group: 'org.springframework.retry', name: 'spring-retry'
-  testCompile group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
+  testCompile group: 'org.awaitility', name: 'awaitility', version: '4.1.0'
 
   testCompile group: 'org.springframework.security', name: 'spring-security-test'
 
@@ -359,7 +365,7 @@ dependencies {
   contractTestCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
   contractTestRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit_jupiter
   contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit_jupiter
-  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.1'
+  contractTestRuntime group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.2'
   contractTestImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestCompile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.4'
   contractTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.7.RELEASE'
@@ -422,6 +428,6 @@ pitest {
 
 dependencyManagement {
   imports {
-    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.0'
+    mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.2'
   }
 }

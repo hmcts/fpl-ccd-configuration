@@ -29,10 +29,37 @@
     "Searchable": "N"
   },
   {
+    "LiveFrom": "01/01/2018",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersApprovedAtHearing",
+    "Label": "Was the order approved at a hearing?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersApprovedAtHearingList",
+    "FieldType": "DynamicList",
+    "Label": "Which hearing?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
     "LiveFrom": "01/01/2017",
     "ID": "manageOrdersApprovalDate",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Date",
+    "Label": "Approval Date",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersApprovalDateTime",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
     "Label": "Approval Date",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
@@ -70,6 +97,240 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "FieldType": "Document",
     "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEpoType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "EPOTypes",
+    "Label": "Type of emergency protection order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIncludePhrase",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Include: \"Any person who can produce the children to the applicant must do so\"",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersChildrenDescription",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add description of children",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEndDateTime",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": "When does it end?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCareOrderIssuedDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "When was the care order issued?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCareOrderIssuedCourt",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "HearingVenue",
+    "Label": "Which court issued the order?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEpoRemovalAddress",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "AddressUK",
+    "Label": "Address",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersExclusionRequirement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Is there an exclusion requirement",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersWhoIsExcluded",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Text",
+    "Label": "Who's excluded",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersExclusionStartDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": "Date power of exclusion starts",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersPowerOfArrest",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Upload power of arrest, if required",
+    "FieldType": "Document",
+    "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".doc,.docx,.pdf",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersIsFinalOrder",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Is this a final order?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCloseCase",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "Does this order close the case?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCloseCaseWarning",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": "The case will remain open for 21 days to allow for appeal.\n\n In a closed case, you can still: \n * add a case note \n * upload a document \n * issue a C21 (blank order) \n * submit a C2 application",
+    "FieldType": "Label",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEndDateTypeWithMonth",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersEndDateTypeWithMonth",
+    "Label": "When does the order end?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersEndDateTypeWithEndOfProceedings",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersEndDateTypeWithEndOfProceedings",
+    "Label": "When does the order end?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSetDateEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Date",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSetDateAndTimeEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "DateTime",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersSetMonthsEndDate",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Number",
+    "Label": "Order length, in months",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N",
+    "Min": "1"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersHasExclusionRequirement",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Add exclusion details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersExclusionDetails",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "TextArea",
+    "Label": "Add exclusion details",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassRegion",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CafcassJurisdictionRegion",
+    "Label": "Select jurisdiction",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassOfficesEngland",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassEnglandOffices",
+    "Label": "Select region",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersCafcassOfficesWales",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassWalesOffices",
+    "Label": "Select region",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersState",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Label": " ",
+    "FieldType": "Text",
     "SecurityClassification": "PUBLIC",
     "Searchable": "N"
   }

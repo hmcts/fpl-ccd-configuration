@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.orders;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ManageOrderDocumentScopedFieldsCalculatorTest {
 
@@ -12,24 +10,51 @@ class ManageOrderDocumentScopedFieldsCalculatorTest {
 
     @Test
     void calculate() {
-        assertThat(underTest.calculate()).isEqualTo(
-            List.of(
-                "judgeAndLegalAdvisor",
-                "manageOrdersApprovalDate",
-                "orderAppliesToAllChildren",
-                "children_label",
-                "childSelector",
-                "manageOrdersFurtherDirections",
-                "orderPreview",
-                "manageOrdersTitle",
-                "manageOrdersDirections",
-                "manageOrdersOperation",
-                "manageOrdersType",
-                "orderTempQuestions",
-                "issuingDetailsSectionSubHeader",
-                "childrenDetailsSectionSubHeader",
-                "orderDetailsSectionSubHeader"
-            )
+        assertThat(underTest.calculate()).containsExactlyInAnyOrder(
+            "manageOrdersApprovedAtHearing",
+            "manageOrdersApprovedAtHearingList",
+            "judgeAndLegalAdvisor",
+            "manageOrdersApprovalDate",
+            "orderAppliesToAllChildren",
+            "children_label",
+            "childSelector",
+            "manageOrdersTitle",
+            "manageOrdersDirections",
+            "manageOrdersCareOrderIssuedDate",
+            "manageOrdersCareOrderIssuedCourt",
+            "manageOrdersEpoType",
+            "manageOrdersIncludePhrase",
+            "manageOrdersChildrenDescription",
+            "manageOrdersEndDateTime",
+            "manageOrdersEpoRemovalAddress",
+            "manageOrdersExclusionRequirement",
+            "manageOrdersWhoIsExcluded",
+            "manageOrdersExclusionStartDate",
+            "manageOrdersPowerOfArrest",
+            "manageOrdersFurtherDirections",
+            "manageOrdersEndDateTypeWithMonth",
+            "manageOrdersEndDateTypeWithEndOfProceedings",
+            "manageOrdersSetDateEndDate",
+            "manageOrdersSetDateAndTimeEndDate",
+            "manageOrdersSetMonthsEndDate",
+            "orderPreview",
+            "manageOrdersIsFinalOrder",
+            "manageOrdersCloseCase",
+            "manageOrdersCloseCaseWarning",
+            "manageOrdersApprovalDateTime",
+            "manageOrdersOperation",
+            "manageOrdersType",
+            "manageOrdersState",
+            "orderTempQuestions",
+            "hearingDetailsSectionSubHeader",
+            "issuingDetailsSectionSubHeader",
+            "childrenDetailsSectionSubHeader",
+            "orderDetailsSectionSubHeader",
+            "manageOrdersExclusionDetails",
+            "manageOrdersHasExclusionRequirement",
+            "manageOrdersCafcassRegion",
+            "manageOrdersCafcassOfficesEngland",
+            "manageOrdersCafcassOfficesWales"
         );
     }
 }

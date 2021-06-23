@@ -15,4 +15,10 @@ public class Organisation {
     private String organisationID;
     @JsonProperty("OrganisationName")
     private String organisationName;
+
+    public static Organisation organisation(String id) {
+        return Organisation.builder()
+            .organisationID(id)
+            .build();
+    }
 }

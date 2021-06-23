@@ -104,4 +104,16 @@ class CaseDetailsMapTest {
         assertThat(caseDetailsMap).containsExactly(entry("K0", "V0"));
     }
 
+    @Test
+    void shouldBuildFromMap() {
+        final Map<String, Object> initialMap = new HashMap<>();
+        initialMap.put("K0", null);
+        initialMap.put("K1", "V1");
+        initialMap.put("K2", null);
+
+        CaseDetailsMap caseDetailsMap = caseDetailsMap(initialMap);
+
+        assertThat(caseDetailsMap).containsExactly(entry("K1", "V1"));
+    }
+
 }

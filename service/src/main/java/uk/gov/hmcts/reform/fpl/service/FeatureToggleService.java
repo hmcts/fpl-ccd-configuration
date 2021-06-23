@@ -63,16 +63,18 @@ public class FeatureToggleService {
         return ldClient.boolVariation("fee-and-pay-case-type", createLDUser(), false);
     }
 
-    public boolean isRetrievingOrganisationEnabled() {
-        return ldClient.boolVariation("retrieve-organisation", createLDUser(), false);
+    public boolean isFurtherEvidenceUploadNotificationEnabled() {
+        return ldClient.boolVariation("further-evidence-upload-notification",
+            createLDUser(), false);
     }
 
-    public boolean isRespondentJourneyEnabled() {
-        return ldClient.boolVariation("respondent-journey", createLDUser(), false);
+    public boolean isFurtherEvidenceDocumentTabEnabled() {
+        return ldClient.boolVariation("further-evidence-document-tab",
+            createLDUser(), false);
     }
 
-    public boolean hasRSOCaseAccess() {
-        return ldClient.boolVariation("rso-case-access", createLDUser(), false);
+    public boolean isEldestChildLastNameEnabled() {
+        return ldClient.boolVariation("eldest-child-last-name", createLDUser(), false);
     }
 
     private LDUser createLDUser() {
@@ -86,10 +88,5 @@ public class FeatureToggleService {
 
         values.forEach(builder::custom);
         return builder.build();
-    }
-
-    public boolean isFurtherEvidenceUploadNotificationEnabled() {
-        return ldClient.boolVariation("further-evidence-upload-notification",
-            createLDUser(), false);
     }
 }

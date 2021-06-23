@@ -2,15 +2,57 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
-    "ListElementCode": "C21_BLANK_ORDER",
-    "ListElement": "C21 - Blank order",
+    "ListElementCode": "C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN",
+    "ListElement": "Appointment of a children's guardian (C47A)",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ManageOrdersType",
-    "ListElementCode": "C32_CARE_ORDER",
-    "ListElement": "C32 - Care order",
+    "ListElementCode": "C21_BLANK_ORDER",
+    "ListElement": "Blank order (C21)",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C32_CARE_ORDER",
+    "ListElement": "Care order (C32)",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C32B_DISCHARGE_OF_CARE_ORDER",
+    "ListElement": "Discharge of care order (C32B)",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C23_EMERGENCY_PROTECTION_ORDER",
+    "ListElement": "Emergency protection order (C23)",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/207",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C33_INTERIM_CARE_ORDER",
+    "ListElement": "Interim care order (C33)",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/207",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C35B_INTERIM_SUPERVISION_ORDER",
+    "ListElement": "Interim supervision order (C35B)",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/207",
+    "ID": "ManageOrdersType",
+    "ListElementCode": "C35A_SUPERVISION_ORDER",
+    "ListElement": "Supervision order (C35A)",
+    "DisplayOrder": 8
   }
 ]

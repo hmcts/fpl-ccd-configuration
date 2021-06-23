@@ -13,5 +13,6 @@ public class OrderDefinition {
     private final String type;
     private final Language language;
     private final String service;
-    private final List<DirectionConfiguration> directions;
+    private final List<DirectionConfiguration> standardDirections;
+    private final DirectionConfiguration customDirection;
 }

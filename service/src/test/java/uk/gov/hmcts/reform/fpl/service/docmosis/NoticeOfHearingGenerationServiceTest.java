@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.docmosis.DocmosisNoticeOfHearing;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.CaseDetailsHelper;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
 import java.time.LocalDateTime;
@@ -58,11 +57,9 @@ class NoticeOfHearingGenerationServiceTest {
     private final HmctsCourtLookupConfiguration courtLookup = new LookupTestConfig().courtLookupConfiguration();
     private final Time time = new FixedTimeConfiguration().fixedDateTime(LocalDateTime.of(2021, 3, 3, 3, 3, 3));
     private final CaseDataExtractionService dataExtractionService = mock(CaseDataExtractionService.class);
-    private final CaseDetailsHelper caseDetailsHelper = mock(CaseDetailsHelper.class);
 
     private final NoticeOfHearingGenerationService underTest = new NoticeOfHearingGenerationService(
-        dataExtractionService, courtLookup, caseDetailsHelper, time
-    );
+        dataExtractionService, courtLookup, time);
 
     @BeforeEach
     void mocks() {
@@ -83,7 +80,6 @@ class NoticeOfHearingGenerationServiceTest {
                 .hearingLegalAdvisorName("should also be removed")
                 .build()
         );
-        when(caseDetailsHelper.formatCCDCaseNumber(CASE_NUMBER)).thenReturn(FORMATTED_CASE_NUMBER);
     }
 
     @Test
