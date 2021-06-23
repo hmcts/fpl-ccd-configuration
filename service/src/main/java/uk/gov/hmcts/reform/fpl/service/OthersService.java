@@ -13,9 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.*;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.utils.ConfidentialDetailsHelper.getConfidentialItemToAdd;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
@@ -75,13 +75,12 @@ public class OthersService {
         if (useAllOthers(sendOrderToAllOthers)) {
             return others;
         } else {
-            if (selector.getSelected().isEmpty()) {
-                return Collections.emptyList();
+            if (isNull(selector) || isEmpty(selector.getSelected())) {
+                return null;
             }
             return selector.getSelected().stream()
                 .map(others::get)
                 .collect(toList());
-
         }
     }
 
@@ -124,5 +123,13 @@ public class OthersService {
 
     private boolean otherExists(Others others) {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
+    }
+
+    public boolean isRepresented(Other other) {
+        return !isEmpty(other.getRepresentedBy());
+    }
+
+    public boolean hasAddressAdded(Other other) {
+        return !isNull(other.getAddress().getPostcode());
     }
 }

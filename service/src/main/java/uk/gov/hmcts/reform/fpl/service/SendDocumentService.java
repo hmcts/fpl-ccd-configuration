@@ -31,6 +31,7 @@ public class SendDocumentService {
     private final SendLetterService sendLetters;
     private final CoreCaseDataService caseService;
     private final SentDocumentHistoryService sentDocuments;
+    private final OthersService othersService;
 
     public void sendDocuments(CaseData caseData, List<DocumentReference> documentToBeSent, List<Recipient> parties) {
 
@@ -71,26 +72,25 @@ public class SendDocumentService {
     }
 
     public List<Recipient> getSelectedOtherRecipients(CaseData caseData, List<Element<Other>> othersSelected) {
-        final List<Recipient> recipients = new ArrayList<>();
-
+        List<Recipient> recipients = new ArrayList<>();
         List<Representative> otherRepresentatives = new ArrayList<>();
 
         othersSelected.stream().forEach(other -> {
             Other otherToBeNotified = other.getValue();
-            if (otherIsRepresented(otherToBeNotified)) {
-                UUID representativeID = other.getValue().getRepresentedBy().get(0).getValue();
+            if ((othersService.isRepresented(otherToBeNotified))) {
+                otherToBeNotified.getRepresentedBy().stream().forEach(representedBy -> {
+                    Optional<Representative> representative = caseData.getRepresentatives().stream()
+                        .filter(element -> element.getId().equals(representedBy.getValue()) && element.getValue().getServingPreferences() == POST)
+                        .map(Element::getValue)
+                        .findFirst();
 
-                Optional<Representative> representative = caseData.getRepresentatives().stream()
-                    .filter(element -> element.getId().equals(representativeID) && element.getValue().getServingPreferences() == POST)
-                    .map(Element::getValue)
-                    .findFirst();
+                    if (representative.isPresent()) {
+                        otherRepresentatives.add(representative.get());
+                    }
+                });
 
-                if(representative.isPresent()) {
-                    otherRepresentatives.add(representative.get());
-                }
             } else {
-                // send to other address if not empty
-                if(otherHasAddressAdded(otherToBeNotified)) {
+                if (othersService.hasAddressAdded(otherToBeNotified)) {
                     recipients.add(Representative.builder()
                         .fullName(otherToBeNotified.getName())
                         .address(otherToBeNotified.getAddress())
@@ -109,22 +109,14 @@ public class SendDocumentService {
 
         List<Representative> representatives = caseData.getRepresentativesByServedPreference(POST)
             .stream()
-            .filter(representative ->
-                !representative.getRole().getType().equals(RepresentativeRole.Type.OTHER))
+            .filter(representative -> !representative.getRole().getType()
+                .equals(RepresentativeRole.Type.OTHER))
             .collect(Collectors.toList());
 
         recipients.addAll(new ArrayList<>((representatives)));
         recipients.addAll(getNotRepresentedRespondents(caseData));
 
         return recipients;
-    }
-
-    private boolean otherIsRepresented(Other other) {
-        return !isEmpty(other.getRepresentedBy());
-    }
-
-    private boolean otherHasAddressAdded(Other other) {
-        return !isNull(other.getAddress());
     }
 
     private List<Recipient> getRepresentativesServedByPost(CaseData caseData) {

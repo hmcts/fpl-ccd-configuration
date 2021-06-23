@@ -72,8 +72,6 @@ public class SealedOrderHistoryService {
             .unsealedDocumentCopy(plainWordOrder)
             .build()));
 
-        System.out.println("Selected others inside history is" + selectedOthers );
-
         pastOrders.sort(legacyLastAndThenByApprovalDateAndIssuedDateTimeDesc());
 
         Map<String, Object> data = new HashMap<>(manageOrdersClosedCaseFieldGenerator.generate(caseData));

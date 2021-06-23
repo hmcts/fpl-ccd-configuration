@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -41,6 +42,7 @@ public class GeneratedOrderEventHandler {
     private final RepresentativeNotificationService representativeNotificationService;
     private final IssuedOrderAdminNotificationHandler issuedOrderAdminNotificationHandler;
     private final SendDocumentService sendDocumentService;
+    private final OthersService othersService;
 
     @EventListener
     public void notifyParties(final GeneratedOrderEvent orderEvent) {
@@ -64,10 +66,6 @@ public class GeneratedOrderEventHandler {
         final List<Recipient> allRecipients = sendDocumentService.getRecipientsExcludingOthers(caseData);
         allRecipients.addAll(otherRecipients);
 
-        allRecipients.stream().forEach(recipient -> {
-            System.out.println("I am posting to" + recipient.getFullName() + recipient.getAddress().getAddressLine1());
-        });
-
         sendDocumentService.sendDocuments(caseData, documents, allRecipients);
     }
 
@@ -77,8 +75,6 @@ public class GeneratedOrderEventHandler {
         Set<String> emailRepresentatives = representativesInbox.getEmailsByPreferenceExcludingOthers(caseData, EMAIL);
 
         emailRepresentatives.addAll(getOthersToBeNotified(othersSelected, caseData.getRepresentatives(), EMAIL));
-
-        System.out.println("I am going to notify email serv" + emailRepresentatives);
 
         if (!emailRepresentatives.isEmpty()) {
             final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithoutCaseUrl(caseData,
@@ -100,8 +96,6 @@ public class GeneratedOrderEventHandler {
 
         digitalRepresentatives.addAll(getOthersToBeNotified(othersSelected, caseData.getRepresentatives(), DIGITAL_SERVICE));
 
-        System.out.println("I am going to notify digital serv" + digitalRepresentatives);
-
         final NotifyData notifyData = orderIssuedEmailContentProvider.getNotifyDataWithCaseUrl(caseData,
             orderDocument, GENERATED_ORDER);
 
@@ -119,19 +113,20 @@ public class GeneratedOrderEventHandler {
         Set<String> othersToBeNotified = new HashSet<>();
 
         othersSelected.stream().forEach(other -> {
-            if (!other.getValue().getRepresentedBy().isEmpty()) {
+            Other otherToBeNotified = other.getValue();
+            if (othersService.isRepresented(otherToBeNotified)) {
 
-                other.getValue().getRepresentedBy().stream().forEach(representative -> {
+                otherToBeNotified.getRepresentedBy().stream().forEach(representative -> {
                     String representativeEmail = representatives.stream()
-                    .filter(element -> element.getId().equals(representative.getValue()) && element.getValue().getServingPreferences() == preferences)
-                    .map(Element::getValue)
-                    .map(Representative::getEmail)
-                    .findFirst()
-                    .orElse("");
+                        .filter(element -> element.getId().equals(representative.getValue()) && element.getValue().getServingPreferences() == preferences)
+                        .map(Element::getValue)
+                        .map(Representative::getEmail)
+                        .findFirst()
+                        .orElse("");
 
-                if(!representativeEmail.isEmpty()) {
-                    othersToBeNotified.add(representativeEmail);
-                }
+                    if (!representativeEmail.isEmpty()) {
+                        othersToBeNotified.add(representativeEmail);
+                    }
                 });
             }
         });
