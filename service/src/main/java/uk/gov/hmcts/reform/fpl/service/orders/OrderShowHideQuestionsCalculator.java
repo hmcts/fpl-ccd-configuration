@@ -26,6 +26,8 @@ public class OrderShowHideQuestionsCalculator {
 
         if (IsFinalOrder.MAYBE.equals(order.getIsFinalOrder())) {
             questionMap.put("isFinalOrder", "YES");
+        } else {
+            questionMap.put("isFinalOrder", "NO");
         }
 
         return questionMap;
