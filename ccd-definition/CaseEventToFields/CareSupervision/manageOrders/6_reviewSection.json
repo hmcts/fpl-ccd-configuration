@@ -35,7 +35,7 @@
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "orderTempQuestions.closeCase=\"YES\"",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,6 +48,6 @@
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
     "FieldShowCondition": "manageOrdersCloseCase=\"Yes\"",
-    "ShowSummaryChangeOption": "N"
+    "ShowSummaryChangeOption": "Y"
   }
 ]
