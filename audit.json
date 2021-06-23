@@ -146,5 +146,6 @@
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-gatekeeping-order/about-to-start_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-gatekeeping-order/generate-draft/mid-event_POST": "ignore",
   "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-gatekeeping-order/about-to-submit_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/add-gatekeeping-order/direction-selection/mid-event_POST": "ignore",
   "10062_PII Disclosure_http://fpl-case-service-aat.service.core-compute-aat.internal/callback/draft-standard-directions/about-to-start_POST": "ignore"
 }
