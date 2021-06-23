@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.mchange.v2.util.CollectionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,25 +18,25 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AppointedGuardianService {
 
-    public String getAppointedGuardiansLabel(List<Element<Respondent>> respondents,
-                                             List<Element<Other>> others) {
+    public String getAppointedGuardiansLabel(CaseData caseData) {
+        List<Element<Respondent>> respondents = caseData.getAllRespondents();
+        List<Element<Other>> others = caseData.getAllOthers();
         if (isEmpty(respondents) && isEmpty(others)) {
-            return "No respondents or others on the case";
+            return "No respondents or others to be given notice on the case";
         }
 
+        Stream<String> respondentsNames = respondents.stream()
+            .map(respondent -> "Respondent - " + respondent.getValue().getParty().getFullName());
+
+        Stream<String> othersNames = others.stream()
+            .map(other -> "Other - " + other.getValue().getName());
+
+        List<String> respondentsAndOthersNames = Stream.concat(respondentsNames, othersNames).collect(
+            Collectors.toList());
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < CollectionUtils.size(respondents); i++) {
-            Respondent respondent = respondents.get(i).getValue();
-
-            builder.append(String.format("Respondent %d: %s", i + 1, respondent.getParty().getFullName()));
-            builder.append("\n");
-        }
-
-        for (int i = 0; i < CollectionUtils.size(others); i++) {
-            Other other = others.get(i).getValue();
-
-            builder.append(String.format("Other %d: %s", i + 1, other.getName()));
+        for (int i = 0; i < respondentsAndOthersNames.size(); i++) {
+            builder.append(String.format("Person %d: %s", i + 1, respondentsAndOthersNames.get(i)));
             builder.append("\n");
         }
 

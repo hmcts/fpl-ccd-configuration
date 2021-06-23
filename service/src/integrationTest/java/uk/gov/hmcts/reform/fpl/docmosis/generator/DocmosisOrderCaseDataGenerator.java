@@ -5,6 +5,10 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.event.ManageOrdersEventData;
 import uk.gov.hmcts.reform.fpl.model.order.Order;
@@ -22,6 +26,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.enums.orders.ManageOrdersEndDateType.NUMBER_OF_MONTHS;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class DocmosisOrderCaseDataGenerator {
 
@@ -159,6 +164,18 @@ public class DocmosisOrderCaseDataGenerator {
                         .manageOrdersCafcassRegion("ENGLAND")
                         .build()
                 );
+            case APPOINTED_GUARDIAN:
+                return builder.respondents1(wrapElements(Respondent.builder().party(RespondentParty.builder()
+                    .firstName("Remy").lastName("Respo").build()).build()))
+                    .others(Others.builder().additionalOthers(wrapElements(
+                        Other.builder().name("Otto Others").build())).build())
+                    .appointedGuardianSelector(Selector.builder().selected(List.of(0, 1)).build());
+            case ORDER_BY_CONSENT:
+                return builder.manageOrdersEventData(
+                    getManageOrdersEvent(builder)
+                        .manageOrdersIsByConsent("Yes")
+                        .build()
+                );
             default:
                 throw new RuntimeException("Question block for " + questionBlock + " not implemented");
         }
@@ -173,6 +190,5 @@ public class DocmosisOrderCaseDataGenerator {
     private ManageOrdersEventData getManageOrdersEventData(CaseData.CaseDataBuilder builder) {
         return defaultIfNull(builder.build().getManageOrdersEventData(), ManageOrdersEventData.builder().build());
     }
-
 
 }

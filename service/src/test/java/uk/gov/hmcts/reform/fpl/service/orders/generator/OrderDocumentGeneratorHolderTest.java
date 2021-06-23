@@ -68,7 +68,8 @@ class OrderDocumentGeneratorHolderTest {
             c21BlankOrderDocumentParameterGenerator, c23EPODocumentParameterGenerator,
             c32CareOrderDocumentParameterGenerator, c32bDischargeOfCareOrderDocumentParameterGenerator,
             c33InterimCareOrderDocumentParameterGenerator, c35aSupervisionOrderDocumentParameterGenerator,
-            c35bISODocumentParameterGenerator, c47AAppointmentOfAChildrensGuardianParameterGenerator
+            c35bISODocumentParameterGenerator, c43aSGODocumentParameterGenerator,
+            c47AAppointmentOfAChildrensGuardianParameterGenerator
         );
         collectors = List.of(c23EPOAdditionalDocumentsCollector);
 

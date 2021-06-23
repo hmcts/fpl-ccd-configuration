@@ -118,14 +118,6 @@ public enum Order {
             FURTHER_DIRECTIONS,
             REVIEW_DRAFT_ORDER
         )
-    ),
-    C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
-        "Appointment of a Children's Guardian",
-        "Section 41(1) Children Act 1989",
-        "C47A - Appointment of a Children's Guardian",
-        false,
-        List.of(
-            LINKED_TO_HEARING, APPROVER, APPROVAL_DATE, CAFCASS_JURISDICTIONS, FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),;
 
     private final String title;
