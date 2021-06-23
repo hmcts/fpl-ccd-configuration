@@ -48,6 +48,10 @@ public enum OrderQuestionBlock {
         "manageOrdersExpiryDateWithEndOfProceedings", "End date", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersEndDateTypeWithEndOfProceedings", "manageOrdersSetDateEndDate",
             "manageOrdersSetDateAndTimeEndDate")),
+    NEED_SEALING("needSealing", "Does needs sealing", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersNeedSealing")),
+    UPLOAD_ORDER_FILE("uploadOrderFile", "Order upload file", OrderSection.ORDER_DETAILS,
+        List.of("manageOrdersUploadOrderFile")),
     ICO_EXCLUSION(
         "manageOrdersExclusionRequirementDetails", "Add exclusion details", OrderSection.ORDER_DETAILS,
         List.of("manageOrdersHasExclusionRequirement", "manageOrdersExclusionDetails")),

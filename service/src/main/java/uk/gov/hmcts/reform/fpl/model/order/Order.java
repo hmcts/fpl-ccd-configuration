@@ -26,13 +26,18 @@ import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINKED_TO_H
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.LINK_APPLICATION;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.MANAGE_ORDER_END_DATE_WITH_MONTH;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.NEED_SEALING;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.REVIEW_DRAFT_ORDER;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.UPLOAD_ORDER_FILE;
 import static uk.gov.hmcts.reform.fpl.model.order.OrderQuestionBlock.WHICH_CHILDREN;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.DIGITAL;
+import static uk.gov.hmcts.reform.fpl.model.order.OrderSourceType.MANUAL_UPLOAD;
 
 @Getter
 @RequiredArgsConstructor
 public enum Order {
     C21_BLANK_ORDER(
+        DIGITAL,
         "Blank order",
         "Section 31 Children Act 1989",
         "C21 - Blank order",
@@ -41,6 +46,7 @@ public enum Order {
             APPROVAL_DATE, WHICH_CHILDREN, DETAILS, REVIEW_DRAFT_ORDER)
     ),
     C23_EMERGENCY_PROTECTION_ORDER(
+        DIGITAL,
         "Emergency protection order",
         "Section 44 Children Act 1989",
         "C23 - Emergency protection order",
@@ -50,6 +56,7 @@ public enum Order {
             FURTHER_DIRECTIONS, REVIEW_DRAFT_ORDER)
     ),
     C32_CARE_ORDER(
+        DIGITAL,
         "Care order",
         "Section 31 Children Act 1989",
         "C32 - Care order",
@@ -58,6 +65,7 @@ public enum Order {
             REVIEW_DRAFT_ORDER, CLOSE_CASE)
     ),
     C32B_DISCHARGE_OF_CARE_ORDER(
+        DIGITAL,
         "Discharge of care order",
         "Section 39(1) Children Act 1989",
         "Discharge of care order (C32B)",
@@ -66,6 +74,7 @@ public enum Order {
             FURTHER_DIRECTIONS, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C35A_SUPERVISION_ORDER(
+        DIGITAL,
         "Supervision order",
         "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Supervision order (C35A)",
@@ -75,6 +84,7 @@ public enum Order {
             MANAGE_ORDER_END_DATE_WITH_MONTH, REVIEW_DRAFT_ORDER, CLOSE_CASE, REVIEW_DRAFT_ORDER)
     ),
     C33_INTERIM_CARE_ORDER(
+        DIGITAL,
         "Interim care order",
         "Section 38 Children Act 1989",
         "Interim care order (C33)",
@@ -84,6 +94,7 @@ public enum Order {
             FURTHER_DIRECTIONS, MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS, REVIEW_DRAFT_ORDER)
     ),
     C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+        DIGITAL,
         "Appointment of a Children's Guardian",
         "Section 41(1) Children Act 1989",
         "C47A - Appointment of a Children's Guardian",
@@ -93,6 +104,7 @@ public enum Order {
             REVIEW_DRAFT_ORDER)
     ),
     C35B_INTERIM_SUPERVISION_ORDER(
+        DIGITAL,
         "Interim supervision order",
         "Section 38 and Paragraphs 1 and 2 Schedule 3 Children Act 1989",
         "Interim supervision order (C35B)",
@@ -106,8 +118,268 @@ public enum Order {
             FURTHER_DIRECTIONS,
             MANAGE_ORDER_END_DATE_WITH_END_OF_PROCEEDINGS,
             REVIEW_DRAFT_ORDER)
-    ),;
+    ),
 
+    /* MANUAL UPLOADS */
+    C24_VARIATION_OF_EMERGENCY_PROTECTION_ORDER(
+        MANUAL_UPLOAD,
+        "Variation of Emergency protection order (C24)",
+        "",
+        "Variation of Emergency protection order (C24)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C25_WARRANT_TO_ASSIST_EPO(
+        MANUAL_UPLOAD,
+        "Warrant to assist EPO (C25)",
+        "",
+        "Warrant to assist EPO (C25)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C28_WARRANT_TO_ASSIST(
+        MANUAL_UPLOAD,
+        "Warrant to assist (C28)",
+        "",
+        "Warrant to assist (C28)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C27_AUTHORITY_TO_SEARCH_FOR_ANOTHER_CHILD(
+        MANUAL_UPLOAD,
+        "Authority to search for another child (C27)",
+        "",
+        "Authority to search for another child (C27)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C29_RECOVERY_OF_A_CHILD(
+        MANUAL_UPLOAD,
+        "Recovery of a child (C29)",
+        "",
+        "Recovery of a child (C29)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C30_TO_DISCLOSE_INFORMATION_ABOUT_THE_WHEREABOUTS_OF_A_MISSING_CHILD(
+        MANUAL_UPLOAD,
+        "To disclose information about the whereabouts of a missing child (C30)",
+        "",
+        "To disclose information about the whereabouts of a missing child (C30)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C31_AUTHORITY_TO_SEARCH_FOR_A_CHILD(
+        MANUAL_UPLOAD,
+        "Authority to search for a child (C31)",
+        "",
+        "Authority to search for a child (C31)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C34B_REFUSAL_OF_CONTACT_WITH_A_CHILD_IN_CARE(
+        MANUAL_UPLOAD,
+        "Refusal of contact with a child in care (C34B)",
+        "",
+        "Refusal of contact with a child in care (C34B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C34A_CONTACT_WITH_A_CHILD_IN_CARE(
+        MANUAL_UPLOAD,
+        "Contact with a child in care (C34A)",
+        "",
+        "Contact with a child in care (C34A)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C36_VARIATION_EXTENSION_OF_EDUCATION_SUPERVISION_ORDER(
+        MANUAL_UPLOAD,
+        "Variation/extension of Education supervision order (C36)",
+        "",
+        "Variation/extension of Education supervision order (C36)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C37_EDUCATION_SUPERVISION_ORDER(
+        MANUAL_UPLOAD,
+        "Education supervision order (C37)",
+        "",
+        "Education supervision order (C37)",
+        IsFinalOrder.MAYBE,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C38A_DISCHARGE_EDUCATION_SUPERVISION_ORDER(
+        MANUAL_UPLOAD,
+        "Discharge education supervision order (C38A)",
+        "",
+        "Discharge education supervision order (C38A)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C38B_EXTENSION_OF_AN_EDUCATION_SUPERVISION_ORDER(
+        MANUAL_UPLOAD,
+        "Extension of an education supervision order (C38B)",
+        "",
+        "Extension of an education supervision order (C38B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C39_CHILD_ASSESSMENT_ORDER(
+        MANUAL_UPLOAD,
+        "Child assessment order (C39)",
+        "",
+        "Child assessment order (C39)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C42_FAMILY_ASSISTANCE_ORDER(
+        MANUAL_UPLOAD,
+        "Family assistance order (C42)",
+        "",
+        "Family assistance order (C42)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C43_CHILD_ARRANGEMENTS_SPECIFIC_ISSUE_PROHIBITED_STEPS_ORDER(
+        MANUAL_UPLOAD,
+        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
+        "",
+        "Child arrangements/Specific issue/Prohibited steps order (including interim orders) (C43)",
+        IsFinalOrder.MAYBE,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C43A_SPECIAL_GUARDIANSHIP_ORDER(
+        MANUAL_UPLOAD,
+        "Special guardianship order (C43A)",
+        "",
+        "Special guardianship order (C43A)",
+        IsFinalOrder.MAYBE,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C44A_LEAVE_TO_CHANGE_SURNAME(
+        MANUAL_UPLOAD,
+        "Leave to change surname (C44A)",
+        "",
+        "Leave to change surname (C44A)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C44B_LEAVE_TO_REMOVE_A_CHILD_FROM_THE_UK(
+        MANUAL_UPLOAD,
+        "Leave to remove a child from the UK (C44B)",
+        "",
+        "Leave to remove a child from the UK (C44B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C45A_PARENTAL_RESPONSIBILITY_ORDER(
+        MANUAL_UPLOAD,
+        "Parental responsibility order (C45A)",
+        "",
+        "Parental responsibility order (C45A)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C45B_DISCHARGE_OF_PARENTAL_RESPONSIBILITY(
+        MANUAL_UPLOAD,
+        "Discharge of parental responsibility (C45B)",
+        "",
+        "Discharge of parental responsibility (C45B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C46A_APPOINTMENT_OF_A_GUARDIAN(
+        MANUAL_UPLOAD,
+        "Appointment of a guardian (C46A)",
+        "",
+        "Appointment of a guardian (C46A)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C46B_TERMINATION_OF_GUARDIANS_APPOINTMENT(
+        MANUAL_UPLOAD,
+        "Termination of guardian's appointment (C46B)",
+        "",
+        "Termination of guardian's appointment (C46B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C47B_REFUSAL_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+        MANUAL_UPLOAD,
+        "Refusal of appointment of a children's guardian (C47B)",
+        "",
+        "Refusal of appointment of a children's guardian (C47B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C47C_TERMINATION_OF_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN(
+        MANUAL_UPLOAD,
+        "Termination of appointment of a children's guardian (C47C)",
+        "",
+        "Termination of appointment of a children's guardian (C47C)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C48A_APPOINTMENT_OF_A_SOLICITOR(
+        MANUAL_UPLOAD,
+        "Appointment of a solicitor (C48A)",
+        "",
+        "Appointment of a solicitor (C48A)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C48B_REFUSAL_OF_APPOINTMENT_OF_A_SOLICITOR(
+        MANUAL_UPLOAD,
+        "Refusal of appointment of a solicitor (C48B)",
+        "",
+        "Refusal of appointment of a solicitor (C48B)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C48C_TERMINATION_OF_APPOINTMENT_OF_A_SOLICITOR(
+        MANUAL_UPLOAD,
+        "Termination of appointment of a solicitor (C48C)",
+        "",
+        "Termination of appointment of a solicitor (C48C)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C49_TRANSFER_OUT_CHILDREN_ACT(
+        MANUAL_UPLOAD,
+        "Transfer out Children Act (C49)",
+        "",
+        "Transfer out Children Act (C49)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    C50_REFUSAL_TO_TRANSFER_PROCEEDINGS(
+        MANUAL_UPLOAD,
+        "Refusal to transfer proceedings (C50)",
+        "",
+        "Refusal to transfer proceedings (C50)",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    FL406_POWER_OF_ARREST(
+        MANUAL_UPLOAD,
+        "",
+        "",
+        "",
+        IsFinalOrder.NO,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    OTHER_ORDER(
+        MANUAL_UPLOAD,
+        "",
+        "",
+        "Other",
+        IsFinalOrder.MAYBE,
+        Constants.MANUAL_UPLOAD_QUESTIONS
+    ),
+    ;
+
+    private final OrderSourceType sourceType;
     private final String title;
     private final String childrenAct;
     private final String historyTitle;
@@ -139,5 +411,16 @@ public enum Order {
         }
 
         return Optional.empty();
+    }
+
+    private static class Constants {
+        private static final List<OrderQuestionBlock> MANUAL_UPLOAD_QUESTIONS = List.of(
+            APPROVAL_DATE,
+            WHICH_CHILDREN,
+            UPLOAD_ORDER_FILE,
+            NEED_SEALING,
+            REVIEW_DRAFT_ORDER,
+            CLOSE_CASE
+        );
     }
 }

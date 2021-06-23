@@ -242,6 +242,7 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
         // dummy data set for the front end that is dirtying case data
         caseDetails.getData().putAll(Map.of(
             "manageOrdersOperation", "CREATE",
+            "manageOrdersOperationClosedState", "CREATE",
             "orderTempQuestions", Map.of("holderObject", "forQuestionConditions"),
             "hearingDetailsSectionSubHeader", "some heading",
             "issuingDetailsSectionSubHeader", "some heading",

@@ -188,7 +188,8 @@ Scenario('Create C21 blank order in closed case', async ({ I, caseViewPage, mana
 
   await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
 
-  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.create);
+  I.dontSee('Upload an order');
+  await manageOrdersEventPage.selectOperationInClosedState(manageOrdersEventPage.operations.options.create);
   await I.goToNextPage();
   manageOrdersEventPage.selectRelatedToHearing(manageOrdersEventPage.hearingDetails.linkedToHearing.options.no);
   manageOrdersEventPage.confirmNoApplicationCanBeLinked();
@@ -337,6 +338,34 @@ Scenario('Create C47A appointment of a Children\'s Guardian', async ({ I, caseVi
   });
 });
 
+Scenario('Upload Manual order (other order)', async ({I, caseViewPage, manageOrdersEventPage}) => {
+  await caseViewPage.goToNewActions(config.administrationActions.manageOrders);
+  await manageOrdersEventPage.selectOperation(manageOrdersEventPage.operations.options.upload);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectUploadOrder(manageOrdersEventPage.orders.options.other);
+  manageOrdersEventPage.specifyOtherOrderTitle('Order F789s');
+  await I.goToNextPage();
+  await manageOrdersEventPage.enterApprovalDate(approvalDate);
+  await I.goToNextPage();
+  await manageOrdersEventPage.selectChildren(manageOrdersEventPage.section3.allChildren.options.select,[0]);
+  await I.goToNextPage();
+  await manageOrdersEventPage.uploadManualOrder(config.testPdfFile);
+  manageOrdersEventPage.selectManualOrderNeedSealing(manageOrdersEventPage.section4.manualOrderNeedSealing.options.yes);
+  await manageOrdersEventPage.selectIsFinalOrder();
+  await I.goToNextPage();
+  await manageOrdersEventPage.checkPreview();
+  await manageOrdersEventPage.selectCloseCase();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
+  assertOrder(I, caseViewPage, {
+    orderIndex: 7,
+    orderType: 'Other',
+    orderTitle: 'Order F789s',
+    approvalDate: approvalDate,
+    children: 'Timothy Jones',
+  });
+});
+
 function assertOrder(I, caseViewPage, order) {
   const orderElement = `Order ${order.orderIndex}`;
   const dateOfApproval = order.approvalDate !== undefined ? order.approvalDate : order.approvalDateTime;
@@ -345,11 +374,17 @@ function assertOrder(I, caseViewPage, order) {
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeInTab([orderElement, 'Type of order'], order.orderType);
   I.seeInTab([orderElement, 'Approval date'], dateFormat(dateOfApproval, mask));
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
-  I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
-  if (order.allocatedJudge.legalAdviserFullName) {
-    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.allocatedJudge.legalAdviserFullName);
+
+  // Judge details will be removed anyway based on https://tools.hmcts.net/jira/browse/FPLA-3084
+  if (order.allocatedJudge) {
+    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Judge or magistrate\'s title'], order.allocatedJudge.title);
+    I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Last name'], order.allocatedJudge.name);
+
+    if (order.allocatedJudge.legalAdviserFullName) {
+      I.seeInTab([orderElement, 'Judge and Justices\' Legal Adviser', 'Justices\' Legal Adviser\'s full name'], order.allocatedJudge.legalAdviserFullName);
+    }
   }
+
   I.seeInTab([orderElement, 'Children'], order.children);
 
   if (order.title !== undefined) {

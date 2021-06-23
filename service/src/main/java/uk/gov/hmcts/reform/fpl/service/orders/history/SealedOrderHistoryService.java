@@ -41,6 +41,7 @@ public class SealedOrderHistoryService {
     private final IdentityService identityService;
     private final ChildrenService childrenService;
     private final OrderCreationService orderCreationService;
+    private final SealedOrderHistoryExtraTitleGenerator extraTitleGenerator;
     private final Time time;
 
     private final ManageOrdersClosedCaseFieldGenerator manageOrdersClosedCaseFieldGenerator;
@@ -55,7 +56,7 @@ public class SealedOrderHistoryService {
 
         GeneratedOrder.GeneratedOrderBuilder generatedOrderBuilder = GeneratedOrder.builder()
             .orderType(manageOrdersEventData.getManageOrdersType().name()) // hidden field, to store the type
-            .title(manageOrdersEventData.getManageOrdersTitle())
+            .title(extraTitleGenerator.generate(caseData))
             .type(manageOrdersEventData.getManageOrdersType().getHistoryTitle())
             .children(selectedChildren)
             .judgeAndLegalAdvisor(getJudgeForTabView(caseData.getJudgeAndLegalAdvisor(), caseData.getAllocatedJudge()))
