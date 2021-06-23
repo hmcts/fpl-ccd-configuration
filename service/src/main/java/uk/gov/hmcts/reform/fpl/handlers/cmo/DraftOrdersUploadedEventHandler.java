@@ -58,14 +58,12 @@ public class DraftOrdersUploadedEventHandler {
             return;
         }
 
-        final DraftOrdersUploadedTemplate content = draftOrdersContentProvider.buildContent(caseData, hearing, judge,
-            orders);
+        final DraftOrdersUploadedTemplate content = draftOrdersContentProvider.buildContent(
+            caseData, hearing, judge, orders
+        );
 
         notificationService.sendEmail(
-            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE,
-            judge.getJudgeEmailAddress(),
-            content,
-            caseData.getId().toString()
+            DRAFT_ORDERS_UPLOADED_NOTIFICATION_TEMPLATE, judge.getJudgeEmailAddress(), content, caseData.getId()
         );
     }
 
@@ -86,21 +84,13 @@ public class DraftOrdersUploadedEventHandler {
             return;
         }
 
-        CMOReadyToSealTemplate template = agreedCMOContentProvider.buildTemplate(
-            hearing,
-            caseData.getId(),
-            judge,
-            caseData.getAllRespondents(),
-            caseData.getFamilyManCaseNumber()
-        );
+        CMOReadyToSealTemplate template = agreedCMOContentProvider.buildTemplate(hearing, judge, caseData);
 
         String email = adminNotificationHandler.getHmctsAdminEmail(caseData);
 
-        notificationService.sendEmail(CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE,
-            email,
-            template,
-            caseData.getId().toString());
-
+        notificationService.sendEmail(
+            CMO_READY_FOR_JUDGE_REVIEW_NOTIFICATION_TEMPLATE, email, template, caseData.getId()
+        );
     }
 
     private HearingBooking getHearingBooking(CaseData caseData) {

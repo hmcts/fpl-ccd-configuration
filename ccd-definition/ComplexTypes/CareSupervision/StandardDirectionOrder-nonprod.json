@@ -1,0 +1,31 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "unsealedDocumentCopy",
+    "FieldType": "Document",
+    "ElementLabel": "Unsealed copy",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "customDirections",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CustomDirection",
+    "ElementLabel": "Custom directions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "standardDirections",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "StandardDirection",
+    "ElementLabel": "Standard directions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderStatus=\"DO_NOT_SHOW\""
+  }
+]

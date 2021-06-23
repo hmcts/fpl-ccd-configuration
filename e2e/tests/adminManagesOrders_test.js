@@ -72,7 +72,7 @@ Scenario('Create 32b discharge of care order', async ({I, caseViewPage, manageOr
   I.seeEventSubmissionConfirmation(config.administrationActions.manageOrders);
   assertOrder(I, caseViewPage, {
     orderIndex: 1,
-    orderType: 'C32B - Discharge of care order',
+    orderType: 'Discharge of care order (C32B)',
     approvalDate: today,
     allocatedJudge: allocatedJudge,
     children: 'Timothy Jones',

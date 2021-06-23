@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionTypesForOthers",
+    "ListElementCode": "OBJECT_TO_REQUEST_FOR_DISCLOSURE",
+    "ListElement": "Object to a request for disclosure",
+    "DisplayOrder": 1
+  }
+]

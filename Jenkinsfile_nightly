@@ -82,7 +82,8 @@ withNightlyPipeline(type, product, component) {
   enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest(120)
-  enableCrossBrowserTest(['chrome', 'firefox', 'safari', 'microsoft'])
+  // 'microsoft' and 'safari' to be returned to crossbrowser tests once FPLA-3172 improvements are complete
+  enableCrossBrowserTest(['chrome', 'firefox'])
 
   before('mutationTest') {
     setupSecretsForIntegrationTests(pipelineConf)
@@ -106,6 +107,10 @@ withNightlyPipeline(type, product, component) {
     archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/serenity/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     env.TESTS_FOR_ACCESSIBILITY = false
+  }
+
+  before('crossBrowserTest') {
+    env.TEST_RETRIES = 2
   }
 
   after('crossBrowserTest') {
