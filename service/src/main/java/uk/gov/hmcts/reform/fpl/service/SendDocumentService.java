@@ -3,25 +3,22 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Recipient;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.SentDocument;
-import uk.gov.hmcts.reform.fpl.model.SentDocuments;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.*;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.enums.YesNo.YES;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
@@ -71,6 +68,63 @@ public class SendDocumentService {
         recipients.addAll(getNotRepresentedRespondents(caseData));
 
         return recipients;
+    }
+
+    public List<Recipient> getSelectedOtherRecipients(CaseData caseData, List<Element<Other>> othersSelected) {
+        final List<Recipient> recipients = new ArrayList<>();
+
+        List<Representative> otherRepresentatives = new ArrayList<>();
+
+        othersSelected.stream().forEach(other -> {
+            Other otherToBeNotified = other.getValue();
+            if (otherIsRepresented(otherToBeNotified)) {
+                UUID representativeID = other.getValue().getRepresentedBy().get(0).getValue();
+
+                Optional<Representative> representative = caseData.getRepresentatives().stream()
+                    .filter(element -> element.getId().equals(representativeID) && element.getValue().getServingPreferences() == POST)
+                    .map(Element::getValue)
+                    .findFirst();
+
+                if(representative.isPresent()) {
+                    otherRepresentatives.add(representative.get());
+                }
+            } else {
+                // send to other address if not empty
+                if(otherHasAddressAdded(otherToBeNotified)) {
+                    recipients.add(Representative.builder()
+                        .fullName(otherToBeNotified.getName())
+                        .address(otherToBeNotified.getAddress())
+                        .build());
+                }
+            }
+        });
+
+        recipients.addAll(new ArrayList<>((otherRepresentatives)));
+
+        return recipients;
+    }
+
+    public List<Recipient> getRecipientsExcludingOthers(CaseData caseData) {
+        final List<Recipient> recipients = new ArrayList<>();
+
+        List<Representative> representatives = caseData.getRepresentativesByServedPreference(POST)
+            .stream()
+            .filter(representative ->
+                !representative.getRole().getType().equals(RepresentativeRole.Type.OTHER))
+            .collect(Collectors.toList());
+
+        recipients.addAll(new ArrayList<>((representatives)));
+        recipients.addAll(getNotRepresentedRespondents(caseData));
+
+        return recipients;
+    }
+
+    private boolean otherIsRepresented(Other other) {
+        return !isEmpty(other.getRepresentedBy());
+    }
+
+    private boolean otherHasAddressAdded(Other other) {
+        return !isNull(other.getAddress());
     }
 
     private List<Recipient> getRepresentativesServedByPost(CaseData caseData) {

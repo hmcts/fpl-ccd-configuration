@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.notify.LocalAuthorityInboxRecipientsRequest;
 import uk.gov.hmcts.reform.fpl.model.notify.NotifyData;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.SendDocumentService;
 import uk.gov.hmcts.reform.fpl.service.email.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.email.RepresentativesInbox;
@@ -25,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.representative.RepresentativeNotification
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_GENERATED_NOTIFICATION_TEMPLATE_FOR_LA_AND_DIGITAL_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_ISSUED_NOTIFICATION_TEMPLATE_FOR_REPRESENTATIVES;
 import static uk.gov.hmcts.reform.fpl.enums.IssuedOrderType.GENERATED_ORDER;
@@ -60,10 +58,17 @@ public class GeneratedOrderEventHandler {
     public void sendOrderByPost(final GeneratedOrderEvent orderEvent) {
         final CaseData caseData = orderEvent.getCaseData();
         final List<DocumentReference> documents = List.of(orderEvent.getOrderDocument());
+        final List<Element<Other>> othersSelected = caseData.getOrderCollection().get(0).getValue().getOthers();
 
-        final List<Recipient> recipients = sendDocumentService.getStandardRecipients(caseData);
+        final List<Recipient> otherRecipients = sendDocumentService.getSelectedOtherRecipients(caseData, othersSelected);
+        final List<Recipient> allRecipients = sendDocumentService.getRecipientsExcludingOthers(caseData);
+        allRecipients.addAll(otherRecipients);
 
-        sendDocumentService.sendDocuments(caseData, documents, recipients);
+        allRecipients.stream().forEach(recipient -> {
+            System.out.println("I am posting to" + recipient.getFullName() + recipient.getAddress().getAddressLine1());
+        });
+
+        sendDocumentService.sendDocuments(caseData, documents, allRecipients);
     }
 
     private void sendNotificationToEmailServedRepresentatives(final CaseData caseData,
@@ -115,10 +120,10 @@ public class GeneratedOrderEventHandler {
 
         othersSelected.stream().forEach(other -> {
             if (!other.getValue().getRepresentedBy().isEmpty()) {
-                UUID representativeID = other.getValue().getRepresentedBy().get(0).getValue();
 
-                String representativeEmail = representatives.stream()
-                    .filter(element -> element.getId().equals(representativeID) && element.getValue().getServingPreferences() == preferences)
+                other.getValue().getRepresentedBy().stream().forEach(representative -> {
+                    String representativeEmail = representatives.stream()
+                    .filter(element -> element.getId().equals(representative.getValue()) && element.getValue().getServingPreferences() == preferences)
                     .map(Element::getValue)
                     .map(Representative::getEmail)
                     .findFirst()
@@ -127,6 +132,7 @@ public class GeneratedOrderEventHandler {
                 if(!representativeEmail.isEmpty()) {
                     othersToBeNotified.add(representativeEmail);
                 }
+                });
             }
         });
 
