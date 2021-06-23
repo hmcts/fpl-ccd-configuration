@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.controllers.AbstractCallbackTest;
 import uk.gov.hmcts.reform.fpl.enums.State;
@@ -58,10 +59,17 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
 
             CaseDetails caseDetails = caseDetails(otherCourtAdminDocuments, familyManNumber, migrationId);
 
-            CaseData extractedCaseData = extractCaseData(postAboutToSubmitEvent(caseDetails));
+            AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
-            assertThat(extractedCaseData.getOtherCourtAdminDocuments())
+            assertThat(extractCaseData(response).getOtherCourtAdminDocuments())
                 .isEqualTo(List.of(otherCourtAdminDocuments.get(0)));
+
+            assertThat((String) response.getData().get("documentViewLA")).doesNotContain(
+                documentTitle1, documentTitle2, documentTitle3, documentTitle4, documentTitle5, documentTitle6);
+            assertThat((String) response.getData().get("documentViewHMCTS")).doesNotContain(
+                documentTitle1, documentTitle2, documentTitle3, documentTitle4, documentTitle5, documentTitle6);
+            assertThat((String) response.getData().get("documentViewNC")).doesNotContain(
+                documentTitle1, documentTitle2, documentTitle3, documentTitle4, documentTitle5, documentTitle6);
         }
 
         @Test
@@ -86,7 +94,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage(String.format(
-                    "Migration FPLA-3175: Expected other court admin document Id %s and document title %s "
+                    "Migration FPLA-3175: Expected other court admin document Id %s and document title '%s' "
                         + "but not found", documentId2, documentTitle2));
         }
 
@@ -112,7 +120,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage(String.format(
-                    "Migration FPLA-3175: Expected other court admin document Id %s and document title %s "
+                    "Migration FPLA-3175: Expected other court admin document Id %s and document title '%s' "
                         + "but not found", documentId3, documentTitle3));
         }
 
@@ -137,7 +145,7 @@ class MigrateCaseControllerTest extends AbstractCallbackTest {
             assertThatThrownBy(() -> postAboutToSubmitEvent(caseDetails))
                 .getRootCause()
                 .hasMessage(String.format(
-                    "Migration FPLA-3175: Expected other court admin document Id %s and document title %s "
+                    "Migration FPLA-3175: Expected other court admin document Id %s and document title '%s' "
                         + "but not found", documentId6, documentTitle6));
         }
 

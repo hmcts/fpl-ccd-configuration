@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CourtAdminDocument;
 import uk.gov.hmcts.reform.fpl.model.common.AdditionalApplicationsBundle;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.casesubmission.CaseSubmissionService;
+import uk.gov.hmcts.reform.fpl.service.document.DocumentListService;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ import java.util.UUID;
 @Slf4j
 public class MigrateCaseController extends CallbackController {
     private static final String MIGRATION_ID_KEY = "migrationId";
-    private final CaseSubmissionService caseSubmissionService;
+    private final DocumentListService documentListService;
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
@@ -82,6 +82,7 @@ public class MigrateCaseController extends CallbackController {
             removeOtherCourtAdminDocument(otherCourtAdminDocuments, entry);
         }
         caseDetails.getData().put("otherCourtAdminDocuments", otherCourtAdminDocuments);
+        caseDetails.getData().putAll(documentListService.getDocumentView(getCaseData(caseDetails)));
     }
 
     private void removeOtherCourtAdminDocument(List<Element<CourtAdminDocument>> otherCourtAdminDocuments,
@@ -90,7 +91,7 @@ public class MigrateCaseController extends CallbackController {
             && documentToRemove.getValue().equals(document.getValue().getDocumentTitle()))) {
 
             throw new AssertionError(String.format(
-                "Migration FPLA-3175: Expected other court admin document Id %s and document title %s "
+                "Migration FPLA-3175: Expected other court admin document Id %s and document title '%s' "
                     + "but not found", documentToRemove.getKey(), documentToRemove.getValue()
             ));
         }
