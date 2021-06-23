@@ -49,6 +49,7 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
     void shouldRemoveExistingRepresentativeInfoWhenMainRepresentativeIsRemoved() {
         ChildrenEventData eventData = ChildrenEventData.builder()
             .childrenHaveRepresentation("No")
+            .childrenMainRepresentative(MAIN_REPRESENTATIVE) // existing field from previous run of the event
             .build();
 
         CaseData caseData = CaseData.builder()
@@ -64,6 +65,8 @@ class ChildControllerAboutToSubmitTest extends AbstractCallbackTest {
         assertThat(responseData.getAllChildren()).extracting(Element::getValue).containsExactly(
             Child.builder().party(ChildParty.builder().build()).build()
         );
+
+        assertThat(responseData.getChildrenEventData().getChildrenMainRepresentative()).isNull();
     }
 
     @Test
