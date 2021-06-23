@@ -12,10 +12,39 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersOperationClosedState",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersOperationClosedState",
+    "Label": "What do you want to do?",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "manageOrdersType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ManageOrdersType",
     "Label": "Select order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersUploadType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ManageOrdersUploadType",
+    "Label": "Select order",
+    "SecurityClassification": "Public",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageOrdersUploadTypeOtherTitle",
+    "FieldType": "Text",
+    "Label": " ",
     "SecurityClassification": "Public",
     "Searchable": "N"
   },
@@ -89,6 +118,25 @@
     "FieldType": "TextArea",
     "Label": "Add order directions",
     "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersNeedSealing",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "YesOrNo",
+    "Label": "Do you need to seal the order?",
+    "SecurityClassification": "PUBLIC",
+    "Searchable": "N"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "manageOrdersUploadOrderFile",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "FieldType": "Document",
+    "Label": " ",
+    "SecurityClassification": "PUBLIC",
+    "RegularExpression": ".doc,.docx,.pdf",
     "Searchable": "N"
   },
   {

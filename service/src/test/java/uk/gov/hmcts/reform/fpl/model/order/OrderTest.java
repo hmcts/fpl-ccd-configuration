@@ -76,9 +76,19 @@ class OrderTest {
         assertThat(order.nextSection(currentSection)).isEqualTo(expectedNextSection);
     }
 
+    @ParameterizedTest
+    @MethodSource("sectionsWithNextForManualUploads")
+    void testNextSectionForManualUploads(Order order, OrderSection currentSection,
+                                         Optional<OrderSection> expectedNextSection) {
+        assertThat(order.nextSection(currentSection)).isEqualTo(expectedNextSection);
+    }
+
     @Test
     void checkCoverage() {
-        Set<Order> allOrders = Arrays.stream(Order.values()).collect(Collectors.toSet());
+        Set<Order> allOrders = Arrays.stream(Order.values())
+            .filter(order -> OrderSourceType.DIGITAL == order.getSourceType())
+            .collect(Collectors.toSet());
+
         Set<Order> testedOrders = sectionsWithNext()
             .map(arguments -> (Order) arguments.get()[0])
             .collect(Collectors.toSet());
@@ -127,5 +137,16 @@ class OrderTest {
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, ORDER_DETAILS, Optional.of(REVIEW)),
             Arguments.of(C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN, REVIEW, Optional.empty())
         );
+    }
+
+    private static Stream<Arguments> sectionsWithNextForManualUploads() {
+        return Arrays.stream(Order.values())
+            .filter(order -> OrderSourceType.MANUAL_UPLOAD == order.getSourceType())
+            .flatMap(order -> Stream.of(
+                Arguments.of(order, ISSUING_DETAILS, Optional.of(CHILDREN_DETAILS)),
+                Arguments.of(order, CHILDREN_DETAILS, Optional.of(ORDER_DETAILS)),
+                Arguments.of(order, ORDER_DETAILS, Optional.of(REVIEW)),
+                Arguments.of(order, REVIEW, Optional.empty()))
+            );
     }
 }

@@ -5,13 +5,16 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 // Fields
 const operations = {
   group: '#manageOrdersOperation',
+  groupInClosedState: '#manageOrdersOperationClosedState',
   options: {
     create: 'CREATE',
+    upload: 'UPLOAD',
   },
 };
 
 const orders = {
   group: '#manageOrdersType',
+  uploadGroup: '#manageOrdersUploadType',
   options: {
     c21: 'C21_BLANK_ORDER',
     c23: 'C23_EMERGENCY_PROTECTION_ORDER',
@@ -22,6 +25,7 @@ const orders = {
     c35B: 'C35B_INTERIM_SUPERVISION_ORDER',
     c43a: 'C43A_SPECIAL_GUARDIANSHIP_ORDER',
     c47a: 'C47A_APPOINTMENT_OF_A_CHILDRENS_GUARDIAN',
+    other: 'OTHER_ORDER',
   },
   title: {
     c21: 'Blank order (C21)',
@@ -32,7 +36,9 @@ const orders = {
     c35B: 'Interim supervision order (C35B)',
     c35A: 'Supervision order (C35A)',
     c47a: 'Appointment of a children\'s guardian (C47A)',
+    other: 'Other',
   },
+  otherOrderTitle: '#manageOrdersUploadTypeOtherTitle',
 };
 
 const hearingDetails = {
@@ -122,6 +128,14 @@ const section4 = {
   exclusionStartDate: '#manageOrdersExclusionStartDate',
   exclusionDetails: '#manageOrdersExclusionDetails',
   powerOfArrest: '#manageOrdersPowerOfArrest',
+  manualOrder: '#manageOrdersUploadOrderFile',
+  manualOrderNeedSealing: {
+    group: '#manageOrdersNeedSealing',
+    options: {
+      yes: 'Yes',
+      no: 'No',
+    },
+  },
   endDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDate: '#manageOrdersEndDateTime',
   supervisionOrderEndDateAndTime: '#manageOrdersSetDateAndTimeEndDate',
@@ -162,6 +176,11 @@ const selectOperation = async (operationType) => {
   await I.runAccessibilityTest();
 };
 
+const selectOperationInClosedState = async (operationType) => {
+  I.click(`${operations.groupInClosedState}-${operationType}`);
+  await I.runAccessibilityTest();
+};
+
 const selectRelatedToHearing = (answer) => {
   I.click(`${hearingDetails.linkedToHearing.group}-${answer}`);
 };
@@ -175,6 +194,16 @@ const selectHearing = async (hearing) => {
 const selectOrder = async (orderType) => {
   I.click(`${orders.group}-${orderType}`);
   await I.runAccessibilityTest();
+};
+
+const selectUploadOrder = async (orderType) => {
+  I.click(`${orders.uploadGroup}-${orderType}`);
+  await I.runAccessibilityTest();
+};
+
+const specifyOtherOrderTitle = (text) => {
+  I.waitForElement(orders.otherOrderTitle);
+  I.fillField(orders.otherOrderTitle, text);
 };
 
 const enterJudge = () => {
@@ -253,6 +282,15 @@ const uploadPowerOfArrest = (file) => {
   I.attachFile(section4.powerOfArrest, file);
 };
 
+const uploadManualOrder = async (file) => {
+  I.attachFile(section4.manualOrder, file);
+  await I.runAccessibilityTest();
+};
+
+const selectManualOrderNeedSealing = (needSealing) => {
+  I.click(`${section4.manualOrderNeedSealing.group}-${needSealing}`);
+};
+
 const enterRemovalAddress = (address) => {
   postcodeLookup.enterAddressManually(address);
 };
@@ -290,6 +328,10 @@ const selectIsFinalOrder = async () => {
   I.checkOption(section4.isFinalOrder.options.yes);
 };
 
+const selectIsNotFinalOrder = async () => {
+  I.checkOption(section4.isFinalOrder.options.no);
+};
+
 const checkPreview = async () => {
   I.see(preview.documentName);
   await I.runAccessibilityTest();
@@ -314,9 +356,10 @@ const selectEnglandOffice= office => {
 module.exports = {
   operations, hearingDetails, orders, section2, section3, section4,
   selectOperation, selectOrder, selectRelatedToHearing, selectHearing, enterJudge, enterApprovalDate, selectChildren, enterTitle, enterDirections,
-  enterFurtherDirections, selectIsFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
+  enterFurtherDirections, selectIsFinalOrder, selectIsNotFinalOrder, checkPreview, selectCloseCase, enterApprovalDateTime, selectEpoType, selectIncludePhrase, enterEPOEndDateTime,
   enterRemovalAddress, selectExclusionRequirementEPO, enterWhoIsExcluded, enterExclusionStartDate, uploadPowerOfArrest,
   selectSupervisionType, enterSuperVisionOrderEndDate, enterSuperVisionOrderEndDateAndTime, enterSuperVisionNumOfMonths,
   selectOrderTypeWithMonth, enterExclusionDetails, selectOrderTypeWithEndOfProceedings, selectExclusionRequirementICO,
   selectCafcassRegion, selectEnglandOffice, enterCareOrderIssuedVenue, enterCareOrderIssuedDate,
+  selectUploadOrder, specifyOtherOrderTitle, uploadManualOrder, selectManualOrderNeedSealing, selectOperationInClosedState,
 };
