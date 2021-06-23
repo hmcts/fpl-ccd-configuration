@@ -29,9 +29,5 @@ public class OrderTempQuestions {
     String closeCase;
     String uploadOrderFile;
     String previewOrder;
-    String manageOrdersExpiryDateWithMonth;
-    String manageOrdersExclusionRequirementDetails;
-    String cafcassJurisdictions;
-    String manageOrdersExpiryDateWithEndOfProceedings;
 
 }

@@ -336,11 +336,6 @@ class SealedOrderHistoryServiceTest {
             PLAIN_WORD_DOCUMENT);
     }
 
-    private void mockHelper(MockedStatic<JudgeAndLegalAdvisorHelper> jalMock) {
-        jalMock.when(() -> JudgeAndLegalAdvisorHelper.getJudgeForTabView(JUDGE_AND_LEGAL_ADVISOR, JUDGE))
-            .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
-    }
-
     private CaseData.CaseDataBuilder caseData() {
         return startCommonCaseDataBuilder(startBuildingCommonEventData());
     }
@@ -396,14 +391,4 @@ class SealedOrderHistoryServiceTest {
             .thenReturn(TAB_JUDGE_AND_LEGAL_ADVISOR);
     }
 
-    private CaseData.CaseDataBuilder caseData() {
-        return CaseData.builder()
-            .allocatedJudge(JUDGE)
-            .judgeAndLegalAdvisor(JUDGE_AND_LEGAL_ADVISOR)
-            .manageOrdersEventData(ManageOrdersEventData.builder()
-                .manageOrdersType(ORDER_TYPE)
-                .manageOrdersApprovalDate(APPROVAL_DATE)
-                .build());
-    }
-  
 }
