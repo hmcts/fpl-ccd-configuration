@@ -1,6 +1,6 @@
 const config = require('../config.js');
 const dateFormat = require('dateformat');
-const caseData = require('../fixtures/caseData/gatekeepinhWithPastHearingDetails.json');
+const caseData = require('../fixtures/caseData/gatekeepingWithPastHearingDetails.json');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const caseDataWithApplication = require('../fixtures/caseData/gatekeepingWithPastHearingDetailsAndApplication.json');
 const closedCaseData = require('../fixtures/caseData/closedCase.json');
