@@ -84,6 +84,7 @@ public class ChildrenEventData {
         return childRepresentationDetails;
     }
 
+    @JsonIgnore
     public String[] getTransientFields() {
         List<String> fields = new ArrayList<>();
         if (!YesNo.YES.getValue().equals(childrenHaveRepresentation)) {
