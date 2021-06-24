@@ -70,6 +70,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
         Map.entry("furtherDirections", "YES"),
         Map.entry("orderDetails", "NO"),
         Map.entry("whichChildren", "YES"),
+        Map.entry("whichOthers", "YES"),
         Map.entry("closeCase", "YES"),
         Map.entry("approvalDate", "YES"),
         Map.entry("approvalDateTime", "NO"),
@@ -261,19 +262,6 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
     }
 
     @Test
-    void reviewShouldNotAlterCaseData() {
-        CaseData caseData = CaseData.builder()
-            .manageOrdersEventData(ManageOrdersEventData.builder().manageOrdersType(C32_CARE_ORDER).build())
-            .build();
-
-        CaseDetails caseDetails = asCaseDetails(caseData);
-
-        AboutToStartOrSubmitCallbackResponse response = postMidEvent(caseDetails, "review");
-
-        assertThat(response.getData()).isEqualTo(caseDetails.getData());
-    }
-
-    @Test
     void epoEndDateShouldReturnErrorForPastDate() {
         CaseData caseData = buildCaseData().toBuilder().manageOrdersEventData(
             buildRemoveToAccommodationEventData(now().plusDays(1), now().minusDays(1))).build();
@@ -446,6 +434,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("furtherDirections", "YES"),
             Map.entry("orderDetails","NO"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("whichOthers", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
@@ -477,6 +466,7 @@ class ManageOrdersMidEventControllerTest extends AbstractCallbackTest {
             Map.entry("furtherDirections", "YES"),
             Map.entry("orderDetails","NO"),
             Map.entry("whichChildren", "YES"),
+            Map.entry("whichOthers", "YES"),
             Map.entry("approvalDate", "YES"),
             Map.entry("approvalDateTime", "NO"),
             Map.entry("epoIncludePhrase", "NO"),
